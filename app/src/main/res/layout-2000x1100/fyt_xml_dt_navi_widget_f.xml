@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:id="@id/rl_navi" android:background="@drawable/navi_bg" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginRight="20.0dip" android:layout_marginBottom="16.0dip">
+        <TextView android:textSize="60.0sp" android:textColor="@color/text_color_black" android:id="@id/tv_speed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="40.0dip" android:text="0" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="18.0sp" android:textColor="@color/text_color_black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Km/h" android:layout_below="@id/tv_speed" android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</RelativeLayout>

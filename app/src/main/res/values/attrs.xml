@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ImageCoverFlowView">
+        <attr name="visibleImage" format="integer" />
+        <attr name="reflectionHeight" format="fraction" />
+        <attr name="reflectionGap" format="dimension" />
+        <attr name="imageClickEnable" format="boolean" value="0" />
+        <attr name="imageLongClickEnable" format="boolean" value="0" />
+        <attr name="coverflowGravity" format="enum">
+            <enum name="top" value="0" />
+            <enum name="bottom" value="1" />
+            <enum name="center_vertical" value="2" />
+        </attr>
+        <attr name="coverflowLayoutMode" format="enum">
+            <enum name="match_parent" value="0"></enum>
+            <enum name="wrap_content" value="1"></enum>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="CellLayout">
+        <attr name="cellWidth" format="dimension" />
+        <attr name="cellHeight" format="dimension" />
+        <attr name="widthGap" format="dimension" />
+        <attr name="heightGap" format="dimension" />
+        <attr name="maxGap" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="AppsCustomizePagedView">
+        <attr name="maxAppCellCountX" format="integer" />
+        <attr name="maxAppCellCountY" format="integer" />
+        <attr name="widgetCellWidthGap" format="dimension" />
+        <attr name="widgetCellHeightGap" format="dimension" />
+        <attr name="widgetCountX" format="integer" />
+        <attr name="widgetCountY" format="integer" />
+        <attr name="clingFocusedX" format="integer" />
+        <attr name="clingFocusedY" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="Cling">
+        <attr name="drawIdentifier" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="DrawableStateProxyView">
+        <attr name="sourceViewId" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="Include">
+        <attr name="workspace" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="Favorite">
+        <attr name="className" format="string" />
+        <attr name="packageName" format="string" />
+        <attr name="container" format="string" />
+        <attr name="screen" format="string" />
+        <attr name="x" format="string" />
+        <attr name="y" format="string" />
+        <attr name="spanX" format="string" />
+        <attr name="spanY" format="string" />
+        <attr name="icon" format="reference" />
+        <attr name="title" format="reference" />
+        <attr name="uri" format="string" />        
+    </declare-styleable>
+
+    <declare-styleable name="Extra">
+        <attr name="key" format="string" />
+        <attr name="value" format="string" />        
+    </declare-styleable>
+
+    <declare-styleable name="HolographicLinearLayout">
+        <attr name="sourceImageViewId" format="integer" />
+        <attr name="stateHotwordOn" format="boolean" />        
+    </declare-styleable>
+
+    <declare-styleable name="PagedView">
+        <attr name="pageLayoutWidthGap" format="dimension" />
+        <attr name="pageLayoutHeightGap" format="dimension" />
+        <attr name="pageLayoutPaddingTop" format="dimension" />
+        <attr name="pageLayoutPaddingBottom" format="dimension" />
+        <attr name="pageLayoutPaddingLeft" format="dimension" />
+        <attr name="pageLayoutPaddingRight" format="dimension" />
+        <attr name="pageSpacing" format="dimension" />
+        <attr name="pageIndicator" format="reference" />        
+    </declare-styleable>
+
+    <declare-styleable name="PageIndicator">
+        <attr name="windowSize" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="Workspace">
+        <attr name="defaultScreen" format="integer" />
+        <attr name="cellCountX" format="integer" />
+        <attr name="cellCountY" format="integer" />        
+    </declare-styleable>
+
+    <declare-styleable name="AnimationView">
+        <attr name="animationid" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CircleProgressView">
+        <attr name="progress_width" format="dimension" />
+        <attr name="progress_color" format="color" />
+        <attr name="location_start">
+            <enum name="bottom" value="4" />
+            <enum name="top" value="2" />
+            <enum name="left" value="1" />
+            <enum name="right" value="3" />
+        </attr>        
+    </declare-styleable>
+
+    <declare-styleable name="IconView">
+        <attr name="appname" format="reference|string" />
+        <attr name="titlecolor" format="reference" />        
+    </declare-styleable>
+
+    <declare-styleable name="TextIcon">
+        <attr name="iconid" format="reference" />
+        <attr name="pressedId" format="reference" />        
+    </declare-styleable>
+
+    <declare-styleable name="WaveProgressView">
+        <attr name="progress_max" format="integer" />
+        <attr name="progress" format="integer" />
+        <attr name="speed" format="float" />
+        <attr name="wave_width" format="float" />
+        <attr name="wave_height" format="float" />
+        <attr name="wave_color" format="color" />
+        <attr name="wave_bg_color" format="color" />
+        <attr name="stroke_color" format="color" />
+        <attr name="main_text" format="string" />
+        <attr name="main_text_color" format="color" />
+        <attr name="main_text_size" format="dimension" />
+        <attr name="hint_text" format="string" />
+        <attr name="hint_color" format="color" />
+        <attr name="hint_size" format="dimension" />
+        <attr name="text_space" format="dimension" />        
+    </declare-styleable>
+
+    <declare-styleable name="Entry">
+        <attr name="epkg" format="string" />
+        <attr name="eclazz" format="string" />
+        <attr name="eicon" format="reference" />        
+    </declare-styleable>
+
+    <attr name="strokeColor" format="color" />
+    <attr name="strokeTextColor" format="color" />
+    <attr name="strokeWidth" format="float" />
+
+    <attr name="topImageClickEnable" format="boolean" />
+    <attr name="facetype" format="string" />
+</resources>

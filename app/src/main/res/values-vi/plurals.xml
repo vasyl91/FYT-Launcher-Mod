@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="number_of_items_selected">
+        <item quantity="other">Đã chọn %1$d</item>
+        <item quantity="zero">Đã chọn %1$d</item>
+        <item quantity="one">Đã chọn %1$d</item>
+    </plurals>
+</resources>

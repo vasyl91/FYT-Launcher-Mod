@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="application_name">Launcher Mod</string>
+    <string name="home">主屏</string>
+    <string name="uid_name">Android 核心应用</string>
+    <string name="folder_name" />
+    <string name="wallpaper_instructions">设置壁纸</string>
+    <string name="wallpaper_accessibility_name">第%1$d张壁纸，共%2$d张</string>
+    <string name="announce_selection">已选择%1$s</string>
+    <string name="wallpaper_delete">删除</string>
+    <string name="pick_image">选择图片</string>
+    <string name="pick_wallpaper">壁纸</string>
+    <string name="crop_wallpaper">剪裁壁纸</string>
+    <string name="activity_not_found">未安装该应用。</string>
+    <string name="widgets_tab_label">小部件</string>
+    <string name="widget_adder">小部件</string>
+    <string name="toggle_weight_watcher">显示内存空间</string>
+    <string name="long_press_widget_to_add">触摸并按住小部件即可选择。</string>
+    <string name="market">商店</string>
+    <string name="widget_dims_format">%1$d × %2$d</string>
+    <string name="external_drop_widget_error">无法将相关内容拖放到此主屏幕上。</string>
+    <string name="external_drop_widget_pick_title">选择要创建的小部件</string>
+    <string name="rename_folder_label">文件夹名称</string>
+    <string name="rename_folder_title">重命名文件夹</string>
+    <string name="rename_action">确定</string>
+    <string name="cancel_action">取消</string>
+    <string name="menu_item_add_item">添加到主屏幕</string>
+    <string name="group_applications">应用</string>
+    <string name="group_shortcuts">快捷方式</string>
+    <string name="group_widgets">小部件</string>
+    <string name="completely_out_of_space">您的主屏幕上没有空间了。</string>
+    <string name="out_of_space">此主屏幕上已没有空间。</string>
+    <string name="hotseat_out_of_space">底部区域已无空间。</string>
+    <string name="invalid_hotseat_item">该小部件太大，底部区域容纳不下。</string>
+    <string name="shortcut_installed">已创建“%s”快捷方式。</string>
+    <string name="shortcut_uninstalled">已删除“%s”快捷方式。</string>
+    <string name="shortcut_duplicate">“%s”快捷方式已存在。</string>
+    <string name="title_select_shortcut">选择快捷方式</string>
+    <string name="title_select_application">选择应用</string>
+    <string name="all_apps_button_label">应用</string>
+    <string name="all_apps_home_button_label">主屏幕</string>
+    <string name="delete_zone_label_workspace">删除</string>
+    <string name="delete_zone_label_all_apps">卸载</string>
+    <string name="delete_target_label">删除</string>
+    <string name="delete_target_uninstall_label">卸载</string>
+    <string name="info_target_label">应用信息</string>
+    <string name="accessibility_search_button">搜索</string>
+    <string name="accessibility_voice_search_button">语音搜索</string>
+    <string name="accessibility_all_apps_button">应用</string>
+    <string name="accessibility_delete_button">删除</string>
+    <string name="delete_zone_label_all_apps_system_app">卸载更新内容</string>
+    <string name="cab_menu_delete_app">卸载应用</string>
+    <string name="cab_menu_app_info">应用详情</string>
+    <string name="cab_app_selection_text">已选择1个应用</string>
+    <string name="cab_widget_selection_text">已选择1个小部件</string>
+    <string name="cab_folder_selection_text">已选择1个文件夹</string>
+    <string name="cab_shortcut_selection_text">已选择1个快捷方式</string>
+    <string name="permlab_install_shortcut">安装快捷方式</string>
+    <string name="permdesc_install_shortcut">允许应用自行添加快捷方式。</string>
+    <string name="permlab_uninstall_shortcut">卸载快捷方式</string>
+    <string name="permdesc_uninstall_shortcut">允许应用自行删除快捷方式。</string>
+    <string name="permlab_read_settings">读取主屏幕设置和快捷方式</string>
+    <string name="permdesc_read_settings">允许应用读取主屏幕中的设置和快捷方式。</string>
+    <string name="permlab_write_settings">写入主屏幕设置和快捷方式</string>
+    <string name="permdesc_write_settings">允许应用更改主屏幕中的设置和快捷方式。</string>
+    <string name="gadget_error_text">加载小部件时出现问题</string>
+    <string name="uninstall_system_app_text">这是系统应用，无法卸载。</string>
+    <string name="dream_name">火箭发射器</string>
+    <string name="folder_hint_text">未命名文件夹</string>
+    <string name="workspace_description_format">主屏幕%1$d</string>
+    <string name="default_scroll_format">第%1$d页，共%2$d页</string>
+    <string name="workspace_scroll_format">主屏幕：第%1$d屏，共%2$d屏</string>
+    <string name="apps_customize_apps_scroll_format">应用：第%1$d页，共%2$d页</string>
+    <string name="apps_customize_widgets_scroll_format">小部件：第%1$d页，共%2$d页</string>
+    <string name="first_run_cling_title">欢迎！</string>
+    <string name="first_run_cling_description">您的主屏幕您做主。</string>
+    <string name="first_run_cling_custom_content_hint" />
+    <string name="first_run_cling_search_bar_hint" />
+    <string name="first_run_cling_create_screens_hint">添加更多屏幕来容纳应用和文件夹</string>
+    <string name="workspace_cling_title">整理您的空间</string>
+    <string name="workspace_cling_move_item">触摸并按住背景，即可管理壁纸、小部件和设置。</string>
+    <string name="all_apps_cling_title">选择一些应用</string>
+    <string name="all_apps_cling_add_item">要将应用添加到主屏幕，请触摸并按住该应用。</string>
+    <string name="folder_cling_title">这是一个文件夹</string>
+    <string name="folder_cling_create_folder">要创建一个类似的文件夹，请触摸并按住某个应用，然后将其移至另一个应用上。</string>
+    <string name="cling_dismiss">确定</string>
+    <string name="folder_opened">文件夹已打开，大小为%1$d×%2$d</string>
+    <string name="folder_tap_to_close">触摸可关闭文件夹</string>
+    <string name="folder_tap_to_rename">触摸可保存新名称</string>
+    <string name="folder_closed">文件夹已关闭</string>
+    <string name="folder_renamed">已将文件夹重命名为“%1$s”</string>
+    <string name="folder_name_format">文件夹：%1$s</string>
+    <string name="custom_workspace_cling_title_1" />
+    <string name="custom_workspace_cling_description_1" />
+    <string name="custom_workspace_cling_title_2" />
+    <string name="custom_workspace_cling_description_2" />
+    <string name="widget_button_text">小部件</string>
+    <string name="livewallpaper_button_text">动态壁纸</string>
+    <string name="wallpaper_button_text">壁纸</string>
+    <string name="settings_button_text">设置</string>
+    <string name="no_tv_msg">No TV device!</string>
+    <string name="car_aux">AUX</string>
+    <string name="car_tv">TV</string>
+    <string name="car_dvr">行车记录仪</string>
+    <string name="car_steer">方向盘学习</string>
+    <string name="car_speech">语音</string>
+    <string name="car_setting">车载设置</string>
+    <string name="car_wallpaper">Wallpapers</string>
+    <string name="car_video">视频</string>
+    <string name="car_dvd">DVD</string>
+    <string name="car_radio">收音机</string>
+    <string name="car_music">音乐</string>
+    <string name="car_bt">蓝牙</string>
+    <string name="car_carlife">百度CarLife</string>
+    <string name="music_unknown">未知名</string>
+    <string name="car_bt_music">蓝牙音乐</string>
+    <string name="car_app">应用</string>
+    <string name="car_temp">温度</string>
+    <string name="car_weather">天气</string>
+    <string name="car_city">城市</string>
+    <string name="car_wind_direction">风向</string>
+    <string name="car_temprange">温度范围</string>
+    <string name="sys_settings">Settings</string>
+    <string name="music_name">歌曲</string>
+    <string name="music_author">歌手</string>
+    <string name="music_album">专辑</string>
+    <string name="car_link">E-CARLINK</string>
+    <string name="date_str_format">yyyy/MM/dd</string>
+    <string name="car_settings">设置</string>
+    <string name="car_navi">导航</string>
+    <string name="car_kuwo">酷我音乐</string>
+    <string name="car_klfm">考拉FM</string>
+    <string name="car_unicar">流量充值</string>
+    <string name="car_gallery">图片浏览</string>
+    <string name="car_file">文件管理</string>
+    <string name="car_voice">智能语音</string>
+    <string name="car_car">我的爱车</string>
+    <string name="car_easyconn">手机互联</string>
+    <string name="car_browser">一键上网</string>
+    <string name="am">上午</string>
+    <string name="pm">下午</string>
+    <string name="dvr_switch">请打开内置DVR开关</string>
+    <string name="app_name">时 间</string>
+    <string name="widget_name">车载控件</string>
+    <string name="google_setting">谷歌设置</string>
+    <string name="car_speed" />
+    <string name="car_bt_connected" />
+    <string name="car_bt_notconnect">未连接</string>
+    <string name="car_time">时间</string>
+    <string name="clingmusictitle">使用车助理语音操作音乐播放器</string>
+    <string name="clingvideotitle">使用车助理语音操作视频播放器</string>
+    <string name="clingnavetitle">使用车助理语音操作导航应用</string>
+    <string name="clingradiotitle">使用车助理语音操作FM电台</string>
+    <string name="clingbttitle">使用车助理语音操作蓝牙电话</string>
+    <string name="clingkuwotitle">使用车助理语音操作酷我音乐</string>
+    <string name="clingkaolatitle">使用车助理语音操作考拉FM</string>
+    <string name="clingmusictext">"1.可以通过唤醒语“打开音乐/播放音乐/播放歌曲/我要听音乐”来播放音乐。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭音乐”来暂停音乐。"</string>
+    <string name="clingvideotext">"1.可以通过唤醒语“打开视频”唤醒视频播放器。
+2.可以通过唤醒语“下一曲/上一曲”来切换上下曲。
+3.可以通过唤醒语“播放/暂停”来切换播放暂停键。"</string>
+    <string name="clingnavetext">"1.可以通过唤醒语“打开导航/开始导航/返回导航/回到导航/进入导航”唤醒导航应用。
+2.可以通过唤醒语“我要去世界之窗/导航到世界之窗/中山公园怎么走/怎么去白石洲/带我去白石洲”发起导航。
+3.可以通过唤醒语“我要回家/我要去公司/导航回家/导航去公司/带我回家/带我去公司”以及“修改家/公司的地址为XX”来导航家里到公司的路线。
+4.可以通过唤醒语“（查找/搜索）附近的餐馆/附近的停车场/附近的加油站”来搜索周边。
+5.可以通过唤醒语“我饿了/我想吃饭/我想洗脚/我想上网/我想吃肯德基”来搜索商圈。
+6.可以通过唤醒语“停止导航/结束导航/关闭导航/取消导航/退出导航”来关闭导航。"</string>
+    <string name="clingradiotext">"1.可以通过唤醒语“打开收音机”唤醒收音机应用。
+2.可以通过唤醒语“上一台/切换上一台/换上一台/上一个台/切换上一个台/换上一个台/前一台/前 一个台/切换前一台/换前一台/切换前一个台/换前一个台”播放上一台。
+3.可以通过唤醒语“下一台/切换下一台/换下一台/下一个台/切换下一个台/换下一个台/后一台/后一个台/切换后一台/换后一台/后一个台/切换后一个台/换后一个台”来播放下一台。
+4.可以通过唤醒语“调频到XX（例：调频到101.1）”来播放具体某台。
+5.可以通过唤醒语“关闭收音机”来关闭收音机。"</string>
+    <string name="clingbttext">"1.可以通过唤醒语“打开蓝牙/打开电话”唤醒蓝牙应用。
+2.可以通过唤醒语“离线（打联系人）：打个电话张三给李冰/给老妈打电话/呼叫黄豆豆/拨打张三的电话/打李冰的电话”以及“在线（打号码）：呼叫110/打电话给110”来打电话。
+3.可以通过唤醒语“第一个/第二个/深圳那个/北京那个/电信那个/移动那个(广东有多个结果，请再次选择)/最前面那个/最后面那个/最上面那个/最下面那个/尾号是0580/0580结尾/150开头/座机/短号/手机”来选择电话号码。
+4.可以通过唤醒语“关闭蓝牙/关闭电话”来关闭蓝牙电话。"</string>
+    <string name="clingkuwotext">"1.可以通过唤醒语“打开酷我音乐”来播放酷我音乐。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭酷我音乐”来关闭。"</string>
+    <string name="clingkaolatext">"1.可以通过唤醒语“打开考拉FM”来打开考拉FM。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭考拉FM”来关闭。"</string>
+    <string name="cling_cancel">取消</string>
+    <string name="car_km">公里/小时</string>
+    <string name="select_default_app">选择需要默认打开的应用</string>
+    <string name="use_carradio">请使用原车收音机.</string>
+    <string name="dt_time_widget">时间日期</string>
+    <string name="dt_radio_widget">收音</string>
+    <string name="dt_music_widget">音乐</string>
+    <string name="dt_navi_widget">导航</string>
+    <string name="car_navi_title">"在线地图  实时路况"</string>
+    <string name="car_bt_title">一键拨号</string>
+    <string name="car_allapps_title">打开更多APP应用</string>
+    <string name="car_settings_title">系统功能设置</string>
+    <string name="car_realnavi">实时导航</string>
+</resources>

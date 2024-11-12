@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher66.AppsCustomizeTabHost android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="#00000000"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <LinearLayout android:orientation="vertical" android:id="@id/apps_customize_content" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <FrameLayout android:layout_gravity="center_horizontal" android:id="@id/tabs_container" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="@dimen/apps_customize_tab_bar_height" android:layout_marginTop="@dimen/apps_customize_tab_bar_margin_top">
+            <com.android.launcher66.FocusOnlyTabWidget android:gravity="start" android:layout_gravity="center" android:id="@android:id/tabs" android:background="@drawable/tab_unselected_holo" android:layout_width="fill_parent" android:layout_height="fill_parent" android:divider="@null" android:tabStripEnabled="false" />
+            <include android:layout_gravity="end" android:id="@id/market_button" android:layout_width="wrap_content" android:layout_height="fill_parent" layout="@layout/market_button" />
+        </FrameLayout>
+        <FrameLayout android:id="@android:id/tabcontent" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <com.android.launcher66.AppsCustomizePagedView android:id="@id/apps_customize_pane_content" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginBottom="@dimen/apps_customize_page_indicator_offset" launcher:maxGap="@dimen/workspace_max_gap" launcher:pageIndicator="@id/page_indicator" launcher:widgetCountX="@integer/apps_customize_widget_cell_count_x" launcher:widgetCountY="@integer/apps_customize_widget_cell_count_y" launcher:clingFocusedX="@integer/apps_customize_cling_focused_x" launcher:clingFocusedY="@integer/apps_customize_cling_focused_y" />
+            <FrameLayout android:id="@id/animation_buffer" android:background="#00000000" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+            <include android:layout_gravity="bottom|center" android:id="@id/page_indicator" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/apps_customize_page_indicator_margin" layout="@layout/page_indicator" />
+        </FrameLayout>
+    </LinearLayout>
+</com.android.launcher66.AppsCustomizeTabHost>

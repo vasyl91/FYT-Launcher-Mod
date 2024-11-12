@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:gravity="center" android:background="@drawable/tab_widget_indicator_selector" android:focusable="true" android:clickable="true" android:shadowColor="@color/workspace_all_apps_and_delete_zone_text_shadow_color" android:shadowDx="0.0" android:shadowDy="0.0" android:shadowRadius="2.0" android:onClick="onClickAppMarketButton" android:contentDescription="@string/market" android:paddingStart="16.0dip" android:paddingEnd="16.0dip" style="@style/MarketButton"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher66.Cling android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:drawIdentifier="first_run_portrait"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <FrameLayout android:id="@id/content" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:layout_gravity="center" android:orientation="vertical" android:id="@id/bubble_content" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="100.0dip" android:layout_marginRight="100.0dip">
+            <TextView android:textSize="30.0sp" android:textColor="#ffffffff" android:gravity="center" android:layout_gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="@string/first_run_cling_title" style="@style/ClingAltTitleText" />
+            <TextView android:textSize="16.0sp" android:textColor="#80000000" android:gravity="center" android:layout_gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/first_run_cling_description" style="@style/ClingAltTitleText" />
+        </LinearLayout>
+        <TextView android:gravity="center_horizontal" android:layout_gravity="end|center|top" android:id="@id/search_bar_hint" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="65.0dip" android:maxWidth="160.0dip" android:text="@string/first_run_cling_search_bar_hint" android:drawableTop="@drawable/cling_arrow_up" android:drawablePadding="5.0dip" android:layout_marginEnd="10.0dip" style="@style/ClingHintText" />
+        <TextView android:layout_gravity="start|center|top" android:id="@id/custom_content_hint" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="100.0dip" android:maxWidth="160.0dip" android:text="@string/first_run_cling_custom_content_hint" android:drawablePadding="10.0dip" android:drawableStart="@drawable/cling_arrow_start" android:layout_marginStart="10.0dip" android:layout_marginEnd="10.0dip" style="@style/ClingHintText" />
+        <TextView android:layout_gravity="end|bottom|center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="85.0dip" android:maxWidth="180.0dip" android:text="@string/first_run_cling_create_screens_hint" android:drawablePadding="5.0dip" android:drawableEnd="@drawable/cling_arrow_end" android:layout_marginEnd="10.0dip" style="@style/ClingHintText" />
+    </FrameLayout>
+    <Button android:layout_gravity="end|bottom|center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="15.0dip" android:onClick="dismissFirstRunCling" android:layout_marginEnd="20.0dip" style="@style/ClingButton" />
+</com.android.launcher66.Cling>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<favorites
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <favorite launcher:className="com.syu.radio.Launch" launcher:packageName="com.syu.radio" launcher:screen="0" launcher:x="0" launcher:y="0" />
+    <favorite launcher:className="com.syu.music.MAct" launcher:packageName="com.syu.music" launcher:screen="0" launcher:x="1" launcher:y="0" />
+    <favorite launcher:className="com.syu.bt.BtAct" launcher:packageName="com.syu.bt" launcher:screen="0" launcher:x="2" launcher:y="0" />
+    <favorite launcher:className="com.syu.video.main.VideoListActivity" launcher:packageName="com.syu.video" launcher:screen="0" launcher:x="3" launcher:y="0" />
+    <favorite launcher:className="com.syu.settings.MainActivity" launcher:packageName="com.syu.settings" launcher:screen="0" launcher:x="4" launcher:y="0" />
+    <appwidget launcher:className="com.syu.music.MAppWidget" launcher:packageName="com.syu.music" launcher:screen="0" launcher:x="0" launcher:y="1" launcher:spanX="5" launcher:spanY="1" />
+</favorites>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weekday" id="0x7f080000" >
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+    <string-array name="months">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <string-array name="wallpapers">
+        <item>def_bg</item>
+        <item>fyt_home_bk_00</item>
+        <item>fyt_home_bk_01</item>
+        <item>fyt_home_bk_02</item>
+        <item>fyt_home_bk_03</item>
+        <item>fyt_home_bk_04</item>
+        <item>fyt_home_bk_05</item>
+        <item>fyt_home_bk_06</item>
+        <item>fyt_home_bk_07</item>
+        <item>fyt_home_bk_08</item>
+        <item>fyt_home_bk_09</item>
+        <item>fyt_home_bk_10</item>
+        <item>fyt_home_bk_11</item>
+        <item>fyt_home_bk_12</item>
+        <item>fyt_home_bk_13</item>
+        <item>fyt_home_bk_14</item>
+        <item>fyt_home_bk_15</item>
+        <item>fyt_home_bk_16</item>
+        <item>fyt_home_bk_17</item>
+        <item>fyt_home_bk_18</item>
+        <item>fyt_home_bk_19</item>
+        <item>fyt_home_bk_20</item>
+    </string-array>
+    <string-array name="wallpapers_n">
+        <item>def_bg_n</item>
+        <item>fyt_home_bk_00_n</item>
+        <item>fyt_home_bk_01_n</item>
+        <item>fyt_home_bk_02_n</item>
+        <item>fyt_home_bk_03_n</item>
+        <item>fyt_home_bk_04_n</item>
+        <item>fyt_home_bk_05_n</item>
+        <item>fyt_home_bk_06_n</item>
+        <item>fyt_home_bk_07_n</item>
+        <item>fyt_home_bk_08_n</item>
+        <item>fyt_home_bk_09_n</item>
+        <item>fyt_home_bk_10_n</item>
+        <item>fyt_home_bk_11_n</item>
+        <item>fyt_home_bk_12_n</item>
+        <item>fyt_home_bk_13_n</item>
+        <item>fyt_home_bk_14_n</item>
+        <item>fyt_home_bk_15_n</item>
+        <item>fyt_home_bk_16_n</item>
+        <item>fyt_home_bk_17_n</item>
+        <item>fyt_home_bk_18_n</item>
+        <item>fyt_home_bk_19_n</item>
+        <item>fyt_home_bk_20_n</item>
+    </string-array>
+</resources>

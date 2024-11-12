@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_name" />
+    <string name="first_run_cling_custom_content_hint" />
+    <string name="first_run_cling_search_bar_hint" />
+    <string name="custom_workspace_cling_title_1" />
+    <string name="custom_workspace_cling_description_1" />
+    <string name="custom_workspace_cling_title_2" />
+    <string name="custom_workspace_cling_description_2" />
+</resources>

@@ -1,0 +1,60 @@
+[versions]
+agp = "8.7.1"
+commonsCodec = "1.17.1"
+eventbus = "3.3.1"
+httpclient = "4.5.14"
+httpcore = "4.4.16"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.6.1"
+activityCompose = "1.9.2"
+composeBom = "2024.04.01"
+junitJupiter = "5.8.1"
+appcompat = "1.7.0"
+litepal = "8ad8322cc6"
+log4j = "1.2.17"
+material = "1.12.0"
+materialVersion = "1.1.0"
+multidex = "2.0.1"
+recyclerview = "1.3.2"
+recyclerviewSelection = "1.1.0"
+viewpager = "1.0.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
+androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
+eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
+httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
+httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+litepal = { module = "com.github.guolindev:LitePal", version.ref = "litepal" }
+log4j = { module = "log4j:log4j", version.ref = "log4j" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+material-v110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<customicons
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <entry launcher:epkg="com.syu.av" launcher:eclazz="com.syu.av.ActivityLaunch" launcher:eicon="@drawable/com_syu_aux" />
+    <entry launcher:epkg="com.android.browser" launcher:eclazz="com.android.browser.BrowserActivity" launcher:eicon="@drawable/com_syu_browser" />
+    <entry launcher:epkg="com.android.calculator2" launcher:eclazz="com.android.calculator2.Calculator" launcher:eicon="@drawable/com_syu_calculator2" />
+    <entry launcher:epkg="com.syu.canbus" launcher:eclazz="com.syu.canbus.ActivityLauncher" launcher:eicon="@drawable/com_syu_canbus" />
+    <entry launcher:epkg="com.syu.eq" launcher:eclazz="com.syu.eq.Launch" launcher:eicon="@drawable/com_syu_eq" />
+    <entry launcher:epkg="com.syu.eq" launcher:eclazz="com.syu.eq.activity.MainActivity" launcher:eicon="@drawable/com_syu_eq" />
+    <entry launcher:epkg="com.syu.filemanager" launcher:eclazz="com.syu.filemanager.FileManagerActivity" launcher:eicon="@drawable/com_syu_filemanager" />
+    <entry launcher:epkg="com.syu.gallery" launcher:eclazz="com.syu.gallery.GalleryActivity" launcher:eicon="@drawable/com_syu_gallery" />
+    <entry launcher:epkg="com.syu.music" launcher:eclazz="com.syu.music.MAct" launcher:eicon="@drawable/com_syu_music" />
+    <entry launcher:epkg="com.syu.music" launcher:eclazz="com.syu.app.Activity_All" launcher:eicon="@drawable/com_syu_music" />
+    <entry launcher:epkg="com.syu.onekeynavi" launcher:eclazz="com.syu.onekeynavi.MainActivity" launcher:eicon="@drawable/com_syu_navi" />
+    <entry launcher:epkg="com.syu.radio" launcher:eclazz="com.syu.radio.Launch" launcher:eicon="@drawable/com_syu_radio" />
+    <entry launcher:epkg="com.fyt.screenbutton" launcher:eclazz="com.fyt.screenbutton.Setting" launcher:eicon="@drawable/com_syu_screenbutton" />
+    <entry launcher:epkg="com.android.settings" launcher:eclazz="com.android.settings.Settings" launcher:eicon="@drawable/com_syu_settings" />
+    <entry launcher:epkg="com.syu.steer" launcher:eclazz="com.syu.steer.Launch" launcher:eicon="@drawable/com_syu_steer" />
+    <entry launcher:epkg="com.syu.settings" launcher:eclazz="com.syu.settings.MainActivity" launcher:eicon="@drawable/com_syu_settings" />
+    <entry launcher:epkg="com.syu.video" launcher:eclazz="com.syu.video.main.VideoListActivity" launcher:eicon="@drawable/com_syu_video" />
+    <entry launcher:epkg="com.syu.voice" launcher:eclazz="com.syu.voice.VoiceLaunch" launcher:eicon="@drawable/com_syu_voice_voicelaunch" />
+    <entry launcher:epkg="com.syu.voice" launcher:eclazz="com.syu.voice.Launch" launcher:eicon="@drawable/com_syu_voice_voicelaunch" />
+    <entry launcher:epkg="com.syu.voice" launcher:eclazz="com.syu.voice.VoiceSetup" launcher:eicon="@drawable/com_syu_voice_voicesetup" />
+    <entry launcher:epkg="com.syu.video" launcher:eclazz="com.syu.video.main.VideoListActivity" launcher:eicon="@drawable/com_syu_video" />
+    <entry launcher:epkg="com.syu.guide" launcher:eclazz="com.syu.guide.GuideActivity" launcher:eicon="@drawable/com_syu_guide" />
+    <entry launcher:epkg="com.syu.bt" launcher:eclazz="com.syu.bt.BtAct" launcher:eicon="@drawable/com_syu_bt" />
+    <entry launcher:epkg="com.android.launcher66" launcher:eclazz="com.android.launcher66.AppAct" launcher:eicon="@drawable/ic_apps" />
+    <entry launcher:epkg="net.easyconn" launcher:eclazz="net.easyconn.ui.StandMainActivity" launcher:eicon="@drawable/net_easyconn" />
+    <entry launcher:epkg="net.easyconn" launcher:eclazz="net.easyconn.ui.Fy15MainActivity" launcher:eicon="@drawable/net_easyconn" />
+    <entry launcher:epkg="com.syu.carlink" launcher:eclazz="com.syu.carlink.MainActivity" launcher:eicon="@drawable/com_syu_carlink" />
+</customicons>

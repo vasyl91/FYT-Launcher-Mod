@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher66.Cling android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:drawIdentifier="all_apps_landscape"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="40.0dip" android:layout_marginStart="40.0dip">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <TextView android:id="@id/all_apps_cling_title" android:text="@string/all_apps_cling_title" style="@style/ClingTitleText" />
+            <TextView android:id="@id/all_apps_cling_add_item" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/all_apps_cling_add_item" style="@style/ClingText" />
+        </LinearLayout>
+    </FrameLayout>
+    <Button android:layout_gravity="end|bottom|center" android:id="@id/cling_dismiss" android:layout_marginBottom="15.0dip" android:onClick="dismissAllAppsCling" android:layout_marginEnd="10.0dip" style="@style/ClingButton" />
+</com.android.launcher66.Cling>

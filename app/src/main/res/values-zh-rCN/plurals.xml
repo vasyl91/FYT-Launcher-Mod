@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="number_of_items_selected">
+        <item quantity="other">已选择%1$d项</item>
+        <item quantity="zero">已选择%1$d项</item>
+        <item quantity="one">已选择%1$d项</item>
+    </plurals>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="yl_ui66" ></dbname>
+
+    <version value="1" ></version>
+
+    <list>
+        <mapping class="com.android.recycler.AppMultiple"></mapping>
+        <mapping class="com.android.recycler.LeftAppMultiple"></mapping>
+    </list>
+</litepal>

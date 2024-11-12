@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@drawable/pop_window_bright_bg" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <SeekBar android:id="@id/bright_seekbar" android:layout_width="335.0px" android:layout_height="wrap_content" android:progressDrawable="@drawable/layer_list_seekbar" android:thumb="@drawable/seekbar_thumb" android:layout_centerInParent="true" />
+    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/seekbar_bright" android:layout_toLeftOf="@id/bright_seekbar" android:layout_centerVertical="true" />
+    <TextView android:textSize="40.0px" android:textColor="@android:color/white" android:id="@id/bright_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:layout_toRightOf="@id/bright_seekbar" android:layout_centerVertical="true" />
+</RelativeLayout>

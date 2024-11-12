@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_button_vertical_padding">8.0dip</dimen>
+    <dimen name="toolbar_button_horizontal_padding">0.0dip</dimen>
+    <dimen name="apps_customize_tab_bar_height">42.0dip</dimen>
+    <dimen name="workspace_page_spacing">-1.0dip</dimen>
+</resources>

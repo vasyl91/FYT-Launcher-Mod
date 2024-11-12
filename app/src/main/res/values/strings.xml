@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_filter_class">com.syu.car.CustomFilter</string>
+    <string name="application_name">Launcher Mod</string>
+    <string name="home">Home</string>
+    <string name="uid_name">Android Core Apps</string>
+    <string name="folder_name" />
+    <string name="wallpaper_instructions">Set wallpaper</string>
+    <string name="wallpaper_accessibility_name">Wallpaper %1$d of %2$d</string>
+    <string name="announce_selection">Selected %1$s</string>
+    <string name="wallpaper_delete">Delete</string>
+    <string name="pick_image">Pick image</string>
+    <string name="pick_wallpaper">Wallpapers</string>
+    <string name="crop_wallpaper">Crop wallpaper</string>
+    <string name="activity_not_found">"App isn't installed."</string>
+    <string name="widgets_tab_label">Widgets</string>
+    <string name="widget_adder">Widgets</string>
+    <string name="toggle_weight_watcher">Show Mem</string>
+    <string name="long_press_widget_to_add">Touch &amp; hold to pick up a widget.</string>
+    <string name="market">Shop</string>
+    <string name="widget_dims_format">%1$d × %2$d</string>
+    <string name="external_drop_widget_pick_format">%1$s (%2$d × %3$d)</string>
+    <string name="external_drop_widget_error">"Couldn't drop item on this Home screen."</string>
+    <string name="external_drop_widget_pick_title">Choose widget to create</string>
+    <string name="rename_folder_label">Folder name</string>
+    <string name="rename_folder_title">Rename folder</string>
+    <string name="rename_action">OK</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="menu_item_add_item">Add to Home screen</string>
+    <string name="group_applications">Apps</string>
+    <string name="group_shortcuts">Shortcuts</string>
+    <string name="group_widgets">Widgets</string>
+    <string name="completely_out_of_space">No more room on your Home screens.</string>
+    <string name="out_of_space">No more room on this Home screen.</string>
+    <string name="hotseat_out_of_space">No more room on the hotseat.</string>
+    <string name="invalid_hotseat_item">This widget is too large for the hotseat.</string>
+    <string name="shortcut_installed">Shortcut \"%s\" created.</string>
+    <string name="shortcut_uninstalled">Shortcut \"%s\" was removed.</string>
+    <string name="shortcut_duplicate">Shortcut \"%s\" already exists.</string>
+    <string name="title_select_shortcut">Choose shortcut</string>
+    <string name="title_select_application">Choose app</string>
+    <string name="all_apps_button_label">Apps</string>
+    <string name="all_apps_home_button_label">Home</string>
+    <string name="delete_zone_label_workspace">Remove</string>
+    <string name="delete_zone_label_all_apps">Uninstall</string>
+    <string name="delete_target_label">Remove</string>
+    <string name="delete_target_uninstall_label">Uninstall</string>
+    <string name="info_target_label">App info</string>
+    <string name="accessibility_search_button">Search</string>
+    <string name="accessibility_voice_search_button">Voice Search</string>
+    <string name="accessibility_all_apps_button">Apps</string>
+    <string name="accessibility_delete_button">Remove</string>
+    <string name="delete_zone_label_all_apps_system_app">Uninstall update</string>
+    <string name="help_url" />
+    <string name="cab_menu_delete_app">Uninstall app</string>
+    <string name="cab_menu_app_info">App details</string>
+    <string name="cab_app_selection_text">1 app selected</string>
+    <string name="cab_widget_selection_text">1 widget selected</string>
+    <string name="cab_folder_selection_text">1 folder selected</string>
+    <string name="cab_shortcut_selection_text">1 shortcut selected</string>
+    <string name="permlab_install_shortcut">install shortcuts</string>
+    <string name="permdesc_install_shortcut">Allows an app to add shortcuts without user intervention.</string>
+    <string name="permlab_uninstall_shortcut">uninstall shortcuts</string>
+    <string name="permdesc_uninstall_shortcut">Allows the app to remove shortcuts without user intervention.</string>
+    <string name="permlab_read_settings">read Home settings and shortcuts</string>
+    <string name="permdesc_read_settings">Allows the app to read the settings and shortcuts in Home.</string>
+    <string name="permlab_write_settings">write Home settings and shortcuts</string>
+    <string name="permdesc_write_settings">Allows the app to change the settings and shortcuts in Home.</string>
+    <string name="gadget_error_text">Problem loading widget</string>
+    <string name="uninstall_system_app_text">"This is a system app and can't be uninstalled."</string>
+    <string name="dream_name">Rocket Launcher</string>
+    <string name="folder_hint_text">Unnamed Folder</string>
+    <string name="workspace_description_format">Home screen %1$d</string>
+    <string name="default_scroll_format">Page %1$d of %2$d</string>
+    <string name="workspace_scroll_format">Home screen %1$d of %2$d</string>
+    <string name="apps_customize_apps_scroll_format">Apps page %1$d of %2$d</string>
+    <string name="apps_customize_widgets_scroll_format">Widgets page %1$d of %2$d</string>
+    <string name="first_run_cling_title">Welcome!</string>
+    <string name="first_run_cling_description">Make yourself at home.</string>
+    <string name="first_run_cling_custom_content_hint" />
+    <string name="first_run_cling_search_bar_hint" />
+    <string name="first_run_cling_create_screens_hint">Create more screens for apps and folders</string>
+    <string name="workspace_cling_title">Organize your space</string>
+    <string name="workspace_cling_move_item">Touch &amp; hold background to manage wallpaper, widgets and settings.</string>
+    <string name="all_apps_cling_title">Choose some apps</string>
+    <string name="all_apps_cling_add_item">To add an app to your Home screen, touch &amp; hold it.</string>
+    <string name="folder_cling_title">"Here's a folder"</string>
+    <string name="folder_cling_create_folder">To create one like this, touch &amp; hold an app, then move it over another.</string>
+    <string name="cling_dismiss">OK</string>
+    <string name="dummy_custom_cling_error_message">Error: custom workspace layout passed in but custom cling was not overwritten</string>
+    <string name="folder_opened">Folder opened, %1$d by %2$d</string>
+    <string name="folder_tap_to_close">Touch to close folder</string>
+    <string name="folder_tap_to_rename">Touch to save rename</string>
+    <string name="folder_closed">Folder closed</string>
+    <string name="folder_renamed">Folder renamed to %1$s</string>
+    <string name="folder_name_format">Folder: %1$s</string>
+    <string name="custom_workspace_cling_title_1" />
+    <string name="custom_workspace_cling_description_1" />
+    <string name="custom_workspace_cling_title_2" />
+    <string name="custom_workspace_cling_description_2" />
+    <string name="debug_memory_activity">* HPROF</string>
+    <string name="widget_button_text">Widgets</string>
+    <string name="livewallpaper_button_text">Live Wallpapers</string>
+    <string name="wallpaper_button_text">Wallpapers</string>
+    <string name="settings_button_text">Settings</string>
+    <string name="no_app_msg">请修改车载设置中“选择导航应用”选项。</string>
+    <string name="no_tv_msg">No TV device!</string>
+    <string name="car_aux">AUX</string>
+    <string name="car_tv">TV</string>
+    <string name="car_dvr">DVR</string>
+    <string name="car_steer">Steer</string>
+    <string name="car_speech">Voice</string>
+    <string name="car_setting">Car Setting</string>
+    <string name="car_wallpaper">Wallpapers</string>
+    <string name="car_video">Video</string>
+    <string name="car_dvd">DVD</string>
+    <string name="car_radio">Radio</string>
+    <string name="car_music">Music</string>
+    <string name="car_bt">Bluetooth</string>
+    <string name="car_carlife">CarLife</string>
+    <string name="music_unknown">UnKnow</string>
+    <string name="car_bt_music">Bt Music</string>
+    <string name="car_app">Apps</string>
+    <string name="car_eq">EQ</string>
+    <string name="car_temp">Temp</string>
+    <string name="car_weather">Weather</string>
+    <string name="car_city">City</string>
+    <string name="car_wind_direction">Wind Direction</string>
+    <string name="car_temprange">Temp Range</string>
+    <string name="sys_settings">Settings</string>
+    <string name="music_name">Songs</string>
+    <string name="music_author">Author</string>
+    <string name="music_album">Album</string>
+    <string name="car_link">E-CARLINK</string>
+    <string name="date_str_format">yyyy/MM/dd</string>
+    <string name="car_settings">Settings</string>
+    <string name="car_navi">Navi</string>
+    <string name="easy_conn">null</string>
+    <string name="car_gaode">Auto Navi</string>
+    <string name="car_kuwo">Kuwo Music</string>
+    <string name="car_klfm">Koala FM</string>
+    <string name="car_unicar">Flow Recharge</string>
+    <string name="car_gallery">Picture</string>
+    <string name="car_file">File</string>
+    <string name="car_voice">Voice</string>
+    <string name="car_recharge">Recharge</string>
+    <string name="car_car">Car</string>
+    <string name="car_easyconn">Easyconn</string>
+    <string name="car_browser">Browser</string>
+    <string name="car_miu_drive">喵驾</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="dvr_switch">Please turn on the DVR switch</string>
+    <string name="app_name">Timer</string>
+    <string name="widget_name">Car Widget</string>
+    <string name="dtwidget_name">Dates</string>
+    <string name="dtmusicwidget_name">Music</string>
+    <string name="google_setting">GoogleSetting</string>
+    <string name="car_speed" />
+    <string name="car_bt_connected" />
+    <string name="car_bt_notconnect">Not connected</string>
+    <string name="apps">应用</string>
+    <string name="car_carplay">Carplay</string>
+    <string name="car_canbus">Canbus</string>
+    <string name="car_time">Time</string>
+    <string name="clingmusictitle">使用车助理语音操作音乐播放器</string>
+    <string name="clingvideotitle">使用车助理语音操作视频播放器</string>
+    <string name="clingnavetitle">使用车助理语音操作导航应用</string>
+    <string name="clingradiotitle">使用车助理语音操作FM电台</string>
+    <string name="clingbttitle">使用车助理语音操作蓝牙电话</string>
+    <string name="clingkuwotitle">使用车助理语音操作酷我音乐</string>
+    <string name="clingkaolatitle">使用车助理语音操作考拉FM</string>
+    <string name="clingmusictext">"1.可以通过唤醒语“打开音乐/播放音乐/播放歌曲/我要听音乐”来播放音乐。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭音乐”来暂停音乐。"</string>
+    <string name="clingvideotext">"1.可以通过唤醒语“打开视频”唤醒视频播放器。
+2.可以通过唤醒语“下一曲/上一曲”来切换上下曲。
+3.可以通过唤醒语“播放/暂停”来切换播放暂停键。"</string>
+    <string name="clingnavetext">"1.可以通过唤醒语“打开导航/开始导航/返回导航/回到导航/进入导航”唤醒导航应用。
+2.可以通过唤醒语“我要去世界之窗/导航到世界之窗/中山公园怎么走/怎么去白石洲/带我去白石洲”发起导航。
+3.可以通过唤醒语“我要回家/我要去公司/导航回家/导航去公司/带我回家/带我去公司”以及“修改家/公司的地址为XX”来导航家里到公司的路线。
+4.可以通过唤醒语“（查找/搜索）附近的餐馆/附近的停车场/附近的加油站”来搜索周边。
+5.可以通过唤醒语“我饿了/我想吃饭/我想洗脚/我想上网/我想吃肯德基”来搜索商圈。
+6.可以通过唤醒语“停止导航/结束导航/关闭导航/取消导航/退出导航”来关闭导航。"</string>
+    <string name="clingradiotext">"1.可以通过唤醒语“打开收音机”唤醒收音机应用。
+2.可以通过唤醒语“上一台/切换上一台/换上一台/上一个台/切换上一个台/换上一个台/前一台/前 一个台/切换前一台/换前一台/切换前一个台/换前一个台”播放上一台。
+3.可以通过唤醒语“下一台/切换下一台/换下一台/下一个台/切换下一个台/换下一个台/后一台/后一个台/切换后一台/换后一台/后一个台/切换后一个台/换后一个台”来播放下一台。
+4.可以通过唤醒语“调频到XX（例：调频到101.1）”来播放具体某台。
+5.可以通过唤醒语“关闭收音机”来关闭收音机。"</string>
+    <string name="clingbttext">"1.可以通过唤醒语“打开蓝牙/打开电话”唤醒蓝牙应用。
+2.可以通过唤醒语“离线（打联系人）：打个电话张三给李冰/给老妈打电话/呼叫黄豆豆/拨打张三的电话/打李冰的电话”以及“在线（打号码）：呼叫110/打电话给110”来打电话。
+3.可以通过唤醒语“第一个/第二个/深圳那个/北京那个/电信那个/移动那个(广东有多个结果，请再次选择)/最前面那个/最后面那个/最上面那个/最下面那个/尾号是0580/0580结尾/150开头/座机/短号/手机”来选择电话号码。
+4.可以通过唤醒语“关闭蓝牙/关闭电话”来关闭蓝牙电话。"</string>
+    <string name="clingkuwotext">"1.可以通过唤醒语“打开酷我音乐”来播放酷我音乐。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭酷我音乐”来关闭。"</string>
+    <string name="clingkaolatext">"1.可以通过唤醒语“打开考拉FM”来打开考拉FM。
+2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
+3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
+4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
+5.可以通过“关闭考拉FM”来关闭。"</string>
+    <string name="cling_cancel">取消</string>
+    <string name="navi_destination">Distance destination</string>
+    <string name="navi_curr_road">Current road</string>
+    <string name="navi_next_road">Next road</string>
+    <string name="surplus_distance">0公里</string>
+    <string name="remaintime">剩余0分钟</string>
+    <string name="car_calculator">Calculator</string>
+    <string name="car_guide">Guide</string>
+    <string name="skin_ruleless">Lionel</string>
+    <string name="car_km">km/h</string>
+    <string name="select_default_app">Select the application that needs to be opened by default</string>
+    
+    <string name="dt_time_widget">Time Widget</string>
+    <string name="dt_radio_widget">Radio Widget</string>
+    <string name="dt_music_widget">Music Widget</string>
+    <string name="dt_navi_widget">Navi Widget</string>
+    <string name="group_wallpapers">Wallpapers</string>
+    
+    <string name="car_navi_title">"在线地图  实时路况"</string>
+    <string name="car_bt_title">一键拨号</string>
+    <string name="car_allapps_title">打开更多APP应用</string>
+    <string name="car_settings_title">系统功能设置</string>
+    <string name="car_realnavi">实时导航</string>
+    <string name="chooser_wallpaper">Choose wallpaper from</string>
+    <string name="folder_cling_move_item">To move an app, touch &amp; hold it.</string>
+    <string name="workspace_cling_open_all_apps">To see all your apps, touch the circle.</string>
+    <string name="use_carradio">Please use the original car radio.</string>
+
+    <string name="menu_add">Add</string>
+    <string name="menu_manage_apps">Manage apps</string>
+    <string name="menu_wallpaper">Wallpaper</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_settings">System settings</string>
+    <string name="menu_help">Help</string>
+</resources>

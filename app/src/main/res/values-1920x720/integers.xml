@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="config_flingToDeleteMinVelocity">-1000</integer>
+    <integer name="config_cameraDistance">14000</integer>
+    <integer name="all_apps_customize_rows">4</integer>
+    <integer name="all_apps_customize_cols">7</integer>
+    <integer name="Hotseat_navi_icon_index">0</integer>
+    <integer name="Hotseat_bt_icon_index">1</integer>
+    <integer name="Hotseat_radio_icon_index">2</integer>
+    <integer name="Hotseat_music_icon_index">4</integer>
+    <integer name="Hotseat_dvd_icon_index">5</integer>
+    <integer name="Hotseat_fm_icon_index">6</integer>
+    <integer name="shortcut_icon_size">80</integer>
+    <integer name="hoteseat3G_icon_size">162</integer>
+    <integer name="hoteseatwifi_icon_size">111</integer>
+    <integer name="numRows_size">4</integer>
+    <integer name="numCols_size">7</integer>
+    <integer name="nhotseat_count">7</integer>
+    <integer name="bubbletextview_padding">19</integer>
+    <integer name="pagetextview_padding">19</integer>
+    <integer name="shortcut_textSize">18</integer>
+    <integer name="hotseat_icon_top">40</integer>
+    <integer name="utility_icon_height">0</integer>
+    <integer name="image_cell_top">0</integer>
+    <integer name="analogwidth">276</integer>
+    <integer name="analogheight">276</integer>
+    <integer name="getMeasuredGap">0</integer>
+    <integer name="digit_clock_width">52</integer>
+    <integer name="digit_clock_height">70</integer>
+    <integer name="dot_clock_width">16</integer>
+    <integer name="dot_clock_height">70</integer>
+    <integer name="appNameAlign">1</integer>
+</resources>

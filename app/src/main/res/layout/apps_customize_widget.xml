@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher66.PagedViewWidget android:orientation="vertical" android:background="@drawable/focusable_view_bg" android:focusable="true" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <com.android.launcher66.PagedViewWidgetImageView android:id="@id/widget_preview" android:background="@drawable/screenpanel" android:paddingTop="@dimen/app_widget_preview_padding_top" android:layout_width="fill_parent" android:layout_height="wrap_content" android:scaleType="matrix" android:layout_weight="1.0" android:paddingStart="@dimen/app_widget_preview_padding_left" android:paddingEnd="@dimen/app_widget_preview_padding_right" />
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/app_widget_preview_label_margin_top" android:layout_marginStart="@dimen/app_widget_preview_label_margin_left" android:layout_marginEnd="@dimen/app_widget_preview_label_margin_right">
+        <TextView android:textSize="13.0sp" android:textColor="#ffffffff" android:ellipsize="marquee" android:gravity="start" android:id="@id/widget_name" android:fadingEdge="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:shadowColor="#b0000000" android:shadowRadius="2.0" android:layout_weight="1.0" android:fontFamily="sans-serif-condensed" android:textAlignment="viewStart"
+          xmlns:android="http://schemas.android.com/apk/res/android" />
+        <TextView android:textSize="12.0sp" android:textColor="#ffaaaaaa" android:gravity="start" android:layout_gravity="center" android:id="@id/widget_dims" android:layout_width="wrap_content" android:layout_height="wrap_content" android:shadowColor="#b0000000" android:shadowRadius="2.0" android:layout_weight="0.0" android:fontFamily="sans-serif-condensed" android:layout_marginStart="5.0dip"
+          xmlns:android="http://schemas.android.com/apk/res/android" />
+    </LinearLayout>
+</com.android.launcher66.PagedViewWidget>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@id/launcher" android:background="@drawable/workspace_bg" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    <com.android.launcher66.DragLayer android:id="@id/drag_layer" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <com.android.launcher66.Workspace android:id="@id/workspace" android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:defaultScreen="@integer/config_workspaceDefaultScreen" launcher:pageSpacing="@dimen/workspace_page_spacing" launcher:pageIndicator="@id/page_indicator" />
+        <include android:id="@id/hotseat" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/hotseat" />
+        <include android:id="@id/overview_panel" android:visibility="gone" layout="@layout/overview_panel" />
+        <include android:layout_gravity="center_horizontal" android:id="@id/page_indicator" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/page_indicator" />
+        <include android:id="@id/qsb_bar" layout="@layout/qsb_bar" />
+        <com.android.launcher66.ScrimView android:id="@id/cling_scrim" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+        <include android:id="@id/first_run_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/first_run_cling" />
+        <include android:id="@id/workspace_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/workspace_cling" />
+        <include android:id="@id/folder_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/folder_cling" />
+        <com.android.launcher66.DrawableStateProxyView android:layout_gravity="end|center|top" android:id="@id/voice_button_proxy" android:clickable="true" android:layout_width="0.0dip" android:layout_height="0.0dip" android:onClick="onClickVoiceButton" android:importantForAccessibility="no" launcher:sourceViewId="@id/voice_button" />
+        <include android:id="@id/apps_customize_pane" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/apps_customize_pane" />
+    </com.android.launcher66.DragLayer>
+</FrameLayout>

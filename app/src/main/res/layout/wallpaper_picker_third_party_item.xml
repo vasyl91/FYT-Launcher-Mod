@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher66.CheckableFrameLayout android:background="@drawable/wallpaper_tile_fg" android:focusable="true" android:clickable="true" android:layout_width="@dimen/wallpaperThumbnailWidth" android:layout_height="@dimen/wallpaperThumbnailHeight" android:foreground="@drawable/wallpaper_tile_fg"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:id="@id/wallpaper_image" android:background="@color/wallpaper_picker_translucent_gray" android:layout_width="fill_parent" android:layout_height="fill_parent" android:scaleType="centerCrop" />
+    <TextView android:textColor="@android:color/white" android:ellipsize="marquee" android:gravity="center" android:layout_gravity="center" android:id="@id/wallpaper_item_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:drawablePadding="4.0dip" />
+</com.android.launcher66.CheckableFrameLayout>

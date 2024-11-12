@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="is_tablet">false</bool>
+    <bool name="allow_rotation">false</bool>
+    <bool name="config_useCustomClings">true</bool>
+    <bool name="hotseat_landscape_layout">true</bool>
+    <bool name="hotseat_item_show_title">false</bool>
+    <bool name="hotseat_add_car_app">true</bool>
+    <bool name="hotseat_load_defualt_workspace">false</bool>
+</resources>
