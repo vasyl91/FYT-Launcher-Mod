@@ -14,8 +14,6 @@
             android:layout_width="100.0px"
             android:layout_height="472.0px"
             android:layout_marginTop="20.0px" />
-
-
     </RelativeLayout>
 
     <ImageView
@@ -159,7 +157,7 @@
         android:id="@id/rl_allapps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20.0px"
+        android:layout_marginBottom="25.0px"
         android:src="@drawable/all_apps_btn_icon"
         android:layout_alignParentBottom="true" />
 

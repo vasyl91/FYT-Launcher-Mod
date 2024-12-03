@@ -58,11 +58,11 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import androidx.core.view.ViewCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
-import android.service.notification.NotificationListenerService;
 import android.text.Selection;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -100,6 +100,7 @@ import cn.kuwo.autosdk.api.PlayState;
 import cn.kuwo.autosdk.api.PlayerStatus;
 import cn.kuwo.autosdk.bean.Music;
 
+import com.android.launcher66.settings.Helpers;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppMultiple;
@@ -216,15 +217,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private KeyEvent event;
     private String activeController;
     private String state;
+    private boolean userLayout;
+    private boolean leftBar;
     private static KWAPI kwAPi;
-    public static View liveWallPaperButton;
     public static TextView mAllAppView;
     public static Launcher mLauncher;
     public static LauncherModel mModel;
     private static Workspace mWorkspace;
     public static boolean sNightMode;
     public static View wallpaperButton;
-    public static View widgetButton;
+    public static View settingsButton;
     LauncherApplication app;
     private ProgressBar btavProgress;
     public int carSpeed;
@@ -1381,14 +1383,21 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     @Override // android.app.Activity
     protected void onCreate(Bundle savedInstanceState) {
-        if (getResources().getBoolean(R.bool.isTransparent)) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("transparent_statusbar", false)) {
             getWindow().addFlags(Integer.MIN_VALUE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().setStatusBarColor(0);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         super.onCreate(savedInstanceState);
-        checkNotificationPermission();
-        setWindowLoc();
+        checkNotificationPermission();        
+        userLayout = prefs.getBoolean("user_layout", false);
+        leftBar = prefs.getBoolean("left_bar", false); 
+        if (userLayout) {
+            setWindowLocUser();
+        } else {
+            setWindowLocDefault();
+        }
         getWindow().addFlags(Integer.MIN_VALUE);
         float density = getResources().getDisplayMetrics().density;
         LogPreview.show("------------------->>> density:" + density);
@@ -1438,14 +1447,22 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    private void setWindowLoc() {
+    public int getStatusBarHeight() { 
+          int result = 0;
+          int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+          if (resourceId > 0) {
+              result = getResources().getDimensionPixelSize(resourceId);
+          } 
+          return result;
+    } 
+
+    private void setWindowLocDefault() {
         SystemProperties.set("persist.syu.launcher.haspip", "true");
         SystemProperties.set("persist.lsec.radius", "14");
         Intent intent = new Intent();
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory("android.intent.category.HOME");
-        if (getPackageManager().resolveActivity(intent, 65536).activityInfo.packageName.equals(getPackageName())) {
-            Log.d("LZP", "----->>> UI20");
+        if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
             View iv_map = this.findViewById(R.id.iv_map1);
             if (getResources().getDisplayMetrics().widthPixels == 1024) {
                 SystemProperties.set("sys.lsec.pip_rect", "114 74 677 522");
@@ -1455,24 +1472,46 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 611");
             } else {
                 if (getResources().getDisplayMetrics().heightPixels == 1100) {
-                    SystemProperties.set("sys.lsec.pip_rect", "160 120 1302 960");
+                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 960");
                 } else if (getResources().getDisplayMetrics().heightPixels == 1200) {
-                    SystemProperties.set("sys.lsec.pip_rect", "160 120 1302 1060");
-                }
-                
-            }
+                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1060");
+                }           
+            }   
+        }
+    }
 
-            // SystemProperties.set("sys.lsec.pip_rect", String.valueOf(iv_map.getLeft()) + " " + String.valueOf(iv_map.getTop()) + " " + String.valueOf(iv_map.getRight()) + " " + String.valueOf(iv_map.getBottom()));
-
-            /*
-            if (getResources().getDisplayMetrics().widthPixels == 1280) {
-                SystemProperties.set("sys.lsec.pip_rect", "130 80 1252 585");
-            } else if (getResources().getDisplayMetrics().widthPixels == 1024) {
-                SystemProperties.set("sys.lsec.pip_rect", "115 80 1013 484");
-            } else {
-                SystemProperties.set("sys.lsec.pip_rect", "173 125 1980 983"); // top-left x, top left y, bottom right x, bottom right y
-            }
-            */
+    private void setWindowLocUser() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int mapTopLeftX, mapBottomRightX, leftBarSize;
+        if (getResources().getDisplayMetrics().widthPixels == 1024) {
+            leftBarSize = 100;
+        } else if (getResources().getDisplayMetrics().widthPixels == 1280
+                || getResources().getDisplayMetrics().widthPixels == 1920) {
+            leftBarSize = 110;
+        } else {
+            leftBarSize = 142;               
+        }  
+        if (leftBar) {
+            mapTopLeftX = prefs.getInt("mapTopLeftX", 114) + leftBarSize;
+            mapBottomRightX = prefs.getInt("mapBottomRightX", 677) + leftBarSize;   
+        } else {
+            mapTopLeftX = prefs.getInt("mapTopLeftX", 114);
+            mapBottomRightX = prefs.getInt("mapBottomRightX", 677);
+        }
+        int mapTopLeftY = prefs.getInt("mapTopLeftY", 74) + getStatusBarHeight();
+        int mapBottomRightY = prefs.getInt("mapBottomRightY", 522) + getStatusBarHeight();
+        SystemProperties.set("persist.syu.launcher.haspip", "true");
+        SystemProperties.set("persist.lsec.radius", "14");
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
+            View iv_map = this.findViewById(R.id.iv_map1);
+            Helpers.width = getResources().getDisplayMetrics().widthPixels;
+            Helpers.height = getResources().getDisplayMetrics().heightPixels;
+            Helpers.leftBarWidth = leftBarSize;
+            // top-left x, top left y, bottom right x, bottom right y
+            SystemProperties.set("sys.lsec.pip_rect", String.valueOf(mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY));
         }
     }
 
@@ -2063,8 +2102,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         if (isAllAppsVisible()) {
             WindowUtil.removePip(null);
         } else {
-            Log.d("LZP", "startMapPip");
-            WindowUtil.startMapPip(null, false, 250);
+            if (!Helpers.firstPreferenceWindow) {
+                Log.d("LZP", "startMapPip");
+                WindowUtil.startMapPip(null, false, 250);
+            }
+            Helpers.firstPreferenceWindow = false;
         }
         handleView();
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
@@ -2491,24 +2533,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mDragLayer.setup(this, dragController);
         this.mHotseat = findViewById(R.id.hotseat);
         this.mOverviewPanel = findViewById(R.id.overview_panel);
-        widgetButton = findViewById(ResValue.getInstance().widget_button);
-        liveWallPaperButton = findViewById(ResValue.getInstance().livewallpaper_button);
         wallpaperButton = findViewById(ResValue.getInstance().wallpaper_button);
-        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.iswidgetpages)) {
-            if (widgetButton != null) {
-                widgetButton.setOnTouchListener(getHapticFeedbackTouchListener());
-                widgetButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.24
-                    @Override // android.view.View.OnClickListener
-                    public void onClick(View arg0) {
-                        Launcher.this.hideHotseat(true);
-                        Launcher.this.setButtonVisible(false);
-                        Launcher.this.showAllApps(true, AppsCustomizePagedView.ContentType.Widgets, true);
-                    }
-                });
-            }
-        } else if (widgetButton != null) {
-            widgetButton.setVisibility(android.view.View.GONE);
-        }
         if (this.mHotseat != null) {
             this.mAllAppsButton = this.mHotseat.findViewById(ResValue.getInstance().syu_app_button);
         }
@@ -2521,25 +2546,17 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             wallpaperButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.25
                 @Override // android.view.View.OnClickListener
                 public void onClick(View arg0) {
-                    Launcher.this.startWallpaper();
+                    onClickWallpaperPicker(arg0);
                 }
             });
             wallpaperButton.setOnTouchListener(getHapticFeedbackTouchListener());
         }
-        if (liveWallPaperButton != null) {
-            liveWallPaperButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.26
-                @Override // android.view.View.OnClickListener
-                public void onClick(View arg0) {
-                    Launcher.this.startLiveWallpaper();
-                }
-            });
-        }
-        View settingsButton = findViewById(ResValue.getInstance().settings_button);
+        settingsButton = findViewById(ResValue.getInstance().settings_button);
         if (settingsButton != null) {
             settingsButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.27
                 @Override // android.view.View.OnClickListener
                 public void onClick(View arg0) {
-                    Launcher.this.startSettings();
+                    onClickSettingsButton(arg0); //Launcher.this.startSettings();
                 }
             });
             settingsButton.setOnTouchListener(getHapticFeedbackTouchListener());
@@ -2589,51 +2606,87 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
+    public void onClickWallpaperPicker(View v) {
+        int pageScroll = mWorkspace.getScrollForPage(mWorkspace.getPageNearestToCenterOfScreen());
+        Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
+
+        String pickerPackage = "com.android.wallpaper";
+        boolean hasTargetPackage = !TextUtils.isEmpty(pickerPackage);
+        try {
+            if (hasTargetPackage && getPackageManager().getApplicationInfo(pickerPackage, 0).enabled) {
+                intent.setPackage(pickerPackage);
+            }
+        } catch (PackageManager.NameNotFoundException ex) {
+        }
+
+        intent.setSourceBounds(getViewBounds(v));
+        try {
+            startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "activity_not_found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Rect getViewBounds(View v) {
+        int[] pos = new int[2];
+        v.getLocationOnScreen(pos);
+        return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
+    }
+
+    public void onClickSettingsButton(View v) {
+        if (LOGD) Log.d(TAG, "onClickSettingsButton");
+        Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES)
+                .setPackage(getPackageName());
+        intent.setSourceBounds(getViewBounds(v));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
     private void initViews() {
         if (mWorkspace != null) {
-            this.mRadioPrevButton = (Button) mWorkspace.findViewById(ResValue.getInstance().Radiobutton_prev);
-            this.mRadioPauseButton = (Button) mWorkspace.findViewById(ResValue.getInstance().Radiobutton_pause);
-            this.mRadioNextButton = (Button) mWorkspace.findViewById(ResValue.getInstance().Radiobutton_next);
-            this.mRadioBandButton = (Button) mWorkspace.findViewById(ResValue.getInstance().radio_btn_band);
-            this.mMusicPrevButton = (Button) mWorkspace.findViewById(ResValue.getInstance().musicbutton_prev);
-            this.mMusicPrevButtonTwo = (Button) mWorkspace.findViewById(ResValue.getInstance().musicbutton_prev_two);
-            this.mMusicNextButton = (Button) mWorkspace.findViewById(ResValue.getInstance().musicbutton_next);
-            this.mMusicNextButtonTwo = (Button) mWorkspace.findViewById(ResValue.getInstance().musicbutton_next_two);
-            this.music_playpause = (Button) mWorkspace.findViewById(ResValue.getInstance().musicbutton_playpause);
+            this.mRadioPrevButton = mWorkspace.findViewById(ResValue.getInstance().Radiobutton_prev);
+            this.mRadioPauseButton = mWorkspace.findViewById(ResValue.getInstance().Radiobutton_pause);
+            this.mRadioNextButton = mWorkspace.findViewById(ResValue.getInstance().Radiobutton_next);
+            this.mRadioBandButton = mWorkspace.findViewById(ResValue.getInstance().radio_btn_band);
+            this.mMusicPrevButton = mWorkspace.findViewById(ResValue.getInstance().musicbutton_prev);
+            this.mMusicPrevButtonTwo = mWorkspace.findViewById(ResValue.getInstance().musicbutton_prev_two);
+            this.mMusicNextButton = mWorkspace.findViewById(ResValue.getInstance().musicbutton_next);
+            this.mMusicNextButtonTwo = mWorkspace.findViewById(ResValue.getInstance().musicbutton_next_two);
+            this.music_playpause = mWorkspace.findViewById(ResValue.getInstance().musicbutton_playpause);
             this.mRadioIcon = mWorkspace.findViewById(ResValue.getInstance().mRadioIcon);
-            this.tvMusicName = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_musicName);
-            this.tvMusicNameTwo = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_musicName_two);
-            this.ivALbumBg = (ImageView) mWorkspace.findViewById(ResValue.getInstance().iv_album_bg);
-            this.ivMusicScore = (ImageView) mWorkspace.findViewById(ResValue.getInstance().music_score);
-            this.ivMusicScore2 = (ImageView) mWorkspace.findViewById(ResValue.getInstance().music_score2);
-            this.tvAritst = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_artist);
-            this.tvAlbum = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_album);
-            this.tvCurTime = (TextView) mWorkspace.findViewById(ResValue.getInstance().music_cur_time);
-            this.tvTotalTime = (TextView) mWorkspace.findViewById(ResValue.getInstance().music_total_time);
-            this.musicSeekBar = (SeekBar) mWorkspace.findViewById(ResValue.getInstance().music_seekbar);
-            this.musicProgress = (ProgressBar) mWorkspace.findViewById(ResValue.getInstance().music_progress);
+            this.tvMusicName = mWorkspace.findViewById(ResValue.getInstance().tv_musicName);
+            this.tvMusicNameTwo = mWorkspace.findViewById(ResValue.getInstance().tv_musicName_two);
+            this.ivALbumBg = mWorkspace.findViewById(ResValue.getInstance().iv_album_bg);
+            this.ivMusicScore = mWorkspace.findViewById(ResValue.getInstance().music_score);
+            this.ivMusicScore2 = mWorkspace.findViewById(ResValue.getInstance().music_score2);
+            this.tvAritst = mWorkspace.findViewById(ResValue.getInstance().tv_artist);
+            this.tvAlbum = mWorkspace.findViewById(ResValue.getInstance().tv_album);
+            this.tvCurTime = mWorkspace.findViewById(ResValue.getInstance().music_cur_time);
+            this.tvTotalTime = mWorkspace.findViewById(ResValue.getInstance().music_total_time);
+            this.musicSeekBar = mWorkspace.findViewById(ResValue.getInstance().music_seekbar);
+            this.musicProgress = mWorkspace.findViewById(ResValue.getInstance().music_progress);
             this.mPlayer = new MediaPlayer();
-            this.mTvNavi = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_navi);
-            this.mTvSettings = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_settings);
-            this.mTvCar = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_car);
-            this.mTvMusic = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_music);
-            this.mTvRadio = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_radio);
-            this.mMiuDrive = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_miudrive);
-            this.mTvAux = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_aux);
-            this.mTvApps = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_apps);
-            this.mTvBt = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_bt);
-            this.mTvBtPhoneName = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_btphone_name);
-            this.mTvCanbus = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_canbus);
-            this.mTvMovie = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_video);
-            this.mTvFile = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_file);
-            this.mTvGallery = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_gallery);
-            this.mTvDVR = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_dvr);
-            this.mTvPerson = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_person);
-            this.mTvGuide = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_guide);
-            this.mTvCalculator = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_calculator);
-            this.mTvEq = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_eq);
-            this.mTurntableView = (TurntableView3) mWorkspace.findViewById(ResValue.getInstance().turntableview);
-            this.mTvSpeed = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_speed);
+            this.mTvNavi = mWorkspace.findViewById(ResValue.getInstance().tv_navi);
+            this.mTvSettings = mWorkspace.findViewById(ResValue.getInstance().tv_settings);
+            this.mTvCar = mWorkspace.findViewById(ResValue.getInstance().tv_car);
+            this.mTvMusic = mWorkspace.findViewById(ResValue.getInstance().tv_music);
+            this.mTvRadio = mWorkspace.findViewById(ResValue.getInstance().tv_radio);
+            this.mMiuDrive = mWorkspace.findViewById(ResValue.getInstance().tv_miudrive);
+            this.mTvAux = mWorkspace.findViewById(ResValue.getInstance().tv_aux);
+            this.mTvApps = mWorkspace.findViewById(ResValue.getInstance().tv_apps);
+            this.mTvBt = mWorkspace.findViewById(ResValue.getInstance().tv_bt);
+            this.mTvBtPhoneName = mWorkspace.findViewById(ResValue.getInstance().tv_btphone_name);
+            this.mTvCanbus = mWorkspace.findViewById(ResValue.getInstance().tv_canbus);
+            this.mTvMovie = mWorkspace.findViewById(ResValue.getInstance().tv_video);
+            this.mTvFile = mWorkspace.findViewById(ResValue.getInstance().tv_file);
+            this.mTvGallery = mWorkspace.findViewById(ResValue.getInstance().tv_gallery);
+            this.mTvDVR = mWorkspace.findViewById(ResValue.getInstance().tv_dvr);
+            this.mTvPerson = mWorkspace.findViewById(ResValue.getInstance().tv_person);
+            this.mTvGuide = mWorkspace.findViewById(ResValue.getInstance().tv_guide);
+            this.mTvCalculator = mWorkspace.findViewById(ResValue.getInstance().tv_calculator);
+            this.mTvEq = mWorkspace.findViewById(ResValue.getInstance().tv_eq);
+            this.mTurntableView = mWorkspace.findViewById(ResValue.getInstance().turntableview);
+            this.mTvSpeed = mWorkspace.findViewById(ResValue.getInstance().tv_speed);
             this.customView.put(Config.WS_Music, mWorkspace.findViewById(ResValue.getInstance().rl_music));
             this.customView.put(Config.WS_Radio, mWorkspace.findViewById(ResValue.getInstance().rl_radio));
             this.customView.put(Config.WS_Video, mWorkspace.findViewById(ResValue.getInstance().rl_video));
@@ -2642,10 +2695,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.customView.put(Config.WS_Settings, mWorkspace.findViewById(ResValue.getInstance().rl_settings));
             this.customView.put(Config.WS_Time, mWorkspace.findViewById(ResValue.getInstance().ll_time));
             this.customView.put(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
-            this.tvBand = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_band);
-            this.tvUnit = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_unit);
-            this.img_freq_point = (RadioRuler) mWorkspace.findViewById(ResValue.getInstance().radio_point);
-            this.tvCurFreq = (TextView) mWorkspace.findViewById(ResValue.getInstance().tv_freq);
+            this.tvBand = mWorkspace.findViewById(ResValue.getInstance().tv_band);
+            this.tvUnit = mWorkspace.findViewById(ResValue.getInstance().tv_unit);
+            this.img_freq_point = mWorkspace.findViewById(ResValue.getInstance().radio_point);
+            this.tvCurFreq = mWorkspace.findViewById(ResValue.getInstance().tv_freq);
         }
         if (this.tvMusicName != null) {
             if (MusicService.music_path != null && !MusicService.music_path.equals("") && MusicService.music_path.lastIndexOf("/") >= 0) {
@@ -2835,13 +2888,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mAppListAdapter = new AppListAdapter(this, this.mAppListData);
         this.mLeftAppListAdapter = new LeftAppListAdapter(this, this.mLeftAppListData);
         this.mRecyclerView.setLayoutManager(layoutManager);
-        this.mLeftRecyclerView.setLayoutManager(leftLayoutManager);
+        if (userLayout) {
+            if (leftBar) {
+                this.mLeftRecyclerView.setLayoutManager(leftLayoutManager);
+                this.mLeftRecyclerView.setAdapter(this.mLeftAppListAdapter);
+            }
+        } else {
+            this.mLeftRecyclerView.setLayoutManager(leftLayoutManager);
+            this.mLeftRecyclerView.setAdapter(this.mLeftAppListAdapter);
+        }
         if (this.mRecyclerView.getTag() == null) {
             this.mRecyclerView.setTag(1);
             this.mRecyclerView.addItemDecoration(new SimpleDividerDecoration());
         }
         this.mRecyclerView.setAdapter(this.mAppListAdapter);
-        this.mLeftRecyclerView.setAdapter(this.mLeftAppListAdapter);
     }
 
     public void refreshCycle(List<AppMultiple> data) {
@@ -4234,12 +4294,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         sFolders.remove(Long.valueOf(folder.id));
     }
 
-    protected void startWallpaper() {
-        Intent pickWallpaper = new Intent("android.intent.action.SET_WALLPAPER");
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
-        startActivityForResult(pickWallpaper, 10);
-    }
-
     protected ComponentName getWallpaperPickerComponent() {
         return new ComponentName(getPackageName(), WallpaperPickerActivity.class.getName());
     }
@@ -4272,24 +4326,21 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     }
 
     public void setButtonVisible(boolean flag) {
-        if (widgetButton == null || wallpaperButton == null || liveWallPaperButton == null) {
-            widgetButton = findViewById(ResValue.getInstance().widget_button);
+        if (settingsButton == null || wallpaperButton == null) { 
+            settingsButton = findViewById(ResValue.getInstance().widget_button);
             wallpaperButton = findViewById(ResValue.getInstance().wallpaper_button);
-            liveWallPaperButton = findViewById(ResValue.getInstance().livewallpaper_button);
         }
         if (flag) {
-            if (widgetButton != null && LauncherApplication.sApp.getResources().getBoolean(R.bool.iswidgetpages)) {
-                widgetButton.setVisibility(View.VISIBLE);
+            if (settingsButton != null) {
+                settingsButton.setVisibility(View.VISIBLE);
             }
             wallpaperButton.setVisibility(android.view.View.VISIBLE);
-            liveWallPaperButton.setVisibility(android.view.View.VISIBLE);
             return;
         }
-        if (widgetButton != null) {
-            widgetButton.setVisibility(android.view.View.GONE);
+        if (settingsButton != null) {
+            settingsButton.setVisibility(android.view.View.GONE);
         }
         wallpaperButton.setVisibility(android.view.View.GONE);
-        liveWallPaperButton.setVisibility(android.view.View.GONE);
     }
 
     @Override // android.app.Activity
@@ -5942,7 +5993,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
-            if (Launcher.this.getPackageManager().resolveActivity(i, 65536).activityInfo.packageName.equals(Launcher.this.getPackageName())) {
+            if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName())) {
                 if ("com.lsec.tyz.action.voice.launcher".equals(intent.getAction())) {
                     WindowUtil.removePip(null);
                     return;
@@ -5951,12 +6002,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         new Thread(new Runnable() { // from class: com.android.launcher66.Launcher.CloseSystemDialogsIntentReceiver.1
                             @Override // java.lang.Runnable
                             public void run() {
-                                Intent i2 = FytPackage.getIntent(Launcher.getLauncher(), WindowUtil.AppPackageNmae);
+                                Intent i2 = FytPackage.getIntent(Launcher.getLauncher(), WindowUtil.AppPackageName);
                                 SystemProperties.set("sys.lsec.force_pip", "true");
                                 i2.putExtra("force_pip", true);
                                 Log.i("mql", "--- com.lsec.pipdie");
                                 Launcher.mLauncher.startActivity(i2);
-                                if (WindowUtil.AppPackageNmae.equals("com.syu.camera360")) {
+                                if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                                     Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
                                 }
                             }

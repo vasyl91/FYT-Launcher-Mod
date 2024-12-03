@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@id/preferences" >
+    <SwitchPreference
+        android:key="left_bar"
+        android:defaultValue="false"
+        android:title="@string/left_bar"
+        android:summaryOn="@string/left_bar_on"
+        android:summaryOff="@string/left_bar_off" />
+    <SwitchPreference
+        android:key="user_date"
+        android:defaultValue="true"
+        android:title="@string/date_widget" />
+    <SwitchPreference
+        android:key="user_music"
+        android:defaultValue="true"
+        android:title="@string/music_widget" />
+    <SwitchPreference
+        android:key="user_radio"
+        android:defaultValue="false"
+        android:title="@string/radio_widget" />
+    <Preference
+        android:key="layout_margin"
+        android:title="@string/margins_str"
+        android:summary="10" />
+    <Preference
+        android:key="launcher_creator_second"
+        android:title="@string/open_creator"
+        android:summary="@string/open_creator_summary" />
+</PreferenceScreen>

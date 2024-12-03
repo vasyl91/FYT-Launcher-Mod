@@ -7,7 +7,6 @@ import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
@@ -20,15 +19,14 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -42,19 +40,12 @@ import android.view.ViewParent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.AbsoluteLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.StyleableRes;
 import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.AppsCustomizePagedView;
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.DragController;
-import com.android.launcher66.DropTarget;
-import com.android.launcher66.FolderIcon;
-import com.android.launcher66.Launcher;
-import com.android.launcher66.LauncherModel;
-import com.android.launcher66.PageIndicator;
 import com.syu.log.LogPreview;
 import com.syu.util.JLog;
 import com.syu.util.WindowUtil;
@@ -467,9 +458,19 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public void createUserPage() {
-        Log.i("hy", "createUserPage");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean leftBar = prefs.getBoolean("left_bar", false);
         if (customScreen[0] == null) {
-            customScreen[0] = (MCellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_custom, (ViewGroup) null);
+            if (userLayout) {
+                if (leftBar) {
+                    customScreen[0] = (MCellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_custom_user_left, (ViewGroup) null);
+                } else {
+                    customScreen[0] = (MCellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_custom_user, (ViewGroup) null);
+                }
+            } else {
+                customScreen[0] = (MCellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_custom, (ViewGroup) null);
+            }
         }
         if (customScreen.length > 1 && customScreen[1] == null && ResValue.getInstance().workspace_custom1 != 0) {
             customScreen[1] = (MCellLayout) this.mLauncher.getLayoutInflater().inflate(ResValue.getInstance().workspace_custom1, (ViewGroup) null);
@@ -491,6 +492,94 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                 addView(customScreen[i], i);
             }
         }
+
+        if (userLayout) {
+            AbsoluteLayout absoluteLayout;
+            int mapTopLeftX, mapTopLeftY, mapTopRightX, mapBottomLeftY, leftBarSize = 142;
+            if (leftBar) {
+                absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout_left);
+                mapTopLeftX = prefs.getInt("mapTopLeftX", 50) + leftBarSize;
+                mapTopRightX = prefs.getInt("mapTopRightX", mapTopLeftX + 500) + leftBarSize;
+            } else {
+                absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout);
+                mapTopLeftX = prefs.getInt("mapTopLeftX", 50);
+                mapTopRightX = prefs.getInt("mapTopRightX", mapTopLeftX + 500);
+            }            
+            mapTopLeftY = prefs.getInt("mapTopLeftY", 20);
+            mapBottomLeftY = prefs.getInt("mapBottomLeftY", mapTopLeftY + 500);
+            
+            int mapHeight = mapBottomLeftY - mapTopLeftY;
+            int mapWidth = mapTopRightX - mapTopLeftX;
+
+            boolean userDate = prefs.getBoolean("user_date", true);
+            boolean userMusic = prefs.getBoolean("user_music", true);
+            boolean userRadio = prefs.getBoolean("user_radio", true);
+
+            ImageView map = new ImageView(mContext);
+            map.setId(R.id.iv_map1);
+            map.setBackgroundResource(R.drawable.ic_map_corner);
+            map.setLayoutParams(new AbsoluteLayout.LayoutParams(mapWidth, mapHeight, mapTopLeftX, mapTopLeftY));
+            absoluteLayout.addView(map); 
+            if (userDate == true)  {
+                int dateTopLeftX, dateTopRightX;
+                if (leftBar) {
+                    dateTopLeftX = prefs.getInt("dateTopLeftX", 50) + leftBarSize;
+                    dateTopRightX = prefs.getInt("dateTopRightX", dateTopLeftX + 500) + leftBarSize;
+                } else {
+                    dateTopLeftX = prefs.getInt("dateTopLeftX", 50);
+                    dateTopRightX = prefs.getInt("dateTopRightX", dateTopLeftX + 500);
+                }
+                int dateTopLeftY = prefs.getInt("dateTopLeftY", 20);
+                int dateBottomLeftY = prefs.getInt("dateBottomLeftY", dateTopLeftY + 500);
+                
+                int dateHeight = dateBottomLeftY - dateTopLeftY;
+                int dateWidth = dateTopRightX - dateTopLeftX;
+                
+                View absoluteTime = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_time, (ViewGroup) null);
+                absoluteTime.setLayoutParams(new AbsoluteLayout.LayoutParams(dateWidth, dateHeight, dateTopLeftX, dateTopLeftY)); 
+                absoluteLayout.addView(absoluteTime);
+
+            } 
+            if (userMusic == true)  {
+                int musicTopLeftX, musicTopRightX;
+                if (leftBar) {
+                    musicTopLeftX = prefs.getInt("musicTopLeftX", 50) + leftBarSize;
+                    musicTopRightX = prefs.getInt("musicTopRightX", musicTopLeftX + 500) + leftBarSize;
+                } else {
+                    musicTopLeftX = prefs.getInt("musicTopLeftX", 50);
+                    musicTopRightX = prefs.getInt("musicTopRightX", musicTopLeftX + 500);
+                }
+                int musicTopLeftY = prefs.getInt("musicTopLeftY", 20);
+                int musicBottomLeftY = prefs.getInt("musicBottomLeftY", musicTopLeftY + 500);
+                
+                int musicHeight = musicBottomLeftY - musicTopLeftY; // 570; 
+                int musicWidth = musicTopRightX - musicTopLeftX; // 660; 
+                
+                View absoluteMusic = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, (ViewGroup) null);
+                absoluteMusic.setLayoutParams(new AbsoluteLayout.LayoutParams(musicWidth, musicHeight, musicTopLeftX, musicTopLeftY)); 
+                absoluteLayout.addView(absoluteMusic);
+            }
+            if (userRadio == true)  {
+                int radioTopLeftX, radioTopRightX;
+                if (leftBar) {
+                    radioTopLeftX = prefs.getInt("radioTopLeftX", 50) + leftBarSize;
+                    radioTopRightX = prefs.getInt("radioTopRightX", radioTopLeftX + 500) + leftBarSize;
+                } else {
+                    radioTopLeftX = prefs.getInt("radioTopLeftX", 50);
+                    radioTopRightX = prefs.getInt("radioTopRightX", radioTopLeftX + 500);
+                }
+                int radioTopLeftY = prefs.getInt("radioTopLeftY", 20);
+                int radioBottomLeftY = prefs.getInt("radioBottomLeftY", radioTopLeftY + 500);
+                
+                int radioHeight = radioBottomLeftY - radioTopLeftY; // 570; 
+                int radioWidth = radioTopRightX - radioTopLeftX; // 660; 
+                
+                View absoluteRadio = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, (ViewGroup) null);
+                absoluteRadio.setLayoutParams(new AbsoluteLayout.LayoutParams(radioWidth, radioHeight, radioTopLeftX, radioTopLeftY)); 
+                absoluteLayout.addView(absoluteRadio);
+            }  
+        }        
+        invalidate();
     }
 
     public void createCustomContentPage() {

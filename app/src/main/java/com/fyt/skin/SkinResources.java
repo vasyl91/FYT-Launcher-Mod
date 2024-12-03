@@ -1,5 +1,7 @@
 package com.fyt.skin;
 
+import static com.fyt.skin.SkinUtils.getResources;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -8,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class SkinResources {
     private Resources appResources;
@@ -29,9 +32,9 @@ public class SkinResources {
 
     public int getIdentifier(int resid) {
         if (!this.isDefaultSkin) {
-            String resName = this.appResources.getResourceEntryName(resid);
-            String resType = this.appResources.getResourceTypeName(resid);
-            int skinid = this.skinResources.getIdentifier(resName, resType, this.mSkinPkgName);
+            //String resName = this.appResources.getResourceEntryName(resid);
+            //String resType = this.appResources.getResourceTypeName(resid);
+            int skinid = this.getIdentifier(resid);
             return skinid;
         }
         return resid;
@@ -56,24 +59,26 @@ public class SkinResources {
 
     public ColorStateList getColorStateList(int resid) {
         if (this.isDefaultSkin) {
-            return this.appResources.getColorStateList(resid);
+            return mContext.getColorStateList(resid);
         }
         int skinid = getIdentifier(resid);
         if (skinid == 0) {
-            return this.appResources.getColorStateList(resid);
+            return mContext.getColorStateList(resid);
         }
-        return this.skinResources.getColorStateList(skinid);
+        return mContext.getColorStateList(skinid);
     }
 
     public Drawable getDrawable(int resid) {
         if (this.isDefaultSkin) {
-            return this.appResources.getDrawable(resid);
+            return mContext.getDrawable(resid);
         }
         int skinid = getIdentifier(resid);
         if (skinid == 0) {
-            return this.appResources.getDrawable(resid);
+            return mContext.getDrawable(resid);
         }
-        return this.skinResources.getDrawable(skinid);
+        String r = getResources().getResourceEntryName(resid);
+        Log.i("inf", r);
+        return mContext.getDrawable(skinid);
     }
 
     public Bitmap getBitmap(int resid) {

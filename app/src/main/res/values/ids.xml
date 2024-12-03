@@ -147,4 +147,25 @@
     <item type="id" name="menu_delete" />
     <item type="id" name="rl_radio" />
     <item type="id" name="tv_band" />
+    <item type="id" name="creator" />
+    <item type="id" name="preferences" />
+    <item type="id" name="user_layout" />
+    <item type="id" name="user_layout_left" />    
+    <item type="id" name="absolute_time" />   
+    <item type="id" name="absolute_radio" />   
+    <item type="id" name="absolute_music" /> 
+    <item type="id" name="creator_second" />  
+    <item type="id" name="creator_bar" />
+    <item type="id" name="rectangle_name" />
+    <item type="id" name="top_up" />
+    <item type="id" name="top_down" />
+    <item type="id" name="bottom_up" />
+    <item type="id" name="bottom_down" />
+    <item type="id" name="left_to_left" />
+    <item type="id" name="left_to_right" />
+    <item type="id" name="right_to_left" />
+    <item type="id" name="right_to_right" />
+    <item type="id" name="confirm_layout" />
+    <item type="id" name="toast_layout" />
+    <item type="id" name="toast_text" />
 </resources>

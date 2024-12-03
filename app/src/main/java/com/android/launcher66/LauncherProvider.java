@@ -819,7 +819,7 @@ public class LauncherProvider extends ContentProvider {
                             } else if (TAG_SHORTCUT.equals(name)) {
                                 added = addUriShortcut(db, values, a2) >= 0;
                             } else if (TAG_FOLDER.equals(name)) {
-                                int titleResId = a2.getResourceId(R.styleable.Favorite_title, -1);
+                                int titleResId = a2.getResourceId(R.styleable.Favorite_favTitle, -1);
                                 if (titleResId != -1) {
                                     title = this.mContext.getResources().getString(titleResId);
                                 } else {
@@ -1044,7 +1044,7 @@ public class LauncherProvider extends ContentProvider {
         private long addUriShortcut(SQLiteDatabase db, ContentValues values, TypedArray a) {
             Resources r = this.mContext.getResources();
             final int iconResId = a.getResourceId(R.styleable.Favorite_icon, 0);
-            final int titleResId = a.getResourceId(R.styleable.Favorite_title, 0);
+            final int titleResId = a.getResourceId(R.styleable.Favorite_favTitle, 0);
             String uri = null;
             try {
                 uri = a.getString(R.styleable.Favorite_uri);

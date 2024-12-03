@@ -69,7 +69,7 @@
         android:id="@id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="400.0px"
-        android:layout_height="340.0px"
+        android:layout_height="350.0px"
         android:layout_marginLeft="15.0px"
         android:gravity="center"
         android:layout_toRightOf="@id/iv_map1"

@@ -238,4 +238,30 @@
     <string name="menu_notifications">Notifications</string>
     <string name="menu_settings">System settings</string>
     <string name="menu_help">Help</string>
+
+    <string name="selected_widget">Selected:\u0020</string>       
+    <string name="top">TOP </string>       
+    <string name="bottom">BOTTOM </string>         
+    <string name="left">L\nE\nF\nT </string>
+    <string name="right">R\n I\nG\nH\nT </string>  
+    <string name="confirm_layout">Confirm</string> 
+
+    <string name="layout_type">Layout type</string> 
+    <string name="user_layout">User layout</string> 
+    <string name="stock_layout">Stock layout</string> 
+    <string name="layout_creator">Layout creator</string> 
+    <string name="layout_summary">Set your layout</string> 
+    <string name="fyt_title_source">Fyt music title source</string> 
+    <string name="fyt_metadata">From metadata</string> 
+    <string name="fyt_file">From file path</string> 
+    <string name="left_bar">Use left bar</string> 
+    <string name="left_bar_on">Left bar + bottom bar</string> 
+    <string name="left_bar_off">Only bottom bar</string> 
+    <string name="date_widget">Date and time widget</string> 
+    <string name="music_widget">Music widget</string> 
+    <string name="radio_widget">Radio widget</string> 
+    <string name="margins_str">Margins (max. 25)</string> 
+    <string name="open_creator">Open creator</string> 
+    <string name="open_creator_summary">Adjust your widgets</string> 
+    <string name="transparent_statusbar">Transparent status bar</string> 
 </resources>

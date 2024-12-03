@@ -23,6 +23,7 @@ import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.util.Log
 import android.view.KeyEvent
+import androidx.preference.PreferenceManager
 import com.fyt.car.LauncherNotify
 import com.syu.widget.Widget
 import java.io.ByteArrayOutputStream
@@ -52,7 +53,7 @@ class NotificationListener : NotificationListenerService() {
     private var authorName: String? = ""
     private var album: String? = ""
     private var path: String? = ""
-    private var fytData: Int = 1
+    private var fytData: Boolean = true
     private var fytAllowed: Boolean = true // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.
 
     var musicState: String? = ""
@@ -89,8 +90,7 @@ class NotificationListener : NotificationListenerService() {
         super.onCreate()
         this.context = this
 
-        settings = getSharedPreferences("savedPrefs", 0)    
-        fytData = settings.getInt("fytData", 1)
+        settings = PreferenceManager.getDefaultSharedPreferences(this)
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(sessionListener, componentName)
@@ -104,7 +104,9 @@ class NotificationListener : NotificationListenerService() {
                     setStatus(2)
                 }, 2000)
             } else {
-                setStatus(1)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    setStatus(1)
+                }, 2000)
             }
             
         }
@@ -180,7 +182,6 @@ class NotificationListener : NotificationListenerService() {
                 if (curMinutes > prevCur) {
                     prevCur = curMinutes
                     setStatus(2)
-                    Widget.update(LauncherApplication.sApp)
                 }
             }
             handlerTime.postDelayed(this, 500)
@@ -235,19 +236,20 @@ class NotificationListener : NotificationListenerService() {
             fytState = false
             fytSet = true
         }
-        //fytData = settings.getInt("fytData", 1)
 
         if (song != null && fytState && fytAllowed && mediaSource == 1) {
             totalMinutes = fytTotalMinutes
             curMinutes = fytCurMinutes
 
-            if (fytData == 1) { // from metadata
+            fytData = settings.getBoolean("fyt_data", true)
+
+            if (fytData) { // from metadata
                 song = musicName
                 artist = authorName
                 if(artist?.isEmpty() == true || artist == "Unknown"){
                     artist = album
                 }       
-            } else if (fytData == 2) { // from file title
+            } else if (!fytData) { // from file title
                 val file = File(fytMusicPath)
                 val filename = file.getName()
                 song = filename.substring(0, filename.lastIndexOf("."))

@@ -109,7 +109,7 @@ public class LauncherAppState {
         return this.mModel;
     }
 
-    IconCache getIconCache() {
+    public IconCache getIconCache() {
         return this.mIconCache;
     }
 

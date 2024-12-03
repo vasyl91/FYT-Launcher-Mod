@@ -56,7 +56,7 @@
     <public type="attr" name="spanX" id="0x7f010035" />
     <public type="attr" name="spanY" id="0x7f010036" />
     <public type="attr" name="icon" id="0x7f010037" />
-    <public type="attr" name="title" id="0x7f010038" />
+    <public type="attr" name="favTitle" id="0x7f010038" />
     <public type="attr" name="uri" id="0x7f010039" />
     <public type="attr" name="key" id="0x7f01003a" />
     <public type="attr" name="value" id="0x7f01003b" />
@@ -867,6 +867,24 @@
     <public type="string" name="car_allapps_title" id="0x7f0c00ce" />
     <public type="string" name="car_settings_title" id="0x7f0c00cf" />
     <public type="string" name="car_realnavi" id="0x7f0c00d0" />
+    <public type="string" name="layout_type" id="0x7F0C00D1" />
+    <public type="string" name="user_layout" id="0x7f0c00d2" />
+    <public type="string" name="stock_layout" id="0x7f0c00d3" />
+    <public type="string" name="layout_creator" id="0x7f0c00d4" />
+    <public type="string" name="layout_summary" id="0x7f0c00d5" />
+    <public type="string" name="fyt_title_source" id="0x7f0c00d6" />
+    <public type="string" name="fyt_metadata" id="0x7f0c00d7" />
+    <public type="string" name="fyt_file" id="0x7f0c00d8" />
+    <public type="string" name="left_bar" id="0x7f0c00d9" />
+    <public type="string" name="left_bar_on" id="0x7f0c00da" />
+    <public type="string" name="left_bar_off" id="0x7f0c00db" />
+    <public type="string" name="date_widget" id="0x7f0c00dc" />
+    <public type="string" name="music_widget" id="0x7f0c00dd" />
+    <public type="string" name="radio_widget" id="0x7f0c00de" />
+    <public type="string" name="margins_str" id="0x7f0c00df" />
+    <public type="string" name="open_creator" id="0x7f0c00E0" />
+    <public type="string" name="open_creator_summary" id="0x7f0c00E1" />
+    <public type="string" name="transparent_statusbar" id="0x7f0c00E2" />
     <public type="dimen" name="dynamic_grid_edge_margin" id="0x7f0d0000" />
     <public type="dimen" name="dynamic_grid_search_bar_max_width" id="0x7f0d0001" />
     <public type="dimen" name="dynamic_grid_search_bar_height" id="0x7f0d0002" />
@@ -2824,6 +2842,27 @@
     <public type="id" name="menu_delete" id="0x7f0e0097" />
     <public type="id" name="rl_radio" id="0x7f0e0098" />
     <public type="id" name="tv_band" id="0x7f0e009a" />
+    <public type="id" name="creator" id="0x7F0E009b" />
+    <public type="id" name="preferences" id="0x7F0E009c" />
+    <public type="id" name="user_layout" id="0x7F0E009d" />
+    <public type="id" name="user_layout_left" id="0x7F0E009e" />
+    <public type="id" name="absolute_time" id="0x7F0E009f" />    
+    <public type="id" name="absolute_radio" id="0x7F0E00A0" />    
+    <public type="id" name="absolute_music" id="0x7F0E00A1" />
+    <public type="id" name="creator_second" id="0x7F0E00A2" />
+    <public type="id" name="creator_bar" id="0x7F0E00A3" />
+    <public type="id" name="rectangle_name" id="0x7F0E00A4" />
+    <public type="id" name="top_up" id="0x7F0E00A5" />
+    <public type="id" name="top_down" id="0x7F0E00A6" />
+    <public type="id" name="bottom_up" id="0x7F0E00A7" />
+    <public type="id" name="bottom_down" id="0x7F0E00A8" />
+    <public type="id" name="left_to_left" id="0x7F0E00A9" />
+    <public type="id" name="left_to_right" id="0x7F0E00AA" />
+    <public type="id" name="right_to_left" id="0x7F0E00AB" />
+    <public type="id" name="right_to_right" id="0x7F0E00AC" />
+    <public type="id" name="confirm_layout" id="0x7F0E00AD" />
+    <public type="id" name="toast_layout" id="0x7F0E00AE" />
+    <public type="id" name="toast_text" id="0x7F0E00AF" />
     <public type="plurals" name="number_of_items_selected" id="0x7f0f0000" />
     <public type="style" name="Theme.WallpaperCropper" id="0x7f100000" />
     <public type="style" name="WallpaperCropperActionBar" id="0x7f100001" />

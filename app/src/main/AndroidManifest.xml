@@ -155,6 +155,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.android.launcher66.settings.SettingsActivity"
+            android:label="@string/settings_button_text"
+            android:theme="@style/SettingsTheme"
+            android:autoRemoveFromRecents="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service android:enabled="@bool/debug_memory_enabled" 
             android:name="com.android.launcher66.MemoryTracker"/>
 
@@ -177,17 +189,17 @@
 
         <receiver android:name="com.android.launcher66.InstallShortcutReceiver"
             android:exported="true"
-            android:permission="com.android.launcher66.permission.INSTALL_SHORTCUT">
+            android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
             <intent-filter>
-                <action android:name="com.android.launcher66.action.INSTALL_SHORTCUT"/>
+                <action android:name="com.android.launcher.action.INSTALL_SHORTCUT"/>
             </intent-filter>
         </receiver>
 
         <receiver android:name="com.android.launcher66.UninstallShortcutReceiver"
             android:exported="true"
-            android:permission="com.android.launcher66.permission.UNINSTALL_SHORTCUT">
+            android:permission="com.android.launcher.permission.UNINSTALL_SHORTCUT">
             <intent-filter>
-                <action android:name="com.android.launcher66.action.UNINSTALL_SHORTCUT"/>
+                <action android:name="com.android.launcher.action.UNINSTALL_SHORTCUT"/>
             </intent-filter>
         </receiver>
 

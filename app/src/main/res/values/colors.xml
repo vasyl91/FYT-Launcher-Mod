@@ -19,4 +19,10 @@
     <color name="map_distance_color">#ffff9300</color>
     <color name="translucent">#ffffffff</color>
     <color name="transparent">#FFFFFF00</color>
+    <color name="colorPrimary">#fff5f5f5</color>
+    <color name="colorPrimaryDark">#ffe0e0e0</color>
+    <color name="lollipopStatusBar">#ff9e9e9e</color>
+    <color name="colorAccent">#ff4285f4</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
 </resources>

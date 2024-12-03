@@ -156,4 +156,15 @@
         <item name="android:windowBackground">@color/translucent</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+    <style name="SettingsTheme" parent="Theme.AppCompat.Light">
+        <item name="android:actionBarTheme">@style/SettingsTheme.ActionBar</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/lollipopStatusBar</item>
+    </style>
+    <style name="SettingsTheme.ActionBar">
+        <item name="android:textColorPrimary">@color/colorAccent</item>
+        <item name="android:colorControlNormal">@color/colorAccent</item>
+    </style>
 </resources>

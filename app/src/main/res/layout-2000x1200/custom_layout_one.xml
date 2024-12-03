@@ -7,12 +7,12 @@
         android:id="@id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="142.0px"
-        android:layout_height="880.0px">
+        android:layout_height="980.0px">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@id/left_recycler_view"
             android:layout_width="142.0px"
-            android:layout_height="880.0px"
+            android:layout_height="980.0px"
             android:layout_marginTop="55.0px" />
 
 
@@ -22,7 +22,7 @@
         android:id="@id/iv_map1"
         android:background="@drawable/ic_map_corner"
         android:layout_width="1140.0px"
-        android:layout_height="840.0px"
+        android:layout_height="940.0px"
         android:layout_marginLeft="20.0px"
         android:layout_marginTop="20.0px"
         android:layout_toRightOf="@id/rl_left_bar" />
@@ -31,7 +31,7 @@
         android:id="@id/ll_time"
         android:background="@drawable/time_bg"
         android:layout_width="660.0px"
-        android:layout_height="250.0px"
+        android:layout_height="300.0px"
         android:layout_marginLeft="20.0px"
         android:layout_toRightOf="@id/iv_map1"
         android:layout_alignTop="@id/iv_map1">
@@ -71,7 +71,7 @@
         android:id="@id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="660.0px"
-        android:layout_height="570.0px"
+        android:layout_height="620.0px"
         android:layout_marginLeft="20.0px"
         android:gravity="center"
         android:layout_toRightOf="@id/iv_map1"

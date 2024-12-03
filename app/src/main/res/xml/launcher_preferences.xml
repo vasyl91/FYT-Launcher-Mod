@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@id/preferences" >
+    <SwitchPreference
+        android:key="user_layout"
+        android:defaultValue="false"
+        android:title="@string/layout_type"
+        android:summaryOn="@string/user_layout"
+        android:summaryOff="@string/stock_layout" />
+    <Preference
+        android:key="launcher_creator_first"
+        android:title="@string/layout_creator"
+        android:summary="@string/layout_summary" />
+    <SwitchPreference
+        android:key="transparent_statusbar"
+        android:defaultValue="false"
+        android:title="@string/transparent_statusbar" />
+    <SwitchPreference
+        android:key="fyt_data"
+        android:defaultValue="false"
+        android:title="@string/fyt_title_source"
+        android:summaryOn="@string/fyt_metadata"
+        android:summaryOff="@string/fyt_file" />
+</PreferenceScreen>

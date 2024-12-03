@@ -593,19 +593,20 @@ public class WallpaperCropActivity extends Activity {
 
     protected static RectF getMaxCropRect(int inWidth, int inHeight, int outWidth, int outHeight, boolean leftAligned) {
         RectF cropRect = new RectF();
-        if (inWidth / inHeight > outWidth / outHeight) {
-            cropRect.top = 0.0f;
+        // Get a crop rect that will fit this
+        if (inWidth / (float) inHeight > outWidth / (float) outHeight) {
+            cropRect.top = 0;
             cropRect.bottom = inHeight;
-            cropRect.left = (inWidth - ((outWidth / outHeight) * inHeight)) / WALLPAPER_SCREENS_SPAN;
+            cropRect.left = (inWidth - (outWidth / (float) outHeight) * inHeight) / 2;
             cropRect.right = inWidth - cropRect.left;
             if (leftAligned) {
                 cropRect.right -= cropRect.left;
-                cropRect.left = 0.0f;
+                cropRect.left = 0;
             }
         } else {
-            cropRect.left = 0.0f;
+            cropRect.left = 0;
             cropRect.right = inWidth;
-            cropRect.top = (inHeight - ((outHeight / outWidth) * inWidth)) / WALLPAPER_SCREENS_SPAN;
+            cropRect.top = (inHeight - (outHeight / (float) outWidth) * inWidth) / 2;
             cropRect.bottom = inHeight - cropRect.top;
         }
         return cropRect;

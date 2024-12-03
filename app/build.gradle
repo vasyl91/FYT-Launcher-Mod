@@ -95,6 +95,10 @@ dependencies {
     implementation libs.litepal
     implementation libs.androidx.multidex
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.preference
+    implementation libs.flexbox
+    implementation libs.process.phoenix
 
     testImplementation libs.junit
 

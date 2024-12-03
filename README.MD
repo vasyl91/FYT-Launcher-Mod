@@ -1,8 +1,20 @@
-# Experimental reverse engineered launcher for FYT 7862/8581
+# Experimental reverse engineered launcher for FYT 7862/8581 with launcher creator.
 
-I used Launcher 34 as a base, added 1920x720 resolution, however the tested one is only 2000x1100. I also implemented the music widget working with most of the music players.
+Launcher 34 was used as a base. Tested only on 2000x1100 resolution.
+
+List of modifications:
+- added 1920x720 resolution
+- reworked music widget working with most of the music players
+- implemented launcher creator allowing to adjust launcher layout to user preferences
+
+[<video src='./images/rec1.mp4' width="70%"/>](./images/rec1.mp4)
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
+
+Known issues that I couldn't figure out yet:
+- coordinates and widget name are not displayed on first use (save layout and reopen creator as on the video).
+- proper display of picture in picture requires switching launcher to another and then back to the mod.
+- first use after installation might require some time before music widget starts working (probably related to notification listener).
 
 ## Generating app in Android Studio
 

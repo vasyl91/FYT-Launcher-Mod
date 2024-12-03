@@ -344,7 +344,8 @@ public class TiledImageRenderer {
     //
     // (cX, cY) is the point on the original bitmap which will be put in the
     // center of the ImageViewer.
-    private void getRange(Rect out, int cX, int cY, int level, float scale, int rotation) {
+    private void getRange(Rect out,
+                          int cX, int cY, int level, float scale, int rotation) {
 
         double radians = Math.toRadians(-rotation);
         double w = mViewWidth;
@@ -352,8 +353,10 @@ public class TiledImageRenderer {
 
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        int width = (int) Math.ceil(Math.max(Math.abs(cos * w - sin * h), Math.abs(cos * w + sin * h)));
-        int height = (int) Math.ceil(Math.max(Math.abs(sin * w + cos * h), Math.abs(sin * w - cos * h)));
+        int width = (int) Math.ceil(Math.max(
+                Math.abs(cos * w - sin * h), Math.abs(cos * w + sin * h)));
+        int height = (int) Math.ceil(Math.max(
+                Math.abs(sin * w + cos * h), Math.abs(sin * w - cos * h)));
 
         int left = (int) Math.floor(cX - width / (2f * scale));
         int top = (int) Math.floor(cY - height / (2f * scale));

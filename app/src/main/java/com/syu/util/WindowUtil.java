@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.util.Log;
@@ -22,17 +24,17 @@ public class WindowUtil {
     private static final String TAG = "WindowUtil";
     private static Intent intent;
     private static IActivityManager mActivityManager;
-    public static String AppPackageNmae = "";
+    public static String AppPackageName = "";
     public static boolean visible = true;
     public static int delayMillis = 0;
 
     public static void initDefaultApp() {
         intent = new Intent();
         removePip(null);
-        AppPackageNmae = SystemProperties.get("persist.launcher.packagename", "");
-        if (AppPackageNmae.isEmpty()) {
+        AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+        if (AppPackageName.isEmpty()) {
             SystemProperties.set("persist.launcher.packagename", FytPackage.GaodeACTION);
-            AppPackageNmae = SystemProperties.get("persist.launcher.packagename", "");
+            AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
         }
     }
 
@@ -66,11 +68,11 @@ public class WindowUtil {
     }
 
     public static void openPip(View v, boolean show) {
-        LogPreview.show("startMapPip:" + AppPackageNmae);
+        LogPreview.show("startMapPip:" + AppPackageName);
         Log.d("LZP", "openPip..");
         if ((!visible || show) && Utils.topApp()) {
-            intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageNmae);
-            if (AppPackageNmae.equals("com.syu.camera360")) {
+            intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
+            if (AppPackageName.equals("com.syu.camera360")) {
                 Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
             }
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
@@ -96,13 +98,13 @@ public class WindowUtil {
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
                 @Override // java.lang.Runnable
                 public void run() {
-                    if (WindowUtil.AppPackageNmae.equals("com.syu.camera360")) {
+                    if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                         LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));
                     }
                     WindowUtil.mActivityManager.setPinnedStackVisible(false);
                 }
             }, delayMillis);
-            if (AppPackageNmae.equals(FytPackage.GaodeACTION)) {
+            if (AppPackageName.equals(FytPackage.GaodeACTION)) {
                 try {
                     LauncherApplication.sApp.removeGaoDeCoverView();
                 } catch (Exception e) {
