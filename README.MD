@@ -7,7 +7,7 @@ List of modifications:
 - reworked music widget working with most of the music players
 - implemented launcher creator allowing to adjust launcher layout to user preferences
 
-[<video src='./images/rec1.mp4' width="70%"/>](./images/rec1.mp4)
+https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/rec1.mp4
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
 
