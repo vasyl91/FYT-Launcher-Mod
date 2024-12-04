@@ -281,7 +281,7 @@ class NotificationListener : NotificationListenerService() {
             }, 2000) 
 
             totalMinutes = meta!!.getLong(MediaMetadata.METADATA_KEY_DURATION)
-            curMinutes = mediaController!!.playbackState.position
+            mediaController!!.playbackState?.let { curMinutes = it.position }
 
             song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
             artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST) 

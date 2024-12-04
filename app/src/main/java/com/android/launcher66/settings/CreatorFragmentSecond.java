@@ -146,6 +146,8 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     }
 
     private void checkIfOverlappingMargins() {
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int width = getResources().getDisplayMetrics().widthPixels;
         margin = Integer.valueOf(sharedPrefs.getString("layout_margin", "10"));    
         mapTopLeftX = sharedPrefs.getInt("mapTopLeftX", margin);
         mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);        
@@ -157,9 +159,9 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
         mapBottomLeftY = sharedPrefs.getInt("mapBottomLeftY", mapTopLeftY + mapMinHeight);
 
         if (mapTopLeftX < margin || mapTopLeftY < margin 
-            || mapTopRightX > (Helpers.width - margin) || mapTopRightY < margin 
-            || mapBottomRightX > (Helpers.width - margin) || mapBottomRightY > (Helpers.height - margin) 
-            || mapBottomLeftX < margin || mapBottomLeftY > (Helpers.height - margin)) {
+            || mapTopRightX > (width - margin) || mapTopRightY < margin 
+            || mapBottomRightX > (width - margin) || mapBottomRightY > (height - margin) 
+            || mapBottomLeftX < margin || mapBottomLeftY > (height - margin)) {
             overlappingMargins = true;
         } 
 
@@ -174,9 +176,9 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             dateBottomLeftY = sharedPrefs.getInt("dateBottomLeftY", dateTopLeftY + dateMinHeight);
 
             if (dateTopLeftX < margin || dateTopLeftY < margin 
-                || dateTopRightX > (Helpers.width - margin) || dateTopRightY < margin 
-                || dateBottomRightX > (Helpers.width - margin) || dateBottomRightY > (Helpers.height - margin) 
-                || dateBottomLeftX < margin || dateBottomLeftY > (Helpers.height - margin)) {
+                || dateTopRightX > (width - margin) || dateTopRightY < margin 
+                || dateBottomRightX > (width - margin) || dateBottomRightY > (height - margin) 
+                || dateBottomLeftX < margin || dateBottomLeftY > (height - margin)) {
                 overlappingMargins = true;
             } 
         }
@@ -192,9 +194,9 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", musicTopLeftY + musicMinHeight);
 
             if (musicTopLeftX < margin || musicTopLeftY < margin
-                || musicTopRightX > (Helpers.width - margin) || musicTopRightY < margin 
-                || musicBottomRightX > (Helpers.width - margin) || musicBottomRightY > (Helpers.height - margin) 
-                || musicBottomLeftX < margin || musicBottomLeftY > (Helpers.height - margin)) {
+                || musicTopRightX > (width - margin) || musicTopRightY < margin 
+                || musicBottomRightX > (width - margin) || musicBottomRightY > (height - margin) 
+                || musicBottomLeftX < margin || musicBottomLeftY > (height - margin)) {
                 overlappingMargins = true;
             } 
         } 
@@ -210,9 +212,9 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", radioTopLeftY + radioMinHeight);
 
             if (radioTopLeftX < margin || radioTopLeftY < margin
-                || radioTopRightX > (Helpers.width - margin) || radioTopRightY < margin 
-                || radioBottomRightX > (Helpers.width - margin) || radioBottomRightY > (Helpers.height - margin) 
-                || radioBottomLeftX < margin || radioBottomLeftY > (Helpers.height - margin)) {
+                || radioTopRightX > (width - margin) || radioTopRightY < margin 
+                || radioBottomRightX > (width - margin) || radioBottomRightY > (height - margin) 
+                || radioBottomLeftX < margin || radioBottomLeftY > (height - margin)) {
                 overlappingMargins = true;
             } 
         }  

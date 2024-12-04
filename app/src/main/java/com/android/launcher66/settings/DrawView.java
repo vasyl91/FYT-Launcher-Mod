@@ -151,19 +151,19 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
-        if (Helpers.width == 1024) {           
+        if (getResources().getDisplayMetrics().widthPixels == 1024) {           
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;
-        } else if (Helpers.width == 1280 || Helpers.width == 1920) {
+        } else if (getResources().getDisplayMetrics().widthPixels == 1280 || getResources().getDisplayMetrics().widthPixels == 1920) {
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
-        } else if (Helpers.width == 2000) {
+        } else if (getResources().getDisplayMetrics().widthPixels == 2000) {
             ballDiameter = 75.0f;
             coordinatesSize = 50;
             nameTextSize = 40;
-        }        
+        }     
         sizeOfRect = ballDiameter / 2.0f;
 
         colorballs = new ArrayList<>();
@@ -1186,7 +1186,6 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         } else {
             padL = (coordinatesSize / 2) + 35;
         }
-        System.out.println(String.valueOf(colorballs.get(bottomLeft).getX()));
         canvas.drawText(String.valueOf(colorballs.get(bottomLeft).getX()), 
             (colorballs.get(bottomLeft).getX() + padL),
             (colorballs.get(bottomLeft).getY() - (colorballs.get(bottomLeft).getY() - colorballs.get(topLeft).getY()) / 2.0f) + coordinatesSize / 2.5f, 

@@ -263,5 +263,7 @@
     <string name="margins_str">Margins (max. 25)</string> 
     <string name="open_creator">Open creator</string> 
     <string name="open_creator_summary">Adjust your widgets</string> 
-    <string name="transparent_statusbar">Transparent status bar</string> 
+    <string name="transparent_statusbar">Transparent status bar</string>  
+    <string name="noti_str">Notification listener settings</string>      
+    <string name="noti_summary">Tap to open</string> 
 </resources>

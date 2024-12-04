@@ -76,7 +76,7 @@ public class WindowUtil {
                 Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
             }
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
-                @Override // java.lang.Runnable
+                @Override 
                 public void run() {
                     try {
                         WindowUtil.intent.putExtra("force_pip", true);
@@ -96,7 +96,7 @@ public class WindowUtil {
         if (visible) {
             mActivityManager = ActivityManager.getService();
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
-                @Override // java.lang.Runnable
+                @Override 
                 public void run() {
                     if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                         LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));

@@ -23,4 +23,8 @@
         android:title="@string/fyt_title_source"
         android:summaryOn="@string/fyt_metadata"
         android:summaryOff="@string/fyt_file" />
+    <Preference
+        android:key="noti_settings"
+        android:title="@string/noti_str"
+        android:summary="@string/noti_summary" />
 </PreferenceScreen>

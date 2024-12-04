@@ -187,6 +187,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     static Rect mPortraitCellLayoutMetrics = null;
     public static MCellLayout[] customScreen = new MCellLayout[LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count)];
     public static int apps_customepage_count = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count);
+    private Context mContext;
 
     enum State {
         NORMAL,
@@ -210,6 +211,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
 
     public Workspace(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.mContext = context;
         this.mChildrenOutlineAlpha = 0.0f;
         this.mDrawBackground = true;
         this.mBackgroundAlpha = 0.0f;

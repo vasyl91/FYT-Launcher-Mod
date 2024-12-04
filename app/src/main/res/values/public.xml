@@ -885,6 +885,8 @@
     <public type="string" name="open_creator" id="0x7f0c00E0" />
     <public type="string" name="open_creator_summary" id="0x7f0c00E1" />
     <public type="string" name="transparent_statusbar" id="0x7f0c00E2" />
+    <public type="string" name="noti_str" id="0x7f0c00E3" />
+    <public type="string" name="noti_summary" id="0x7f0c00E4" />
     <public type="dimen" name="dynamic_grid_edge_margin" id="0x7f0d0000" />
     <public type="dimen" name="dynamic_grid_search_bar_max_width" id="0x7f0d0001" />
     <public type="dimen" name="dynamic_grid_search_bar_height" id="0x7f0d0002" />

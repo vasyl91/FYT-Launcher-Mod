@@ -1507,9 +1507,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         intent.addCategory("android.intent.category.HOME");
         if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
             View iv_map = this.findViewById(R.id.iv_map1);
-            Helpers.width = getResources().getDisplayMetrics().widthPixels;
-            Helpers.height = getResources().getDisplayMetrics().heightPixels;
-            Helpers.leftBarWidth = leftBarSize;
             // top-left x, top left y, bottom right x, bottom right y
             SystemProperties.set("sys.lsec.pip_rect", String.valueOf(mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY));
         }

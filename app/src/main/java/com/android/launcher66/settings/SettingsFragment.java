@@ -27,7 +27,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private static final String USER_LAYOUT = "user_layout";
     private static final String CREATOR_FIRST = "launcher_creator_first";
     private static final String STATUSBAR = "transparent_statusbar";
-    private static final String FYT_DATA = "fyt_data";
+    private static final String FYT_DATA = "fyt_data";    
+    private static final String NOTI = "noti_settings";
     private boolean initLayout;
     private boolean userLayoutBool;
     private boolean initStatusbar;
@@ -49,6 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         Preference launcherCreatorFirst = findPreference(CREATOR_FIRST);
         Preference transparentStatusbar = findPreference(STATUSBAR);
         Preference fytData = findPreference(FYT_DATA);
+        Preference noti = findPreference(NOTI);
 
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
@@ -64,6 +66,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         if (fytData != null) {
             fytData.setOnPreferenceClickListener(this);
         }
+        if (noti != null) {
+            noti.setOnPreferenceClickListener(this);
+        }
     }
 
     @Override
@@ -75,6 +80,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 break;
             case CREATOR_FIRST:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
+                break;
+            case NOTI:
+                Intent intentNoti = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                intentNoti.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intentNoti.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intentNoti.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                startActivity(intentNoti);
                 break;
         }
         return false;
