@@ -2,12 +2,12 @@
 <com.android.launcher66.Cling android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:drawIdentifier="workspace_portrait"
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
-    <FrameLayout android:layout_gravity="center_horizontal" android:id="@id/content" android:layout_width="859.0dip" android:layout_height="402.0dip" android:layout_marginTop="40.0dip">
+    <FrameLayout android:layout_gravity="center_horizontal" android:id="@id/content" android:layout_width="859.0px" android:layout_height="402.0px" android:layout_marginTop="40.0px">
         <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
             <TextView android:id="@id/clingtitletext" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/workspace_cling_title" style="@style/ClingTitleText" />
             <TextView android:id="@id/clingtext" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/workspace_cling_move_item" style="@style/ClingText" />
         </LinearLayout>
     </FrameLayout>
-    <Button android:layout_gravity="end|bottom|center" android:id="@id/clickapp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20.0dip" android:text="@string/cling_dismiss" android:layout_marginEnd="90.0dip" style="@style/ClingButton" />
-    <Button android:layout_gravity="start|bottom|center" android:id="@id/clickapp_cancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20.0dip" android:text="@string/cling_cancel" android:layout_marginStart="90.0dip" style="@style/ClingButton" />
+    <Button android:layout_gravity="end|bottom|center" android:id="@id/clickapp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20.0px" android:text="@string/cling_dismiss" android:layout_marginEnd="90.0px" style="@style/ClingButton" />
+    <Button android:layout_gravity="start|bottom|center" android:id="@id/clickapp_cancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20.0px" android:text="@string/cling_cancel" android:layout_marginStart="90.0px" style="@style/ClingButton" />
 </com.android.launcher66.Cling>

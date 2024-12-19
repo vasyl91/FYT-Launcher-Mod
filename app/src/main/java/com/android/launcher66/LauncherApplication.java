@@ -1,22 +1,53 @@
 package com.android.launcher66;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemProperties;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
+import com.syu.canbus.ZipCompare;
+import com.syu.canbus.cfg.CfgCustom;
+import com.syu.canbus.warn.DataPack;
 import com.syu.car.CarStates;
+import com.syu.module.MsToolkitConnection;
+import com.syu.module.canbus.ConnectionCanbus;
+import com.syu.module.canbus.up.ConnectionCanUp;
+import com.syu.module.main.ConnectionMain;
+import com.syu.module.sound.ConnectionSound;
+import com.syu.ui.air.AirHelper;
+import com.syu.ui.benzair.Air_BenzHelper;
+import com.syu.ui.benzair.Show_BenzHelper;
+import com.syu.ui.carvol.CarVolHelper;
+import com.syu.ui.door.DoorHelper;
+import com.syu.ui.parking.ParkingHelper;
 import com.syu.util.CustomIcons;
+import com.syu.util.DebugView;
 import com.syu.util.FytPackage;
+import com.syu.util.ObjApp;
 import com.syu.util.Utils;
 import com.syu.utils.W3Utils;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.litepal.LitePalApplication;
 
 public class LauncherApplication extends LitePalApplication {
@@ -42,6 +73,16 @@ public class LauncherApplication extends LitePalApplication {
     public static int appWidget_Host_Id = 0;
     public static float shadow_Large_Radius = 0.0f;
     public static float shadow_Small_Radius = 0.0f;
+    private static ActivityManager sActivityManager;
+    private static AssetManager sAssetManager;
+    private static Handler sHandler;
+    private static boolean sIsRootViewAdd;
+    private static Resources sResources;
+    private static View sRootView;
+    private static WindowManager.LayoutParams sRootViewLp;
+    private static WindowManager sWindowManager;
+    private static int sScreenSizeId = 0;
+    private static final ArrayList<Object> ROOT_VIEW_OBJ = new ArrayList<>();
 
     public String getApkPath() {
         return this.apkPath;
@@ -52,6 +93,14 @@ public class LauncherApplication extends LitePalApplication {
         super.onCreate();
         initData();
         initProperties();
+        sHandler = new Handler();
+        CrashHandler.getInstance(getApplicationContext());
+        writeCanOgg();
+        cfg();
+        setupBase();
+        initWindow();
+        connectService();
+        DataPack.init(this);
     }
 
     private void initProperties() {
@@ -86,6 +135,19 @@ public class LauncherApplication extends LitePalApplication {
         mAppWallPaper = Utils.getSp().getBoolean("mAppWallPaper", true);
         mWallPaperUpdate = Utils.getSp().getBoolean("mWallPaperUpdate", true);
         initGaoDeCoverView();
+
+
+        ObjApp.init(this);
+        sActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        sWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        sResources = getResources();
+        sAssetManager = sResources.getAssets();
+        try {
+            sScreenSizeId = getResources().getIntArray(R.array.screen_size)[0];
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sRootView = new View(this);
     }
 
     public void addGaoDeCoverView() {
@@ -140,5 +202,189 @@ public class LauncherApplication extends LitePalApplication {
     public void onTerminate() {
         super.onTerminate();
         LauncherAppState.getInstance().onTerminate();
+    }
+
+    public static LauncherApplication getInstance() {
+        return sApp;
+    }
+
+    public static Resources getRes() {
+        return sResources;
+    }
+
+    public static AssetManager getAssetManager() {
+        return sAssetManager;
+    }
+
+    public static int getScreenSizeId() {
+        return sScreenSizeId;
+    }
+
+    public void postDelayed(Runnable runnable, int delay) {
+        if (runnable != null) {
+            sHandler.postDelayed(runnable, delay);
+        }
+    }
+
+    public void removeCallbacks(Runnable runnable) {
+        if (runnable != null) {
+            sHandler.removeCallbacks(runnable);
+        }
+    }
+
+    public int isScreensOriatationPortrait() {
+        int result = getResources().getConfiguration().orientation;
+        return result;
+    }
+
+    public static int getScreenWidth() {
+        int result = sWindowManager.getDefaultDisplay().getWidth();
+        return result;
+    }
+
+    public static int getScreenHeight() {
+        int result = sWindowManager.getDefaultDisplay().getHeight();
+        return result;
+    }
+
+    public static void showWindow(PopupWindow window, int gravity, int x, int y) {
+        window.showAtLocation(sRootView, gravity, x, y);
+    }
+
+    public static boolean isAppTop() {
+        List<ActivityManager.RunningTaskInfo> list = sActivityManager.getRunningTasks(1);
+        if (list == null || list.size() <= 0) {
+            return false;
+        }
+        return sApp.getPackageName().equals(list.get(0).baseActivity.getPackageName());
+    }
+
+    public void writeCanOgg() {
+        try {
+            AssetManager assetManager = getAssets();
+            InputStream is = assetManager.open("Can_Back.ogg");
+            if (is != null) {
+                boolean bWrite = true;
+                File file = new File("/sdcard/Can_Back.bin");
+                FileInputStream fileInputStream = null;
+                if (file.exists()) {
+                    fileInputStream = new FileInputStream(file);
+                    is.mark(is.available());
+                    bWrite = !ZipCompare.isSameZip(is, fileInputStream);
+                    is.reset();
+                }
+                if (bWrite) {
+                    FileOutputStream fos = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    while (true) {
+                        int len = is.read(buffer);
+                        if (len == -1) {
+                            break;
+                        } else {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                    fos.close();
+                }
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+                is.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void cfg() {
+        CfgCustom.cfgCustom();
+    }
+
+    private void setupBase() {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.height = -1;
+        lp.width = -1;
+        lp.format = 1;
+        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
+        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        sRootViewLp = lp;
+        sRootView = new View(this);
+        DebugView msgView = ObjApp.getMsgView();
+        if (msgView.isDbg()) {
+            ObjApp.getWindowManager().addView(msgView, msgView.getWindowLayoutParams());
+        }
+    }
+
+    public View getRootView() {
+        return sRootView;
+    }
+
+    public static int getConfiguration() {
+        return sApp.getResources().getConfiguration().orientation;
+    }
+
+    public static boolean isPortrait() {
+        return getConfiguration() == 1;
+    }
+
+    private void initWindow() {
+        Configuration config = getResources().getConfiguration();
+        int smallestScreenWidth = config.smallestScreenWidthDp;
+        //Log.v("zed", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + smallestScreenWidth);
+        AirHelper.getInstance().initWindow(this);
+        DoorHelper.getInstance().initWindow(this);
+        ParkingHelper.getInstance().initWindow(this);
+        Air_BenzHelper.getInstance().initWindow(this);
+        Show_BenzHelper.getInstance().initWindow(this);
+        CarVolHelper.getInstance().initWindow(this);
+    }
+
+    private void connectService() {
+        MsToolkitConnection.getInstance().addObserver(ConnectionCanbus.getInstance());
+        MsToolkitConnection.getInstance().addObserver(ConnectionMain.getInstance());
+        MsToolkitConnection.getInstance().addObserver(ConnectionSound.getInstance());
+        MsToolkitConnection.getInstance().addObserver(ConnectionCanUp.getInstance());
+        MsToolkitConnection.getInstance().connect(this);
+    }
+
+    public void activityByIntentName(String value) {
+        try {
+            Intent intent = new Intent(value);
+            defIntentSetForStartActivity(intent);
+            startActivity(intent);
+        } catch (Exception e) {
+        }
+    }
+
+    private void defIntentSetForStartActivity(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    public static void addRootView(Object obj) {
+        if (obj != null && !ROOT_VIEW_OBJ.contains(obj)) {
+            ROOT_VIEW_OBJ.add(obj);
+        }
+        if (!sIsRootViewAdd) {
+            sIsRootViewAdd = true;
+            sWindowManager.addView(sRootView, sRootViewLp);
+        }
+    }
+
+    public static void removeRootView(Object obj) {
+        if (obj != null && ROOT_VIEW_OBJ.contains(obj)) {
+            ROOT_VIEW_OBJ.remove(obj);
+        }
+        if (sIsRootViewAdd && ROOT_VIEW_OBJ.size() == 0) {
+            sIsRootViewAdd = false;
+            sWindowManager.removeView(sRootView);
+        }
+    }
+
+    public static IBinder rootViewWindowToken() {
+        return sRootView.getWindowToken();
     }
 }

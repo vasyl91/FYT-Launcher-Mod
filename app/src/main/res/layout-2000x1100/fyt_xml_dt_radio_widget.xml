@@ -7,8 +7,8 @@
         android:background="@drawable/radio_bg"
         android:layout_width="@dimen/x440"
         android:layout_height="@dimen/y134"
-        android:layout_marginTop="10.0dip"
-        android:layout_marginRight="20.0dip"
+        android:layout_marginTop="10.0px"
+        android:layout_marginRight="20.0px"
         android:layout_alignParentRight="true">
 
         <TextView
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/y30"
-            android:layout_marginBottom="5.0dip"
+            android:layout_marginBottom="5.0px"
             android:text="KHZ"
             android:layout_toRightOf="@id/tv_freq"
             android:layout_alignBottom="@id/tv_freq" />

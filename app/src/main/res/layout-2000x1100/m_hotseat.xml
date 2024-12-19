@@ -12,11 +12,11 @@
         android:orientation="horizontal" 
         android:layout_width="fill_parent" 
         android:layout_height="fill_parent" 
-        android:layout_marginLeft="14.0dip" 
-        android:layout_marginRight="270.0dip">
+        android:layout_marginLeft="14.0px" 
+        android:layout_marginRight="270.0px">
         <RelativeLayout 
             android:id="@id/m_bt_btn" 
-            android:layout_width="0.0dip" 
+            android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
@@ -30,7 +30,7 @@
                 android:textColor="@color/text_color_white" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
-                android:layout_marginBottom="20.0dip" 
+                android:layout_marginBottom="20.0px" 
                 android:text="@string/car_bt" 
                 android:singleLine="true" 
                 android:layout_alignBottom="@id/ic_hotseat_bt" 
@@ -38,7 +38,7 @@
         </RelativeLayout>
         <RelativeLayout 
             android:id="@id/m_eq_btn" 
-            android:layout_width="0.0dip" 
+            android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
@@ -52,7 +52,7 @@
                 android:textColor="@color/text_color_white" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
-                android:layout_marginBottom="20.0dip" 
+                android:layout_marginBottom="20.0px" 
                 android:text="@string/car_eq" 
                 android:singleLine="true" 
                 android:layout_alignBottom="@id/ic_hotseat_eq" 
@@ -60,7 +60,7 @@
         </RelativeLayout>
         <RelativeLayout 
             android:id="@id/m_allapp_btn" 
-            android:layout_width="0.0dip" 
+            android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
@@ -74,7 +74,7 @@
                 android:textColor="@color/text_color_white" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
-                android:layout_marginBottom="20.0dip" 
+                android:layout_marginBottom="20.0px" 
                 android:text="@string/car_app" 
                 android:singleLine="true" 
                 android:layout_alignBottom="@id/ic_hotseat_app" 
@@ -82,7 +82,7 @@
         </RelativeLayout>
         <RelativeLayout 
             android:id="@id/m_settings_btn" 
-            android:layout_width="0.0dip" 
+            android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
@@ -96,7 +96,7 @@
                 android:textColor="@color/text_color_white" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
-                android:layout_marginBottom="20.0dip" 
+                android:layout_marginBottom="20.0px" 
                 android:text="@string/car_settings" 
                 android:singleLine="true" 
                 android:layout_alignBottom="@id/ic_hotseat_settings" 
@@ -107,7 +107,7 @@
         android:id="@id/m_navi_btn" 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="14.0dip" 
+        android:layout_marginRight="14.0px" 
         android:layout_alignParentRight="true">
         <ImageView 
             android:id="@id/ic_hotseat_navi" 
@@ -121,7 +121,7 @@
             android:id="@id/tv_app" 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
-            android:layout_marginBottom="20.0dip" 
+            android:layout_marginBottom="20.0px" 
             android:text="@string/car_navi" 
             android:singleLine="true" 
             android:layout_alignBottom="@id/ic_hotseat_navi" 

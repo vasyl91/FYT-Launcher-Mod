@@ -1,0 +1,58 @@
+package com.syu.carinfo.ford;
+
+/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
+public class FordData {
+    public static final int U_AIR_AC = 16;
+    public static final int U_AIR_AC_MAX = 27;
+    public static final int U_AIR_AUTO = 19;
+    public static final int U_AIR_BEGIN = 14;
+    public static final int U_AIR_BLOW_BODY = 21;
+    public static final int U_AIR_BLOW_FOOT = 22;
+    public static final int U_AIR_BLOW_UP = 20;
+    public static final int U_AIR_CYCLE = 18;
+    public static final int U_AIR_DUAL = 26;
+    public static final int U_AIR_END = 29;
+    public static final int U_AIR_FRONT = 17;
+    public static final int U_AIR_POWER = 15;
+    public static final int U_AIR_SHOW = 14;
+    public static final int U_AIR_TEMP_LEFT = 24;
+    public static final int U_AIR_TEMP_RIGHT = 25;
+    public static final int U_AIR_TEMP_UNIT = 28;
+    public static final int U_AIR_WIND_LEVEL = 23;
+    public static final int U_AUTO_REQUEST = 12;
+    public static final int U_BT_STATE = 5;
+    public static final int U_CARINFO_BEGIN = 0;
+    public static final int U_CARINFO_END = 14;
+    public static final int U_CARSET_BRIGHTNESS = 41;
+    public static final int U_CARSET_INFORMATION = 39;
+    public static final int U_CARSET_INTERIORLIGHTING = 45;
+    public static final int U_CARSET_RAINSENSOR = 47;
+    public static final int U_CARSET_TOWSYSTEM = 38;
+    public static final int U_CARSET_TURNLIGHT = 44;
+    public static final int U_CARSET_TYREMONITOR = 46;
+    public static final int U_CARSET_UNIT = 42;
+    public static final int U_CARSET_VOICEMODE = 43;
+    public static final int U_CARSET_WARNING = 40;
+    public static final int U_CAR_ENGINE_SPEED = 37;
+    public static final int U_CAR_SPEED = 36;
+    public static final int U_CAR_WARN = 13;
+    public static final int U_CUR_WORK_MODE = 9;
+    public static final int U_DISPLAY_MODE = 4;
+    public static final int U_DOOR_BACK = 33;
+    public static final int U_DOOR_BEGIN = 29;
+    public static final int U_DOOR_END = 35;
+    public static final int U_DOOR_ENGINE = 34;
+    public static final int U_DOOR_FL = 29;
+    public static final int U_DOOR_FR = 30;
+    public static final int U_DOOR_RL = 31;
+    public static final int U_DOOR_RR = 32;
+    public static final int U_LINE_GROUP = 2;
+    public static final int U_LIST_INFO = 7;
+    public static final int U_MODE_STATE = 10;
+    public static final int U_PARM_WARM = 6;
+    public static final int U_PHONE_STATE = 11;
+    public static final int U_PHONE_TIME = 8;
+    public static final int U_PLAY_TIME = 3;
+    public static final int U_SCREEN_ICON = 1;
+    public static final int U_SCREEN_ID = 0;
+}

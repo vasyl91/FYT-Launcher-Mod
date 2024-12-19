@@ -1,6 +1,5 @@
 package com.syu.ipc;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ModuleObject {
     public float[] flts;
     public int[] ints;

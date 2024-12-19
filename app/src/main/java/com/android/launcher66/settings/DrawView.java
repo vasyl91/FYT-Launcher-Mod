@@ -36,7 +36,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     private HomeWatcher mHomeWatcher;
     private Context mContext;
 
-    Point[] point = new Point[16];
+    Point[] point = new Point[20];
     int groupId;
     private ArrayList<ColorBall> colorballs;
     // array that holds the balls
@@ -49,14 +49,17 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     Paint paintMusic;    
     Paint paintRadio;
     Paint textPaint;
+    Paint textStatsPaint;
     Paint namePaint;
+    Paint statsPaint;
     Canvas canvas;
     boolean isInsideMap = false;
     boolean isInsideDate = false;
     boolean isInsideMusic = false;    
-    boolean isInsideRadio = false;
+    boolean isInsideRadio = false;   
+    boolean isInsideStats = false;
 
-    int selectedWidget = 1; // 1 - map, 2 - date, 3 - music, 4 - radio
+    int selectedWidget = 1; // 1 - map, 2 - date, 3 - music, 4 - radio, 5 - stats
 
     boolean intersectionMapDate = false;
     boolean intersectionMapMusic = false;
@@ -79,6 +82,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     boolean date = false;
     boolean music = false;
     boolean radio = false;
+    boolean stats = false;
     int margin;
 
     int mapMinWidth, mapMinHeight, dateMinWidth, dateMinHeight, musicMinWidth, musicMinHeight, radioMinWidth, radioMinHeight;
@@ -86,6 +90,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     int dateTopLeftX, dateTopLeftY, dateTopRightX, dateTopRightY, dateBottomRightX, dateBottomRightY, dateBottomLeftX, dateBottomLeftY;
     int musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY;
     int radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY;
+    int statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, statsWidth, statsHeight;
 
     int minBorderX, minBorderY, maxBorderX, maxBorderY;
 
@@ -93,6 +98,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     int dateMinX = -1, dateMaxX = -1, dateMinY = -1, dateMaxY = -1;
     int musicMinX = -1, musicMaxX = -1, musicMinY = -1, musicMaxY = -1;
     int radioMinX = -1, radioMaxX = -1, radioMinY = -1, radioMaxY = -1;
+    int statsMinX = -1, statsMaxX = -1, statsMinY = -1, statsMaxY = -1;
 
     private final int none = -1;
     private final int mapTopTouch = 0, mapBottomTouch = 1, mapLeftTouch = 2, mapRightTouch = 3;
@@ -144,6 +150,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         date = sharedPrefs.getBoolean("user_date", false);
         music = sharedPrefs.getBoolean("user_music", false);
         radio = sharedPrefs.getBoolean("user_radio", false); 
+        stats = sharedPrefs.getBoolean("user_stats", false); 
         margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
 
@@ -151,18 +158,38 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
+        mapMinWidth = 561;      
+        dateMinWidth = 561;
+        dateMinHeight = 145;
+        musicMinWidth = 320;
+        radioMinWidth = 320;
+        radioMinHeight = 145;
+
         if (getResources().getDisplayMetrics().widthPixels == 1024) {           
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;
-        } else if (getResources().getDisplayMetrics().widthPixels == 1280 || getResources().getDisplayMetrics().widthPixels == 1920) {
+            statsWidth = 240;
+            statsHeight = 55;
+            mapMinHeight = 284;
+            musicMinHeight = 284;
+        } else if (getResources().getDisplayMetrics().widthPixels == 1280 
+                || getResources().getDisplayMetrics().widthPixels == 1920) {
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
+            statsWidth = 240;
+            statsHeight = 55;
+            mapMinHeight = 340;
+            musicMinHeight = 340;
         } else if (getResources().getDisplayMetrics().widthPixels == 2000) {
             ballDiameter = 75.0f;
             coordinatesSize = 50;
             nameTextSize = 40;
+            statsWidth = 430;
+            statsHeight = 100;
+            mapMinHeight = 340;
+            musicMinHeight = 340;
         }     
         sizeOfRect = ballDiameter / 2.0f;
 
@@ -190,54 +217,56 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         
         mConfirmLayout = rootView.findViewById(R.id.confirm_layout);
         mConfirmLayout.setOnClickListener(this);
-        
-        mapMinWidth = 561;
-        mapMinHeight = 300;      
+
         mapTopLeftX = sharedPrefs.getInt("mapTopLeftX", margin);
-        mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin);          
-        mapTopRightX = sharedPrefs.getInt("mapTopRightX", mapTopLeftX + mapMinWidth);    
-        mapTopRightY = sharedPrefs.getInt("mapTopRightY", mapTopLeftY);
-        mapBottomRightX = sharedPrefs.getInt("mapBottomRightX", mapTopRightX);
-        mapBottomRightY = sharedPrefs.getInt("mapBottomRightY", mapTopRightY + mapMinHeight);
-        mapBottomLeftX = sharedPrefs.getInt("mapBottomLeftX", mapTopLeftX);
-        mapBottomLeftY = sharedPrefs.getInt("mapBottomLeftY", mapTopLeftY + mapMinHeight);
+        mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);  
+        mapTopRightX = sharedPrefs.getInt("mapTopRightX", margin + mapMinWidth);    
+        mapTopRightY = sharedPrefs.getInt("mapTopRightY", margin + dateMinHeight + margin); 
+        mapBottomRightX = sharedPrefs.getInt("mapBottomRightX", margin + mapMinWidth); 
+        mapBottomRightY = sharedPrefs.getInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
+        mapBottomLeftX = sharedPrefs.getInt("mapBottomLeftX", margin);  
+        mapBottomLeftY = sharedPrefs.getInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
         initRect(context, new int[]{mapTopLeftX, mapTopLeftY, mapTopRightX, mapTopRightY, mapBottomRightX, mapBottomRightY, mapBottomLeftX, mapBottomLeftY, 0, 1, 2, 3});
 
-        dateMinWidth = 561;
-        dateMinHeight = 142;
-        dateTopLeftX = sharedPrefs.getInt("dateTopLeftX", 591);
+        dateTopLeftX = sharedPrefs.getInt("dateTopLeftX", margin);
         dateTopLeftY = sharedPrefs.getInt("dateTopLeftY", margin);          
-        dateTopRightX = sharedPrefs.getInt("dateTopRightX", dateTopLeftX + dateMinWidth);    
-        dateTopRightY = sharedPrefs.getInt("dateTopRightY", dateTopLeftY);
-        dateBottomRightX = sharedPrefs.getInt("dateBottomRightX", dateTopRightX);
-        dateBottomRightY = sharedPrefs.getInt("dateBottomRightY", dateTopRightY + dateMinHeight);
-        dateBottomLeftX = sharedPrefs.getInt("dateBottomLeftX", dateTopLeftX);
-        dateBottomLeftY = sharedPrefs.getInt("dateBottomLeftY", dateTopLeftY + dateMinHeight);
+        dateTopRightX = sharedPrefs.getInt("dateTopRightX", margin + dateMinWidth);    
+        dateTopRightY = sharedPrefs.getInt("dateTopRightY", margin);  
+        dateBottomRightX = sharedPrefs.getInt("dateBottomRightX", margin + dateMinWidth);  
+        dateBottomRightY = sharedPrefs.getInt("dateBottomRightY", margin + dateMinHeight); 
+        dateBottomLeftX = sharedPrefs.getInt("dateBottomLeftX", margin);  
+        dateBottomLeftY = sharedPrefs.getInt("dateBottomLeftY", margin + dateMinHeight);
         initRect(context, new int[]{dateTopLeftX, dateTopLeftY, dateTopRightX, dateTopRightY, dateBottomRightX, dateBottomRightY, dateBottomLeftX, dateBottomLeftY, 4, 5, 6, 7});
 
-        musicMinWidth = 320;
-        musicMinHeight = 284;
-        musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", 591);
-        musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", 175);          
-        musicTopRightX = sharedPrefs.getInt("musicTopRightX", musicTopLeftX + musicMinWidth);    
-        musicTopRightY = sharedPrefs.getInt("musicTopRightY", musicTopLeftY);
-        musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", musicTopRightX);
-        musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", musicTopRightY + musicMinHeight);
-        musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", musicTopLeftX);
-        musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", musicTopLeftY + musicMinHeight);
+        musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);  
+        musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", margin + radioMinHeight + margin);            
+        musicTopRightX = sharedPrefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+        musicTopRightY = sharedPrefs.getInt("musicTopRightY", margin + radioMinHeight + margin); 
+        musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+        musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+        musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+        musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);     
         initRect(context, new int[]{musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY, 8, 9, 10, 11});
 
-        radioMinWidth = 320;
-        radioMinHeight = 145;
-        radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", 591);
-        radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", margin);          
-        radioTopRightX = sharedPrefs.getInt("radioTopRightX", radioTopLeftX + radioMinWidth);    
-        radioTopRightY = sharedPrefs.getInt("radioTopRightY", radioTopLeftY);
-        radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", radioTopRightX);
-        radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", radioTopRightY + radioMinHeight);
-        radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", radioTopLeftX);
-        radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", radioTopLeftY + radioMinHeight);
+        radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
+        radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", margin);      
+        radioTopRightX = sharedPrefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);     
+        radioTopRightY = sharedPrefs.getInt("radioTopRightY", margin); 
+        radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+        radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", margin + radioMinHeight); 
+        radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+        radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", margin + radioMinHeight);   
         initRect(context, new int[]{radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY, 12, 13, 14, 15});               
+    
+        statsTopLeftX = sharedPrefs.getInt("statsTopLeftX", 20);
+        statsTopLeftY = sharedPrefs.getInt("statsTopLeftY", 20);          
+        statsTopRightX = sharedPrefs.getInt("statsTopRightX", statsTopLeftX + statsWidth);    
+        statsTopRightY = sharedPrefs.getInt("statsTopRightY", statsTopLeftY);
+        statsBottomRightX = sharedPrefs.getInt("statsBottomRightX", statsTopRightX);
+        statsBottomRightY = sharedPrefs.getInt("statsBottomRightY", statsTopRightY + statsHeight);
+        statsBottomLeftX = sharedPrefs.getInt("statsBottomLeftX", statsTopLeftX);
+        statsBottomLeftY = sharedPrefs.getInt("statsBottomLeftY", statsTopLeftY + statsHeight);
+        initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 16, 17, 18, 19});
     }
 
     private AppCompatActivity getActivity() {
@@ -354,11 +383,22 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         textPaint.setTextSize(coordinatesSize); 
         textPaint.setTextAlign(Paint.Align.CENTER);
 
+        textStatsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+        textStatsPaint.setColor(Color.BLACK); 
+        textStatsPaint.setTextSize(coordinatesSize - 8); 
+        textStatsPaint.setTextAlign(Paint.Align.CENTER);
+
         namePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         namePaint.setColor(Color.BLACK); 
         namePaint.setTextSize(nameTextSize); 
         namePaint.setTextAlign(Paint.Align.CENTER);
         namePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        statsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+        statsPaint.setColor(Color.BLACK); 
+        statsPaint.setTextSize(nameTextSize - 8); 
+        statsPaint.setTextAlign(Paint.Align.CENTER);
+        statsPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         mapMinX = Math.min(point[0].x, point[2].x);
         mapMaxX = Math.max(point[0].x, point[2].x);
@@ -412,6 +452,15 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             }
             drawCoordinates(canvas, 12, 13, 14, 15, "Radio");
             rectRadio = new Rectangle(point[12], point[13], point[14], point[15]); 
+        }
+
+        if (stats) {
+            statsMinX = Math.min(point[16].x, point[18].x);
+            statsMaxX = Math.max(point[16].x, point[18].x);
+            statsMinY = Math.min(point[16].y, point[18].y);
+            statsMaxY = Math.max(point[16].y, point[18].y);
+            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, paint); 
+            drawStatsCoordinates(canvas, 16, 17, 18, 19, "Stats");
         }
 
         // draw the balls on the canvas
@@ -577,6 +626,22 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                 }
 
                 if (cnt > 0) {
+                    if (stats) {
+                        if ((statsMinX < X && X < statsMaxX) && (statsMinY < Y && Y < statsMaxY)) {
+                            diffX = 0;
+                            diffY = 0;
+                            rectangleName.setText("Stats");
+                            selectedWidget = 5;
+                            isInsideStats = true;                            
+                            isInsideMap = false;
+                            isInsideDate = false;
+                            isInsideMusic = false;
+                            isInsideRadio = false;
+                            currentTouch = none;
+                            break;
+                        }  
+                    }
+
                     if ((mapMinX + sizeOfRect < X && X < mapMaxX - sizeOfRect) && (mapMinY + sizeOfRect < Y && Y < mapMaxY - sizeOfRect)) {
                         diffX = 0;
                         diffY = 0;
@@ -811,7 +876,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                             }
                         }         
                         invalidate();
+                    } else if (isInsideStats) {
+                        if (stats) {
+                            diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
+                            diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
+                            moveStatsRect(16, 17, 18, 19);
+                            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, paint); 
+                        }         
+                        invalidate();
                     }
+
                 }
 
                 break;
@@ -822,6 +896,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                 isInsideDate = false;
                 isInsideMusic = false;
                 isInsideRadio = false;
+                isInsideStats = false;
 
                 currentTouch = none;
 
@@ -1114,13 +1189,17 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         }
         if (radio) {
             editor.putInt("radioTopLeftX", colorballs.get(12).getX());  
-            editor.putInt("radioTopLeftY", colorballs.get(12).getY());           
+            editor.putInt("radioTopLeftY", colorballs.get(12).getY());         
             editor.putInt("radioTopRightX", colorballs.get(13).getX());  
             editor.putInt("radioTopRightY", colorballs.get(13).getY()); 
             editor.putInt("radioBottomRightX", colorballs.get(14).getX());  
             editor.putInt("radioBottomRightY", colorballs.get(14).getY()); 
             editor.putInt("radioBottomLeftX", colorballs.get(15).getX());  
-            editor.putInt("radioBottomLeftY", colorballs.get(15).getY());             
+            editor.putInt("radioBottomLeftY", colorballs.get(15).getY());            
+        }          
+        if (stats) {
+            editor.putInt("statsTopLeftX", point[16].x);  
+            editor.putInt("statsTopLeftY", point[16].y);            
         } 
         editor.commit();
     }
@@ -1159,6 +1238,34 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         colorballs.add(values[11], new ColorBall(context, R.drawable.gray_circle, point[values[11]], values[11]));
     }
 
+    private void initStatsRect(Context context, int[] values) {
+        int topLeftX = values[0];
+        int topLeftY = values[1];         
+        int topRightX = values[2];         
+        int topRightY = values[3];
+        int bottomRightX = values[4];
+        int bottomRightY = values[5];
+        int bottomLeftX = values[6];
+        int bottomLeftY = values[7];
+
+        // setting the start point for the balls
+        point[values[8]] = new Point();
+        point[values[8]].x = topLeftX;
+        point[values[8]].y = topLeftY;
+
+        point[values[9]] = new Point();
+        point[values[9]].x = topRightX;
+        point[values[9]].y = topRightY;
+
+        point[values[10]] = new Point();
+        point[values[10]].x = bottomRightX;
+        point[values[10]].y = bottomRightY;
+
+        point[values[11]] = new Point();
+        point[values[11]].x = bottomLeftX; //50;
+        point[values[11]].y = bottomLeftY;
+    }
+
     private void drawRectFirstGroup(Canvas canvas, int topLeft, int bottomRight, Paint paint) {
         int size = colorballs.get(bottomRight).getWidthOfBall() /2;
         canvas.drawRect(point[topLeft].x + size, point[bottomRight].y + size, point[bottomRight].x + size, point[topLeft].y + size, paint);        
@@ -1173,7 +1280,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         // top
         canvas.drawText(String.valueOf(colorballs.get(topLeft).getY()), 
             (colorballs.get(topLeft).getX() + (colorballs.get(topRight).getX() - colorballs.get(topLeft).getX()) / 2.0f), 
-            (colorballs.get(topLeft).getY() + coordinatesSize), 
+            (colorballs.get(topLeft).getY() + (coordinatesSize - 5)), 
             textPaint);
         // left
         int padL;
@@ -1206,6 +1313,45 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             (colorballs.get(bottomRight).getX() - (colorballs.get(bottomRight).getX() - colorballs.get(bottomLeft).getX()) / 2.0f), 
             (colorballs.get(bottomLeft).getY() - (colorballs.get(bottomLeft).getY() - colorballs.get(topLeft).getY()) / 2.0f) + coordinatesSize / 2.5f, 
             namePaint);
+    }
+
+    private void drawStatsCoordinates(Canvas canvas, int topLeft, int topRight, int bottomRight, int bottomLeft, String name) {
+        // top
+        canvas.drawText(String.valueOf(point[topLeft].y), 
+            (point[topLeft].x + (point[topRight].x - point[topLeft].x) / 2.0f), 
+            (point[topLeft].y + (coordinatesSize - 15)), 
+            textStatsPaint);
+        // left
+        int padL;
+        if (point[bottomLeft].x < 9) {
+            padL = coordinatesSize / 2;
+        } else if (10 <= point[bottomLeft].x && point[bottomLeft].x < 99) {
+            padL = (coordinatesSize / 2) + 5;
+        } else if (100 <= point[bottomLeft].x && point[bottomLeft].x < 999) {
+            padL = (coordinatesSize / 2) + 20;
+        } else {
+            padL = (coordinatesSize / 2) + 25;
+        }
+        canvas.drawText(String.valueOf(point[bottomLeft].x), 
+            (point[bottomLeft].x + padL),
+            (point[bottomLeft].y - (point[bottomLeft].y - point[topLeft].y) / 2.0f) + coordinatesSize / 2.5f, 
+            textStatsPaint);
+        // bottom
+        canvas.drawText(String.valueOf(point[bottomLeft].y), 
+            (point[bottomRight].x - (point[bottomRight].x - point[bottomLeft].x) / 2.0f), 
+            (point[bottomLeft].y), 
+            textStatsPaint);
+        // right
+        int padR = (coordinatesSize / 2) + 25;
+        canvas.drawText(String.valueOf(point[bottomRight].x), 
+            point[bottomRight].x - padR, 
+            (point[bottomRight].y - (point[bottomRight].y - point[topRight].y) / 2.0f) + coordinatesSize / 2.5f, 
+            textStatsPaint);
+        // widget name
+        canvas.drawText(name, 
+            (point[bottomRight].x - (point[bottomRight].x - point[bottomLeft].x) / 2.0f), 
+            (point[bottomLeft].y - (point[bottomLeft].y - point[topLeft].y) / 2.0f) + coordinatesSize / 3.5f, 
+            statsPaint);
     }
 
     private void moveRect(int topLeft, int topRight, int bottomRight, int bottomLeft) {
@@ -1249,6 +1395,51 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                 colorballs.get(topRight).subtractY(toMaxY);
                 colorballs.get(bottomRight).subtractY(toMaxY);
                 colorballs.get(bottomLeft).subtractY(toMaxY);
+            }                                
+        }
+    }
+
+    private void moveStatsRect(int topLeft, int topRight, int bottomRight, int bottomLeft) {
+        // allow to move only within layout borders
+        if (point[topLeft].x >= minBorderX 
+            || point[topLeft].y >= minBorderY 
+            || point[bottomRight].x >= maxBorderX 
+            || point[bottomRight].y >= maxBorderY) {
+            point[topLeft].x = point[topLeft].x + diffX;
+            point[topRight].x = point[topRight].x + diffX;
+            point[bottomRight].x = point[bottomRight].x + diffX;
+            point[bottomLeft].x = point[bottomLeft].x + diffX;
+            point[topLeft].y = point[topLeft].y + diffY;
+            point[topRight].y = point[topRight].y + diffY;
+            point[bottomRight].y = point[bottomRight].y + diffY;
+            point[bottomLeft].y = point[bottomLeft].y + diffY;
+            if (point[topLeft].x < minBorderX) {
+                int toZeroX = Math.abs(point[topLeft].x) + margin;
+                point[topLeft].x = point[topLeft].x + toZeroX;
+                point[topRight].x = point[topRight].x + toZeroX;
+                point[bottomRight].x = point[bottomRight].x + toZeroX;
+                point[bottomLeft].x = point[bottomLeft].x + toZeroX;
+            }  
+            if (point[topLeft].y < minBorderY) {
+                int toZeroY = Math.abs(point[topLeft].y) + margin;
+                point[topLeft].y = point[topLeft].y + toZeroY;
+                point[topRight].y = point[topRight].y + toZeroY;
+                point[bottomRight].y = point[bottomRight].y + toZeroY;
+                point[bottomLeft].y = point[bottomLeft].y + toZeroY;
+            } 
+            if (point[bottomRight].x > maxBorderX) {
+                int toMaxX = Math.abs(point[bottomRight].x) - maxBorderX;
+                point[topLeft].x = point[topLeft].x - toMaxX;
+                point[topRight].x = point[topRight].x - toMaxX;
+                point[bottomRight].x = point[bottomRight].x - toMaxX;
+                point[bottomLeft].x = point[bottomLeft].x - toMaxX;
+            }  
+            if (point[bottomRight].y > maxBorderY) {
+                int toMaxY = Math.abs(point[bottomRight].y) - maxBorderY;
+                point[topLeft].y = point[topLeft].y - toMaxY;
+                point[topRight].y = point[topRight].y - toMaxY;
+                point[bottomRight].y = point[bottomRight].y - toMaxY;
+                point[bottomLeft].y = point[bottomLeft].y - toMaxY;
             }                                
         }
     }

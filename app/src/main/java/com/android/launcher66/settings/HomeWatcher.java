@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.jakewharton.processphoenix.ProcessPhoenix;
+import com.syu.util.WindowUtil;
 
 
 public class HomeWatcher {
@@ -61,6 +62,12 @@ public class HomeWatcher {
                     if (mListener != null) {
                         if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {                         
                             Helpers.backFromCreator = false;
+                            WindowUtil.restartPipApp();
+                            Intent startMain = new Intent(Intent.ACTION_MAIN);
+                            startMain.addCategory(Intent.CATEGORY_HOME);
+                            startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            context.startActivity(startMain);
                             ProcessPhoenix.triggerRebirth(context);
                         }
                     }

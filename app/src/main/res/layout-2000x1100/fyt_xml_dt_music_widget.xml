@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <RelativeLayout android:id="@id/dt_music_layout" android:background="@drawable/music_bg" android:layout_width="420.0dip" android:layout_height="310.0dip" android:layout_alignParentTop="true" android:layout_centerHorizontal="true">
-        <ImageView android:id="@id/music_album_def1" android:layout_width="110.0dip" android:layout_height="110.0dip" android:layout_marginTop="30.0dip" android:src="@drawable/music_album_def" android:layout_centerHorizontal="true" />
-        <TextView android:textSize="18.0sp" android:textColor="@color/text_color_black" android:ellipsize="end" android:gravity="center_horizontal" android:id="@id/music_name" android:layout_width="300.0dip" android:layout_height="wrap_content" android:layout_marginTop="12.0dip" android:text="@string/car_music" android:singleLine="true" android:layout_below="@id/music_album_def1" android:layout_centerHorizontal="true" />
-        <LinearLayout android:gravity="center_horizontal" android:orientation="horizontal" android:id="@id/music_play" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="30.0dip" android:layout_below="@id/music_name">
+    <RelativeLayout android:id="@id/dt_music_layout" android:background="@drawable/music_bg" android:layout_width="420.0px" android:layout_height="310.0px" android:layout_alignParentTop="true" android:layout_centerHorizontal="true">
+        <ImageView android:id="@id/music_album_def1" android:layout_width="110.0px" android:layout_height="110.0px" android:layout_marginTop="30.0px" android:src="@drawable/music_album_def" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="18.0sp" android:textColor="@color/text_color_black" android:ellipsize="end" android:gravity="center_horizontal" android:id="@id/music_name" android:layout_width="300.0px" android:layout_height="wrap_content" android:layout_marginTop="12.0px" android:text="@string/car_music" android:singleLine="true" android:layout_below="@id/music_album_def1" android:layout_centerHorizontal="true" />
+        <LinearLayout android:gravity="center_horizontal" android:orientation="horizontal" android:id="@id/music_play" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="30.0px" android:layout_below="@id/music_name">
             <ImageView android:id="@id/music_prev" android:layout_width="@dimen/DTbtnWidth" android:layout_height="@dimen/DTbtnHeight" android:src="@drawable/btn_ic_prev" />
-            <ImageView android:id="@id/music_playpause" android:tag="@string/skin_ruleless" android:layout_width="@dimen/DTbtnWidth" android:layout_height="@dimen/DTbtnHeight" android:layout_marginLeft="20.0dip" android:src="@drawable/music_pause_icon" />
-            <ImageView android:id="@id/music_next" android:layout_width="@dimen/DTbtnWidth" android:layout_height="@dimen/DTbtnHeight" android:layout_marginLeft="20.0dip" android:src="@drawable/btn_ic_next" />
+            <ImageView android:id="@id/music_playpause" android:tag="@string/skin_ruleless" android:layout_width="@dimen/DTbtnWidth" android:layout_height="@dimen/DTbtnHeight" android:layout_marginLeft="20.0px" android:src="@drawable/music_pause_icon" />
+            <ImageView android:id="@id/music_next" android:layout_width="@dimen/DTbtnWidth" android:layout_height="@dimen/DTbtnHeight" android:layout_marginLeft="20.0px" android:src="@drawable/btn_ic_next" />
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

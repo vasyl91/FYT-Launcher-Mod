@@ -29,7 +29,6 @@ import com.syu.weather.WeatherDescription;
 import com.syu.widget.util.TimeUtil;
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DateRadioWidget extends Widget {
     private int count;
     private String music_path_pre;

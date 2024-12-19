@@ -148,4 +148,10 @@
 
     <attr name="topImageClickEnable" format="boolean" />
     <attr name="facetype" format="string" />
+
+    <declare-styleable name="MaterialColorPickerTextSeekBar">
+        <attr name="android:text"/>
+        <attr name="android:textColorHint"/>
+        <attr name="android:textSize"/>
+    </declare-styleable>
 </resources>

@@ -12,7 +12,7 @@
         <include android:id="@id/first_run_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/first_run_cling" />
         <include android:id="@id/workspace_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/workspace_cling" />
         <include android:id="@id/folder_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/folder_cling" />
-        <com.android.launcher66.DrawableStateProxyView android:layout_gravity="end|center|top" android:id="@id/voice_button_proxy" android:clickable="true" android:layout_width="0.0dip" android:layout_height="0.0dip" android:onClick="onClickVoiceButton" android:importantForAccessibility="no" launcher:sourceViewId="@id/voice_button" />
+        <com.android.launcher66.DrawableStateProxyView android:layout_gravity="end|center|top" android:id="@id/voice_button_proxy" android:clickable="true" android:layout_width="0.0px" android:layout_height="0.0px" android:onClick="onClickVoiceButton" android:importantForAccessibility="no" launcher:sourceViewId="@id/voice_button" />
         <include android:id="@id/apps_customize_pane" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/apps_customize_pane" />
     </com.android.launcher66.DragLayer>
 </FrameLayout>

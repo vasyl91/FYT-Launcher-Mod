@@ -25,11 +25,11 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
 
     int margin;
     int mapMinWidth = 561;
-    int mapMinHeight = 284;
+    int mapMinHeight;
     int dateMinWidth = 561;
     int dateMinHeight = 145;
     int musicMinWidth = 320;
-    int musicMinHeight = 284;
+    int musicMinHeight;
     int radioMinWidth = 320;
     int radioMinHeight = 145;
     int mapTopLeftX, mapTopLeftY, mapTopRightX, mapTopRightY, mapBottomRightX, mapBottomRightY, mapBottomLeftX, mapBottomLeftY;
@@ -37,7 +37,7 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     int musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY;
     int radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY;
 
-    boolean date, music, radio; 
+    boolean date, music, radio, stats; 
     boolean overlappingMargins = false;
 
     public CreatorFragmentSecond() {
@@ -48,11 +48,19 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mContext = container.getContext();
+        if (getResources().getDisplayMetrics().widthPixels == 1024) {
+            mapMinHeight = 284;
+            musicMinHeight = 284;
+        } else {
+            mapMinHeight = 340;
+            musicMinHeight = 340;               
+        } 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
-        date = sharedPrefs.getBoolean("user_date", true);
-        music = sharedPrefs.getBoolean("user_music", true);
-        radio = sharedPrefs.getBoolean("user_radio", true);       
+        date = sharedPrefs.getBoolean("user_date", false);
+        music = sharedPrefs.getBoolean("user_music", false);
+        radio = sharedPrefs.getBoolean("user_radio", false); 
+        stats = sharedPrefs.getBoolean("user_stats", false);       
         checkIfOverlappingMargins();
         if (overlappingMargins) {
             resetPrefs();
@@ -141,6 +149,10 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             editor.putInt("radioBottomRightY", margin + radioMinHeight); 
             editor.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
             editor.putInt("radioBottomLeftY", margin + radioMinHeight);         
+        }
+        if (stats) {
+            editor.putInt("statsTopLeftX", 20);
+            editor.putInt("statsTopLeftY", 20);         
         }
         editor.commit();
     }

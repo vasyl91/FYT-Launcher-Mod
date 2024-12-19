@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="500dp"
+    android:layout_height="300dp"
+    android:orientation="horizontal"
+    tools:context=".ColorPicker">
+
+    <View
+        android:id="@+id/colorView"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"/>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/materialcolorpicker__white"
+        android:paddingBottom="@dimen/materialcolorpicker__activity_vertical_margin"
+        android:paddingLeft="@dimen/materialcolorpicker__activity_horizontal_margin"
+        android:paddingRight="@dimen/materialcolorpicker__activity_horizontal_margin"
+        android:paddingTop="@dimen/materialcolorpicker__activity_vertical_margin">
+
+        <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+            android:id="@+id/alphaSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:max="255"
+            android:maxHeight="3dip"
+            android:minHeight="3dip"
+            android:progressDrawable="@drawable/materialcolorpicker__alpha_progress"
+            android:textColorHint="@android:color/black"
+            android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"/>
+
+        <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+            android:id="@+id/redSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/alphaSeekBar"
+            android:max="255"
+            android:maxHeight="3dip"
+            android:minHeight="3dip"
+            android:progressDrawable="@drawable/materialcolorpicker__red_progress"
+            android:textColorHint="@android:color/holo_red_light"
+            android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"/>
+
+        <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+            android:id="@+id/greenSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/redSeekBar"
+            android:max="255"
+            android:maxHeight="3dip"
+            android:minHeight="3dip"
+            android:progressDrawable="@drawable/materialcolorpicker__green_progress"
+            android:textColorHint="@android:color/holo_green_light"
+            android:thumb="@drawable/materialcolorpicker__green_thumb_drawable"/>
+
+        <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+            android:id="@+id/blueSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/greenSeekBar"
+            android:max="255"
+            android:maxHeight="3dip"
+            android:minHeight="3dip"
+            android:progressDrawable="@drawable/materialcolorpicker__blue_progress"
+            android:textColorHint="@android:color/holo_blue_light"
+            android:thumb="@drawable/materialcolorpicker__blue_thumb_drawable"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignBaseline="@+id/hexCode"
+            android:layout_alignEnd="@+id/hexCode"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/hexCode"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:labelFor="@id/hexCode"
+            android:text="@string/materialcolorpicker__hash"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/hexCode"
+            style="@style/Widget.AppCompat.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:imeOptions="actionDone|actionGo|actionSend"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            android:lines="1"
+            android:maxLines="1"
+            android:paddingEnd="4dp"
+            android:paddingStart="4dp"
+            android:textColor="@android:color/primary_text_light"
+            android:textColorHint="@android:color/primary_text_light"
+            android:textSize="12sp"
+            tools:text="123456"
+            android:autofillHints="" />
+
+        <Button
+            android:id="@+id/okColorButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignBaseline="@+id/hexCode"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:text="@string/materialcolorpicker__btnSelectColor"
+            android:textSize="12sp"
+            android:focusable="true"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,52 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.WallpaperRootView android:id="@id/wallpaper_root" 
-    android:layout_width="fill_parent" 
+<com.android.launcher66.WallpaperRootView android:id="@id/wallpaper_root"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <com.android.launcher66.CropView 
-        android:id="@id/cropView" 
-        android:layout_width="fill_parent" 
+
+    <com.android.launcher66.CropView
+        android:id="@id/cropView"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
-    <ProgressBar android:layout_gravity="center" 
-        android:id="@id/loading" 
-        android:background="@android:color/transparent" 
-        android:visibility="invisible" 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:indeterminate="true" 
-        android:indeterminateOnly="true" 
+
+    <ProgressBar
+        android:layout_gravity="center"
+        android:id="@id/loading"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
         style="@android:style/Widget.Holo.ProgressBar.Large" />
-    <LinearLayout android:orientation="vertical" 
-        android:id="@id/wallpaper_strip" 
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@id/wallpaper_strip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
-        <View android:background="@drawable/tile_shadow_top" 
-            android:layout_width="fill_parent" 
-            android:layout_height="2.0dip" />
-        <HorizontalScrollView android:id="@id/wallpaper_scroll_container" 
-            android:layout_width="fill_parent" 
+
+        <View
+            android:background="@drawable/tile_shadow_top"
+            android:layout_width="fill_parent"
+            android:layout_height="2.0px" />
+
+        <HorizontalScrollView
+            android:id="@id/wallpaper_scroll_container"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content">
-            <LinearLayout android:orientation="horizontal" 
-                android:id="@id/master_wallpaper_list" 
-                android:layout_width="wrap_content" 
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@id/master_wallpaper_list"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <LinearLayout android:orientation="horizontal" 
-                    android:id="@id/wallpaper_list" 
-                    android:layout_width="wrap_content" 
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@id/wallpaper_list"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <LinearLayout android:orientation="horizontal" 
-                    android:id="@id/live_wallpaper_list" 
-                    android:layout_width="wrap_content" 
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@id/live_wallpaper_list"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <LinearLayout android:orientation="horizontal" 
-                    android:id="@id/third_party_wallpaper_list" 
-                    android:layout_width="wrap_content" 
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@id/third_party_wallpaper_list"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </HorizontalScrollView>
-        <View android:background="@drawable/tile_shadow_bottom" 
-            android:layout_width="fill_parent" 
-            android:layout_height="2.0dip" />
+
+        <View
+            android:background="@drawable/tile_shadow_bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="2.0px" />
     </LinearLayout>
 </com.android.launcher66.WallpaperRootView>

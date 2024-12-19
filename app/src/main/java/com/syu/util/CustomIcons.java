@@ -8,9 +8,6 @@ import android.content.res.XmlResourceParser;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Xml;
-
-import androidx.annotation.StyleableRes;
-
 import com.android.launcher66.R;
 import java.io.IOException;
 import java.util.ArrayList;

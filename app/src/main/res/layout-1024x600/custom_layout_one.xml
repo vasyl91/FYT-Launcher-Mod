@@ -87,7 +87,8 @@
         <TextView
             android:textSize="15.0px"
             android:textColor="@android:color/white"
-            android:ellipsize="end"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
             android:id="@id/tv_musicName"
             android:layout_width="300.0px"
@@ -101,7 +102,8 @@
         <TextView
             android:textSize="13.0px"
             android:textColor="#aaffffff"
-            android:ellipsize="end"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
             android:id="@id/tv_artist"
             android:layout_width="300.0px"

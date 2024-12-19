@@ -1,5 +1,7 @@
 package com.android.launcher66;
 
+import static com.syu.util.WindowUtil.PIP_REMOVED;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -188,6 +190,9 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     public static MCellLayout[] customScreen = new MCellLayout[LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count)];
     public static int apps_customepage_count = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count);
     private Context mContext;
+    public static TextView instantaneousConsumption;
+    public static TextView drivingMileage;
+    public static AbsoluteLayout absoluteLayout;
 
     enum State {
         NORMAL,
@@ -463,6 +468,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean leftBar = prefs.getBoolean("left_bar", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
         if (customScreen[0] == null) {
             if (userLayout) {
                 if (leftBar) {
@@ -489,6 +495,12 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             if (customScreen[i] != null) {
                 ViewParent parent = customScreen[i].getParent();
                 if (parent != null && (parent instanceof ViewGroup)) {
+                    if (userLayout) {
+                        if (userStats == true)  {                          
+                            Intent intent = new Intent(PIP_REMOVED);
+                            LauncherApplication.sApp.sendBroadcast(intent);
+                        }  
+                    }
                     ((ViewGroup) parent).removeView(customScreen[i]);
                 }
                 addView(customScreen[i], i);
@@ -496,26 +508,51 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
 
         if (userLayout) {
-            AbsoluteLayout absoluteLayout;
-            int mapTopLeftX, mapTopLeftY, mapTopRightX, mapBottomLeftY, leftBarSize = 142;
+            int mapTopLeftX, mapTopLeftY, mapTopRightX, mapBottomLeftY, leftBarSize;
+            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            boolean userDate = prefs.getBoolean("user_date", false);
+            boolean userMusic = prefs.getBoolean("user_music", false);
+            boolean userRadio = prefs.getBoolean("user_radio", false);
+            
+            int mapMinWidth = 561;
+            int mapMinHeight = 284;      
+            int dateMinWidth = 561;
+            int dateMinHeight = 145;
+            int musicMinWidth = 320;
+            int musicMinHeight = 284;
+            int radioMinWidth = 320;
+            int radioMinHeight = 145;
+
+            if (getResources().getDisplayMetrics().widthPixels == 1024) {
+                leftBarSize = 100;
+                mapMinHeight = 284;
+                musicMinHeight = 284;
+            } else if (getResources().getDisplayMetrics().widthPixels == 1280
+                    || getResources().getDisplayMetrics().widthPixels == 1920) {
+                leftBarSize = 110;
+                mapMinHeight = 340;
+                musicMinHeight = 340;
+            } else {
+                leftBarSize = 142;
+                mapMinHeight = 340;
+                musicMinHeight = 340;               
+            }  
+
             if (leftBar) {
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout_left);
-                mapTopLeftX = prefs.getInt("mapTopLeftX", 50) + leftBarSize;
-                mapTopRightX = prefs.getInt("mapTopRightX", mapTopLeftX + 500) + leftBarSize;
+                mapTopLeftX = prefs.getInt("mapTopLeftX", margin) + leftBarSize;
+                mapTopRightX = prefs.getInt("mapTopRightX", margin + mapMinWidth) + leftBarSize;
             } else {
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout);
-                mapTopLeftX = prefs.getInt("mapTopLeftX", 50);
-                mapTopRightX = prefs.getInt("mapTopRightX", mapTopLeftX + 500);
-            }            
-            mapTopLeftY = prefs.getInt("mapTopLeftY", 20);
-            mapBottomLeftY = prefs.getInt("mapBottomLeftY", mapTopLeftY + 500);
+                mapTopLeftX = prefs.getInt("mapTopLeftX", margin);
+                mapTopRightX = prefs.getInt("mapTopRightX", margin + mapMinWidth);
+            }  
+
+            mapTopLeftY = prefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);
+            mapBottomLeftY = prefs.getInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
             
             int mapHeight = mapBottomLeftY - mapTopLeftY;
             int mapWidth = mapTopRightX - mapTopLeftX;
-
-            boolean userDate = prefs.getBoolean("user_date", true);
-            boolean userMusic = prefs.getBoolean("user_music", true);
-            boolean userRadio = prefs.getBoolean("user_radio", true);
 
             ImageView map = new ImageView(mContext);
             map.setId(R.id.iv_map1);
@@ -525,14 +562,14 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             if (userDate == true)  {
                 int dateTopLeftX, dateTopRightX;
                 if (leftBar) {
-                    dateTopLeftX = prefs.getInt("dateTopLeftX", 50) + leftBarSize;
-                    dateTopRightX = prefs.getInt("dateTopRightX", dateTopLeftX + 500) + leftBarSize;
+                    dateTopLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarSize;
+                    dateTopRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + leftBarSize;
                 } else {
-                    dateTopLeftX = prefs.getInt("dateTopLeftX", 50);
-                    dateTopRightX = prefs.getInt("dateTopRightX", dateTopLeftX + 500);
+                    dateTopLeftX = prefs.getInt("dateTopLeftX", margin);
+                    dateTopRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth);
                 }
-                int dateTopLeftY = prefs.getInt("dateTopLeftY", 20);
-                int dateBottomLeftY = prefs.getInt("dateBottomLeftY", dateTopLeftY + 500);
+                int dateTopLeftY = prefs.getInt("dateTopLeftY", margin);
+                int dateBottomLeftY = prefs.getInt("dateBottomLeftY", margin + dateMinHeight);
                 
                 int dateHeight = dateBottomLeftY - dateTopLeftY;
                 int dateWidth = dateTopRightX - dateTopLeftX;
@@ -545,17 +582,17 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             if (userMusic == true)  {
                 int musicTopLeftX, musicTopRightX;
                 if (leftBar) {
-                    musicTopLeftX = prefs.getInt("musicTopLeftX", 50) + leftBarSize;
-                    musicTopRightX = prefs.getInt("musicTopRightX", musicTopLeftX + 500) + leftBarSize;
+                    musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarSize;
+                    musicTopRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + leftBarSize;
                 } else {
-                    musicTopLeftX = prefs.getInt("musicTopLeftX", 50);
-                    musicTopRightX = prefs.getInt("musicTopRightX", musicTopLeftX + 500);
+                    musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);
+                    musicTopRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);
                 }
-                int musicTopLeftY = prefs.getInt("musicTopLeftY", 20);
-                int musicBottomLeftY = prefs.getInt("musicBottomLeftY", musicTopLeftY + 500);
+                int musicTopLeftY = prefs.getInt("musicTopLeftY", margin + radioMinHeight + margin);
+                int musicBottomLeftY = prefs.getInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);  
                 
-                int musicHeight = musicBottomLeftY - musicTopLeftY; // 570; 
-                int musicWidth = musicTopRightX - musicTopLeftX; // 660; 
+                int musicHeight = musicBottomLeftY - musicTopLeftY; 
+                int musicWidth = musicTopRightX - musicTopLeftX;
                 
                 View absoluteMusic = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, (ViewGroup) null);
                 absoluteMusic.setLayoutParams(new AbsoluteLayout.LayoutParams(musicWidth, musicHeight, musicTopLeftX, musicTopLeftY)); 
@@ -564,23 +601,24 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             if (userRadio == true)  {
                 int radioTopLeftX, radioTopRightX;
                 if (leftBar) {
-                    radioTopLeftX = prefs.getInt("radioTopLeftX", 50) + leftBarSize;
-                    radioTopRightX = prefs.getInt("radioTopRightX", radioTopLeftX + 500) + leftBarSize;
+                    radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarSize;
+                    radioTopRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth) + leftBarSize;
                 } else {
-                    radioTopLeftX = prefs.getInt("radioTopLeftX", 50);
-                    radioTopRightX = prefs.getInt("radioTopRightX", radioTopLeftX + 500);
+                    radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
+                    radioTopRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);
                 }
-                int radioTopLeftY = prefs.getInt("radioTopLeftY", 20);
-                int radioBottomLeftY = prefs.getInt("radioBottomLeftY", radioTopLeftY + 500);
+                int radioTopLeftY = prefs.getInt("radioTopLeftY", margin); 
+                int radioBottomLeftY = prefs.getInt("radioBottomLeftY", margin + radioMinHeight);   
                 
-                int radioHeight = radioBottomLeftY - radioTopLeftY; // 570; 
-                int radioWidth = radioTopRightX - radioTopLeftX; // 660; 
+                int radioHeight = radioBottomLeftY - radioTopLeftY; 
+                int radioWidth = radioTopRightX - radioTopLeftX; 
                 
                 View absoluteRadio = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, (ViewGroup) null);
                 absoluteRadio.setLayoutParams(new AbsoluteLayout.LayoutParams(radioWidth, radioHeight, radioTopLeftX, radioTopLeftY)); 
                 absoluteLayout.addView(absoluteRadio);
-            }  
-        }        
+            }
+        }  
+        this.mLauncher.launchCanbus();  
         invalidate();
     }
 

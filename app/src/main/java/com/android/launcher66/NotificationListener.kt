@@ -24,7 +24,9 @@ import android.service.notification.NotificationListenerService
 import android.util.Log
 import android.view.KeyEvent
 import androidx.preference.PreferenceManager
+import com.android.launcher66.settings.Helpers
 import com.fyt.car.LauncherNotify
+import com.fyt.car.MusicService
 import com.syu.widget.Widget
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -36,15 +38,19 @@ class NotificationListener : NotificationListenerService() {
     
     private lateinit var context: Context
     private lateinit var handler: Handler
-    private lateinit var handlerTime: Handler
+    private lateinit var handlerControllerTime: Handler
+    private lateinit var handlerFytTime: Handler
     private lateinit var mediaSessionManager: MediaSessionManager
     private lateinit var settings: SharedPreferences
 
     private var song: String? = ""
+    private var songFyt: String? = ""
     private var artist: String? = ""
     private var controllers: MutableList<MediaController>? = null
     private var mediaController: MediaController? = null
     private var meta: MediaMetadata? = null
+    private var mState: Int? = 0
+    private var paused: Boolean = false
     private val componentName = ComponentName("com.android.launcher66", "com.android.launcher66.NotificationListener")
 
     private var fytState: Boolean = false
@@ -58,7 +64,8 @@ class NotificationListener : NotificationListenerService() {
 
     var musicState: String? = ""
     var curMinutes: Long = 0
-    var prevCur: Long = 0
+    var prevCurFyt: Long = 0
+    var prevMinutes: Long = 0
 
     var totalMinutes: Long = 0
     var musicPath = ""
@@ -89,8 +96,12 @@ class NotificationListener : NotificationListenerService() {
     override fun onCreate() {
         super.onCreate()
         this.context = this
+        paused = false
 
         settings = PreferenceManager.getDefaultSharedPreferences(this)
+
+        handlerControllerTime = Handler()
+        handlerFytTime = Handler()
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(sessionListener, componentName)
@@ -99,12 +110,23 @@ class NotificationListener : NotificationListenerService() {
         mediaController?.let {
             it.registerCallback(callback)
             meta = it.metadata
-            if (meta != null) {
+            try {
+                mState = it.getPlaybackState()?.getState()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
+            if (meta != null && mState == PlaybackState.STATE_PLAYING) {
                 Handler(Looper.getMainLooper()).postDelayed({
+                    if (!Helpers.updateControllerTimeBool) {
+                        Helpers.updateControllerTimeBool = true
+                        handlerControllerTime.post(updateControllerTime)
+                    }
                     setStatus(2)
                 }, 2000)
-            } else {
+            }
+            if (MusicService.state && MusicService.music_name != "" && MusicService.music_name != "Unknown") {
                 Handler(Looper.getMainLooper()).postDelayed({
+                    handlerFytTime.post(updateFytTime)
                     setStatus(1)
                 }, 2000)
             }
@@ -113,9 +135,6 @@ class NotificationListener : NotificationListenerService() {
 
         handler = Handler()
         handler.post(runTask)
-
-        handlerTime = Handler()
-        
 
         val intentFilter = IntentFilter("titlesReceiver")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -129,6 +148,7 @@ class NotificationListener : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == "titlesReceiver") {
                 val bundle: Bundle? = intent.extras!!
+                var musicNamePrev = ""
                 musicName = bundle?.getString("title")!!
                 authorName = bundle.getString("play_artist")!!
                 fytState = bundle.getBoolean("play_state")
@@ -138,17 +158,28 @@ class NotificationListener : NotificationListenerService() {
                 fytTotalMinutes = bundle.getLong("play_total")
                 fytCurMinutes = bundle.getLong("play_cur")
 
-                val file = File(fytMusicPath)
-                val filename = file.getName()
-                val pathName = filename.substring(0, filename.lastIndexOf("."))
-                if (musicName!!.isNotEmpty() && musicName != "Unknown" && song != musicName && song != pathName) {
-                    fytSet = false
-                } 
-                if(fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown") { 
-                    handler.removeCallbacks(updateTime)  
-                    fytSet = true
-                    setStatus(1)             
-                }   
+                try {
+                    if (!musicName.equals(musicNamePrev)) {
+                        musicNamePrev = musicName.toString()
+                        prevCurFyt = 0
+                    }
+
+                    val file = File(fytMusicPath)
+                    val filename = file.getName()
+                    val pathName = filename.substring(0, filename.lastIndexOf("."))
+                    if (musicName!!.isNotEmpty() && musicName != "Unknown"  && musicName != "null" && songFyt != musicName && songFyt != pathName) {
+                        fytSet = false
+                    } 
+                    if(fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") { 
+                        handlerControllerTime.removeCallbacks(updateControllerTime)  
+                        Helpers.updateControllerTimeBool = false
+                        fytSet = true
+                        setStatus(1)
+                        handlerFytTime.post(updateFytTime)             
+                    }  
+                } catch (e: IllegalArgumentException) {
+                    e.printStackTrace()
+                }
             }
         }
     }   
@@ -158,7 +189,9 @@ class NotificationListener : NotificationListenerService() {
             mediaSessionManager.removeOnActiveSessionsChangedListener(it)
         }
         handler.removeCallbacks(runTask)
-        
+        handlerControllerTime.removeCallbacks(updateControllerTime)
+        Helpers.updateControllerTimeBool = false   
+        handlerFytTime.removeCallbacks(updateFytTime)   
         unregisterReceiver(fytReceiver)
     }
 
@@ -175,16 +208,28 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    private val updateTime = object : Runnable {
+    private val updateControllerTime = object : Runnable {
         override fun run() {
             val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
             if (am.isMusicActive && musicState == "true") {
-                if (curMinutes > prevCur) {
-                    prevCur = curMinutes
+                if (curMinutes > prevMinutes) {
+                    prevMinutes = curMinutes
                     setStatus(2)
                 }
             }
-            handlerTime.postDelayed(this, 500)
+            handlerControllerTime.postDelayed(this, 1000)
+        }
+    }
+
+    private val updateFytTime = object : Runnable {
+        override fun run() {
+            if (MusicService.state) {
+                if (fytCurMinutes > prevCurFyt) {
+                    prevCurFyt = fytCurMinutes
+                    setStatus(1)
+                }
+            }
+            handlerFytTime.postDelayed(this, 500)
         }
     }
 
@@ -197,35 +242,47 @@ class NotificationListener : NotificationListenerService() {
             super.onPlaybackStateChanged(state)
             // 1 - STOPPED, 2 - PAUSED, 3 - PLAYING
             val currentState = state?.state
-            if (currentState == 1) {
-                handlerTime.removeCallbacks(updateTime)
+            if (currentState == 1 && !paused) {
+                paused = true
+                handlerControllerTime.removeCallbacks(updateControllerTime)
+                Helpers.updateControllerTimeBool = false
                 musicState = "false"
-            } else if (currentState == 2) {
-                handlerTime.removeCallbacks(updateTime)
+            } else if (currentState == 2 && !paused) {
+                paused = true
+                handlerControllerTime.removeCallbacks(updateControllerTime)
+                Helpers.updateControllerTimeBool = false
                 musicState = "false"
             } else if (currentState == 3) {
-                musicState = "true"
-                setStatus(2)
-                handlerTime.post(updateTime)
+                // prevents youtube live to add the view every ~second
+                var dur = meta?.getLong(MediaMetadata.METADATA_KEY_DURATION)
+                if (dur != 0.toLong() || paused) {
+                    musicState = "true"
+                    setStatus(2)
+                    if (!Helpers.updateControllerTimeBool) {
+                        Helpers.updateControllerTimeBool = true
+                        handlerControllerTime.post(updateControllerTime)
+                    }
+                }
             }
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             if (meta == null) {
-                prevCur = 0
+                prevMinutes = 0
                 meta = metadata
                 musicState = "true"
-                //setStatus(2) 
-                //handlerTime.post(updateTime)
             } else if (metadata != null && meta != null) {
                 // Check if the new title is different from the previous one
                 if (metadata.getString(MediaMetadata.METADATA_KEY_TITLE) != meta!!.getString(MediaMetadata.METADATA_KEY_TITLE)) {
-                    prevCur = 0
+                    prevMinutes = 0
                     meta = metadata
                     musicState = "true"
-                    setStatus(2) 
-                    handlerTime.post(updateTime)
+                    setStatus(2)
+                    if (!Helpers.updateControllerTimeBool) {
+                        Helpers.updateControllerTimeBool = true
+                        handlerControllerTime.post(updateControllerTime)
+                    }
                 }
             }
         }
@@ -237,14 +294,11 @@ class NotificationListener : NotificationListenerService() {
             fytSet = true
         }
 
-        if (song != null && fytState && fytAllowed && mediaSource == 1) {
-            totalMinutes = fytTotalMinutes
-            curMinutes = fytCurMinutes
-
+        if (songFyt != null && fytState && fytAllowed && mediaSource == 1) {
             fytData = settings.getBoolean("fyt_data", true)
 
             if (fytData) { // from metadata
-                song = musicName
+                songFyt = musicName
                 artist = authorName
                 if(artist?.isEmpty() == true || artist == "Unknown"){
                     artist = album
@@ -252,23 +306,18 @@ class NotificationListener : NotificationListenerService() {
             } else if (!fytData) { // from file title
                 val file = File(fytMusicPath)
                 val filename = file.getName()
-                song = filename.substring(0, filename.lastIndexOf("."))
+                songFyt = filename.substring(0, filename.lastIndexOf("."))
                 artist = null
             }
-            musicState = (fytState).toString()
-            album = fytAlbum
-            musicPath = fytMusicPath
             activeControllerPackage = ""
-            
-            albumCover = fytAlbumCover
             source = "fyt" 
 
             LauncherNotify.NOTIFIER_MUSIC.set(
                 null,
-                longArrayOf(totalMinutes, curMinutes),
+                longArrayOf(fytTotalMinutes, fytCurMinutes),
                 null,
-                arrayOf((song).toString(), (artist).toString(), musicState, album, musicPath, activeControllerPackage),
-                albumCover,
+                arrayOf((songFyt).toString(), (artist).toString(), (fytState).toString(), fytAlbum, fytMusicPath, activeControllerPackage),
+                fytAlbumCover,
                 source
             )
             Widget.update(LauncherApplication.sApp)   
@@ -296,6 +345,9 @@ class NotificationListener : NotificationListenerService() {
             }
             if(artist == null || artist?.isEmpty() == true) {
                 artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+            }
+            if(artist == null || artist?.isEmpty() == true) {
+                artist = "Unknown"
             }
             musicState = "true"   
             album = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM)
@@ -325,6 +377,7 @@ class NotificationListener : NotificationListenerService() {
                 source
             )
             Widget.update(LauncherApplication.sApp)
+            paused = false
         }  
     }
 

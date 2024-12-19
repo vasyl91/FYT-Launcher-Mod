@@ -16,7 +16,7 @@
         <item name="android:shadowRadius">4.0</item>
     </style>
     <style name="TabIndicator.AppsCustomize" parent="@style/TabIndicator">
-        <item name="android:maxWidth">300.0dip</item>
+        <item name="android:maxWidth">300.0px</item>
     </style>
     <style name="InfoTargetButtonContainer">
         <item name="android:layout_width">fill_parent</item>

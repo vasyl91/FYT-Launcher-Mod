@@ -11,7 +11,7 @@
         <include android:id="@id/first_run_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/first_run_cling" />
         <include android:id="@id/workspace_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/workspace_cling" />
         <include android:id="@id/folder_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/folder_cling" />
-        <include android:id="@id/apps_customize_pane" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginBottom="0.0dip" layout="@layout/apps_customize_pane" />
+        <include android:id="@id/apps_customize_pane" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginBottom="0.0px" layout="@layout/apps_customize_pane" />
         <include android:id="@id/clickapp_cling" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/clickapp_cling" />
     </com.android.launcher66.DragLayer>
 </FrameLayout>

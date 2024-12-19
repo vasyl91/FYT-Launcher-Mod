@@ -3,6 +3,8 @@ package com.syu.util;
 import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,14 +13,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemProperties;
+import android.os.Process;
 import android.util.Log;
 import android.view.View;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.settings.Helpers;
 import com.fyt.car.MapConfig;
 import com.fyt.thread.ThreadManager;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.log.LogPreview;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class WindowUtil {
     private static final String TAG = "WindowUtil";
@@ -27,6 +35,8 @@ public class WindowUtil {
     public static String AppPackageName = "";
     public static boolean visible = true;
     public static int delayMillis = 0;
+    public static final String PIP_STARTED = "pip.started";
+    public static final String PIP_REMOVED = "pip.removed";
 
     public static void initDefaultApp() {
         intent = new Intent();
@@ -70,8 +80,12 @@ public class WindowUtil {
     public static void openPip(View v, boolean show) {
         LogPreview.show("startMapPip:" + AppPackageName);
         Log.d("LZP", "openPip..");
+        Intent intentpip = new Intent(PIP_STARTED);
+        LauncherApplication.sApp.sendBroadcast(intentpip);
+        Helpers.backFromApp = true;
         if ((!visible || show) && Utils.topApp()) {
             intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
+            
             if (AppPackageName.equals("com.syu.camera360")) {
                 Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
             }
@@ -91,8 +105,21 @@ public class WindowUtil {
         }
     }
 
+    public static void restartPipApp() {
+        ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(activityManager, AppPackageName);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static void removePip(View v) {
         Log.d("LZP", "removePip..");
+        Intent intent = new Intent(PIP_REMOVED);
+        LauncherApplication.sApp.sendBroadcast(intent);
         if (visible) {
             mActivityManager = ActivityManager.getService();
             Launcher.getLauncher().handler.postDelayed(new Runnable() {

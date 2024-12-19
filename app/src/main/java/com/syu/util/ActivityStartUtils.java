@@ -12,7 +12,6 @@ import com.android.launcher66.R;
 import com.syu.ipc.ModuleObject;
 import com.syu.ipc.RemoteModuleProxy;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ActivityStartUtils {
     public static boolean startActivitySafely(Context context, View v, Intent intent, Object tag) {
         if (intent == null) {

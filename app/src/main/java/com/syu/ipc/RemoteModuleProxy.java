@@ -3,7 +3,6 @@ package com.syu.ipc;
 import android.os.RemoteException;
 import com.syu.ipc.IRemoteModule;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class RemoteModuleProxy extends IRemoteModule.Stub {
     private IRemoteModule mRemoteModule;
 

@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.util.WindowUtil;
 import com.jakewharton.processphoenix.ProcessPhoenix;
@@ -38,6 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        this.mContext = this.getContext();
         mHomeWatcher = new HomeWatcher(getActivity());
         mHomeWatcher.setOnHomePressedListener(this);
         mHomeWatcher.startWatch();
@@ -104,7 +107,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 userFytBool = sharedPrefs.getBoolean(FYT_DATA, false);
                 if ((initLayout != userLayoutBool) || initStatusbar != userStatusbarBool || initFyt != userFytBool || Helpers.backFromCreator) {
                     Helpers.backFromCreator = false;
-                    ProcessPhoenix.triggerRebirth(context);
+                    WindowUtil.restartPipApp();
+                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+                    startMain.addCategory(Intent.CATEGORY_HOME);
+                    startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(startMain);
+                    ProcessPhoenix.triggerRebirth(mContext);
                 } else {
                     Helpers.firstPreferenceWindow = true;
                     getActivity().finish();                    

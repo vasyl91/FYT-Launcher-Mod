@@ -28,20 +28,20 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#ffffffff</item>
         <item name="android:background">@drawable/cling_button_bg</item>
-        <item name="android:paddingTop">15.0dip</item>
-        <item name="android:paddingBottom">15.0dip</item>
+        <item name="android:paddingTop">15.0px</item>
+        <item name="android:paddingBottom">15.0px</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:text">@string/cling_dismiss</item>
-        <item name="android:paddingStart">50.0dip</item>
-        <item name="android:paddingEnd">50.0dip</item>
+        <item name="android:paddingStart">50.0px</item>
+        <item name="android:paddingEnd">50.0px</item>
     </style>
     <style name="ClingTitleText">
         <item name="android:textSize">22.0sp</item>
         <item name="android:textColor">#ffffffff</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">5.0dip</item>
+        <item name="android:layout_marginBottom">5.0px</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
     <style name="ClingAltTitleText">
@@ -80,7 +80,7 @@
         <item name="android:background">@null</item>
         <item name="android:shadowColor">#ff000000</item>
         <item name="android:shadowRadius">4.0</item>
-        <item name="android:drawablePadding">4.0dip</item>
+        <item name="android:drawablePadding">4.0px</item>
     </style>
     <style name="QSBBar">
         <item name="android:orientation">horizontal</item>
@@ -88,7 +88,7 @@
     <style name="SearchDropTargetBar" />
     <style name="SearchButton" />
     <style name="DropTargetButtonContainer">
-        <item name="android:layout_width">0.0dip</item>
+        <item name="android:layout_width">0.0px</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
     <style name="DropTargetButton">
@@ -105,8 +105,8 @@
         <item name="android:shadowDy">1.0</item>
         <item name="android:shadowRadius">4.0</item>
         <item name="android:drawablePadding">7.5dip</item>
-        <item name="android:paddingStart">25.0dip</item>
-        <item name="android:paddingEnd">25.0dip</item>
+        <item name="android:paddingStart">25.0px</item>
+        <item name="android:paddingEnd">25.0px</item>
     </style>
     <style name="TabIndicator">
         <item name="android:textSize">12.0sp</item>
@@ -119,8 +119,8 @@
         <item name="android:layout_height">fill_parent</item>
         <item name="android:singleLine">true</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:paddingStart">20.0dip</item>
-        <item name="android:paddingEnd">20.0dip</item>
+        <item name="android:paddingStart">20.0px</item>
+        <item name="android:paddingEnd">20.0px</item>
     </style>
     <style name="TabIndicator.AppsCustomize" parent="@style/TabIndicator" />
     <style name="MarketButton">
@@ -130,14 +130,14 @@
         <item name="android:shadowDx">0.0</item>
         <item name="android:shadowDy">0.0</item>
         <item name="android:shadowRadius">2.0</item>
-        <item name="android:paddingStart">5.0dip</item>
-        <item name="android:paddingEnd">5.0dip</item>
+        <item name="android:paddingStart">5.0px</item>
+        <item name="android:paddingEnd">5.0px</item>
     </style>
     <style name="CustomClingTitleText" />
     <style name="CustomClingText" />
     <style name="music_btn_style">
-        <item name="android:layout_width">64.0dip</item>
-        <item name="android:layout_height">49.0dip</item>
+        <item name="android:layout_width">64.0px</item>
+        <item name="android:layout_height">49.0px</item>
         <item name="android:onClick">onExtraClick</item>
     </style>
     <style name="hotseat_layout">
@@ -166,5 +166,27 @@
     <style name="SettingsTheme.ActionBar">
         <item name="android:textColorPrimary">@color/colorAccent</item>
         <item name="android:colorControlNormal">@color/colorAccent</item>
+    </style>
+    <style name="MyDialogActivityTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="bz408_oil_style">
+        <item name="android:textSize">30.0px</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">5.0px</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="bz408_oil_text_title">
+        <item name="android:textSize">35.0px</item>
+        <item name="android:textColor">#ff057cf0</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">5.0px</item>
+        <item name="android:singleLine">true</item>
     </style>
 </resources>

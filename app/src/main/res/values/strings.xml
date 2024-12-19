@@ -266,4 +266,29 @@
     <string name="transparent_statusbar">Transparent status bar</string>  
     <string name="noti_str">Notification listener settings</string>      
     <string name="noti_summary">Tap to open</string> 
+    <string name="bg_drawable">Default background</string>
+    <string name="bg_color">Colored background</string>
+    <string name="bg_color_picker">Set the background color</string>
+
+    <string name="instantaneous_consumption">Fuel consum.:</string>
+    <string name="driving_mileage">Cruising Range:</string>
+    <string name="instantaneous_consumption_val">--.--</string>
+    <string name="driving_mileage_val">--.--</string>
+    <string name="stats_window">Fuel statistics</string>
+    <string name="stats_window_summary">Do not use that widget, unless you have modified\u0020</string>
+    <string name="stats_window_summary_second">. Otherwise the app will crash (please refer to README.MD)</string>
+    <string name="stats_dialog_title">Are you sure about that?</string>
+    <string name="stats_dialog_message">Do not use that function unless you have edited\u0020</string>
+    <string name="color_picker">Stats text color</string>
+    <string name="stats_bg">Stats background</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="set_btn">Set</string>
+    <string name="margins_title">Margins (max. 25)</string>
+    <string name="alert_stats_pos">Yes, do not show that again</string>
+    <string name="vehicle_not_exist">Original vehicle equipment does not exist</string>
+
+    <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
+    <string name="materialcolorpicker__inputColor">Color: </string>
+    <string name="materialcolorpicker__btnSelectColor">Select</string>
+    <string name="materialcolorpicker__hash" translatable="false">#</string>
 </resources>

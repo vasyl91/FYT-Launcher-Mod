@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.CheckableFrameLayout android:background="@drawable/wallpaper_tile_fg" android:focusable="true" android:clickable="true" android:layout_width="@dimen/wallpaperThumbnailWidth" android:layout_height="@dimen/wallpaperThumbnailHeight" android:foreground="@drawable/wallpaper_tile_fg"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView android:id="@id/wallpaper_image" android:layout_width="fill_parent" android:layout_height="fill_parent" android:scaleType="centerCrop" />
+<com.android.launcher66.CheckableFrameLayout android:background="@drawable/wallpaper_tile_fg"
+    android:focusable="true"
+    android:clickable="true"
+    android:layout_width="@dimen/wallpaperThumbnailWidth"
+    android:layout_height="@dimen/wallpaperThumbnailHeight"
+    android:foreground="@drawable/wallpaper_tile_fg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@id/wallpaper_image"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop" />
 </com.android.launcher66.CheckableFrameLayout>

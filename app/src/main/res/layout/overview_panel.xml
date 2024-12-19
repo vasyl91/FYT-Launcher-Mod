@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/wallpaper_button_text"
         android:drawableTop="@drawable/wallpaper_button"
-        android:drawablePadding="4.0dip"
+        android:drawablePadding="4.0px"
         android:textAllCaps="true"
         android:fontFamily="sans-serif-condensed" />
 
@@ -29,7 +29,7 @@
         android:layout_marginLeft="@dimen/overview_panel_buttonSpacing"
         android:text="@string/settings_button_text"
         android:drawableTop="@drawable/setting_button"
-        android:drawablePadding="4.0dip"
+        android:drawablePadding="4.0px"
         android:textAllCaps="true"
         android:fontFamily="sans-serif-condensed" />
 </LinearLayout>

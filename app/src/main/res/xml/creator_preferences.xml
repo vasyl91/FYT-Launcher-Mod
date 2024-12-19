@@ -22,6 +22,29 @@
         android:key="user_radio"
         android:defaultValue="false"
         android:title="@string/radio_widget" />
+    <SwitchPreferenceCompat
+        android:key="user_stats"
+        android:defaultValue="false"
+        android:title="@string/stats_window"
+        android:maxLines="5" />
+    <Preference
+        android:key="color_picker"
+        android:title="@string/color_picker" />
+    <SwitchPreference
+        android:key="stats_bg"
+        android:defaultValue="true"
+        android:title="@string/stats_bg" />
+    <SwitchPreferenceCompat
+        android:key="bg_drawable"
+        android:defaultValue="true"
+        android:title="@string/bg_drawable" />
+    <SwitchPreferenceCompat
+        android:key="bg_color"
+        android:defaultValue="false"
+        android:title="@string/bg_color" />
+    <Preference
+        android:key="bg_color_picker"
+        android:title="@string/bg_color_picker" />
     <Preference
         android:key="layout_margin"
         android:title="@string/margins_str"

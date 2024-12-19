@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.Folder android:orientation="vertical" android:background="@drawable/portal_container_holo" android:layout_width="wrap_content" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
-    <ScrollView android:id="@id/scroll_view" android:layout_width="fill_parent" android:layout_height="fill_parent">
-        <com.android.launcher66.CellLayout android:id="@id/folder_content" android:layout_width="wrap_content" android:layout_height="wrap_content" android:cacheColorHint="#ff333333" android:hapticFeedbackEnabled="false" />
+<com.android.launcher66.Folder android:orientation="vertical"
+    android:background="@drawable/portal_container_holo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+
+    <ScrollView
+        android:id="@id/scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <com.android.launcher66.CellLayout
+            android:id="@id/folder_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="#ff333333"
+            android:hapticFeedbackEnabled="false" />
     </ScrollView>
-    <com.android.launcher66.FolderEditText android:textSize="14.0sp" android:textColor="#ff777777" android:textColorHighlight="#ffcccccc" android:gravity="center_horizontal" android:id="@id/folder_name" android:background="#00000000" android:paddingTop="@dimen/folder_name_padding" android:paddingBottom="@dimen/folder_name_padding" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/folder_hint_text" android:singleLine="true" android:layout_centerHorizontal="true" android:imeOptions="flagNoExtractUi" android:textCursorDrawable="@null" android:fontFamily="sans-serif-condensed" />
+
+    <com.android.launcher66.FolderEditText
+        android:textSize="14.0sp"
+        android:textColor="#ff777777"
+        android:textColorHighlight="#ffcccccc"
+        android:gravity="center_horizontal"
+        android:id="@id/folder_name"
+        android:background="#00000000"
+        android:paddingTop="@dimen/folder_name_padding"
+        android:paddingBottom="@dimen/folder_name_padding"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/folder_hint_text"
+        android:singleLine="true"
+        android:layout_centerHorizontal="true"
+        android:imeOptions="flagNoExtractUi"
+        android:textCursorDrawable="@null"
+        android:fontFamily="sans-serif-condensed" />
 </com.android.launcher66.Folder>

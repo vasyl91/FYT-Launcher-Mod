@@ -10,20 +10,20 @@
         <item name="android:textSize">20.0sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:background">@drawable/cling_button_bg</item>
-        <item name="android:paddingTop">10.0dip</item>
-        <item name="android:paddingBottom">15.0dip</item>
+        <item name="android:paddingTop">10.0px</item>
+        <item name="android:paddingBottom">15.0px</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:text">@string/cling_dismiss</item>
-        <item name="android:paddingStart">35.0dip</item>
-        <item name="android:paddingEnd">35.0dip</item>
+        <item name="android:paddingStart">35.0px</item>
+        <item name="android:paddingEnd">35.0px</item>
     </style>
     <style name="ClingTitleText">
         <item name="android:textSize">32.0sp</item>
         <item name="android:textColor">#ff49c0ec</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">5.0dip</item>
+        <item name="android:layout_marginBottom">5.0px</item>
         <item name="android:shadowColor">#ff000000</item>
         <item name="android:shadowDy">2.0</item>
         <item name="android:shadowRadius">2.0</item>
@@ -55,13 +55,13 @@
         <item name="android:shadowDy">0.0</item>
         <item name="android:shadowRadius">2.0</item>
         <item name="android:drawablePadding">7.5dip</item>
-        <item name="android:paddingStart">60.0dip</item>
-        <item name="android:paddingEnd">60.0dip</item>
+        <item name="android:paddingStart">60.0px</item>
+        <item name="android:paddingEnd">60.0px</item>
     </style>
     <style name="TabIndicator.AppsCustomize" parent="@style/TabIndicator">
         <item name="android:textSize">14.0sp</item>
-        <item name="android:maxWidth">240.0dip</item>
-        <item name="android:paddingStart">32.0dip</item>
-        <item name="android:paddingEnd">32.0dip</item>
+        <item name="android:maxWidth">240.0px</item>
+        <item name="android:paddingStart">32.0px</item>
+        <item name="android:paddingEnd">32.0px</item>
     </style>
 </resources>

@@ -71,4 +71,7 @@
         <item>fyt_home_bk_19_n</item>
         <item>fyt_home_bk_20_n</item>
     </string-array>
+    <integer-array name="screen_size">
+        <item>0</item>
+    </integer-array>
 </resources>
