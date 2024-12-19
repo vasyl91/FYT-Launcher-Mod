@@ -13,9 +13,9 @@ https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/rec1.mp4
 
 Known issues that I couldn't figure out yet:
 - ~~coordinates and widget name are not displayed on first use (save layout and reopen creator as on the video).~~
-- proper display of picture in picture requires switching launcher to another and then back to the mod.
-- first use after installation might require some time before music widget starts working (probably related to notification listener).
-- embedd video in this readme.
+- ~~proper display of picture in picture requires switching launcher to another and then back to the mod.~~
+- ~~first use after installation might require some time before music widget starts working (probably related to notification listener).~~
+- embedd video and update this readme.
 
 ## Generating app in Android Studio
 
