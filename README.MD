@@ -7,7 +7,7 @@ List of modifications:
 - reworked music widget working with most of the music players
 - implemented launcher creator allowing to adjust launcher layout to user preferences
 
-[![Watch the video](https://raw.githubusercontent.com/vasyl91/FYT-Launcher-Mod/main/images/1.png)](https://raw.githubusercontent.com/vasyl91/FYT-Launcher-Mod/main/images/example_creator.gif)
+[](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
 
