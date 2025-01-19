@@ -5,7 +5,7 @@ So far tested only on 2000x1100 resolution.
 List of modifications:
 - Reworked music widget working with most of the music players.
 - Launcher creator allowing to adjust launcher layout to user preferences.
-- Fuel stats with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
+- Live fuel stats with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to set the wallpaper and brightness for the day/night mode).
 - Settings fragment with useful tweaks.
 - Replaced part of deprecated code with the new one.
@@ -18,12 +18,13 @@ List of modifications:
 ## Fuel statistics
 
 This requires some basic coding skills so that feature probably won't be for everyone (unless it's already adjusted for your car). 
+<details>
 1. Go to settings > Layout creator and check what does the summary say under the Fuel statistics:
 [<img src="./images/Screenshot_2024-09-17_230715.jpg" width="50%">](./images/Screenshot_2024-09-17_230715.jpg)
 
 2. It should contain the name of the class that canbus runs as default, in my case it is : `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`. This file contains stuff related to FYT canbus app that we don't want to run because it will crash the app so in order to run the fuel ststistics properly you will have to inspect some code and modify it as described below. 
 3. Keep in mind that the following description is an example based on my case, just a hint how to do it.
-4. Open the class from 1. and look for the method that opens next activity that finally contains what we need which is fuel consumption and cruising range. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains and `onClickListener` with intent:
+4. Open the class from step 1. and look for the method that opens next activity that finally contains what we need which is fuel consumption and cruising range. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains `onClickListener` with an  intent:
 
 ```
                     Intent intent = new Intent();
@@ -38,30 +39,82 @@ That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMi
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage3").setIndicator("tabPage3").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage3Acti.class)));
 ```
 `RZC_BZ408OilMilePage1Acti.class` represents the window in fyt canbus app that contains fuel statistics.
-6. Finally proceed to `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java` and there you will find a method:
+6. Finally proceed to `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java` and there you will find there the methods (I left only crucial parts):
 
 ```
     private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.1
         @Override // com.syu.module.IUiNotify
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
-                    RZC_BZ408OilMilePage1Acti.this.mUpdaterStartStopTime();
-                    break;
+                ....
                 case 91:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterOilExpend();
                     break;
                 case 92:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterDrivingMileage();
                     break;
-                case 93:
-                    RZC_BZ408OilMilePage1Acti.this.mUpdaterSpecialMileage();
-                    break;
+                ....
             }
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ....
+        DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);
+    }
+
+    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void onResume() {
+        ....
+        DataCanbus.PROXY.cmd(29, new int[1], null, null);
+        ....
+    }
+
+    @Override 
+    public void addNotify() {
+        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
+        ....
+    }
+
+    @Override 
+    public void removeNotify() {
+        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
+        ....
+    }
+
+    public void mUpdaterOilExpend() {
+        int value = DataCanbus.DATA[91];
+        ....
+    }
+
+    public void mUpdaterDrivingMileage() {
+        int value = DataCanbus.DATA[92];
+        ....
+    }
 ```
-Case that represents `RZC_BZ408OilMilePage1Acti.this.mUpdaterOilExpend();` and `RZC_BZ408OilMilePage1Acti.this.mUpdaterDrivingMileage();` is what we need, accordingly 91 and 92.
+
+6. Modded `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains the methods above, do not change the methods' names, just update necessary parts - codes `91`, `92`, and `DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);`, `DataCanbus.PROXY.cmd(29, new int[1], null, null);` If you have some problems with identifying these codes please look for the file in the containing folder that contains general codes list for particular car (in my case it is `com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`).
+
+7. After updating code from step 6. please rename `RZC_BZ408IndexActi` to the name displayed in the settings as stated in step 1., remember to update `package com.syu.carinfo.rzc.biaozhi408;` according to your class name.
+
+8. Open `AndroidManifest.xml` and look for:
+```
+        <!-- Replace "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi" with your class name provided in the settings -->
+        <service
+            android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+```
+Rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` as your newly modded file from step 7. says.
+
+9. If everything goes well, enabling `Fuel statistics` in Settings shouldn't result in an error while going back to the launcher's main window and you should see a popup containing stats as on the screenshot below.
+[<img src="./images/Screenshot_2024-09-17_231235.jpg" width="50%">](./images/Screenshot_2024-09-17_231235.jpg)
+</details>
+
 
 ## Generating app in Android Studio
 
