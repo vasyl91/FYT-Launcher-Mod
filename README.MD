@@ -15,9 +15,9 @@ List of modifications:
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
 
-## Fuel ststistics
+## Fuel statistics
 
-// TODO
+Requires some basic coding skills so that feature won't be for everyone (unless it's already adjusted for your car). I'll add instruction how to modify the app asap. 
 
 ## Generating app in Android Studio
 
