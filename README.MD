@@ -1,21 +1,23 @@
-# Experimental reverse engineered launcher for FYT 7862/8581 with launcher creator.
+# Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-Launcher 34 was used as a base. Tested only on 2000x1100 resolution.
+So far tested only on 2000x1100 resolution.
 
 List of modifications:
-- added 1920x720 resolution
-- reworked music widget working with most of the music players
-- implemented launcher creator allowing to adjust launcher layout to user preferences
+- Reworked music widget working with most of the music players.
+- Launcher creator allowing to adjust launcher layout to user preferences.
+- Fuel stats with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
+- Night Mode that determines sunrise and sunset depending on the location (also allows user to set the wallpaper and brightness for the day/night mode).
+- Settings fragment with useful tweaks.
+- Replaced part of deprecated code with the new one.
+- Added 1920x720 resolution.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
 
-Known issues that I couldn't figure out yet:
-- ~~coordinates and widget name are not displayed on first use (save layout and reopen creator as on the video).~~
-- ~~proper display of picture in picture requires switching launcher to another and then back to the mod.~~
-- ~~first use after installation might require some time before music widget starts working (probably related to notification listener).~~
-- embedd video and update this readme.
+## Fuel ststistics
+
+// TODO
 
 ## Generating app in Android Studio
 
@@ -35,4 +37,4 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 1. Connect your phone to Android Studio and confirm the connection. 
 2. Go to `/data/misc/adb/` on your phone and copy it's content (should contain `adb_keys`).
 3. Paste that file in the same directory on your FYT.
-4. Install Termux terminal, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if get some error with the last one).
+4. Install Termux terminal, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get some error with the last one).
