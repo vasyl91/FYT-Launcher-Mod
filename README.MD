@@ -1,6 +1,8 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-So far tested only on 2000x1100 resolution.
+TODO - update videos and screenshots for this readme.
+
+So far the launcher has been tested only on 2000x1100 resolution.
 
 List of modifications:
 - Reworked music widget working with most of the music players.
