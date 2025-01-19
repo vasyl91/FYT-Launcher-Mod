@@ -20,6 +20,7 @@ List of modifications:
 This requires some basic coding skills so that feature probably won't be for everyone (unless it's already adjusted for your car). 
 <details>
 1. Go to settings > Layout creator and check what does the summary say under the Fuel statistics:
+
 [<img src="./images/Screenshot_2024-09-17_230715.jpg" width="50%">](./images/Screenshot_2024-09-17_230715.jpg)
 
 2. It should contain the name of the class that canbus runs as default, in my case it is : `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`. This file contains stuff related to FYT canbus app that we don't want to run because it will crash the app so in order to run the fuel ststistics properly you will have to inspect some code and modify it as described below. 
@@ -112,6 +113,7 @@ That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMi
 Rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` as your newly modded file from step 7. says.
 
 9. If everything goes well, enabling `Fuel statistics` in Settings shouldn't result in an error while going back to the launcher's main window and you should see a popup containing stats as on the screenshot below.
+
 [<img src="./images/Screenshot_2024-09-17_231235.jpg" width="50%">](./images/Screenshot_2024-09-17_231235.jpg)
 </details>
 
