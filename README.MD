@@ -17,7 +17,7 @@ List of modifications:
 
 ## Fuel statistics
 
-Requires some basic coding skills so that feature won't be for everyone (unless it's already adjusted for your car). I'll add instruction how to modify the app asap. 
+This requires some basic coding skills so that feature probably won't be for everyone (unless it's already adjusted for your car). I'll add instruction how to modify the app asap. 
 
 ## Generating app in Android Studio
 
