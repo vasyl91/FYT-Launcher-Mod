@@ -103,7 +103,7 @@ That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMi
 
 6. Modded `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains the methods above, do not change the methods' names, just update necessary parts - codes `91`, `92`, and `DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);`, `DataCanbus.PROXY.cmd(29, new int[1], null, null);` If you have some problems with identifying these codes please look for the file in the containing folder that contains general codes list for particular car (in my case it is `com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`).
 
-7. After updating code from step 6. please rename `RZC_BZ408IndexActi` to the name displayed in the settings as stated in step 1., remember to update `package com.syu.carinfo.rzc.biaozhi408;` according to your class name.
+7. After updating code from step 6. please rename `RZC_BZ408IndexActi` (class name as well as file name) to the name displayed in the settings as stated in step 1., remember to update `package com.syu.carinfo.rzc.biaozhi408;` according to your class name. Replace it with original file.
 
 8. Open `AndroidManifest.xml` and look for:
 ```
