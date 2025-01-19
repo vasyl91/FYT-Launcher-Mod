@@ -33,7 +33,7 @@ This requires some basic coding skills so that feature probably won't be for eve
                     Intent intent = new Intent();
                     intent.setClass(RZC_BZ408IndexActi.this, RZC_BZ408OilMileIndexActi.class);
 ```
-That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java` and you should keep looking there.
+That originally leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java` and you should keep looking there.
 
 5. In [`RZC_BZ408OilMileIndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats/RZC_BZ408OilMileIndexActi.java) you will find three tabs:
 
