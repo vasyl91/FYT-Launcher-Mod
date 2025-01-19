@@ -24,7 +24,9 @@ This requires some basic coding skills so that feature probably won't be for eve
 [<img src="./images/Screenshot_2024-09-17_230715.jpg" width="50%">](./images/Screenshot_2024-09-17_230715.jpg)
 
 2. It should contain the name of the class that canbus runs as default, in my case it is : `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`. This file contains stuff related to FYT canbus app that we don't want to run because it will crash the app so in order to run the fuel ststistics properly you will have to inspect some code and modify it as described below. 
+
 3. Keep in mind that the following description is an example based on my case, just a hint how to do it.
+
 4. Open the class from step 1. and look for the method that opens next activity that finally contains what we need which is fuel consumption and cruising range. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains `onClickListener` with an  intent:
 
 ```
@@ -32,6 +34,7 @@ This requires some basic coding skills so that feature probably won't be for eve
                     intent.setClass(RZC_BZ408IndexActi.this, RZC_BZ408OilMileIndexActi.class);
 ```
 That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java` and you should keep looking there.
+
 5. In `RZC_BZ408OilMileIndexActi.java` you will find three tabs:
 
 ```
@@ -40,6 +43,7 @@ That originally leads to th class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMi
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage3").setIndicator("tabPage3").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage3Acti.class)));
 ```
 `RZC_BZ408OilMilePage1Acti.class` represents the window in fyt canbus app that contains fuel statistics.
+
 6. Finally proceed to `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java` and there you will find there the methods (I left only crucial parts):
 
 ```
