@@ -12,7 +12,6 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.reflect.Field;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordDoornumWindow extends BaseActivity implements View.OnClickListener {
     private View mRootView;
     private PopupWindow mWindow;
@@ -50,10 +49,10 @@ public class PAFordDoornumWindow extends BaseActivity implements View.OnClickLis
         ((Button) this.mRootView.findViewById(R.id.btn_plus4)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 if (this.pagenum == 2) {
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[6];
@@ -62,21 +61,21 @@ public class PAFordDoornumWindow extends BaseActivity implements View.OnClickLis
                 }
                 hideWindow();
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 RemoteModuleProxy remoteModuleProxy2 = DataCanbus.PROXY;
                 int[] iArr2 = new int[6];
                 iArr2[0] = 15;
                 remoteModuleProxy2.cmd(22, iArr2, null, null);
                 hideWindow();
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 RemoteModuleProxy remoteModuleProxy3 = DataCanbus.PROXY;
                 int[] iArr3 = new int[6];
                 iArr3[0] = 2;
                 remoteModuleProxy3.cmd(22, iArr3, null, null);
                 hideWindow();
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 hideWindow();
                 break;
         }

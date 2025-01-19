@@ -5,6 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
@@ -22,6 +25,7 @@ import android.graphics.drawable.PaintDrawable;
 import androidx.core.internal.view.SupportMenu;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 import com.fyt.skin.SkinUtils;
@@ -29,7 +33,6 @@ import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.Utils;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public final class Utilities {
     private static final String TAG = "Launcher.Utilities";
     private static int sIconSize = -1;
@@ -373,5 +376,27 @@ public final class Utilities {
             Toast.makeText(activity, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Launcher does not have the permission to launch " + intent + ". Make sure to create a MAIN intent-filter for the corresponding activity or use the exported attribute for this activity.", e2);
         }
+    }    
+
+    /*
+     * Finds a system apk which had a broadcast receiver listening to a particular action.
+     * @param action intent action used to find the apk
+     * @return a pair of apk package name and the resources.
+     */
+    static Pair<String, Resources> findSystemApk(String action, PackageManager pm) {
+        final Intent intent = new Intent(action);
+        for (ResolveInfo info : pm.queryBroadcastReceivers(intent, 0)) {
+            if (info.activityInfo != null &&
+                    (info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                final String packageName = info.activityInfo.packageName;
+                try {
+                    final Resources res = pm.getResourcesForApplication(packageName);
+                    return Pair.create(packageName, res);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.w(TAG, "Failed to find resources for " + packageName);
+                }
+            }
+        }
+        return null;
     }
 }

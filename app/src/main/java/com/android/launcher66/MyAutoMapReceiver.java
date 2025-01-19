@@ -12,7 +12,6 @@ import com.fyt.car.MapConfig;
 import com.syu.car.CarStates;
 import com.syu.widget.Widget;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class MyAutoMapReceiver extends BroadcastReceiver {
     public static int mCurDis_All;
     public static int mCurDis_Remain;
@@ -26,7 +25,7 @@ public class MyAutoMapReceiver extends BroadcastReceiver {
     public static int mREMAINTime = 0;
     public static int mREMAINDis = 0;
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
             Bundle bundle = intent.getExtras();

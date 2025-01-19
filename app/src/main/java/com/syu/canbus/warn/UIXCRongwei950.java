@@ -6,11 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIXCRongwei950 {
     private static UIXCRongwei950 mInstance;
     Context context;
@@ -29,7 +29,7 @@ public class UIXCRongwei950 {
         WarnUtils.getWindow();
         initTip(value, updateCode);
         switch (updateCode) {
-            case 60:
+            case 124:
                 if (this.sWarnContent != null) {
                     if (value == 1 || value == 2) {
                         WarnUtils.showWindow();
@@ -38,27 +38,27 @@ public class UIXCRongwei950 {
                     }
                 }
                 break;
-            case 61:
-                if (DataCanbus.DATA[60] == 1 || DataCanbus.DATA[60] == 2) {
+            case 125:
+                if (DataCanbus.DATA[124] == 1 || DataCanbus.DATA[124] == 2) {
                     WarnUtils.showWindow();
                     WarnUtils.postDimiss(5000);
                     break;
                 }
-            case 62:
-                if (DataCanbus.DATA[60] == 1 || DataCanbus.DATA[60] == 2) {
+            case 126:
+                if (DataCanbus.DATA[124] == 1 || DataCanbus.DATA[124] == 2) {
                     WarnUtils.showWindow();
                     WarnUtils.postDimiss(5000);
                     break;
                 }
-            case 63:
-            case 64:
-            case 65:
-            case 66:
-            case 67:
-            case 68:
-            case 69:
-            case 70:
-            case 79:
+            case 127:
+            case 128:
+            case 129:
+            case 130:
+            case 131:
+            case 132:
+            case 133:
+            case 134:
+            case 143:
                 if (value != 0) {
                     WarnUtils.showWindow();
                     WarnUtils.postDimiss(5000);
@@ -70,14 +70,14 @@ public class UIXCRongwei950 {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (updateCode) {
-            case 60:
+            case 124:
                 if (value == 1) {
-                    switch (DataCanbus.DATA[61]) {
+                    switch (DataCanbus.DATA[125]) {
                         case 0:
                             this.mTextWarn.setText("驾驶模式 : ECO");
                             break;
@@ -86,7 +86,7 @@ public class UIXCRongwei950 {
                             break;
                     }
                 } else if (value == 2) {
-                    switch (DataCanbus.DATA[62]) {
+                    switch (DataCanbus.DATA[126]) {
                         case 0:
                             this.mTextWarn.setText("能力回收 : Light");
                             break;
@@ -99,8 +99,8 @@ public class UIXCRongwei950 {
                     }
                 }
                 break;
-            case 61:
-                if (DataCanbus.DATA[60] == 1) {
+            case 125:
+                if (DataCanbus.DATA[124] == 1) {
                     switch (value) {
                         case 0:
                             this.mTextWarn.setText("驾驶模式 : ECO");
@@ -111,8 +111,8 @@ public class UIXCRongwei950 {
                     }
                 }
                 break;
-            case 62:
-                if (DataCanbus.DATA[60] == 2) {
+            case 126:
+                if (DataCanbus.DATA[124] == 2) {
                     switch (value) {
                         case 0:
                             this.mTextWarn.setText("能力回收 : Light");
@@ -126,47 +126,47 @@ public class UIXCRongwei950 {
                     }
                 }
                 break;
-            case 63:
+            case 127:
                 if (value != 0) {
                     this.mTextWarn.setText("混动系统故障");
                     break;
                 }
-            case 64:
+            case 128:
                 if (value != 0) {
                     this.mTextWarn.setText("动力蓄电池故障");
                     break;
                 }
-            case 65:
+            case 129:
                 if (value != 0) {
                     this.mTextWarn.setText("动力蓄电池切断");
                     break;
                 }
-            case 66:
+            case 130:
                 if (value != 0) {
                     this.mTextWarn.setText("电机过温");
                     break;
                 }
-            case 67:
+            case 131:
                 if (value != 0) {
                     this.mTextWarn.setText("蓄电池电流过低，请启动车辆");
                     break;
                 }
-            case 68:
+            case 132:
                 if (value != 0) {
                     this.mTextWarn.setText("EDU冷却液过温");
                     break;
                 }
-            case 69:
+            case 133:
                 if (value != 0) {
                     this.mTextWarn.setText("功率受限,限速行驶");
                     break;
                 }
-            case 70:
+            case 134:
                 if (value != 0) {
                     this.mTextWarn.setText("请充电 保持高压电池均衡");
                     break;
                 }
-            case 79:
+            case 143:
                 switch (value) {
                     case 1:
                         this.mTextWarn.setText("默认模式");

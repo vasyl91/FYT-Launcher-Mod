@@ -12,45 +12,44 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0418_XBS_XP1_AnKeSela_Cx4_Atenza;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static Xbs_AngKeSaiLa_CarCD mInstance;
     public static boolean mIsFront = false;
     int rep_mode = 255;
     int random_mode = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 50:
-                case 52:
-                case 53:
+                case 7:
+                case 9:
+                case 10:
                     Xbs_AngKeSaiLa_CarCD.this.mUpdaterStatus();
                     break;
-                case 51:
-                case 55:
+                case 8:
+                case 12:
                     Xbs_AngKeSaiLa_CarCD.this.mUpdaterTrack();
                     break;
-                case 56:
-                case 57:
+                case 13:
+                case 14:
                     Xbs_AngKeSaiLa_CarCD.this.mUpdaterTrackTime();
                     break;
-                case 58:
+                case 15:
                     Xbs_AngKeSaiLa_CarCD.this.updaterCdTextInfo();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_418_xbs_carcd);
+        //setContentView(R.layout.layout_418_xbs_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.jeep_btn_loop).setOnClickListener(this);
         findViewById(R.id.jeep_btn_random).setOnClickListener(this);
@@ -62,22 +61,22 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         findViewById(R.id.jeep_btn_fr).setOnLongClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(0, new int[1], null, null);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(0, new int[]{1}, null, null);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(0, new int[]{4}, null, null);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(0, new int[]{5}, null, null);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
+            case R.id.jeep_btn_loop /* 2131427737 */:
                 if (this.rep_mode == 1) {
                     DataCanbus.PROXY.cmd(0, new int[]{7}, null, null);
                     break;
@@ -88,7 +87,7 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
                     DataCanbus.PROXY.cmd(0, new int[]{6}, null, null);
                     break;
                 }
-            case R.id.jeep_btn_random /* 2131428348 */:
+            case R.id.jeep_btn_random /* 2131427740 */:
                 if (this.random_mode == 1) {
                     DataCanbus.PROXY.cmd(0, new int[]{10}, null, null);
                     break;
@@ -107,7 +106,7 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
     
         return true;
      */
-    @Override // android.view.View.OnLongClickListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -120,8 +119,8 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
             r3 = 0
             int r0 = r7.getId()
             switch(r0) {
-                case 2131427610: goto L17;
-                case 2131427611: goto Lb;
+                case 2131427622: goto L17;
+                case 2131427623: goto Lb;
                 default: goto La;
             }
         La:
@@ -144,7 +143,7 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         throw new UnsupportedOperationException("Method not decompiled: com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_CarCD.onLongClick(android.view.View):boolean");
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -157,40 +156,40 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         DataCanbus.PROXY.cmd(0, new int[]{19}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCdTextInfo() {
         int infoType = Callback_0418_XBS_XP1_AnKeSela_Cx4_Atenza.infoType & 65535;
         String strInfo = "";
@@ -210,11 +209,11 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStatus() {
-        int value = DataCanbus.DATA[52];
-        this.random_mode = DataCanbus.DATA[53] & 15;
-        this.rep_mode = (DataCanbus.DATA[53] >> 4) & 15;
+        int value = DataCanbus.DATA[9];
+        this.random_mode = DataCanbus.DATA[10] & 15;
+        this.rep_mode = (DataCanbus.DATA[10] >> 4) & 15;
         StringBuffer sb = new StringBuffer();
         switch (value) {
             case 0:
@@ -250,10 +249,10 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         ((TextView) findViewById(R.id.jeep_tv_state)).setText(sb.toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
-        int track = DataCanbus.DATA[55];
-        int tarckTotal = DataCanbus.DATA[51];
+        int track = DataCanbus.DATA[12];
+        int tarckTotal = DataCanbus.DATA[8];
         if (track == 16777215 || tarckTotal == 16777215) {
             ((TextView) findViewById(R.id.jeep_tv_track)).setText("--/--");
         } else {
@@ -261,10 +260,10 @@ public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
-        int value = DataCanbus.DATA[57];
-        int valueall = DataCanbus.DATA[56];
+        int value = DataCanbus.DATA[14];
+        int valueall = DataCanbus.DATA[13];
         if (value == 16777215) {
             ((TextView) findViewById(R.id.jeep_tv_time)).setText("--:-- / --:--");
         } else {

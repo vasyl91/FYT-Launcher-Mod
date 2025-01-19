@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mingjueruiteng.ActRongweiRX8RearAirSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 91:
@@ -47,10 +46,10 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         DataCanbus.PROXY.cmd(5, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0273_rzc_rx8_air_rear_control);
+        //setContentView(R.layout.layout_0273_rzc_rx8_air_rear_control);
         init();
     }
 
@@ -68,7 +67,7 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         findViewById(R.id.air_xts_rearlock).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -76,7 +75,7 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -84,7 +83,7 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -167,25 +166,25 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateReaclockOn() {
         int acOn = DataCanbus.DATA[139];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
         int acOn = DataCanbus.DATA[138];
         findViewById(R.id.air_xts_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[137];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[132];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -203,13 +202,13 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[136];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[91];
         if (leave < 0) {
@@ -222,7 +221,7 @@ public class ActRongweiRX8RearAirSet extends Activity implements View.OnTouchLis
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[134];
         int body = DataCanbus.DATA[133];

@@ -10,32 +10,31 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcLockSetACt.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 9:
+                case 107:
                     RzcKlcLockSetACt.this.updatePreventAutoLatch();
                     break;
-                case 10:
+                case 108:
                     RzcKlcLockSetACt.this.updateAutoLatch();
                     break;
-                case 11:
+                case 109:
                     RzcKlcLockSetACt.this.updateParkingAutoUnLock();
                     break;
-                case 12:
+                case 110:
                     RzcKlcLockSetACt.this.updateDelayLatch();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_lock_set);
+        //setContentView(R.layout.layout_rzc_klc_lock_set);
         setUI();
     }
 
@@ -47,15 +46,11 @@ public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int AutoLatchState = DataCanbus.DATA[10];
-                RzcKlcFunc.CAR_COMM_CONTROL(3, AutoLatchState != 0 ? 0 : 1);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int ParkingAutoUnlockState = DataCanbus.DATA[11];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int ParkingAutoUnlockState = DataCanbus.DATA[109];
                 if (ParkingAutoUnlockState == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(4, 2);
                     break;
@@ -66,8 +61,8 @@ public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(4, 1);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                int ParkingAutoUnlockState2 = DataCanbus.DATA[11];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int ParkingAutoUnlockState2 = DataCanbus.DATA[109];
                 if (ParkingAutoUnlockState2 == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(4, 1);
                     break;
@@ -78,24 +73,28 @@ public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(4, 0);
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int PreventAutoLatchState = DataCanbus.DATA[9];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int AutoLatchState = DataCanbus.DATA[108];
+                RzcKlcFunc.CAR_COMM_CONTROL(3, AutoLatchState != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int PreventAutoLatchState = DataCanbus.DATA[107];
                 RzcKlcFunc.CAR_COMM_CONTROL(2, PreventAutoLatchState != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int DelayLatchState = DataCanbus.DATA[12];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int DelayLatchState = DataCanbus.DATA[110];
                 RzcKlcFunc.CAR_COMM_CONTROL(5, DelayLatchState != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -106,22 +105,22 @@ public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateParkingAutoUnLock() {
-        int ParkingAutoUnlockState = DataCanbus.DATA[11];
+        int ParkingAutoUnlockState = DataCanbus.DATA[109];
         if (ParkingAutoUnlockState == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (ParkingAutoUnlockState == 1) {
@@ -131,21 +130,21 @@ public class RzcKlcLockSetACt extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoLatch() {
-        int AutoLatchState = DataCanbus.DATA[10];
+        int AutoLatchState = DataCanbus.DATA[108];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(AutoLatchState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePreventAutoLatch() {
-        int PreventAutoLatchState = DataCanbus.DATA[9];
+        int PreventAutoLatchState = DataCanbus.DATA[107];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(PreventAutoLatchState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDelayLatch() {
-        int DelayLatchState = DataCanbus.DATA[12];
+        int DelayLatchState = DataCanbus.DATA[110];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(DelayLatchState != 0);
     }
 }

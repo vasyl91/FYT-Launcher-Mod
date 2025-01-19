@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIRZCPsa407All {
     private static UIRZCPsa407All mInstance;
     Context context;
@@ -29,7 +29,7 @@ public class UIRZCPsa407All {
     public void showWindowTip(int value, int updateCode) {
         PopupWindow window = WarnUtils.getWindow();
         initTip(value, updateCode);
-        if (DataCanbus.DATA[215] == 0) {
+        if (DataCanbus.DATA[226] == 0) {
             if (window.isShowing()) {
                 window.dismiss();
             }
@@ -41,13 +41,13 @@ public class UIRZCPsa407All {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn_bigtext, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn_bigtext, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
-        switch (DataCanbus.DATA[215]) {
+        switch (DataCanbus.DATA[226]) {
             case 1:
-                int val = DataCanbus.DATA[218];
+                int val = DataCanbus.DATA[229];
                 if (val > 9) {
                     this.mTextWarn.setText("Bal : +" + (val - 9));
                     break;
@@ -59,7 +59,7 @@ public class UIRZCPsa407All {
                     break;
                 }
             case 2:
-                int val2 = DataCanbus.DATA[219];
+                int val2 = DataCanbus.DATA[230];
                 if (val2 > 9) {
                     this.mTextWarn.setText("Fad : +" + (val2 - 9));
                     break;
@@ -71,7 +71,7 @@ public class UIRZCPsa407All {
                     break;
                 }
             case 3:
-                int val3 = DataCanbus.DATA[222];
+                int val3 = DataCanbus.DATA[233];
                 switch (val3) {
                     case 0:
                         this.mTextWarn.setText("Auto vol: Off");
@@ -81,7 +81,7 @@ public class UIRZCPsa407All {
                         break;
                 }
             case 4:
-                int val4 = DataCanbus.DATA[220];
+                int val4 = DataCanbus.DATA[231];
                 switch (val4) {
                     case 0:
                         this.mTextWarn.setText("EQ : Standard");
@@ -103,7 +103,7 @@ public class UIRZCPsa407All {
                         break;
                 }
             case 5:
-                int val5 = DataCanbus.DATA[221];
+                int val5 = DataCanbus.DATA[232];
                 switch (val5) {
                     case 0:
                         this.mTextWarn.setText("Lound : Off");
@@ -113,7 +113,7 @@ public class UIRZCPsa407All {
                         break;
                 }
             case 6:
-                int val6 = DataCanbus.DATA[216];
+                int val6 = DataCanbus.DATA[227];
                 if (val6 > 9) {
                     this.mTextWarn.setText("Bass : +" + (val6 - 9));
                     break;
@@ -125,7 +125,7 @@ public class UIRZCPsa407All {
                     break;
                 }
             case 7:
-                int val7 = DataCanbus.DATA[217];
+                int val7 = DataCanbus.DATA[228];
                 if (val7 > 9) {
                     this.mTextWarn.setText("Treb : +" + (val7 - 9));
                     break;
@@ -137,7 +137,7 @@ public class UIRZCPsa407All {
                     break;
                 }
             case 8:
-                int val8 = DataCanbus.DATA[223];
+                int val8 = DataCanbus.DATA[234];
                 this.mTextWarn.setText("Car Vol : " + val8);
                 break;
         }

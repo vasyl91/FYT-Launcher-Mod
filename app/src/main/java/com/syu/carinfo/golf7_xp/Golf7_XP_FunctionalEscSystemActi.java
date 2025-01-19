@@ -9,42 +9,41 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_FunctionalEscSystemActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalEscSystemActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 65:
+                case 162:
                     Golf7_XP_FunctionalEscSystemActi.this.mUpdaterEscSystem();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_state_esc_system_xp);
+        //setContentView(R.layout.layout_golf7_functional_state_esc_system_xp);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.glf7_btn_esc_system_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalEscSystemActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[65] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[162] & 255) - 1;
                 if (switchOn < 0) {
                     switchOn = 2;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{16, switchOn}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalEscSystemActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[65] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[162] & 255) + 1;
                 if (switchOn > 2) {
                     switchOn = 0;
                 }
@@ -53,31 +52,31 @@ public class Golf7_XP_FunctionalEscSystemActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEscSystem() {
-        int switchOn = DataCanbus.DATA[65] & 255;
+        int switchOn = DataCanbus.DATA[162] & 255;
         if (switchOn == 2) {
             ((TextView) findViewById(R.id.glf7_tv_esc_system_minus)).setText(R.string.Eesc_sport);
         } else if (switchOn == 1) {

@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONTokener;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class InstallShortcutReceiver extends BroadcastReceiver {
     public static final String ACTION_INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT";
     public static final String APPS_PENDING_INSTALL = "apps_to_install";
@@ -66,7 +65,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                 JSONStringer json2 = json.endObject();
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 addToStringSet(sharedPrefs, editor, APPS_PENDING_INSTALL, json2.toString());
-                editor.commit();
+                editor.apply();
             } catch (JSONException e) {
                 Log.d(TAG, "Exception when adding shortcut: " + e);
             }
@@ -97,7 +96,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                         Log.d(TAG, "Exception reading shortcut to remove: " + e2);
                     }
                 }
-                sharedPrefs.edit().putStringSet(APPS_PENDING_INSTALL, new HashSet(newStrings)).commit();
+                sharedPrefs.edit().putStringSet(APPS_PENDING_INSTALL, new HashSet<>(newStrings)).commit();
             }
         }
     }
@@ -140,7 +139,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                         Log.d(TAG, "Exception reading shortcut to add: " + e2);
                     }
                 }
-                sharedPrefs.edit().putStringSet(APPS_PENDING_INSTALL, new HashSet()).commit();
+                sharedPrefs.edit().putStringSet(APPS_PENDING_INSTALL, new HashSet<>()).commit();
             }
         }
         return infos;
@@ -160,7 +159,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         }
     }
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent data) {
         Intent intent;
         if (ACTION_INSTALL_SHORTCUT.equals(data.getAction()) && (intent = (Intent) data.getParcelableExtra("android.intent.extra.shortcut.INTENT")) != null) {

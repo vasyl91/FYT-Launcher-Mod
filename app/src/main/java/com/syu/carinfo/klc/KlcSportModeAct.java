@@ -9,26 +9,25 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcSportModeAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcSportModeAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 48:
+                case 145:
                     KlcSportModeAct.this.updateSpeedFadongjiSet();
                     break;
-                case 49:
+                case 146:
                     KlcSportModeAct.this.updateSpeedBeiGuangSet();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_sport_mode_set);
+        //setContentView(R.layout.layout_klc_sport_mode_set);
         setUI();
     }
 
@@ -37,28 +36,28 @@ public class KlcSportModeAct extends Activity implements View.OnClickListener {
         ((CheckedTextView) findViewById(R.id.klc_btn_sport_mode_Backlit_check)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_sport_mode_Engine_check /* 2131432025 */:
-                int valEngie = DataCanbus.DATA[48] & 255;
+            case R.id.klc_sport_mode_Engine_check /* 2131431975 */:
+                int valEngie = DataCanbus.DATA[145] & 255;
                 KlcFunc.C_CAR_SPORT_MODE(1, valEngie == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_sport_mode_Backlit_check /* 2131432028 */:
-                int valBacklit = DataCanbus.DATA[49] & 255;
+            case R.id.klc_btn_sport_mode_Backlit_check /* 2131431978 */:
+                int valBacklit = DataCanbus.DATA[146] & 255;
                 KlcFunc.C_CAR_SPORT_MODE(2, valBacklit != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -69,18 +68,18 @@ public class KlcSportModeAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeedFadongjiSet() {
-        int val = DataCanbus.DATA[48];
+        int val = DataCanbus.DATA[145];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {
@@ -98,9 +97,9 @@ public class KlcSportModeAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeedBeiGuangSet() {
-        int val = DataCanbus.DATA[49];
+        int val = DataCanbus.DATA[146];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {

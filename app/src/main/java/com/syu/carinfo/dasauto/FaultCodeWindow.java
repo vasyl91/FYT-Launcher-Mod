@@ -15,14 +15,13 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FaultCodeWindow extends BaseActivity implements View.OnClickListener {
     private int mFaultCount;
     private PopupWindow mWindow;
     private TextView[] mErrorCodes = new TextView[8];
     private List<Integer> mCodeSets = new ArrayList();
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dasauto.FaultCodeWindow.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -36,10 +35,10 @@ public class FaultCodeWindow extends BaseActivity implements View.OnClickListene
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_pop_fault_code);
+        //setContentView(R.layout.layout_pop_fault_code);
         initView();
     }
 
@@ -56,19 +55,19 @@ public class FaultCodeWindow extends BaseActivity implements View.OnClickListene
         ((ImageView) findViewById(R.id.pop_remove)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateErrorCode(int value) {
         this.mFaultCount = value;
     }
@@ -106,13 +105,13 @@ public class FaultCodeWindow extends BaseActivity implements View.OnClickListene
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.pop_close /* 2131427922 */:
+            case R.id.pop_close /* 2131427925 */:
                 hideWindow();
                 break;
-            case R.id.pop_remove /* 2131432252 */:
+            case R.id.pop_remove /* 2131432201 */:
                 for (int i = 0; i < this.mErrorCodes.length; i++) {
                     if (this.mErrorCodes[i].getAlpha() == 1.0f) {
                         gradientAnim(this.mErrorCodes[i], 1.0f, 0.0f);

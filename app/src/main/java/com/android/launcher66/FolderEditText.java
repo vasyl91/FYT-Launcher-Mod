@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FolderEditText extends EditText {
     private Folder mFolder;
 
@@ -25,7 +24,7 @@ public class FolderEditText extends EditText {
         this.mFolder = folder;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == 4) {
             this.mFolder.doneEditingFolderName(true);

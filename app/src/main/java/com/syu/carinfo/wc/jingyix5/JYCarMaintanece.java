@@ -7,12 +7,11 @@ import android.widget.CheckedTextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JYCarMaintanece extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_wc_jyx5_maintain);
+        //setContentView(R.layout.layout_wc_jyx5_maintain);
         setUI();
     }
 
@@ -22,18 +21,18 @@ public class JYCarMaintanece extends BaseActivity implements View.OnClickListene
         ((CheckedTextView) findViewById(R.id.jy_maintain_3)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         Intent ii = new Intent(this, (Class<?>) JYCarMaintaneceOptions.class);
         switch (id) {
-            case R.id.jy_maintain_1 /* 2131433095 */:
+            case R.id.jy_maintain_1 /* 2131432994 */:
                 ii.putExtra("ID", "Maintenance");
                 break;
-            case R.id.jy_maintain_2 /* 2131433096 */:
+            case R.id.jy_maintain_2 /* 2131432995 */:
                 ii.putExtra("ID", "tire");
                 break;
-            case R.id.jy_maintain_3 /* 2131433097 */:
+            case R.id.jy_maintain_3 /* 2131432996 */:
                 ii.putExtra("ID", "oil");
                 break;
         }

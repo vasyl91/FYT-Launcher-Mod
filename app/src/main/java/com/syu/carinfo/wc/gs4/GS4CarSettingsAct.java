@@ -8,12 +8,11 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS4CarSettingsAct extends Activity implements View.OnClickListener {
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_289_wc_gs4_car_set);
+        //setContentView(R.layout.layout_289_wc_gs4_car_set);
         init();
     }
 
@@ -24,16 +23,16 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
         findViewById(R.id.wc_gs4_car_accessory_set_check).setOnClickListener(this);
         findViewById(R.id.wc_gs4_light_set_check).setOnClickListener(this);
         findViewById(R.id.wc_gs4_charging_set_check).setOnClickListener(this);
-        if (459041 != DataCanbus.DATA[1000]) {
+        if (DataCanbus.DATA[1000] != 459041 && DataCanbus.DATA[1000] != 655649 && DataCanbus.DATA[1000] != 786721) {
             findViewById(R.id.view_functional_charging_set).setVisibility(8);
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.wc_gs4_air_car_set_check /* 2131429146 */:
+            case R.id.wc_gs4_air_car_set_check /* 2131429106 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) GS4AirSetAct.class);
                     startActivity(intent);
@@ -42,7 +41,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
                     e.printStackTrace();
                     return;
                 }
-            case R.id.wc_gs4_seat_car_set_check /* 2131429148 */:
+            case R.id.wc_gs4_seat_car_set_check /* 2131429108 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) GS4SeatSetAct.class);
                     startActivity(intent2);
@@ -51,7 +50,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.wc_gs4_help_set_check /* 2131429150 */:
+            case R.id.wc_gs4_help_set_check /* 2131429110 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) GS4HelpSetAct.class);
                     startActivity(intent3);
@@ -60,7 +59,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.wc_gs4_car_accessory_set_check /* 2131429152 */:
+            case R.id.wc_gs4_car_accessory_set_check /* 2131429112 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) GS4CarAccessoryAct.class);
                     startActivity(intent4);
@@ -69,7 +68,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.wc_gs4_light_set_check /* 2131429153 */:
+            case R.id.wc_gs4_light_set_check /* 2131429113 */:
                 try {
                     Intent intent5 = new Intent(this, (Class<?>) GS4LightSetAct.class);
                     startActivity(intent5);
@@ -78,7 +77,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.wc_gs4_charging_set_check /* 2131429155 */:
+            case R.id.wc_gs4_charging_set_check /* 2131429115 */:
                 try {
                     Intent intent6 = new Intent(this, (Class<?>) GE3ChargingSetAct.class);
                     startActivity(intent6);
@@ -90,7 +89,7 @@ public class GS4CarSettingsAct extends Activity implements View.OnClickListener 
         }
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

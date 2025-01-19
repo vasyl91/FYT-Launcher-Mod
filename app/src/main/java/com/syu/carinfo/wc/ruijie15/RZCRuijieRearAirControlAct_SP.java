@@ -12,30 +12,29 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.RZCRuijieRearAirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 49:
-                    RZCRuijieRearAirControlAct_SP.this.mUpdateAirTempLeft();
-                    break;
-                case 50:
-                    RZCRuijieRearAirControlAct_SP.this.mUpdaterAirWindLevelLeft();
-                    break;
-                case 51:
-                    RZCRuijieRearAirControlAct_SP.this.mUpdatePowerOn();
-                    break;
-                case 52:
-                    RZCRuijieRearAirControlAct_SP.this.mUpdateRearCtrlOn();
-                    break;
-                case 54:
+                case 29:
                     RZCRuijieRearAirControlAct_SP.this.updaterSeatHotLeft();
                     break;
-                case 55:
+                case 30:
                     RZCRuijieRearAirControlAct_SP.this.updaterSeatHotRight();
+                    break;
+                case 40:
+                    RZCRuijieRearAirControlAct_SP.this.mUpdateAirTempLeft();
+                    break;
+                case 42:
+                    RZCRuijieRearAirControlAct_SP.this.mUpdatePowerOn();
+                    break;
+                case 44:
+                    RZCRuijieRearAirControlAct_SP.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 67:
+                    RZCRuijieRearAirControlAct_SP.this.mUpdateRearCtrlOn();
                     break;
             }
         }
@@ -45,14 +44,14 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control);
         } else {
-            setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control_7731);
+            //setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control_7731);
         }
         init();
     }
@@ -70,7 +69,7 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         findViewById(R.id.air_xts_seatwin_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -78,7 +77,7 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -86,7 +85,7 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -133,26 +132,26 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSeatHotRight() {
-        int mRightSeatHeat = DataCanbus.DATA[55];
+        int mRightSeatHeat = DataCanbus.DATA[30];
         switch (mRightSeatHeat) {
             case 0:
                 ((Button) findViewById(R.id.air_xts_seathot_right)).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);
@@ -185,9 +184,9 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSeatHotLeft() {
-        int mLeftSeatHeat = DataCanbus.DATA[54];
+        int mLeftSeatHeat = DataCanbus.DATA[29];
         switch (mLeftSeatHeat) {
             case 0:
                 ((Button) findViewById(R.id.air_xts_seathot_left)).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
@@ -220,29 +219,29 @@ public class RZCRuijieRearAirControlAct_SP extends Activity implements View.OnTo
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearCtrlOn() {
-        int power = DataCanbus.DATA[52];
+        int power = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[49];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             ((TextView) findViewById(R.id.tv_air_temp_left)).setText(new StringBuilder().append(temp).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[51];
+        int power = DataCanbus.DATA[42];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[50];
+        int leave = DataCanbus.DATA[44];
         if (leave < 0) {
             leave = 0;
         }

@@ -4,74 +4,74 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Bg_ZiYouguang_Safety extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 97:
                     Bg_ZiYouguang_Safety.this.mParksense_brake_assist();
                     break;
-                case 1:
+                case 98:
                     Bg_ZiYouguang_Safety.this.mHill_start_assist();
                     break;
-                case 2:
+                case 99:
                     Bg_ZiYouguang_Safety.this.mAuto_park_brake();
                     break;
-                case 11:
+                case 108:
                     Bg_ZiYouguang_Safety.this.mParkSense();
                     break;
-                case 12:
+                case 109:
                     Bg_ZiYouguang_Safety.this.mFrontParkSenseVol();
                     break;
-                case 13:
+                case 110:
                     Bg_ZiYouguang_Safety.this.mRearParkSenseVol();
                     break;
-                case 19:
+                case 116:
                     Bg_ZiYouguang_Safety.this.mBrake_mode();
                     break;
-                case 20:
+                case 117:
                     Bg_ZiYouguang_Safety.this.mForwardCollision();
                     break;
-                case 21:
+                case 118:
                     Bg_ZiYouguang_Safety.this.mVideoMove();
                     break;
-                case 22:
+                case 119:
                     Bg_ZiYouguang_Safety.this.mVideoStatic();
                     break;
-                case 23:
+                case 120:
                     Bg_ZiYouguang_Safety.this.mViewRainAuto();
                     break;
-                case 24:
+                case 121:
                     Bg_ZiYouguang_Safety.this.mForwardCollisionWarn();
                     break;
-                case 25:
+                case 122:
                     Bg_ZiYouguang_Safety.this.mLanewar();
                     break;
-                case 26:
+                case 123:
                     Bg_ZiYouguang_Safety.this.mView_Lanedev();
                     break;
-                case 27:
+                case 124:
                     Bg_ZiYouguang_Safety.this.mBlindWarring();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_safety);
+        //setContentView(R.layout.layout_jeep_safety);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 371) {
             findViewById(R.id.layout_view8).setVisibility(8);
@@ -83,11 +83,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
             findViewById(R.id.layout_view14).setVisibility(8);
             findViewById(R.id.layout_view15).setVisibility(8);
         }
-        findViewById(R.id.btn_minus1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[11];
+                int value2 = DataCanbus.DATA[108];
                 if (value2 == 1) {
                     value = 2;
                 } else {
@@ -96,11 +96,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{1, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[11];
+                int value2 = DataCanbus.DATA[108];
                 if (value2 == 1) {
                     value = 2;
                 } else {
@@ -109,11 +109,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{1, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[12];
+                int value2 = DataCanbus.DATA[109];
                 if (value2 == 3) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -124,11 +124,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{2, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[12];
+                int value2 = DataCanbus.DATA[109];
                 if (value2 == 1) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -139,11 +139,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{2, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus3).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[13];
+                int value2 = DataCanbus.DATA[110];
                 if (value2 == 3) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -154,11 +154,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{3, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus3).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.7
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[13];
+                int value2 = DataCanbus.DATA[110];
                 if (value2 == 1) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -169,11 +169,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{3, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.8
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[0];
+                int value2 = DataCanbus.DATA[97];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -182,11 +182,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{4, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.9
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[1];
+                int value2 = DataCanbus.DATA[98];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -195,11 +195,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{7, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.10
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext4).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[2];
+                int value2 = DataCanbus.DATA[99];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -208,18 +208,18 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{6, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.11
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int i = DataCanbus.DATA[19];
+                int i = DataCanbus.DATA[116];
                 DataCanbus.PROXY.cmd(2, new int[]{5, 2}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.12
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext5).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[21];
+                int value2 = DataCanbus.DATA[118];
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -228,11 +228,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{6, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.13
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext6).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[22];
+                int value2 = DataCanbus.DATA[119];
                 if (value2 == 0) {
                     value = 17;
                 } else {
@@ -241,11 +241,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{7, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.14
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext7).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[23];
+                int value2 = DataCanbus.DATA[120];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -254,11 +254,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{8, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus4).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.15
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus4).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[20];
+                int value2 = DataCanbus.DATA[117];
                 if (value2 == 2) {
                     value = 1;
                 } else {
@@ -267,11 +267,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{1, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus4).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.16
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus4).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[20];
+                int value2 = DataCanbus.DATA[117];
                 if (value2 == 2) {
                     value = 1;
                 } else {
@@ -280,11 +280,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{1, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus5).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.17
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus5).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[24];
+                int value2 = DataCanbus.DATA[121];
                 if (value2 == 2) {
                     value = 1;
                 } else {
@@ -293,11 +293,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{2, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus5).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.18
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus5).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[24];
+                int value2 = DataCanbus.DATA[121];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -306,11 +306,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{2, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus6).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.19
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus6).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[25];
+                int value2 = DataCanbus.DATA[122];
                 if (value2 == 3) {
                     value = 2;
                 } else if (value2 == 2) {
@@ -321,11 +321,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{3, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus6).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.20
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus6).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[25];
+                int value2 = DataCanbus.DATA[122];
                 if (value2 == 1) {
                     value = 2;
                 } else if (value2 == 2) {
@@ -336,11 +336,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{3, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus7).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.21
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus7).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[26];
+                int value2 = DataCanbus.DATA[123];
                 if (value2 == 3) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -351,11 +351,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{4, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus7).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.22
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus7).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[26];
+                int value2 = DataCanbus.DATA[123];
                 if (value2 == 1) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -366,11 +366,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{4, value}, null, null);
             }
         });
-        findViewById(R.id.btn_minus8).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.23
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus8).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[27];
+                int value2 = DataCanbus.DATA[124];
                 if (value2 == 3) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -381,11 +381,11 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
                 DataCanbus.PROXY.cmd(3, new int[]{5, value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus8).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_Safety.24
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus8).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[27];
+                int value2 = DataCanbus.DATA[124];
                 if (value2 == 1) {
                     value = 1;
                 } else if (value2 == 2) {
@@ -398,88 +398,88 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mParksense_brake_assist() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[97];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mHill_start_assist() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[98];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mAuto_park_brake() {
-        int value = DataCanbus.DATA[2];
+        int value = DataCanbus.DATA[99];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mBrake_mode() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[116];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mParkSense() {
-        int value = DataCanbus.DATA[11];
-        if (((TextView) findViewById(R.id.tv_text1)) != null) {
+        int value = DataCanbus.DATA[108];
+        if (findViewById(R.id.tv_text1) != null) {
             if (value == 2) {
                 ((TextView) findViewById(R.id.tv_text1)).setText(R.string.jeep_parksense_1);
             } else if (value == 1) {
@@ -490,10 +490,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mFrontParkSenseVol() {
-        int value = DataCanbus.DATA[12];
-        if (((TextView) findViewById(R.id.tv_text2)) != null) {
+        int value = DataCanbus.DATA[109];
+        if (findViewById(R.id.tv_text2) != null) {
             if (value == 3) {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.klc_air_high);
                 return;
@@ -508,10 +508,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mRearParkSenseVol() {
-        int value = DataCanbus.DATA[13];
-        if (((TextView) findViewById(R.id.tv_text3)) != null) {
+        int value = DataCanbus.DATA[110];
+        if (findViewById(R.id.tv_text3) != null) {
             if (value == 3) {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_air_high);
                 return;
@@ -526,10 +526,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mForwardCollision() {
-        int value = DataCanbus.DATA[20];
-        if (((TextView) findViewById(R.id.tv_text4)) != null) {
+        int value = DataCanbus.DATA[117];
+        if (findViewById(R.id.tv_text4) != null) {
             if (value == 2) {
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.jeep_forwardcollisionwarn_1);
             } else if (value == 1) {
@@ -540,31 +540,31 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mVideoMove() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[118];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mVideoStatic() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[119];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mViewRainAuto() {
-        int value = DataCanbus.DATA[23];
+        int value = DataCanbus.DATA[120];
         int switchOn = value & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mForwardCollisionWarn() {
-        int value = DataCanbus.DATA[24];
-        if (((TextView) findViewById(R.id.tv_text5)) != null) {
+        int value = DataCanbus.DATA[121];
+        if (findViewById(R.id.tv_text5) != null) {
             if (value == 2) {
                 ((TextView) findViewById(R.id.tv_text5)).setText("ON");
             } else if (value == 1) {
@@ -575,10 +575,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mLanewar() {
-        int value = DataCanbus.DATA[25];
-        if (((TextView) findViewById(R.id.tv_text6)) != null) {
+        int value = DataCanbus.DATA[122];
+        if (findViewById(R.id.tv_text6) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.tv_text6)).setText(R.string.jeep_lanesensewarn_0);
                 return;
@@ -593,10 +593,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mView_Lanedev() {
-        int value = DataCanbus.DATA[26];
-        if (((TextView) findViewById(R.id.tv_text7)) != null) {
+        int value = DataCanbus.DATA[123];
+        if (findViewById(R.id.tv_text7) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.tv_text7)).setText(R.string.wc_372_low);
                 return;
@@ -611,10 +611,10 @@ public class Bg_ZiYouguang_Safety extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mBlindWarring() {
-        int value = DataCanbus.DATA[27];
-        if (((TextView) findViewById(R.id.tv_text8)) != null) {
+        int value = DataCanbus.DATA[124];
+        if (findViewById(R.id.tv_text8) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.tv_text8)).setText(R.string.jeep_blindwarn_0);
                 return;

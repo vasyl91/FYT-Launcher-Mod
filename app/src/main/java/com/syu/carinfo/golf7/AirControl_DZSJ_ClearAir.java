@@ -11,36 +11,35 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControl_DZSJ_ClearAir extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.golf7.AirControl_DZSJ_ClearAir.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 190:
-                case 226:
+                case 73:
+                case 76:
                     AirControl_DZSJ_ClearAir.this.uAirClearState();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_golf7_clearair_dzsj);
+        //setContentView(R.layout.layout_golf7_clearair_dzsj);
         initUI();
     }
 
     private void initUI() {
-        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.AirControl_DZSJ_ClearAir.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     AirControl_DZSJ_ClearAir.this.onKeyDown(4, null);
@@ -58,24 +57,24 @@ public class AirControl_DZSJ_ClearAir extends Activity implements View.OnClickLi
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.glf7_btn_air_clear_od /* 2131431067 */:
-                int value = DataCanbus.DATA[190];
+            case R.id.glf7_btn_air_clear_od /* 2131431043 */:
+                int value = DataCanbus.DATA[76];
                 setAirCmd(32, value == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -87,16 +86,16 @@ public class AirControl_DZSJ_ClearAir extends Activity implements View.OnClickLi
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[226].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mCanbusNotify);
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -105,10 +104,10 @@ public class AirControl_DZSJ_ClearAir extends Activity implements View.OnClickLi
         return true;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uAirClearState() {
-        int value1 = DataCanbus.DATA[226];
-        int value2 = DataCanbus.DATA[190];
+        int value1 = DataCanbus.DATA[73];
+        int value2 = DataCanbus.DATA[76];
         if (value2 == 0) {
             ((Button) findViewById(R.id.glf7_btn_air_clear_od)).setSelected(false);
             ((ImageView) findViewById(R.id.iv_airlearstate)).setImageDrawable(getResources().getDrawable(R.drawable.ic_air_clear_stat0));

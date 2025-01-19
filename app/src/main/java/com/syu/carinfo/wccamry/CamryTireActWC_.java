@@ -10,11 +10,10 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.Locale;
 
 /* renamed from: com.syu.carinfo.wccamry.CamryTireActWC_备份, reason: invalid class name */
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryTireActWC_ extends BaseActivity {
     public static CamryTireActWC_ mInit;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wccamry.CamryTireActWC_备份.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 71:
@@ -36,14 +35,14 @@ public class CamryTireActWC_ extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_tire_wc);
+        //setContentView(R.layout.layout_camry_tire_wc);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
@@ -52,7 +51,7 @@ public class CamryTireActWC_ extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
@@ -61,12 +60,12 @@ public class CamryTireActWC_ extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         mInit = this;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
         int value = DataCanbus.DATA[72];
         if (value == 254) {
@@ -84,7 +83,7 @@ public class CamryTireActWC_ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
         int value = DataCanbus.DATA[73];
         if (value == 254) {
@@ -102,7 +101,7 @@ public class CamryTireActWC_ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
         int value = DataCanbus.DATA[74];
         if (value == 254) {
@@ -120,7 +119,7 @@ public class CamryTireActWC_ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
         int value = DataCanbus.DATA[75];
         if (value == 254) {
@@ -138,7 +137,7 @@ public class CamryTireActWC_ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireWarn() {
         int value = DataCanbus.DATA[71];
         if (value == 1) {

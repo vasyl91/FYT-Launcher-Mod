@@ -11,7 +11,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TianLai09Act extends BaseActivity {
     public static boolean mIsFront = false;
     static int sHasDisc = 0;
@@ -23,47 +22,47 @@ public class TianLai09Act extends BaseActivity {
     private TextView[] cd4infoTv = new TextView[4];
     ImageView[] systemImage = new ImageView[6];
     ImageView[] soundImage = new ImageView[6];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.sbd.x80.TianLai09Act.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 51:
+                case 99:
                     TianLai09Act.this.updaterradiostate();
                     break;
-                case 52:
+                case 100:
                     TianLai09Act.this.updaterband();
                     break;
-                case 53:
+                case 101:
                     TianLai09Act.this.updaterFreq(ints);
                     break;
-                case 54:
+                case 102:
                     TianLai09Act.this.updaterradiotext(strs);
                     break;
-                case 57:
+                case 105:
                     TianLai09Act.this.updaterMode();
                     break;
-                case 58:
+                case 106:
                     TianLai09Act.this.updaterDiscState();
                     break;
-                case 59:
+                case 107:
                     TianLai09Act.this.updaterDiscState();
                     break;
-                case 60:
+                case 108:
                     TianLai09Act.this.updaterPlayTime();
                     break;
-                case 61:
+                case 109:
                     TianLai09Act.this.updaterFiles();
                     break;
-                case 62:
+                case 110:
                     TianLai09Act.this.updatercdtext(strs);
                     break;
-                case 65:
+                case 113:
                     TianLai09Act.this.updaterMediaState();
                     break;
-                case 67:
+                case 115:
                     TianLai09Act.this.updaterVol();
                     break;
-                case 68:
+                case 116:
                     TianLai09Act.this.updaterShowPage();
                     break;
             }
@@ -72,15 +71,15 @@ public class TianLai09Act extends BaseActivity {
     Toast toast = null;
     TextView view = null;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_388_hc_xp1_09tianlai);
+        //setContentView(R.layout.layout_388_hc_xp1_09tianlai);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.myButtons[0] = (MyButton) findViewById(R.id.freq1);
         this.myButtons[1] = (MyButton) findViewById(R.id.freq2);
@@ -134,7 +133,7 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -142,50 +141,50 @@ public class TianLai09Act extends BaseActivity {
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterShowPage() {
-        int PageIndex = DataCanbus.DATA[68] & 3;
+        int PageIndex = DataCanbus.DATA[116] & 3;
         if (PageIndex <= 3) {
             if (PageIndex == 1) {
                 ((TextView) findViewById(R.id.cd_tip_show_center_tv)).setVisibility(8);
@@ -287,10 +286,10 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterVol() {
-        int value = DataCanbus.DATA[67] & 255;
-        int enable = (DataCanbus.DATA[67] >> 8) & 255;
+        int value = DataCanbus.DATA[115] & 255;
+        int enable = (DataCanbus.DATA[115] >> 8) & 255;
         if (enable == 1) {
             ((TextView) findViewById(R.id.cd_tip_vol)).setVisibility(0);
         } else {
@@ -299,9 +298,9 @@ public class TianLai09Act extends BaseActivity {
         ((TextView) findViewById(R.id.cd_tip_vol)).setText(String.valueOf(getResources().getString(R.string.str_sbd_x80_yuanche_vol)) + value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterradiostate() {
-        int state = DataCanbus.DATA[51];
+        int state = DataCanbus.DATA[99];
         int rds_state = (state >> 7) & 1;
         int scane_state = (state >> 6) & 1;
         int st_state = (state >> 5) & 1;
@@ -334,16 +333,16 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterradiotext(String[] strs) {
         if (strs != null) {
             ((TextView) findViewById(R.id.radio_text)).setText(strs[0]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterband() {
-        this.band = DataCanbus.DATA[52];
+        this.band = DataCanbus.DATA[100];
         if (this.band == 3) {
             ((TextView) findViewById(R.id.band)).setText("FM 1");
             ((TextView) findViewById(R.id.textshow)).setText("MHz");
@@ -366,7 +365,7 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFreq(int[] ints) {
         if (ints != null && ints.length >= 2) {
             int currentband = ints[0] & 65535;
@@ -387,18 +386,18 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatercdtext(String[] strs) {
         if (strs != null) {
             ((TextView) findViewById(R.id.cd_title_show)).setText(strs[0]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDiscState() {
-        int havedisc = DataCanbus.DATA[58] & 65535;
-        int disc = (DataCanbus.DATA[59] >> 8) & 255;
-        int track = DataCanbus.DATA[59] & 255;
+        int havedisc = DataCanbus.DATA[106] & 65535;
+        int disc = (DataCanbus.DATA[107] >> 8) & 255;
+        int track = DataCanbus.DATA[107] & 255;
         if (((havedisc >> 14) & 1) == 1) {
             sHasDisc |= 1;
         } else {
@@ -447,16 +446,16 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = (DataCanbus.DATA[60] >> 8) & 255;
+        int playminute = (DataCanbus.DATA[108] >> 8) & 255;
         if (playminute > 59) {
             playminute = 59;
         }
         if (playminute < 0) {
             playminute = 0;
         }
-        int playsecond = DataCanbus.DATA[60] & 255;
+        int playsecond = DataCanbus.DATA[108] & 255;
         if (playsecond > 59) {
             playsecond = 59;
         }
@@ -466,9 +465,9 @@ public class TianLai09Act extends BaseActivity {
         ((TextView) findViewById(R.id.time_tv)).setText(String.valueOf(playminute) + ":" + playsecond);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFiles() {
-        int files = DataCanbus.DATA[61];
+        int files = DataCanbus.DATA[109];
         switch (files) {
             case 0:
                 ((TextView) findViewById(R.id.file_num_tv)).setText("Play");
@@ -500,12 +499,12 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMode() {
-        int mode = DataCanbus.DATA[57] & 7;
+        int mode = DataCanbus.DATA[105] & 7;
         ((TextView) findViewById(R.id.mode_text)).setVisibility(0);
         ((TextView) findViewById(R.id.mode_tv)).setVisibility(0);
-        if (((DataCanbus.DATA[57] >> 3) & 1) == 1) {
+        if (((DataCanbus.DATA[105] >> 3) & 1) == 1) {
             ((TextView) findViewById(R.id.cd_title_show)).setVisibility(0);
         } else {
             ((TextView) findViewById(R.id.cd_title_show)).setVisibility(8);
@@ -538,10 +537,10 @@ public class TianLai09Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMediaState() {
-        int media_type = (DataCanbus.DATA[65] >> 5) & 255;
-        int media_data = DataCanbus.DATA[65] & 31;
+        int media_type = (DataCanbus.DATA[113] >> 5) & 255;
+        int media_data = DataCanbus.DATA[113] & 31;
         if (media_type != 0) {
             updatesound(1);
         } else {
@@ -621,7 +620,7 @@ public class TianLai09Act extends BaseActivity {
         this.toast.show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case 3:

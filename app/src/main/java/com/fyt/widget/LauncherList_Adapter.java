@@ -7,11 +7,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
+
 import share.ResValue;
 
 public class LauncherList_Adapter extends BaseAdapter {
-    private Context context;
+    private final Context context;
     private ArrayList<String> list;
     private long sum = 0;
     private int focus_id = 0;
@@ -22,7 +24,7 @@ public class LauncherList_Adapter extends BaseAdapter {
         this.context = context2;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public int getCount() {
         if (this.list == null) {
             return 0;
@@ -30,12 +32,12 @@ public class LauncherList_Adapter extends BaseAdapter {
         return this.list.size();
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public Object getItem(int position) {
         return this.list.get(position);
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public long getItemId(int position) {
         return position;
     }
@@ -48,14 +50,14 @@ public class LauncherList_Adapter extends BaseAdapter {
         return this.focus_id;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         long star = System.nanoTime();
         if (convertView == null) {
             ViewHolder viewHolder = new ViewHolder();
             convertView = View.inflate(this.context, ResValue.getInstance().item_applist, null);
-            viewHolder.appbtn_bg = (ImageView) convertView.findViewById(ResValue.getInstance().appbtn_bg);
-            viewHolder.AppName = (TextView) convertView.findViewById(ResValue.getInstance().app_name);
+            viewHolder.appbtn_bg = convertView.findViewById(ResValue.getInstance().appbtn_bg);
+            viewHolder.AppName = convertView.findViewById(ResValue.getInstance().app_name);
             convertView.setTag(viewHolder);
         }
         ViewHolder viewHolder2 = (ViewHolder) convertView.getTag();

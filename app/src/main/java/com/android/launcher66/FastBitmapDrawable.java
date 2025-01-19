@@ -8,7 +8,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class FastBitmapDrawable extends Drawable {
     private Bitmap mBitmap;
     private int mHeight;
@@ -27,7 +26,7 @@ class FastBitmapDrawable extends Drawable {
         }
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public void draw(Canvas canvas) {
         Rect r = getBounds();
         if (this.mBitmap != null) {
@@ -35,48 +34,48 @@ class FastBitmapDrawable extends Drawable {
         }
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public void setColorFilter(ColorFilter cf) {
         this.mPaint.setColorFilter(cf);
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public void setAlpha(int alpha) {
         this.mAlpha = alpha;
         this.mPaint.setAlpha(alpha);
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public void setFilterBitmap(boolean filterBitmap) {
         this.mPaint.setFilterBitmap(filterBitmap);
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getAlpha() {
         return this.mAlpha;
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getIntrinsicWidth() {
         return this.mWidth;
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getIntrinsicHeight() {
         return this.mHeight;
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getMinimumWidth() {
         return this.mWidth;
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public int getMinimumHeight() {
         return this.mHeight;
     }

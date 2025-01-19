@@ -9,7 +9,7 @@ import android.os.RemoteException;
 public interface IModuleCallback extends IInterface {
     void update(int i, int[] iArr, float[] fArr, String[] strArr) throws RemoteException;
 
-    public static abstract class Stub extends Binder implements IModuleCallback {
+    abstract class Stub extends Binder implements IModuleCallback {
         private static final String DESCRIPTOR = "com.syu.ipc.IModuleCallback";
         static final int TRANSACTION_update = 1;
 
@@ -28,12 +28,12 @@ public interface IModuleCallback extends IInterface {
             return new Proxy(obj);
         }
 
-        @Override // android.os.IInterface
+        @Override
         public IBinder asBinder() {
             return this;
         }
 
-        @Override // android.os.Binder
+        @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
             switch (code) {
                 case 1:
@@ -53,18 +53,18 @@ public interface IModuleCallback extends IInterface {
         }
 
         private static class Proxy implements IModuleCallback {
-            private IBinder mRemote;
+            private final IBinder mRemote;
 
             Proxy(IBinder remote) {
                 this.mRemote = remote;
             }
 
-            @Override // android.os.IInterface
+            @Override
             public IBinder asBinder() {
                 return this.mRemote;
             }
 
-            @Override // com.syu.ipc.IModuleCallback
+            @Override
             public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
                 Parcel data = Parcel.obtain();
                 try {

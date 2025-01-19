@@ -12,14 +12,13 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.reflect.Field;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordDirectTuneWindow extends BaseActivity implements View.OnClickListener {
     private View mRootView;
     private PopupWindow mWindow;
     StringBuffer mTvCurrPasswordBuffer = new StringBuffer();
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordDirectTuneWindow.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         }
     };
@@ -66,12 +65,84 @@ public class PAFordDirectTuneWindow extends BaseActivity implements View.OnClick
         ((Button) this.mRootView.findViewById(R.id.btn_plus13)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_plus13 /* 2131427470 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    switch (DataCanbus.DATA[408]) {
+                    this.mTvCurrPasswordBuffer.append('1');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus2 /* 2131427460 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('2');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus3 /* 2131427463 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('3');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus4 /* 2131427466 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('4');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus5 /* 2131427469 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('5');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus6 /* 2131427472 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null && this.mTvCurrPasswordBuffer.length() >= 1) {
+                    this.mTvCurrPasswordBuffer.deleteCharAt(this.mTvCurrPasswordBuffer.length() - 1);
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus7 /* 2131427475 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('6');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus8 /* 2131427478 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('7');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus9 /* 2131427481 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('8');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus10 /* 2131427484 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('9');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus11 /* 2131427487 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('0');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus12 /* 2131427490 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    this.mTvCurrPasswordBuffer.append('.');
+                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
+                    break;
+                }
+            case R.id.btn_plus13 /* 2131427493 */:
+                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
+                    switch (DataCanbus.DATA[420]) {
                         case 1:
                             if (this.mTvCurrPasswordBuffer.length() == 4 && this.mTvCurrPasswordBuffer.codePointAt(0) != 46 && this.mTvCurrPasswordBuffer.codePointAt(1) != 46 && this.mTvCurrPasswordBuffer.codePointAt(2) == 46 && this.mTvCurrPasswordBuffer.codePointAt(3) != 46) {
                                 int n2 = (this.mTvCurrPasswordBuffer.codePointAt(1) - 48) * 10;
@@ -179,79 +250,7 @@ public class PAFordDirectTuneWindow extends BaseActivity implements View.OnClick
                     }
                 }
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('1');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus2 /* 2131427486 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('2');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus3 /* 2131427490 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('3');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus4 /* 2131427494 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('4');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus5 /* 2131427498 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('5');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus6 /* 2131427503 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null && this.mTvCurrPasswordBuffer.length() >= 1) {
-                    this.mTvCurrPasswordBuffer.deleteCharAt(this.mTvCurrPasswordBuffer.length() - 1);
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus7 /* 2131427507 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('6');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus8 /* 2131427511 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('7');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus9 /* 2131427515 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('8');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus10 /* 2131427519 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('9');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus11 /* 2131427523 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('0');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.btn_plus12 /* 2131427527 */:
-                if (((TextView) this.mRootView.findViewById(R.id.tv_text1)) != null) {
-                    this.mTvCurrPasswordBuffer.append('.');
-                    ((TextView) this.mRootView.findViewById(R.id.tv_text1)).setText(this.mTvCurrPasswordBuffer);
-                    break;
-                }
-            case R.id.pop_close /* 2131427922 */:
+            case R.id.pop_close /* 2131427925 */:
                 hideWindow();
                 break;
         }
@@ -267,13 +266,13 @@ public class PAFordDirectTuneWindow extends BaseActivity implements View.OnClick
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[408].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[420].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[408].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[420].removeNotify(this.mNotifyCanbus);
     }
 }

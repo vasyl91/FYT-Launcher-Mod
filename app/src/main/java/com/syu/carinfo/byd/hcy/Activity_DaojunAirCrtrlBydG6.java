@@ -11,46 +11,45 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTouchListener {
     public static Activity_DaojunAirCrtrlBydG6 mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.Activity_DaojunAirCrtrlBydG6.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 20:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdateAutoOn();
-                    break;
-                case 21:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdateCycle();
-                    break;
-                case 22:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdateFrontDefrost();
-                    break;
-                case 23:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdateRearDefrost();
-                    break;
-                case 24:
+                case 11:
                     Activity_DaojunAirCrtrlBydG6.this.mUpdateAcOn();
                     break;
-                case 25:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdateAirTempLeft();
+                case 12:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdateCycle();
                     break;
-                case 26:
-                case 27:
-                case 28:
+                case 13:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdateAutoOn();
+                    break;
+                case 14:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdaterDualOn();
+                    break;
+                case 16:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdateRearDefrost();
+                    break;
+                case 18:
+                case 19:
+                case 20:
                     Activity_DaojunAirCrtrlBydG6.this.updateBtnSource();
                     break;
-                case 29:
+                case 21:
                     Activity_DaojunAirCrtrlBydG6.this.mUpdaterAirWindLevelLeft();
                     Activity_DaojunAirCrtrlBydG6.this.mUpdatePowerOn();
                     break;
-                case 30:
-                    Activity_DaojunAirCrtrlBydG6.this.mUpdaterDualOn();
+                case 27:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdateAirTempLeft();
                     break;
-                case 31:
+                case 28:
                     Activity_DaojunAirCrtrlBydG6.this.mUpdateAirTempRight();
+                    break;
+                case 65:
+                    Activity_DaojunAirCrtrlBydG6.this.mUpdateFrontDefrost();
                     break;
             }
         }
@@ -60,10 +59,10 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_oudi_byd_sirui_air_control);
+        //setContentView(R.layout.layout_0439_oudi_byd_sirui_air_control);
         init();
         mInstance = this;
     }
@@ -87,7 +86,7 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         findViewById(R.id.air_ac_max).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -95,7 +94,7 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -103,7 +102,7 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -141,16 +140,16 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 15;
                 break;
-            case R.id.air_xts_mode_munits /* 2131427455 */:
+            case R.id.air_xts_mode_munits /* 2131427497 */:
                 data0 = 11;
                 break;
-            case R.id.air_xts_mode_plus /* 2131427456 */:
+            case R.id.air_xts_mode_plus /* 2131427498 */:
                 data0 = 11;
                 break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 5;
                 break;
-            case R.id.air_sync /* 2131428351 */:
+            case R.id.air_sync /* 2131428338 */:
                 data0 = 2;
                 break;
         }
@@ -163,40 +162,40 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
     }
 
     private void addUpdater() {
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[25];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == 1) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -212,9 +211,9 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[31];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == 1) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -230,38 +229,33 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         }
     }
 
-    private void mUpdaterAcMaxOn() {
-        int acOn = DataCanbus.DATA[32];
-        findViewById(R.id.air_ac_max).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDualOn() {
-        int acOn = DataCanbus.DATA[30];
+        int acOn = DataCanbus.DATA[14];
         findViewById(R.id.air_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[20];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[24];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 2 ? R.drawable.ic_xts_ac_p : R.drawable.ic_xts_ac_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[29];
+        int power = DataCanbus.DATA[21];
         findViewById(R.id.air_xts_power).setBackgroundResource(power != 0 ? R.drawable.ic_xts_power_p : R.drawable.ic_xts_power_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[21];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_p);
         } else {
@@ -269,21 +263,21 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[22];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[23];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[29];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -294,11 +288,11 @@ public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTou
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[28];
-        int body = DataCanbus.DATA[26];
-        int foot = DataCanbus.DATA[27];
+        int window = DataCanbus.DATA[18];
+        int body = DataCanbus.DATA[19];
+        int foot = DataCanbus.DATA[20];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

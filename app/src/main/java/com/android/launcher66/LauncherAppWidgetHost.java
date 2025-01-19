@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class LauncherAppWidgetHost extends AppWidgetHost {
     Launcher mLauncher;
 
@@ -14,18 +13,18 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
         this.mLauncher = launcher;
     }
 
-    @Override // android.appwidget.AppWidgetHost
+    @Override
     protected AppWidgetHostView onCreateView(Context context, int appWidgetId, AppWidgetProviderInfo appWidget) {
         return new LauncherAppWidgetHostView(context);
     }
 
-    @Override // android.appwidget.AppWidgetHost
+    @Override
     public void stopListening() {
         super.stopListening();
         clearViews();
     }
 
-    @Override // android.appwidget.AppWidgetHost
+    @Override
     protected void onProvidersChanged() {
         this.mLauncher.bindPackagesUpdated(LauncherModel.getSortedWidgetsAndShortcuts(this.mLauncher));
     }

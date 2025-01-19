@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0453_LZ_Nissan_Teana_08 extends AirBase {
     public AIR_0453_LZ_Nissan_Teana_08(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0265_RZC_ZhongTaiDaMaiX5/lz_nissan_08teana.webp";
         this.mPathHighlight = "0265_RZC_ZhongTaiDaMaiX5/lz_nissan_08teana_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -85,9 +85,9 @@ public class AIR_0453_LZ_Nissan_Teana_08 extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("NO", 56.0f, 138.0f, this.mPaint);
         } else if (unit == 1) {
-            c.drawText(new StringBuilder(String.valueOf(left_temp / 10)).toString(), 56.0f, 138.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 10), 56.0f, 138.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(left_temp / 10) + "." + (left_temp % 10), 56.0f, 138.0f, this.mPaint);
+            c.drawText(left_temp / 10 + "." + (left_temp % 10), 56.0f, 138.0f, this.mPaint);
         }
         int right_temp = this.DATA[28];
         if (right_temp == -2) {
@@ -97,9 +97,9 @@ public class AIR_0453_LZ_Nissan_Teana_08 extends AirBase {
         } else if (right_temp == -1) {
             c.drawText("NO", 935.0f, 138.0f, this.mPaint);
         } else if (unit == 1) {
-            c.drawText(new StringBuilder(String.valueOf(right_temp / 10)).toString(), 935.0f, 138.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 10), 935.0f, 138.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(right_temp / 10) + "." + (right_temp % 10), 935.0f, 138.0f, this.mPaint);
+            c.drawText(right_temp / 10 + "." + (right_temp % 10), 935.0f, 138.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

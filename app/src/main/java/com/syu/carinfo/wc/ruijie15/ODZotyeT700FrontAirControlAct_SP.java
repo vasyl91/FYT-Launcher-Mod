@@ -12,59 +12,58 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.ODZotyeT700FrontAirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 7:
+                case 10:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdatePowerOn();
                     break;
-                case 8:
+                case 11:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateAcOn();
                     break;
-                case 9:
+                case 12:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateCycle();
                     break;
-                case 10:
+                case 14:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateDualOn();
                     break;
-                case 11:
-                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateFrontDefrost();
-                    break;
-                case 12:
+                case 16:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateRearDefrost();
                     break;
-                case 14:
-                case 15:
-                case 16:
+                case 18:
+                case 19:
+                case 20:
                     ODZotyeT700FrontAirControlAct_SP.this.updateBtnSource();
                     break;
-                case 17:
+                case 21:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 19:
+                case 27:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateAirTempLeft();
                     break;
-                case 20:
+                case 28:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdateAirTempRight();
                     break;
-                case 21:
-                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateIONOn();
-                    break;
-                case 22:
-                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateMaxAcOn();
-                    break;
-                case 23:
-                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateMaxFrontOn();
-                    break;
-                case 24:
+                case 29:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdaterSeatHeatLeft();
                     break;
-                case 25:
+                case 30:
                     ODZotyeT700FrontAirControlAct_SP.this.mUpdaterSeatHeatRight();
+                    break;
+                case 45:
+                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateMaxFrontOn();
+                    break;
+                case 53:
+                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateMaxAcOn();
+                    break;
+                case 58:
+                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateIONOn();
+                    break;
+                case 65:
+                    ODZotyeT700FrontAirControlAct_SP.this.mUpdateFrontDefrost();
                     break;
             }
         }
@@ -108,14 +107,14 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_0452_od_zotye_t700_air_control_9853);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_0452_od_zotye_t700_air_control_9853);
         } else {
-            setContentView(R.layout.layout_0452_od_zotye_t700_air_control);
+            //setContentView(R.layout.layout_0452_od_zotye_t700_air_control);
         }
         init();
     }
@@ -142,7 +141,7 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         findViewById(R.id.air_xts_ion).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -150,7 +149,7 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -158,7 +157,7 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -216,27 +215,27 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
                 data0 = 1;
                 num = 4;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
+            case R.id.air_xts_rear /* 2131427560 */:
+                data0 = 8;
+                num = 5;
+                break;
+            case R.id.air_xts_dual /* 2131427566 */:
                 data0 = 8;
                 num = 1;
                 break;
-            case R.id.air_xts_rear /* 2131427534 */:
-                data0 = 8;
-                num = 5;
-                break;
-            case R.id.air_cycle_inter /* 2131427558 */:
-                data0 = 4;
-                num = 0;
-                break;
-            case R.id.air_xts_ion /* 2131427559 */:
+            case R.id.air_xts_ion /* 2131427570 */:
                 data0 = 16;
                 num = 5;
                 break;
-            case R.id.air_xts_cycle_out /* 2131428155 */:
+            case R.id.air_cycle_inter /* 2131428107 */:
+                data0 = 4;
+                num = 0;
+                break;
+            case R.id.air_xts_cycle_out /* 2131428147 */:
                 data0 = 8;
                 num = 0;
                 break;
-            case R.id.air_xts_rearview_hot /* 2131428595 */:
+            case R.id.air_xts_rearview_hot /* 2131428592 */:
                 data0 = 4;
                 num = 1;
                 break;
@@ -252,50 +251,48 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
-        int value = DataCanbus.DATA[25];
+        int value = DataCanbus.DATA[30];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);
@@ -312,9 +309,9 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[29];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
@@ -331,27 +328,27 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxFrontOn() {
-        int power = DataCanbus.DATA[23];
+        int power = DataCanbus.DATA[45];
         findViewById(R.id.air_xts_rearview_hot).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearview_hot_n : R.drawable.ic_xts_rearview_hot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateIONOn() {
-        int power = DataCanbus.DATA[21];
+        int power = DataCanbus.DATA[58];
         findViewById(R.id.air_xts_ion).setBackgroundResource(power == 0 ? R.drawable.ic_xts_ion_n : R.drawable.ic_xts_ion_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
-        int power = DataCanbus.DATA[22];
+        int power = DataCanbus.DATA[53];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(power == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[19];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -363,9 +360,9 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[20];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -377,27 +374,27 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
-        int acOn = DataCanbus.DATA[10];
+        int acOn = DataCanbus.DATA[14];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[8];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[7];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[9];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
             findViewById(R.id.air_xts_cycle_out).setBackgroundResource(R.drawable.ic_xts_cycle_out_p);
             findViewById(R.id.air_cycle_inter).setBackgroundResource(R.drawable.ic_cycle_all_n);
@@ -407,21 +404,21 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[11];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[12];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_light_n : R.drawable.ic_xts_rear_light_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[17];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -432,11 +429,11 @@ public class ODZotyeT700FrontAirControlAct_SP extends Activity implements View.O
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[14];
-        int foot = DataCanbus.DATA[16];
-        int body = DataCanbus.DATA[15];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

@@ -10,14 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepRaceCoolDown extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceCoolDown.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 361:
+                case 373:
                     int unit = (value >> 15) & 1;
                     int temp = (value & 32767) - 40;
                     if (unit == 1) {
@@ -27,7 +26,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                         ((TextView) PAJeepRaceCoolDown.this.findViewById(R.id.tv_text1)).setText(String.valueOf(temp) + "℃");
                         break;
                     }
-                case 375:
+                case 387:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus1)).setTextColor(Color.parseColor("#ffffff"));
@@ -40,7 +39,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                             PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_jeep_mode_setup_button_p1);
                             break;
                     }
-                case 376:
+                case 388:
                     int unit2 = (value >> 8) & 255;
                     int temp2 = value & 255;
                     if (temp2 == 0) {
@@ -53,7 +52,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                         ((TextView) PAJeepRaceCoolDown.this.findViewById(R.id.tv_text2)).setText(String.valueOf(((temp2 * 5) - 400) * 0.1f) + "℃");
                         break;
                     }
-                case 383:
+                case 395:
                     int unit3 = (value >> 15) & 1;
                     int temp3 = (value & 32767) - 40;
                     if (unit3 == 1) {
@@ -63,7 +62,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                         ((TextView) PAJeepRaceCoolDown.this.findViewById(R.id.tv_text3)).setText(String.valueOf(temp3) + "℃");
                         break;
                     }
-                case 384:
+                case 396:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus2)).setTextColor(Color.parseColor("#ffffff"));
@@ -74,7 +73,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                             PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_jeep_mode_setup_button_p1);
                             break;
                     }
-                case 385:
+                case 397:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus3)).setTextColor(Color.parseColor("#ffffff"));
@@ -85,7 +84,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                             PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_jeep_mode_setup_button_p1);
                             break;
                     }
-                case 386:
+                case 398:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus3)).setTextColor(Color.parseColor("#ffffff"));
@@ -96,7 +95,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                             PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_jeep_mode_setup_button_p1);
                             break;
                     }
-                case 387:
+                case 399:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus4)).setTextColor(Color.parseColor("#ffffff"));
@@ -107,7 +106,7 @@ public class PAJeepRaceCoolDown extends BaseActivity {
                             PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_jeep_mode_setup_button_p1);
                             break;
                     }
-                case 388:
+                case 400:
                     switch (value) {
                         case 0:
                             ((Button) PAJeepRaceCoolDown.this.findViewById(R.id.btn_plus5)).setTextColor(Color.parseColor("#ffffff"));
@@ -122,59 +121,59 @@ public class PAJeepRaceCoolDown extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_racecooldown);
+        //setContentView(R.layout.layout_0374_pa_jeep_racecooldown);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceCoolDown.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{11}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{89}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[375].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[361].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[383].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[376].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[384].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[385].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[386].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[387].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[373].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[395].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[388].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[396].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[397].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[398].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[399].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[400].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[375].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[361].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[383].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[376].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[384].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[385].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[386].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[387].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[373].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[395].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[388].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[396].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[397].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[398].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[399].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[400].removeNotify(this.mNotifyCanbus);
     }
 }

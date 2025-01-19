@@ -1,18 +1,23 @@
 package com.android.launcher66;
 
+import static android.view.MotionEvent.ACTION_POINTER_INDEX_MASK;
+import static android.view.accessibility.AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED;
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD;
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -33,11 +38,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
-import com.android.launcher66.PageIndicator;
+
 import com.syu.ipc.data.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarchyChangeListener {
     protected static final float ALPHA_QUANTIZE_LEVEL = 1.0E-4f;
     private static final int ANIM_TAG_KEY = 100;
@@ -270,7 +274,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         setOnHierarchyChangeListener(this);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         ViewGroup parent = (ViewGroup) getParent();
@@ -298,7 +302,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return null;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.mPageIndicator = null;
@@ -342,7 +346,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         requestLayout();
     }
 
-    @Override // android.view.View
+    @Override
     public void setScaleX(float scaleX) {
         super.setScaleX(scaleX);
         if (isReordering(true)) {
@@ -484,7 +488,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     protected void onPageEndMoving() {
     }
 
-    @Override // android.view.View
+    @Override
     public void setOnLongClickListener(View.OnLongClickListener l) {
         this.mLongClickListener = l;
         int count = getPageCount();
@@ -494,12 +498,12 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         super.setOnLongClickListener(l);
     }
 
-    @Override // android.view.View
+    @Override
     public void scrollBy(int x, int y) {
         scrollTo(this.mUnboundedScrollX + x, getScrollY() + y);
     }
 
-    @Override // android.view.View
+    @Override
     public void scrollTo(int x, int y) {
         if (this.mFreeScroll) {
             x = Math.max(Math.min(x, this.mFreeScrollMaxScrollX), this.mFreeScrollMinScrollX);
@@ -544,7 +548,12 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         int action;
         AccessibilityManager am = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (am.isEnabled()) {
-            AccessibilityEvent ev = AccessibilityEvent.obtain(4096);
+            AccessibilityEvent ev;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                ev = AccessibilityEvent.obtain(CONTENT_CHANGE_TYPE_ENABLED);
+            } else {
+                ev = new AccessibilityEvent(CONTENT_CHANGE_TYPE_ENABLED);
+            }
             ev.setItemCount(getChildCount());
             ev.setFromIndex(this.mCurrentPage);
             if (getNextPage() >= this.mCurrentPage) {
@@ -589,7 +598,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return true;
     }
 
-    @Override // android.view.View
+    @Override
     public void computeScroll() {
         computeScrollHelper();
     }
@@ -612,8 +621,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: protected */
-    @Override // android.view.ViewGroup
+    
+    @Override
     public LayoutParams generateDefaultLayoutParams() {
         return new LayoutParams(-2, -2);
     }
@@ -628,7 +637,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return this.mNormalChildHeight;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int scaledWidthSize;
         int scaledHeightSize;
@@ -718,7 +727,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return this.mFirstChildLeft;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int childTop;
         if (this.mIsDataReady && getChildCount() != 0) {
@@ -810,7 +819,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         this.mAllowPagedViewAnimations = false;
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewAdded(View parent, View child) {
         if (this.mPageIndicator != null && !isReordering(false)) {
             int pageIndex = indexOfChild(child);
@@ -822,7 +831,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         invalidate();
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewRemoved(View parent, View child) {
         this.mForceScreenScrolled = true;
         updateFreescrollBounds();
@@ -835,25 +844,25 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewManager
+    @Override
     public void removeView(View v) {
         removeMarkerForView(indexOfChild(v));
         super.removeView(v);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViewInLayout(View v) {
         removeMarkerForView(indexOfChild(v));
         super.removeViewInLayout(v);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViewAt(int index) {
         removeViewAt(index);
         super.removeViewAt(index);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeAllViewsInLayout() {
         if (this.mPageIndicator != null) {
             this.mPageIndicator.removeAllMarkers(this.mAllowPagedViewAnimations);
@@ -918,7 +927,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return child.getAlpha() > 0.0f && child.getVisibility() == View.VISIBLE;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         int halfScreenSize = getViewportWidth() / 2;
         int screenCenter = this.mOverScrollX + halfScreenSize;
@@ -951,7 +960,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {
         int page = indexToPage(indexOfChild(child));
         if (page == this.mCurrentPage && this.mScroller.isFinished()) {
@@ -961,7 +970,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return true;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
         int focusablePage;
         if (this.mNextPage != -1) {
@@ -976,7 +985,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return false;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public boolean dispatchUnhandledMove(View focused, int direction) {
         if (direction == 17) {
             if (getCurrentPage() > 0) {
@@ -990,7 +999,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return super.dispatchUnhandledMove(focused, direction);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
         if (this.mCurrentPage >= 0 && this.mCurrentPage < getPageCount()) {
             getPageAt(this.mCurrentPage).addFocusables(views, direction, focusableMode);
@@ -1004,7 +1013,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public void focusableViewAvailable(View focused) {
         View current = getPageAt(this.mCurrentPage);
         for (View v = focused; v != current; v = (View) v.getParent()) {
@@ -1020,7 +1029,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         super.focusableViewAvailable(focused);
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         if (disallowIntercept) {
             View currentPage = getPageAt(this.mCurrentPage);
@@ -1044,7 +1053,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return this.mTmpRect.contains(x, y);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         acquireVelocityTrackerAndAddMovement(ev);
         if (getChildCount() <= 0) {
@@ -1293,7 +1302,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         boolean isDeltaXLeft;
         boolean isVelocityXLeft;
@@ -1441,8 +1450,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                         getOverviewModePages(this.mTempVisiblePagesRange);
                         if (this.mTempVisiblePagesRange[0] <= pageUnderPointIndex && pageUnderPointIndex <= this.mTempVisiblePagesRange[1] && pageUnderPointIndex != this.mSidePageHoverIndex && this.mScroller.isFinished()) {
                             this.mSidePageHoverIndex = pageUnderPointIndex;
-                            this.mSidePageHoverRunnable = new Runnable() { // from class: com.android.launcher66.PagedView.1
-                                @Override // java.lang.Runnable
+                            this.mSidePageHoverRunnable = new Runnable() { 
+                                @Override
                                 public void run() {
                                     PagedView.this.snapToPage(pageUnderPointIndex);
                                     int shiftDelta = dragViewIndex < pageUnderPointIndex ? -1 : 1;
@@ -1522,7 +1531,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         ((Launcher) getContext()).onClick(this);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
         float vscroll;
         float hscroll;
@@ -1574,7 +1583,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     }
 
     private void onSecondaryPointerUp(MotionEvent ev) {
-        int pointerIndex = (ev.getAction() & MotionEventCompat.ACTION_POINTER_INDEX_MASK) >> 8;
+        int pointerIndex = (ev.getAction() & ACTION_POINTER_INDEX_MASK) >> 8;
         int pointerId = ev.getPointerId(pointerIndex);
         if (pointerId == this.mActivePointerId) {
             int newPointerIndex = pointerIndex == 0 ? 1 : 0;
@@ -1590,7 +1599,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public void requestChildFocus(View child, View focused) {
         super.requestChildFocus(child, focused);
         int page = indexToPage(indexOfChild(child));
@@ -1638,7 +1647,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     }
 
     private static class ScrollInterpolator implements Interpolator {
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float t) {
             float t2 = t - 1.0f;
             return (t2 * t2 * t2 * t2 * t2) + 1.0f;
@@ -1744,7 +1753,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return this.mAllowLongPress;
     }
 
-    @Override // android.view.View
+    @Override
     public boolean performLongClick() {
         this.mCancelTap = true;
         return super.performLongClick();
@@ -1755,15 +1764,15 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     }
 
     public static class SavedState extends View.BaseSavedState {
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() { // from class: com.android.launcher66.PagedView.SavedState.1
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() { 
             /* JADX WARN: Can't rename method to resolve collision */
-            @Override // android.os.Parcelable.Creator
+            @Override
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in, null);
             }
 
             /* JADX WARN: Can't rename method to resolve collision */
-            @Override // android.os.Parcelable.Creator
+            @Override
             public SavedState[] newArray(int size) {
                 return new SavedState[size];
             }
@@ -1785,7 +1794,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             this.currentPage = in.readInt();
         }
 
-        @Override // android.view.View.BaseSavedState, android.view.AbsSavedState, android.os.Parcelable
+        @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
             out.writeInt(this.currentPage);
@@ -1867,8 +1876,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             AnimatorSet anim = new AnimatorSet();
             anim.setDuration(this.REORDERING_DROP_REPOSITION_DURATION);
             anim.playTogether(ObjectAnimator.ofFloat(this.mDragView, "translationX", 0.0f), ObjectAnimator.ofFloat(this.mDragView, "translationY", 0.0f), ObjectAnimator.ofFloat(this.mDragView, "scaleX", 1.0f), ObjectAnimator.ofFloat(this.mDragView, "scaleY", 1.0f));
-            anim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.PagedView.2
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            anim.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     PagedView.this.onPostReorderingAnimationCompleted();
                 }
@@ -1883,7 +1892,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         invalidate();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onPostReorderingAnimationCompleted() {
         this.mPostReorderingPreZoomInRemainingAnimationCount--;
         if (this.mPostReorderingPreZoomInRunnable != null && this.mPostReorderingPreZoomInRemainingAnimationCount == 0) {
@@ -1927,15 +1936,15 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     void endReordering() {
         if (this.mReorderingStarted) {
             this.mReorderingStarted = false;
-            final Runnable onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.PagedView.3
-                @Override // java.lang.Runnable
+            final Runnable onCompleteRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     PagedView.this.onEndReordering();
                 }
             };
             if (!this.mDeferringForDelete) {
-                this.mPostReorderingPreZoomInRunnable = new Runnable() { // from class: com.android.launcher66.PagedView.4
-                    @Override // java.lang.Runnable
+                this.mPostReorderingPreZoomInRunnable = new Runnable() { 
+                    @Override
                     public void run() {
                         onCompleteRunnable.run();
                         PagedView.this.enableFreeScroll();
@@ -1997,8 +2006,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     };
 
     private Runnable createPostDeleteAnimationRunnable(final View dragView) {
-        return new Runnable() { // from class: com.android.launcher66.PagedView.5
-            @Override // java.lang.Runnable
+        return new Runnable() { 
+            @Override
             public void run() {
                 int oldX;
                 int newX;
@@ -2041,8 +2050,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 AnimatorSet slideAnimations = new AnimatorSet();
                 slideAnimations.playTogether(animations);
                 slideAnimations.setDuration(PagedView.this.DELETE_SLIDE_IN_SIDE_PAGE_DURATION);
-                slideAnimations.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.PagedView.5.1
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                slideAnimations.addListener(new AnimatorListenerAdapter() { 
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         PagedView.this.mDeferringForDelete = false;
                         PagedView.this.onEndReordering();
@@ -2058,7 +2067,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
     public void onFlingToDelete(PointF vel) {
         long startTime = AnimationUtils.currentAnimationTimeMillis();
-        TimeInterpolator tInterpolator = new TimeInterpolator() { // from class: com.android.launcher66.PagedView.6
+        TimeInterpolator tInterpolator = new TimeInterpolator() { 
             private int mCount = -1;
             private float mOffset;
             private long mStartTime;
@@ -2067,7 +2076,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 this.mStartTime = startTime;
             }
 
-            @Override // android.animation.TimeInterpolator
+            @Override
             public float getInterpolation(float t) {
                 if (this.mCount < 0) {
                     this.mCount++;
@@ -2089,8 +2098,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         mDropAnim.setDuration(this.FLING_TO_DELETE_FADE_OUT_DURATION);
         mDropAnim.setFloatValues(0.0f, 1.0f);
         mDropAnim.addUpdateListener(updateCb);
-        mDropAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.PagedView.7
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        mDropAnim.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 onAnimationEndRunnable.run();
             }
@@ -2131,8 +2140,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         AnimatorSet anim = new AnimatorSet();
         anim.playTogether(animations);
         anim.setDuration(this.DRAG_TO_DELETE_FADE_OUT_DURATION);
-        anim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.PagedView.8
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        anim.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 onAnimationEndRunnable.run();
             }
@@ -2141,33 +2150,33 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         this.mDeferringForDelete = true;
     }
 
-    @Override // android.view.View
+    @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setScrollable(getPageCount() > 1);
         if (getCurrentPage() < getPageCount() - 1) {
-            info.addAction(4096);
+            info.addAction(ACTION_SCROLL_FORWARD);
         }
         if (getCurrentPage() > 0) {
-            info.addAction(8192);
+            info.addAction(ACTION_SCROLL_BACKWARD);
         }
     }
 
-    @Override // android.view.View, android.view.accessibility.AccessibilityEventSource
+    @Override
     public void sendAccessibilityEvent(int eventType) {
         if (eventType != 4096) {
             super.sendAccessibilityEvent(eventType);
         }
     }
 
-    @Override // android.view.View
+    @Override
     public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
         event.setScrollable(true);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View
+    @Override
     public boolean performAccessibilityAction(int action, Bundle arguments) {
         if (super.performAccessibilityAction(action, arguments)) {
             return true;
@@ -2194,7 +2203,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return String.format(getContext().getString(R.string.default_scroll_format), Integer.valueOf(getNextPage() + 1), Integer.valueOf(getChildCount()));
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onHoverEvent(MotionEvent event) {
         return true;
     }

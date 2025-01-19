@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.CellLayout;
 import com.syu.car.CarStates;
 import com.syu.util.ActivityStartUtils;
@@ -27,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Hotseat extends FrameLayout {
     private static final String TAG = "Hotseat";
     private int mAllAppsButtonRank;
@@ -60,7 +62,7 @@ public class Hotseat extends FrameLayout {
         return this.mContent;
     }
 
-    @Override // android.view.View
+    @Override
     public void setOnLongClickListener(View.OnLongClickListener l) {
         this.mContent.setOnLongClickListener(l);
     }
@@ -109,7 +111,7 @@ public class Hotseat extends FrameLayout {
         return coords;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         LauncherAppState app = LauncherAppState.getInstance();
@@ -149,7 +151,7 @@ public class Hotseat extends FrameLayout {
         Context context = getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         final TextView newBtn = (TextView) inflater.inflate(R.layout.all_apps_button, (ViewGroup) this.mContent, false);
-        Drawable d = context.getResources().getDrawable(icon);
+        Drawable d = ContextCompat.getDrawable(context, icon);
         Utilities.resizeHotseatIconDrawable(d);
         newBtn.setCompoundDrawables(null, d, null, null);
         newBtn.setTag(findIntentFromPackage(pkg));
@@ -170,8 +172,8 @@ public class Hotseat extends FrameLayout {
         if (this.mLauncher != null) {
             newBtn.setOnTouchListener(this.mLauncher.getHapticFeedbackTouchListener());
         }
-        newBtn.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Hotseat.1
-            @Override // android.view.View.OnClickListener
+        newBtn.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Hotseat.this.mLauncher != null) {
                     Intent intent = (Intent) v.getTag();
@@ -196,15 +198,15 @@ public class Hotseat extends FrameLayout {
         Context context = getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         TextView newBtn = (TextView) inflater.inflate(R.layout.all_apps_button, (ViewGroup) this.mContent, false);
-        Drawable d = context.getResources().getDrawable(icon);
+        Drawable d = ContextCompat.getDrawable(context, icon);
         Utilities.resizeIconDrawable(d);
         newBtn.setCompoundDrawables(null, d, null, null);
         newBtn.setContentDescription(context.getString(title));
         if (this.mLauncher != null) {
             newBtn.setOnTouchListener(this.mLauncher.getHapticFeedbackTouchListener());
         }
-        newBtn.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Hotseat.2
-            @Override // android.view.View.OnClickListener
+        newBtn.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Hotseat.this.mLauncher != null) {
                     Hotseat.this.mLauncher.onClickAllAppsButton(v);
@@ -218,7 +220,7 @@ public class Hotseat extends FrameLayout {
         this.mContent.addViewToCellLayout(newBtn, -1, 0, lp, true);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return this.mLauncher.getWorkspace().isSmall();
     }

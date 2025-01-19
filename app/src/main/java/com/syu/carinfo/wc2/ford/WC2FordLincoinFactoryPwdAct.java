@@ -17,63 +17,62 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.OnClickListener {
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinFactoryPwdAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 48:
+                case 109:
                     WC2FordLincoinFactoryPwdAct.this.updateStatus(val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc2_ford_lincoin_factory_pwd_act);
+        //setContentView(R.layout.layout_0443_wc2_ford_lincoin_factory_pwd_act);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick(findViewById(R.id.wc_ford_pwd_update), this);
         setSelfClick(findViewById(R.id.wc_ford_pwd_del), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.wc_ford_pwd_update /* 2131428532 */:
+            case R.id.wc_ford_pwd_update /* 2131428537 */:
                 showPwd(4, "工厂密码", "确认");
                 break;
-            case R.id.wc_ford_pwd_del /* 2131428534 */:
+            case R.id.wc_ford_pwd_del /* 2131428539 */:
                 showPwd(4, "工厂密码", "确认");
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int data0, int data1, int data2, int data3) {
         DataCanbus.PROXY.cmd(5, new int[]{data0, data1, data2, data3}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateStatus(int val) {
         switch (val) {
             case 1:
@@ -92,7 +91,7 @@ public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.On
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void showPwd(final int type, String s1, String s2) {
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setBackgroundColor(Color.parseColor("#44ffffff"));
@@ -121,8 +120,8 @@ public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.On
         button.setTextSize(20.0f);
         button.setTextColor(-16777216);
         button.setPadding(30, 10, 30, 10);
-        button.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinFactoryPwdAct.2
-            @Override // android.view.View.OnClickListener
+        button.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int[] intArr = WC2FordLincoinFactoryPwdAct.this.strToIntArr(editText.getText().toString());
                 if (intArr != null) {
@@ -174,8 +173,8 @@ public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.On
         button.setTextSize(20.0f);
         button.setTextColor(-16777216);
         button.setPadding(30, 10, 30, 10);
-        button.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinFactoryPwdAct.3
-            @Override // android.view.View.OnClickListener
+        button.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WC2FordLincoinFactoryPwdAct.this.dialog.dismiss();
                 WC2FordLincoinFactoryPwdAct.this.showPwd(5, "密码修改", "确认");
@@ -191,8 +190,8 @@ public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.On
         button2.setTextSize(20.0f);
         button2.setTextColor(-16777216);
         button2.setPadding(30, 10, 30, 10);
-        button2.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinFactoryPwdAct.4
-            @Override // android.view.View.OnClickListener
+        button2.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WC2FordLincoinFactoryPwdAct.this.dialog.dismiss();
                 WC2FordLincoinFactoryPwdAct.this.sendCmd(6, 0, 0, 0);
@@ -207,7 +206,7 @@ public class WC2FordLincoinFactoryPwdAct extends BaseActivity implements View.On
         this.dialog.show();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public int[] strToIntArr(String str) {
         int[] ints = new int[str.length()];
         if (TextUtils.isEmpty(str) || str.length() < 5) {

@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BesturnB70AirActi extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.b70.BesturnB70AirActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
@@ -53,15 +52,15 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        AirHelper.disableAirWindowLocal(true);
-        setContentView(R.layout.layout_0086_wc_besturn_b70_control);
+        //AirHelper.disableAirWindowLocal(true);
+        ////setContentView(R.layout.layout_0086_wc_besturn_b70_control);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(this);
         ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(this);
@@ -81,7 +80,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         findViewById(R.id.dj_xts_air_win_plus_btn).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View arg0) {
         int id = arg0.getId();
         switch (id) {
@@ -142,7 +141,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -150,7 +149,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -158,7 +157,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         AirHelper.disableAirWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
@@ -174,7 +173,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
@@ -190,7 +189,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataUpAuto() {
         int value = DataCanbus.DATA[1];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -198,7 +197,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataFrontDeforst() {
         int value = DataCanbus.DATA[3];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -206,7 +205,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataRearDeforst() {
         int value = DataCanbus.DATA[4];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -214,7 +213,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpataTempLeft() {
         int temp = DataCanbus.DATA[6];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -232,7 +231,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWindType() {
         int wind = DataCanbus.DATA[8];
         int body = DataCanbus.DATA[9];
@@ -258,7 +257,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPower() {
         int value = DataCanbus.DATA[0];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -266,7 +265,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataRecycle() {
         int value = DataCanbus.DATA[2];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -274,7 +273,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataAc() {
         int value = DataCanbus.DATA[5];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -282,7 +281,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWindLevel() {
         int value = DataCanbus.DATA[11];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
@@ -290,7 +289,7 @@ public class BesturnB70AirActi extends BaseActivity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpataTempRight() {
         int temp = DataCanbus.DATA[7];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.Toast;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.ipc.ModuleObject;
@@ -36,7 +37,7 @@ public class ActivityStartUtils {
     static boolean startActivity(Context context, View v, Intent intent, Object tag) {
         try {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            boolean useLaunchAnimation = (v == null || intent.hasExtra("com.android.launcher66.intent.extra.shortcut.INGORE_LAUNCH_ANIMATION")) ? false : true;
+            boolean useLaunchAnimation = v != null && !intent.hasExtra("com.android.launcher66.intent.extra.shortcut.INGORE_LAUNCH_ANIMATION");
             if (useLaunchAnimation) {
                 ActivityOptions opts = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
                 context.startActivity(intent, opts.toBundle());

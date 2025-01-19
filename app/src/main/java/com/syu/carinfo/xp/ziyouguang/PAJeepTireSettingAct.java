@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepTireSettingAct extends Activity implements View.OnTouchListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepTireSettingAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 208:
+                case 220:
                     if (value == 1) {
                         ((Button) PAJeepTireSettingAct.this.findViewById(R.id.pop_full_charge_onoff)).setBackgroundResource(R.drawable.ic_pa_chargfull_on);
                         break;
@@ -26,13 +25,13 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
                         ((Button) PAJeepTireSettingAct.this.findViewById(R.id.pop_full_charge_onoff)).setBackgroundResource(R.drawable.ic_pa_chargfull_off);
                         break;
                     }
-                case 271:
+                case 283:
                     PAJeepTireSettingAct.this.mUpdateTire1();
                     break;
-                case 272:
+                case 284:
                     PAJeepTireSettingAct.this.mUpdateTire2();
                     break;
-                case 288:
+                case 300:
                     PAJeepTireSettingAct.this.mUpdateTire1();
                     PAJeepTireSettingAct.this.mUpdateTire2();
                     break;
@@ -40,10 +39,10 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_tire_setting);
+        //setContentView(R.layout.layout_0374_pa_jeep_tire_setting);
         init();
     }
 
@@ -58,33 +57,33 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int value;
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
+                case R.id.btn_minus1 /* 2131427455 */:
                     DataCanbus.PROXY.cmd(12, new int[]{1}, null, null);
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     DataCanbus.PROXY.cmd(12, new int[]{1, 1}, null, null);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
+                case R.id.btn_minus2 /* 2131427458 */:
                     DataCanbus.PROXY.cmd(12, new int[]{2}, null, null);
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     DataCanbus.PROXY.cmd(12, new int[]{2, 1}, null, null);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
+                case R.id.btn_minus3 /* 2131427461 */:
                     DataCanbus.PROXY.cmd(12, new int[]{3, 1}, null, null);
                     ((Button) findViewById(R.id.btn_minus3)).setTextColor(Color.parseColor("#666666"));
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     DataCanbus.PROXY.cmd(12, new int[]{4, 1}, null, null);
                     ((Button) findViewById(R.id.btn_plus3)).setTextColor(Color.parseColor("#666666"));
                     break;
-                case R.id.pop_full_charge_onoff /* 2131428015 */:
-                    int value2 = DataCanbus.DATA[208];
+                case R.id.pop_full_charge_onoff /* 2131428018 */:
+                    int value2 = DataCanbus.DATA[220];
                     if (value2 == 0) {
                         value = 1;
                     } else {
@@ -95,11 +94,11 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.btn_minus3 /* 2131427488 */:
+                case R.id.btn_minus3 /* 2131427461 */:
                     DataCanbus.PROXY.cmd(12, new int[]{3}, null, null);
                     ((Button) findViewById(R.id.btn_minus3)).setTextColor(Color.parseColor("#ffffff"));
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     DataCanbus.PROXY.cmd(12, new int[]{4}, null, null);
                     ((Button) findViewById(R.id.btn_plus3)).setTextColor(Color.parseColor("#ffffff"));
                     break;
@@ -108,37 +107,37 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{78}, null, null);
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[271].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[272].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[288].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[208].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[283].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[284].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[300].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[220].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[271].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[272].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[288].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[208].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[283].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[284].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[300].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTire1() {
-        int value = DataCanbus.DATA[271];
-        int unit = DataCanbus.DATA[288];
+        int value = DataCanbus.DATA[283];
+        int unit = DataCanbus.DATA[300];
         switch (unit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10) + "." + (value % 10) + " psi");
@@ -152,10 +151,10 @@ public class PAJeepTireSettingAct extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTire2() {
-        int value = DataCanbus.DATA[272];
-        int unit = DataCanbus.DATA[288];
+        int value = DataCanbus.DATA[284];
+        int unit = DataCanbus.DATA[300];
         switch (unit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "." + (value % 10) + " psi");

@@ -11,20 +11,19 @@ import android.widget.TextView;
 import com.android.launcher66.R;
 import com.syu.car.CarStates;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PopWindowBright extends PopupWindow implements SeekBar.OnSeekBarChangeListener {
     private int mBrightLevel;
     private Context mContext;
     private SeekBar mSeekBar;
     private TextView mTextView;
     private View mView;
-    private CountDownTimer timer = new CountDownTimer(5000, 1000) { // from class: com.syu.popwindow.PopWindowBright.1
-        @Override // android.os.CountDownTimer
+    private CountDownTimer timer = new CountDownTimer(5000, 1000) { 
+        @Override
         public void onFinish() {
             PopWindowBright.this.dismiss();
         }
 
-        @Override // android.os.CountDownTimer
+        @Override
         public void onTick(long arg0) {
         }
     };
@@ -43,8 +42,8 @@ public class PopWindowBright extends PopupWindow implements SeekBar.OnSeekBarCha
         setFocusable(true);
         setOutsideTouchable(true);
         setBackgroundDrawable(new BitmapDrawable());
-        setTouchInterceptor(new View.OnTouchListener() { // from class: com.syu.popwindow.PopWindowBright.2
-            @Override // android.view.View.OnTouchListener
+        setTouchInterceptor(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View view, MotionEvent event) {
                 if (event.getAction() != 4) {
                     PopWindowBright.this.timer.start();
@@ -74,17 +73,17 @@ public class PopWindowBright extends PopupWindow implements SeekBar.OnSeekBarCha
         }
     }
 
-    @Override // android.widget.SeekBar.OnSeekBarChangeListener
+    @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         this.mTextView.setText(new StringBuilder().append(progress).toString());
         CarStates.getCar(this.mContext).getTools().sendInt(0, 10, progress);
     }
 
-    @Override // android.widget.SeekBar.OnSeekBarChangeListener
+    @Override
     public void onStartTrackingTouch(SeekBar arg0) {
     }
 
-    @Override // android.widget.SeekBar.OnSeekBarChangeListener
+    @Override
     public void onStopTrackingTouch(SeekBar arg0) {
     }
 }

@@ -4,30 +4,30 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.PopupWindow;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_BenzHelper implements Runnable {
     private static final Air_BenzHelper INSTANCE = new Air_BenzHelper();
-    public static final IUiNotify SHOW_AND_REFRESH = new IUiNotify() { // from class: com.syu.ui.benzair.Air_BenzHelper.3
-        @Override // com.syu.module.IUiNotify
+    public static final IUiNotify SHOW_AND_REFRESH = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Air_BenzHelper.getInstance().showAndRefresh();
         }
     };
     private int mTick;
     private PopupWindow mWindow;
-    private Runnable mHideWindow = new Runnable() { // from class: com.syu.ui.benzair.Air_BenzHelper.1
-        @Override // java.lang.Runnable
+    private final Runnable mHideWindow = new Runnable() { 
+        @Override
         public void run() {
             Air_BenzHelper.this.mWindow.dismiss();
         }
     };
-    private final Runnable SHOW = new Runnable() { // from class: com.syu.ui.benzair.Air_BenzHelper.2
-        @Override // java.lang.Runnable
+    private final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             Air_BenzHelper.this.mTick = 6;
             if (!Air_BenzHelper.this.mWindow.isShowing()) {
@@ -61,46 +61,46 @@ public class Air_BenzHelper implements Runnable {
             this.mWindow.setHeight(-2);
             this.mWindow.setBackgroundDrawable(new ColorDrawable(0));
             this.mWindow.setOutsideTouchable(true);
-            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { // from class: com.syu.ui.benzair.Air_BenzHelper.4
-                @Override // android.widget.PopupWindow.OnDismissListener
+            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { 
+                @Override
                 public void onDismiss() {
-                    LauncherApplication.removeRootView(Air_BenzHelper.this.mWindow);
+                    //LauncherApplication.removeRootView(Air_BenzHelper.this.mWindow);
                 }
             });
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (this.mTick > 0) {
             this.mTick--;
             if (this.mTick == 0) {
-                HandlerUI.getInstance().post(this.mHideWindow);
+                //HandlerUI.getInstance().post(this.mHideWindow);
             }
         }
     }
 
     public void hideWindow() {
-        HandlerUI.getInstance().post(this.mHideWindow);
+        //HandlerUI.getInstance().post(this.mHideWindow);
     }
 
     public void showAndRefresh() {
-        HandlerUI.getInstance().post(this.SHOW);
+        //HandlerUI.getInstance().post(this.SHOW);
     }
 
     public void refreshOnShow() {
-        View view;
+        /*View view;
         if (this.mWindow != null && this.mWindow.isShowing() && (view = this.mWindow.getContentView()) != null) {
             view.invalidate();
-        }
+        }*/
     }
 
     public void buildUi(View view) {
-        this.mWindow.dismiss();
-        this.mWindow.setContentView(view);
+        //this.mWindow.dismiss();
+        //this.mWindow.setContentView(view);
     }
 
     public void destroyUi() {
-        this.mWindow.setContentView(null);
+        //this.mWindow.setContentView(null);
     }
 }

@@ -11,39 +11,41 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.AirControlMQB_RZC_Rear.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 123:
+                case 38:
                     AirControlMQB_RZC_Rear.this.mUpdatePowerOn();
                     break;
-                case 154:
+                case 40:
                     AirControlMQB_RZC_Rear.this.mUpdateAirTempLeft();
                     break;
-                case 204:
-                    AirControlMQB_RZC_Rear.this.updateBlowFoot();
+                case 43:
+                    AirControlMQB_RZC_Rear.this.mUpdateAutoOn();
                     break;
-                case 205:
+                case 44:
                     AirControlMQB_RZC_Rear.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 206:
+                case 46:
                     AirControlMQB_RZC_Rear.this.updateBlowBody();
                     break;
-                case 207:
-                    AirControlMQB_RZC_Rear.this.mUpdateAutoOn();
+                case 47:
+                    AirControlMQB_RZC_Rear.this.updateBlowFoot();
+                    break;
+                case 67:
+                    AirControlMQB_RZC_Rear.this.updateRearLock();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0160_rzc_mqb_air_rear_control);
+        //setContentView(R.layout.layout_0160_rzc_mqb_air_rear_control);
         init();
     }
 
@@ -57,9 +59,10 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
         findViewById(R.id.air_xts_mode_foot).setOnClickListener(this);
         findViewById(R.id.air_xts_mode_body).setOnClickListener(this);
         findViewById(R.id.air_xts_auto).setOnClickListener(this);
+        findViewById(R.id.air_xts_rearlock).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -67,7 +70,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -75,7 +78,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value = 0;
         int cmdId = 0;
@@ -90,7 +93,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                 break;
             case R.id.air_xts_power /* 2131427428 */:
                 cmdId = 36;
-                if (DataCanbus.DATA[123] != 0) {
+                if (DataCanbus.DATA[38] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -99,14 +102,14 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                 }
             case R.id.dj_xts_air_win_minuts_btn /* 2131427429 */:
                 cmdId = 40;
-                value = DataCanbus.DATA[205] - 1;
+                value = DataCanbus.DATA[44] - 1;
                 if (value <= 0) {
                     value = 0;
                     break;
                 }
             case R.id.dj_xts_air_win_plus_btn /* 2131427431 */:
                 cmdId = 40;
-                value = DataCanbus.DATA[205] + 1;
+                value = DataCanbus.DATA[44] + 1;
                 if (value >= 7) {
                     value = 7;
                     break;
@@ -121,7 +124,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_auto /* 2131427436 */:
                 cmdId = 37;
-                if (DataCanbus.DATA[207] != 0) {
+                if (DataCanbus.DATA[43] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -130,7 +133,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_mode_foot /* 2131427443 */:
                 cmdId = 39;
-                if (DataCanbus.DATA[204] != 0) {
+                if (DataCanbus.DATA[47] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -139,7 +142,16 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_mode_body /* 2131427444 */:
                 cmdId = 38;
-                if (DataCanbus.DATA[206] != 0) {
+                if (DataCanbus.DATA[46] != 0) {
+                    value = 0;
+                    break;
+                } else {
+                    value = 1;
+                    break;
+                }
+            case R.id.air_xts_rearlock /* 2131427446 */:
+                cmdId = 188;
+                if (DataCanbus.DATA[67] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -157,48 +169,58 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[204].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
+    public void updateRearLock() {
+        int value = DataCanbus.DATA[67];
+        if (((Button) findViewById(R.id.air_xts_rearlock)) != null) {
+            ((Button) findViewById(R.id.air_xts_rearlock)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
+        }
+    }
+
+    
     public void updateBlowBody() {
-        int value = DataCanbus.DATA[206];
+        int value = DataCanbus.DATA[46];
         if (((Button) findViewById(R.id.air_xts_mode_body)) != null) {
             ((Button) findViewById(R.id.air_xts_mode_body)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowFoot() {
-        int value = DataCanbus.DATA[204];
+        int value = DataCanbus.DATA[47];
         if (((Button) findViewById(R.id.air_xts_mode_foot)) != null) {
             ((Button) findViewById(R.id.air_xts_mode_foot)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int power = DataCanbus.DATA[207];
+        int power = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_auto).setBackgroundResource(power == 0 ? R.drawable.ic_xts_auto_p : R.drawable.ic_xts_auto_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[154];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             switch (temp) {
                 case 0:
@@ -208,7 +230,7 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HIGHT");
                     break;
                 default:
-                    if (DataCanbus.DATA[103] == 0) {
+                    if (DataCanbus.DATA[37] == 0) {
                         ((TextView) findViewById(R.id.tv_air_temp_left)).setText((((temp * 5) + 155) / 10.0f) + "℃");
                         break;
                     } else {
@@ -219,21 +241,15 @@ public class AirControlMQB_RZC_Rear extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[123];
+        int power = DataCanbus.DATA[38];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[205];
-        if (leave < 0) {
-            leave = 0;
-        }
-        if (leave > 8) {
-            leave = 8;
-        }
+        int leave = DataCanbus.DATA[44];
         String str = " " + leave + " ";
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }

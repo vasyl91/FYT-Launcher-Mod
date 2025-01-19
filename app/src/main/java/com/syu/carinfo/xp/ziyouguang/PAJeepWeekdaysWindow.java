@@ -12,44 +12,43 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.reflect.Field;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepWeekdaysWindow extends BaseActivity implements View.OnClickListener {
     private View mRootView;
     private PopupWindow mWindow;
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepWeekdaysWindow.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 261:
-                case 265:
+                case 273:
+                case 277:
                     if (((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text1)) != null) {
                         if (PAJeepWeekdaysWindow.this.pagenum == 2) {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[265])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[277])).toString());
                             break;
                         } else {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[261])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[273])).toString());
                             break;
                         }
                     }
                     break;
-                case 262:
-                case 266:
+                case 274:
+                case 278:
                     if (((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text2)) != null) {
                         if (PAJeepWeekdaysWindow.this.pagenum == 2) {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[266])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[278])).toString());
                             break;
                         } else {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[262])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[274])).toString());
                             break;
                         }
                     }
                     break;
-                case 263:
-                case 267:
+                case 275:
+                case 279:
                     if (((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text3)) != null) {
                         if (PAJeepWeekdaysWindow.this.pagenum == 2) {
-                            int value = DataCanbus.DATA[267];
+                            int value = DataCanbus.DATA[279];
                             if (value == 24) {
                                 ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text3)).setText("Full");
                                 ((Button) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.pop_full_charge_onoff)).setBackgroundResource(R.drawable.ic_pa_chargfull_on);
@@ -60,7 +59,7 @@ public class PAJeepWeekdaysWindow extends BaseActivity implements View.OnClickLi
                                 break;
                             }
                         } else {
-                            int value2 = DataCanbus.DATA[263];
+                            int value2 = DataCanbus.DATA[275];
                             if (value2 == 24) {
                                 ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text3)).setText("Full");
                                 ((Button) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.pop_full_charge_onoff)).setBackgroundResource(R.drawable.ic_pa_chargfull_on);
@@ -73,14 +72,14 @@ public class PAJeepWeekdaysWindow extends BaseActivity implements View.OnClickLi
                         }
                     }
                     break;
-                case 264:
-                case 268:
+                case 276:
+                case 280:
                     if (((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text4)) != null) {
                         if (PAJeepWeekdaysWindow.this.pagenum == 2) {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text4)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[268])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text4)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[280])).toString());
                             break;
                         } else {
-                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text4)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[264])).toString());
+                            ((TextView) PAJeepWeekdaysWindow.this.mRootView.findViewById(R.id.tv_text4)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[276])).toString());
                             break;
                         }
                     }
@@ -143,167 +142,167 @@ public class PAJeepWeekdaysWindow extends BaseActivity implements View.OnClickLi
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[261].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[262].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[263].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[264].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[265].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[266].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[267].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[268].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[273].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[274].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[275].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[276].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[277].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[278].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[279].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[280].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[261].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[262].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[263].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[264].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[265].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[266].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[267].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[268].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[273].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[274].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[275].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[276].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[277].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[278].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[279].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[280].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 if (this.pagenum == 2) {
-                    int value = DataCanbus.DATA[265] - 1;
+                    int value = DataCanbus.DATA[277] - 1;
                     if (value < 0) {
                         value = 23;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{8, value}, null, null);
                     break;
                 } else {
-                    int value2 = DataCanbus.DATA[261] - 1;
+                    int value2 = DataCanbus.DATA[273] - 1;
                     if (value2 < 0) {
                         value2 = 23;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{4, value2}, null, null);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 if (this.pagenum == 2) {
-                    int value3 = DataCanbus.DATA[265] + 1;
+                    int value3 = DataCanbus.DATA[277] + 1;
                     if (value3 > 23) {
                         value3 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{8, value3}, null, null);
                     break;
                 } else {
-                    int value4 = DataCanbus.DATA[261] + 1;
+                    int value4 = DataCanbus.DATA[273] + 1;
                     if (value4 > 23) {
                         value4 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{4, value4}, null, null);
                     break;
                 }
-            case R.id.btn_minus2 /* 2131427484 */:
+            case R.id.btn_minus2 /* 2131427458 */:
                 if (this.pagenum == 2) {
-                    int value5 = DataCanbus.DATA[266] - 15;
+                    int value5 = DataCanbus.DATA[278] - 15;
                     if (value5 < 0) {
                         value5 = 45;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{9, value5}, null, null);
                     break;
                 } else {
-                    int value6 = DataCanbus.DATA[262] - 15;
+                    int value6 = DataCanbus.DATA[274] - 15;
                     if (value6 < 0) {
                         value6 = 45;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{5, value6}, null, null);
                     break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 if (this.pagenum == 2) {
-                    int value7 = DataCanbus.DATA[266] + 15;
+                    int value7 = DataCanbus.DATA[278] + 15;
                     if (value7 > 59) {
                         value7 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{9, value7}, null, null);
                     break;
                 } else {
-                    int value8 = DataCanbus.DATA[262] + 15;
+                    int value8 = DataCanbus.DATA[274] + 15;
                     if (value8 > 59) {
                         value8 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{5, value8}, null, null);
                     break;
                 }
-            case R.id.btn_minus3 /* 2131427488 */:
+            case R.id.btn_minus3 /* 2131427461 */:
                 if (this.pagenum == 2) {
-                    int value9 = DataCanbus.DATA[267] - 1;
+                    int value9 = DataCanbus.DATA[279] - 1;
                     if (value9 < 0) {
                         value9 = 23;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{10, value9}, null, null);
                     break;
                 } else {
-                    int value10 = DataCanbus.DATA[263] - 1;
+                    int value10 = DataCanbus.DATA[275] - 1;
                     if (value10 < 0) {
                         value10 = 23;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{6, value10}, null, null);
                     break;
                 }
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 if (this.pagenum == 2) {
-                    int value11 = DataCanbus.DATA[267] + 1;
+                    int value11 = DataCanbus.DATA[279] + 1;
                     if (value11 > 23) {
                         value11 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{10, value11}, null, null);
                     break;
                 } else {
-                    int value12 = DataCanbus.DATA[263] + 1;
+                    int value12 = DataCanbus.DATA[275] + 1;
                     if (value12 > 23) {
                         value12 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{6, value12}, null, null);
                     break;
                 }
-            case R.id.btn_minus4 /* 2131427492 */:
+            case R.id.btn_minus4 /* 2131427464 */:
                 if (this.pagenum == 2) {
-                    int value13 = DataCanbus.DATA[268] - 15;
+                    int value13 = DataCanbus.DATA[280] - 15;
                     if (value13 < 0) {
                         value13 = 45;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{11, value13}, null, null);
                     break;
                 } else {
-                    int value14 = DataCanbus.DATA[264] - 15;
+                    int value14 = DataCanbus.DATA[276] - 15;
                     if (value14 < 0) {
                         value14 = 45;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{7, value14}, null, null);
                     break;
                 }
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 if (this.pagenum == 2) {
-                    int value15 = DataCanbus.DATA[268] + 15;
+                    int value15 = DataCanbus.DATA[280] + 15;
                     if (value15 > 59) {
                         value15 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{11, value15}, null, null);
                     break;
                 } else {
-                    int value16 = DataCanbus.DATA[264] + 15;
+                    int value16 = DataCanbus.DATA[276] + 15;
                     if (value16 > 59) {
                         value16 = 0;
                     }
                     DataCanbus.PROXY.cmd(11, new int[]{7, value16}, null, null);
                     break;
                 }
-            case R.id.pop_close /* 2131427922 */:
+            case R.id.pop_close /* 2131427925 */:
                 hideWindow();
                 break;
-            case R.id.pop_full_charge_onoff /* 2131428015 */:
+            case R.id.pop_full_charge_onoff /* 2131428018 */:
                 if (this.pagenum == 2) {
-                    int value17 = DataCanbus.DATA[267];
+                    int value17 = DataCanbus.DATA[279];
                     if (value17 != 24) {
                         value17 = 24;
                     } else if (value17 == 24) {
@@ -312,7 +311,7 @@ public class PAJeepWeekdaysWindow extends BaseActivity implements View.OnClickLi
                     DataCanbus.PROXY.cmd(11, new int[]{10, value17}, null, null);
                     break;
                 } else {
-                    int value18 = DataCanbus.DATA[263];
+                    int value18 = DataCanbus.DATA[275];
                     if (value18 != 24) {
                         value18 = 24;
                     } else if (value18 == 24) {

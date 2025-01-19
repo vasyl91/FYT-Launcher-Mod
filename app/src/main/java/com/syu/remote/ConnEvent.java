@@ -1,6 +1,5 @@
 package com.syu.remote;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ConnEvent {
     public boolean success;
     public String type;

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0118_XP1_BiaoZhi2008;
 import com.syu.module.canbus.Callback_0185_XP1_BiaoZhi408;
@@ -12,17 +11,16 @@ import com.syu.module.canbus.Callback_0278_XP1_BiaoZhi301;
 import com.syu.module.canbus.Callback_0281_XP_PSA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BZ408AlarmRecordActi extends BaseActivity {
     private static StringBuffer mStringBuffer = new StringBuffer(1000);
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.BZ408AlarmRecordActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 68:
+                case 114:
                     BZ408AlarmRecordActi.this.mUpdaterValue1();
                     break;
-                case 103:
+                case 165:
                     BZ408AlarmRecordActi.this.mUpdaterValue1();
                     break;
             }
@@ -30,51 +28,51 @@ public class BZ408AlarmRecordActi extends BaseActivity {
     };
     private String mTempStr = "";
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_biaozhi408_alarm_record);
+        //setContentView(R.layout.layout_biaozhi408_alarm_record);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
-        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281 || DataCanbus.DATA[1000] == 262425) {
             DataCanbus.PROXY.cmd(48, new int[]{252}, null, null);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         this.mTempStr = "";
         mStringBuffer.delete(0, mStringBuffer.length());
         removeNotify();
-        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281 || DataCanbus.DATA[1000] == 262425) {
             DataCanbus.PROXY.cmd(48, new int[]{253}, null, null);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[103];
-        int total = DataCanbus.DATA[43];
-        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+        int value = DataCanbus.DATA[114];
+        int total = DataCanbus.DATA[140];
+        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281 || DataCanbus.DATA[1000] == 262425) {
             if (value == 252) {
                 ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.diagnostic_start);
             } else if (value > -1 && value < 177) {
@@ -96,7 +94,7 @@ public class BZ408AlarmRecordActi extends BaseActivity {
                     mStringBuffer.append("\n");
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(mStringBuffer.toString());
                 }
-                if ((DataCanbus.DATA[1000] == 281 || DataCanbus.DATA[1000] == 65817) && this.mTempStr != Callback_0281_XP_PSA_ALL.mCarId) {
+                if ((DataCanbus.DATA[1000] == 281 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 65817) && this.mTempStr != Callback_0281_XP_PSA_ALL.mCarId) {
                     this.mTempStr = Callback_0281_XP_PSA_ALL.mCarId;
                     mStringBuffer.append(this.mTempStr);
                     mStringBuffer.append("\n");
@@ -292,49 +290,49 @@ public class BZ408AlarmRecordActi extends BaseActivity {
                 case 308:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_134);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_RIGHT /* 506 */:
+                case 506:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1fa);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_FRONT /* 507 */:
+                case 507:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1fb);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_REAR /* 508 */:
+                case 508:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1fc);
                     break;
-                case ConstRzcAddData.U_CAR_WIPER_LEV /* 509 */:
+                case 509:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1fd);
                     break;
-                case ConstRzcAddData.U_CAR_CUR_SPEED /* 510 */:
+                case 510:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1fe);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_SPEED /* 511 */:
+                case 511:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_1ff);
                     break;
-                case ConstRzcAddData.U_CAR_TOTAL_MILEAGE /* 512 */:
+                case 512:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_200);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_LEFT /* 514 */:
+                case 514:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_202);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_RIGHT /* 515 */:
+                case 515:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_203);
                     break;
-                case ConstRzcAddData.U_CAR_ACCON /* 516 */:
+                case 516:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_204);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT /* 517 */:
+                case 517:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_205);
                     break;
-                case ConstRzcAddData.U_CAR_REAR_BACK /* 518 */:
+                case 518:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_206);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_FUEL /* 521 */:
+                case 521:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_209);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_WATER /* 522 */:
+                case 522:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_20a);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_MOTOR_OIL /* 523 */:
+                case 523:
                     ((TextView) findViewById(R.id.bz408_tv_alarm)).setText(R.string.bz408_warning_20b);
                     break;
                 case 32767:

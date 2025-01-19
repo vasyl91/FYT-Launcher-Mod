@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import com.android.launcher66.DragLayer;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DragView extends View {
     private static float sDragAlpha = 1.0f;
     ValueAnimator mAnim;
@@ -52,8 +51,8 @@ public class DragView extends View {
         setScaleY(initialScale);
         this.mAnim = LauncherAnimUtils.ofFloat(this, 0.0f, 1.0f);
         this.mAnim.setDuration(150L);
-        this.mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.DragView.1
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        this.mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = ((Float) animation.getAnimatedValue()).floatValue();
                 int deltaX = (int) ((offsetX * value) - DragView.this.mOffsetX);
@@ -126,12 +125,12 @@ public class DragView extends View {
         this.mInitialScale = getScaleX();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(this.mBitmap.getWidth(), this.mBitmap.getHeight());
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         this.mHasDrawn = true;
         boolean crossFade = this.mCrossFadeProgress > 0.0f && this.mCrossFadeBitmap != null;
@@ -159,8 +158,8 @@ public class DragView extends View {
         ValueAnimator va = LauncherAnimUtils.ofFloat(this, 0.0f, 1.0f);
         va.setDuration(duration);
         va.setInterpolator(new DecelerateInterpolator(1.5f));
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.DragView.2
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 DragView.this.mCrossFadeProgress = animation.getAnimatedFraction();
             }
@@ -184,7 +183,7 @@ public class DragView extends View {
         return this.mHasDrawn;
     }
 
-    @Override // android.view.View
+    @Override
     public void setAlpha(float alpha) {
         super.setAlpha(alpha);
         this.mPaint.setAlpha((int) (255.0f * alpha));
@@ -200,8 +199,8 @@ public class DragView extends View {
         setLayoutParams(lp);
         setTranslationX(touchX - this.mRegistrationX);
         setTranslationY(touchY - this.mRegistrationY);
-        post(new Runnable() { // from class: com.android.launcher66.DragView.3
-            @Override // java.lang.Runnable
+        post(new Runnable() { 
+            @Override
             public void run() {
                 DragView.this.mAnim.start();
             }

@@ -12,7 +12,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_Ford_Lincoin_All;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchListener {
     public static WC2FordLincoinCdAct mInstance;
     public static boolean mIsFront = false;
@@ -20,42 +19,42 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinCdAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 88:
+                case 149:
                     WC2FordLincoinCdAct.this.mUpdaterCdState(value);
                     break;
-                case 89:
+                case 150:
                     WC2FordLincoinCdAct.this.mUpdaterCdRepeat(value);
                     break;
-                case 90:
+                case 151:
                     WC2FordLincoinCdAct.this.mUpdaterCdRandom(value);
                     break;
-                case 91:
-                case 92:
+                case 152:
+                case 153:
                     WC2FordLincoinCdAct.this.mUpdaterCdTime();
                     break;
-                case 93:
-                case 94:
+                case 154:
+                case 155:
                     WC2FordLincoinCdAct.this.mUpdaterCdTrack();
                     break;
-                case 95:
+                case 156:
                     ((TextView) WC2FordLincoinCdAct.this.findViewById(R.id.cd_title)).setText(Callback_0443_WC2_Ford_Lincoin_All.Title);
                     break;
-                case 96:
+                case 157:
                     ((TextView) WC2FordLincoinCdAct.this.findViewById(R.id.cd_artist)).setText(Callback_0443_WC2_Ford_Lincoin_All.Artist);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc2_ford_lincoin_cd_act);
+        //setContentView(R.layout.layout_0443_wc2_ford_lincoin_cd_act);
         mInstance = this;
         ((Button) findViewById(R.id.cd_repeat)).setOnTouchListener(this);
         ((Button) findViewById(R.id.cd_ramdom)).setOnTouchListener(this);
@@ -68,7 +67,7 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
         findViewById(R.id.cd_album).setVisibility(8);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -76,7 +75,7 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -87,39 +86,39 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
         DataCanbus.PROXY.cmd(2, cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
-            case R.id.cd_repeat /* 2131427913 */:
+            case R.id.cd_repeat /* 2131427916 */:
                 this.cmdId = 3;
-                this.value = DataCanbus.DATA[89] == 1 ? 0 : 1;
+                this.value = DataCanbus.DATA[150] == 1 ? 0 : 1;
                 break;
-            case R.id.cd_ramdom /* 2131427914 */:
+            case R.id.cd_ramdom /* 2131427917 */:
                 this.cmdId = 5;
-                this.value = DataCanbus.DATA[90] == 1 ? 0 : 1;
+                this.value = DataCanbus.DATA[151] == 1 ? 0 : 1;
                 break;
-            case R.id.cd_prev /* 2131427915 */:
+            case R.id.cd_prev /* 2131427918 */:
                 this.cmdId = 7;
                 this.value = 1;
                 break;
-            case R.id.cd_fb /* 2131427916 */:
+            case R.id.cd_fb /* 2131427919 */:
                 this.cmdId = 8;
                 this.value = 1;
                 break;
-            case R.id.cd_play /* 2131427917 */:
+            case R.id.cd_play /* 2131427920 */:
                 this.cmdId = 1;
                 this.value = 0;
                 break;
-            case R.id.cd_pause /* 2131427918 */:
+            case R.id.cd_pause /* 2131427921 */:
                 this.cmdId = 2;
                 this.value = 0;
                 break;
-            case R.id.cd_ff /* 2131427919 */:
+            case R.id.cd_ff /* 2131427922 */:
                 this.cmdId = 8;
                 this.value = 0;
                 break;
-            case R.id.cd_next /* 2131427920 */:
+            case R.id.cd_next /* 2131427923 */:
                 this.cmdId = 7;
                 this.value = 0;
                 break;
@@ -134,43 +133,43 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdRandom(int value) {
         ((Button) findViewById(R.id.cd_ramdom)).setSelected(value == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdRepeat(int value) {
         ((Button) findViewById(R.id.cd_repeat)).setSelected(value == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdState(int value) {
         switch (value) {
             case 0:
@@ -206,17 +205,17 @@ public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTrack() {
-        int value = DataCanbus.DATA[93];
-        int value1 = DataCanbus.DATA[94];
+        int value = DataCanbus.DATA[154];
+        int value1 = DataCanbus.DATA[155];
         ((TextView) findViewById(R.id.huiteng_cd_track)).setText("Track: " + value + " / " + value1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTime() {
-        int value = DataCanbus.DATA[91];
-        int value3 = DataCanbus.DATA[92];
+        int value = DataCanbus.DATA[152];
+        int value3 = DataCanbus.DATA[153];
         ((TextView) findViewById(R.id.huiteng_cd_time)).setText(String.valueOf(value) + " / " + value3);
     }
 }

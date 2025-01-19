@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_HC_Volvo extends AirBase {
     public Air_0439_HC_Volvo(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_hechi_volvo/hc_volvo.webp";
         this.mPathHighlight = "0439_hechi_volvo/hc_volvo_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -84,7 +84,7 @@ public class Air_0439_HC_Volvo extends AirBase {
         } else if (value > 18) {
             value = 18;
         }
-        c.drawText(new StringBuilder(String.valueOf(value)).toString(), 543.0f, 131.0f, this.mPaint);
+        c.drawText(String.valueOf(value), 543.0f, 131.0f, this.mPaint);
         int temp = this.DATA[9];
         if (temp == -1) {
             c.drawText("NO", 62.0f, 60.0f, this.mPaint);
@@ -94,7 +94,7 @@ public class Air_0439_HC_Volvo extends AirBase {
             c.drawText("HI", 62.0f, 60.0f, this.mPaint);
         } else {
             int temp2 = (temp * 5) + 155;
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10) + " ℃", 62.0f, 60.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10) + " ℃", 62.0f, 60.0f, this.mPaint);
         }
         int temp1 = this.DATA[10];
         if (temp1 == -1) {
@@ -105,7 +105,7 @@ public class Air_0439_HC_Volvo extends AirBase {
             c.drawText("HI", 930.0f, 60.0f, this.mPaint);
         } else {
             int temp12 = (temp1 * 5) + 155;
-            c.drawText(String.valueOf(temp12 / 10) + "." + (temp12 % 10) + " ℃", 930.0f, 60.0f, this.mPaint);
+            c.drawText(temp12 / 10 + "." + (temp12 % 10) + " ℃", 930.0f, 60.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -1,5 +1,6 @@
 package com.syu.carinfo.jili;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,95 +16,113 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.mzd.RZCJiliSkySetActi;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
     public ListView mLauStylelv;
     private View mPopShowView;
+    int[] send_drivemode;
     int[] send_lang;
-    private int[] eventIds = {86, 87, 88, 89, 90, 99, 118, 105, 119, 120, 121, 122, 123, 124, 139, 140, 141, 142, 143, 144, 145, 167, 160, 161, 162, 163, 164, 165, 154, 166, 169, 170, 171, 172, 146, 103, 155, 173, 175, 176, 177, 178, 179, 180, 181, 183, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201};
+    private int[] eventIds = {98, 99, 100, 101, 102, 111, 130, 117, 131, 132, 133, 134, 135, 136, 151, 152, 153, 154, 155, 156, 157, 179, 172, 173, 174, 175, 176, 177, 166, 178, 181, 182, 183, 184, 158, 115, 167, 185, 187, 188, 189, 190, 191, 192, 193, 195, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213};
+    int cmdtype = 0;
     int language_set = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    int drivemode_set = 255;
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 86:
+                case 98:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext29), value == 1);
                     break;
-                case 87:
+                case 99:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext30), value == 1);
                     break;
-                case 88:
+                case 100:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext31), value == 1);
                     break;
-                case 89:
+                case 101:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext32), value == 1);
                     break;
-                case 90:
+                case 102:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext33), value == 1);
                     break;
-                case 99:
+                case 111:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext34), value == 1);
                     break;
-                case 103:
+                case 115:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext18), value == 1);
                     break;
-                case 105:
+                case 117:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext35), value == 1);
                     if (((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.boyue_fortification_prompt_txt)) != null) {
                         ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.boyue_fortification_prompt_txt)).setText(value == 1 ? R.string.klc_remote_Remote_control_latch_only_light : R.string.klc_remote_Remote_control_latch_light_Speaker);
                         break;
                     }
-                case 118:
+                case 130:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext36), value == 1);
                     break;
-                case 119:
+                case 131:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext37), value == 1);
                     break;
-                case 120:
+                case 132:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext38), value == 1);
                     break;
-                case 121:
+                case 133:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext39), value == 1);
                     break;
-                case 122:
+                case 134:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext40), value == 1);
                     break;
-                case 123:
+                case 135:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext41), value == 1);
                     break;
-                case 124:
+                case 136:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext42), value == 1);
                     break;
-                case 139:
+                case 151:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 140:
+                case 152:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 141:
+                case 153:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 142:
+                case 154:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 143:
+                case 155:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 144:
-                    YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext6), value == 1);
-                    break;
-                case 145:
+                case 156:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_XP1_Haoyue_20 /* 2556043 */:
+                            switch (value) {
+                                case 0:
+                                    ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text14)).setText("锁车自动关窗");
+                                    break;
+                                case 1:
+                                    ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text14)).setText("长按钥匙自动关窗");
+                                    break;
+                                case 2:
+                                    ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text14)).setText(R.string.off);
+                                    break;
+                            }
+                        default:
+                            YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext6), value == 1);
+                            break;
+                    }
+                case 157:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 146:
+                case 158:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text3)).setText(R.string.str_403_ambient_5);
@@ -118,40 +137,40 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text3)).setText(R.string.str_403_ambient_7);
                             break;
                     }
-                case 154:
+                case 166:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 155:
+                case 167:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext19), value == 1);
                     break;
-                case 160:
+                case 172:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     if (((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text1)).setText(value == 1 ? R.string.jeep_forwardcollisionwarn_1 : R.string.jeep_forwardcollisionwarn_0);
                         break;
                     }
-                case 161:
+                case 173:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 162:
+                case 174:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext15), value == 1);
                     break;
-                case 163:
+                case 175:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 164:
+                case 176:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 165:
+                case 177:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 166:
+                case 178:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext16), value == 1);
                     break;
-                case 167:
+                case 179:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 169:
+                case 181:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text2)).setText("30s");
@@ -163,10 +182,10 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text2)).setText("90s");
                             break;
                     }
-                case 170:
+                case 182:
                     ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text5)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 171:
+                case 183:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text4)).setText(R.string.mateng_air_con_profile_0);
@@ -178,31 +197,43 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text4)).setText(R.string.mateng_air_con_profile_2);
                             break;
                     }
-                case 172:
+                case 184:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext20), value == 1);
                     break;
-                case 173:
+                case 185:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext21), value == 1);
                     break;
-                case 175:
+                case 187:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext22), value == 1);
                     break;
-                case 176:
+                case 188:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext23), value == 1);
                     break;
-                case 178:
+                case 189:
+                    switch (value) {
+                        case 0:
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text13)).setText("COMFORT");
+                            break;
+                        case 1:
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text13)).setText("ECO");
+                            break;
+                        case 2:
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text13)).setText("SPORT");
+                            break;
+                    }
+                case 190:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext24), value == 1);
                     break;
-                case 179:
+                case 191:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext25), value == 1);
                     break;
-                case 180:
+                case 192:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext26), value == 1);
                     break;
-                case 181:
+                case 193:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext27), value == 1);
                     break;
-                case 183:
+                case 195:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text6)).setText(R.string.off);
@@ -235,7 +266,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text6)).setText("4.5小时");
                             break;
                     }
-                case 185:
+                case 197:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text7)).setText(R.string.off);
@@ -247,28 +278,28 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text7)).setText("20km/h");
                             break;
                     }
-                case 186:
+                case 198:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext43), value == 1);
                     break;
-                case 187:
+                case 199:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext44), value == 1);
                     break;
-                case 189:
+                case 201:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext45), value == 1);
                     break;
-                case 190:
+                case 202:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext46), value == 1);
                     break;
-                case 191:
+                case 203:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext47), value == 1);
                     break;
-                case 192:
+                case 204:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext48), value == 1);
                     break;
-                case 193:
+                case 205:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext49), value == 1);
                     break;
-                case 194:
+                case 206:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text8)).setText(R.string.klc_remote_Remote_control_latch_only_light);
@@ -277,16 +308,16 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text8)).setText(R.string.klc_remote_Remote_control_latch_light_Speaker);
                             break;
                     }
-                case 195:
+                case 207:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext50), value == 1);
                     break;
-                case 196:
+                case 208:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext51), value == 1);
                     break;
-                case 197:
+                case 209:
                     YuanJingX1CarSettingsAct.this.setCheckView((CheckedTextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.ctv_checkedtext52), value == 1);
                     break;
-                case 198:
+                case 210:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text9)).setText("两次锁车开启");
@@ -295,7 +326,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text9)).setText("两次锁车关闭");
                             break;
                     }
-                case 199:
+                case 211:
                     switch (value) {
                         case 0:
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text10)).setText("Smart");
@@ -310,7 +341,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                             ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text10)).setText("Save");
                             break;
                     }
-                case 200:
+                case 212:
                     switch (DataCanbus.DATA[1000]) {
                         case FinalCanbus.CAR_RZC_Xiongmao_Mini_23 /* 2818187 */:
                             switch (value) {
@@ -355,30 +386,30 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                                     break;
                             }
                     }
-                case 201:
+                case 213:
                     switch (value) {
                         case 0:
-                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text11)).setText("L1");
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text12)).setText("L1");
                             break;
                         case 1:
-                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text11)).setText("L2");
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text12)).setText("L2");
                             break;
                         case 2:
-                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text11)).setText("L3");
+                            ((TextView) YuanJingX1CarSettingsAct.this.findViewById(R.id.tv_text12)).setText("L3");
                             break;
                     }
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_139_rzc_yuanjing_x1);
+        //setContentView(R.layout.layout_139_rzc_yuanjing_x1);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 1; i < 65; i++) {
             if (i % 5 == 0) {
@@ -395,7 +426,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mNotifyCanbus);
@@ -403,7 +434,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         DataCanbus.PROXY.cmd(5, new int[1], null, null);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -416,43 +447,80 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                YuanJingX1CarSettingsAct.this.language_set = position;
-                if (YuanJingX1CarSettingsAct.this.language_set >= 0 && YuanJingX1CarSettingsAct.this.language_set <= YuanJingX1CarSettingsAct.this.mLauStylelist.size() && YuanJingX1CarSettingsAct.this.send_lang != null) {
-                    DataCanbus.PROXY.cmd(1, new int[]{26, YuanJingX1CarSettingsAct.this.send_lang[YuanJingX1CarSettingsAct.this.language_set]}, null, null);
+                switch (YuanJingX1CarSettingsAct.this.cmdtype) {
+                    case 1:
+                        YuanJingX1CarSettingsAct.this.language_set = position;
+                        if (YuanJingX1CarSettingsAct.this.language_set >= 0 && YuanJingX1CarSettingsAct.this.language_set <= YuanJingX1CarSettingsAct.this.mLauStylelist.size() && YuanJingX1CarSettingsAct.this.send_lang != null) {
+                            DataCanbus.PROXY.cmd(1, new int[]{26, YuanJingX1CarSettingsAct.this.send_lang[YuanJingX1CarSettingsAct.this.language_set]}, null, null);
+                            break;
+                        }
+                    case 2:
+                        YuanJingX1CarSettingsAct.this.drivemode_set = position;
+                        if (YuanJingX1CarSettingsAct.this.drivemode_set >= 0 && YuanJingX1CarSettingsAct.this.drivemode_set <= YuanJingX1CarSettingsAct.this.mLauStylelist.size() && YuanJingX1CarSettingsAct.this.send_lang != null) {
+                            DataCanbus.PROXY.cmd(1, new int[]{44, YuanJingX1CarSettingsAct.this.send_drivemode[YuanJingX1CarSettingsAct.this.drivemode_set]}, null, null);
+                            break;
+                        }
                 }
                 YuanJingX1CarSettingsAct.this.mLauStyle.dismiss();
             }
         });
     }
 
-    public void updateLauguageSet() {
-        if (this.language_set >= 0 && this.language_set < this.mLauStylelist.size() && this.mLauStylelv != null) {
-            this.mLauStylelv.setItemChecked(this.language_set, true);
+    public void updateLauguageSet(int index) {
+        if (index >= 0 && index < this.mLauStylelist.size() && this.mLauStylelv != null) {
+            this.mLauStylelv.setItemChecked(index, true);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
-    public void init() {
-        this.mPopShowView = getWindow().getDecorView();
-        this.mLauStylelist = new ArrayList<>();
+    
+    public void initmLauStylelist() {
+        this.mLauStylelist.clear();
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_2));
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_1));
         this.send_lang = new int[]{0, 1};
-        if (this.send_lang.length != this.mLauStylelist.size()) {
-            throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
-        }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.3
-            @Override // android.view.View.OnClickListener
+    }
+
+    
+    public void initmDrivemodeStylelist() {
+        this.mLauStylelist.clear();
+        this.mLauStylelist.add(getResources().getString(R.string.wc_golf_comfort));
+        this.mLauStylelist.add(getResources().getString(R.string.str_driving_eco));
+        this.mLauStylelist.add(getResources().getString(R.string.str_driving_sport));
+        this.send_drivemode = new int[]{0, 1, 2};
+    }
+
+    @Override
+    public void init() {
+        this.mPopShowView = getWindow().getDecorView();
+        this.mLauStylelist = new ArrayList<>();
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
+                YuanJingX1CarSettingsAct.this.initmLauStylelist();
+                YuanJingX1CarSettingsAct.this.cmdtype = 1;
                 if (YuanJingX1CarSettingsAct.this.mLauStyle == null) {
                     YuanJingX1CarSettingsAct.this.initLauStyle();
                 }
                 if (YuanJingX1CarSettingsAct.this.mLauStyle != null && YuanJingX1CarSettingsAct.this.mPopShowView != null) {
                     YuanJingX1CarSettingsAct.this.mLauStyle.showAtLocation(YuanJingX1CarSettingsAct.this.mPopShowView, 17, 0, 0);
-                    YuanJingX1CarSettingsAct.this.updateLauguageSet();
+                    YuanJingX1CarSettingsAct.this.updateLauguageSet(YuanJingX1CarSettingsAct.this.language_set);
+                }
+            }
+        });
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext54), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                YuanJingX1CarSettingsAct.this.initmDrivemodeStylelist();
+                YuanJingX1CarSettingsAct.this.cmdtype = 2;
+                if (YuanJingX1CarSettingsAct.this.mLauStyle == null) {
+                    YuanJingX1CarSettingsAct.this.initLauStyle();
+                }
+                if (YuanJingX1CarSettingsAct.this.mLauStyle != null && YuanJingX1CarSettingsAct.this.mPopShowView != null) {
+                    YuanJingX1CarSettingsAct.this.mLauStyle.showAtLocation(YuanJingX1CarSettingsAct.this.mPopShowView, 17, 0, 0);
+                    YuanJingX1CarSettingsAct.this.updateLauguageSet(YuanJingX1CarSettingsAct.this.drivemode_set);
                 }
             }
         });
@@ -462,6 +530,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         findViewById(R.id.layout_view4).setVisibility(8);
         findViewById(R.id.layout_view5).setVisibility(8);
         findViewById(R.id.layout_view6).setVisibility(8);
+        findViewById(R.id.layout_view30).setVisibility(8);
         findViewById(R.id.layout_view7).setVisibility(8);
         findViewById(R.id.layout_view8).setVisibility(8);
         findViewById(R.id.layout_view9).setVisibility(8);
@@ -485,7 +554,6 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         findViewById(R.id.layout_view27).setVisibility(8);
         findViewById(R.id.layout_view28).setVisibility(8);
         findViewById(R.id.layout_view29).setVisibility(8);
-        findViewById(R.id.layout_view30).setVisibility(8);
         findViewById(R.id.layout_view31).setVisibility(8);
         findViewById(R.id.layout_view32).setVisibility(8);
         findViewById(R.id.layout_view33).setVisibility(8);
@@ -519,6 +587,9 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         findViewById(R.id.layout_view61).setVisibility(8);
         findViewById(R.id.layout_view62).setVisibility(8);
         findViewById(R.id.layout_view63).setVisibility(8);
+        findViewById(R.id.layout_view64).setVisibility(8);
+        findViewById(R.id.layout_view65).setVisibility(8);
+        findViewById(R.id.layout_view66).setVisibility(8);
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_RZC_XP1_YuanJingX6 /* 131211 */:
             case FinalCanbus.CAR_RZC_XP1_18YuanJingSUV /* 721035 */:
@@ -622,6 +693,8 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.layout_view37).setVisibility(0);
                 break;
             case FinalCanbus.CAR_RZC_XP1_Bingyue_19 /* 2228363 */:
+            case FinalCanbus.CAR_RZC_XP1_BingyuePro_19 /* 2949259 */:
+            case FinalCanbus.CAR_RZC_XP1_Bingyue_21_RS /* 3276939 */:
                 findViewById(R.id.layout_view20).setVisibility(0);
                 findViewById(R.id.layout_view36).setVisibility(0);
                 findViewById(R.id.layout_view7).setVisibility(0);
@@ -629,6 +702,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.layout_view33).setVisibility(0);
                 findViewById(R.id.layout_view26).setVisibility(0);
                 findViewById(R.id.layout_view32).setVisibility(0);
+                findViewById(R.id.layout_view37).setVisibility(0);
                 findViewById(R.id.layout_view38).setVisibility(0);
                 findViewById(R.id.layout_view40).setVisibility(0);
                 findViewById(R.id.layout_view39).setVisibility(0);
@@ -653,6 +727,7 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.layout_view33).setVisibility(0);
                 findViewById(R.id.layout_view32).setVisibility(0);
                 findViewById(R.id.layout_view38).setVisibility(0);
+                findViewById(R.id.layout_view64).setVisibility(0);
                 findViewById(R.id.layout_view42).setVisibility(0);
                 break;
             case FinalCanbus.CAR_RZC_XP1_Binrui_20 /* 2490507 */:
@@ -665,9 +740,10 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.layout_view33).setVisibility(0);
                 break;
             case FinalCanbus.CAR_RZC_XP1_Haoyue_20 /* 2556043 */:
-                findViewById(R.id.layout_view20).setVisibility(0);
+                findViewById(R.id.layout_view66).setVisibility(0);
                 findViewById(R.id.layout_view7).setVisibility(0);
                 findViewById(R.id.layout_view32).setVisibility(0);
+                findViewById(R.id.layout_view33).setVisibility(0);
                 findViewById(R.id.layout_view38).setVisibility(0);
                 findViewById(R.id.layout_view44).setVisibility(0);
                 findViewById(R.id.layout_view45).setVisibility(0);
@@ -733,39 +809,57 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.layout_view61).setVisibility(0);
                 findViewById(R.id.layout_view62).setVisibility(0);
                 break;
+            case FinalCanbus.CAR_RZC_XP1_Dihao_23 /* 3342475 */:
+                findViewById(R.id.layout_view2).setVisibility(0);
+                findViewById(R.id.layout_view8).setVisibility(0);
+                findViewById(R.id.layout_view20).setVisibility(0);
+                findViewById(R.id.layout_view14).setVisibility(0);
+                findViewById(R.id.layout_view32).setVisibility(0);
+                findViewById(R.id.layout_view37).setVisibility(0);
+                findViewById(R.id.layout_view44).setVisibility(0);
+                findViewById(R.id.layout_view48).setVisibility(0);
+                findViewById(R.id.layout_view49).setVisibility(0);
+                findViewById(R.id.layout_view50).setVisibility(0);
+                findViewById(R.id.layout_view51).setVisibility(0);
+                findViewById(R.id.layout_view52).setVisibility(0);
+                findViewById(R.id.layout_view53).setVisibility(0);
+                findViewById(R.id.layout_view56).setVisibility(0);
+                findViewById(R.id.layout_view64).setVisibility(0);
+                findViewById(R.id.layout_view65).setVisibility(0);
+                break;
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext17)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.4
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     YuanJingX1CarSettingsAct.this.sendCmd(40, 1);
                 }
             });
         }
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), 0, 139);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), 1, 140);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), 2, 141);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), 3, 142);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), 4, 143);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext6), 8, 144);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext7), 20, 145);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext8), 38, 167);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext9), 30, 163);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext10), 31, 164);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext11), 32, 165);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext12), 33, 154);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext13), 35, 160);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext14), 34, 161);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext15), 36, 162);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext16), 8, 166);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), 9, 103);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext19), 10, 155);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext20), 43, 172);
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext21)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.5
-            @Override // android.view.View.OnClickListener
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), 0, 151);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), 1, 152);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), 2, 153);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), 3, 154);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), 4, 155);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext6), 8, 156);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext7), 20, 157);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext8), 38, 179);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext9), 30, 175);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext10), 31, 176);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext11), 32, 177);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext12), 33, 166);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext13), 35, 172);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext14), 34, 173);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext15), 36, 174);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext16), 8, 178);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), 9, 115);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext19), 10, 167);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext20), 43, 184);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext21)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[173];
+                int value2 = DataCanbus.DATA[185];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -774,227 +868,239 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 DataCanbus.PROXY.cmd(4, new int[]{value}, null, null);
             }
         });
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext22), 128, 175);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext23), 27, 176);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext24), 45, 178);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext25), 46, 179);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext26), 47, 180);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext27), 48, 181);
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext28)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.6
-            @Override // android.view.View.OnClickListener
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext22), 128, 187);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext23), 27, 188);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext24), 45, 190);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext25), 46, 191);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext26), 47, 192);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext27), 48, 193);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext28)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(5, new int[]{1}, null, null);
             }
         });
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext29), 0, 86);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext30), 1, 87);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext31), 2, 88);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext32), 3, 89);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext33), 4, 90);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext34), 5, 99);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext35), 17, 105);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext36), 20, 118);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext37), 1, 119);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext38), 3, 120);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext39), 2, 121);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext40), 4, 122);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext41), 0, 123);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext42), 19, 124);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext43), 50, 186);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext44), 51, 187);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext45), 53, 189);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext46), 54, 190);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext47), 55, 191);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext48), 56, 192);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext49), 57, 193);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext50), 59, 195);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext51), 60, 196);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext52), 61, 197);
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.7
-            @Override // android.view.View.OnClickListener
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext29), 0, 98);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext30), 1, 99);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext31), 2, 100);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext32), 3, 101);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext33), 4, 102);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext34), 5, 111);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext35), 17, 117);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext36), 20, 130);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext37), 1, 131);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext38), 3, 132);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext39), 2, 133);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext40), 4, 134);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext41), 0, 135);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext42), 19, 136);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext43), 50, 198);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext44), 51, 199);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext45), 53, 201);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext46), 54, 202);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext47), 55, 203);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext48), 56, 204);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext49), 57, 205);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext50), 59, 207);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext51), 60, 208);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext52), 61, 209);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext53)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[169] - 1;
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(YuanJingX1CarSettingsAct.this, RZCJiliSkySetActi.class);
+                    YuanJingX1CarSettingsAct.this.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[181] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{39, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[169] + 1;
+                int value = DataCanbus.DATA[181] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{39, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[146] - 1;
+                int value = DataCanbus.DATA[158] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{28, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[146] + 1;
+                int value = DataCanbus.DATA[158] + 1;
                 if (value > 3) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{28, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[171] - 1;
+                int value = DataCanbus.DATA[183] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{42, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[171] + 1;
+                int value = DataCanbus.DATA[183] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{42, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[170];
+                int value = DataCanbus.DATA[182];
                 if (value > 1) {
                     value--;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{41, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[170];
+                int value = DataCanbus.DATA[182];
                 if (value < 10) {
                     value++;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{41, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.15
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[183] - 1;
+                int value = DataCanbus.DATA[195] - 1;
                 if (value < 0) {
                     value = 9;
                 }
                 DataCanbus.PROXY.cmd(6, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[183] + 1;
+                int value = DataCanbus.DATA[195] + 1;
                 if (value > 9) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(6, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[185] - 1;
+                int value = DataCanbus.DATA[197] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{49, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[185] + 1;
+                int value = DataCanbus.DATA[197] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{49, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.19
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[194] - 1;
+                int value = DataCanbus.DATA[206] - 1;
                 if (value < 0) {
                     value = 1;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{58, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.20
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[194] + 1;
+                int value = DataCanbus.DATA[206] + 1;
                 if (value > 1) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{58, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.21
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[198] - 1;
+                int value = DataCanbus.DATA[210] - 1;
                 if (value < 0) {
                     value = 1;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{62, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.22
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[198] + 1;
+                int value = DataCanbus.DATA[210] + 1;
                 if (value > 1) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{62, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.23
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[199] - 1;
+                int value = DataCanbus.DATA[211] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{63, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.24
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[199] + 1;
+                int value = DataCanbus.DATA[211] + 1;
                 if (value > 3) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{63, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.25
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[200];
+                int value2 = DataCanbus.DATA[212];
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_RZC_Xiongmao_Mini_23 /* 2818187 */:
                         if (value2 == 9) {
@@ -1014,11 +1120,11 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 DataCanbus.PROXY.cmd(1, new int[]{64, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.26
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[200];
+                int value2 = DataCanbus.DATA[212];
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_RZC_Xiongmao_Mini_23 /* 2818187 */:
                         if (value2 == 9) {
@@ -1038,32 +1144,52 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
                 DataCanbus.PROXY.cmd(1, new int[]{64, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.27
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[201] - 1;
+                int value = DataCanbus.DATA[213] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{65, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.28
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[201] + 1;
+                int value = DataCanbus.DATA[213] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{65, value}, null, null);
             }
         });
+        ((Button) findViewById(R.id.btn_minus13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[156] - 1;
+                if (value < 0) {
+                    value = 2;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{8, value}, null, null);
+            }
+        });
+        ((Button) findViewById(R.id.btn_plus13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[156] + 1;
+                if (value > 2) {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{8, value}, null, null);
+            }
+        });
     }
 
     private void sendClick(View v, final int cmd, final int id) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1CarSettingsAct.29
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     int value = DataCanbus.DATA[id];
                     YuanJingX1CarSettingsAct.this.sendCmd(cmd, value == 0 ? 1 : 0);
@@ -1072,23 +1198,23 @@ public class YuanJingX1CarSettingsAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setCheckView(CheckedTextView v, boolean b) {
         if (v != null) {
             v.setChecked(b);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int cmd, int value) {
         DataCanbus.PROXY.cmd(1, new int[]{cmd, value}, null, null);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

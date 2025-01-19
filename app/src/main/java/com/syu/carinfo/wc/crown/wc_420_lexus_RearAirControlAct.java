@@ -9,31 +9,30 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnClickListener {
     public static wc_420_lexus_RearAirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.crown.wc_420_lexus_RearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 31:
+                case 40:
                     wc_420_lexus_RearAirControlAct.this.mUpdaterAirTempLeft();
                     break;
-                case 32:
+                case 41:
                     wc_420_lexus_RearAirControlAct.this.mUpdaterAirTempRight();
                     break;
-                case 33:
+                case 44:
                     wc_420_lexus_RearAirControlAct.this.mUpdaterAirWindLevel();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0420_wc_lexus_ls460_rear_carairset);
+        //setContentView(R.layout.layout_0420_wc_lexus_ls460_rear_carairset);
         init();
         mInstance = this;
     }
@@ -48,7 +47,7 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
         findViewById(R.id.dj_xts_air_win_plus_btn).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -56,7 +55,7 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -64,7 +63,7 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -93,20 +92,20 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
-        int temp = DataCanbus.DATA[31];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             switch (temp) {
                 case -3:
@@ -125,9 +124,9 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
-        int temp = DataCanbus.DATA[32];
+        int temp = DataCanbus.DATA[41];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             switch (temp) {
                 case -3:
@@ -146,9 +145,9 @@ public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnC
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
-        int level = DataCanbus.DATA[33];
+        int level = DataCanbus.DATA[44];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
         findViewById(R.id.air_xts_power).setBackgroundResource(level == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }

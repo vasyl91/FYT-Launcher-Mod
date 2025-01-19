@@ -13,30 +13,29 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0188_XBS_XP1_CRV2012;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CrvXBSActi extends BaseActivity {
     public static CrvXBSActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.crv.CrvXBSActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 7:
                     CrvXBSActi.this.mUpdaterStatus();
                     break;
-                case 2:
+                case 8:
                     CrvXBSActi.this.mUpdaterCurrSource();
                     break;
-                case 3:
+                case 9:
                     CrvXBSActi.this.mUpdaterMdi();
                     break;
-                case 4:
+                case 10:
                     CrvXBSActi.this.mUpdaterTrackTime();
                     break;
-                case 5:
+                case 11:
                     CrvXBSActi.this.mUpdaterTrack();
                     break;
-                case 6:
+                case 12:
                     CrvXBSActi.this.mUpdaterProgress();
                     break;
             }
@@ -45,107 +44,107 @@ public class CrvXBSActi extends BaseActivity {
     Toast toast = null;
     TextView view = null;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xbs_crv);
+        //setContentView(R.layout.layout_xbs_crv);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        findViewById(R.id.crv_btn_ff).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_ff).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 4);
             }
         });
-        findViewById(R.id.crv_btn_fr).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_fr).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 3);
             }
         });
-        findViewById(R.id.crv_btn_play).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_play).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 1);
             }
         });
-        findViewById(R.id.crv_btn_scan).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_scan).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 2);
             }
         });
-        findViewById(R.id.crv_btn_folderb).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_folderb).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 9);
             }
         });
-        findViewById(R.id.crv_btn_folderf).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.7
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_folderf).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 9);
             }
         });
-        findViewById(R.id.crv_btn_playmode).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.8
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_playmode).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 10);
             }
         });
-        findViewById(R.id.crv_btn_random).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.CrvXBSActi.9
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_random).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, 11);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
         FuncMain.setChannel(13);
-        if (DataCanbus.DATA[1] != 1) {
+        if (DataCanbus.DATA[7] != 1) {
             DataCanbus.PROXY.cmd(1, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrSource() {
-        int value = DataCanbus.DATA[2];
+        int value = DataCanbus.DATA[8];
         if (value == 0) {
             ((TextView) findViewById(R.id.crv_tv_source)).setText(R.string.crv_source_usb);
             return;
@@ -159,9 +158,9 @@ public class CrvXBSActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterMdi() {
-        int value = DataCanbus.DATA[3];
+        int value = DataCanbus.DATA[9];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.crv_tv_mdi)).setText(R.string.crv_playstate_0);
@@ -181,23 +180,23 @@ public class CrvXBSActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
         int track = Callback_0188_XBS_XP1_CRV2012.mTRACK_INFO[0];
         int tarckTotal = Callback_0188_XBS_XP1_CRV2012.mTRACK_INFO[1];
         ((TextView) findViewById(R.id.crv_tv_track)).setText(String.format("%d/%d", Integer.valueOf(track), Integer.valueOf(tarckTotal)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
         int minute = Callback_0188_XBS_XP1_CRV2012.mTRACK_TIME_INFO[0];
         int second = Callback_0188_XBS_XP1_CRV2012.mTRACK_TIME_INFO[1];
         ((TextView) findViewById(R.id.crv_tv_time)).setText(String.format("%02d:%02d:%02d", Integer.valueOf(minute / 60), Integer.valueOf(minute % 60), Integer.valueOf(second)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterProgress() {
-        int progress = DataCanbus.DATA[6];
+        int progress = DataCanbus.DATA[12];
         if (progress < 0) {
             progress = 0;
         } else if (progress > 100) {
@@ -206,9 +205,9 @@ public class CrvXBSActi extends BaseActivity {
         ((ProgressBar) findViewById(R.id.crv_progress)).setProgress(progress);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStatus() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[7];
         switch (value) {
             case 0:
                 tips(getResources().getString(R.string.crv_state_stop));
@@ -251,7 +250,7 @@ public class CrvXBSActi extends BaseActivity {
         this.toast.show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);

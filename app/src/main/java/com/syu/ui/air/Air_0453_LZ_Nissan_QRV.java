@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_LZ_Nissan_QRV extends AirBase {
     public Air_0453_LZ_Nissan_QRV(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0453_lz_nissan_qrv/air_lz_nissan_qrv_n.webp";
         this.mPathHighlight = "0453_lz_nissan_qrv/air_lz_nissan_qrv_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -91,9 +91,9 @@ public class Air_0453_LZ_Nissan_QRV extends AirBase {
         }
         this.mPaint.setTextSize(30.0f);
         int temp = this.DATA[13];
-        c.drawText(new StringBuilder().append((temp * 5) / 10.0f).toString(), 56.0f, 132.0f, this.mPaint);
+        c.drawText(String.valueOf((temp * 5) / 10.0f), 56.0f, 132.0f, this.mPaint);
         int temp2 = this.DATA[14];
-        c.drawText(new StringBuilder().append((temp2 * 5) / 10.0f).toString(), 930.0f, 132.0f, this.mPaint);
+        c.drawText(String.valueOf((temp2 * 5) / 10.0f), 930.0f, 132.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

@@ -13,7 +13,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.StyleableRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class HolographicImageView extends ImageView {
     private final HolographicViewHelper mHolographicHelper;
     private boolean mHotwordOn;
@@ -34,8 +33,8 @@ public class HolographicImageView extends ImageView {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.HolographicLinearLayout, defStyle, 0);
         this.mHotwordOn = a.getBoolean(R.styleable.HolographicLinearLayout_stateHotwordOn, false);
         a.recycle();
-        setOnTouchListener(new View.OnTouchListener() { // from class: com.android.launcher66.HolographicImageView.1
-            @Override // android.view.View.OnTouchListener
+        setOnTouchListener(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (HolographicImageView.this.isPressed() != HolographicImageView.this.mIsPressed) {
                     HolographicImageView.this.mIsPressed = HolographicImageView.this.isPressed();
@@ -45,8 +44,8 @@ public class HolographicImageView extends ImageView {
                 return false;
             }
         });
-        setOnFocusChangeListener(new View.OnFocusChangeListener() { // from class: com.android.launcher66.HolographicImageView.2
-            @Override // android.view.View.OnFocusChangeListener
+        setOnFocusChangeListener(new View.OnFocusChangeListener() { 
+            @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (HolographicImageView.this.isFocused() != HolographicImageView.this.mIsFocused) {
                     HolographicImageView.this.mIsFocused = HolographicImageView.this.isFocused();
@@ -60,7 +59,7 @@ public class HolographicImageView extends ImageView {
         this.mHolographicHelper.invalidatePressedFocusedStates(this);
     }
 
-    @Override // android.widget.ImageView, android.view.View
+    @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
         this.mHolographicHelper.generatePressedFocusedStates(this);
@@ -72,7 +71,7 @@ public class HolographicImageView extends ImageView {
         }
     }
 
-    @Override // android.widget.ImageView, android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.mHolographicHelper.generatePressedFocusedStates(this);
@@ -89,7 +88,7 @@ public class HolographicImageView extends ImageView {
         }
     }
 
-    @Override // android.widget.ImageView, android.view.View
+    @Override
     public int[] onCreateDrawableState(int extraSpace) {
         int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
         if (isHotwordOn()) {

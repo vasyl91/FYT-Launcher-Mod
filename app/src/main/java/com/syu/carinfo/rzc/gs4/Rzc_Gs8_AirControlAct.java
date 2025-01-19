@@ -12,64 +12,63 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_Gs8_AirControlAct extends Activity {
     public static boolean mIsFront = false;
     protected Handler mHandler;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.gs4.Rzc_Gs8_AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 2:
-                case 35:
-                    Rzc_Gs8_AirControlAct.this.UAuto();
-                    break;
-                case 3:
-                    Rzc_Gs8_AirControlAct.this.mUpdateAirCycle();
-                    break;
-                case 4:
-                    Rzc_Gs8_AirControlAct.this.mUpdateAirFrontDefrost(DataCanbus.DATA[updateCode]);
-                    Rzc_Gs8_AirControlAct.this.UBlowMode();
-                    break;
-                case 5:
-                    Rzc_Gs8_AirControlAct.this.mUpdateAirRearDefrost();
-                    break;
-                case 6:
+                case 11:
                     Rzc_Gs8_AirControlAct.this.mUpdaterAirAC();
                     break;
-                case 7:
-                    Rzc_Gs8_AirControlAct.this.UTempLeft(DataCanbus.DATA[updateCode]);
+                case 12:
+                    Rzc_Gs8_AirControlAct.this.mUpdateAirCycle();
                     break;
-                case 9:
-                case 10:
-                case 33:
-                case 34:
+                case 13:
+                case 43:
+                    Rzc_Gs8_AirControlAct.this.UAuto();
+                    break;
+                case 16:
+                    Rzc_Gs8_AirControlAct.this.mUpdateAirRearDefrost();
+                    break;
+                case 18:
+                case 20:
+                case 46:
+                case 47:
                     Rzc_Gs8_AirControlAct.this.UBlowMode();
                     break;
-                case 12:
-                case 36:
+                case 21:
+                case 44:
                     Rzc_Gs8_AirControlAct.this.mUpdaterAirWindLevel();
                     break;
-                case 15:
+                case 27:
+                    Rzc_Gs8_AirControlAct.this.UTempLeft(DataCanbus.DATA[updateCode]);
+                    break;
+                case 28:
                     Rzc_Gs8_AirControlAct.this.UTempRight(DataCanbus.DATA[updateCode]);
                     break;
-                case 31:
-                    Rzc_Gs8_AirControlAct.this.U3Zone(DataCanbus.DATA[updateCode] == 1);
-                    break;
-                case 32:
+                case 38:
                     Rzc_Gs8_AirControlAct.this.UAuto();
                     Rzc_Gs8_AirControlAct.this.mUpdaterAirWindLevel();
                     Rzc_Gs8_AirControlAct.this.UBlowMode();
                     Rzc_Gs8_AirControlAct.this.URearAuto(DataCanbus.DATA[updateCode] == 1);
                     break;
+                case 57:
+                    Rzc_Gs8_AirControlAct.this.U3Zone(DataCanbus.DATA[updateCode] == 1);
+                    break;
+                case 65:
+                    Rzc_Gs8_AirControlAct.this.mUpdateAirFrontDefrost(DataCanbus.DATA[updateCode]);
+                    Rzc_Gs8_AirControlAct.this.UBlowMode();
+                    break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_gs8_air_control_set);
+        //setContentView(R.layout.layout_rzc_gs8_air_control_set);
         this.mHandler = new Handler(Looper.getMainLooper());
         init();
     }
@@ -94,8 +93,8 @@ public class Rzc_Gs8_AirControlAct extends Activity {
 
     private void sendClick(View v, final int cmd) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.gs4.Rzc_Gs8_AirControlAct.2
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     if (cmd == 255) {
                         return;
@@ -106,18 +105,18 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(final int cmd) {
         DataCanbus.PROXY.cmd(1, new int[]{cmd, 1}, null, null);
-        this.mHandler.postDelayed(new Runnable() { // from class: com.syu.carinfo.rzc.gs4.Rzc_Gs8_AirControlAct.3
-            @Override // java.lang.Runnable
+        this.mHandler.postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(1, new int[]{cmd}, null, null);
             }
         }, 200L);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -125,7 +124,7 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -134,57 +133,57 @@ public class Rzc_Gs8_AirControlAct extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void URearAuto(boolean b) {
         if (((Button) findViewById(R.id.air_xts_rear_light)) != null) {
             ((Button) findViewById(R.id.air_xts_rear_light)).setBackgroundResource(b ? R.drawable.ic_xts_rear_light_p : R.drawable.ic_xts_rear_light_n);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
-        int level = DataCanbus.DATA[12];
-        if (DataCanbus.DATA[32] == 1) {
-            int level2 = DataCanbus.DATA[36];
+        int level = DataCanbus.DATA[21];
+        if (DataCanbus.DATA[38] == 1) {
+            int level2 = DataCanbus.DATA[44];
             if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
                 ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level2).toString());
                 ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setTextColor(-256);
@@ -204,15 +203,15 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UBlowMode() {
-        int bBody = DataCanbus.DATA[10];
-        int bFoot = DataCanbus.DATA[9];
-        int bWin = DataCanbus.DATA[4];
-        if (DataCanbus.DATA[32] == 1) {
+        int bBody = DataCanbus.DATA[18];
+        int bFoot = DataCanbus.DATA[20];
+        int bWin = DataCanbus.DATA[65];
+        if (DataCanbus.DATA[38] == 1) {
             bWin = 0;
-            bBody = DataCanbus.DATA[34];
-            bFoot = DataCanbus.DATA[33];
+            bBody = DataCanbus.DATA[46];
+            bFoot = DataCanbus.DATA[47];
         }
         int mode = 0;
         if (bFoot == 1) {
@@ -230,7 +229,7 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         } else if (bWin == 0) {
             mode &= 251;
         }
-        if (DataCanbus.DATA[32] == 1) {
+        if (DataCanbus.DATA[38] == 1) {
             switch (mode) {
                 case 0:
                     findViewById(R.id.air_xts_mode).setBackgroundResource(R.drawable.ic_xts_rearmode_null);
@@ -280,25 +279,25 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UAuto() {
-        int auto = DataCanbus.DATA[2];
-        if (DataCanbus.DATA[32] == 1) {
-            int auto2 = DataCanbus.DATA[35];
+        int auto = DataCanbus.DATA[13];
+        if (DataCanbus.DATA[38] == 1) {
+            int auto2 = DataCanbus.DATA[43];
             ((Button) findViewById(R.id.air_xts_auto)).setBackgroundResource(auto2 == 1 ? R.drawable.ic_xts_rearauto_p : R.drawable.ic_xts_rearauto_n);
         } else {
             ((Button) findViewById(R.id.air_xts_auto)).setBackgroundResource(auto == 1 ? R.drawable.ic_xts_auto_p : R.drawable.ic_xts_auto_n);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void U3Zone(boolean b) {
         if (((Button) findViewById(R.id.air_xts_zone)) != null) {
             ((Button) findViewById(R.id.air_xts_zone)).setBackgroundResource(b ? R.drawable.ic_xts_zone_p : R.drawable.ic_xts_zone_n);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UTempLeft(int data) {
         String str;
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -321,7 +320,7 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UTempRight(int data) {
         String str;
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -344,33 +343,33 @@ public class Rzc_Gs8_AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
-        int value = DataCanbus.DATA[3];
+        int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
             ((Button) findViewById(R.id.air_xts_cycle)).setBackgroundResource(value == 1 ? R.drawable.ic_xts_cycle_n : R.drawable.ic_xts_cycle_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[11];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
             ((Button) findViewById(R.id.air_xts_ac)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost(int data) {
-        int value = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[65];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
             ((Button) findViewById(R.id.air_xts_front)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[16];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
             ((Button) findViewById(R.id.air_xts_rear)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
         }

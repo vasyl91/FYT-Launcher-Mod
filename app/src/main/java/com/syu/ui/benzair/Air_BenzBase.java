@@ -7,11 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public abstract class Air_BenzBase extends View {
     protected int[] DATA;
     protected Bitmap mContent;
@@ -71,13 +71,13 @@ public abstract class Air_BenzBase extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         this.mScale = LauncherApplication.getScreenWidth() / this.mContentWidth;
         setMeasuredDimension(LauncherApplication.getScreenWidth(), (int) (this.mContentHeight * this.mScale));
     }
 
-    @Override // android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         this.mContent = Bitmap.createBitmap(this.mContentWidth, this.mContentHeight, Bitmap.Config.ARGB_8888);
@@ -108,7 +108,7 @@ public abstract class Air_BenzBase extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (this.mPathNormal != null) {

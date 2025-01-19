@@ -8,56 +8,55 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityBaojun530Info extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.guochan.ActivityBaojun530Info.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 9:
+                case 99:
                     ActivityBaojun530Info.this.updateRearVautoChoose(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_baojun730_rearvauto);
-        ((CheckedTextView) findViewById(R.id.ctv_baojun730_rearvauto_choose)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.guochan.ActivityBaojun530Info.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_baojun730_rearvauto);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[9];
+                int value = DataCanbus.DATA[99];
                 DataCanbus.PROXY.cmd(0, value == 1 ? 0 : 1);
             }
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearVautoChoose(int value) {
-        if (((CheckedTextView) findViewById(R.id.ctv_baojun730_rearvauto_choose)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_baojun730_rearvauto_choose)).setChecked(value != 0);
+        if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value != 0);
         }
     }
 }

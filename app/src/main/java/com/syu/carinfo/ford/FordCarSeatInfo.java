@@ -11,17 +11,16 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static FordCarSeatInfo mInit;
     int pagenum = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ford.FordCarSeatInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 100:
+                case 168:
                     if (FordCarSeatInfo.this.pagenum == 0) {
                         switch (value) {
                             case 0:
@@ -51,7 +50,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case 101:
+                case 169:
                     if (FordCarSeatInfo.this.pagenum == 1) {
                         switch (value) {
                             case 0:
@@ -79,26 +78,26 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case 102:
-                case 103:
-                case 104:
-                case 105:
-                case 106:
-                case 107:
-                case 108:
-                case 109:
-                case 110:
-                case 111:
+                case 170:
+                case 171:
+                case 172:
+                case 173:
+                case 174:
+                case 175:
+                case 176:
+                case 177:
+                case 178:
+                case 179:
                     FordCarSeatInfo.this.mUpdateSeatValue();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0334_rzc_ford_seatset);
+        //setContentView(R.layout.layout_0334_rzc_ford_seatset);
         init();
     }
 
@@ -121,11 +120,11 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     this.pagenum = 0;
                     findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                     findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button);
@@ -134,7 +133,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                     findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_null);
                     mUpdateSeatValue();
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     this.pagenum = 1;
                     findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                     findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button);
@@ -143,7 +142,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                     findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_null);
                     mUpdateSeatValue();
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                     findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button);
                     ((Button) findViewById(R.id.btn_plus3)).setTextColor(Color.parseColor("#666666"));
@@ -157,7 +156,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     }
-                case R.id.btn_plus4 /* 2131427494 */:
+                case R.id.btn_plus4 /* 2131427466 */:
                     findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                     findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button);
                     ((Button) findViewById(R.id.btn_plus4)).setTextColor(Color.parseColor("#666666"));
@@ -171,7 +170,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     }
-                case R.id.ford_seat_sub1 /* 2131427817 */:
+                case R.id.ford_seat_sub1 /* 2131427833 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist1);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 0, 2}, null, null);
@@ -181,7 +180,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 3, 2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub2 /* 2131427818 */:
+                case R.id.ford_seat_sub2 /* 2131427834 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist2);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 1, 2}, null, null);
@@ -191,7 +190,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 4, 2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub3 /* 2131427819 */:
+                case R.id.ford_seat_sub3 /* 2131427835 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist3);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 2, 2}, null, null);
@@ -201,7 +200,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 5, 2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add1 /* 2131427820 */:
+                case R.id.ford_seat_add1 /* 2131427836 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist1);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 0, 1}, null, null);
@@ -211,7 +210,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 3, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add2 /* 2131427821 */:
+                case R.id.ford_seat_add2 /* 2131427837 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist2);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 1, 1}, null, null);
@@ -221,7 +220,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 4, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add3 /* 2131427822 */:
+                case R.id.ford_seat_add3 /* 2131427838 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist3);
                         DataCanbus.PROXY.cmd(11, new int[]{167, 2, 1}, null, null);
@@ -231,10 +230,10 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 5, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub_1 /* 2131427823 */:
+                case R.id.ford_seat_sub_1 /* 2131427839 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_massage1);
-                        int leftmassage_vaue1 = DataCanbus.DATA[105];
+                        int leftmassage_vaue1 = DataCanbus.DATA[173];
                         if (leftmassage_vaue1 > 0) {
                             leftmassage_vaue1--;
                         }
@@ -242,17 +241,17 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         break;
                     } else if (this.pagenum == 1) {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage1);
-                        int rightmassage_vaue1 = DataCanbus.DATA[110];
+                        int rightmassage_vaue1 = DataCanbus.DATA[178];
                         if (rightmassage_vaue1 > 0) {
                             rightmassage_vaue1--;
                         }
                         DataCanbus.PROXY.cmd(11, new int[]{167, 8, rightmassage_vaue1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub_2 /* 2131427824 */:
+                case R.id.ford_seat_sub_2 /* 2131427840 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_massage2);
-                        int leftmassage_vaue2 = DataCanbus.DATA[106];
+                        int leftmassage_vaue2 = DataCanbus.DATA[174];
                         if (leftmassage_vaue2 > 0) {
                             leftmassage_vaue2--;
                         }
@@ -260,17 +259,17 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         break;
                     } else if (this.pagenum == 1) {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage2);
-                        int rightmassage_vaue2 = DataCanbus.DATA[111];
+                        int rightmassage_vaue2 = DataCanbus.DATA[179];
                         if (rightmassage_vaue2 > 0) {
                             rightmassage_vaue2--;
                         }
                         DataCanbus.PROXY.cmd(11, new int[]{167, 9, rightmassage_vaue2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add_1 /* 2131427825 */:
+                case R.id.ford_seat_add_1 /* 2131427841 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_massage1);
-                        int leftmassage_vaue12 = DataCanbus.DATA[105];
+                        int leftmassage_vaue12 = DataCanbus.DATA[173];
                         if (leftmassage_vaue12 < 2) {
                             leftmassage_vaue12++;
                         }
@@ -278,17 +277,17 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         break;
                     } else if (this.pagenum == 1) {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage1);
-                        int rightmassage_vaue12 = DataCanbus.DATA[110];
+                        int rightmassage_vaue12 = DataCanbus.DATA[178];
                         if (rightmassage_vaue12 < 2) {
                             rightmassage_vaue12++;
                         }
                         DataCanbus.PROXY.cmd(11, new int[]{167, 8, rightmassage_vaue12}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add_2 /* 2131427826 */:
+                case R.id.ford_seat_add_2 /* 2131427842 */:
                     if (this.pagenum == 0) {
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_massage2);
-                        int leftmassage_vaue22 = DataCanbus.DATA[106];
+                        int leftmassage_vaue22 = DataCanbus.DATA[174];
                         if (leftmassage_vaue22 < 2) {
                             leftmassage_vaue22++;
                         }
@@ -296,7 +295,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         break;
                     } else if (this.pagenum == 1) {
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage2);
-                        int rightmassage_vaue22 = DataCanbus.DATA[111];
+                        int rightmassage_vaue22 = DataCanbus.DATA[179];
                         if (rightmassage_vaue22 < 2) {
                             rightmassage_vaue22++;
                         }
@@ -306,7 +305,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.ford_seat_sub1 /* 2131427817 */:
+                case R.id.ford_seat_sub1 /* 2131427833 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167}, null, null);
                         break;
@@ -314,7 +313,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 3}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub2 /* 2131427818 */:
+                case R.id.ford_seat_sub2 /* 2131427834 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 1}, null, null);
                         break;
@@ -322,7 +321,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 4}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub3 /* 2131427819 */:
+                case R.id.ford_seat_sub3 /* 2131427835 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 2}, null, null);
                         break;
@@ -330,7 +329,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 5}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add1 /* 2131427820 */:
+                case R.id.ford_seat_add1 /* 2131427836 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167}, null, null);
                         break;
@@ -338,7 +337,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 3}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add2 /* 2131427821 */:
+                case R.id.ford_seat_add2 /* 2131427837 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 1}, null, null);
                         break;
@@ -346,7 +345,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 4}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add3 /* 2131427822 */:
+                case R.id.ford_seat_add3 /* 2131427838 */:
                     if (this.pagenum == 0) {
                         DataCanbus.PROXY.cmd(11, new int[]{167, 2}, null, null);
                         break;
@@ -359,7 +358,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(0, new int[]{100}, null, null);
@@ -380,7 +379,7 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
@@ -388,47 +387,47 @@ public class FordCarSeatInfo extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[171].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[175].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[171].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[175].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSeatValue() {
-        int left_vaue1 = DataCanbus.DATA[102];
-        int left_vaue2 = DataCanbus.DATA[103];
-        int left_vaue3 = DataCanbus.DATA[104];
-        int leftmassage_vaue1 = DataCanbus.DATA[105];
-        int leftmassage_vaue2 = DataCanbus.DATA[106];
-        int right_vaue1 = DataCanbus.DATA[107];
-        int right_vaue2 = DataCanbus.DATA[108];
-        int right_vaue3 = DataCanbus.DATA[109];
-        int rightmassage_vaue1 = DataCanbus.DATA[110];
-        int rightmassage_vaue2 = DataCanbus.DATA[111];
+        int left_vaue1 = DataCanbus.DATA[170];
+        int left_vaue2 = DataCanbus.DATA[171];
+        int left_vaue3 = DataCanbus.DATA[172];
+        int leftmassage_vaue1 = DataCanbus.DATA[173];
+        int leftmassage_vaue2 = DataCanbus.DATA[174];
+        int right_vaue1 = DataCanbus.DATA[175];
+        int right_vaue2 = DataCanbus.DATA[176];
+        int right_vaue3 = DataCanbus.DATA[177];
+        int rightmassage_vaue1 = DataCanbus.DATA[178];
+        int rightmassage_vaue2 = DataCanbus.DATA[179];
         if (this.pagenum == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(left_vaue1)).toString());
             ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(left_vaue2)).toString());

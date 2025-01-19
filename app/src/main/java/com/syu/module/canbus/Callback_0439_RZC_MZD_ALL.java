@@ -1,10 +1,10 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_RZC_MZD_ALL extends CallbackCanbusBase {
     public static String SongAblum = null;
     public static String SongArtist = null;
@@ -142,7 +142,7 @@ public class Callback_0439_RZC_MZD_ALL extends CallbackCanbusBase {
     public static final int U_CARSET_D74_D9_B7 = 130;
     public static final int U_CNT_MAX = 138;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 138; i++) {
@@ -160,7 +160,7 @@ public class Callback_0439_RZC_MZD_ALL extends CallbackCanbusBase {
         DoorHelper.getInstance().buildUi();
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -168,7 +168,7 @@ public class Callback_0439_RZC_MZD_ALL extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 138) {
             switch (updateCode) {

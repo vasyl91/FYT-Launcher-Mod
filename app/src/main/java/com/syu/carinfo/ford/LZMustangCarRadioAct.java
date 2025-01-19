@@ -13,39 +13,38 @@ import com.syu.module.canbus.Callback_0452_LZ_Ford_Mustang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZMustangCarRadioAct extends Activity implements View.OnTouchListener {
     public static LZMustangCarRadioAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ford.LZMustangCarRadioAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 107:
+                case 119:
                     LZMustangCarRadioAct.this.updaterRadioBand();
                     break;
-                case 109:
+                case 121:
                     LZMustangCarRadioAct.this.updaterRadioFreq();
                     break;
-                case 110:
+                case 122:
                     LZMustangCarRadioAct.this.updaterRadioFreq1(Callback_0452_LZ_Ford_Mustang.RadioFrq1);
                     break;
-                case 111:
+                case 123:
                     LZMustangCarRadioAct.this.updaterRadioFreq2(Callback_0452_LZ_Ford_Mustang.RadioFrq2);
                     break;
-                case 112:
+                case 124:
                     LZMustangCarRadioAct.this.updaterRadioFreq3(Callback_0452_LZ_Ford_Mustang.RadioFrq3);
                     break;
-                case 113:
+                case 125:
                     LZMustangCarRadioAct.this.updaterRadioFreq4(Callback_0452_LZ_Ford_Mustang.RadioFrq4);
                     break;
-                case 114:
+                case 126:
                     LZMustangCarRadioAct.this.updaterRadioFreq5(Callback_0452_LZ_Ford_Mustang.RadioFrq5);
                     break;
-                case 115:
+                case 127:
                     LZMustangCarRadioAct.this.updaterRadioFreq6(Callback_0452_LZ_Ford_Mustang.RadioFrq6);
                     break;
-                case 116:
+                case 128:
                     LZMustangCarRadioAct.this.updaterRadioFreqColor();
                     break;
             }
@@ -54,8 +53,8 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
     int radioband = 1;
     int num = 0;
     int curnum = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.ford.LZMustangCarRadioAct.2
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             LZMustangCarRadioAct.this.num++;
             if (LZMustangCarRadioAct.this.num == 3 && LZMustangCarRadioAct.this.curnum != 0) {
@@ -68,10 +67,10 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
     boolean flag = false;
     byte unit = 0;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0334_rzc_mustang_carradio);
+        //setContentView(R.layout.layout_0334_rzc_mustang_carradio);
         mInstance = this;
         init();
     }
@@ -89,8 +88,8 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
         findViewById(R.id.lexus_radio_next).setOnTouchListener(this);
         findViewById(R.id.lexus_radio_fm).setOnTouchListener(this);
         findViewById(R.id.lexus_radio_am).setOnTouchListener(this);
-        findViewById(R.id.lexus_radio_toaudio).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.ford.LZMustangCarRadioAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_radio_toaudio).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -103,19 +102,19 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
         FuncMain.setChannel(11);
-        if (DataCanbus.DATA[126] != 1) {
+        if (DataCanbus.DATA[138] != 1) {
             DataCanbus.PROXY.cmd(1, new int[]{176, 1}, null, null);
             DataCanbus.PROXY.cmd(0, new int[]{97}, null, null);
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -123,34 +122,34 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
     }
 
     public void addNotify() {
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreqColor() {
-        int value = DataCanbus.DATA[116];
+        int value = DataCanbus.DATA[128];
         ((TextView) findViewById(R.id.dj_lexus_radio_freq6)).setTextColor(-1);
         ((TextView) findViewById(R.id.dj_lexus_radio_freq5)).setTextColor(-1);
         ((TextView) findViewById(R.id.dj_lexus_radio_freq4)).setTextColor(-1);
@@ -179,42 +178,42 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq6(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq6)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq5(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq5)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq4(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq4)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq3(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq3)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq2(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq2)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq1(String strs) {
         ((TextView) findViewById(R.id.dj_lexus_radio_freq1)).setText(strs);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioFreq() {
-        int value = DataCanbus.DATA[109];
+        int value = DataCanbus.DATA[121];
         switch (this.radioband) {
-            case 2:
             case 3:
+            case 4:
                 ((TextView) findViewById(R.id.dj_lexus_radio_freq)).setText(new StringBuilder(String.valueOf(value)).toString());
                 break;
             default:
@@ -223,23 +222,23 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRadioBand() {
-        if (this.radioband != DataCanbus.DATA[107]) {
-            this.radioband = DataCanbus.DATA[107];
+        if (this.radioband != DataCanbus.DATA[119]) {
+            this.radioband = DataCanbus.DATA[119];
             DataCanbus.PROXY.cmd(0, new int[]{97}, null, null);
         }
         switch (this.radioband) {
             case 0:
-                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm1");
+                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm");
                 ((TextView) findViewById(R.id.dj_lexus_radio_unit)).setText("Mhz");
                 break;
             case 1:
-                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm2");
+                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm1");
                 ((TextView) findViewById(R.id.dj_lexus_radio_unit)).setText("Mhz");
                 break;
             case 2:
-                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm3");
+                ((TextView) findViewById(R.id.dj_lexus_radio_band)).setText("Fm2");
                 ((TextView) findViewById(R.id.dj_lexus_radio_unit)).setText("Mhz");
                 break;
             case 3:
@@ -264,82 +263,76 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
         HandlerUI.getInstance().removeCallbacks(this.mCalTime);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mSetCurFrq(int value) {
         this.flag = true;
         DataCanbus.PROXY.cmd(2, new int[]{13, value + 48}, null, null);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_radio_prev /* 2131427850 */:
+                case R.id.lexus_radio_prev /* 2131427866 */:
                     DataCanbus.PROXY.cmd(2, new int[]{13, 10}, null, null);
                     break;
-                case R.id.lexus_radio_next /* 2131427851 */:
+                case R.id.lexus_radio_next /* 2131427867 */:
                     DataCanbus.PROXY.cmd(2, new int[]{13, 9}, null, null);
                     break;
-                case R.id.lexus_radio_scan_plus /* 2131427853 */:
+                case R.id.lexus_radio_scan_plus /* 2131427869 */:
                     DataCanbus.PROXY.cmd(2, new int[]{13, 11}, null, null);
                     break;
-                case R.id.lexus_radio_scan_minu /* 2131427854 */:
+                case R.id.lexus_radio_scan_minu /* 2131427870 */:
                     DataCanbus.PROXY.cmd(2, new int[]{13, 12}, null, null);
                     break;
-                case R.id.lexus_radio_fm /* 2131427855 */:
-                    if (DataCanbus.DATA[107] == 0) {
+                case R.id.lexus_radio_fm /* 2131427871 */:
+                    if (DataCanbus.DATA[119] == 0) {
                         DataCanbus.PROXY.cmd(2, new int[]{13, 1}, null, null);
                         break;
-                    } else if (DataCanbus.DATA[107] == 1) {
+                    } else if (DataCanbus.DATA[119] == 1) {
                         DataCanbus.PROXY.cmd(2, new int[]{13, 2}, null, null);
                         break;
                     } else {
                         DataCanbus.PROXY.cmd(2, new int[]{13}, null, null);
                         break;
                     }
-                case R.id.lexus_radio_am /* 2131427856 */:
-                    if (DataCanbus.DATA[107] == 3) {
+                case R.id.lexus_radio_am /* 2131427872 */:
+                    if (DataCanbus.DATA[119] == 3) {
                         DataCanbus.PROXY.cmd(2, new int[]{13, 4}, null, null);
                         break;
                     } else {
                         DataCanbus.PROXY.cmd(2, new int[]{13, 3}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     this.curnum = 1;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     this.curnum = 2;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     this.curnum = 3;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     this.curnum = 4;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     this.curnum = 5;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     this.curnum = 6;
                     mUpdatermCalTime(true);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_radio_scan_plus /* 2131427853 */:
-                    DataCanbus.PROXY.cmd(2, new int[]{13, 13}, null, null);
-                    break;
-                case R.id.lexus_radio_scan_minu /* 2131427854 */:
-                    DataCanbus.PROXY.cmd(2, new int[]{13, 13}, null, null);
-                    break;
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -347,7 +340,7 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
                         DataCanbus.PROXY.cmd(2, new int[]{13, 33}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -355,7 +348,7 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
                         DataCanbus.PROXY.cmd(2, new int[]{13, 34}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -363,7 +356,7 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
                         DataCanbus.PROXY.cmd(2, new int[]{13, 35}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -371,7 +364,7 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
                         DataCanbus.PROXY.cmd(2, new int[]{13, 36}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -379,7 +372,7 @@ public class LZMustangCarRadioAct extends Activity implements View.OnTouchListen
                         DataCanbus.PROXY.cmd(2, new int[]{13, 37}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;

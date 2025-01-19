@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PagedViewWidget extends LinearLayout {
     static final String TAG = "PagedViewWidgetLayout";
     private static boolean sDeletePreviewsWhenDetachedFromWindow = true;
@@ -54,7 +53,7 @@ public class PagedViewWidget extends LinearLayout {
         setClipToPadding(false);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         ImageView image = (ImageView) findViewById(R.id.widget_preview);
@@ -82,7 +81,7 @@ public class PagedViewWidget extends LinearLayout {
         sRecyclePreviewsWhenDetachedFromWindow = value;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         ImageView image;
         super.onDetachedFromWindow();
@@ -104,8 +103,9 @@ public class PagedViewWidget extends LinearLayout {
         if (maxWidth > -1) {
             image.setMaxWidth(maxWidth);
         }
+        PackageManager mPackageManager = getContext().getPackageManager();
         TextView name = (TextView) findViewById(R.id.widget_name);
-        name.setText(info.label);
+        name.setText(info.loadLabel(mPackageManager));
         TextView dims = (TextView) findViewById(R.id.widget_dims);
         if (dims != null) {
             int hSpan = Math.min(cellSpan[0], (int) grid.numColumns);
@@ -157,7 +157,7 @@ public class PagedViewWidget extends LinearLayout {
         CheckForShortPress() {
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             if (PagedViewWidget.sShortpressTarget == null) {
                 if (PagedViewWidget.this.mShortPressListener != null) {
@@ -198,7 +198,7 @@ public class PagedViewWidget extends LinearLayout {
         sShortpressTarget = null;
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         switch (event.getAction()) {

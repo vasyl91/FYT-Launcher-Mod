@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0282_WC2_MingJueRuiTeng extends AirBase {
     public Air_0282_WC2_MingJueRuiTeng(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0282_wc2_mingjueruiteng/air_wc_ruiteng_n.webp";
         this.mPathHighlight = "0282_wc2_mingjueruiteng/air_wc_ruiteng_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -90,7 +90,7 @@ public class Air_0282_WC2_MingJueRuiTeng extends AirBase {
             if (right_temp == -1) {
                 c.drawText("--.-", 930.0f, 152.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(right_temp / 10.0f).toString(), 930.0f, 152.0f, this.mPaint);
+                c.drawText(String.valueOf(right_temp / 10.0f), 930.0f, 152.0f, this.mPaint);
             }
         } else {
             c.drawText("--.-", 930.0f, 152.0f, this.mPaint);

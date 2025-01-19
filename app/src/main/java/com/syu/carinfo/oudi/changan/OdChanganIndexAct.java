@@ -6,15 +6,15 @@ import android.view.View;
 import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OdChanganIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_odchangan_indexact);
+        //setContentView(R.layout.layout_odchangan_indexact);
         switch (DataCanbus.sCanbusId) {
             case FinalCanbus.CAR_439_OuDi_ZTT500 /* 721335 */:
             case FinalCanbus.CAR_439_OuDi_DMX7 /* 917943 */:
@@ -31,8 +31,8 @@ public class OdChanganIndexAct extends BaseActivity {
                 setViewVisible(findViewById(R.id.odchangan_car_air_view), false);
                 break;
         }
-        ((Button) findViewById(R.id.odchangan_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.changan.OdChanganIndexAct.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -43,20 +43,20 @@ public class OdChanganIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.odchangan_car_air)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.changan.OdChanganIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_air)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    intent.setClass(OdChanganIndexAct.this, OdChanganAirControlAct.class);
+                    intent.setClass(OdChanganIndexAct.this, Air_Activity_All_NewAdd_HP.class);
                     OdChanganIndexAct.this.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-        ((Button) findViewById(R.id.odchangan_car_tire)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.changan.OdChanganIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_tire)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

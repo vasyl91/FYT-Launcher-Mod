@@ -9,7 +9,6 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS3SeatSetAct extends BaseActivity implements View.OnClickListener {
     CheckedTextView mAutomaticallyCheck;
     CheckedTextView mDriveSetCheck;
@@ -21,30 +20,30 @@ public class GS3SeatSetAct extends BaseActivity implements View.OnClickListener 
     int mSecDriverSeat = -1;
     int mSeatWelcom = -1;
     int mAutoMatically = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.gs3.GS3SeatSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 4:
+                case 102:
                     GS3SeatSetAct.this.updaterDriverSeatHot();
                     break;
-                case 5:
+                case 103:
                     GS3SeatSetAct.this.updaterSecDriverSeatHot();
                     break;
-                case 6:
+                case 104:
                     GS3SeatSetAct.this.updaterSeatWelcome();
                     break;
-                case 7:
+                case 105:
                     GS3SeatSetAct.this.updaterAutoMatically();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_289_wc_gs4_seat_set);
+        //setContentView(R.layout.layout_289_wc_gs4_seat_set);
         setUI();
     }
 
@@ -70,32 +69,32 @@ public class GS3SeatSetAct extends BaseActivity implements View.OnClickListener 
         setSelfClick(this.mAutomaticallyCheck, this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.wc_gs4_seat_set_drive_seat_check /* 2131429065 */:
+            case R.id.wc_gs4_seat_set_drive_seat_check /* 2131429030 */:
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 19;
                 iArr[1] = this.mDriverSeat == 0 ? 1 : 0;
                 remoteModuleProxy.cmd(2, iArr, null, null);
                 break;
-            case R.id.wc_gs4_air_set_the_pilot_drive_seat_check /* 2131429066 */:
+            case R.id.wc_gs4_air_set_the_pilot_drive_seat_check /* 2131429031 */:
                 RemoteModuleProxy remoteModuleProxy2 = DataCanbus.PROXY;
                 int[] iArr2 = new int[2];
                 iArr2[0] = 20;
                 iArr2[1] = this.mSecDriverSeat == 0 ? 1 : 0;
                 remoteModuleProxy2.cmd(2, iArr2, null, null);
                 break;
-            case R.id.xbs_gs3_seat_welcome /* 2131429162 */:
+            case R.id.xbs_gs3_seat_welcome /* 2131429122 */:
                 RemoteModuleProxy remoteModuleProxy3 = DataCanbus.PROXY;
                 int[] iArr3 = new int[2];
                 iArr3[0] = 22;
                 iArr3[1] = this.mSeatWelcom == 0 ? 1 : 0;
                 remoteModuleProxy3.cmd(2, iArr3, null, null);
                 break;
-            case R.id.xbs_gs3_seat_key_automatically /* 2131429164 */:
+            case R.id.xbs_gs3_seat_key_automatically /* 2131429124 */:
                 RemoteModuleProxy remoteModuleProxy4 = DataCanbus.PROXY;
                 int[] iArr4 = new int[2];
                 iArr4[0] = 23;
@@ -105,43 +104,43 @@ public class GS3SeatSetAct extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSeatWelcome() {
-        this.mSeatWelcom = DataCanbus.DATA[6];
+        this.mSeatWelcom = DataCanbus.DATA[104];
         this.mSeat_welcomeCheck.setChecked(this.mSeatWelcom != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoMatically() {
-        this.mAutoMatically = DataCanbus.DATA[7];
+        this.mAutoMatically = DataCanbus.DATA[105];
         this.mAutomaticallyCheck.setChecked(this.mAutoMatically != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDriverSeatHot() {
-        this.mDriverSeat = DataCanbus.DATA[4];
+        this.mDriverSeat = DataCanbus.DATA[102];
         this.mDriveSetCheck.setChecked(this.mDriverSeat != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSecDriverSeatHot() {
-        this.mSecDriverSeat = DataCanbus.DATA[5];
+        this.mSecDriverSeat = DataCanbus.DATA[103];
         this.mSecDriverSetCheck.setChecked(this.mSecDriverSeat != 0);
     }
 }

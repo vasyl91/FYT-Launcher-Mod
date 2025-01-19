@@ -1,171 +1,151 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct;
 import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0190_RZC_TianLai;
+//import com.syu.ui.air.Air_0190_RZC_TianLai;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0190_RZC_XP1_TianLai extends CallbackCanbusBase {
     public static String CarCdText = "";
     public static String CarRadioText = "";
-    public static final int U_AIR_AC = 2;
-    public static final int U_AIR_AUTO = 4;
-    public static final int U_AIR_BEGIN = 0;
-    public static final int U_AIR_BLOW_BODY_LEFT = 8;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 9;
-    public static final int U_AIR_BLOW_MODE_LEFT = 11;
-    public static final int U_AIR_BLOW_WIN_LEFT = 10;
-    public static final int U_AIR_CYCLE = 3;
-    public static final int U_AIR_DUAL = 7;
-    public static final int U_AIR_END = 15;
-    public static final int U_AIR_FRONT_DEFROST = 5;
-    public static final int U_AIR_POWER = 1;
-    public static final int U_AIR_REAR_DEFROST = 6;
-    public static final int U_AIR_TEMP_LEFT = 13;
-    public static final int U_AIR_TEMP_RIGHT = 14;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 12;
-    public static final int U_CAREQ_D92_D0_B70 = 90;
-    public static final int U_CAREQ_D92_D1_B70 = 91;
-    public static final int U_CAREQ_D92_D2_B70 = 92;
-    public static final int U_CAREQ_D92_D3_B70 = 93;
-    public static final int U_CAREQ_D92_D4_B70 = 94;
-    public static final int U_CAREQ_D92_D5_B70 = 95;
-    public static final int U_CAREQ_D92_D6_B70 = 96;
-    public static final int U_CAREQ_D92_D7_B70 = 97;
-    public static final int U_CAREQ_D93_D0_B70 = 74;
-    public static final int U_CAREQ_D93_D1_B70 = 75;
-    public static final int U_CAREQ_D93_D2_B70 = 76;
-    public static final int U_CAREQ_D93_D3_B70 = 77;
-    public static final int U_CAREQ_D93_D4_B70 = 78;
-    public static final int U_CAREQ_D93_D5_B70 = 79;
-    public static final int U_CAREQ_D93_D6_B70 = 80;
-    public static final int U_CAREQ_D93_D7_B70 = 81;
-    public static final int U_CAREQ_D93_D8_B70 = 82;
-    public static final int U_CAREQ_D95_D0_B5 = 85;
-    public static final int U_CAREQ_D95_D0_B6 = 84;
-    public static final int U_CAREQ_D95_D0_B7 = 83;
-    public static final int U_CAREQ_D95_D1_B30 = 101;
-    public static final int U_CAREQ_D95_D1_B4 = 100;
-    public static final int U_CAREQ_D95_D1_B65 = 99;
-    public static final int U_CAREQ_D95_D1_B7 = 98;
-    public static final int U_CAREQ_D95_D2_B5 = 104;
-    public static final int U_CAREQ_D95_D2_B6 = 103;
-    public static final int U_CAREQ_D95_D2_B7 = 102;
-    public static final int U_CAREQ_D95_D3_B5 = 107;
-    public static final int U_CAREQ_D95_D3_B6 = 106;
-    public static final int U_CAREQ_D95_D3_B7 = 105;
-    public static final int U_CARINF_D27_D0_B0 = 87;
-    public static final int U_CARINF_D27_D0_B1 = 86;
-    public static final int U_CARINF_D27_D1_D2_D3 = 88;
-    public static final int U_CARINF_D27_D4_D5 = 89;
-    public static final int U_CAR_CD_BEGIN = 43;
-    public static final int U_CAR_CD_DISC1 = 51;
-    public static final int U_CAR_CD_DISC2 = 52;
-    public static final int U_CAR_CD_DISC3 = 53;
-    public static final int U_CAR_CD_DISC4 = 54;
-    public static final int U_CAR_CD_DISC5 = 55;
-    public static final int U_CAR_CD_DISC6 = 56;
-    public static final int U_CAR_CD_END = 63;
-    public static final int U_CAR_CD_NUM = 57;
-    public static final int U_CAR_CD_STATE = 44;
-    public static final int U_CAR_CD_STATE_FOLD = 45;
-    public static final int U_CAR_CD_STATE_MP3 = 47;
-    public static final int U_CAR_CD_STATE_PLAY = 61;
-    public static final int U_CAR_CD_STATE_SCAN = 48;
-    public static final int U_CAR_CD_STATE_TXT = 49;
-    public static final int U_CAR_CD_STATE_WMA = 46;
-    public static final int U_CAR_CD_STATE_WORK = 50;
-    public static final int U_CAR_CD_TEXT = 62;
-    public static final int U_CAR_CD_TIME_M = 59;
-    public static final int U_CAR_CD_TIME_S = 60;
-    public static final int U_CAR_CD_TRACK = 58;
-    public static final int U_CAR_EQ_BAL = 68;
-    public static final int U_CAR_EQ_BAS = 65;
-    public static final int U_CAR_EQ_BEEP = 69;
-    public static final int U_CAR_EQ_BEGIN = 64;
-    public static final int U_CAR_EQ_END = 71;
-    public static final int U_CAR_EQ_FAD = 67;
-    public static final int U_CAR_EQ_TREB = 66;
-    public static final int U_CAR_EQ_VOL = 70;
-    public static final int U_CAR_F_RADAR_SET = 108;
-    public static final int U_CAR_MODE_STATE = 72;
-    public static final int U_CAR_RADIO_BAND = 32;
-    public static final int U_CAR_RADIO_BEGIN = 25;
-    public static final int U_CAR_RADIO_END = 42;
-    public static final int U_CAR_RADIO_FREQ = 34;
-    public static final int U_CAR_RADIO_FREQ1 = 35;
-    public static final int U_CAR_RADIO_FREQ2 = 36;
-    public static final int U_CAR_RADIO_FREQ3 = 37;
-    public static final int U_CAR_RADIO_FREQ4 = 38;
-    public static final int U_CAR_RADIO_FREQ5 = 39;
-    public static final int U_CAR_RADIO_FREQ6 = 40;
-    public static final int U_CAR_RADIO_NUM = 33;
-    public static final int U_CAR_RADIO_STATE = 26;
-    public static final int U_CAR_RADIO_STATE_AUTO = 30;
-    public static final int U_CAR_RADIO_STATE_RDS = 27;
-    public static final int U_CAR_RADIO_STATE_SCAN = 28;
-    public static final int U_CAR_RADIO_STATE_ST = 29;
-    public static final int U_CAR_RADIO_STATE_TXT = 31;
-    public static final int U_CAR_RADIO_TXT = 41;
-    public static final int U_CAR_RIGHT_LIGHT_CAM = 73;
-    public static final int U_CAR_R_RADAR_SET = 109;
-    public static final int U_CNT_MAX = 110;
-    public static final int U_CUR_SPEED = 23;
-    public static final int U_DOOR_BACK = 21;
-    public static final int U_DOOR_BEGIN = 16;
-    public static final int U_DOOR_END = 22;
-    public static final int U_DOOR_ENGINE = 16;
-    public static final int U_DOOR_FL = 17;
-    public static final int U_DOOR_FR = 18;
-    public static final int U_DOOR_RL = 19;
-    public static final int U_DOOR_RR = 20;
-    public static final int U_ENGINE_SPEED = 24;
+    public static final int U_CAREQ_D92_D0_B70 = 163;
+    public static final int U_CAREQ_D92_D1_B70 = 164;
+    public static final int U_CAREQ_D92_D2_B70 = 165;
+    public static final int U_CAREQ_D92_D3_B70 = 166;
+    public static final int U_CAREQ_D92_D4_B70 = 167;
+    public static final int U_CAREQ_D92_D5_B70 = 168;
+    public static final int U_CAREQ_D92_D6_B70 = 169;
+    public static final int U_CAREQ_D92_D7_B70 = 170;
+    public static final int U_CAREQ_D93_D0_B70 = 147;
+    public static final int U_CAREQ_D93_D1_B70 = 148;
+    public static final int U_CAREQ_D93_D2_B70 = 149;
+    public static final int U_CAREQ_D93_D3_B70 = 150;
+    public static final int U_CAREQ_D93_D4_B70 = 151;
+    public static final int U_CAREQ_D93_D5_B70 = 152;
+    public static final int U_CAREQ_D93_D6_B70 = 153;
+    public static final int U_CAREQ_D93_D7_B70 = 154;
+    public static final int U_CAREQ_D93_D8_B70 = 155;
+    public static final int U_CAREQ_D95_D0_B5 = 158;
+    public static final int U_CAREQ_D95_D0_B6 = 157;
+    public static final int U_CAREQ_D95_D0_B7 = 156;
+    public static final int U_CAREQ_D95_D1_B30 = 174;
+    public static final int U_CAREQ_D95_D1_B4 = 173;
+    public static final int U_CAREQ_D95_D1_B65 = 172;
+    public static final int U_CAREQ_D95_D1_B7 = 171;
+    public static final int U_CAREQ_D95_D2_B5 = 177;
+    public static final int U_CAREQ_D95_D2_B6 = 176;
+    public static final int U_CAREQ_D95_D2_B7 = 175;
+    public static final int U_CAREQ_D95_D3_B5 = 180;
+    public static final int U_CAREQ_D95_D3_B6 = 179;
+    public static final int U_CAREQ_D95_D3_B7 = 178;
+    public static final int U_CAREQ_D95_D4_B3 = 186;
+    public static final int U_CAREQ_D95_D4_B4 = 185;
+    public static final int U_CAREQ_D95_D4_B65 = 184;
+    public static final int U_CAREQ_D95_D4_B7 = 183;
+    public static final int U_CARINF_D27_D0_B0 = 160;
+    public static final int U_CARINF_D27_D0_B1 = 159;
+    public static final int U_CARINF_D27_D1_D2_D3 = 161;
+    public static final int U_CARINF_D27_D4_D5 = 162;
+    public static final int U_CARSET_AIR_TYPE = 188;
+    public static final int U_CARSET_D60_D30_B70 = 187;
+    public static final int U_CAR_CD_BEGIN = 116;
+    public static final int U_CAR_CD_DISC1 = 124;
+    public static final int U_CAR_CD_DISC2 = 125;
+    public static final int U_CAR_CD_DISC3 = 126;
+    public static final int U_CAR_CD_DISC4 = 127;
+    public static final int U_CAR_CD_DISC5 = 128;
+    public static final int U_CAR_CD_DISC6 = 129;
+    public static final int U_CAR_CD_END = 136;
+    public static final int U_CAR_CD_NUM = 130;
+    public static final int U_CAR_CD_STATE = 117;
+    public static final int U_CAR_CD_STATE_FOLD = 118;
+    public static final int U_CAR_CD_STATE_MP3 = 120;
+    public static final int U_CAR_CD_STATE_PLAY = 134;
+    public static final int U_CAR_CD_STATE_SCAN = 121;
+    public static final int U_CAR_CD_STATE_TXT = 122;
+    public static final int U_CAR_CD_STATE_WMA = 119;
+    public static final int U_CAR_CD_STATE_WORK = 123;
+    public static final int U_CAR_CD_TEXT = 135;
+    public static final int U_CAR_CD_TIME_M = 132;
+    public static final int U_CAR_CD_TIME_S = 133;
+    public static final int U_CAR_CD_TRACK = 131;
+    public static final int U_CAR_EQ_BAL = 141;
+    public static final int U_CAR_EQ_BAS = 138;
+    public static final int U_CAR_EQ_BEEP = 142;
+    public static final int U_CAR_EQ_BEGIN = 137;
+    public static final int U_CAR_EQ_END = 144;
+    public static final int U_CAR_EQ_FAD = 140;
+    public static final int U_CAR_EQ_TREB = 139;
+    public static final int U_CAR_EQ_VOL = 143;
+    public static final int U_CAR_F_RADAR_SET = 181;
+    public static final int U_CAR_MODE_STATE = 145;
+    public static final int U_CAR_RADIO_BAND = 105;
+    public static final int U_CAR_RADIO_BEGIN = 98;
+    public static final int U_CAR_RADIO_END = 115;
+    public static final int U_CAR_RADIO_FREQ = 107;
+    public static final int U_CAR_RADIO_FREQ1 = 108;
+    public static final int U_CAR_RADIO_FREQ2 = 109;
+    public static final int U_CAR_RADIO_FREQ3 = 110;
+    public static final int U_CAR_RADIO_FREQ4 = 111;
+    public static final int U_CAR_RADIO_FREQ5 = 112;
+    public static final int U_CAR_RADIO_FREQ6 = 113;
+    public static final int U_CAR_RADIO_NUM = 106;
+    public static final int U_CAR_RADIO_STATE = 99;
+    public static final int U_CAR_RADIO_STATE_AUTO = 103;
+    public static final int U_CAR_RADIO_STATE_RDS = 100;
+    public static final int U_CAR_RADIO_STATE_SCAN = 101;
+    public static final int U_CAR_RADIO_STATE_ST = 102;
+    public static final int U_CAR_RADIO_STATE_TXT = 104;
+    public static final int U_CAR_RADIO_TXT = 114;
+    public static final int U_CAR_RIGHT_LIGHT_CAM = 146;
+    public static final int U_CAR_R_RADAR_SET = 182;
+    public static final int U_CNT_MAX = 189;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 110; i++) {
+        for (int i = 0; i < 189; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 16;
-        DoorHelper.sUcDoorFl = 17;
-        DoorHelper.sUcDoorFr = 18;
-        DoorHelper.sUcDoorRl = 19;
-        DoorHelper.sUcDoorRr = 20;
-        DoorHelper.sUcDoorBack = 21;
-        AirHelper.getInstance().buildUi(new Air_0190_RZC_TianLai(LauncherApplication.getInstance()));
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        //AirHelper.getInstance().buildUi(new Air_0190_RZC_TianLai(LauncherApplication.getInstance()));
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 16; i2 < 22; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        for (int i3 = 0; i3 < 15; i3++) {
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 16; i < 22; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 0; i2 < 15; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 110) {
+        if (updateCode >= 0 && updateCode < 189) {
             switch (updateCode) {
-                case 41:
+                case 114:
                     if (strs != null && strs.length > 0) {
                         CarRadioText = strs[0];
                     } else {
@@ -173,7 +153,7 @@ public class Callback_0190_RZC_XP1_TianLai extends CallbackCanbusBase {
                     }
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     break;
-                case 62:
+                case 135:
                     if (strs != null && strs.length > 0) {
                         CarCdText = strs[0];
                     } else {
@@ -181,7 +161,7 @@ public class Callback_0190_RZC_XP1_TianLai extends CallbackCanbusBase {
                     }
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     break;
-                case 72:
+                case 145:
                     if (ints[0] == 2 && !XBS09TianlaiCarCDAct.mIsFront) {
                         JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct");
                         break;

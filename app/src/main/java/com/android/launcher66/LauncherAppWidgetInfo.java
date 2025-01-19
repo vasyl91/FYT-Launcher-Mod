@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import com.android.launcher66.LauncherSettings;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class LauncherAppWidgetInfo extends ItemInfo {
     static final int NO_ID = -1;
     int appWidgetId;
@@ -24,7 +23,7 @@ class LauncherAppWidgetInfo extends ItemInfo {
         this.spanY = -1;
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     void onAddToDatabase(ContentValues values) {
         super.onAddToDatabase(values);
         values.put("appWidgetId", Integer.valueOf(this.appWidgetId));
@@ -42,12 +41,12 @@ class LauncherAppWidgetInfo extends ItemInfo {
         this.mHasNotifiedInitialWidgetSizeChanged = true;
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "AppWidget(id=" + Integer.toString(this.appWidgetId) + ")";
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     void unbind() {
         super.unbind();
         this.hostView = null;

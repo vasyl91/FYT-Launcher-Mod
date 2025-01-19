@@ -7,44 +7,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActFuel_GM_SiBo extends BaseActivity {
-    int[] resids = {85, 86, 87, 88};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.saiou3.ActFuel_GM_SiBo.1
-        @Override // com.syu.module.IUiNotify
+    int[] resids = {144, 145, 146, 147};
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 85:
+                case 144:
                     ActFuel_GM_SiBo.this.uAverageFuel(val);
                     break;
-                case 86:
+                case 145:
                     ActFuel_GM_SiBo.this.uInstantFuel(val);
                     break;
-                case 87:
+                case 146:
                     ActFuel_GM_SiBo.this.uFuelMiles(val);
                     break;
-                case 88:
+                case 147:
                     ActFuel_GM_SiBo.this.uTotalMiles(val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_sb_gm_oil_trip_info);
+        //setContentView(R.layout.layout_sb_gm_oil_trip_info);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.resids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.resids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);

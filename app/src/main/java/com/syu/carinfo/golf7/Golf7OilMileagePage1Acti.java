@@ -13,37 +13,36 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7OilMileagePage1Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7OilMileagePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
-                case 68:
+                case 97:
+                case 165:
                     Golf7OilMileagePage1Acti.this.mUpdaterAverageOil();
                     break;
-                case 1:
-                case 177:
+                case 98:
+                case 231:
                     Golf7OilMileagePage1Acti.this.mUpdaterDrivingMileage();
                     break;
-                case 2:
+                case 99:
                     Golf7OilMileagePage1Acti.this.mUpdaterRunningMileage();
                     break;
-                case 3:
+                case 100:
                     Golf7OilMileagePage1Acti.this.mUpdaterDrivingTime();
                     break;
-                case 4:
-                case 81:
+                case 101:
+                case 178:
                     Golf7OilMileagePage1Acti.this.mUpdaterAverageSpeed();
                     break;
-                case 236:
+                case 278:
                     if (((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)) != null) {
                         Golf7OilMileagePage1Acti.this.mUpdaterRemainingOil();
                         break;
                     }
-                case 389:
-                case 390:
+                case 381:
+                case 382:
                     Golf7OilMileagePage1Acti.this.mUpdaterAverageDian();
                     break;
             }
@@ -52,39 +51,39 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
     private int move_start = 0;
     private int move_end = 0;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setContentView(R.layout.layout_golf7_oil_page1_od);
+            //setContentView(R.layout.layout_golf7_oil_page1_od);
         } else {
-            setContentView(R.layout.layout_golf7_oil_page1);
+            //setContentView(R.layout.layout_golf7_oil_page1);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.move_end = (50 - DataCanbus.DATA[236]) * 10;
+        this.move_end = (50 - DataCanbus.DATA[278]) * 10;
         this.move_start = this.move_end;
-        if (DataCanbus.DATA[1000] != 655520 && DataCanbus.DATA[1000] != 393233 && DataCanbus.DATA[1000] != 458769) {
+        if (DataCanbus.DATA[1000] != 655520 && DataCanbus.DATA[1000] != 3801248 && DataCanbus.DATA[1000] != 393233 && DataCanbus.DATA[1000] != 458769) {
             findViewById(R.id.tv_text1).setVisibility(8);
             findViewById(R.id.layout_view1).setVisibility(8);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (((ImageView) findViewById(R.id.golf7_icon_car)) != null) {
             ((ImageView) findViewById(R.id.golf7_icon_car)).setImageDrawable(getResources().getDrawable(R.drawable.icon_car_null));
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.golf7.Golf7OilMileagePage1Acti.2
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
-                    Golf7OilMileagePage1Acti.this.move_end = (50 - DataCanbus.DATA[236]) * 10;
+                    Golf7OilMileagePage1Acti.this.move_end = (50 - DataCanbus.DATA[278]) * 10;
                     Golf7OilMileagePage1Acti.this.move_start = Golf7OilMileagePage1Acti.this.move_end;
                     ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).layout(Golf7OilMileagePage1Acti.this.move_end, 190, Golf7OilMileagePage1Acti.this.move_end + ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getWidth(), ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getHeight() + 190);
-                    switch (DataCanbus.DATA[86]) {
+                    switch (DataCanbus.DATA[183]) {
                         case 1:
                             ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).setImageDrawable(Golf7OilMileagePage1Acti.this.getResources().getDrawable(R.drawable.icon_car2));
                             break;
@@ -107,48 +106,48 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[389].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[390].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[278].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[381].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[382].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[389].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[390].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[278].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[381].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[382].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageDian() {
-        int value = DataCanbus.DATA[390] & 65535;
-        int unit = DataCanbus.DATA[389] & 1;
+        int value = DataCanbus.DATA[382] & 65535;
+        int unit = DataCanbus.DATA[381] & 1;
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km/kwh");
@@ -158,10 +157,10 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageOil() {
-        int value = DataCanbus.DATA[0];
-        int unit_wc = DataCanbus.DATA[68] & 255;
+        int value = DataCanbus.DATA[97];
+        int unit_wc = DataCanbus.DATA[165] & 255;
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_average_oil)) != null) {
             if (ConstGolf.isWcGolf()) {
                 if (value != 65535) {
@@ -182,10 +181,10 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[1];
-        int unit_wc = DataCanbus.DATA[177] & 255;
+        int value = DataCanbus.DATA[98];
+        int unit_wc = DataCanbus.DATA[231] & 255;
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_mileage)) != null) {
             if (ConstGolf.isWcGolf()) {
                 if (value != 65535) {
@@ -204,10 +203,10 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRunningMileage() {
-        int value = DataCanbus.DATA[2];
-        int unit_wc = DataCanbus.DATA[177] & 255;
+        int value = DataCanbus.DATA[99];
+        int unit_wc = DataCanbus.DATA[231] & 255;
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_running_mileage)) != null) {
             if (ConstGolf.isWcGolf()) {
                 ((TextView) findViewById(R.id.golf7_tv_oil_since_start_running_mileage)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + Golf7Data.mDistanceUnitWc[unit_wc]);
@@ -228,9 +227,9 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingTime() {
-        int value = DataCanbus.DATA[3];
+        int value = DataCanbus.DATA[100];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_time)) != null) {
             if (ConstGolf.isWcGolf()) {
                 ((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_time)).setText(String.valueOf(value / 60) + " " + getResources().getString(R.string.time_hour) + " " + (value % 60) + " " + getResources().getString(R.string.time_minute));
@@ -241,10 +240,10 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageSpeed() {
-        int value = DataCanbus.DATA[4];
-        int unit_wc = DataCanbus.DATA[81] & 255;
+        int value = DataCanbus.DATA[101];
+        int unit_wc = DataCanbus.DATA[178] & 255;
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_average_velocity)) != null) {
             if (ConstGolf.isWcGolf()) {
                 ((TextView) findViewById(R.id.golf7_tv_oil_since_start_average_velocity)).setText(String.valueOf(value) + Golf7Data.mSpeedUnitWc[unit_wc]);
@@ -263,16 +262,16 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
             TranslateAnimation car_moving = new TranslateAnimation(0.0f, this.move_end - this.move_start, 0.0f, 0.0f);
             car_moving.setDuration(3000L);
             ((ImageView) findViewById(R.id.golf7_icon_car)).startAnimation(car_moving);
-            car_moving.setAnimationListener(new Animation.AnimationListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileagePage1Acti.3
-                @Override // android.view.animation.Animation.AnimationListener
+            car_moving.setAnimationListener(new Animation.AnimationListener() { 
+                @Override
                 public void onAnimationStart(Animation animation) {
                 }
 
-                @Override // android.view.animation.Animation.AnimationListener
+                @Override
                 public void onAnimationRepeat(Animation animation) {
                 }
 
-                @Override // android.view.animation.Animation.AnimationListener
+                @Override
                 public void onAnimationEnd(Animation animation) {
                     ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).clearAnimation();
                     ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).layout(Golf7OilMileagePage1Acti.this.move_end, ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getTop(), Golf7OilMileagePage1Acti.this.move_end + ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getWidth(), ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getHeight() + ((ImageView) Golf7OilMileagePage1Acti.this.findViewById(R.id.golf7_icon_car)).getTop());
@@ -281,18 +280,18 @@ public class Golf7OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRemainingOil() {
         this.move_start = this.move_end;
-        if (DataCanbus.DATA[236] < 50) {
-            this.move_end = (50 - DataCanbus.DATA[236]) * 10;
+        if (DataCanbus.DATA[278] < 50) {
+            this.move_end = (50 - DataCanbus.DATA[278]) * 10;
         } else {
             this.move_end = 0;
         }
         car_move();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {

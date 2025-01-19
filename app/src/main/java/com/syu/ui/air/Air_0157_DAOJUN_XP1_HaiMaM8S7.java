@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0157_DAOJUN_XP1_HaiMaM8S7 extends AirBase {
     public Air_0157_DAOJUN_XP1_HaiMaM8S7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0157_daojun_xp1_haimam8s7/air_daojun_haimam8_n.webp";
         this.mPathHighlight = "0157_daojun_xp1_haimam8s7/air_daojun_haimam8_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -69,14 +69,14 @@ public class Air_0157_DAOJUN_XP1_HaiMaM8S7 extends AirBase {
             if (lef_temp == 1) {
                 c.drawText("LO", 71.0f, 142.0f, this.mPaint);
             } else if (lef_temp > 1 && lef_temp < 63) {
-                c.drawText(String.valueOf(lef_temp) + "℃", 71.0f, 142.0f, this.mPaint);
+                c.drawText(lef_temp + "℃", 71.0f, 142.0f, this.mPaint);
             } else if (lef_temp == 63) {
                 c.drawText("HI", 71.0f, 142.0f, this.mPaint);
             }
         } else if (lef_temp == 1) {
             c.drawText("LO", 71.0f, 142.0f, this.mPaint);
         } else if (lef_temp > 1 && lef_temp < 63) {
-            c.drawText(String.valueOf(lef_temp + 0.5d) + "℃", 71.0f, 142.0f, this.mPaint);
+            c.drawText(lef_temp + 0.5d + "℃", 71.0f, 142.0f, this.mPaint);
         } else if (lef_temp == 63) {
             c.drawText("HI", 71.0f, 142.0f, this.mPaint);
         }
@@ -86,14 +86,14 @@ public class Air_0157_DAOJUN_XP1_HaiMaM8S7 extends AirBase {
             if (right_temp == 1) {
                 c.drawText("LO", 915.0f, 142.0f, this.mPaint);
             } else if (right_temp > 1 && right_temp < 63) {
-                c.drawText(String.valueOf(right_temp) + "℃", 915.0f, 142.0f, this.mPaint);
+                c.drawText(right_temp + "℃", 915.0f, 142.0f, this.mPaint);
             } else if (right_temp == 63) {
                 c.drawText("HI", 915.0f, 142.0f, this.mPaint);
             }
         } else if (right_temp == 1) {
             c.drawText("LO", 915.0f, 142.0f, this.mPaint);
         } else if (right_temp > 1 && right_temp < 63) {
-            c.drawText(String.valueOf(right_temp + 0.5d) + "℃", 915.0f, 142.0f, this.mPaint);
+            c.drawText(right_temp + 0.5d + "℃", 915.0f, 142.0f, this.mPaint);
         } else if (right_temp == 63) {
             c.drawText("HI", 915.0f, 142.0f, this.mPaint);
         }

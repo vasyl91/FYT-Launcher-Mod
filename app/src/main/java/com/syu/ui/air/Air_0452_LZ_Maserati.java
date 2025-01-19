@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_LZ_Maserati extends AirBase {
     public Air_0452_LZ_Maserati(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_lz_maserati/air.webp";
         this.mPathHighlight = "0452_lz_maserati/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -107,7 +107,7 @@ public class Air_0452_LZ_Maserati extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 39.0f, 134.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(left_temp / 2.0f)).toString(), 39.0f, 134.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 2.0f), 39.0f, 134.0f, this.mPaint);
         }
         int right_temp = this.DATA[28];
         if (right_temp == -2) {
@@ -115,7 +115,7 @@ public class Air_0452_LZ_Maserati extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 955.0f, 134.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(right_temp / 2.0f)).toString(), 955.0f, 134.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 2.0f), 955.0f, 134.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

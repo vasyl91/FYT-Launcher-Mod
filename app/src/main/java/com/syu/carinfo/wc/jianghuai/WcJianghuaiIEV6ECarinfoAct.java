@@ -7,14 +7,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcJianghuaiIEV6ECarinfoAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.jianghuai.WcJianghuaiIEV6ECarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 38:
+                case 113:
                     switch (value) {
                         case 1:
                             ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_drivemode_value)).setText("L");
@@ -26,22 +25,22 @@ public class WcJianghuaiIEV6ECarinfoAct extends BaseActivity {
                             ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_drivemode_value)).setText("S");
                             break;
                     }
-                case 40:
+                case 115:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_current_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "A");
                     break;
-                case 41:
+                case 116:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_voltage_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "V");
                     break;
-                case 42:
+                case 117:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_mileage_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
                     break;
-                case 43:
+                case 118:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_rem_mileage_value)).setText(String.valueOf(value) + "km");
                     break;
-                case 44:
+                case 119:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_charging_value)).setText(String.valueOf(value) + "%");
                     break;
-                case 45:
+                case 120:
                     switch (value) {
                         case 0:
                             ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_battery_value)).setText(R.string.str_298_17crv_notdisplay);
@@ -53,19 +52,19 @@ public class WcJianghuaiIEV6ECarinfoAct extends BaseActivity {
                             ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_battery_value)).setText(R.string.str_227_ec180_car_state_3);
                             break;
                     }
-                case 46:
+                case 121:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_avg_energycons_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km/kmh");
                     break;
-                case 47:
+                case 122:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_cur_energycons_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km/kmh");
                     break;
-                case 48:
+                case 123:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_energy_air_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
                     break;
-                case 49:
+                case 124:
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_energy_recycle_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
                     break;
-                case 50:
+                case 125:
                     int value2 = (value * 30) / 4;
                     ((TextView) WcJianghuaiIEV6ECarinfoAct.this.findViewById(R.id.rzc_jianghuai_energy_motor_value)).setText(String.valueOf(value2 / 10) + "." + (value2 % 10) + "km");
                     break;
@@ -73,55 +72,55 @@ public class WcJianghuaiIEV6ECarinfoAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_rzc_jianghuai_carinfo);
+        //setContentView(R.layout.layout_0439_rzc_jianghuai_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
     }
 }

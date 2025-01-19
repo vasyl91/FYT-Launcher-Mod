@@ -9,44 +9,52 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcGMBasicInfoAct extends Activity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.WcGMBasicInfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 9:
+                case 106:
                     WcGMBasicInfoAct.this.mUpdaterTrip();
                     break;
-                case 13:
+                case 110:
                     WcGMBasicInfoAct.this.mUpdaterCurrentSpeech();
                     break;
-                case 107:
+                case 169:
                     WcGMBasicInfoAct.this.mUpdaterEngineSpeed();
                     break;
-                case 144:
+                case 194:
                     WcGMBasicInfoAct.this.mUpdaterTrunk();
                     break;
-                case 145:
+                case 195:
                     WcGMBasicInfoAct.this.mUpdaterBatteryVol();
                     break;
-                case 146:
+                case 196:
                     WcGMBasicInfoAct.this.mUpdaterDrivingMileage();
                     break;
-                case 147:
+                case 197:
                     WcGMBasicInfoAct.this.updaterOutTemp();
                     break;
+                case 202:
+                    if (value > 0) {
+                        ((TextView) WcGMBasicInfoAct.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value) + " KM");
+                        break;
+                    } else {
+                        ((TextView) WcGMBasicInfoAct.this.findViewById(R.id.tv_text1)).setText("--.-- KM");
+                        break;
+                    }
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_basic_info);
+        //setContentView(R.layout.layout_0036_wc_gm_basic_info);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
@@ -54,7 +62,7 @@ public class WcGMBasicInfoAct extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -65,28 +73,30 @@ public class WcGMBasicInfoAct extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEngineSpeed() {
-        int value = DataCanbus.DATA[107];
+        int value = DataCanbus.DATA[169];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_engine_speed_wc)).setText(String.valueOf(value) + " RPM");
         } else {
@@ -94,9 +104,9 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrentSpeech() {
-        int value = DataCanbus.DATA[13];
+        int value = DataCanbus.DATA[110];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_current_speed)).setText(String.valueOf(value) + " Km/h");
         } else {
@@ -104,9 +114,9 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[146];
+        int value = DataCanbus.DATA[196];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_mileage_wc)).setText(String.valueOf(value) + " KM");
         } else {
@@ -114,9 +124,9 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBatteryVol() {
-        int value = DataCanbus.DATA[145];
+        int value = DataCanbus.DATA[195];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_battery_voltage_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " V");
         } else {
@@ -124,9 +134,9 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrip() {
-        int value = DataCanbus.DATA[9];
+        int value = DataCanbus.DATA[106];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_trip_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + "L/100KM");
         } else {
@@ -134,9 +144,9 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOutTemp() {
-        int value = DataCanbus.DATA[147];
+        int value = DataCanbus.DATA[197];
         if (value >= 0 && value <= 80) {
             int value2 = 400 - (value * 5);
             ((TextView) findViewById(R.id.xp_yl_tv_outside_temperature_wc)).setText("-" + (value2 / 10) + "." + (value2 % 10) + "℃");
@@ -146,13 +156,13 @@ public class WcGMBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrunk() {
-        int value = DataCanbus.DATA[144];
+        int value = DataCanbus.DATA[194];
         ((TextView) findViewById(R.id.dasauto_tv_hand_brake)).setText(String.valueOf(value) + " ");
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

@@ -1,6 +1,5 @@
 package com.syu.remote;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Message {
     public int code;
     public float[] flts;

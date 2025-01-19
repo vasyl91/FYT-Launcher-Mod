@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0447_OD_RZC_19Tusheng extends AirBase {
     public Air_0447_OD_RZC_19Tusheng(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0447_od_rzc_19tusheng/air_19tusheng_n.webp";
         this.mPathHighlight = "0447_od_rzc_19tusheng/air_19tusheng_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -74,9 +74,9 @@ public class Air_0447_OD_RZC_19Tusheng extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 218.0f, 60.0f, this.mPaint);
         } else if (left_temp >= 62 && left_temp <= 90) {
-            c.drawText(new StringBuilder().append(left_temp).toString(), 218.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp), 218.0f, 60.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(17.0f + (left_temp / 2.0f)).toString(), 218.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(17.0f + (left_temp / 2.0f)), 218.0f, 60.0f, this.mPaint);
         }
         int right_temp = this.DATA[11];
         if (right_temp == -2) {
@@ -84,9 +84,9 @@ public class Air_0447_OD_RZC_19Tusheng extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 934.0f, 60.0f, this.mPaint);
         } else if (right_temp >= 62 && right_temp <= 90) {
-            c.drawText(new StringBuilder().append(right_temp).toString(), 934.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp), 934.0f, 60.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(17.0f + (right_temp / 2.0f)).toString(), 934.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(17.0f + (right_temp / 2.0f)), 934.0f, 60.0f, this.mPaint);
         }
         int rear_temp = this.DATA[78];
         if (rear_temp == -2) {
@@ -96,7 +96,7 @@ public class Air_0447_OD_RZC_19Tusheng extends AirBase {
         } else if (rear_temp == -1) {
             c.drawText("----", 52.0f, 60.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(17.0f + (rear_temp / 2.0f)).toString(), 52.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(17.0f + (rear_temp / 2.0f)), 52.0f, 60.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

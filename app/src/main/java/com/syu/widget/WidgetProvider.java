@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class WidgetProvider extends AppWidgetProvider {
     public static final String APP_WIDGET_START = "syu.widget.start";
     public static final String BTAVNEXTSERVICE = "com.syu.bt.byav.widgetNext";
@@ -22,7 +21,7 @@ public abstract class WidgetProvider extends AppWidgetProvider {
 
     public abstract void update(Context context, int i);
 
-    @Override // android.appwidget.AppWidgetProvider, android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String action = intent.getAction();
@@ -36,7 +35,7 @@ public abstract class WidgetProvider extends AppWidgetProvider {
         }
     }
 
-    @Override // android.appwidget.AppWidgetProvider
+    @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int id : appWidgetIds) {
             Log.e("TT", "WidgetProvider onUpdate =====  " + id);
@@ -45,7 +44,7 @@ public abstract class WidgetProvider extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
-    @Override // android.appwidget.AppWidgetProvider
+    @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
         for (int id : appWidgetIds) {
@@ -56,12 +55,12 @@ public abstract class WidgetProvider extends AppWidgetProvider {
         }
     }
 
-    @Override // android.appwidget.AppWidgetProvider
+    @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
     }
 
-    @Override // android.appwidget.AppWidgetProvider
+    @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
     }

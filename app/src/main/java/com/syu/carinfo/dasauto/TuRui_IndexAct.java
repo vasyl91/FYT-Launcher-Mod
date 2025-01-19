@@ -8,21 +8,20 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TuRui_IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_turui_indexact);
+        //setContentView(R.layout.layout_turui_indexact);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         Button mBtnFunctionalState = (Button) findViewById(R.id.jeep_car_settings);
         if (mBtnFunctionalState != null) {
-            mBtnFunctionalState.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_IndexAct.1
-                @Override // android.view.View.OnClickListener
+            mBtnFunctionalState.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();
@@ -39,8 +38,8 @@ public class TuRui_IndexAct extends BaseActivity {
         }
         Button mBtnAirControl = (Button) findViewById(R.id.jeep_car_airset);
         if (mBtnAirControl != null) {
-            mBtnAirControl.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_IndexAct.2
-                @Override // android.view.View.OnClickListener
+            mBtnAirControl.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();
@@ -54,8 +53,8 @@ public class TuRui_IndexAct extends BaseActivity {
         }
         Button mBtnOil = (Button) findViewById(R.id.jeep_car_oil);
         if (mBtnOil != null) {
-            mBtnOil.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_IndexAct.3
-                @Override // android.view.View.OnClickListener
+            mBtnOil.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();

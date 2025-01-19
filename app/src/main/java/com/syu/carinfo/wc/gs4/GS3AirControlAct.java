@@ -11,15 +11,14 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS3AirControlAct extends BaseActivity {
     public static GS3AirControlAct mInstance;
     public static boolean mIsFront = false;
     boolean auto;
     boolean body;
     boolean foot;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 26:
@@ -76,202 +75,202 @@ public class GS3AirControlAct extends BaseActivity {
     int mode = 0;
     boolean win;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0289_wc_chuanqi_gs3_air_control);
+        //setContentView(R.layout.layout_0289_wc_chuanqi_gs3_air_control);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{14, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.2.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{14}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{13, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.3.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{13}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{12, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.4.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{12}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{11, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.5.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{11}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{16, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.6.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{16}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{15, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.7.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{15}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{4, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.8.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{4}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{2, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.9.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{2}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_mode)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_mode)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{21, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.10.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{21}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{5, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.11.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{5}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{6, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.12.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{6}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_clear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_clear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{25, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.13.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{25}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{17, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.14.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{17}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.15
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{18, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.15.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{18}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{1, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.16.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                     }
                 }, 100L);
             }
         });
-        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{7, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS3AirControlAct.17.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(4, new int[]{7}, null, null);
                     }
@@ -280,7 +279,7 @@ public class GS3AirControlAct extends BaseActivity {
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRightL() {
         int temp = DataCanbus.DATA[38];
         if (temp == -2) {
@@ -292,7 +291,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[31];
         if (temp == -2) {
@@ -304,13 +303,13 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int temp = DataCanbus.DATA[35];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(temp).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAutoOn() {
         int value = DataCanbus.DATA[26];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -318,7 +317,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirHybirdAc() {
         int value = DataCanbus.DATA[30];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -326,7 +325,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirFrontDefrost() {
         int value = DataCanbus.DATA[28];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -334,7 +333,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirRearDefrost() {
         int value = DataCanbus.DATA[29];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -342,7 +341,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanFlower() {
         int value = DataCanbus.DATA[43];
         if (((Button) findViewById(R.id.air_xts_clear)) != null) {
@@ -350,7 +349,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatLeft() {
         int value = DataCanbus.DATA[36];
         if (((Button) findViewById(R.id.air_xts_seathot_left)) != null) {
@@ -369,7 +368,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatRight() {
         int value = DataCanbus.DATA[37];
         if (((Button) findViewById(R.id.air_xts_seathot_right)) != null) {
@@ -388,7 +387,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[39];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -396,7 +395,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCycle() {
         int value = DataCanbus.DATA[27];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -404,7 +403,7 @@ public class GS3AirControlAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
@@ -424,7 +423,7 @@ public class GS3AirControlAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
@@ -444,7 +443,7 @@ public class GS3AirControlAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -510,7 +509,7 @@ public class GS3AirControlAct extends BaseActivity {
         uMode(getMode());
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;

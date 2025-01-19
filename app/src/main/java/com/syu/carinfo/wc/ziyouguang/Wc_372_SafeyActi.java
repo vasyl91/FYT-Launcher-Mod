@@ -11,81 +11,80 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_372_SafeyActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 98:
                     Wc_372_SafeyActi.this.m43d36();
                     break;
-                case 2:
+                case 99:
                     Wc_372_SafeyActi.this.m43d34();
                     break;
-                case 3:
+                case 100:
                     Wc_372_SafeyActi.this.m43d32();
                     break;
-                case 4:
+                case 101:
                     Wc_372_SafeyActi.this.m43d31();
                     break;
-                case 5:
+                case 102:
                     Wc_372_SafeyActi.this.m43d30();
                     break;
-                case 6:
+                case 103:
                     Wc_372_SafeyActi.this.m43d47();
                     break;
-                case 7:
+                case 104:
                     Wc_372_SafeyActi.this.m43d46();
                     break;
-                case 8:
+                case 105:
                     Wc_372_SafeyActi.this.m43d45();
                     break;
-                case 9:
+                case 106:
                     Wc_372_SafeyActi.this.m43d43();
                     break;
-                case 10:
+                case 107:
                     Wc_372_SafeyActi.this.m43d42();
                     break;
-                case 11:
+                case 108:
                     Wc_372_SafeyActi.this.m43d40();
                     break;
-                case 12:
+                case 109:
                     Wc_372_SafeyActi.this.m43d56();
                     break;
-                case 13:
+                case 110:
                     Wc_372_SafeyActi.this.m43d55();
                     break;
-                case 14:
+                case 111:
                     Wc_372_SafeyActi.this.m43d54();
                     break;
-                case 15:
+                case 112:
                     Wc_372_SafeyActi.this.m43d52();
                     break;
-                case 16:
+                case 113:
                     Wc_372_SafeyActi.this.m43d50();
                     break;
-                case 94:
+                case 162:
                     Wc_372_SafeyActi.this.m43d44();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_372_zyg_safetyassist);
+        //setContentView(R.layout.layout_372_zyg_safetyassist);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.jeep_parksense_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_parksense_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[1] & 255;
+                int value2 = DataCanbus.DATA[98] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -94,11 +93,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{5, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_parksense_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_parksense_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[1] & 255;
+                int value2 = DataCanbus.DATA[98] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -107,11 +106,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{5, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_view_lanedev_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_view_lanedev_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[2] & 255;
+                int value2 = DataCanbus.DATA[99] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -120,11 +119,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_view_lanedev_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_view_lanedev_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[2] & 255;
+                int value2 = DataCanbus.DATA[99] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -133,11 +132,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_lanewar_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_lanewar_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[3] & 255;
+                int value2 = DataCanbus.DATA[100] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -146,11 +145,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{3, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_lanewar_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_lanewar_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[3] & 255;
+                int value2 = DataCanbus.DATA[100] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -159,10 +158,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{3, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_crash_brak)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_crash_brak)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[4] & 255;
+                int value = DataCanbus.DATA[101] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 2;
@@ -170,10 +169,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_crash_brakwarring)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_crash_brakwarring)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[5] & 255;
+                int value = DataCanbus.DATA[102] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 1;
@@ -181,10 +180,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.jeep_auto_park_brake)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.jeep_auto_park_brake)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[6] & 255;
+                int value = DataCanbus.DATA[103] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 12;
@@ -192,10 +191,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.jeep_hill_start_assist)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.jeep_hill_start_assist)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[7] & 255;
+                int value = DataCanbus.DATA[104] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 11;
@@ -203,10 +202,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_rainauto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.12
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_rainauto)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[8] & 255;
+                int value = DataCanbus.DATA[105] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 10;
@@ -214,10 +213,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_video_move)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.13
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_video_move)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[9] & 255;
+                int value = DataCanbus.DATA[106] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 7;
@@ -225,10 +224,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_video_static)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.14
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_video_static)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[10] & 255;
+                int value = DataCanbus.DATA[107] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 8;
@@ -236,11 +235,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_blindwarring_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.15
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_blindwarring_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[11] & 255;
+                int value2 = DataCanbus.DATA[108] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -249,11 +248,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{6, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_blindwarring_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_blindwarring_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[11] & 255;
+                int value2 = DataCanbus.DATA[108] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -262,11 +261,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{6, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_autoserve_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_autoserve_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[12] & 255;
+                int value2 = DataCanbus.DATA[109] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -275,11 +274,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_autoserve_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_autoserve_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[12] & 255;
+                int value2 = DataCanbus.DATA[109] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -288,10 +287,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_parksystem)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.19
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_parksystem)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[13] & 255;
+                int value = DataCanbus.DATA[110] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 16;
@@ -299,10 +298,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_parksensebreak)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.20
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_parksensebreak)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[14] & 255;
+                int value = DataCanbus.DATA[111] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 15;
@@ -310,11 +309,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_frontsensevo_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.21
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_frontsensevo_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[16] & 255;
+                int value2 = DataCanbus.DATA[113] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -323,11 +322,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{13, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_frontsensevo_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.22
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_frontsensevo_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[16] & 255;
+                int value2 = DataCanbus.DATA[113] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -336,11 +335,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{13, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_backsensevol_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.23
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_backsensevol_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[15] & 255;
+                int value2 = DataCanbus.DATA[112] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -349,11 +348,11 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{14, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_372_backsensevol_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.24
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_backsensevol_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[15] & 255;
+                int value2 = DataCanbus.DATA[112] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -362,10 +361,10 @@ public class Wc_372_SafeyActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{14, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_372_parkingimagedelay)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi.25
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_372_parkingimagedelay)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[94] & 255;
+                int value = DataCanbus.DATA[162] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 9;
@@ -375,63 +374,63 @@ public class Wc_372_SafeyActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d36() {
-        int temp = DataCanbus.DATA[1] & 65535;
+        int temp = DataCanbus.DATA[98] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_assist).setVisibility(enable == 0 ? 8 : 0);
@@ -445,16 +444,16 @@ public class Wc_372_SafeyActi extends BaseActivity {
     }
 
     protected void m43d44() {
-        int temp = DataCanbus.DATA[94] & 65535;
+        int temp = DataCanbus.DATA[162] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_parkingimagedelay).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_parkingimagedelay)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d34() {
-        int temp = DataCanbus.DATA[2] & 65535;
+        int temp = DataCanbus.DATA[99] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_lanedev).setVisibility(enable == 0 ? 8 : 0);
@@ -469,9 +468,9 @@ public class Wc_372_SafeyActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d32() {
-        int temp = DataCanbus.DATA[3] & 65535;
+        int temp = DataCanbus.DATA[100] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_lanewar).setVisibility(enable == 0 ? 8 : 0);
@@ -486,72 +485,72 @@ public class Wc_372_SafeyActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d31() {
-        int temp = DataCanbus.DATA[4] & 65535;
+        int temp = DataCanbus.DATA[101] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_crash_brak).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_crash_brak)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d30() {
-        int temp = DataCanbus.DATA[5] & 65535;
+        int temp = DataCanbus.DATA[102] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_crash_brakwarring).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_crash_brakwarring)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d47() {
-        int temp = DataCanbus.DATA[6] & 65535;
+        int temp = DataCanbus.DATA[103] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_auto_park_brake).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.jeep_auto_park_brake)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d46() {
-        int temp = DataCanbus.DATA[7] & 65535;
+        int temp = DataCanbus.DATA[104] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_jeep_hill_start_assist).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.jeep_hill_start_assist)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d45() {
-        int temp = DataCanbus.DATA[8] & 65535;
+        int temp = DataCanbus.DATA[105] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
-        findViewById(R.id.wc_372_view_rainauto).setVisibility(enable != 0 ? 0 : 8);
+        findViewById(R.id.wc_372_view_rainauto).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_rainauto)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d43() {
-        int temp = DataCanbus.DATA[9] & 65535;
+        int temp = DataCanbus.DATA[106] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_video_move).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_video_move)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d42() {
-        int temp = DataCanbus.DATA[10] & 65535;
+        int temp = DataCanbus.DATA[107] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_video_static).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_video_static)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d40() {
-        int temp = DataCanbus.DATA[11] & 65535;
+        int temp = DataCanbus.DATA[108] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_blindwarring).setVisibility(enable == 0 ? 8 : 0);
@@ -566,9 +565,9 @@ public class Wc_372_SafeyActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d56() {
-        int temp = DataCanbus.DATA[12] & 65535;
+        int temp = DataCanbus.DATA[109] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_autoserve).setVisibility(enable == 0 ? 8 : 0);
@@ -583,27 +582,27 @@ public class Wc_372_SafeyActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d55() {
-        int temp = DataCanbus.DATA[13] & 65535;
+        int temp = DataCanbus.DATA[110] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_parksystem).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_parksystem)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d54() {
-        int temp = DataCanbus.DATA[14] & 65535;
+        int temp = DataCanbus.DATA[111] & 65535;
         int switchOn = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_parksensebreak).setVisibility(enable == 0 ? 8 : 0);
         ((CheckedTextView) findViewById(R.id.wc_372_parksensebreak)).setChecked(switchOn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d52() {
-        int temp = DataCanbus.DATA[15] & 65535;
+        int temp = DataCanbus.DATA[112] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_backsensevol).setVisibility(enable == 0 ? 8 : 0);
@@ -618,9 +617,9 @@ public class Wc_372_SafeyActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m43d50() {
-        int temp = DataCanbus.DATA[16] & 65535;
+        int temp = DataCanbus.DATA[113] & 65535;
         int value = temp & 255;
         int enable = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_frontsensevol).setVisibility(enable == 0 ? 8 : 0);

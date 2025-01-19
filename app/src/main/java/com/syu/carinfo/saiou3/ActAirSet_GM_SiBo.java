@@ -11,44 +11,43 @@ import com.syu.carinfo.xfl.chuangku.XflCkFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.saiou3.ActAirSet_GM_SiBo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 97:
                     ActAirSet_GM_SiBo.this.updaterAutoModeWild();
                     break;
-                case 1:
+                case 98:
                     ActAirSet_GM_SiBo.this.updaterAirQuality();
                     break;
-                case 2:
+                case 99:
                     ActAirSet_GM_SiBo.this.updaterZoonTemp();
                     break;
-                case 3:
+                case 100:
                     ActAirSet_GM_SiBo.this.updaterRearWindowDefog();
                     break;
-                case 4:
+                case 101:
                     ActAirSet_GM_SiBo.this.updaterFrontWindowDefog();
                     break;
-                case 5:
+                case 102:
                     ActAirSet_GM_SiBo.this.mUpdateBackAirState();
                     break;
-                case 6:
+                case 103:
                     ActAirSet_GM_SiBo.this.updaterAirStartMode();
                     break;
-                case 77:
+                case 136:
                     ActAirSet_GM_SiBo.this.uRemoteAirPower();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_sb_gm_air_set);
+        //setContentView(R.layout.layout_sb_gm_air_set);
         setUI();
     }
 
@@ -68,14 +67,11 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
         ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                XflCkFunc.CAR_AIR_CONTROL(22, DataCanbus.DATA[77] != 0 ? 0 : 1);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int AutoModeWildState = DataCanbus.DATA[0];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int AutoModeWildState = DataCanbus.DATA[97];
                 if (AutoModeWildState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(0, 2);
                     break;
@@ -86,8 +82,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(0, 1);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                int AutoModeWildState2 = DataCanbus.DATA[0];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int AutoModeWildState2 = DataCanbus.DATA[97];
                 if (AutoModeWildState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(0, 1);
                     break;
@@ -98,8 +94,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(0, 0);
                     break;
                 }
-            case R.id.btn_minus2 /* 2131427484 */:
-                int AirQualityState = DataCanbus.DATA[1];
+            case R.id.btn_minus2 /* 2131427458 */:
+                int AirQualityState = DataCanbus.DATA[98];
                 if (AirQualityState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(1, 2);
                     break;
@@ -110,8 +106,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(1, 1);
                     break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
-                int AirQualityState2 = DataCanbus.DATA[1];
+            case R.id.btn_plus2 /* 2131427460 */:
+                int AirQualityState2 = DataCanbus.DATA[98];
                 if (AirQualityState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(1, 1);
                     break;
@@ -122,8 +118,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(1, 0);
                     break;
                 }
-            case R.id.btn_minus3 /* 2131427488 */:
-                int ZoonTempState = DataCanbus.DATA[2];
+            case R.id.btn_minus3 /* 2131427461 */:
+                int ZoonTempState = DataCanbus.DATA[99];
                 if (ZoonTempState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(2, 2);
                     break;
@@ -134,8 +130,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(2, 1);
                     break;
                 }
-            case R.id.btn_plus3 /* 2131427490 */:
-                int ZoonTempState2 = DataCanbus.DATA[2];
+            case R.id.btn_plus3 /* 2131427463 */:
+                int ZoonTempState2 = DataCanbus.DATA[99];
                 if (ZoonTempState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(2, 1);
                     break;
@@ -146,8 +142,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(2, 0);
                     break;
                 }
-            case R.id.btn_minus4 /* 2131427492 */:
-                int AirStartModeState = DataCanbus.DATA[6];
+            case R.id.btn_minus4 /* 2131427464 */:
+                int AirStartModeState = DataCanbus.DATA[103];
                 if (AirStartModeState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(3, 2);
                     break;
@@ -158,8 +154,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(3, 1);
                     break;
                 }
-            case R.id.btn_plus4 /* 2131427494 */:
-                int AirStartModeState2 = DataCanbus.DATA[6];
+            case R.id.btn_plus4 /* 2131427466 */:
+                int AirStartModeState2 = DataCanbus.DATA[103];
                 if (AirStartModeState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(3, 1);
                     break;
@@ -170,8 +166,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(3, 0);
                     break;
                 }
-            case R.id.btn_minus5 /* 2131427496 */:
-                int mBackAir = DataCanbus.DATA[5];
+            case R.id.btn_minus5 /* 2131427467 */:
+                int mBackAir = DataCanbus.DATA[102];
                 if (mBackAir == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(4, 2);
                     break;
@@ -182,8 +178,8 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(4, 1);
                     break;
                 }
-            case R.id.btn_plus5 /* 2131427498 */:
-                int mBackAir2 = DataCanbus.DATA[5];
+            case R.id.btn_plus5 /* 2131427469 */:
+                int mBackAir2 = DataCanbus.DATA[102];
                 if (mBackAir2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(4, 2);
                     break;
@@ -194,22 +190,25 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
                     XflCkFunc.CAR_AIR_CONTROL(4, 1);
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                XflCkFunc.CAR_AIR_CONTROL(5, DataCanbus.DATA[3] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                XflCkFunc.CAR_AIR_CONTROL(22, DataCanbus.DATA[136] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                XflCkFunc.CAR_AIR_CONTROL(6, DataCanbus.DATA[4] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                XflCkFunc.CAR_AIR_CONTROL(5, DataCanbus.DATA[100] != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                XflCkFunc.CAR_AIR_CONTROL(6, DataCanbus.DATA[101] != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -220,30 +219,30 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoModeWild() {
-        int AutoModeWildState = DataCanbus.DATA[0];
+        int AutoModeWildState = DataCanbus.DATA[97];
         if (AutoModeWildState == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.klc_air_low);
         } else if (AutoModeWildState == 1) {
@@ -254,16 +253,16 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
     }
 
     protected void uRemoteAirPower() {
-        int mRemoteStartAir = DataCanbus.DATA[77];
+        int mRemoteStartAir = DataCanbus.DATA[136];
         if (((TextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             int[] resId = {R.string.klc_air_auto, R.string.klc_air_last_Set};
             ((TextView) findViewById(R.id.ctv_checkedtext1)).setText(resId[mRemoteStartAir]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirQuality() {
-        int AirQualityState = DataCanbus.DATA[1];
+        int AirQualityState = DataCanbus.DATA[98];
         if (AirQualityState == 0) {
             ((TextView) findViewById(R.id.tv_text2)).setText(R.string.klc_air_Low_sensitivity);
         } else if (AirQualityState == 1) {
@@ -273,9 +272,9 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterZoonTemp() {
-        int ZoonTempState = DataCanbus.DATA[2];
+        int ZoonTempState = DataCanbus.DATA[99];
         if (ZoonTempState == 0) {
             ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_air_Auto_zone_climate_controlUni_form_Set);
         } else if (ZoonTempState == 1) {
@@ -285,21 +284,21 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRearWindowDefog() {
-        int RearWindowAutoState = DataCanbus.DATA[3];
+        int RearWindowAutoState = DataCanbus.DATA[100];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(RearWindowAutoState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFrontWindowDefog() {
-        int FrontWindowAutoState = DataCanbus.DATA[4];
+        int FrontWindowAutoState = DataCanbus.DATA[101];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(FrontWindowAutoState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirStartMode() {
-        int AirStartModeState = DataCanbus.DATA[6];
+        int AirStartModeState = DataCanbus.DATA[103];
         if (AirStartModeState == 0) {
             ((TextView) findViewById(R.id.tv_text4)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (AirStartModeState == 1) {
@@ -309,9 +308,9 @@ public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackAirState() {
-        int mBackAir = DataCanbus.DATA[5];
+        int mBackAir = DataCanbus.DATA[102];
         if (mBackAir == 0) {
             ((TextView) findViewById(R.id.tv_text5)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (mBackAir == 1) {

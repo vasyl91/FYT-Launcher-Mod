@@ -13,18 +13,17 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_ford_index extends BaseActivity implements View.OnClickListener {
     private ArrayList<String> mFragmentlist;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0403_bnr_ford_index);
+        //setContentView(R.layout.layout_0403_bnr_ford_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         View carset = findViewById(R.id.id_carset);
         View sync = findViewById(R.id.ctv_ylfocus_sync);
@@ -43,7 +42,7 @@ public class Activity_ford_index extends BaseActivity implements View.OnClickLis
         this.mFragmentlist.add(fragment_ford_seatset.class.getCanonicalName());
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FragmentTransaction beginTransaction = getFragmentManager().beginTransaction();
@@ -61,10 +60,10 @@ public class Activity_ford_index extends BaseActivity implements View.OnClickLis
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) KXMDOCarTire.class);
                     startActivity(intent);
@@ -73,7 +72,7 @@ public class Activity_ford_index extends BaseActivity implements View.OnClickLis
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) KXMDOEQSetAct.class);
                     startActivity(intent2);
@@ -82,11 +81,11 @@ public class Activity_ford_index extends BaseActivity implements View.OnClickLis
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.id_carset /* 2131428045 */:
+            case R.id.id_carset /* 2131428046 */:
                 FragmentTransaction beginTransaction = getFragmentManager().beginTransaction();
                 beginTransaction.replace(R.id.container, new fragment_ford_carset(), this.mFragmentlist.get(0)).commitAllowingStateLoss();
                 break;
-            case R.id.ctv_ylfocus_sync /* 2131428047 */:
+            case R.id.ctv_ylfocus_sync /* 2131428048 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) FocusSyncBtActi.class);
                     startActivity(intent3);
@@ -95,7 +94,7 @@ public class Activity_ford_index extends BaseActivity implements View.OnClickLis
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.id_seatset /* 2131428048 */:
+            case R.id.id_seatset /* 2131428049 */:
                 FragmentTransaction beginTransaction2 = getFragmentManager().beginTransaction();
                 beginTransaction2.replace(R.id.container, new fragment_ford_seatset(), this.mFragmentlist.get(1)).commitAllowingStateLoss();
                 break;

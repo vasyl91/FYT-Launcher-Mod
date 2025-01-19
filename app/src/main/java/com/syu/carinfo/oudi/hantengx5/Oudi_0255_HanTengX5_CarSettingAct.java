@@ -11,60 +11,59 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 51:
+                case 121:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateBrightLevel();
                     break;
-                case 52:
+                case 122:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateAmbientLightSwitch();
                     break;
-                case 53:
+                case 123:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateSeatCourtesySwitch();
                     break;
-                case 54:
+                case 124:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateControlMethod();
                     break;
-                case 55:
+                case 125:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateStaticSet();
                     break;
-                case 56:
+                case 126:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateBlueGreenRed();
                     break;
-                case 57:
+                case 127:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateBluePurpleRed();
                     break;
-                case 58:
+                case 128:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateDynamicSetting();
                     break;
-                case 59:
+                case 129:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateDynamicSampling();
                     break;
-                case 60:
+                case 130:
                     Oudi_0255_HanTengX5_CarSettingAct.this.updateDynamicSpeed();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0255_oudi_hantentx5_carsetting);
+        //setContentView(R.layout.layout_0255_oudi_hantentx5_carsetting);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        setSelfClick((Button) findViewById(R.id.btn_minus1), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int brightlevel;
-                int brightlevel2 = DataCanbus.DATA[51] & 255;
+                int brightlevel2 = DataCanbus.DATA[121] & 255;
                 if (brightlevel2 <= 1) {
                     brightlevel = 7;
                 } else {
@@ -73,11 +72,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{149, brightlevel}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus1), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int brightlevel;
-                int brightlevel2 = DataCanbus.DATA[51] & 255;
+                int brightlevel2 = DataCanbus.DATA[121] & 255;
                 if (brightlevel2 >= 6) {
                     brightlevel = 1;
                 } else {
@@ -86,11 +85,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{149, brightlevel}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus2), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus2), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int controlmethod;
-                int controlmethod2 = DataCanbus.DATA[54] & 255;
+                int controlmethod2 = DataCanbus.DATA[124] & 255;
                 if (controlmethod2 <= 0) {
                     controlmethod = 2;
                 } else {
@@ -99,11 +98,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{150, controlmethod}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus2), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus2), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int controlmethod;
-                int controlmethod2 = DataCanbus.DATA[54] & 255;
+                int controlmethod2 = DataCanbus.DATA[124] & 255;
                 if (controlmethod2 > 1) {
                     controlmethod = 2;
                 } else {
@@ -112,11 +111,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{150, controlmethod}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus3), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus3), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicset;
-                int dynamicset2 = DataCanbus.DATA[58] & 255;
+                int dynamicset2 = DataCanbus.DATA[128] & 255;
                 if (dynamicset2 <= 0) {
                     dynamicset = 2;
                 } else {
@@ -125,11 +124,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{151, dynamicset}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus3), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus3), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicset;
-                int dynamicset2 = DataCanbus.DATA[58] & 255;
+                int dynamicset2 = DataCanbus.DATA[128] & 255;
                 if (dynamicset2 >= 2) {
                     dynamicset = 0;
                 } else {
@@ -138,11 +137,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{151, dynamicset}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus4), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus4), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int bluegreenred;
-                int bluegreenred2 = DataCanbus.DATA[56] & 255;
+                int bluegreenred2 = DataCanbus.DATA[126] & 255;
                 if (bluegreenred2 <= 0) {
                     bluegreenred = 255;
                 } else {
@@ -151,11 +150,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{152, bluegreenred}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus4), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus4), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int bluegreenred;
-                int bluegreenred2 = DataCanbus.DATA[56] & 255;
+                int bluegreenred2 = DataCanbus.DATA[126] & 255;
                 if (bluegreenred2 >= 255) {
                     bluegreenred = 0;
                 } else {
@@ -164,11 +163,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{152, bluegreenred}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus5), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus5), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int bluepurplered;
-                int bluepurplered2 = DataCanbus.DATA[57] & 255;
+                int bluepurplered2 = DataCanbus.DATA[127] & 255;
                 if (bluepurplered2 <= 0) {
                     bluepurplered = 255;
                 } else {
@@ -177,11 +176,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{153, bluepurplered}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus5), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus5), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int bluepurplered;
-                int bluepurplered2 = DataCanbus.DATA[57] & 255;
+                int bluepurplered2 = DataCanbus.DATA[127] & 255;
                 if (bluepurplered2 >= 255) {
                     bluepurplered = 0;
                 } else {
@@ -190,11 +189,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{153, bluepurplered}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus6), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus6), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicsampling;
-                int dynamicsampling2 = DataCanbus.DATA[59] & 255;
+                int dynamicsampling2 = DataCanbus.DATA[129] & 255;
                 if (dynamicsampling2 == 0) {
                     dynamicsampling = 1;
                 } else {
@@ -203,11 +202,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{155, dynamicsampling}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus6), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus6), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicsampling;
-                int dynamicsampling2 = DataCanbus.DATA[59] & 255;
+                int dynamicsampling2 = DataCanbus.DATA[129] & 255;
                 if (dynamicsampling2 == 0) {
                     dynamicsampling = 1;
                 } else {
@@ -216,11 +215,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{155, dynamicsampling}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_minus7), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.14
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_minus7), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicspeed;
-                int dynamicspeed2 = DataCanbus.DATA[60] & 255;
+                int dynamicspeed2 = DataCanbus.DATA[130] & 255;
                 if (dynamicspeed2 <= 0) {
                     dynamicspeed = 255;
                 } else {
@@ -229,11 +228,11 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{156, dynamicspeed}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.btn_plus7), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.15
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.btn_plus7), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int dynamicspeed;
-                int dynamicspeed2 = DataCanbus.DATA[60] & 255;
+                int dynamicspeed2 = DataCanbus.DATA[130] & 255;
                 if (dynamicspeed2 >= 255) {
                     dynamicspeed = 0;
                 } else {
@@ -242,10 +241,10 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{156, dynamicspeed}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.16
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[52] & 255;
+                int switchOn = DataCanbus.DATA[122] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 148;
@@ -253,10 +252,10 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.17
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[53] & 255;
+                int switchOn = DataCanbus.DATA[123] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 147;
@@ -264,10 +263,10 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), new View.OnClickListener() { // from class: com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct.18
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[58] & 255;
+                int switchOn = DataCanbus.DATA[128] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 154;
@@ -277,45 +276,45 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBrightLevel() {
-        int brightlevel = DataCanbus.DATA[51];
+        int brightlevel = DataCanbus.DATA[121];
         if (((TextView) findViewById(R.id.tv_text1)) != null && brightlevel > 0 && brightlevel <= 7) {
             ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("%d", Integer.valueOf(brightlevel))) + "level");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateControlMethod() {
-        int controlmethod = DataCanbus.DATA[54];
+        int controlmethod = DataCanbus.DATA[124];
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             if (controlmethod == 1) {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_255_hantengx5_11);
@@ -327,9 +326,9 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateStaticSet() {
-        int staticset = DataCanbus.DATA[55];
+        int staticset = DataCanbus.DATA[125];
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             if (staticset == 1) {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_255_hantengx5_14);
@@ -341,9 +340,9 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDynamicSampling() {
-        int dynamicsampling = DataCanbus.DATA[59];
+        int dynamicsampling = DataCanbus.DATA[129];
         if (((TextView) findViewById(R.id.tv_text6)) != null) {
             if (dynamicsampling == 1) {
                 ((TextView) findViewById(R.id.tv_text6)).setText(R.string.str_255_hantengx5_17);
@@ -353,45 +352,45 @@ public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlueGreenRed() {
-        int bluegreenred = DataCanbus.DATA[56];
+        int bluegreenred = DataCanbus.DATA[126];
         if (((TextView) findViewById(R.id.tv_text4)) != null && bluegreenred > 0 && bluegreenred <= 255) {
             ((TextView) findViewById(R.id.tv_text4)).setText(String.format("%d", Integer.valueOf(bluegreenred)));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBluePurpleRed() {
-        int bluepurplered = DataCanbus.DATA[57];
+        int bluepurplered = DataCanbus.DATA[127];
         if (((TextView) findViewById(R.id.tv_text5)) != null && bluepurplered > 0 && bluepurplered <= 255) {
             ((TextView) findViewById(R.id.tv_text5)).setText(String.format("%d", Integer.valueOf(bluepurplered)));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDynamicSpeed() {
-        int dynamicspeed = DataCanbus.DATA[60];
+        int dynamicspeed = DataCanbus.DATA[130];
         if (((TextView) findViewById(R.id.tv_text7)) != null && dynamicspeed > 0 && dynamicspeed <= 255) {
             ((TextView) findViewById(R.id.tv_text7)).setText(String.format("%d", Integer.valueOf(dynamicspeed)));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAmbientLightSwitch() {
-        int ambientlight = DataCanbus.DATA[52];
+        int ambientlight = DataCanbus.DATA[122];
         setCheck((CheckedTextView) findViewById(R.id.ctv_checkedtext1), ambientlight != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatCourtesySwitch() {
-        int seatcourtesy = DataCanbus.DATA[53];
+        int seatcourtesy = DataCanbus.DATA[123];
         setCheck((CheckedTextView) findViewById(R.id.ctv_checkedtext2), seatcourtesy != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDynamicSetting() {
-        int dynamicsetting = DataCanbus.DATA[58];
+        int dynamicsetting = DataCanbus.DATA[128];
         setCheck((CheckedTextView) findViewById(R.id.ctv_checkedtext3), dynamicsetting != 0);
     }
 }

@@ -10,44 +10,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLBasicInfoAct extends Activity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLBasicInfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 33:
+                case 130:
                     YLBasicInfoAct.this.mUpdaterCurrentSpeech();
                     break;
-                case 35:
+                case 132:
                     YLBasicInfoAct.this.mUpdaterBatteryVol();
                     break;
-                case 36:
+                case 133:
                     YLBasicInfoAct.this.updaterOutTemp();
                     break;
-                case 37:
+                case 134:
                     YLBasicInfoAct.this.mUpdaterDrivingMileage();
                     break;
-                case 38:
+                case 135:
                     YLBasicInfoAct.this.mUpdaterEngineSpeed();
                     break;
-                case 39:
+                case 136:
                     YLBasicInfoAct.this.mUpdaterTrip();
                     break;
-                case 40:
+                case 137:
                     YLBasicInfoAct.this.mUpdaterTrunk();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_basic_info);
+        //setContentView(R.layout.layout_xp_yl_basic_info);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
@@ -55,7 +54,7 @@ public class YLBasicInfoAct extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -66,28 +65,28 @@ public class YLBasicInfoAct extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEngineSpeed() {
-        int value = DataCanbus.DATA[38];
+        int value = DataCanbus.DATA[135];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_engine_speed_wc)).setText(String.valueOf(value) + " RPM");
         } else {
@@ -95,9 +94,18 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrentSpeech() {
-        int value = DataCanbus.DATA[33];
+        int value = DataCanbus.DATA[130];
+        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            if (value > 0) {
+                ((TextView) findViewById(R.id.xp_yl_tv_current_speed)).setText(String.valueOf((value * 10) / 16) + " mph");
+                return;
+            } else {
+                ((TextView) findViewById(R.id.xp_yl_tv_current_speed)).setText("--.-- mph");
+                return;
+            }
+        }
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_current_speed)).setText(String.valueOf(value) + " Km/h");
         } else {
@@ -105,9 +113,18 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[37];
+        int value = DataCanbus.DATA[134];
+        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            if (value > 0) {
+                ((TextView) findViewById(R.id.xp_yl_tv_mileage_wc)).setText(String.valueOf((value * 10) / 16) + " MILES");
+                return;
+            } else {
+                ((TextView) findViewById(R.id.xp_yl_tv_mileage_wc)).setText("--.-- MILES");
+                return;
+            }
+        }
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_mileage_wc)).setText(String.valueOf(value) + " KM");
         } else {
@@ -115,9 +132,9 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBatteryVol() {
-        int value = DataCanbus.DATA[35];
+        int value = DataCanbus.DATA[132];
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_battery_voltage_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " V");
         } else {
@@ -125,9 +142,19 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrip() {
-        int value = DataCanbus.DATA[39];
+        int value = DataCanbus.DATA[136];
+        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            int value2 = 235 / value;
+            if (value2 > 0) {
+                ((TextView) findViewById(R.id.xp_yl_tv_trip_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value2 / 10), Integer.valueOf(value2 % 10))) + " MPG");
+                return;
+            } else {
+                ((TextView) findViewById(R.id.xp_yl_tv_trip_wc)).setText("--.-- MPG");
+                return;
+            }
+        }
         if (value > 0) {
             ((TextView) findViewById(R.id.xp_yl_tv_trip_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + "L/100KM");
         } else {
@@ -135,9 +162,9 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOutTemp() {
-        int value = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[133];
         int flag = 0;
         if ((value & 128) != 0) {
             value = 256 - value;
@@ -159,13 +186,13 @@ public class YLBasicInfoAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrunk() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[137];
         ((TextView) findViewById(R.id.dasauto_tv_hand_brake)).setText(String.valueOf(value) + "%");
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

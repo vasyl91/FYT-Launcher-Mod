@@ -11,44 +11,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static XBS08YageCar6Cd mInit;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.yage8.XBS08YageCar6Cd.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 19:
-                case 20:
+                case 99:
+                case 100:
                     XBS08YageCar6Cd.this.updatecdTime();
                     break;
-                case 21:
+                case 101:
                     XBS08YageCar6Cd.this.updatecdTrack();
                     break;
-                case 22:
+                case 102:
                     XBS08YageCar6Cd.this.mUpdateCdRpt();
                     break;
-                case 26:
+                case 106:
                     XBS08YageCar6Cd.this.mUpdateCd1State();
                     break;
-                case 27:
+                case 107:
                     XBS08YageCar6Cd.this.mUpdateCd2State();
                     break;
-                case 28:
+                case 108:
                     XBS08YageCar6Cd.this.mUpdateCd3State();
                     break;
-                case 29:
+                case 109:
                     XBS08YageCar6Cd.this.mUpdateCd4State();
                     break;
-                case 30:
+                case 110:
                     XBS08YageCar6Cd.this.mUpdateCd5State();
                     break;
-                case 31:
+                case 111:
                     XBS08YageCar6Cd.this.mUpdateCd6State();
                     break;
-                case 33:
+                case 113:
                     XBS08YageCar6Cd.this.updateDiscNum(value);
                     break;
             }
@@ -56,42 +55,42 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
     };
     int cmdId = -1;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xbs_yage8_carcd);
+        //setContentView(R.layout.layout_xbs_yage8_carcd);
         init();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd1State() {
-        int value = DataCanbus.DATA[26];
+        int value = DataCanbus.DATA[106];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd1)).setText(R.string.jeep_playstate1);
@@ -111,9 +110,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd2State() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[107];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd2)).setText(R.string.jeep_playstate1);
@@ -133,9 +132,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd3State() {
-        int value = DataCanbus.DATA[28];
+        int value = DataCanbus.DATA[108];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd3)).setText(R.string.jeep_playstate1);
@@ -155,9 +154,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd4State() {
-        int value = DataCanbus.DATA[29];
+        int value = DataCanbus.DATA[109];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd4)).setText(R.string.jeep_playstate1);
@@ -177,9 +176,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd5State() {
-        int value = DataCanbus.DATA[30];
+        int value = DataCanbus.DATA[110];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd5)).setText(R.string.jeep_playstate1);
@@ -199,9 +198,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd6State() {
-        int value = DataCanbus.DATA[31];
+        int value = DataCanbus.DATA[111];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd6)).setText(R.string.jeep_playstate1);
@@ -221,9 +220,9 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
-        int On = DataCanbus.DATA[22];
+        int On = DataCanbus.DATA[102];
         findViewById(R.id.lexus_cd_rpt).setBackgroundResource(R.drawable.ic_lexus_cd_rpt_n);
         findViewById(R.id.lexus_cd_random).setBackgroundResource(R.drawable.ic_lexus_cd_random_n);
         findViewById(R.id.lexus_cd_scan).setBackgroundResource(R.drawable.ic_lexus_cd_scan_n);
@@ -248,13 +247,13 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
     }
 
     public void updatecdTrack() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[101];
         ((TextView) findViewById(R.id.dj_lexus_cd_track)).setText(String.format("TRACK: %d", Integer.valueOf(value)));
     }
 
     public void updatecdTime() {
-        int value = DataCanbus.DATA[20];
-        int value1 = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[100];
+        int value1 = DataCanbus.DATA[99];
         ((TextView) findViewById(R.id.dj_lexus_cd_time)).setText(String.format("%d%d:%d%d", Integer.valueOf(value1 / 10), Integer.valueOf(value1 % 10), Integer.valueOf(value / 10), Integer.valueOf(value % 10)));
     }
 
@@ -292,7 +291,7 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         ((Button) findViewById(R.id.cd_next)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -301,7 +300,7 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
@@ -313,14 +312,14 @@ public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
-            case R.id.cd_prev /* 2131427915 */:
+            case R.id.cd_prev /* 2131427918 */:
                 this.cmdId = 3;
                 break;
-            case R.id.cd_next /* 2131427920 */:
+            case R.id.cd_next /* 2131427923 */:
                 this.cmdId = 4;
                 break;
         }

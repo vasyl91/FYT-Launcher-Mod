@@ -8,26 +8,23 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityQiYaKaiShenSet extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.qiya.kx7.ActivityQiYaKaiShenSet.1
-        int value;
-
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 28:
+                case 104:
                     ActivityQiYaKaiShenSet.this.updateBlindSpots(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_393_qiya_kaishen_set);
+        //setContentView(R.layout.layout_393_qiya_kaishen_set);
         setListener();
     }
 
@@ -35,31 +32,31 @@ public class ActivityQiYaKaiShenSet extends Activity implements View.OnClickList
         ((CheckedTextView) findViewById(R.id.rzc_qiya_blind_spots)).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.rzc_qiya_blind_spots /* 2131429704 */:
-                int value = DataCanbus.DATA[28] == 1 ? 2 : 1;
+            case R.id.rzc_qiya_blind_spots /* 2131429655 */:
+                int value = DataCanbus.DATA[104] == 1 ? 2 : 1;
                 setCmd(1, value);
                 break;
         }

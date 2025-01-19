@@ -15,7 +15,6 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_0452_PA_Ford_Language extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;
@@ -24,19 +23,19 @@ public class Activity_0452_PA_Ford_Language extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_index_language);
+        //setContentView(R.layout.layout_xp_index_language);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -48,8 +47,8 @@ public class Activity_0452_PA_Ford_Language extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_0452_PA_Ford_Language.1
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Activity_0452_PA_Ford_Language.this.mLauStyle == null) {
                     Activity_0452_PA_Ford_Language.this.initLauStyle();
@@ -62,7 +61,7 @@ public class Activity_0452_PA_Ford_Language extends BaseActivity {
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -75,8 +74,8 @@ public class Activity_0452_PA_Ford_Language extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_0452_PA_Ford_Language.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Activity_0452_PA_Ford_Language.this.language_set = position;
                 if (Activity_0452_PA_Ford_Language.this.language_set >= 0 && Activity_0452_PA_Ford_Language.this.language_set <= Activity_0452_PA_Ford_Language.this.mLauStylelist.size() && Activity_0452_PA_Ford_Language.this.send_lang != null) {

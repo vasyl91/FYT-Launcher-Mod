@@ -5,62 +5,62 @@ import android.view.View;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODBMWCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.ODBMWCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 24:
+                case 98:
                     ((TextView) ODBMWCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value) + "km");
                     break;
-                case 25:
+                case 99:
                     ((TextView) ODBMWCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "km/h");
                     break;
-                case 26:
-                    ((TextView) ODBMWCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10) + "L/100km");
+                case 100:
+                    ((TextView) ODBMWCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10) + CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_od_bmw_carinfo);
+        //setContentView(R.layout.layout_0439_od_bmw_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
     }
 }

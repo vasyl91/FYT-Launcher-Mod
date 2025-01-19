@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIPAJeepBrakeMode {
     private static UIPAJeepBrakeMode mInstance;
     Context context;
@@ -38,17 +38,17 @@ public class UIPAJeepBrakeMode {
     private void initTip(int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0374_pa_jeep_brakemode_window, (ViewGroup) null, false);
-            ((Button) this.sWarnContent.findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.canbus.warn.UIPAJeepBrakeMode.1
-                @Override // android.view.View.OnClickListener
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0374_pa_jeep_brakemode_window, null, false);
+            this.sWarnContent.findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     UIPAJeepBrakeMode.this.Hideindow();
                 }
             });
-            ((Button) this.sWarnContent.findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.canbus.warn.UIPAJeepBrakeMode.2
-                @Override // android.view.View.OnClickListener
+            this.sWarnContent.findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
-                    if (DataCanbus.DATA[358] == 7) {
+                    if (DataCanbus.DATA[370] == 7) {
                         DataCanbus.PROXY.cmd(0, new int[]{190, 1}, null, null);
                     }
                     UIPAJeepBrakeMode.this.Hideindow();

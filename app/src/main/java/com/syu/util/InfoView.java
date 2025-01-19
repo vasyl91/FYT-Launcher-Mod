@@ -4,14 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.View;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoView extends View {
     private boolean mAddToWindow;
-    private ArrayList<Chunk> mInfos;
-    private Paint mPaint;
+    private final ArrayList<Chunk> mInfos;
+    private final Paint mPaint;
 
     public InfoView(Context context) {
         super(context);
@@ -25,7 +25,7 @@ public class InfoView extends View {
         HandlerUI.getInstance().post(new Chunk(this, index, text, textAlign, textSize, textColor, bgHeight, bgColor, null));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void addSelfToWindow() {
         if (!this.mAddToWindow) {
             ObjApp.getWindowManager().addView(this, ToolkitApp.buildOverlayLayoutParams(-1, -1));
@@ -33,7 +33,7 @@ public class InfoView extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         int width = getWidth();
         int top = 0;
@@ -67,12 +67,12 @@ public class InfoView extends View {
     }
 
     private class Chunk implements Runnable {
-        private int mBgColor;
-        private int mBgHeight;
+        private final int mBgColor;
+        private final int mBgHeight;
         private int mIndex;
-        private String mText;
+        private final String mText;
         Paint.Align mTextAlign;
-        private int mTextColor;
+        private final int mTextColor;
         private int mTextSize;
 
         /* synthetic */ Chunk(InfoView infoView, int i, String str, Paint.Align align, int i2, int i3, int i4, int i5, Chunk chunk) {
@@ -93,7 +93,7 @@ public class InfoView extends View {
             return text.equals(this.mText);
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             if (this.mText != null && !this.mText.isEmpty()) {
                 if (this.mIndex < 0) {

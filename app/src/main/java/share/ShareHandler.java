@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66.apk\dexFile\classes.dex */
 public class ShareHandler {
     public static final Uri URI = Uri.parse("content://com.syu.ms.provider");
 

@@ -12,7 +12,6 @@ import com.syu.canbus.warn.DataPack;
 import com.syu.util.HandlerUI;
 import com.syu.util.TimeLocker;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIRuiTengWarn {
     public static ImageView mImageView;
     public static TextView mTextView;
@@ -20,8 +19,8 @@ public class UIRuiTengWarn {
     private static PopupWindow sPopupWindow;
     public static final TimeLocker LOCK_SHOW_UI = new TimeLocker();
     private static int sWarnUI = -1;
-    private static final Runnable SHOW = new Runnable() { // from class: com.syu.carinfo.rzc.mingjueruiteng.UIRuiTengWarn.1
-        @Override // java.lang.Runnable
+    private static final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             PopupWindow window = UIRuiTengWarn.getWindow();
             LauncherApplication.addRootView(window);
@@ -32,8 +31,8 @@ public class UIRuiTengWarn {
             }
         }
     };
-    private static final Runnable WINDOW_HIDE = new Runnable() { // from class: com.syu.carinfo.rzc.mingjueruiteng.UIRuiTengWarn.2
-        @Override // java.lang.Runnable
+    private static final Runnable WINDOW_HIDE = new Runnable() { 
+        @Override
         public void run() {
             PopupWindow window = UIRuiTengWarn.getWindow();
             if (window.isShowing()) {
@@ -52,8 +51,8 @@ public class UIRuiTengWarn {
             window.setHeight(-2);
             window.setAnimationStyle(R.style.anim_window_pack);
             sPopupWindow = window;
-            window.setOnDismissListener(new PopupWindow.OnDismissListener() { // from class: com.syu.carinfo.rzc.mingjueruiteng.UIRuiTengWarn.3
-                @Override // android.widget.PopupWindow.OnDismissListener
+            window.setOnDismissListener(new PopupWindow.OnDismissListener() { 
+                @Override
                 public void onDismiss() {
                     LauncherApplication.removeRootView(UIRuiTengWarn.sPopupWindow);
                 }

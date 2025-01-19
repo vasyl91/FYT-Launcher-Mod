@@ -10,56 +10,55 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity17CRVAirControl extends Activity implements View.OnTouchListener {
     public static Activity17CRVAirControl mInstance;
     public static boolean mIsFront = false;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.honda.Activity17CRVAirControl.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 26:
-                    Activity17CRVAirControl.this.updateAirAuto(value);
-                    break;
-                case 27:
-                    Activity17CRVAirControl.this.updateAirCycle(value);
-                    break;
-                case 28:
-                    Activity17CRVAirControl.this.updateAirFront(value);
-                    break;
-                case 29:
-                    Activity17CRVAirControl.this.updateAirRear(value);
-                    break;
-                case 30:
-                    Activity17CRVAirControl.this.updateAirAC(value);
-                    break;
-                case 31:
-                    Activity17CRVAirControl.this.updateAirTempLeft(value);
-                    break;
-                case 35:
-                    Activity17CRVAirControl.this.updateAirWind(value);
-                    break;
-                case 37:
-                    Activity17CRVAirControl.this.updateAirTempRight(value);
-                    break;
-                case 38:
+                case 10:
                     Activity17CRVAirControl.this.updateAirOff(value);
                     break;
-                case 39:
+                case 11:
+                    Activity17CRVAirControl.this.updateAirAC(value);
+                    break;
+                case 12:
+                    Activity17CRVAirControl.this.updateAirCycle(value);
+                    break;
+                case 13:
+                    Activity17CRVAirControl.this.updateAirAuto(value);
+                    break;
+                case 16:
+                    Activity17CRVAirControl.this.updateAirRear(value);
+                    break;
+                case 21:
+                    Activity17CRVAirControl.this.updateAirWind(value);
+                    break;
+                case 27:
+                    Activity17CRVAirControl.this.updateAirTempLeft(value);
+                    break;
+                case 28:
+                    Activity17CRVAirControl.this.updateAirTempRight(value);
+                    break;
+                case 62:
                     Activity17CRVAirControl.this.updateAirSync(value);
                     break;
-                case 73:
+                case 65:
+                    Activity17CRVAirControl.this.updateAirFront(value);
+                    break;
+                case 77:
                     Activity17CRVAirControl.this.updateAirBlowMode(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_321_17crv_air_control);
+        //setContentView(R.layout.layout_321_17crv_air_control);
         mInstance = this;
         setListener();
     }
@@ -88,7 +87,7 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
     /* JADX WARN: Removed duplicated region for block: B:10:0x007e  */
     /* JADX WARN: Removed duplicated region for block: B:11:0x0080  */
     /* JADX WARN: Removed duplicated region for block: B:6:0x001a A[ADDED_TO_REGION] */
-    @Override // android.view.View.OnTouchListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -96,8 +95,8 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
     public boolean onTouch(android.view.View r10, android.view.MotionEvent r11) {
         /*
             r9 = this;
-            r8 = 35
-            r7 = 25
+            r8 = 25
+            r7 = 21
             r6 = -1
             r3 = 1
             r4 = 0
@@ -120,9 +119,9 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
                 case 2131427444: goto L33;
                 case 2131427449: goto L26;
                 case 2131427451: goto L23;
-                case 2131427461: goto L39;
-                case 2131427462: goto L3c;
-                case 2131427534: goto L2b;
+                case 2131427502: goto L39;
+                case 2131427560: goto L2b;
+                case 2131427632: goto L3c;
                 default: goto L11;
             }
         L11:
@@ -181,7 +180,7 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
             goto L11
         L41:
             int[] r5 = com.syu.module.canbus.DataCanbus.DATA
-            r6 = 30
+            r6 = 11
             r5 = r5[r6]
             if (r5 != 0) goto L55
             r2 = r3
@@ -196,18 +195,18 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
             goto L4a
         L57:
             int[] r5 = com.syu.module.canbus.DataCanbus.DATA
-            r2 = r5[r8]
+            r2 = r5[r7]
             int r2 = r2 + (-1)
             if (r2 >= 0) goto L60
             r2 = 0
         L60:
             int r5 = r11.getAction()
             if (r5 != r3) goto L1c
-            r9.setAirControl(r7, r2)
+            r9.setAirControl(r8, r2)
             goto L1c
         L6a:
             int[] r5 = com.syu.module.canbus.DataCanbus.DATA
-            r2 = r5[r8]
+            r2 = r5[r7]
             int r2 = r2 + 1
             r5 = 7
             if (r2 <= r5) goto L74
@@ -215,7 +214,7 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
         L74:
             int r5 = r11.getAction()
             if (r5 != r3) goto L1c
-            r9.setAirControl(r7, r2)
+            r9.setAirControl(r8, r2)
             goto L1c
         L7e:
             r1 = 1
@@ -234,7 +233,7 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
         DataCanbus.PROXY.cmd(107, cmdId, touchState);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -242,7 +241,7 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -251,31 +250,31 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
     }
 
     protected void updateAirRear(int value) {
@@ -301,15 +300,15 @@ public class Activity17CRVAirControl extends Activity implements View.OnTouchLis
         ((Button) findViewById(R.id.air_xts_mode_footwin)).setBackgroundResource(R.drawable.ic_xts_mode_footwin_n);
         ((Button) findViewById(R.id.air_xts_mode_footbody)).setBackgroundResource(R.drawable.ic_xts_mode_footbody_n);
         ((Button) findViewById(R.id.air_xts_mode_foot)).setBackgroundResource(R.drawable.ic_xts_mode_foot_n);
-        if (DataCanbus.DATA[73] == 4) {
+        if (DataCanbus.DATA[77] == 4) {
             ((Button) findViewById(R.id.air_xts_mode_footwin)).setBackgroundResource(R.drawable.ic_xts_mode_footwin_p);
             return;
         }
-        if (DataCanbus.DATA[73] == 5) {
+        if (DataCanbus.DATA[77] == 5) {
             ((Button) findViewById(R.id.air_xts_mode_footbody)).setBackgroundResource(R.drawable.ic_xts_mode_footbody_p);
-        } else if (DataCanbus.DATA[73] == 3) {
+        } else if (DataCanbus.DATA[77] == 3) {
             ((Button) findViewById(R.id.air_xts_mode_foot)).setBackgroundResource(R.drawable.ic_xts_mode_foot_p);
-        } else if (DataCanbus.DATA[73] == 6) {
+        } else if (DataCanbus.DATA[77] == 6) {
             ((Button) findViewById(R.id.air_xts_mode_body)).setBackgroundResource(R.drawable.ic_xts_mode_body_p);
         }
     }

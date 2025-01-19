@@ -12,53 +12,52 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GuandaoSetting2Act extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 33:
+                case 101:
                     GuandaoSetting2Act.this.mD0B04();
                     break;
-                case 50:
+                case 118:
                     GuandaoSetting2Act.this.mD0B02();
                     break;
-                case 51:
+                case 119:
                     GuandaoSetting2Act.this.mD0B00();
                     break;
-                case 52:
+                case 120:
                     GuandaoSetting2Act.this.mD5B06();
                     break;
-                case 53:
+                case 121:
                     GuandaoSetting2Act.this.mD5B05();
                     break;
-                case 54:
+                case 122:
                     GuandaoSetting2Act.this.mD5B04();
                     break;
-                case 55:
+                case 123:
                     GuandaoSetting2Act.this.mD5B03();
                     break;
-                case 56:
+                case 124:
                     GuandaoSetting2Act.this.mD5B02();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_425_guandao_settingse);
+        //setContentView(R.layout.layout_425_guandao_settingse);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.wc_321_civic_speed)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_321_civic_speed)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[55] & 255;
+                int value = DataCanbus.DATA[123] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 23;
@@ -66,10 +65,10 @@ public class GuandaoSetting2Act extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_321_civic_message)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_321_civic_message)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[56] & 255;
+                int value = DataCanbus.DATA[124] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 24;
@@ -77,10 +76,10 @@ public class GuandaoSetting2Act extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_321_save)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_321_save)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[54] & 255;
+                int value = DataCanbus.DATA[122] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 22;
@@ -88,10 +87,10 @@ public class GuandaoSetting2Act extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_321_civic_back)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_321_civic_back)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[53] & 255;
+                int value = DataCanbus.DATA[121] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 21;
@@ -99,11 +98,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_civic_warnvol_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_civic_warnvol_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[52] & 255;
+                int value2 = DataCanbus.DATA[120] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -112,11 +111,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{20, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_civic_warnvol_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_civic_warnvol_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[52] & 255;
+                int value2 = DataCanbus.DATA[120] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -125,11 +124,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{20, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_b_switch_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_b_switch_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[51] & 255;
+                int value2 = DataCanbus.DATA[119] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -138,11 +137,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{3, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_b_switch_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_b_switch_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[51] & 255;
+                int value2 = DataCanbus.DATA[119] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -151,11 +150,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{3, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_a_switch_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_a_switch_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[50] & 255;
+                int value2 = DataCanbus.DATA[118] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -164,11 +163,11 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{2, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_a_switch_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_a_switch_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[50] & 255;
+                int value2 = DataCanbus.DATA[118] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -177,10 +176,10 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{2, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_temp_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_temp_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[33] - 1;
+                int value = DataCanbus.DATA[101] - 1;
                 if (value < 0) {
                     value = 10;
                 } else if (value > 10) {
@@ -189,10 +188,10 @@ public class GuandaoSetting2Act extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{0, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_321_temp_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSetting2Act.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_321_temp_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[33] + 1;
+                int value = DataCanbus.DATA[101] + 1;
                 if (value < 0) {
                     value = 10;
                 } else if (value > 10) {
@@ -203,45 +202,45 @@ public class GuandaoSetting2Act extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD5B03() {
-        int temp = DataCanbus.DATA[55] & 65535;
+        int temp = DataCanbus.DATA[123] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.wc_321_civic_speed)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -251,9 +250,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD5B02() {
-        int temp = DataCanbus.DATA[56] & 65535;
+        int temp = DataCanbus.DATA[124] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.wc_321_civic_message)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -263,9 +262,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD5B04() {
-        int temp = DataCanbus.DATA[54] & 65535;
+        int temp = DataCanbus.DATA[122] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.wc_321_save)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -275,9 +274,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD5B05() {
-        int temp = DataCanbus.DATA[53] & 65535;
+        int temp = DataCanbus.DATA[121] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.wc_321_civic_back)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -287,9 +286,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD5B06() {
-        int temp = DataCanbus.DATA[52] & 65535;
+        int temp = DataCanbus.DATA[120] & 65535;
         int switchOn = temp & 255;
         if (((TextView) findViewById(R.id.wc_321_civic_warnvol_set_show)) != null) {
             if (switchOn == 0) {
@@ -306,9 +305,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD0B00() {
-        int temp = DataCanbus.DATA[51] & 65535;
+        int temp = DataCanbus.DATA[119] & 65535;
         int switchOn = temp & 255;
         if (((TextView) findViewById(R.id.wc_321_b_switch_set_show)) != null) {
             if (switchOn == 0) {
@@ -325,9 +324,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD0B02() {
-        int temp = DataCanbus.DATA[50] & 65535;
+        int temp = DataCanbus.DATA[118] & 65535;
         int switchOn = temp & 255;
         if (((TextView) findViewById(R.id.wc_321_a_switch_set_show)) != null) {
             if (switchOn == 0) {
@@ -344,9 +343,9 @@ public class GuandaoSetting2Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mD0B04() {
-        int temp = DataCanbus.DATA[33];
+        int temp = DataCanbus.DATA[101];
         int switchOn = temp & 255;
         if (((TextView) findViewById(R.id.wc_321_temp_set_show)) != null && switchOn >= 0 && switchOn < 11) {
             ((TextView) findViewById(R.id.wc_321_temp_set_show)).setText(AccordConfig.mStrOutSideTemp[switchOn]);

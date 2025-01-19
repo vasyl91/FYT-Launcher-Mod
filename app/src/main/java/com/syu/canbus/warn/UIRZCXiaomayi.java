@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIRZCXiaomayi {
     private static UIRZCXiaomayi mInstance;
     Context context;
@@ -36,8 +36,8 @@ public class UIRZCXiaomayi {
     private void initTip(int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0362_car_mode, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0362_car_mode, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
         }
         switch (value) {
             case 1:

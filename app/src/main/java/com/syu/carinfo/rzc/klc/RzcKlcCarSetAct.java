@@ -19,23 +19,22 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
     public ListView mLauStylelv;
     private View mPopShowView;
     int language_set = 255;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcCarSetAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_car_set);
+        //setContentView(R.layout.layout_rzc_klc_car_set);
         init();
         setUI();
     }
@@ -60,9 +59,19 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_15));
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_17));
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_22));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_16));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_18));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_19));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_33));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_2));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_30));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_34));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_6));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_40));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_32));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -76,8 +85,8 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.klc.RzcKlcCarSetAct.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 RzcKlcCarSetAct.this.language_set = position;
                 YLFunc.C_CAR_LANGUAGE_SETUP(position);
@@ -90,8 +99,8 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
         findViewById(R.id.ctv_checkedtext1).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext2).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext3).setOnClickListener(this);
-        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.klc.RzcKlcCarSetAct.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcKlcCarSetAct.this.mLauStyle == null) {
                     RzcKlcCarSetAct.this.initLauStyle();
@@ -115,22 +124,22 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) RzcKlcLockSetACt.class);
                     startActivity(intent);
@@ -139,7 +148,7 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) RzcKlcRemoteAct.class);
                     startActivity(intent2);
@@ -148,7 +157,7 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) RzcKlcLightAct.class);
                     startActivity(intent3);
@@ -161,10 +170,10 @@ public class RzcKlcCarSetAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
     }
 }

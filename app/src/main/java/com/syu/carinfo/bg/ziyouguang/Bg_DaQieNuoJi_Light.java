@@ -5,61 +5,61 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Bg_DaQieNuoJi_Light extends BaseActivity {
-    int[] ids = {72, 73, 74, 75, 76};
+    int[] ids = {142, 143, 144, 145, 146};
     int val = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_DaQieNuoJi_Light.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Bg_DaQieNuoJi_Light.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 72:
+                case 142:
                     Bg_DaQieNuoJi_Light.this.u6(Bg_DaQieNuoJi_Light.this.val);
                     break;
-                case 73:
+                case 143:
                     Bg_DaQieNuoJi_Light.this.u4(Bg_DaQieNuoJi_Light.this.val);
                     break;
-                case 74:
+                case 144:
                     Bg_DaQieNuoJi_Light.this.u3(Bg_DaQieNuoJi_Light.this.val);
                     break;
-                case 75:
+                case 145:
                     Bg_DaQieNuoJi_Light.this.u2(Bg_DaQieNuoJi_Light.this.val);
                     break;
-                case 76:
+                case 146:
                     Bg_DaQieNuoJi_Light.this.u1(Bg_DaQieNuoJi_Light.this.val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_light);
+        //setContentView(R.layout.layout_jeep_light);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         View v = findViewById(R.id.layout_view6);
         setGone(v, true);
@@ -73,15 +73,15 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
         setGone(v5, true);
         View v6 = findViewById(R.id.layout_view12);
         setGone(v6, true);
-        setCmdClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), 19, 74);
-        setCmdClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), 20, 75);
-        setCmdClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), 21, 76);
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_DaQieNuoJi_Light.2
-            @Override // android.view.View.OnClickListener
+        setCmdClick(findViewById(R.id.ctv_checkedtext3), 19, 144);
+        setCmdClick(findViewById(R.id.ctv_checkedtext1), 20, 145);
+        setCmdClick(findViewById(R.id.ctv_checkedtext2), 21, 146);
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v7) {
                 switch (v7.getId()) {
-                    case R.id.btn_minus1 /* 2131427480 */:
-                        int val = DataCanbus.DATA[72] - 1;
+                    case R.id.btn_minus1 /* 2131427455 */:
+                        int val = DataCanbus.DATA[142] - 1;
                         if (val < 0) {
                             val = 3;
                         }
@@ -102,9 +102,9 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
                         }
                         Bg_DaQieNuoJi_Light.this.setCmd(17, vals);
                         break;
-                    case R.id.btn_plus1 /* 2131427482 */:
+                    case R.id.btn_plus1 /* 2131427457 */:
                         int vals2 = 0;
-                        switch ((DataCanbus.DATA[72] + 1) % 4) {
+                        switch ((DataCanbus.DATA[142] + 1) % 4) {
                             case 0:
                                 vals2 = 0;
                                 break;
@@ -120,8 +120,8 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
                         }
                         Bg_DaQieNuoJi_Light.this.setCmd(17, vals2);
                         break;
-                    case R.id.btn_minus2 /* 2131427484 */:
-                        int val2 = DataCanbus.DATA[73] - 1;
+                    case R.id.btn_minus2 /* 2131427458 */:
+                        int val2 = DataCanbus.DATA[143] - 1;
                         if (val2 < 0) {
                             val2 = 3;
                         }
@@ -142,9 +142,9 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
                         }
                         Bg_DaQieNuoJi_Light.this.setCmd(18, vals3);
                         break;
-                    case R.id.btn_plus2 /* 2131427486 */:
+                    case R.id.btn_plus2 /* 2131427460 */:
                         int vals4 = 0;
-                        switch ((DataCanbus.DATA[73] + 1) % 4) {
+                        switch ((DataCanbus.DATA[143] + 1) % 4) {
                             case 0:
                                 vals4 = 0;
                                 break;
@@ -163,16 +163,16 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
                 }
             }
         };
-        setClick((Button) findViewById(R.id.btn_minus1));
-        setClick((Button) findViewById(R.id.btn_plus1));
-        setClick((Button) findViewById(R.id.btn_minus2));
-        setClick((Button) findViewById(R.id.btn_plus2));
+        setClick(findViewById(R.id.btn_minus1));
+        setClick(findViewById(R.id.btn_plus1));
+        setClick(findViewById(R.id.btn_minus2));
+        setClick(findViewById(R.id.btn_plus2));
     }
 
     private void setCmdClick(View v, final int cmd, final int id) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_DaQieNuoJi_Light.3
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     int val = DataCanbus.DATA[id];
                     Bg_DaQieNuoJi_Light.this.setCmd(cmd, val == 0 ? 2 : 1);
@@ -181,7 +181,7 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setCmd(int cmd, int val) {
         DataCanbus.PROXY.cmd(1, new int[]{cmd, val}, null, null);
     }
@@ -198,21 +198,21 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void u6(int val) {
-        TextView v = (TextView) findViewById(R.id.tv_text1);
+        TextView v = findViewById(R.id.tv_text1);
         if (v != null) {
             String str = "0s";
             if (val == 1) {
@@ -226,9 +226,9 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void u4(int val) {
-        TextView v = (TextView) findViewById(R.id.tv_text2);
+        TextView v = findViewById(R.id.tv_text2);
         if (v != null) {
             String str = "0s";
             if (val == 1) {
@@ -242,18 +242,18 @@ public class Bg_DaQieNuoJi_Light extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void u3(int val) {
-        setChecked((CheckedTextView) findViewById(R.id.ctv_checkedtext3), val != 0);
+        setChecked(findViewById(R.id.ctv_checkedtext3), val != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void u2(int val) {
-        setChecked((CheckedTextView) findViewById(R.id.ctv_checkedtext1), val != 0);
+        setChecked(findViewById(R.id.ctv_checkedtext1), val != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void u1(int val) {
-        setChecked((CheckedTextView) findViewById(R.id.ctv_checkedtext2), val != 0);
+        setChecked(findViewById(R.id.ctv_checkedtext2), val != 0);
     }
 }

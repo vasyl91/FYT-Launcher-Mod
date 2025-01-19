@@ -3,6 +3,7 @@ package com.syu.carinfo.golf7;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
@@ -11,16 +12,28 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7Electric_management_Acti_RZC extends BaseActivity implements View.OnClickListener {
     int value_select = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7Electric_management_Acti_RZC.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             Golf7Electric_management_Acti_RZC.this.mUpdaterCurStation();
             switch (updateCode) {
-                case 360:
+                case 349:
+                    String strid = "5A";
+                    if (((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text8)) != null) {
+                        if (value == 1) {
+                            strid = "10A";
+                        } else if (value == 2) {
+                            strid = "13A";
+                        } else if (value == 3) {
+                            strid = "MAX";
+                        }
+                        ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text8)).setText(strid);
+                        break;
+                    }
+                case 352:
                     if (((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text2)) != null) {
                         if (DataCanbus.DATA[1000] == 655377) {
                             if (value == 254) {
@@ -35,19 +48,19 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                                 break;
                             }
                         } else if (value < 60) {
-                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text2)).setText("LO");
+                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text7)).setText("LO");
                             break;
                         } else if (value > 195 || value == 255) {
-                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text2)).setText("HI");
+                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text7)).setText("HI");
                             break;
                         } else {
                             int value3 = value + 100;
-                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value3 / 10) + "." + (value3 % 10) + "℃");
+                            ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value3 / 10) + "." + (value3 % 10) + "℃");
                             break;
                         }
                     }
                     break;
-                case 404:
+                case 396:
                     if (DataCanbus.DATA[1000] == 655377) {
                         Golf7Electric_management_Acti_RZC.this.value_select |= value & 32;
                     } else {
@@ -55,7 +68,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     }
                     Golf7Electric_management_Acti_RZC.this.setCheck((CheckedTextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 405:
+                case 397:
                     if (DataCanbus.DATA[1000] == 655377) {
                         Golf7Electric_management_Acti_RZC.this.value_select |= value & 64;
                     } else {
@@ -63,7 +76,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     }
                     Golf7Electric_management_Acti_RZC.this.setCheck((CheckedTextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 406:
+                case 398:
                     if (DataCanbus.DATA[1000] == 655377) {
                         Golf7Electric_management_Acti_RZC.this.value_select |= value & 128;
                     } else {
@@ -71,39 +84,39 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     }
                     Golf7Electric_management_Acti_RZC.this.setCheck((CheckedTextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 410:
-                case 411:
-                    if (DataCanbus.DATA[410] == 1 && DataCanbus.DATA[411] == 0) {
+                case 402:
+                case 403:
+                    if (DataCanbus.DATA[402] == 1 && DataCanbus.DATA[403] == 0) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text4)).setText("充电");
                         break;
-                    } else if (DataCanbus.DATA[410] == 0 && DataCanbus.DATA[411] == 1) {
+                    } else if (DataCanbus.DATA[402] == 0 && DataCanbus.DATA[403] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text4)).setText("空调控制");
                         break;
-                    } else if (DataCanbus.DATA[410] == 1 && DataCanbus.DATA[411] == 1) {
+                    } else if (DataCanbus.DATA[402] == 1 && DataCanbus.DATA[403] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text4)).setText("充电和空调控制");
                         break;
                     }
-                case 429:
-                case 430:
-                    if (DataCanbus.DATA[429] == 1 && DataCanbus.DATA[430] == 0) {
+                case 421:
+                case 422:
+                    if (DataCanbus.DATA[421] == 1 && DataCanbus.DATA[422] == 0) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text5)).setText("充电");
                         break;
-                    } else if (DataCanbus.DATA[429] == 0 && DataCanbus.DATA[430] == 1) {
+                    } else if (DataCanbus.DATA[421] == 0 && DataCanbus.DATA[422] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text5)).setText("空调控制");
                         break;
-                    } else if (DataCanbus.DATA[429] == 1 && DataCanbus.DATA[430] == 1) {
+                    } else if (DataCanbus.DATA[421] == 1 && DataCanbus.DATA[422] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text5)).setText("充电和空调控制");
                         break;
                     }
-                case 448:
-                case 449:
-                    if (DataCanbus.DATA[448] == 1 && DataCanbus.DATA[449] == 0) {
+                case 440:
+                case 441:
+                    if (DataCanbus.DATA[440] == 1 && DataCanbus.DATA[441] == 0) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text6)).setText("充电");
                         break;
-                    } else if (DataCanbus.DATA[448] == 0 && DataCanbus.DATA[449] == 1) {
+                    } else if (DataCanbus.DATA[440] == 0 && DataCanbus.DATA[441] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text6)).setText("空调控制");
                         break;
-                    } else if (DataCanbus.DATA[448] == 1 && DataCanbus.DATA[449] == 1) {
+                    } else if (DataCanbus.DATA[440] == 1 && DataCanbus.DATA[441] == 1) {
                         ((TextView) Golf7Electric_management_Acti_RZC.this.findViewById(R.id.tv_text6)).setText("充电和空调控制");
                         break;
                     }
@@ -111,35 +124,94 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0160_rzc_mqb_electric_management);
+        //setContentView(R.layout.layout_0160_rzc_mqb_electric_management);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext6), this);
+        if (DataCanbus.DATA[1000] == 655377) {
+            findViewById(R.id.layout_view1).setVisibility(0);
+            findViewById(R.id.layout_view2).setVisibility(0);
+            findViewById(R.id.layout_view3).setVisibility(8);
+            findViewById(R.id.layout_view4).setVisibility(8);
+            return;
+        }
+        findViewById(R.id.layout_view1).setVisibility(8);
+        findViewById(R.id.layout_view2).setVisibility(8);
+        findViewById(R.id.layout_view3).setVisibility(0);
+        findViewById(R.id.layout_view4).setVisibility(0);
+        setSelfClick((Button) findViewById(R.id.btn_minus1), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int val = DataCanbus.DATA[352] & 255;
+                if (val > 60 && val <= 195 && val != 255) {
+                    val -= 5;
+                } else if (val > 195 || val == 255) {
+                    val = 195;
+                } else if (val <= 60) {
+                    val = 0;
+                }
+                DataCanbus.PROXY.cmd(160, new int[]{242, val}, null, null);
+            }
+        });
+        setSelfClick((Button) findViewById(R.id.btn_plus1), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int val = DataCanbus.DATA[352] & 255;
+                if (val >= 60 && val < 195 && val != 255) {
+                    val += 5;
+                } else if (val >= 195) {
+                    val = 255;
+                } else if (val < 60) {
+                    val = 60;
+                }
+                DataCanbus.PROXY.cmd(160, new int[]{242, val}, null, null);
+            }
+        });
+        setSelfClick((Button) findViewById(R.id.btn_minus2), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int val = (DataCanbus.DATA[349] & 255) - 1;
+                if (val < 0) {
+                    val = 3;
+                }
+                DataCanbus.PROXY.cmd(160, new int[]{241, val}, null, null);
+            }
+        });
+        setSelfClick((Button) findViewById(R.id.btn_plus2), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int val = (DataCanbus.DATA[349] & 255) + 1;
+                if (val > 3) {
+                    val = 0;
+                }
+                DataCanbus.PROXY.cmd(160, new int[]{241, val}, null, null);
+            }
+        });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[406];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value = DataCanbus.DATA[398];
                 if (DataCanbus.DATA[1000] == 655377) {
                     if (value == 1) {
                         this.value_select &= 127;
@@ -157,7 +229,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     setCarInfo(0, this.value_select);
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent = new Intent();
                     intent.setClass(this, Golf7Electric_management_d1_Acti_RZC.class);
@@ -167,8 +239,8 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value2 = DataCanbus.DATA[405];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value2 = DataCanbus.DATA[397];
                 if (DataCanbus.DATA[1000] == 655377) {
                     if (value2 == 1) {
                         this.value_select &= 191;
@@ -186,7 +258,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     setCarInfo(0, this.value_select);
                     break;
                 }
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 try {
                     Intent intent2 = new Intent();
                     intent2.setClass(this, Golf7Electric_management_d2_Acti_RZC.class);
@@ -196,8 +268,8 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value3 = DataCanbus.DATA[404];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value3 = DataCanbus.DATA[396];
                 if (DataCanbus.DATA[1000] == 655377) {
                     if (value3 == 1) {
                         this.value_select &= 223;
@@ -215,7 +287,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                     setCarInfo(0, this.value_select);
                     break;
                 }
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
                 try {
                     Intent intent3 = new Intent();
                     intent3.setClass(this, Golf7Electric_management_d3_Acti_RZC.class);
@@ -239,54 +311,56 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
         DataCanbus.PROXY.cmd(142, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[404].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[396].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[397].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[398].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[352].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[349].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[456].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[457].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[399].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[400].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[402].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[403].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[405].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[406].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[360].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[464].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[465].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[407].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[408].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[410].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[411].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[413].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[426].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[427].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[429].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[430].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[432].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[445].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[446].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[448].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[449].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[451].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[418].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[419].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[421].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[422].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[424].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[437].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[438].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[440].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[441].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[443].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[404].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[396].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[397].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[398].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[352].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[349].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[456].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[457].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[399].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[400].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[402].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[403].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[405].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[406].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[360].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[464].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[465].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[407].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[408].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[410].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[411].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[413].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[426].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[427].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[429].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[430].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[432].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[445].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[446].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[448].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[449].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[451].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[418].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[419].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[421].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[422].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[424].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[437].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[438].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[440].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[441].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[443].removeNotify(this.mNotifyCanbus);
     }
 
     int mGetSmallvalue(int value1, int value2, int value3) {
@@ -309,21 +383,21 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
         return t2;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurStation() {
-        boolean num1 = DataCanbus.DATA[406] == 1;
-        boolean num2 = DataCanbus.DATA[405] == 1;
-        boolean num3 = DataCanbus.DATA[404] == 1;
-        int cur_h = DataCanbus.DATA[464];
-        int cur_m = DataCanbus.DATA[465];
-        int num1_h = DataCanbus.DATA[407];
-        int num1_m = DataCanbus.DATA[408];
-        int num2_h = DataCanbus.DATA[426];
-        int num2_m = DataCanbus.DATA[427];
-        int num3_h = DataCanbus.DATA[445];
-        int num3_m = DataCanbus.DATA[446];
+        boolean num1 = DataCanbus.DATA[398] == 1;
+        boolean num2 = DataCanbus.DATA[397] == 1;
+        boolean num3 = DataCanbus.DATA[396] == 1;
+        int cur_h = DataCanbus.DATA[456];
+        int cur_m = DataCanbus.DATA[457];
+        int num1_h = DataCanbus.DATA[399];
+        int num1_m = DataCanbus.DATA[400];
+        int num2_h = DataCanbus.DATA[418];
+        int num2_m = DataCanbus.DATA[419];
+        int num3_h = DataCanbus.DATA[437];
+        int num3_m = DataCanbus.DATA[438];
         String num1_cur = "";
-        switch (DataCanbus.DATA[413]) {
+        switch (DataCanbus.DATA[405]) {
             case 0:
                 num1_cur = "5A";
                 break;
@@ -338,7 +412,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                 break;
         }
         String num2_cur = "";
-        switch (DataCanbus.DATA[432]) {
+        switch (DataCanbus.DATA[424]) {
             case 0:
                 num2_cur = "5A";
                 break;
@@ -353,7 +427,7 @@ public class Golf7Electric_management_Acti_RZC extends BaseActivity implements V
                 break;
         }
         String num3_cur = "";
-        switch (DataCanbus.DATA[451]) {
+        switch (DataCanbus.DATA[443]) {
             case 0:
                 num3_cur = "5A";
                 break;

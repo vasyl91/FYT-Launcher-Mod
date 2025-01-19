@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_RZC_BisuT5 extends AirBase {
     public Air_0452_RZC_BisuT5(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_rzc_bisu_t5/air.webp";
         this.mPathHighlight = "0452_rzc_bisu_t5/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -84,13 +84,13 @@ public class Air_0452_RZC_BisuT5 extends AirBase {
         if (temp == 0) {
             c.drawText("", 42.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(17.5d + (temp / 2.0f)).toString(), 42.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(17.5d + (temp / 2.0f)), 42.0f, 64.0f, this.mPaint);
         }
         int temp2 = this.DATA[20];
         if (temp2 == 0) {
             c.drawText("", 711.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(17.5d + (temp2 / 2.0f)).toString(), 711.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(17.5d + (temp2 / 2.0f)), 711.0f, 64.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

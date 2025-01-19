@@ -7,31 +7,30 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GolfTireAct_TuAng_Wc extends BaseActivity {
     int curVal;
     int defVal;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.GolfTireAct_TuAng_Wc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 116:
+                case 184:
                     GolfTireAct_TuAng_Wc.this.uTireFL(val);
                     break;
-                case 117:
+                case 185:
                     GolfTireAct_TuAng_Wc.this.uTireFR(val);
                     break;
-                case 118:
+                case 186:
                     GolfTireAct_TuAng_Wc.this.uTireRL(val);
                     break;
-                case 119:
+                case 187:
                     GolfTireAct_TuAng_Wc.this.uTireRR(val);
                     break;
-                case 201:
+                case 251:
                     GolfTireAct_TuAng_Wc.this.uTireDisplay(val);
                     break;
-                case 202:
+                case 252:
                     GolfTireAct_TuAng_Wc.this.uTireUnit(val);
                     break;
             }
@@ -44,30 +43,30 @@ public class GolfTireAct_TuAng_Wc extends BaseActivity {
     private int uRL = 0;
     String strTireUnit = "";
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf_tire_wc);
+        //setContentView(R.layout.layout_golf_tire_wc);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[184].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[186].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[251].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[252].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[184].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[186].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[251].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[252].removeNotify(this.notifyCanbus);
     }
 
     protected void uTireDisplay(int i) {
@@ -109,7 +108,7 @@ public class GolfTireAct_TuAng_Wc extends BaseActivity {
         return this.strTireUnit;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireFL(int val) {
         String str;
         this.uFL = val;
@@ -125,7 +124,7 @@ public class GolfTireAct_TuAng_Wc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireFR(int val) {
         String str;
         this.uFR = val;
@@ -141,7 +140,7 @@ public class GolfTireAct_TuAng_Wc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireRL(int val) {
         String str;
         this.uRL = val;
@@ -157,7 +156,7 @@ public class GolfTireAct_TuAng_Wc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireRR(int val) {
         String str;
         this.uRR = val;

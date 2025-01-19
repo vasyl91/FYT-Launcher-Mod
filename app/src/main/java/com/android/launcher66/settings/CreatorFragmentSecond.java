@@ -154,7 +154,7 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             editor.putInt("statsTopLeftX", 20);
             editor.putInt("statsTopLeftY", 20);         
         }
-        editor.commit();
+        editor.apply();
     }
 
     private void checkIfOverlappingMargins() {

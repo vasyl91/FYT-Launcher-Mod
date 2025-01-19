@@ -10,15 +10,14 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_Keleijia_Airset extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int body;
     int foot;
     int up;
     private int[] eventIds = {13, 12, 16, 11, 27, 19, 20, 18, 21, 28, 10, 37, 62, 36, 15};
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.leinuo.Act_Keleijia_Airset.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -59,10 +58,10 @@ public class Act_Keleijia_Airset extends Activity implements View.OnClickListene
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_keleiao_air);
+        //setContentView(R.layout.layout_keleiao_air);
         initUI();
     }
 
@@ -82,7 +81,7 @@ public class Act_Keleijia_Airset extends Activity implements View.OnClickListene
         ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int cmd = 0;
         switch (v.getId()) {
@@ -116,15 +115,15 @@ public class Act_Keleijia_Airset extends Activity implements View.OnClickListene
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 cmd = 32;
                 break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 cmd = 22;
                 break;
-            case R.id.air_cycle_outer /* 2131427557 */:
+            case R.id.air_cycle_outer /* 2131428106 */:
                 if (DataCanbus.DATA[12] == 1) {
                     cmd = 19;
                     break;
                 }
-            case R.id.air_cycle_inter /* 2131427558 */:
+            case R.id.air_cycle_inter /* 2131428107 */:
                 if (DataCanbus.DATA[12] == 0) {
                     cmd = 19;
                     break;
@@ -139,7 +138,7 @@ public class Act_Keleijia_Airset extends Activity implements View.OnClickListene
         DataCanbus.PROXY.cmd(1, new int[]{cmd}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -147,7 +146,7 @@ public class Act_Keleijia_Airset extends Activity implements View.OnClickListene
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);

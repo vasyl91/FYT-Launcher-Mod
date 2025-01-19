@@ -8,16 +8,15 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_Keleijia_Index extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_keleiao_index);
+        //setContentView(R.layout.layout_keleiao_index);
         View viewAir = findViewById(R.id.id_airset);
         View viewCarSet = findViewById(R.id.id_carset);
-        setSelfClick(findViewById(R.id.btn_air_control), new View.OnClickListener() { // from class: com.syu.carinfo.leinuo.Act_Keleijia_Index.1
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.btn_air_control), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -32,8 +31,8 @@ public class Act_Keleijia_Index extends BaseActivity {
                 }
             }
         });
-        setSelfClick(findViewById(R.id.btn_base_info), new View.OnClickListener() { // from class: com.syu.carinfo.leinuo.Act_Keleijia_Index.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.btn_base_info), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();

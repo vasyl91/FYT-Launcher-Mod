@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0402_RZC_Leinuo_Kabin extends AirBase {
     public Air_0402_RZC_Leinuo_Kabin(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0402_rzc_leinuo/leinuo_kabin.webp";
         this.mPathHighlight = "0402_rzc_leinuo/leinuo_kabin_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -67,7 +67,7 @@ public class Air_0402_RZC_Leinuo_Kabin extends AirBase {
         } else if (value == -1) {
             c.drawText("NO", 69.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value / 10.0f).toString(), 69.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(value / 10.0f), 69.0f, 142.0f, this.mPaint);
         }
         int value2 = this.DATA[70];
         if (value2 == -2) {
@@ -77,7 +77,7 @@ public class Air_0402_RZC_Leinuo_Kabin extends AirBase {
         } else if (value2 == -1) {
             c.drawText("NO", 916.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value2 / 10.0f).toString(), 916.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(value2 / 10.0f), 916.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

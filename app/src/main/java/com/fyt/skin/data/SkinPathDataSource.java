@@ -3,7 +3,6 @@ package com.fyt.skin.data;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class SkinPathDataSource {
     private static final String KEY_SKIN_PATH = "skin-path";
     private static final String SKIN_SHARED = "skin-peeler-lib";
@@ -35,7 +34,7 @@ public class SkinPathDataSource {
     }
 
     private static class Holder {
-        private static SkinPathDataSource instance = new SkinPathDataSource(null);
+        private static final SkinPathDataSource instance = new SkinPathDataSource(null);
 
         private Holder() {
         }

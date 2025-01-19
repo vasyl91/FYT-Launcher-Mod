@@ -3,17 +3,17 @@ package com.syu.carinfo.lz.jaguar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TDLandRoverEcoDataIndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_td_landrover_ecodata_indexact);
-        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverEcoDataIndexActi.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_0453_td_landrover_ecodata_indexact);
+        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -24,8 +24,8 @@ public class TDLandRoverEcoDataIndexActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverEcoDataIndexActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -36,8 +36,8 @@ public class TDLandRoverEcoDataIndexActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.btn_plus3).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverEcoDataIndexActi.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

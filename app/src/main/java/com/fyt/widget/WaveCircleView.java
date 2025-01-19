@@ -15,6 +15,7 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+
 import com.android.launcher66.R;
 
 public class WaveCircleView extends View {
@@ -63,7 +64,7 @@ public class WaveCircleView extends View {
         this.mWavePaint.setDither(true);
         this.mWavePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         float[] position = {0.0f, 0.8f};
-        Shader shader = new LinearGradient(0.0f, 0.0f, 0.0f, (float)this.mCircleHeight, new int[]{Color.parseColor("#F81758"), Color.parseColor("#F6188C")}, position, Shader.TileMode.REPEAT);
+        Shader shader = new LinearGradient(0.0f, 0.0f, 0.0f, (float) this.mCircleHeight, new int[]{Color.parseColor("#F81758"), Color.parseColor("#F6188C")}, position, Shader.TileMode.REPEAT);
         this.mWavePaint.setShader(shader);
         this.mCirclePaint = new Paint();
         this.mCirclePaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -81,7 +82,7 @@ public class WaveCircleView extends View {
         setPercent(0);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.mWaveCanvas.drawCircle(this.mCenterPoint, this.mCenterPoint, this.mCenterPoint, this.mCirclePaint);

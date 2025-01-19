@@ -1,14 +1,14 @@
 package com.android.launcher66;
 
 import android.os.Handler;
+import android.os.Looper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Alarm implements Runnable {
     private OnAlarmListener mAlarmListener;
     private long mAlarmTriggerTime;
     private boolean mWaitingForCallback;
     private boolean mAlarmPending = false;
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public void setOnAlarmListener(OnAlarmListener alarmListener) {
         this.mAlarmListener = alarmListener;
@@ -29,7 +29,7 @@ public class Alarm implements Runnable {
         this.mAlarmPending = false;
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         this.mWaitingForCallback = false;
         if (this.mAlarmTriggerTime != 0) {

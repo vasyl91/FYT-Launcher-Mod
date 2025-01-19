@@ -8,10 +8,10 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.os.Handler;
-import androidx.core.content.IntentCompat;
+
+import android.os.Looper;
 import android.util.Log;
-import com.android.launcher66.LauncherSettings;
-import com.android.launcher66.WidgetPreviewLoader;
+
 import java.lang.ref.WeakReference;
 
 public class LauncherAppState {
@@ -29,8 +29,8 @@ public class LauncherAppState {
     private float mScreenDensity;
     private WidgetPreviewLoader.CacheDb mWidgetPreviewCacheDb;
     private int mLongPressTimeout = 300;
-    private final ContentObserver mFavoritesObserver = new ContentObserver(new Handler()) { // from class: com.android.launcher66.LauncherAppState.1
-        @Override // android.database.ContentObserver
+    private final ContentObserver mFavoritesObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+        @Override
         public void onChange(boolean selfChange) {
             LauncherAppState.this.mModel.resetLoadedState(false, true);
             LauncherAppState.this.mModel.startLoaderFromBackground();

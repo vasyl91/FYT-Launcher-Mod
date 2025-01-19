@@ -9,103 +9,102 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODJiliRuilanX3TireAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.ODJiliRuilanX3TireAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 96:
+                case 108:
                     ODJiliRuilanX3TireAct.this.updaterFLWalm();
                     break;
-                case 97:
+                case 109:
                     ODJiliRuilanX3TireAct.this.updaterFRWalm();
                     break;
-                case 98:
+                case 110:
                     ODJiliRuilanX3TireAct.this.updaterRLWalm();
                     break;
-                case 99:
+                case 111:
                     ODJiliRuilanX3TireAct.this.updaterRRWalm();
                     break;
-                case 100:
+                case 112:
                     ODJiliRuilanX3TireAct.this.mUpdaterTireFL();
                     break;
-                case 101:
+                case 113:
                     ODJiliRuilanX3TireAct.this.mUpdaterTireFR();
                     break;
-                case 102:
+                case 114:
                     ODJiliRuilanX3TireAct.this.mUpdaterTireRL();
                     break;
-                case 103:
+                case 115:
                     ODJiliRuilanX3TireAct.this.mUpdaterTireRR();
                     break;
-                case 104:
+                case 116:
                     ODJiliRuilanX3TireAct.this.updaterTempFL();
                     break;
-                case 105:
+                case 117:
                     ODJiliRuilanX3TireAct.this.updaterTempFR();
                     break;
-                case 106:
+                case 118:
                     ODJiliRuilanX3TireAct.this.updaterTempRL();
                     break;
-                case 107:
+                case 119:
                     ODJiliRuilanX3TireAct.this.updaterTempRR();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFL() {
-        int value = DataCanbus.DATA[104];
+        int value = DataCanbus.DATA[116];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1_temp)).setText("--");
         } else {
@@ -113,9 +112,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFR() {
-        int value = DataCanbus.DATA[105];
+        int value = DataCanbus.DATA[117];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2_temp)).setText("--");
         } else {
@@ -123,9 +122,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRL() {
-        int value = DataCanbus.DATA[106];
+        int value = DataCanbus.DATA[118];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3_temp)).setText("--");
         } else {
@@ -133,9 +132,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRR() {
-        int value = DataCanbus.DATA[107];
+        int value = DataCanbus.DATA[119];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4_temp)).setText("--");
         } else {
@@ -143,9 +142,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[100];
+        int value = DataCanbus.DATA[112];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
             return;
@@ -157,9 +156,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[101];
+        int value = DataCanbus.DATA[113];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
             return;
@@ -171,9 +170,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[102];
+        int value = DataCanbus.DATA[114];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
             return;
@@ -185,9 +184,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[103];
+        int value = DataCanbus.DATA[115];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
             return;
@@ -199,9 +198,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm() {
-        int value = DataCanbus.DATA[96];
+        int value = DataCanbus.DATA[108];
         ((TextView) findViewById(R.id.oudi_changan_tire1_temp)).setTextColor(-1);
         switch (value) {
             case 1:
@@ -232,9 +231,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRWalm() {
-        int value = DataCanbus.DATA[97];
+        int value = DataCanbus.DATA[109];
         ((TextView) findViewById(R.id.oudi_changan_tire2_temp)).setTextColor(-1);
         switch (value) {
             case 1:
@@ -265,9 +264,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLWalm() {
-        int value = DataCanbus.DATA[98];
+        int value = DataCanbus.DATA[110];
         ((TextView) findViewById(R.id.oudi_changan_tire3_temp)).setTextColor(-1);
         switch (value) {
             case 1:
@@ -298,9 +297,9 @@ public class ODJiliRuilanX3TireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRWalm() {
-        int value = DataCanbus.DATA[99];
+        int value = DataCanbus.DATA[111];
         ((TextView) findViewById(R.id.oudi_changan_tire4_temp)).setTextColor(-1);
         switch (value) {
             case 1:

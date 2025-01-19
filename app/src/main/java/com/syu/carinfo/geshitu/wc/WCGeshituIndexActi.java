@@ -8,14 +8,13 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.honda.HondaIndexActi;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCGeshituIndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_geshitu_wc_index);
-        ((Button) findViewById(R.id.wc_geshitu_btn_trip)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.geshitu.wc.WCGeshituIndexActi.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_geshitu_wc_index);
+        ((Button) findViewById(R.id.wc_geshitu_btn_trip)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -26,8 +25,8 @@ public class WCGeshituIndexActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.wc_geshitu_btn_setting)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.geshitu.wc.WCGeshituIndexActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_geshitu_btn_setting)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -40,7 +39,7 @@ public class WCGeshituIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

@@ -12,12 +12,11 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_RZC_MZD_ALL;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static Rzc_Mazda_CarCD mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mazda.Rzc_Mazda_CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 79:
@@ -46,15 +45,15 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_418_xbs_carcd);
+        //setContentView(R.layout.layout_418_xbs_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.jeep_btn_loop).setOnClickListener(this);
         findViewById(R.id.jeep_btn_random).setOnClickListener(this);
@@ -66,22 +65,22 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         findViewById(R.id.jeep_btn_fr).setOnLongClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(3, new int[]{128}, null, null);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(3, new int[]{129}, null, null);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(3, new int[]{132}, null, null);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(3, new int[]{131}, null, null);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
+            case R.id.jeep_btn_loop /* 2131427737 */:
                 int rep_mode = DataCanbus.DATA[81];
                 if (rep_mode == 1) {
                     DataCanbus.PROXY.cmd(3, new int[]{136}, null, null);
@@ -90,7 +89,7 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
                     DataCanbus.PROXY.cmd(3, new int[]{135}, null, null);
                     break;
                 }
-            case R.id.jeep_btn_random /* 2131428348 */:
+            case R.id.jeep_btn_random /* 2131427740 */:
                 int random_mode = DataCanbus.DATA[80];
                 if (random_mode == 1) {
                     DataCanbus.PROXY.cmd(3, new int[]{134}, null, null);
@@ -102,20 +101,20 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         }
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         switch (v.getId()) {
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(3, new int[]{13}, null, null);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(3, new int[]{12}, null, null);
                 break;
         }
         return true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -124,14 +123,14 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         DataCanbus.PROXY.cmd(3, new int[]{14}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
@@ -148,7 +147,7 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
@@ -165,7 +164,7 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStatus() {
         int value = DataCanbus.DATA[79];
         int random_mode = DataCanbus.DATA[80];
@@ -204,7 +203,7 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         ((TextView) findViewById(R.id.jeep_tv_state)).setText(sb.toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
         int track = DataCanbus.DATA[86];
         int tarckTotal = DataCanbus.DATA[85];
@@ -215,7 +214,7 @@ public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
         int value = DataCanbus.DATA[88];
         int valueall = DataCanbus.DATA[87];

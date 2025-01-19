@@ -12,11 +12,10 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YuanJingX1AirControlAct extends Activity {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.YuanJingX1AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -77,10 +76,10 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_139_rzc_yuanjing_suv_air_control_set);
+        //setContentView(R.layout.layout_139_rzc_yuanjing_suv_air_control_set);
         init();
     }
 
@@ -105,8 +104,8 @@ public class YuanJingX1AirControlAct extends Activity {
 
     private void sendClick(View v, final int cmd) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.YuanJingX1AirControlAct.2
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     YuanJingX1AirControlAct.this.sendCmd(cmd);
                 }
@@ -114,7 +113,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int cmd) {
         int b0 = 0;
         int b1 = 0;
@@ -193,15 +192,15 @@ public class YuanJingX1AirControlAct extends Activity {
                 break;
         }
         DataCanbus.PROXY.cmd(0, new int[]{b0, b1, b2, b3, b4, b5}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.jili.YuanJingX1AirControlAct.3
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(0, new int[6], null, null);
             }
         }, 100L);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -209,7 +208,7 @@ public class YuanJingX1AirControlAct extends Activity {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -247,7 +246,7 @@ public class YuanJingX1AirControlAct extends Activity {
         DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UTempLeft(int data) {
         int data2;
         String str;
@@ -269,7 +268,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[21];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
@@ -277,7 +276,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -285,7 +284,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[11];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -293,7 +292,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost(int data) {
         int value = DataCanbus.DATA[65];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -301,7 +300,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int value = DataCanbus.DATA[16];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -309,7 +308,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAuto() {
         int value = DataCanbus.DATA[13];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -317,7 +316,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[10];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -325,7 +324,7 @@ public class YuanJingX1AirControlAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UBlowMode_new(int i_mode) {
         if (LauncherApplication.getConfiguration() == 1) {
             switch (i_mode) {

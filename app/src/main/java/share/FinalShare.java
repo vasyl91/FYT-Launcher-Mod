@@ -1,6 +1,5 @@
 package share;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66.apk\dexFile\classes.dex */
 public class FinalShare {
     public static final int CHIP_9853 = 7;
     public static final int CHIP_MST786 = 1;

@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_rzc_suzuki_ignis extends AirBase {
     public Air_0453_rzc_suzuki_ignis(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_hc_ford_explorer/xc_feiyate_feiyue.webp";
         this.mPathHighlight = "0439_hc_ford_explorer/xc_feiyate_feiyue_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -119,9 +119,9 @@ public class Air_0453_rzc_suzuki_ignis extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 39.0f, 73.0f, this.mPaint);
         } else if (this.DATA[37] == 1) {
-            c.drawText(new StringBuilder().append(temp / 10).toString(), 39.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10), 39.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 39.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 39.0f, 73.0f, this.mPaint);
         }
         int temp1 = this.DATA[28];
         if (temp1 == -1) {
@@ -131,9 +131,9 @@ public class Air_0453_rzc_suzuki_ignis extends AirBase {
         } else if (temp1 == -3) {
             c.drawText("HI", 614.0f, 73.0f, this.mPaint);
         } else if (this.DATA[37] == 1) {
-            c.drawText(new StringBuilder().append(temp1 / 10).toString(), 614.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp1 / 10), 614.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp1 / 10.0f).toString(), 614.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp1 / 10.0f), 614.0f, 73.0f, this.mPaint);
         }
         int temp2 = this.DATA[40];
         if (temp2 == -1) {
@@ -143,9 +143,9 @@ public class Air_0453_rzc_suzuki_ignis extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 974.0f, 73.0f, this.mPaint);
         } else if (this.DATA[37] == 1) {
-            c.drawText(String.valueOf(temp2 / 10) + "℉", 974.0f, 73.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "℉", 974.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp2 / 10.0f) + "℃", 974.0f, 73.0f, this.mPaint);
+            c.drawText(temp2 / 10.0f + "℃", 974.0f, 73.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

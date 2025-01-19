@@ -8,10 +8,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_Mazda_CarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mazda.Rzc_Mazda_CarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -276,13 +275,13 @@ public class Rzc_Mazda_CarInfo extends BaseActivity implements View.OnClickListe
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_rzc_mazda_carinfo);
+        //setContentView(R.layout.layout_0439_rzc_mazda_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{80}, null, null);
@@ -291,17 +290,17 @@ public class Rzc_Mazda_CarInfo extends BaseActivity implements View.OnClickListe
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
@@ -339,7 +338,7 @@ public class Rzc_Mazda_CarInfo extends BaseActivity implements View.OnClickListe
         DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);

@@ -8,91 +8,90 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLShowPip {
     static StringBuffer buffer;
     static WindowManager manager;
     static TextView showNumTv;
     static View v = null;
     public static boolean IsShowPip = false;
-    static View.OnClickListener PipClick = new View.OnClickListener() { // from class: com.syu.carinfo.xp.yinglang.YLShowPip.1
-        @Override // android.view.View.OnClickListener
+    static View.OnClickListener PipClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v2) {
             int id = v2.getId();
             switch (id) {
-                case R.id.pipbtn1 /* 2131431963 */:
+                case R.id.pipbtn1 /* 2131431913 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(1);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn2 /* 2131431964 */:
+                case R.id.pipbtn2 /* 2131431914 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(2);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn3 /* 2131431965 */:
+                case R.id.pipbtn3 /* 2131431915 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(3);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn4 /* 2131431966 */:
+                case R.id.pipbtn4 /* 2131431916 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(4);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn5 /* 2131431967 */:
+                case R.id.pipbtn5 /* 2131431917 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(5);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn11 /* 2131431968 */:
+                case R.id.pipbtn11 /* 2131431918 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append('*');
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn6 /* 2131431969 */:
+                case R.id.pipbtn6 /* 2131431919 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(6);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn7 /* 2131431970 */:
+                case R.id.pipbtn7 /* 2131431920 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(7);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn8 /* 2131431971 */:
+                case R.id.pipbtn8 /* 2131431921 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(8);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn9 /* 2131431972 */:
+                case R.id.pipbtn9 /* 2131431922 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(9);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn0 /* 2131431973 */:
+                case R.id.pipbtn0 /* 2131431923 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append(0);
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn10 /* 2131431974 */:
+                case R.id.pipbtn10 /* 2131431924 */:
                     if (YLShowPip.buffer != null) {
                         YLShowPip.buffer.append('#');
                     }
                     YLShowPip.showNumTv.setText(YLShowPip.buffer.toString());
                     break;
-                case R.id.pipcallanswer /* 2131431975 */:
+                case R.id.pipcallanswer /* 2131431925 */:
                     YLFunc.CAR_ON_START_CTL(2);
                     break;
             }
@@ -105,8 +104,8 @@ public class YLShowPip {
         v = inflater.inflate(R.layout.layout_klc_onstar_pip, (ViewGroup) null);
         buffer = new StringBuffer();
         showNumTv = (TextView) v.findViewById(R.id.showNumPip);
-        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.yinglang.YLShowPip.2
-            @Override // android.view.View.OnClickListener
+        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 YLFunc.CAR_ON_START_CTL(3);
                 YLShowPip.CancelWindow();

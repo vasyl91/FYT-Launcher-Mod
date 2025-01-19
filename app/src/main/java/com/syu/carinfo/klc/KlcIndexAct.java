@@ -14,12 +14,12 @@ import android.widget.PopupWindow;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.xp.yinglang.YLTireAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -27,18 +27,18 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 136:
+                case 188:
                     updateTmpsenable();
                     break;
             }
         }
 
         private void updateTmpsenable() {
-            int val = DataCanbus.DATA[136] >> 7;
+            int val = DataCanbus.DATA[188] >> 7;
             if (val == 1) {
                 KlcIndexAct.this.findViewById(R.id.wc_yl_tmps_view).setVisibility(0);
             } else {
@@ -47,14 +47,14 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_index);
+        //setContentView(R.layout.layout_klc_index);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -67,8 +67,8 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.klc.KlcIndexAct.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 KlcIndexAct.this.language_set = position;
                 if (KlcIndexAct.this.language_set >= 0 && KlcIndexAct.this.language_set <= KlcIndexAct.this.mLauStylelist.size() && KlcIndexAct.this.send_lang != null) {
@@ -85,7 +85,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -113,8 +113,8 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.klc.KlcIndexAct.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (KlcIndexAct.this.mLauStyle == null) {
                     KlcIndexAct.this.initLauStyle();
@@ -135,7 +135,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         ((CheckedTextView) findViewById(R.id.xp_yl_car_set_basic_info_check)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 589860) {
@@ -164,27 +164,27 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
         addUpdater();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         Intent intent;
         Intent intent2;
         int id = v.getId();
         switch (id) {
-            case R.id.klc_car_settings_check /* 2131431914 */:
+            case R.id.klc_car_settings_check /* 2131431864 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) KlcCarSettingsAct.class);
                     startActivity(intent3);
@@ -193,7 +193,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e.printStackTrace();
                     return;
                 }
-            case R.id.klc_air_message_check /* 2131431915 */:
+            case R.id.klc_air_message_check /* 2131431865 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) klcAirMessageAct.class);
                     startActivity(intent4);
@@ -202,7 +202,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.klc_comfort_check /* 2131431916 */:
+            case R.id.klc_comfort_check /* 2131431866 */:
                 try {
                     Intent intent5 = new Intent(this, (Class<?>) KlcComfortAct.class);
                     startActivity(intent5);
@@ -211,7 +211,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.klc_tmps_check /* 2131431918 */:
+            case R.id.klc_tmps_check /* 2131431868 */:
                 try {
                     Intent intent6 = new Intent(this, (Class<?>) YLTireAct.class);
                     startActivity(intent6);
@@ -220,7 +220,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.klc_onstar_set_check /* 2131431919 */:
+            case R.id.klc_onstar_set_check /* 2131431869 */:
                 try {
                     if (DataCanbus.DATA[1000] == 458788) {
                         intent2 = new Intent(this, (Class<?>) KlcOnStarGl6Act.class);
@@ -233,14 +233,14 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.klc_air_control_set_check /* 2131431921 */:
+            case R.id.klc_air_control_set_check /* 2131431871 */:
                 try {
                     if (DataCanbus.DATA[1000] == 357) {
                         intent = new Intent(this, (Class<?>) MrbAirControlAct.class);
                     } else if (DataCanbus.DATA[1000] == 393252) {
                         intent = new Intent(this, (Class<?>) KlcGl8AirControlAct.class);
                     } else {
-                        intent = new Intent(this, (Class<?>) KlcAirControlAct.class);
+                        intent = new Intent(this, (Class<?>) Air_Activity_All_NewAdd_HP.class);
                     }
                     startActivity(intent);
                     break;
@@ -248,7 +248,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e6.printStackTrace();
                     return;
                 }
-            case R.id.klc_pannel_select_set_check /* 2131431923 */:
+            case R.id.klc_pannel_select_set_check /* 2131431873 */:
                 try {
                     Intent intent7 = new Intent(this, (Class<?>) KlcPannelselectAct.class);
                     startActivity(intent7);
@@ -257,7 +257,7 @@ public class KlcIndexAct extends BaseActivity implements View.OnClickListener {
                     e7.printStackTrace();
                     return;
                 }
-            case R.id.xp_yl_car_set_basic_info_check /* 2131431925 */:
+            case R.id.xp_yl_car_set_basic_info_check /* 2131431875 */:
                 try {
                     Intent intent8 = new Intent(this, (Class<?>) WcGMBasicInfoAct.class);
                     startActivity(intent8);

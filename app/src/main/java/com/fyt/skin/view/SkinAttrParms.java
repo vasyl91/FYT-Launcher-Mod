@@ -1,6 +1,5 @@
 package com.fyt.skin.view;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class SkinAttrParms {
     private String attrName;
     private int id;

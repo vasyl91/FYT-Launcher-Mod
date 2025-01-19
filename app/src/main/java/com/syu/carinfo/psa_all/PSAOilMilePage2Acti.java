@@ -9,61 +9,60 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSAOilMilePage2Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PSAOilMilePage2Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 88:
-                case 160:
+                case 100:
+                case 172:
                     PSAOilMilePage2Acti.this.mUpdaterValue1();
-                case 90:
+                case 102:
                     PSAOilMilePage2Acti.this.mUpdaterValue2();
-                case 89:
+                case 101:
                     PSAOilMilePage2Acti.this.mUpdaterValue3();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa_all_oil_page2);
+        //setContentView(R.layout.layout_psa_all_oil_page2);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.psa_all_btn_oil_page2_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAOilMilePage2Acti.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa_all_btn_oil_page2_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(90, new int[]{2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[88];
-        int value1 = DataCanbus.DATA[160];
+        int value = DataCanbus.DATA[100];
+        int value1 = DataCanbus.DATA[172];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv1)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv1)).setText("--.--");
@@ -82,9 +81,9 @@ public class PSAOilMilePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[90];
+        int value = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv2)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv2)).setText("--.--");
@@ -94,9 +93,9 @@ public class PSAOilMilePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value = DataCanbus.DATA[89];
+        int value = DataCanbus.DATA[101];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv3)) != null) {
             if (value == 255) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv3)).setText("--.--");

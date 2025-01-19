@@ -1,6 +1,5 @@
 package com.android.launcher66;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public final class Manifest {
 
     public static final class permission {

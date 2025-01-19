@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepRaceOptionsIndexAct extends TabActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceOptionsIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 347:
+                case 359:
                     if (value == 1) {
                         PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabLaunchControl");
                         PAJeepRaceOptionsIndexAct.this.ClearGroup();
@@ -26,7 +25,7 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
                         ((RadioButton) PAJeepRaceOptionsIndexAct.this.findViewById(R.id.pa_jeep_btn2)).setTextColor(Color.parseColor("#666666"));
                         break;
                     }
-                case 372:
+                case 384:
                     if (value == 1) {
                         PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabShitLight");
                         PAJeepRaceOptionsIndexAct.this.ClearGroup();
@@ -39,10 +38,10 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
     };
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_raceoption_index);
+        //setContentView(R.layout.layout_0374_pa_jeep_raceoption_index);
         init();
     }
 
@@ -52,8 +51,8 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabLaunchControl").setIndicator("tabLaunchControl").setContent(new Intent(this, (Class<?>) PAJeepLaunchControl.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabLineLock").setIndicator("tabLineLock").setContent(new Intent(this, (Class<?>) PAJeepLineLock.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabRaceCooldown").setIndicator("tabRaceCooldown").setContent(new Intent(this, (Class<?>) PAJeepRaceCoolDown.class)));
-        ((RadioButton) findViewById(R.id.pa_jeep_btn1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceOptionsIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabShitLight");
@@ -65,8 +64,8 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceOptionsIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabLaunchControl");
@@ -78,8 +77,8 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceOptionsIndexAct.4
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabLineLock");
@@ -91,8 +90,8 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRaceOptionsIndexAct.5
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepRaceOptionsIndexAct.this.mTabHost.setCurrentTabByTag("tabRaceCooldown");
@@ -117,19 +116,19 @@ public class PAJeepRaceOptionsIndexAct extends TabActivity {
         ((RadioButton) findViewById(R.id.pa_jeep_btn4)).setTextColor(Color.parseColor("#FFFFFF"));
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[347].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[372].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[359].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[384].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[347].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[372].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[359].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[384].removeNotify(this.mNotifyCanbus);
     }
 }

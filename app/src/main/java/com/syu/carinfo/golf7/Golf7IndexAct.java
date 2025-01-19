@@ -17,7 +17,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7IndexAct extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;
@@ -26,15 +25,15 @@ public class Golf7IndexAct extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_index);
+        //setContentView(R.layout.layout_golf7_index);
         init();
         DataCanbus.PROXY.cmd(98, new int[]{255}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         switch (DataCanbus.sCanbusId) {
@@ -97,7 +96,7 @@ public class Golf7IndexAct extends BaseActivity {
         DataCanbus.PROXY.cmd(98, new int[]{255}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -172,8 +171,8 @@ public class Golf7IndexAct extends BaseActivity {
                 throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
             }
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.1
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Golf7IndexAct.this.mLauStyle == null) {
                     Golf7IndexAct.this.initLauStyle();
@@ -184,8 +183,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_functional_state), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_functional_state), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -196,8 +195,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_air_control), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_air_control), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -212,8 +211,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_oil_mileage), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_oil_mileage), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -224,8 +223,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_main_electric_mileage), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_main_electric_mileage), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -241,12 +240,12 @@ public class Golf7IndexAct extends BaseActivity {
         } else {
             findViewById(R.id.golf_view_main_electric_mileage).setVisibility(8);
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_main_electric_information), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_main_electric_information), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[1000] == 655520) {
+                    if (DataCanbus.DATA[1000] == 655520 || DataCanbus.DATA[1000] == 3801248) {
                         intent.setClass(Golf7IndexAct.this, Golf7Electric_information_Acti_RZC.class);
                     } else {
                         intent.setClass(Golf7IndexAct.this, Golf7Electric_information_Acti.class);
@@ -257,13 +256,13 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        if (DataCanbus.DATA[1000] == 655520 || DataCanbus.DATA[1000] == 655377) {
+        if (DataCanbus.DATA[1000] == 655520 || DataCanbus.DATA[1000] == 655377 || DataCanbus.DATA[1000] == 3801248) {
             findViewById(R.id.layout_view1).setVisibility(0);
         } else {
             findViewById(R.id.layout_view1).setVisibility(8);
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -274,13 +273,13 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        if (DataCanbus.DATA[1000] == 655377 || DataCanbus.DATA[1000] == 655520) {
+        if (DataCanbus.DATA[1000] == 655377 || DataCanbus.DATA[1000] == 655520 || DataCanbus.DATA[1000] == 3801248) {
             findViewById(R.id.golf_view_main_electric_information).setVisibility(0);
         } else {
             findViewById(R.id.golf_view_main_electric_information).setVisibility(8);
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.hy_brid_car), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.hy_brid_car), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -296,8 +295,8 @@ public class Golf7IndexAct extends BaseActivity {
         } else {
             findViewById(R.id.hy_brid_car_view).setVisibility(8);
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_convenience_consumers), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_convenience_consumers), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -308,8 +307,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_maintenance_information), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_maintenance_information), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -320,8 +319,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_alarm_record), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_alarm_record), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -332,8 +331,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_start_stop), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_start_stop), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -344,8 +343,8 @@ public class Golf7IndexAct extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_tire_pressure), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_main_btn_tire_pressure), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -362,7 +361,7 @@ public class Golf7IndexAct extends BaseActivity {
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -375,8 +374,8 @@ public class Golf7IndexAct extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.golf7.Golf7IndexAct.14
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Golf7IndexAct.this.language_set = position;
                 if (Golf7IndexAct.this.language_set >= 0 && Golf7IndexAct.this.language_set <= Golf7IndexAct.this.mLauStylelist.size() && Golf7IndexAct.this.send_lang != null) {

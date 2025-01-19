@@ -8,23 +8,22 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.HandlerCanbus;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcDoorReceiver extends BroadcastReceiver {
     private final String ACTION_DOOR = "com.youzi.intent.action.doorinfo";
     private final String ACTION_DOOR_PACK = "doorInfo";
     private boolean bInit = true;
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         if (this.bInit) {
-            DoorHelper.sUcDoorEngine = 42;
-            DoorHelper.sUcDoorFl = 43;
-            DoorHelper.sUcDoorFr = 44;
-            DoorHelper.sUcDoorRl = 45;
-            DoorHelper.sUcDoorRr = 46;
-            DoorHelper.sUcDoorBack = 47;
+            DoorHelper.sUcDoorEngine = 0;
+            DoorHelper.sUcDoorFl = 1;
+            DoorHelper.sUcDoorFr = 2;
+            DoorHelper.sUcDoorRl = 3;
+            DoorHelper.sUcDoorRr = 4;
+            DoorHelper.sUcDoorBack = 5;
             DoorHelper.getInstance().buildUi();
-            for (int i = 42; i < 48; i++) {
+            for (int i = 0; i < 6; i++) {
                 DataCanbus.NOTIFY_EVENTS[i].addNotify(DoorHelper.getInstance(), 0);
             }
             this.bInit = false;
@@ -33,12 +32,12 @@ public class WcDoorReceiver extends BroadcastReceiver {
             String action = intent.getAction();
             if (!TextUtils.isEmpty(action) && "com.youzi.intent.action.doorinfo".equals(action)) {
                 int[] doorInfo = intent.getIntArrayExtra("doorInfo");
-                HandlerCanbus.update(42, doorInfo[6]);
-                HandlerCanbus.update(43, doorInfo[1]);
-                HandlerCanbus.update(44, doorInfo[2]);
-                HandlerCanbus.update(45, doorInfo[3]);
-                HandlerCanbus.update(46, doorInfo[4]);
-                HandlerCanbus.update(47, doorInfo[5]);
+                HandlerCanbus.update(0, doorInfo[6]);
+                HandlerCanbus.update(1, doorInfo[1]);
+                HandlerCanbus.update(2, doorInfo[2]);
+                HandlerCanbus.update(3, doorInfo[3]);
+                HandlerCanbus.update(4, doorInfo[4]);
+                HandlerCanbus.update(5, doorInfo[5]);
             }
         }
     }

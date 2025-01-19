@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
@@ -12,16 +13,15 @@ import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int bkNum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverNewCarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 131:
+                case 143:
                     switch (value) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image4)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_null));
@@ -30,7 +30,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image4)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_hdc));
                             break;
                     }
-                case 132:
+                case 144:
                     switch (value) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image2)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_null));
@@ -42,7 +42,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image2)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_gear_high));
                             break;
                     }
-                case 141:
+                case 153:
                     ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image5)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_mode0_p));
                     ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image6)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_mode1));
                     ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image7)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_mode2));
@@ -70,7 +70,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text1)).setText("Rock crawl");
                             break;
                     }
-                case 142:
+                case 154:
                     switch (value) {
                         case 0:
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text2)).setText("Standard");
@@ -82,7 +82,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text2)).setText("Access");
                             break;
                     }
-                case 143:
+                case 155:
                     switch (value) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image1)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_gear_p));
@@ -121,23 +121,23 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image1)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_gear_n));
                             break;
                     }
-                case 144:
+                case 156:
                     TDLandRoverNewCarinfoAct.this.updateTire1Distance();
                     TDLandRoverNewCarinfoAct.this.updateGanFDistance();
                     break;
-                case 145:
+                case 157:
                     TDLandRoverNewCarinfoAct.this.updateTire2Distance();
                     TDLandRoverNewCarinfoAct.this.updateGanFDistance();
                     break;
-                case 146:
+                case 158:
                     TDLandRoverNewCarinfoAct.this.updateTire3Distance();
                     TDLandRoverNewCarinfoAct.this.updateGanRDistance();
                     break;
-                case 147:
+                case 159:
                     TDLandRoverNewCarinfoAct.this.updateTire4Distance();
                     TDLandRoverNewCarinfoAct.this.updateGanRDistance();
                     break;
-                case 150:
+                case 162:
                     switch (value) {
                         case 0:
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text3)).setText("");
@@ -146,7 +146,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text3)).setText("ESP OFF");
                             break;
                     }
-                case 151:
+                case 163:
                     switch (value) {
                         case 0:
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text4)).setText("");
@@ -155,7 +155,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text4)).setText("ASL");
                             break;
                     }
-                case 152:
+                case 164:
                     switch (value) {
                         case 0:
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text5)).setText("");
@@ -164,8 +164,8 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((TextView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.tv_text5)).setText("ATPC");
                             break;
                     }
-                case 155:
-                    int lev = DataCanbus.DATA[155];
+                case 167:
+                    int lev = DataCanbus.DATA[167];
                     switch (lev) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image3)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_lock_g0));
@@ -180,8 +180,8 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image3)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_lock_r3));
                             break;
                     }
-                case 156:
-                    int lev2 = DataCanbus.DATA[156];
+                case 168:
+                    int lev2 = DataCanbus.DATA[168];
                     switch (lev2) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image16)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_lock_g0));
@@ -196,7 +196,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image16)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_lock_r3));
                             break;
                     }
-                case 157:
+                case 169:
                     switch (value) {
                         case 0:
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image17)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_null));
@@ -205,14 +205,14 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                             ((ImageView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.id_image17)).setImageDrawable(TDLandRoverNewCarinfoAct.this.getResources().getDrawable(R.drawable.ic_jaguar_autopark));
                             break;
                     }
-                case 295:
+                case 307:
                     int flag = 0;
                     if ((65536 & value) != 0) {
                         flag = 1;
                     }
-                    int value2 = ((value & 65535) * 30) / Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B4;
+                    int value2 = ((value & 65535) * 30) / Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B10;
                     if (flag == 1) {
-                        value2 = 0 - value2;
+                        value2 = -value2;
                     }
                     ((InfoJaguarLeftView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.infoView_speed)).setSpeed(value2);
                     ((InfoJaguarLeftView) TDLandRoverNewCarinfoAct.this.findViewById(R.id.infoView_enginespeed)).setSpeed(value2);
@@ -221,18 +221,18 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_td_landrover_44info);
-        setSelfClick((Button) findViewById(R.id.btn_plus1), this);
-        setSelfClick((Button) findViewById(R.id.btn_plus2), this);
+        //setContentView(R.layout.layout_0453_td_landrover_44info);
+        setSelfClick(findViewById(R.id.btn_plus1), this);
+        setSelfClick(findViewById(R.id.btn_plus2), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 this.bkNum = 1;
                 findViewById(R.id.layout_view1).setVisibility(0);
                 findViewById(R.id.layout_view2).setVisibility(8);
@@ -245,7 +245,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
                 findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_jaguar_drivemode_p);
                 findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_jaguar_sup);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 this.bkNum = 0;
                 findViewById(R.id.layout_view1).setVisibility(8);
                 findViewById(R.id.layout_view2).setVisibility(0);
@@ -262,7 +262,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         updateTireDistance_delay();
@@ -296,57 +296,57 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(0, new int[]{56}, null, null);
-        DataCanbus.NOTIFY_EVENTS[295].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[307].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[295].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[307].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
     }
 
     private void updateTireDistance_delay() {
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverNewCarinfoAct.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 TDLandRoverNewCarinfoAct.this.updateTire1Distance();
                 TDLandRoverNewCarinfoAct.this.updateTire2Distance();
@@ -358,16 +358,16 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire1Distance() {
-        int value = DataCanbus.DATA[144];
+        int value = DataCanbus.DATA[156];
         if (value < 7) {
             value = 7;
         }
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image10);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image10);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1133, (((value - 7) * 20) / 13) + 133, 1227, (((value - 7) * 20) / 13) + 133 + 180);
@@ -378,16 +378,16 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire2Distance() {
-        int value = DataCanbus.DATA[145];
+        int value = DataCanbus.DATA[157];
         if (value < 7) {
             value = 7;
         }
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image12);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image12);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1469, (((value - 7) * 20) / 13) + 133, 1563, (((value - 7) * 20) / 13) + 133 + 180);
@@ -398,16 +398,16 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire3Distance() {
-        int value = DataCanbus.DATA[146];
+        int value = DataCanbus.DATA[158];
         if (value < 7) {
             value = 7;
         }
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image13);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image13);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1038, (((value - 7) * 22) / 13) + 184, 1160, (((value - 7) * 22) / 13) + 184 + 213);
@@ -418,16 +418,16 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire4Distance() {
-        int value = DataCanbus.DATA[147];
+        int value = DataCanbus.DATA[159];
         if (value < 7) {
             value = 7;
         }
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image15);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image15);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1539, (((value - 7) * 22) / 13) + 184, 1661, (((value - 7) * 22) / 13) + 184 + 213);
@@ -438,10 +438,10 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateGanFDistance() {
-        int value1 = DataCanbus.DATA[144];
-        int value2 = DataCanbus.DATA[145];
+        int value1 = DataCanbus.DATA[156];
+        int value2 = DataCanbus.DATA[157];
         int value = (value1 + value2) / 2;
         if (value < 7) {
             value = 7;
@@ -449,7 +449,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image11);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image11);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1242, (((value - 7) * 20) / 13) + 215, 1459, (((value - 7) * 20) / 13) + 215 + 14);
@@ -460,10 +460,10 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateGanRDistance() {
-        int value1 = DataCanbus.DATA[146];
-        int value2 = DataCanbus.DATA[147];
+        int value1 = DataCanbus.DATA[158];
+        int value2 = DataCanbus.DATA[159];
         int value = (value1 + value2) / 2;
         if (value < 7) {
             value = 7;
@@ -471,7 +471,7 @@ public class TDLandRoverNewCarinfoAct extends BaseActivity implements View.OnCli
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.id_image14);
+        ImageView mIvIconTire1 = findViewById(R.id.id_image14);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(1170, (((value - 7) * 22) / 13) + 283, 1514, (((value - 7) * 22) / 13) + 283 + 24);

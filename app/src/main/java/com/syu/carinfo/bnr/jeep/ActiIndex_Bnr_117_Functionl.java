@@ -12,16 +12,15 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActiIndex_Bnr_117_Functionl extends BaseActivityForFragment {
     List<CarInfo> mList = new ArrayList();
     List<Fragment> mFrags = new ArrayList();
     int[] titles = {R.string.jeep_carcd, R.string.vehicle_personalization};
 
-    @Override // com.syu.canbus.BaseActivityForFragment, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         initValue();
         ((ListView) findViewById(R.id.list_carinfo)).setAdapter((ListAdapter) new AdapterCarInfo(this, this.mList));
         ((TextView) findViewById(R.id.tv_car_title)).setVisibility(0);

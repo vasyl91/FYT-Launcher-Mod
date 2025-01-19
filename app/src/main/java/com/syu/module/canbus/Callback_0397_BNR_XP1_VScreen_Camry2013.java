@@ -1,177 +1,123 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0397_BNR_Camry2013;
+//import com.syu.ui.air.Air_0397_BNR_Camry2013;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase {
     public static String CDArtist = null;
     public static String CDFolder = null;
     public static String CDName = null;
-    public static final int U_AIR_AC = 61;
-    public static final int U_AIR_AQS = 231;
-    public static final int U_AIR_AUTO = 64;
-    public static final int U_AIR_AUTO_FRONT_DEFROST = 108;
-    public static final int U_AIR_BACK_BLOW_AUTO = 115;
-    public static final int U_AIR_BACK_BLOW_BODY = 113;
-    public static final int U_AIR_BACK_BLOW_FOOT = 114;
-    public static final int U_AIR_BACK_BLOW_WIND = 116;
-    public static final int U_AIR_BACK_POWER = 111;
-    public static final int U_AIR_BACK_TEMP = 110;
-    public static final int U_AIR_BACK_TEMP_RIGHT = 214;
-    public static final int U_AIR_BEGIN = 59;
-    public static final int U_AIR_BIG_WIND_LIGHT = 63;
-    public static final int U_AIR_BLOW_BODY_LEFT = 68;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 69;
-    public static final int U_AIR_BLOW_UP_LEFT = 67;
-    public static final int U_AIR_CYCLE = 62;
-    public static final int U_AIR_DUAL = 65;
-    public static final int U_AIR_END = 75;
-    public static final int U_AIR_MAX = 66;
-    public static final int U_AIR_MAXAC = 177;
-    public static final int U_AIR_NANOE = 160;
-    public static final int U_AIR_NEWADD_BLOW_AUTO_LEFT = 232;
-    public static final int U_AIR_NEWADD_BLOW_AUTO_RIGHT = 233;
-    public static final int U_AIR_NEWADD_BLOW_BODY_LEFT = 154;
-    public static final int U_AIR_NEWADD_BLOW_BODY_RIGHT = 157;
-    public static final int U_AIR_NEWADD_BLOW_FOOT_LEFT = 155;
-    public static final int U_AIR_NEWADD_BLOW_FOOT_RIGHT = 158;
-    public static final int U_AIR_NEWADD_BLOW_WIN_LEFT = 153;
-    public static final int U_AIR_NEWADD_BLOW_WIN_RIGHT = 156;
-    public static final int U_AIR_NEWADD_PURIFIER = 234;
-    public static final int U_AIR_POWER = 60;
-    public static final int U_AIR_REAR_CTRL = 117;
-    public static final int U_AIR_REAR_DEFROG = 73;
-    public static final int U_AIR_REAR_DEFROG1 = 152;
-    public static final int U_AIR_REAR_LOCK = 109;
-    public static final int U_AIR_TEMP_LEFT = 71;
-    public static final int U_AIR_TEMP_RIGHT = 72;
-    public static final int U_AIR_TEMP_UNIT = 74;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 70;
-    public static final int U_CARINFO_AUTO_RELOCK_TIME = 107;
-    public static final int U_CARINFO_ECO_MODE = 103;
-    public static final int U_CARINFO_EV_MODE = 104;
-    public static final int U_CARINFO_NEW_ADD = 102;
-    public static final int U_CARINFO_NEW_ADD_END = 121;
-    public static final int U_CARINFO_START_STOP_KEY = 105;
-    public static final int U_CARINF_D11_D0_B20 = 196;
-    public static final int U_CARINF_D11_D0_B3 = 195;
-    public static final int U_CARINF_D11_D0_B4 = 194;
-    public static final int U_CARINF_D11_D0_B5 = 193;
-    public static final int U_CARINF_D11_D0_B6 = 192;
-    public static final int U_CARINF_D11_D0_B7 = 191;
-    public static final int U_CARINF_D11_D1_B70 = 197;
-    public static final int U_CARINF_D11_D2_B70 = 198;
-    public static final int U_CARINF_D11_D3_D4 = 199;
-    public static final int U_CARINF_D12_D0_B30 = 202;
-    public static final int U_CARINF_D12_D0_B7 = 201;
-    public static final int U_CARINF_D12_D11_D12 = 208;
-    public static final int U_CARINF_D12_D13_D14 = 209;
-    public static final int U_CARINF_D12_D1_D2 = 203;
-    public static final int U_CARINF_D12_D3_D4 = 204;
-    public static final int U_CARINF_D12_D5_D6 = 205;
-    public static final int U_CARINF_D12_D7_D8 = 206;
-    public static final int U_CARINF_D12_D9_D10 = 207;
-    public static final int U_CARINF_D13_ALL = 210;
-    public static final int U_CARINF_D14_ALL = 211;
-    public static final int U_CARINF_D15_ALL = 212;
-    public static final int U_CARINF_D17_ALL = 213;
-    public static final int U_CARINF_D18_ALL = 200;
-    public static final int U_CARINF_D19_ALL = 221;
-    public static final int U_CARINF_D1A_ALL = 222;
-    public static final int U_CARINF_D1B_ALL1 = 215;
-    public static final int U_CARINF_D1B_ALL2 = 216;
-    public static final int U_CARINF_D1B_ALL3 = 217;
-    public static final int U_CARINF_D1B_ALL4 = 218;
-    public static final int U_CARINF_D1B_ALL5 = 219;
-    public static final int U_CARINF_D1B_ALL6 = 220;
-    public static final int U_CARINF_D1C_D0_B1 = 241;
-    public static final int U_CARINF_D1C_D0_B2 = 240;
-    public static final int U_CARINF_D1C_D0_B3 = 239;
-    public static final int U_CARINF_D1C_D0_B4 = 238;
-    public static final int U_CARINF_D1C_D0_B5 = 237;
-    public static final int U_CARINF_D1C_D0_B6 = 236;
-    public static final int U_CARINF_D1C_D0_B7 = 235;
-    public static final int U_CARSET_ALTITUDE = 184;
-    public static final int U_CARSET_ANGLE = 187;
-    public static final int U_CARSET_CALIBRATE = 190;
-    public static final int U_CARSET_D26_D4_B10 = 178;
-    public static final int U_CARSET_D26_D4_B2 = 175;
-    public static final int U_CARSET_D26_D5_B20 = 181;
-    public static final int U_CARSET_D26_D5_B43 = 180;
-    public static final int U_CARSET_D26_D5_B65 = 179;
-    public static final int U_CARSET_D26_D5_B7 = 223;
-    public static final int U_CARSET_D26_D6_B1 = 230;
-    public static final int U_CARSET_D26_D6_B2 = 229;
-    public static final int U_CARSET_D26_D6_B3 = 228;
-    public static final int U_CARSET_D26_D6_B4 = 227;
-    public static final int U_CARSET_D26_D6_B5 = 226;
-    public static final int U_CARSET_D26_D6_B6 = 225;
-    public static final int U_CARSET_D26_D6_B7 = 224;
-    public static final int U_CARSET_D4D_D0_D1 = 188;
-    public static final int U_CARSET_D4D_D2_D3 = 189;
-    public static final int U_CARSET_D50_B10 = 151;
-    public static final int U_CARSET_D50_B32 = 150;
-    public static final int U_CARSET_D5D_D0_B0 = 176;
-    public static final int U_CARSET_D5D_D0_B1 = 182;
-    public static final int U_CARSET_D5D_D1_B0 = 183;
-    public static final int U_CARSET_D5F_D0_B0 = 170;
-    public static final int U_CARSET_D5F_D0_B1 = 169;
-    public static final int U_CARSET_D5F_D0_B2 = 168;
-    public static final int U_CARSET_D5F_D0_B3 = 167;
-    public static final int U_CARSET_D5F_D0_B4 = 166;
-    public static final int U_CARSET_D5F_D0_B5 = 165;
-    public static final int U_CARSET_D5F_D0_B6 = 164;
-    public static final int U_CARSET_D5F_D0_B7 = 163;
-    public static final int U_CARSET_D5F_D1_B70 = 171;
-    public static final int U_CARSET_D5F_D2_B70 = 172;
-    public static final int U_CARSET_D5F_D3_B70 = 173;
-    public static final int U_CARSET_D5F_D4_B70 = 174;
-    public static final int U_CARSET_LATITUDE = 186;
-    public static final int U_CARSET_LONGITUDE = 185;
-    public static final int U_CARSET_OIL_UNIT = 159;
-    public static final int U_CAR_AIR_AUTOWIN = 149;
-    public static final int U_CAR_EC_LEV = 147;
-    public static final int U_CAR_LANGUAGE_SET = 148;
-    public static final int U_CMR_NEW_ADD = 140;
-    public static final int U_CNT_MAX = 242;
-    public static final int U_DOOR_BACK = 80;
-    public static final int U_DOOR_BEGIN = 75;
-    public static final int U_DOOR_END = 81;
-    public static final int U_DOOR_ENGINE = 75;
-    public static final int U_DOOR_FL = 76;
-    public static final int U_DOOR_FR = 77;
-    public static final int U_DOOR_RL = 78;
-    public static final int U_DOOR_RR = 79;
-    public static final int U_DRIVING_SPEED = 101;
-    public static final int U_INFO_CAR_AMPMUTE = 130;
-    public static final int U_INFO_CAR_AMPPMID = 132;
-    public static final int U_INFO_CAR_AMPPOWERONOFF = 129;
-    public static final int U_INFO_CAR_AMPPSEL = 131;
-    public static final int U_INFO_CAR_ASL = 127;
-    public static final int U_INFO_CAR_BAL = 124;
-    public static final int U_INFO_CAR_BASS = 125;
-    public static final int U_INFO_CAR_FAD = 123;
-    public static final int U_INFO_CAR_KEEPVOLUEM = 128;
-    public static final int U_INFO_CAR_START = 122;
-    public static final int U_INFO_CAR_TRE = 126;
-    public static final int U_INFO_CAR_VOL = 120;
-    public static final int U_MOTOR_COLOR_TYPE = 146;
-    public static final int U_RADARR_FRONT_DISTANCE = 145;
-    public static final int U_RADARR_ONOFF = 143;
-    public static final int U_RADARR_VOL_LEV = 144;
-    public static final int U_RADAR_REAR_DISTANCE = 142;
-    public static final int U_SEAT_BLOW_LEFT = 161;
-    public static final int U_SEAT_BLOW_RIGHT = 162;
-    public static final int U_SEAT_HEAT_LEFT = 118;
-    public static final int U_SEAT_HEAT_RIGHT = 119;
-    public static final int U_TURN_RIGHT_ENTER_CAMERA = 133;
-    public static final int U_WARNNING_LOW_OIL = 106;
+    public static final int U_CARINFO_AUTO_RELOCK_TIME = 161;
+    public static final int U_CARINFO_ECO_MODE = 158;
+    public static final int U_CARINFO_EV_MODE = 159;
+    public static final int U_CARINFO_NEW_ADD = 157;
+    public static final int U_CARINFO_START_STOP_KEY = 160;
+    public static final int U_CARINF_D11_D0_B20 = 219;
+    public static final int U_CARINF_D11_D0_B3 = 218;
+    public static final int U_CARINF_D11_D0_B4 = 217;
+    public static final int U_CARINF_D11_D0_B5 = 216;
+    public static final int U_CARINF_D11_D0_B6 = 215;
+    public static final int U_CARINF_D11_D0_B7 = 214;
+    public static final int U_CARINF_D11_D1_B70 = 220;
+    public static final int U_CARINF_D11_D2_B70 = 221;
+    public static final int U_CARINF_D11_D3_D4 = 222;
+    public static final int U_CARINF_D12_D0_B30 = 225;
+    public static final int U_CARINF_D12_D0_B7 = 224;
+    public static final int U_CARINF_D12_D11_D12 = 231;
+    public static final int U_CARINF_D12_D13_D14 = 232;
+    public static final int U_CARINF_D12_D1_D2 = 226;
+    public static final int U_CARINF_D12_D3_D4 = 227;
+    public static final int U_CARINF_D12_D5_D6 = 228;
+    public static final int U_CARINF_D12_D7_D8 = 229;
+    public static final int U_CARINF_D12_D9_D10 = 230;
+    public static final int U_CARINF_D13_ALL = 233;
+    public static final int U_CARINF_D14_ALL = 234;
+    public static final int U_CARINF_D15_ALL = 235;
+    public static final int U_CARINF_D17_ALL = 236;
+    public static final int U_CARINF_D18_ALL = 223;
+    public static final int U_CARINF_D19_ALL = 243;
+    public static final int U_CARINF_D1A_ALL = 244;
+    public static final int U_CARINF_D1B_ALL1 = 237;
+    public static final int U_CARINF_D1B_ALL2 = 238;
+    public static final int U_CARINF_D1B_ALL3 = 239;
+    public static final int U_CARINF_D1B_ALL4 = 240;
+    public static final int U_CARINF_D1B_ALL5 = 241;
+    public static final int U_CARINF_D1B_ALL6 = 242;
+    public static final int U_CARINF_D1C_D0_B1 = 259;
+    public static final int U_CARINF_D1C_D0_B2 = 258;
+    public static final int U_CARINF_D1C_D0_B3 = 257;
+    public static final int U_CARINF_D1C_D0_B4 = 256;
+    public static final int U_CARINF_D1C_D0_B5 = 255;
+    public static final int U_CARINF_D1C_D0_B6 = 254;
+    public static final int U_CARINF_D1C_D0_B7 = 253;
+    public static final int U_CARSET_ALTITUDE = 207;
+    public static final int U_CARSET_ANGLE = 210;
+    public static final int U_CARSET_CALIBRATE = 213;
+    public static final int U_CARSET_D26_D4_B10 = 201;
+    public static final int U_CARSET_D26_D4_B2 = 199;
+    public static final int U_CARSET_D26_D5_B20 = 204;
+    public static final int U_CARSET_D26_D5_B43 = 203;
+    public static final int U_CARSET_D26_D5_B65 = 202;
+    public static final int U_CARSET_D26_D5_B7 = 245;
+    public static final int U_CARSET_D26_D6_B1 = 252;
+    public static final int U_CARSET_D26_D6_B2 = 251;
+    public static final int U_CARSET_D26_D6_B3 = 250;
+    public static final int U_CARSET_D26_D6_B4 = 249;
+    public static final int U_CARSET_D26_D6_B5 = 248;
+    public static final int U_CARSET_D26_D6_B6 = 247;
+    public static final int U_CARSET_D26_D6_B7 = 246;
+    public static final int U_CARSET_D4D_D0_D1 = 211;
+    public static final int U_CARSET_D4D_D2_D3 = 212;
+    public static final int U_CARSET_D50_B10 = 185;
+    public static final int U_CARSET_D50_B32 = 184;
+    public static final int U_CARSET_D5D_D0_B0 = 200;
+    public static final int U_CARSET_D5D_D0_B1 = 205;
+    public static final int U_CARSET_D5D_D1_B0 = 206;
+    public static final int U_CARSET_D5F_D0_B0 = 194;
+    public static final int U_CARSET_D5F_D0_B1 = 193;
+    public static final int U_CARSET_D5F_D0_B2 = 192;
+    public static final int U_CARSET_D5F_D0_B3 = 191;
+    public static final int U_CARSET_D5F_D0_B4 = 190;
+    public static final int U_CARSET_D5F_D0_B5 = 189;
+    public static final int U_CARSET_D5F_D0_B6 = 188;
+    public static final int U_CARSET_D5F_D0_B7 = 187;
+    public static final int U_CARSET_D5F_D1_B70 = 195;
+    public static final int U_CARSET_D5F_D2_B70 = 196;
+    public static final int U_CARSET_D5F_D3_B70 = 197;
+    public static final int U_CARSET_D5F_D4_B70 = 198;
+    public static final int U_CARSET_LATITUDE = 209;
+    public static final int U_CARSET_LONGITUDE = 208;
+    public static final int U_CARSET_OIL_UNIT = 186;
+    public static final int U_CAR_AIR_AUTOWIN = 183;
+    public static final int U_CAR_EC_LEV = 181;
+    public static final int U_CAR_LANGUAGE_SET = 182;
+    public static final int U_CMR_NEW_ADD = 175;
+    public static final int U_CNT_MAX = 260;
+    public static final int U_DRIVING_SPEED = 156;
+    public static final int U_INFO_CAR_AMPMUTE = 171;
+    public static final int U_INFO_CAR_AMPPMID = 173;
+    public static final int U_INFO_CAR_AMPPOWERONOFF = 170;
+    public static final int U_INFO_CAR_AMPPSEL = 172;
+    public static final int U_INFO_CAR_ASL = 168;
+    public static final int U_INFO_CAR_BAL = 165;
+    public static final int U_INFO_CAR_BASS = 166;
+    public static final int U_INFO_CAR_FAD = 164;
+    public static final int U_INFO_CAR_KEEPVOLUEM = 169;
+    public static final int U_INFO_CAR_START = 163;
+    public static final int U_INFO_CAR_TRE = 167;
+    public static final int U_INFO_CAR_VOL = 162;
+    public static final int U_MOTOR_COLOR_TYPE = 180;
+    public static final int U_RADARR_FRONT_DISTANCE = 179;
+    public static final int U_RADARR_ONOFF = 177;
+    public static final int U_RADARR_VOL_LEV = 178;
+    public static final int U_RADAR_REAR_DISTANCE = 176;
+    public static final int U_TURN_RIGHT_ENTER_CAMERA = 174;
     public static String XMCH1;
     public static String XMCH2;
     public static String XMCH3;
@@ -183,60 +129,54 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
     public static String XMStatus;
     public static String XMTitle;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 242; i++) {
+        for (int i = 0; i < 260; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 75;
-        DoorHelper.sUcDoorFl = 76;
-        DoorHelper.sUcDoorFr = 77;
-        DoorHelper.sUcDoorRl = 78;
-        DoorHelper.sUcDoorRr = 79;
-        DoorHelper.sUcDoorBack = 80;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         int carId = (DataCanbus.DATA[1000] >> 16) & 65535;
-        if ((carId < 79 || carId > 86) && carId != 89 && carId != 90 && carId != 91 && carId != 92 && carId != 93) {
-            AirHelper.getInstance().buildUi(new Air_0397_BNR_Camry2013(LauncherApplication.getInstance()));
-            for (int i2 = 59; i2 < 75; i2++) {
+        if ((carId < 79 || carId > 86) && carId != 89 && carId != 90 && carId != 91 && carId != 92 && carId != 93 && carId != 94 && carId != 95 && carId != 96 && carId != 97 && carId != 98 && carId != 99 && carId != 100 && carId != 101 && carId != 102 && carId != 103 && carId != 104) {
+            //AirHelper.getInstance().buildUi(new Air_0397_BNR_Camry2013(LauncherApplication.getInstance()));
+            for (int i2 = 10; i2 < 97; i2++) {
                 DataCanbus.NOTIFY_EVENTS[i2].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
-            }
-            for (int i3 = 108; i3 <= 119; i3++) {
-                DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
             }
         }
         DoorHelper.getInstance().buildUi();
-        for (int i4 = 75; i4 < 81; i4++) {
-            DataCanbus.NOTIFY_EVENTS[i4].addNotify(DoorHelper.getInstance(), 0);
+        for (int i3 = 0; i3 < 6; i3++) {
+            DataCanbus.NOTIFY_EVENTS[i3].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 75; i < 81; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 59; i2 < 75; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
-        }
-        for (int i3 = 108; i3 <= 119; i3++) {
-            DataCanbus.NOTIFY_EVENTS[i3].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             switch (updateCode) {
-                case 8:
+                case 105:
                     TripOilExpand(updateCode, ints);
                     break;
-                case 37:
+                case 134:
                     LastMinuteOldExpand(updateCode, ints);
                     break;
-                case 200:
+                case 223:
                     if (strs != null && strs.length > 0) {
                         CDName = strs[0];
                     } else {
@@ -245,7 +185,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 210:
+                case 233:
                     if (strs != null && strs.length > 0) {
                         XMName = strs[0];
                     } else {
@@ -254,7 +194,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 211:
+                case 234:
                     if (strs != null && strs.length > 0) {
                         XMTitle = strs[0];
                     } else {
@@ -263,7 +203,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 212:
+                case 235:
                     if (strs != null && strs.length > 0) {
                         XMCategory = strs[0];
                     } else {
@@ -272,7 +212,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 213:
+                case 236:
                     if (strs != null && strs.length > 0) {
                         XMStatus = strs[0];
                     } else {
@@ -281,7 +221,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 215:
+                case 237:
                     if (strs != null && strs.length > 0) {
                         XMCH1 = strs[0];
                     } else {
@@ -290,7 +230,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 216:
+                case 238:
                     if (strs != null && strs.length > 0) {
                         XMCH2 = strs[0];
                     } else {
@@ -299,7 +239,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 217:
+                case 239:
                     if (strs != null && strs.length > 0) {
                         XMCH3 = strs[0];
                     } else {
@@ -308,7 +248,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 218:
+                case 240:
                     if (strs != null && strs.length > 0) {
                         XMCH4 = strs[0];
                     } else {
@@ -317,7 +257,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 219:
+                case 241:
                     if (strs != null && strs.length > 0) {
                         XMCH5 = strs[0];
                     } else {
@@ -326,7 +266,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 220:
+                case 242:
                     if (strs != null && strs.length > 0) {
                         XMCH6 = strs[0];
                     } else {
@@ -335,7 +275,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 221:
+                case 243:
                     if (strs != null && strs.length > 0) {
                         CDFolder = strs[0];
                     } else {
@@ -344,7 +284,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     HandlerCanbus.update(updateCode, ints);
                     break;
-                case 222:
+                case 244:
                     if (strs != null && strs.length > 0) {
                         CDArtist = strs[0];
                     } else {
@@ -354,7 +294,7 @@ public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase 
                     HandlerCanbus.update(updateCode, ints);
                     break;
                 default:
-                    if (updateCode >= 0 && updateCode < 242) {
+                    if (updateCode >= 0 && updateCode < 260) {
                         HandlerCanbus.update(updateCode, ints);
                         break;
                     }

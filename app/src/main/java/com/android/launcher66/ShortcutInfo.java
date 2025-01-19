@@ -12,7 +12,6 @@ import com.android.launcher66.LauncherSettings;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class ShortcutInfo extends ItemInfo {
     boolean customIcon;
     long firstInstallTime;
@@ -36,7 +35,7 @@ class ShortcutInfo extends ItemInfo {
         this.itemType = 1;
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     protected Intent getIntent() {
         return this.intent;
     }
@@ -138,7 +137,7 @@ class ShortcutInfo extends ItemInfo {
         }
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "ShortcutInfo(title=" + this.title.toString() + "intent=" + this.intent + "id=" + this.id + " type=" + this.itemType + " container=" + this.container + " screen=" + this.screenId + " cellX=" + this.cellX + " cellY=" + this.cellY + " spanX=" + this.spanX + " spanY=" + this.spanY + " dropPos=" + this.dropPos + ")";
     }

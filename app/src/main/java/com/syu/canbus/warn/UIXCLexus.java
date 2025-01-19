@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIXCLexus {
     private static UIXCLexus mInstance;
     Context context;
@@ -36,20 +36,20 @@ public class UIXCLexus {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (updateCode) {
-            case 27:
+            case 98:
                 if (value == 1) {
                     this.mTextWarn.setText("Car Vol : Mute");
                     break;
                 }
-            case 28:
+            case 99:
                 this.mTextWarn.setText("Car Vol : " + value);
                 break;
-            case 29:
+            case 100:
                 if (value > 5) {
                     this.mTextWarn.setText("Bass : +" + (value - 5));
                     break;
@@ -60,7 +60,7 @@ public class UIXCLexus {
                     this.mTextWarn.setText("Bass : 0");
                     break;
                 }
-            case 30:
+            case 101:
                 if (value > 5) {
                     this.mTextWarn.setText("Middle : +" + (value - 5));
                     break;
@@ -71,7 +71,7 @@ public class UIXCLexus {
                     this.mTextWarn.setText("Middle : 0");
                     break;
                 }
-            case 31:
+            case 102:
                 if (value > 5) {
                     this.mTextWarn.setText("Treb : +" + (value - 5));
                     break;
@@ -82,7 +82,7 @@ public class UIXCLexus {
                     this.mTextWarn.setText("Treb : 0");
                     break;
                 }
-            case 32:
+            case 103:
                 if (value > 7) {
                     this.mTextWarn.setText("Balance : +" + (value - 7));
                     break;
@@ -93,7 +93,7 @@ public class UIXCLexus {
                     this.mTextWarn.setText("Balance : 0");
                     break;
                 }
-            case 33:
+            case 104:
                 if (value > 7) {
                     this.mTextWarn.setText("Fade : +" + (value - 7));
                     break;
@@ -104,7 +104,7 @@ public class UIXCLexus {
                     this.mTextWarn.setText("Fade : 0");
                     break;
                 }
-            case 34:
+            case 105:
                 if (value == 1) {
                     this.mTextWarn.setText("ASL : On");
                     break;

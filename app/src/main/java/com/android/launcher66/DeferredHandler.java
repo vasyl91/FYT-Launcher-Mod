@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DeferredHandler {
     private LinkedList<Pair<Runnable, Integer>> mQueue = new LinkedList<>();
     private MessageQueue mMessageQueue = Looper.myQueue();
@@ -23,7 +22,7 @@ public class DeferredHandler {
             this();
         }
 
-        @Override // android.os.Handler
+        @Override
         public void handleMessage(Message msg) {
             synchronized (DeferredHandler.this.mQueue) {
                 if (DeferredHandler.this.mQueue.size() != 0) {
@@ -37,7 +36,7 @@ public class DeferredHandler {
             }
         }
 
-        @Override // android.os.MessageQueue.IdleHandler
+        @Override
         public boolean queueIdle() {
             handleMessage(null);
             return false;
@@ -51,7 +50,7 @@ public class DeferredHandler {
             this.mRunnable = r;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             this.mRunnable.run();
         }

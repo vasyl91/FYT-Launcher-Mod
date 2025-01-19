@@ -4,17 +4,17 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DjB70AirControlAct extends Activity implements View.OnClickListener {
     public static DjB70AirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.b70.DjB70AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
@@ -50,10 +50,10 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_djb70_control_set);
+        ////setContentView(R.layout.layout_djb70_control_set);
         mInstance = this;
         init();
     }
@@ -77,7 +77,7 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         findViewById(R.id.air_xts_auto).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -85,7 +85,7 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -97,7 +97,7 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -203,22 +203,22 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int acOn = DataCanbus.DATA[1];
         findViewById(R.id.air_xts_rear).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirPower() {
         int acOn = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[8];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -233,10 +233,10 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[9];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -251,19 +251,19 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[6];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAutoOn() {
         int auto = DataCanbus.DATA[5];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[0];
         if (cycle == 1) {
@@ -273,13 +273,13 @@ public class DjB70AirControlAct extends Activity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int level = DataCanbus.DATA[7];
-        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
+        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(String.valueOf(level));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[2];
         int foot = DataCanbus.DATA[3];

@@ -10,10 +10,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mazda.Rzc_Mazda_CarAmpSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -93,14 +92,14 @@ public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickLis
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_rzc_mazda_amp_settings);
+        //setContentView(R.layout.layout_0439_rzc_mazda_amp_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -118,10 +117,46 @@ public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickLis
         setSelfClick((Button) findViewById(R.id.btn_plus6), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.btn_minus1 /* 2131427455 */:
+                setCarAmpInfo(1, 129);
+                break;
+            case R.id.btn_plus1 /* 2131427457 */:
+                setCarAmpInfo(1, 1);
+                break;
+            case R.id.btn_minus2 /* 2131427458 */:
+                setCarAmpInfo(2, 129);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                setCarAmpInfo(2, 1);
+                break;
+            case R.id.btn_minus3 /* 2131427461 */:
+                setCarAmpInfo(3, 129);
+                break;
+            case R.id.btn_plus3 /* 2131427463 */:
+                setCarAmpInfo(3, 1);
+                break;
+            case R.id.btn_minus4 /* 2131427464 */:
+                setCarAmpInfo(4, 129);
+                break;
+            case R.id.btn_plus4 /* 2131427466 */:
+                setCarAmpInfo(4, 1);
+                break;
+            case R.id.btn_minus5 /* 2131427467 */:
+                setCarAmpInfo(5, 129);
+                break;
+            case R.id.btn_plus5 /* 2131427469 */:
+                setCarAmpInfo(5, 1);
+                break;
+            case R.id.btn_minus6 /* 2131427470 */:
+                setCarAmpInfo(6, 129);
+                break;
+            case R.id.btn_plus6 /* 2131427472 */:
+                setCarAmpInfo(6, 1);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 int value = DataCanbus.DATA[98];
                 if (value == 1) {
                     value = 0;
@@ -130,43 +165,7 @@ public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickLis
                 }
                 setCarAmpInfo(7, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                setCarAmpInfo(1, 129);
-                break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                setCarAmpInfo(1, 1);
-                break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                setCarAmpInfo(2, 129);
-                break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                setCarAmpInfo(2, 1);
-                break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                setCarAmpInfo(3, 129);
-                break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                setCarAmpInfo(3, 1);
-                break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                setCarAmpInfo(4, 129);
-                break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                setCarAmpInfo(4, 1);
-                break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                setCarAmpInfo(5, 129);
-                break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                setCarAmpInfo(5, 1);
-                break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                setCarAmpInfo(6, 129);
-                break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                setCarAmpInfo(6, 1);
-                break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 int value2 = DataCanbus.DATA[99];
                 if (value2 == 1) {
                     value2 = 0;
@@ -182,20 +181,20 @@ public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickLis
         DataCanbus.PROXY.cmd(4, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{112}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
@@ -207,7 +206,7 @@ public class Rzc_Mazda_CarAmpSet extends BaseActivity implements View.OnClickLis
         DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);

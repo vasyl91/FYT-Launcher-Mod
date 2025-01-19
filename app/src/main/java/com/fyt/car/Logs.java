@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.ipc.data.FinalCanbus;
 
 public class Logs {

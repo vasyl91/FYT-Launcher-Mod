@@ -11,14 +11,13 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0061_RZC_XP1_GM;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GmAndraActivityCarCD extends Activity implements View.OnTouchListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.andra.GmAndraActivityCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 132:
+                case 193:
                     if (value == 1) {
                         ((TextView) GmAndraActivityCarCD.this.findViewById(R.id.tv_text1)).setText("Powe: On");
                         break;
@@ -26,7 +25,7 @@ public class GmAndraActivityCarCD extends Activity implements View.OnTouchListen
                         ((TextView) GmAndraActivityCarCD.this.findViewById(R.id.tv_text1)).setText("Powe: Off");
                         break;
                     }
-                case 133:
+                case 194:
                     switch (value) {
                         case 1:
                             ((TextView) GmAndraActivityCarCD.this.findViewById(R.id.tv_text2)).setText("BC");
@@ -53,20 +52,20 @@ public class GmAndraActivityCarCD extends Activity implements View.OnTouchListen
                             ((TextView) GmAndraActivityCarCD.this.findViewById(R.id.tv_text2)).setText("");
                             break;
                     }
-                case 135:
+                case 196:
                     ((TextView) GmAndraActivityCarCD.this.findViewById(R.id.tv_text3)).setText(Callback_0061_RZC_XP1_GM.cdText);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0061_rzc_gm_andra_carcd);
+        //setContentView(R.layout.layout_0061_rzc_gm_andra_carcd);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -74,29 +73,29 @@ public class GmAndraActivityCarCD extends Activity implements View.OnTouchListen
         DataCanbus.PROXY.cmd(98, new int[]{1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         DataCanbus.PROXY.cmd(98, new int[]{2}, null, null);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return false;
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
     }
 }

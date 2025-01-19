@@ -5,24 +5,22 @@ import android.os.Bundle;
 import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0227_RZC_XP1_ChangAnYueXiangV7;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityEnergyStatistics extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.beiqi.ActivityEnergyStatistics.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 90:
+                case 102:
                     ActivityEnergyStatistics.this.updateEnergyCurStatistics();
                     break;
-                case 95:
+                case 107:
                     ActivityEnergyStatistics.this.updateEnergyStatistics(DataCanbus.DATA[updateCode]);
                     break;
-                case ConstRzcAddData.U_CAR_DRIVENABLE_MILEAGE /* 513 */:
+                case 145:
                     if (((TextView) ActivityEnergyStatistics.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) ActivityEnergyStatistics.this.findViewById(R.id.tv_text1)).setText("续航里程：" + (DataCanbus.DATA[updateCode] / 10) + "." + (DataCanbus.DATA[updateCode] % 10) + " km");
                         break;
@@ -31,29 +29,29 @@ public class ActivityEnergyStatistics extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_227_energy_statistics);
+        //setContentView(R.layout.layout_227_energy_statistics);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[513].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[513].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEnergyCurStatistics() {
         if (((VerticalProgressbar) findViewById(R.id.camry_progressbar_0)) != null) {
             int vaule = (Callback_0227_RZC_XP1_ChangAnYueXiangV7.U_CARINFO_ENERGEY_LIST[0] * 30) / 100;
@@ -307,7 +305,7 @@ public class ActivityEnergyStatistics extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEnergyStatistics(int value) {
         if (((TextView) findViewById(R.id.tv_227_energy_statistics)) != null) {
             ((TextView) findViewById(R.id.tv_227_energy_statistics)).setText(String.valueOf(value) + "   W");

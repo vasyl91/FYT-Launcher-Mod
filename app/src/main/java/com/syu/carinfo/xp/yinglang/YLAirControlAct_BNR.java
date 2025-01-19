@@ -10,43 +10,42 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLAirControlAct_BNR extends Activity implements View.OnClickListener {
     public static YLAirControlAct_BNR mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLAirControlAct_BNR.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
-                    YLAirControlAct_BNR.this.mUpdatesyncOn();
-                    break;
-                case 89:
-                    YLAirControlAct_BNR.this.mUpdateCycle();
-                    break;
-                case 93:
+                case 11:
                     YLAirControlAct_BNR.this.mUpdateAcOn();
                     break;
-                case 97:
-                    YLAirControlAct_BNR.this.mUpdateAirTempLeft();
+                case 12:
+                    YLAirControlAct_BNR.this.mUpdateCycle();
                     break;
-                case 98:
-                    YLAirControlAct_BNR.this.mUpdateAirTempRight();
+                case 14:
+                    YLAirControlAct_BNR.this.mUpdatesyncOn();
                     break;
-                case 110:
-                    YLAirControlAct_BNR.this.mUpdateAirAutoOn();
-                    break;
-                case 111:
+                case 15:
                     YLAirControlAct_BNR.this.mUpdateFrontDefrog();
                     break;
-                case 112:
-                case 151:
+                case 21:
+                case 74:
                     YLAirControlAct_BNR.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 121:
+                case 27:
+                    YLAirControlAct_BNR.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    YLAirControlAct_BNR.this.mUpdateAirTempRight();
+                    break;
+                case 49:
+                    YLAirControlAct_BNR.this.mUpdateAirAutoOn();
+                    break;
+                case 77:
                     YLAirControlAct_BNR.this.mUpdatefrontblow();
                     break;
-                case 152:
+                case 80:
                     YLAirControlAct_BNR.this.uAcAuto(DataCanbus.DATA[updateCode]);
                     break;
             }
@@ -54,10 +53,10 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
     };
     boolean acauto = false;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0379_bnr_gm_all_airset);
+        //setContentView(R.layout.layout_0379_bnr_gm_all_airset);
         init();
         mInstance = this;
     }
@@ -80,7 +79,7 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         findViewById(R.id.dj_xts_air_win_plus_btn).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -88,7 +87,7 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -98,15 +97,15 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
 
     private void sendCmd(final int cmd) {
         DataCanbus.PROXY.cmd(10, new int[]{cmd, 1}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.xp.yinglang.YLAirControlAct_BNR.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(10, new int[]{cmd}, null, null);
             }
         }, 100L);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         int cmd = 0;
@@ -147,13 +146,13 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 cmd = 4;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                cmd = 16;
-                break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 cmd = 33;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
+            case R.id.air_xts_dual /* 2131427566 */:
+                cmd = 16;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
                 cmd = 32;
                 break;
         }
@@ -161,39 +160,39 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         String str;
-        int temp = DataCanbus.DATA[97];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 str = "LOW";
@@ -209,7 +208,7 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
     }
 
     protected void mUpdateFrontDefrog() {
-        int window = DataCanbus.DATA[111];
+        int window = DataCanbus.DATA[15];
         findViewById(R.id.air_xts_front).setBackgroundResource(window != 0 ? R.drawable.ic_xts_front_p : R.drawable.ic_xts_front_n);
     }
 
@@ -218,10 +217,10 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         mUpdateAcOn();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         String str;
-        int temp = DataCanbus.DATA[98];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 str = "LOW";
@@ -236,9 +235,9 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[93];
+        int acOn = DataCanbus.DATA[11];
         if (this.acauto) {
             findViewById(R.id.air_xts_ac).setBackgroundResource(R.drawable.ic_xts_ac_auto_p);
         } else {
@@ -246,21 +245,21 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatesyncOn() {
-        int sync = DataCanbus.DATA[87];
+        int sync = DataCanbus.DATA[14];
         findViewById(R.id.air_xts_dual).setBackgroundResource(sync == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAutoOn() {
-        int auto = DataCanbus.DATA[110];
+        int auto = DataCanbus.DATA[49];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 1 ? R.drawable.ic_xts_auto_p : R.drawable.ic_xts_auto_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[89];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_n);
         } else if (cycle == 0) {
@@ -268,11 +267,11 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
-        int leave = DataCanbus.DATA[112];
-        int leaveAuto = DataCanbus.DATA[151];
+        int leave = DataCanbus.DATA[21];
+        int leaveAuto = DataCanbus.DATA[74];
         if (leaveAuto != 0) {
             str = "A";
         } else {
@@ -281,9 +280,9 @@ public class YLAirControlAct_BNR extends Activity implements View.OnClickListene
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatefrontblow() {
-        int mode = DataCanbus.DATA[121];
+        int mode = DataCanbus.DATA[77];
         boolean auto = false;
         boolean window = false;
         boolean foot = false;

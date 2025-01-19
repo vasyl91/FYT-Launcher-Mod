@@ -10,72 +10,71 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.huiteng.Huiteng_AirFrontCtrl.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 3:
+                case 10:
                     Huiteng_AirFrontCtrl.this.mUpdatePowerOn();
                     break;
-                case 4:
+                case 11:
                     Huiteng_AirFrontCtrl.this.mUpdateAcOn();
                     break;
-                case 5:
+                case 12:
                     Huiteng_AirFrontCtrl.this.mUpdateCycle();
                     break;
-                case 6:
+                case 13:
                     Huiteng_AirFrontCtrl.this.mUpdateAutoOn();
                     break;
-                case 7:
-                    Huiteng_AirFrontCtrl.this.mUpdateAutoRightOn();
-                    break;
-                case 8:
+                case 14:
                     Huiteng_AirFrontCtrl.this.mUpdaterDual();
                     break;
-                case 9:
+                case 15:
                     Huiteng_AirFrontCtrl.this.mUpdateFrontDefrost();
                     break;
-                case 10:
-                    Huiteng_AirFrontCtrl.this.mUpdateRearDefrost();
-                    break;
-                case 11:
+                case 18:
                     Huiteng_AirFrontCtrl.this.mUpdateModeUpOn();
                     break;
-                case 12:
+                case 19:
                     Huiteng_AirFrontCtrl.this.mUpdateModeBodyOn();
                     break;
-                case 13:
+                case 20:
                     Huiteng_AirFrontCtrl.this.mUpdateModeFootOn();
                     break;
-                case 14:
+                case 21:
                     Huiteng_AirFrontCtrl.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 15:
-                    Huiteng_AirFrontCtrl.this.mUpdateAirTempLeft();
-                    break;
-                case 16:
-                    Huiteng_AirFrontCtrl.this.mUpdateAirTempRight();
-                    break;
-                case 17:
-                    Huiteng_AirFrontCtrl.this.mUpdateAQSOn();
-                    break;
-                case 19:
-                    Huiteng_AirFrontCtrl.this.mUpdateRearLockOn();
-                    break;
-                case 23:
+                case 22:
                     Huiteng_AirFrontCtrl.this.mUpdateModeUpRightOn();
                     break;
-                case 24:
+                case 23:
                     Huiteng_AirFrontCtrl.this.mUpdateModeBodyRightOn();
                     break;
-                case 25:
+                case 24:
                     Huiteng_AirFrontCtrl.this.mUpdateModeFootRightOn();
                     break;
+                case 26:
+                    Huiteng_AirFrontCtrl.this.mUpdateAutoRightOn();
+                    break;
                 case 27:
+                    Huiteng_AirFrontCtrl.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    Huiteng_AirFrontCtrl.this.mUpdateAirTempRight();
+                    break;
+                case 38:
+                    Huiteng_AirFrontCtrl.this.mUpdateRearDefrost();
+                    break;
+                case 54:
+                    Huiteng_AirFrontCtrl.this.mUpdateAQSOn();
+                    break;
+                case 55:
                     Huiteng_AirFrontCtrl.this.mUpdateRestOn();
+                    break;
+                case 67:
+                    Huiteng_AirFrontCtrl.this.mUpdateRearLockOn();
                     break;
             }
         }
@@ -85,10 +84,10 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         DataCanbus.PROXY.cmd(3, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_439_huiteng_frontair_dj_control);
+        //setContentView(R.layout.layout_439_huiteng_frontair_dj_control);
         init();
     }
 
@@ -118,7 +117,7 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         findViewById(R.id.air_xts_auto_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -126,7 +125,7 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -134,7 +133,7 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -187,26 +186,26 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 15;
                 break;
-            case R.id.air_xts_aqs /* 2131427467 */:
-                data0 = 52;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 5;
                 break;
-            case R.id.air_xts_mode_win_right /* 2131428290 */:
+            case R.id.air_xts_aqs /* 2131427592 */:
+                data0 = 52;
+                break;
+            case R.id.air_xts_mode_win_right /* 2131428576 */:
                 data0 = 48;
                 break;
-            case R.id.air_xts_mode_body_right /* 2131428291 */:
+            case R.id.air_xts_mode_body_right /* 2131428577 */:
                 data0 = 49;
                 break;
-            case R.id.air_xts_mode_foot_right /* 2131428292 */:
+            case R.id.air_xts_mode_foot_right /* 2131428578 */:
                 data0 = 50;
                 break;
-            case R.id.air_xts_rest /* 2131428293 */:
-                data0 = 53;
-                break;
-            case R.id.air_xts_auto_right /* 2131428294 */:
+            case R.id.air_xts_auto_right /* 2131428584 */:
                 data0 = 51;
+                break;
+            case R.id.air_xts_rest /* 2131430062 */:
+                data0 = 53;
                 break;
         }
         if (event.getAction() == 0) {
@@ -218,70 +217,68 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDual() {
-        int power = DataCanbus.DATA[8];
+        int power = DataCanbus.DATA[14];
         findViewById(R.id.air_xts_sync).setBackgroundResource(power == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[15];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -293,9 +290,9 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[16];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -307,51 +304,51 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAQSOn() {
-        int acOn = DataCanbus.DATA[17];
+        int acOn = DataCanbus.DATA[54];
         findViewById(R.id.air_xts_aqs).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_aqs_n : R.drawable.ic_xts_aqs_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
-        int acOn = DataCanbus.DATA[19];
+        int acOn = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRestOn() {
-        int acOn = DataCanbus.DATA[27];
+        int acOn = DataCanbus.DATA[55];
         findViewById(R.id.air_xts_rest).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rest_n : R.drawable.ic_xts_rest_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoRightOn() {
-        int acOn = DataCanbus.DATA[7];
+        int acOn = DataCanbus.DATA[26];
         findViewById(R.id.air_xts_auto_right).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[6];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[4];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[3];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[5];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_n);
         } else if (cycle == 1) {
@@ -359,21 +356,21 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[9];
+        int front = DataCanbus.DATA[15];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[10];
+        int rear = DataCanbus.DATA[38];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[14];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -381,39 +378,39 @@ public class Huiteng_AirFrontCtrl extends Activity implements View.OnTouchListen
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeUpOn() {
-        int rear = DataCanbus.DATA[11];
+        int rear = DataCanbus.DATA[18];
         findViewById(R.id.air_xts_mode_win).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeBodyOn() {
-        int rear = DataCanbus.DATA[12];
+        int rear = DataCanbus.DATA[19];
         findViewById(R.id.air_xts_mode_body).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeFootOn() {
-        int rear = DataCanbus.DATA[13];
+        int rear = DataCanbus.DATA[20];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeUpRightOn() {
-        int rear = DataCanbus.DATA[23];
+        int rear = DataCanbus.DATA[22];
         findViewById(R.id.air_xts_mode_win_right).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeBodyRightOn() {
-        int rear = DataCanbus.DATA[24];
+        int rear = DataCanbus.DATA[23];
         findViewById(R.id.air_xts_mode_body_right).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateModeFootRightOn() {
-        int rear = DataCanbus.DATA[25];
+        int rear = DataCanbus.DATA[24];
         findViewById(R.id.air_xts_mode_foot_right).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
     }
 }

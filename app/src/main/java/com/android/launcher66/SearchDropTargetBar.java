@@ -12,7 +12,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import com.android.launcher66.DragController;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class SearchDropTargetBar extends FrameLayout implements DragController.DragListener {
     private static final AccelerateInterpolator sAccelerateInterpolator = new AccelerateInterpolator();
     private static final int sTransitionInDuration = 200;
@@ -59,15 +58,15 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     private void setupAnimation(ObjectAnimator anim, final View v) {
         anim.setInterpolator(sAccelerateInterpolator);
         anim.setDuration(200L);
-        anim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.SearchDropTargetBar.1
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        anim.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 v.setLayerType(View.LAYER_TYPE_NONE, null);
             }
         });
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         this.mDropTargetBar = findViewById(R.id.drag_target_bar);
@@ -140,7 +139,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         return 175;
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         prepareStartAnimation(this.mDropTargetBar);
         this.mDropTargetBarAnim.start();
@@ -157,7 +156,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         this.mDeferOnDragEnd = true;
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragEnd() {
         if (!this.mDeferOnDragEnd) {
             prepareStartAnimation(this.mDropTargetBar);

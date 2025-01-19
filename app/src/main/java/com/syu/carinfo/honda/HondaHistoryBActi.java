@@ -7,59 +7,59 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HondaHistoryBActi extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.HondaHistoryBActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 5:
-                case 221:
+                case 103:
+                case 258:
                     HondaHistoryBActi.this.lastMile();
                     break;
-                case 213:
+                case 250:
                     HondaHistoryBActi.this.tripA();
                     break;
-                case 214:
+                case 251:
                     HondaHistoryBActi.this.AveOil();
                     break;
-                case 215:
+                case 252:
                     HondaHistoryBActi.this.tripA1();
                     break;
-                case 216:
+                case 253:
                     HondaHistoryBActi.this.tripAOil1();
                     break;
-                case 217:
+                case 254:
                     HondaHistoryBActi.this.tripA2();
                     break;
-                case 218:
+                case 255:
                     HondaHistoryBActi.this.tripAOil2();
                     break;
-                case 219:
+                case 256:
                     HondaHistoryBActi.this.tripA3();
                     break;
-                case 220:
+                case 257:
                     HondaHistoryBActi.this.tripAOil3();
                     break;
-                case 222:
+                case 259:
                     HondaHistoryBActi.this.tripA();
                     HondaHistoryBActi.this.tripA1();
                     HondaHistoryBActi.this.tripA2();
                     HondaHistoryBActi.this.tripA3();
                     break;
-                case 223:
+                case 260:
                     HondaHistoryBActi.this.AveOil();
                     HondaHistoryBActi.this.tripAOil3();
                     break;
-                case 224:
+                case 261:
                     HondaHistoryBActi.this.tripAOil1();
                     HondaHistoryBActi.this.tripAOil2();
                     HondaHistoryBActi.this.tripAOil3();
                     break;
-                case 226:
+                case 263:
                     HondaHistoryBActi.this.oilRange();
                     HondaHistoryBActi.this.AveOil();
                     HondaHistoryBActi.this.tripAOil1();
@@ -70,135 +70,135 @@ public class HondaHistoryBActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jide_carinfo_b);
+        //setContentView(R.layout.layout_jide_carinfo_b);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.HondaHistoryBActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                DataCanbus.PROXY.cmd(101, 3);
+                DataCanbus.PROXY.cmd(105, new int[]{98, 2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DataCanbus.PROXY.cmd(100, 4);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[213].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[222].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[215].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[217].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[219].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[226].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[214].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[223].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[224].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[220].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[221].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[250].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[259].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[252].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[254].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[256].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[263].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[251].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[260].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[261].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[253].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[255].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[257].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[258].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[213].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[222].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[215].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[217].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[214].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[223].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[224].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[221].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[250].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[259].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[252].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[254].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[256].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[263].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[251].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[260].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[253].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[261].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[255].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[257].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[258].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripA() {
-        int unit = DataCanbus.DATA[222];
-        int value = DataCanbus.DATA[213];
+        int unit = DataCanbus.DATA[259];
+        int value = DataCanbus.DATA[250];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             if (value == 16777215 || value == 65535) {
                 ((TextView) findViewById(R.id.tv_text1)).setText("----");
             } else if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " M");
             } else {
-                ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " KM");
+                ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripA1() {
-        int unit = DataCanbus.DATA[222];
-        int value = DataCanbus.DATA[215];
+        int unit = DataCanbus.DATA[259];
+        int value = DataCanbus.DATA[252];
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             if (value == 16777215 || value == 65535) {
                 ((TextView) findViewById(R.id.tv_text2)).setText("----");
             } else if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " M");
             } else {
-                ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " KM");
+                ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripA2() {
-        int unit = DataCanbus.DATA[222];
-        int value = DataCanbus.DATA[217];
+        int unit = DataCanbus.DATA[259];
+        int value = DataCanbus.DATA[254];
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             if (value == 16777215 || value == 65535) {
                 ((TextView) findViewById(R.id.tv_text3)).setText("----");
             } else if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " M");
             } else {
-                ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " KM");
+                ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripA3() {
-        int unit = DataCanbus.DATA[222];
-        int value = DataCanbus.DATA[219];
+        int unit = DataCanbus.DATA[259];
+        int value = DataCanbus.DATA[256];
         if (((TextView) findViewById(R.id.tv_text4)) != null) {
             if (value == 16777215 || value == 65535) {
                 ((TextView) findViewById(R.id.tv_text4)).setText("----");
             } else if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text4)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " M");
             } else {
-                ((TextView) findViewById(R.id.tv_text4)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " KM");
+                ((TextView) findViewById(R.id.tv_text4)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void oilRange() {
-        int value = DataCanbus.DATA[226];
+        int value = DataCanbus.DATA[263];
         if (((TextView) findViewById(R.id.tv_text5)) != null) {
             ((TextView) findViewById(R.id.tv_text5)).setText(new StringBuilder(String.valueOf(value / 20)).toString());
         }
@@ -207,12 +207,12 @@ public class HondaHistoryBActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void AveOil() {
         int value;
-        int value2 = DataCanbus.DATA[214];
-        int unit = DataCanbus.DATA[223];
-        int max = DataCanbus.DATA[226];
+        int value2 = DataCanbus.DATA[251];
+        int unit = DataCanbus.DATA[260];
+        int max = DataCanbus.DATA[263];
         if (((TextView) findViewById(R.id.tv_text7)) != null) {
             if (value2 == 65535) {
                 ((TextView) findViewById(R.id.tv_text7)).setText("--.-");
@@ -234,12 +234,12 @@ public class HondaHistoryBActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripAOil1() {
         int value;
-        int value2 = DataCanbus.DATA[216];
-        int unit = DataCanbus.DATA[223];
-        int max = DataCanbus.DATA[226];
+        int value2 = DataCanbus.DATA[253];
+        int unit = DataCanbus.DATA[260];
+        int max = DataCanbus.DATA[263];
         if (((TextView) findViewById(R.id.tv_text8)) != null) {
             if (value2 == 65535) {
                 ((TextView) findViewById(R.id.tv_text8)).setText("--.-");
@@ -261,12 +261,12 @@ public class HondaHistoryBActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripAOil2() {
         int value;
-        int value2 = DataCanbus.DATA[218];
-        int unit = DataCanbus.DATA[223];
-        int max = DataCanbus.DATA[226];
+        int value2 = DataCanbus.DATA[255];
+        int unit = DataCanbus.DATA[260];
+        int max = DataCanbus.DATA[263];
         if (((TextView) findViewById(R.id.tv_text9)) != null) {
             if (value2 == 65535) {
                 ((TextView) findViewById(R.id.tv_text9)).setText("--.-");
@@ -288,12 +288,12 @@ public class HondaHistoryBActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void tripAOil3() {
         int value;
-        int value2 = DataCanbus.DATA[220];
-        int unit = DataCanbus.DATA[223];
-        int max = DataCanbus.DATA[226];
+        int value2 = DataCanbus.DATA[257];
+        int unit = DataCanbus.DATA[260];
+        int max = DataCanbus.DATA[263];
         if (((TextView) findViewById(R.id.tv_text10)) != null) {
             if (value2 == 65535) {
                 ((TextView) findViewById(R.id.tv_text10)).setText("--.-");
@@ -317,17 +317,17 @@ public class HondaHistoryBActi extends BaseActivity {
         tripAOil2();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void lastMile() {
-        int value = DataCanbus.DATA[5];
-        int unit = DataCanbus.DATA[221];
+        int value = DataCanbus.DATA[103];
+        int unit = DataCanbus.DATA[258];
         if (((TextView) findViewById(R.id.tv_text11)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.tv_text11)).setText("----");
             } else if (unit == 1) {
                 ((TextView) findViewById(R.id.tv_text11)).setText(String.valueOf(value) + " M");
             } else {
-                ((TextView) findViewById(R.id.tv_text11)).setText(String.valueOf(value) + " KM");
+                ((TextView) findViewById(R.id.tv_text11)).setText(String.valueOf(value) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }

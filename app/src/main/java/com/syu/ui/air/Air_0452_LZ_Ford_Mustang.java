@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_LZ_Ford_Mustang extends AirBase {
     public Air_0452_LZ_Ford_Mustang(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0293_wc3_15ruijie/rzc_15ruijie.webp";
         this.mPathHighlight = "0293_wc3_15ruijie/rzc_15ruijie_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -114,9 +114,9 @@ public class Air_0452_LZ_Ford_Mustang extends AirBase {
         } else if (temp == -1) {
             c.drawText("NO", 51.0f, 78.0f, this.mPaint);
         } else if (this.DATA[37] == 1) {
-            c.drawText(new StringBuilder(String.valueOf(temp / 2)).toString(), 51.0f, 78.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2), 51.0f, 78.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(temp * 0.5f)).toString(), 51.0f, 78.0f, this.mPaint);
+            c.drawText(String.valueOf(temp * 0.5f), 51.0f, 78.0f, this.mPaint);
         }
         int temp2 = this.DATA[28];
         if (temp2 == -2) {
@@ -126,9 +126,9 @@ public class Air_0452_LZ_Ford_Mustang extends AirBase {
         } else if (temp2 == -1) {
             c.drawText("NO", 780.0f, 78.0f, this.mPaint);
         } else if (this.DATA[37] == 1) {
-            c.drawText(new StringBuilder(String.valueOf(temp2 / 2)).toString(), 780.0f, 78.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2), 780.0f, 78.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(temp2 * 0.5f)).toString(), 780.0f, 78.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 * 0.5f), 780.0f, 78.0f, this.mPaint);
         }
         int temp3 = this.DATA[40];
         if (temp3 == -2) {
@@ -136,7 +136,7 @@ public class Air_0452_LZ_Ford_Mustang extends AirBase {
         } else if (temp3 == -3) {
             c.drawText("HI", 895.0f, 257.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(temp3)).toString(), 895.0f, 257.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3), 895.0f, 257.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

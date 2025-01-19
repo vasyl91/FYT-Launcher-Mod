@@ -6,12 +6,12 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.view.MotionEvent;
+
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class SHow_Benz extends Show_BenzBase {
-    private Rect config;
+    private final Rect config;
     boolean touch;
 
     public SHow_Benz(Context context) {
@@ -20,13 +20,13 @@ public class SHow_Benz extends Show_BenzBase {
         this.touch = false;
     }
 
-    @Override // com.syu.ui.benzair.Show_BenzBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1280;
         this.mContentHeight = 420;
     }
 
-    @Override // com.syu.ui.benzair.Show_BenzBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "parking/zhtd_Benz/parking_001.png";
         this.mPathHighlight1 = "parking/zhtd_Benz/parking_001_p.png";
@@ -38,7 +38,7 @@ public class SHow_Benz extends Show_BenzBase {
         return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
 
-    @Override // com.syu.ui.benzair.Show_BenzBase, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         int x = (int) (event.getX() / this.mScale);
         int y = (int) (event.getY() / this.mScale);
@@ -49,7 +49,7 @@ public class SHow_Benz extends Show_BenzBase {
         return false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);

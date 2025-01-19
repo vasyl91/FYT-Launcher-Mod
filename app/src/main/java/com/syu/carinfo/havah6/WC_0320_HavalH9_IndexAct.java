@@ -6,29 +6,28 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC_0320_HavalH9_IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_oudi_havalh9_index);
+        //setContentView(R.layout.layout_0439_oudi_havalh9_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WC_0320_HavalH9_IndexAct.1
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Class<?> cls = null;
                 switch (v.getId()) {
-                    case R.id.ctv_checkedtext1 /* 2131427478 */:
+                    case R.id.ctv_checkedtext1 /* 2131427525 */:
                         cls = WC_0320_HavalH9SetAct.class;
                         break;
-                    case R.id.ctv_checkedtext2 /* 2131427531 */:
+                    case R.id.ctv_checkedtext2 /* 2131427541 */:
                         cls = WC_0320_HavalH9AmpCarSet.class;
                         break;
-                    case R.id.ctv_checkedtext3 /* 2131427532 */:
+                    case R.id.ctv_checkedtext3 /* 2131427542 */:
                         cls = WC_0320_HavalH9CarinfoAct.class;
                         break;
                 }

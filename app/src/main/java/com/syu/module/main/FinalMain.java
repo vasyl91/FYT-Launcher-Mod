@@ -1,6 +1,5 @@
 package com.syu.module.main;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FinalMain {
     public static final int APP_ID_3GPHONE = 15;
     public static final int APP_ID_AUDIO_PLAYER = 8;

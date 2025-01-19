@@ -8,85 +8,84 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class wc_420_crown_CarfuelInfAct extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.crown.wc_420_crown_CarfuelInfAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 83:
+                case 133:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo1();
                     break;
-                case 84:
+                case 134:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo2();
                     break;
-                case 85:
+                case 135:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo3();
                     break;
-                case 86:
+                case 136:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo4();
                     break;
-                case 87:
+                case 137:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo5();
                     break;
-                case 90:
+                case 140:
                     wc_420_crown_CarfuelInfAct.this.updateCarinfo6();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0420_wc_fuel_info);
+        //setContentView(R.layout.layout_0420_wc_fuel_info);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         v.getId();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo6() {
-        int value = DataCanbus.DATA[90];
-        int mileunit = DataCanbus.DATA[89];
+        int value = DataCanbus.DATA[140];
+        int mileunit = DataCanbus.DATA[139];
         switch (mileunit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text6)).setText(String.valueOf(value) + " km");
@@ -97,24 +96,24 @@ public class wc_420_crown_CarfuelInfAct extends BaseActivity implements View.OnC
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo5() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[137];
         ((TextView) findViewById(R.id.tv_text5)).setText(String.valueOf(value) + " km/h");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo4() {
-        int value = DataCanbus.DATA[86];
+        int value = DataCanbus.DATA[136];
         int hour = value / 60;
         int min = value % 60;
         ((TextView) findViewById(R.id.tv_text4)).setText(String.valueOf(hour) + " : " + (min / 10) + (min % 10));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo3() {
-        int value = DataCanbus.DATA[85];
-        int fuelunit = DataCanbus.DATA[88];
+        int value = DataCanbus.DATA[135];
+        int fuelunit = DataCanbus.DATA[138];
         switch (fuelunit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(value * 0.1f) + " MPG");
@@ -128,10 +127,10 @@ public class wc_420_crown_CarfuelInfAct extends BaseActivity implements View.OnC
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo2() {
-        int value = DataCanbus.DATA[84];
-        int mileunit = DataCanbus.DATA[89];
+        int value = DataCanbus.DATA[134];
+        int mileunit = DataCanbus.DATA[139];
         switch (mileunit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value) + " km");
@@ -142,10 +141,10 @@ public class wc_420_crown_CarfuelInfAct extends BaseActivity implements View.OnC
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo1() {
-        int value = DataCanbus.DATA[83];
-        int fuelunit = DataCanbus.DATA[88];
+        int value = DataCanbus.DATA[133];
+        int fuelunit = DataCanbus.DATA[138];
         switch (fuelunit) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value * 0.1f) + " MPG");

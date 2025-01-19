@@ -5,27 +5,27 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0348_XP1_GM_H extends AirBase {
     public Air_0348_XP1_GM_H(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0253_xp1_yinglang/air_kaidilake.webp";
         this.mPathHighlight = "0253_xp1_yinglang/air_kaidilake_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -108,11 +108,11 @@ public class Air_0348_XP1_GM_H extends AirBase {
                 break;
             default:
                 if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
-                    c.drawText(new StringBuilder(String.valueOf(((value3 * 9) / 10) + 32)).toString(), 40.0f, 54.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value3 * 9) / 10) + 32), 40.0f, 54.0f, this.mPaint);
                     break;
                 } else {
                     int value4 = value3 * 5;
-                    c.drawText(String.valueOf(value4 / 10) + "." + (value4 % 10), 40.0f, 54.0f, this.mPaint);
+                    c.drawText(value4 / 10 + "." + (value4 % 10), 40.0f, 54.0f, this.mPaint);
                     break;
                 }
         }
@@ -126,11 +126,11 @@ public class Air_0348_XP1_GM_H extends AirBase {
                 break;
             default:
                 if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
-                    c.drawText(new StringBuilder(String.valueOf(((value5 * 9) / 10) + 32)).toString(), 932.0f, 54.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value5 * 9) / 10) + 32), 932.0f, 54.0f, this.mPaint);
                     break;
                 } else {
                     int value6 = value5 * 5;
-                    c.drawText(String.valueOf(value6 / 10) + "." + (value6 % 10), 932.0f, 54.0f, this.mPaint);
+                    c.drawText(value6 / 10 + "." + (value6 % 10), 932.0f, 54.0f, this.mPaint);
                     break;
                 }
         }

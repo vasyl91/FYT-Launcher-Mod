@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_LZ_Benz_C200 extends AirBase {
     public Air_0453_LZ_Benz_C200(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0255_rzc_fengshenax7/air_rzc_hanteng.webp";
         this.mPathHighlight = "0255_rzc_fengshenax7/air_rzc_hanteng_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -89,7 +89,7 @@ public class Air_0453_LZ_Benz_C200 extends AirBase {
         } else if (temp == -1) {
             str = "NO";
         } else {
-            str = new StringBuilder(String.valueOf(temp + 15)).toString();
+            str = String.valueOf(temp + 15);
         }
         c.drawText(str, 62.0f, 138.0f, this.mPaint);
         int temp2 = this.DATA[21];
@@ -100,7 +100,7 @@ public class Air_0453_LZ_Benz_C200 extends AirBase {
         } else if (temp2 == -1) {
             str2 = "NO";
         } else {
-            str2 = new StringBuilder(String.valueOf(temp2 + 15)).toString();
+            str2 = String.valueOf(temp2 + 15);
         }
         c.drawText(str2, 936.0f, 138.0f, this.mPaint);
         canvas.save();

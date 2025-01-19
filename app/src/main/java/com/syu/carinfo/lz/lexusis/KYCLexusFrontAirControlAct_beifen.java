@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct_beifen.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -78,10 +78,10 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         DataCanbus.PROXY.cmd(3, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_lexus_ls_air_control);
+        //setContentView(R.layout.layout_0452_lz_lexus_ls_air_control);
         init();
     }
 
@@ -108,7 +108,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         findViewById(R.id.btn_air_temp_right_minus).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -116,7 +116,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -124,7 +124,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -166,7 +166,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
             case R.id.air_xts_rearpage /* 2131427448 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) KYCLexusRearAirControlAct.class));
+                    startActivity(new Intent(this, KYCLexusRearAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -247,11 +247,11 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[27];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -268,11 +268,11 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[28];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -289,7 +289,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         if (findViewById(R.id.air_xts_auto) != null) {
@@ -297,7 +297,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[62];
         if (findViewById(R.id.air_xts_dual) != null) {
@@ -305,7 +305,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         if (findViewById(R.id.air_xts_ac) != null) {
@@ -313,7 +313,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateClearOn() {
         if (findViewById(R.id.air_xts_clear) != null) {
             int power = DataCanbus.DATA[33];
@@ -321,7 +321,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontHotOn() {
         int power = DataCanbus.DATA[17];
         if (findViewById(R.id.air_xts_front_hot) != null) {
@@ -329,7 +329,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[67];
         if (findViewById(R.id.air_xts_rearlock) != null) {
@@ -337,7 +337,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[21];
         if (findViewById(R.id.air_xts_power) != null) {
@@ -345,7 +345,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[12];
         int auto = DataCanbus.DATA[54];
@@ -365,7 +365,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[65];
         if (findViewById(R.id.air_xts_front) != null) {
@@ -373,7 +373,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[16];
         if (findViewById(R.id.air_xts_rear) != null) {
@@ -381,7 +381,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
         if (leave < 0) {
@@ -394,7 +394,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[18];
         int foot = DataCanbus.DATA[20];
@@ -446,7 +446,7 @@ public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRight() {
         int body_right = DataCanbus.DATA[23];
         int foot_right = DataCanbus.DATA[24];

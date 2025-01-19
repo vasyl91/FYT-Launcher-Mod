@@ -2,10 +2,11 @@ package com.syu.remote;
 
 import android.os.RemoteException;
 import android.util.SparseArray;
+
 import com.syu.ipc.IModuleCallback;
+
 import org.greenrobot.eventbus.EventBus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class RemoteCallback extends IModuleCallback.Stub {
     int module;
     SparseArray<Boolean> notifies = new SparseArray<>();
@@ -14,7 +15,7 @@ public class RemoteCallback extends IModuleCallback.Stub {
         this.module = module;
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         boolean notify = this.notifies.get(updateCode, false).booleanValue();
         if (notify) {

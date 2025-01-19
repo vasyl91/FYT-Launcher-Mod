@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0255_rzc_xp1_fengshenax7 extends AirBase {
     public Air_0255_rzc_xp1_fengshenax7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0255_rzc_fengshenax7/RZC_ax7.webp";
         this.mPathHighlight = "0255_rzc_fengshenax7/RZC_ax7_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -69,9 +69,9 @@ public class Air_0255_rzc_xp1_fengshenax7 extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("NO", 65.0f, 140.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 917759 || DataCanbus.DATA[1000] == 983295 || DataCanbus.DATA[1000] == 1442047 || DataCanbus.DATA[1000] == 1638655 || DataCanbus.DATA[1000] == 1704191 || DataCanbus.DATA[1000] == 1769727) {
-            c.drawText(String.valueOf(left_temp / 10) + "." + (left_temp % 10), 65.0f, 140.0f, this.mPaint);
+            c.drawText(left_temp / 10 + "." + (left_temp % 10), 65.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp).toString(), 65.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp), 65.0f, 140.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

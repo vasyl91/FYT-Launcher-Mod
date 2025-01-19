@@ -6,11 +6,11 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Door_Default extends DoorBase {
     private Rect back;
     private Rect engine;
@@ -29,7 +29,7 @@ public class Door_Default extends DoorBase {
         this.back = new Rect(70, 282, 181, 331);
     }
 
-    @Override // com.syu.ui.door.DoorBase
+    @Override
     protected void initSize() {
         if (SystemProperties.getInt("ro.build.fytmanufacturer", 0) == 95 && DataCanbus.DATA[1000] == 393666) {
             this.mContentWidth = 1920;
@@ -48,7 +48,7 @@ public class Door_Default extends DoorBase {
         }
     }
 
-    @Override // com.syu.ui.door.DoorBase
+    @Override
     protected void initDrawable() {
         if (SystemProperties.getInt("ro.build.fytmanufacturer", 0) == 95 && DataCanbus.DATA[1000] == 393666) {
             this.mDrawableNormal = ToolkitRes.loadDrawable("door/door_tzy.png");
@@ -67,7 +67,7 @@ public class Door_Default extends DoorBase {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);

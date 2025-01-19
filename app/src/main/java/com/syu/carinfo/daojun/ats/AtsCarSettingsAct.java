@@ -8,27 +8,26 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AtsCarSettingsAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_daojun_ats_car_set);
+        //setContentView(R.layout.layout_daojun_ats_car_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.ctv_checkedtext1).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext2).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext3).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) AtsInfoSetFirstAct.class);
                     startActivity(intent);
@@ -37,7 +36,7 @@ public class AtsCarSettingsAct extends BaseActivity implements View.OnClickListe
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) AtsInfoSetSecondAct.class);
                     startActivity(intent2);
@@ -46,7 +45,7 @@ public class AtsCarSettingsAct extends BaseActivity implements View.OnClickListe
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 dialog(R.string.all_settings);
                 break;
         }
@@ -56,11 +55,11 @@ public class AtsCarSettingsAct extends BaseActivity implements View.OnClickListe
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.factory_data_reset));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.daojun.ats.AtsCarSettingsAct.1
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.daojun.ats.AtsCarSettingsAct.1.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         AtsFunc.CAR_COMM_CONTROL(128, 1);
                     }
@@ -68,8 +67,8 @@ public class AtsCarSettingsAct extends BaseActivity implements View.OnClickListe
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.daojun.ats.AtsCarSettingsAct.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }

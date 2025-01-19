@@ -5,28 +5,28 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.util.Log;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0211_OuDi_ChangChengH3 extends AirBase {
     public Air_0211_OuDi_ChangChengH3(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0211_oudi_changchengh3/air_oudi_h3_n_proc.webp";
         this.mPathHighlight = "0211_oudi_changchengh3/air_oudi_h3_p_proc.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);

@@ -6,29 +6,28 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class IndexAct_Bnr extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_265_bnr_t600_index);
+        //setContentView(R.layout.layout_265_bnr_t600_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.ztt600.IndexAct_Bnr.1
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Class<?> cls = null;
                 switch (v.getId()) {
-                    case R.id.id_airset /* 2131427677 */:
+                    case R.id.id_airset /* 2131427689 */:
                         cls = ZTAirAct_Bnr.class;
                         break;
-                    case R.id.id_carset /* 2131428045 */:
+                    case R.id.id_carset /* 2131428046 */:
                         cls = CarSetAct_Bnr.class;
                         break;
-                    case R.id.id_pm25 /* 2131429007 */:
+                    case R.id.id_pm25 /* 2131428962 */:
                         cls = PM25Act_Bnr.class;
                         break;
                 }

@@ -10,17 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalCarTange extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarTange.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.ctv_checkedtext1 /* 2131427478 */:
-                    DataCanbus.PROXY.cmd(160, new int[]{163, 1}, null, null);
-                    break;
-                case R.id.btn_minus1 /* 2131427480 */:
-                    int data = DataCanbus.DATA[353];
+                case R.id.btn_minus1 /* 2131427455 */:
+                    int data = DataCanbus.DATA[345];
                     if (data == 1) {
                         data = 0;
                     } else if (data == 0) {
@@ -28,8 +24,8 @@ public class Golf7FunctionalCarTange extends BaseActivity {
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{160, data}, null, null);
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
-                    int data2 = DataCanbus.DATA[353];
+                case R.id.btn_plus1 /* 2131427457 */:
+                    int data2 = DataCanbus.DATA[345];
                     if (data2 == 1) {
                         data2 = 0;
                     } else if (data2 == 0) {
@@ -37,22 +33,22 @@ public class Golf7FunctionalCarTange extends BaseActivity {
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{160, data2}, null, null);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
-                    int data3 = (DataCanbus.DATA[354] + 1) - 1;
+                case R.id.btn_minus2 /* 2131427458 */:
+                    int data3 = (DataCanbus.DATA[346] + 1) - 1;
                     if (data3 < 1) {
                         data3 = 4;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{161, data3}, null, null);
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
-                    int data4 = DataCanbus.DATA[354] + 1 + 1;
+                case R.id.btn_plus2 /* 2131427460 */:
+                    int data4 = DataCanbus.DATA[346] + 1 + 1;
                     if (data4 > 4) {
                         data4 = 1;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{161, data4}, null, null);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
-                    int data5 = DataCanbus.DATA[355];
+                case R.id.btn_minus3 /* 2131427461 */:
+                    int data5 = DataCanbus.DATA[347];
                     if (data5 == 1) {
                         data5 = 0;
                     } else if (data5 == 0) {
@@ -60,8 +56,8 @@ public class Golf7FunctionalCarTange extends BaseActivity {
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{162, data5}, null, null);
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
-                    int data6 = DataCanbus.DATA[355];
+                case R.id.btn_plus3 /* 2131427463 */:
+                    int data6 = DataCanbus.DATA[347];
                     if (data6 == 1) {
                         data6 = 0;
                     } else if (data6 == 0) {
@@ -69,38 +65,41 @@ public class Golf7FunctionalCarTange extends BaseActivity {
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{162, data6}, null, null);
                     break;
+                case R.id.ctv_checkedtext1 /* 2131427525 */:
+                    DataCanbus.PROXY.cmd(160, new int[]{163, 1}, null, null);
+                    break;
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarTange.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 353:
+                case 345:
                     Golf7FunctionalCarTange.this.uTangeSet1(val);
                     break;
-                case 354:
+                case 346:
                     Golf7FunctionalCarTange.this.uTangeSet2(val);
                     break;
-                case 355:
+                case 347:
                     Golf7FunctionalCarTange.this.uTangeSet3(val);
                     break;
-                case 356:
+                case 348:
                     Golf7FunctionalCarTange.this.uTangeSet4(val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_cartange_set);
+        //setContentView(R.layout.layout_golf7_functional_cartange_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setonClick((Button) findViewById(R.id.btn_minus1));
         setonClick((Button) findViewById(R.id.btn_plus1));
@@ -117,37 +116,37 @@ public class Golf7FunctionalCarTange extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[353].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[354].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[355].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[356].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[345].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[346].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[347].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[348].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[353].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[354].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[355].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[356].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[345].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[346].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[347].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[348].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uTangeSet4(int val) {

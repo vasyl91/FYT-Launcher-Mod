@@ -1,30 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:id="@id/preferences" >
-    <SwitchPreference
-        android:key="user_layout"
-        android:defaultValue="false"
-        android:title="@string/layout_type"
-        android:summaryOn="@string/user_layout"
-        android:summaryOff="@string/stock_layout" />
-    <Preference
-        android:key="launcher_creator_first"
-        android:title="@string/layout_creator"
-        android:summary="@string/layout_summary" />
-    <SwitchPreference
-        android:key="transparent_statusbar"
-        android:defaultValue="false"
-        android:title="@string/transparent_statusbar" />
-    <SwitchPreference
-        android:key="fyt_data"
-        android:defaultValue="false"
-        android:title="@string/fyt_title_source"
-        android:summaryOn="@string/fyt_metadata"
-        android:summaryOff="@string/fyt_file" />
-    <Preference
-        android:key="noti_settings"
-        android:title="@string/noti_str"
-        android:summary="@string/noti_summary" />
+    android:id="@id/launcher_preferences" >
+    
+    <PreferenceCategory
+        app:key="layout_category"
+        app:title="@string/layout_category">
+
+        <SwitchPreference
+            android:key="transparent_statusbar"
+            android:defaultValue="false"
+            android:title="@string/transparent_statusbar" />
+        <SwitchPreference
+            android:key="user_layout"
+            android:defaultValue="false"
+            android:title="@string/layout_type"
+            android:summaryOn="@string/user_layout"
+            android:summaryOff="@string/stock_layout" />
+        <Preference
+            android:key="launcher_creator_first"
+            android:title="@string/layout_creator"
+            android:summary="@string/layout_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="misc_category"
+        app:title="@string/misc_category">
+
+        <SwitchPreference
+            android:key="fyt_data"
+            android:defaultValue="false"
+            android:title="@string/fyt_title_source"
+            android:summaryOn="@string/fyt_metadata"
+            android:summaryOff="@string/fyt_file" />
+        <Preference
+            android:key="device_settings"
+            android:title="@string/device_settings" />
+        <Preference
+            android:key="noti_settings"
+            android:title="@string/noti_str" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="night_mode_category"
+        app:title="@string/night_mode">
+
+        <SwitchPreference
+            android:key="night_mode"
+            android:defaultValue="false"
+            android:title="@string/night_mode"
+            android:summaryOn="@string/night_mode_summary"
+            android:maxLines="5" />
+        <SwitchPreference
+            android:key="default_wallpapers"
+            android:defaultValue="true"
+            android:title="@string/default_wallpapers" />
+        <Preference
+            android:key="save_day_wallpaper"
+            android:title="@string/save_day_wallpaper"
+            android:summary="@string/save_day_wallpaper_summary"
+            android:maxLines="5" />
+        <Preference
+            android:key="save_night_wallpaper"
+            android:title="@string/save_night_wallpaper"
+            android:summary="@string/save_night_wallpaper_summary"
+            android:maxLines="5" />
+        <SwitchPreference
+            android:key="brightness"
+            android:defaultValue="false"
+            android:title="@string/brightness" />
+        <SeekBarPreference
+            app:key="day_seek_bar"
+            app:title="@string/day_seek_bar"
+            app:defaultValue="50"
+            android:max="255"
+            app:min="0"
+            app:showSeekBarValue="false" />
+        <SeekBarPreference
+            app:key="night_seek_bar"
+            app:title="@string/night_seek_bar"
+            app:defaultValue="50"
+            android:max="255"
+            app:min="0"
+            app:showSeekBarValue="false" />
+        <Preference
+            android:key="empty"/>
+        <Preference
+            android:key="empty"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

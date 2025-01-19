@@ -3,21 +3,21 @@ package com.syu.util;
 import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.RemoteException;
 import android.os.SystemProperties;
-import android.os.Process;
 import android.util.Log;
 import android.view.View;
+
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.Workspace;
 import com.android.launcher66.settings.Helpers;
 import com.fyt.car.MapConfig;
 import com.fyt.thread.ThreadManager;
@@ -26,7 +26,6 @@ import com.syu.log.LogPreview;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class WindowUtil {
     private static final String TAG = "WindowUtil";
@@ -50,7 +49,7 @@ public class WindowUtil {
 
     public static void startMapPip(final View v, final boolean show) {
         ThreadManager.getLongPool().execute(new Runnable() {
-            @Override 
+            @Override
             public void run() {
                 WindowUtil.openPip(v, show);
             }
@@ -80,17 +79,26 @@ public class WindowUtil {
     public static void openPip(View v, boolean show) {
         LogPreview.show("startMapPip:" + AppPackageName);
         Log.d("LZP", "openPip..");
-        Intent intentpip = new Intent(PIP_STARTED);
-        LauncherApplication.sApp.sendBroadcast(intentpip);
-        Helpers.backFromApp = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats) {
+            Helpers.pipStarted = true;
+            Helpers.foregroundAppOpened = false;
+            Helpers.inAllApps = false;
+            Helpers.isInRecent = false;
+            Helpers.overviewMode = false;
+            Intent intentpip = new Intent(PIP_STARTED);
+            LauncherApplication.sApp.sendBroadcast(intentpip);
+        }
         if ((!visible || show) && Utils.topApp()) {
             intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
-            
+
             if (AppPackageName.equals("com.syu.camera360")) {
                 Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
             }
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
-                @Override 
+                @Override
                 public void run() {
                     try {
                         WindowUtil.intent.putExtra("force_pip", true);
@@ -115,15 +123,26 @@ public class WindowUtil {
             e.printStackTrace();
         }
     }
-    
+
     public static void removePip(View v) {
         Log.d("LZP", "removePip..");
-        Intent intent = new Intent(PIP_REMOVED);
-        LauncherApplication.sApp.sendBroadcast(intent);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats) {
+            if (!Helpers.foregroundAppOpened && !Helpers.isInRecent && !Helpers.inAllApps) {
+                Helpers.pipStarted = false;
+                Intent intent = new Intent(PIP_REMOVED);
+                LauncherApplication.sApp.sendBroadcast(intent);
+            } else if (Helpers.overviewMode) {
+                Intent intentOverview = new Intent(Workspace.OVERVIEW_MODE_OPEN);
+                LauncherApplication.sApp.sendBroadcast(intentOverview);
+            }
+        }
         if (visible) {
             mActivityManager = ActivityManager.getService();
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
-                @Override 
+                @Override
                 public void run() {
                     if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                         LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));
@@ -141,7 +160,7 @@ public class WindowUtil {
             delayMillis = 0;
             return;
         }
-        LogPreview.show("WindowUtil ------ 关闭窗口被过滤");
+        LogPreview.show("WindowUtil ------ removePip");
     }
 
     public static void sendBROADCAST(boolean show) {

@@ -8,17 +8,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTouchListener {
     public static rzc_112_Toyota_AirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.huangguan.rzc_112_Toyota_AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -106,10 +106,10 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0112_rzc_toyota_all_carairset);
+        //setContentView(R.layout.layout_0112_rzc_toyota_all_carairset);
         init();
         mInstance = this;
     }
@@ -136,7 +136,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         findViewById(R.id.air_cycle_inter).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -144,7 +144,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -152,7 +152,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -206,7 +206,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
             case R.id.air_xts_rearpage /* 2131427448 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) rzc_112_Toyota_AirRearControlAct.class));
+                    startActivity(new Intent(this, rzc_112_Toyota_AirRearControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -330,7 +330,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         DataCanbus.NOTIFY_EVENTS[222].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirClean() {
         int value = DataCanbus.DATA[163];
         if (findViewById(R.id.air_xts_clear) != null) {
@@ -338,7 +338,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanFlower() {
         int value = DataCanbus.DATA[164];
         if (findViewById(R.id.air_xts_ion) != null) {
@@ -346,7 +346,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanIce() {
         int value = DataCanbus.DATA[165];
         if (findViewById(R.id.air_xts_front_hot) != null) {
@@ -354,7 +354,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanSwing() {
         int value = DataCanbus.DATA[166];
         if (findViewById(R.id.air_xts_front_blow_auto) != null) {
@@ -362,11 +362,11 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[71];
         int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
@@ -389,11 +389,11 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
         int temp = DataCanbus.DATA[72];
         int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
@@ -416,15 +416,15 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[70];
         if (level >= 0 && level <= 7) {
-            ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
+            ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(String.valueOf(level));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
         int value = DataCanbus.DATA[63];
         if (findViewById(R.id.air_xts_auto) != null) {
@@ -432,7 +432,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirdual() {
         int value = DataCanbus.DATA[65];
         if (findViewById(R.id.air_xts_dual) != null) {
@@ -440,30 +440,30 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int i = R.drawable.ic_xts_cycle_n;
         int value = DataCanbus.DATA[62];
-        if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
+        if (findViewById(R.id.air_xts_cycle) != null) {
             if (value == 0) {
                 findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_n);
             } else if (value == 1) {
                 findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_p);
             }
         }
-        if (((Button) findViewById(R.id.air_cycle_outer)) != null) {
-            Button button = (Button) findViewById(R.id.air_cycle_outer);
+        if (findViewById(R.id.air_cycle_outer) != null) {
+            Button button = findViewById(R.id.air_cycle_outer);
             if (value == 0) {
                 i = R.drawable.ic_xts_cycle_out_p;
             }
             button.setBackgroundResource(i);
         }
-        if (((Button) findViewById(R.id.air_cycle_inter)) != null) {
-            ((Button) findViewById(R.id.air_cycle_inter)).setBackgroundResource(value == 1 ? R.drawable.ic_cycle_all_p : R.drawable.ic_cycle_all_n);
+        if (findViewById(R.id.air_cycle_inter) != null) {
+            findViewById(R.id.air_cycle_inter).setBackgroundResource(value == 1 ? R.drawable.ic_cycle_all_p : R.drawable.ic_cycle_all_n);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[61];
         if (findViewById(R.id.air_xts_ac) != null) {
@@ -471,7 +471,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[60];
         if (findViewById(R.id.air_xts_power) != null) {
@@ -479,7 +479,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost() {
         int value = DataCanbus.DATA[169];
         if (findViewById(R.id.air_xts_front) != null) {
@@ -487,7 +487,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int value = DataCanbus.DATA[152];
         if (findViewById(R.id.air_xts_rear) != null) {
@@ -495,7 +495,7 @@ public class rzc_112_Toyota_AirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlow() {
         int value = DataCanbus.DATA[167];
         if (value == 3) {

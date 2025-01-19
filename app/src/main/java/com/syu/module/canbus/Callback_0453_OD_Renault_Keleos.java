@@ -1,31 +1,31 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0453_OD_Renault_Keleos extends CallbackCanbusBase {
-    public static final int U_CARINF_DC0_ALL_STR = 86;
-    public static final int U_CNT_MAX = 87;
+    public static final int U_CARINF_DC0_ALL_STR = 98;
+    public static final int U_CNT_MAX = 99;
     public static String XMName;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 87; i++) {
+        for (int i = 0; i < 99; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 87) {
+        if (updateCode >= 0 && updateCode < 99) {
             switch (updateCode) {
-                case 86:
+                case 98:
                     if (strs != null && strs.length > 0) {
                         XMName = strs[0];
                     } else {

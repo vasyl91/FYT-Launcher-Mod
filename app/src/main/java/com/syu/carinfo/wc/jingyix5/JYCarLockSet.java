@@ -10,30 +10,29 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JYCarLockSet extends BaseActivity implements View.OnClickListener {
     static int[] strIds = {R.string.klc_Parking_with_trailer_Off, R.string.klc_Parking_with_trailer_ON};
     int id66d0b0;
     int id66d0b1;
-    int[] eventIds = {87, 88};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.jingyix5.JYCarLockSet.1
-        @Override // com.syu.module.IUiNotify
+    int[] eventIds = {136, 137};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
+                case 136:
                     JYCarLockSet.this.u_66d0b1(updateCode);
                     break;
-                case 88:
+                case 137:
                     JYCarLockSet.this.u_66d0b0(updateCode);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_wc_jyx5_lock);
+        //setContentView(R.layout.layout_wc_jyx5_lock);
         setUI();
     }
 
@@ -42,18 +41,18 @@ public class JYCarLockSet extends BaseActivity implements View.OnClickListener {
         ((CheckedTextView) findViewById(R.id.ctv_auto_relock)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_speed_lock /* 2131433090 */:
+            case R.id.ctv_speed_lock /* 2131432989 */:
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 2;
                 iArr[1] = this.id66d0b1 == 0 ? 1 : 0;
                 remoteModuleProxy.cmd(0, iArr, null, null);
                 break;
-            case R.id.ctv_auto_relock /* 2131433093 */:
+            case R.id.ctv_auto_relock /* 2131432992 */:
                 RemoteModuleProxy remoteModuleProxy2 = DataCanbus.PROXY;
                 int[] iArr2 = new int[2];
                 iArr2[0] = 1;
@@ -63,14 +62,14 @@ public class JYCarLockSet extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mNotifyCanbus);

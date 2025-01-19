@@ -12,70 +12,69 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 19:
+                case 116:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterActivateAutomaticlly();
                     break;
-                case 20:
+                case 117:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterFrontVolumn();
                     break;
-                case 21:
+                case 118:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterFrontTone();
                     break;
-                case 22:
+                case 119:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterRearVol();
                     break;
-                case 23:
+                case 120:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterRearTone();
                     break;
-                case 24:
+                case 121:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterParkMode();
                     break;
-                case 25:
+                case 122:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.mUpdaterRadarVol();
                     break;
-                case 162:
-                case 335:
+                case 216:
+                case 327:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.updateActivateMaticlly();
                     break;
-                case 194:
-                case 337:
+                case 244:
+                case 329:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.updateOutOfParkingAssist();
                     break;
-                case 200:
+                case 250:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.updateOffRoadIcon();
                     break;
-                case 234:
-                case 336:
+                case 276:
+                case 328:
                     Golf7FunctionalParkingAndManoeurvrinActi.this.updateParkingBrake();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
             requestWindowFeature(1);
             getWindow().setFlags(1024, 1024);
-            setContentView(R.layout.layout_golf7_functional_state_parking_and_manoeurvring_od);
+            //setContentView(R.layout.layout_golf7_functional_state_parking_and_manoeurvring_od);
         } else {
-            setContentView(R.layout.layout_golf7_functional_state_parking_and_manoeurvring);
+            //setContentView(R.layout.layout_golf7_functional_state_parking_and_manoeurvring);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.2
-                @Override // android.view.View.OnClickListener
+            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();
@@ -87,22 +86,22 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
                 }
             });
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_activate_automaticlly), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_activate_automaticlly), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[19] & 255;
+                int switchOn = DataCanbus.DATA[116] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = switchOn != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(39, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_activate_maticlly), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_activate_maticlly), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[162] & 255;
+                int switchOn = DataCanbus.DATA[216] & 255;
                 if (ConstGolf.isRZCGolf()) {
-                    int switchOn2 = DataCanbus.DATA[335] & 255;
+                    int switchOn2 = DataCanbus.DATA[327] & 255;
                     return;
                 }
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -111,102 +110,102 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
                 remoteModuleProxy.cmd(109, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_volumn_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_volumn_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[20] & 255;
+                int mValue = DataCanbus.DATA[117] & 255;
                 if (mValue > 0) {
                     DataCanbus.PROXY.cmd(40, new int[]{mValue - 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_volumn_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_volumn_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[20] & 255;
+                int mValue = DataCanbus.DATA[117] & 255;
                 if (mValue < 8) {
                     DataCanbus.PROXY.cmd(40, new int[]{mValue + 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_tone_setting_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_tone_setting_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[21] & 255;
+                int mValue = DataCanbus.DATA[118] & 255;
                 if (mValue > 0) {
                     DataCanbus.PROXY.cmd(41, new int[]{mValue - 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_tone_setting_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_front_tone_setting_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[21] & 255;
+                int mValue = DataCanbus.DATA[118] & 255;
                 if (mValue < 8) {
                     DataCanbus.PROXY.cmd(41, new int[]{mValue + 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_volumn_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_volumn_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[22] & 255;
+                int mValue = DataCanbus.DATA[119] & 255;
                 if (mValue > 0) {
                     DataCanbus.PROXY.cmd(42, new int[]{mValue - 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_volumn_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_volumn_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[22] & 255;
+                int mValue = DataCanbus.DATA[119] & 255;
                 if (mValue < 8) {
                     DataCanbus.PROXY.cmd(42, new int[]{mValue + 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_tone_setting_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_tone_setting_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[23] & 255;
+                int mValue = DataCanbus.DATA[120] & 255;
                 if (mValue > 0) {
                     DataCanbus.PROXY.cmd(43, new int[]{mValue - 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_tone_setting_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_Rear_tone_setting_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[23] & 255;
+                int mValue = DataCanbus.DATA[120] & 255;
                 if (mValue < 8) {
                     DataCanbus.PROXY.cmd(43, new int[]{mValue + 1}, null, null);
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_parking_mode_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_parking_mode_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[24] & 255;
+                int mValue = DataCanbus.DATA[121] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = mValue == 1 ? 0 : 1;
                 remoteModuleProxy.cmd(44, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_parking_mode_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.14
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_parking_mode_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[24] & 255;
+                int mValue = DataCanbus.DATA[121] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = mValue == 1 ? 0 : 1;
                 remoteModuleProxy.cmd(44, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_radar_volumn), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.15
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_radar_volumn), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[25] & 255;
+                int mValue = DataCanbus.DATA[122] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = mValue != 0 ? 0 : 1;
@@ -216,12 +215,12 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         if ((DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) && findViewById(R.id.layout_17_out_of_park_assist) != null) {
             findViewById(R.id.layout_17_out_of_park_assist).setVisibility(8);
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_out_of_park_assist), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.16
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_out_of_park_assist), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[194] & 255;
+                int mValue = DataCanbus.DATA[244] & 255;
                 if (ConstGolf.isRZCGolf()) {
-                    int mValue2 = DataCanbus.DATA[337];
+                    int mValue2 = DataCanbus.DATA[329];
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 59;
@@ -235,12 +234,12 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
                 remoteModuleProxy2.cmd(110, iArr2, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_parking_brake), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.17
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_parking_brake), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[234] & 255;
+                int mValue = DataCanbus.DATA[276] & 255;
                 if (ConstGolf.isRZCGolf()) {
-                    int mValue2 = DataCanbus.DATA[336];
+                    int mValue2 = DataCanbus.DATA[328];
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 58;
@@ -254,10 +253,10 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
                 remoteModuleProxy2.cmd(132, iArr2, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_off_road_icon), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalParkingAndManoeurvrinActi.18
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_17_off_road_icon), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int mValue = DataCanbus.DATA[200] & 255;
+                int mValue = DataCanbus.DATA[250] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = mValue != 0 ? 0 : 1;
@@ -266,63 +265,63 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[244].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[250].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[276].addNotify(this.mNotifyCanbus, 1);
         if (ConstGolf.isRZCGolf()) {
-            DataCanbus.NOTIFY_EVENTS[335].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[336].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[337].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[338].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[327].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[328].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[329].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[330].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[244].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[250].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[276].removeNotify(this.mNotifyCanbus);
         if (ConstGolf.isRZCGolf()) {
-            DataCanbus.NOTIFY_EVENTS[335].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[336].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[337].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[338].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[327].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[328].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[329].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[330].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterActivateAutomaticlly() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[116];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -334,11 +333,11 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         ((CheckedTextView) findViewById(R.id.glf7_btn_functional_parking_and_manoeurvring_activate_automaticlly)).setChecked(value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateActivateMaticlly() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[116];
         if (ConstGolf.isRZCGolf()) {
-            value = DataCanbus.DATA[335];
+            value = DataCanbus.DATA[327];
         }
         if (DataCanbus.DATA[1000] == 437 || ConstGolf.isRZCGolf()) {
             setViewVisible(findViewById(R.id.glf7_view_functional_parking_and_manoeurvring_activate_maticlly), true);
@@ -349,7 +348,7 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
     }
 
     public void updateOutOfParkingAssist() {
-        int value = DataCanbus.DATA[194];
+        int value = DataCanbus.DATA[244];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -369,7 +368,7 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
             return;
         }
         if (ConstGolf.isRZCGolf()) {
-            int switchOn3 = DataCanbus.DATA[337] & 255;
+            int switchOn3 = DataCanbus.DATA[329] & 255;
             setViewVisible(findViewById(R.id.layout_17_out_of_park_assist), true);
             ((CheckedTextView) findViewById(R.id.ctv_17_out_of_park_assist)).setChecked(switchOn3 != 0);
             return;
@@ -378,7 +377,7 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
     }
 
     public void updateOffRoadIcon() {
-        int value = DataCanbus.DATA[200];
+        int value = DataCanbus.DATA[250];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -390,7 +389,7 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
     }
 
     public void updateParkingBrake() {
-        int value = DataCanbus.DATA[234];
+        int value = DataCanbus.DATA[276];
         if (ConstGolf.isWcGolf()) {
             int enable = (value & 65280) >> 8;
             int switchOn = value & 255;
@@ -406,7 +405,7 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
             return;
         }
         if (ConstGolf.isRZCGolf()) {
-            int switchOn3 = DataCanbus.DATA[336] & 255;
+            int switchOn3 = DataCanbus.DATA[328] & 255;
             setViewVisible(findViewById(R.id.layout_17_parking_brake), true);
             ((CheckedTextView) findViewById(R.id.ctv_17_parking_brake)).setChecked(switchOn3 != 0);
             return;
@@ -414,9 +413,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         setViewVisible(findViewById(R.id.layout_17_parking_brake), false);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFrontVolumn() {
-        int value = DataCanbus.DATA[20];
+        int value = DataCanbus.DATA[117];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int mValue = value & 255;
@@ -428,9 +427,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         ((TextView) findViewById(R.id.glf7_tv_functional_parking_and_manoeurvring_front_volumn)).setText(new StringBuilder().append(value + 1).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFrontTone() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[118];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int mValue = value & 255;
@@ -442,9 +441,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         ((TextView) findViewById(R.id.glf7_tv_functional_parking_and_manoeurvring_front_tone_setting)).setText(new StringBuilder().append(value + 1).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearVol() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[119];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int mValue = value & 255;
@@ -456,9 +455,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         ((TextView) findViewById(R.id.glf7_tv_functional_parking_and_manoeurvring_Rear_volumn)).setText(new StringBuilder().append(value + 1).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearTone() {
-        int value = DataCanbus.DATA[23];
+        int value = DataCanbus.DATA[120];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int mValue = value & 255;
@@ -470,9 +469,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         ((TextView) findViewById(R.id.glf7_tv_functional_parking_and_manoeurvring_Rear_tone_setting)).setText(new StringBuilder().append(value + 1).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterParkMode() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[121];
         int enable = (65280 & value) >> 8;
         int mValue = value & 255;
         if (ConstGolf.isWcGolf()) {
@@ -491,9 +490,9 @@ public class Golf7FunctionalParkingAndManoeurvrinActi extends BaseActivity {
         setViewVisible(findViewById(R.id.glf7_view_functional_parking_and_manoeurvring_parking_mode), false);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadarVol() {
-        int value = DataCanbus.DATA[25];
+        int value = DataCanbus.DATA[122];
         int enable = (65280 & value) >> 8;
         int mValue = value & 255;
         if (ConstGolf.isWcGolf()) {

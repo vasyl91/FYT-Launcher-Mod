@@ -7,14 +7,13 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCLexusIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_xc_lexus_indexact);
-        ((Button) findViewById(R.id.lexus_car_radio)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xc.lexus.XCLexusIndexAct.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_0452_xc_lexus_indexact);
+        ((Button) findViewById(R.id.lexus_car_radio)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -25,8 +24,8 @@ public class XCLexusIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_car_air)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xc.lexus.XCLexusIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_car_air)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -37,8 +36,8 @@ public class XCLexusIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_car_cd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xc.lexus.XCLexusIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_car_cd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

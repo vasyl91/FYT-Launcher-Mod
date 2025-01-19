@@ -5,17 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class BtavService extends Service {
     public String mBtavAristName;
     public String mBtavMusicName;
 
-    @Override // android.app.Service
+    @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
 
-    @Override // android.app.Service
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             Bundle bundle = intent.getExtras();

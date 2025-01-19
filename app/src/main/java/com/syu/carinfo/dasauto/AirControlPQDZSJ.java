@@ -13,7 +13,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
     public static AirControlPQDZSJ mInstance;
     public static boolean mIsFront = false;
@@ -21,26 +20,59 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
     int value = -1;
     int Msgbox_Num = 0;
     int Msgbox_Num_p = 0;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.dasauto.AirControlPQDZSJ.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 21:
-                    AirControlPQDZSJ.this.updateSync(this.value);
+                case 10:
+                    AirControlPQDZSJ.this.updatePower(this.value);
                     break;
-                case 22:
-                case 25:
-                case 28:
-                    AirControlPQDZSJ.this.updateAuto();
+                case 11:
+                    AirControlPQDZSJ.this.updateAC(this.value);
                     break;
-                case 23:
+                case 12:
                     AirControlPQDZSJ.this.updateCycle(this.value);
                     break;
+                case 13:
+                case 53:
+                case 65:
+                    AirControlPQDZSJ.this.updateAuto();
+                    break;
+                case 14:
+                    AirControlPQDZSJ.this.updateSync(this.value);
+                    break;
+                case 18:
+                    AirControlPQDZSJ.this.updateBlowWinLeft(this.value);
+                    break;
+                case 19:
+                    AirControlPQDZSJ.this.updateBlowBodyLeft(this.value);
+                    break;
+                case 20:
+                    AirControlPQDZSJ.this.updateBlowFootLeft(this.value);
+                    break;
+                case 21:
+                    AirControlPQDZSJ.this.mUpdaterAirWindLevelLeft(this.value);
+                    break;
+                case 22:
+                    AirControlPQDZSJ.this.updateBlowWinRight(this.value);
+                    break;
+                case 23:
+                    AirControlPQDZSJ.this.updateBlowBodyRight(this.value);
+                    break;
+                case 24:
+                    AirControlPQDZSJ.this.updateBlowFootRight(this.value);
+                    break;
+                case 25:
+                    AirControlPQDZSJ.this.mUpdaterAirWindLevelRight(this.value);
+                    break;
                 case 27:
-                    AirControlPQDZSJ.this.updateAC(this.value);
+                    AirControlPQDZSJ.this.updateTempLeft(this.value);
+                    break;
+                case 28:
+                    AirControlPQDZSJ.this.updateTempRight(this.value);
                     break;
                 case 29:
                     if (((ImageView) AirControlPQDZSJ.this.findViewById(R.id.image_FLHeatDriver)) != null) {
@@ -78,50 +110,17 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
                         }
                     }
                     break;
-                case 31:
-                    AirControlPQDZSJ.this.updateTempLeft(this.value);
-                    break;
-                case 32:
-                    AirControlPQDZSJ.this.updateTempRight(this.value);
-                    break;
-                case 33:
-                    AirControlPQDZSJ.this.updateBlowWinLeft(this.value);
-                    break;
-                case 34:
-                    AirControlPQDZSJ.this.updateBlowBodyLeft(this.value);
-                    break;
-                case 35:
-                    AirControlPQDZSJ.this.updateBlowFootLeft(this.value);
-                    break;
-                case 36:
-                    AirControlPQDZSJ.this.mUpdaterAirWindLevelLeft(this.value);
-                    break;
-                case 37:
-                    AirControlPQDZSJ.this.updateBlowWinRight(this.value);
-                    break;
-                case 38:
-                    AirControlPQDZSJ.this.updateBlowBodyRight(this.value);
-                    break;
-                case 39:
-                    AirControlPQDZSJ.this.updateBlowFootRight(this.value);
-                    break;
-                case 40:
-                    AirControlPQDZSJ.this.mUpdaterAirWindLevelRight(this.value);
-                    break;
-                case 52:
+                case 67:
                     AirControlPQDZSJ.this.updateRearLock(this.value);
-                    break;
-                case 53:
-                    AirControlPQDZSJ.this.updatePower(this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0001_pq_air_dzsj);
+        //setContentView(R.layout.layout_0001_pq_air_dzsj);
         setListener();
         mInstance = this;
     }
@@ -183,7 +182,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         this.value = 0;
         this.cmdId = 0;
@@ -216,7 +215,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         setViewVisible((Button) findViewById(R.id.btn_air_clearair), false);
@@ -230,7 +229,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -242,56 +241,56 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
     }
 
     private void addNotify() {
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mCanbusNotify);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempLeft(int value) {
         Boolean isHot = false;
         if (((TextView) findViewById(R.id.tv_air_templeft)) != null) {
@@ -322,7 +321,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempRight(int value) {
         Boolean isHot = false;
         if (((TextView) findViewById(R.id.tv_air_tempright)) != null) {
@@ -353,7 +352,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePower(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_power)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_power)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_power_p : R.drawable.ic_dzsj_dz_power);
@@ -385,38 +384,38 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         setViewVisible((Button) findViewById(R.id.btn_dzsj_show), true);
         setViewVisible((Button) findViewById(R.id.btn_dzsj_show_right), true);
         if (((ProgressBar) findViewById(R.id.pb_wind_progress)) != null) {
-            ((ProgressBar) findViewById(R.id.pb_wind_progress)).setProgress(DataCanbus.DATA[36]);
+            ((ProgressBar) findViewById(R.id.pb_wind_progress)).setProgress(DataCanbus.DATA[21]);
         }
         if (((ProgressBar) findViewById(R.id.pb_wind_progress_right)) != null) {
-            ((ProgressBar) findViewById(R.id.pb_wind_progress_right)).setProgress(DataCanbus.DATA[40]);
+            ((ProgressBar) findViewById(R.id.pb_wind_progress_right)).setProgress(DataCanbus.DATA[25]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAC(int value) {
         int i = R.drawable.ic_dzsj_dz_ac;
         if (((Button) findViewById(R.id.btn_air_ac)) != null) {
-            ((Button) findViewById(R.id.btn_air_ac)).setBackgroundResource(value == 0 ? 2130839565 : 2130839566);
+            ((Button) findViewById(R.id.btn_air_ac)).setBackgroundResource(value == 0 ? 2130840213 : 2130840214);
         }
         if (((Button) findViewById(R.id.btn_air_ac_right)) != null) {
             Button button = (Button) findViewById(R.id.btn_air_ac_right);
             if (value != 0) {
-                i = 2130839566;
+                i = 2130840214;
             }
             button.setBackgroundResource(i);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCycle(int value) {
         int i = R.drawable.ic_dzsj_dz_cycle;
         if (((Button) findViewById(R.id.btn_air_cycle)) != null) {
-            ((Button) findViewById(R.id.btn_air_cycle)).setBackgroundResource(value == 0 ? 2130839573 : 2130839574);
+            ((Button) findViewById(R.id.btn_air_cycle)).setBackgroundResource(value == 0 ? 2130840221 : 2130840222);
         }
         if (((Button) findViewById(R.id.btn_air_cycle_right)) != null) {
             Button button = (Button) findViewById(R.id.btn_air_cycle_right);
             if (value != 0) {
-                i = 2130839574;
+                i = 2130840222;
             }
             button.setBackgroundResource(i);
         }
@@ -438,29 +437,29 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
             }
         }
         if (((ImageView) findViewById(R.id.iv_air_wind0)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_wind0)).setImageDrawable(getResources().getDrawable(value == 0 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_wind0)).setImageDrawable(getResources().getDrawable(value == 0 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_wind1)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_wind1)).setImageDrawable(getResources().getDrawable(value == 1 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_wind1)).setImageDrawable(getResources().getDrawable(value == 1 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_wind2)) != null) {
             ImageView imageView = (ImageView) findViewById(R.id.iv_air_wind2);
             Resources resources = getResources();
             if (value != 2) {
-                i = 2130839577;
+                i = 2130840225;
             }
             imageView.setImageDrawable(resources.getDrawable(i));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearLock(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_rear_lock)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_rear_lock)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_rear : R.drawable.ic_dzsj_dz_rear_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowWinLeft(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_win)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_win)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_up : R.drawable.ic_dzsj_dz_up_p);
@@ -470,7 +469,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowWinRight(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_win_right)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_win_right)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_up : R.drawable.ic_dzsj_dz_up_p);
@@ -480,7 +479,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowBodyLeft(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_body)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_body)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_body : R.drawable.ic_dzsj_dz_body_p);
@@ -490,7 +489,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowBodyRight(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_body_right)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_body_right)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_body : R.drawable.ic_dzsj_dz_body_p);
@@ -500,7 +499,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowFootLeft(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_foot)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_foot)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_foot : R.drawable.ic_dzsj_dz_foot_p);
@@ -510,7 +509,7 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowFootRight(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_foot_right)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_foot_right)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_foot : R.drawable.ic_dzsj_dz_foot_p);
@@ -520,14 +519,14 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAuto() {
         int LeftList_Num = 3;
-        if (DataCanbus.DATA[28] == 1 && DataCanbus.DATA[36] == 7) {
+        if (DataCanbus.DATA[53] == 1 && DataCanbus.DATA[21] == 7) {
             LeftList_Num = 1;
-        } else if (DataCanbus.DATA[25] == 1 && DataCanbus.DATA[36] == 7) {
+        } else if (DataCanbus.DATA[65] == 1 && DataCanbus.DATA[21] == 7) {
             LeftList_Num = 2;
-        } else if (DataCanbus.DATA[22] == 1) {
+        } else if (DataCanbus.DATA[13] == 1) {
             LeftList_Num = 0;
         }
         show_left(LeftList_Num);
@@ -552,25 +551,25 @@ public class AirControlPQDZSJ extends Activity implements View.OnClickListener {
             }
         }
         if (((ImageView) findViewById(R.id.iv_air_maxac)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_maxac)).setImageDrawable(getResources().getDrawable(LeftList_Num == 1 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_maxac)).setImageDrawable(getResources().getDrawable(LeftList_Num == 1 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_front)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_front)).setImageDrawable(getResources().getDrawable(LeftList_Num == 2 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_front)).setImageDrawable(getResources().getDrawable(LeftList_Num == 2 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_auto)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_auto)).setImageDrawable(getResources().getDrawable(LeftList_Num == 0 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_auto)).setImageDrawable(getResources().getDrawable(LeftList_Num == 0 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_manually)) != null) {
             ImageView imageView = (ImageView) findViewById(R.id.iv_air_manually);
             Resources resources = getResources();
             if (LeftList_Num != 3) {
-                i = 2130839577;
+                i = 2130840225;
             }
             imageView.setImageDrawable(resources.getDrawable(i));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSync(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_sync)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_sync)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_sync : R.drawable.ic_dzsj_dz_sync_p);

@@ -21,8 +21,12 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
+
+import com.android.async.AsyncTask;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.ref.SoftReference;
@@ -31,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class WidgetPreviewLoader {
     private static final String SHORTCUT_PREFIX = "Shortcut:";
     static final String TAG = "WidgetPreviewLoader";
@@ -137,13 +140,23 @@ public class WidgetPreviewLoader {
         synchronized (this.mLoadedPreviews) {
             this.mLoadedPreviews.put(name, new WeakReference<>(generatedPreview));
         }
-        new AsyncTask<Void, Void, Void>() { // from class: com.android.launcher66.WidgetPreviewLoader.1
-            @Override // android.os.AsyncTask
+        new AsyncTask<Void, Void, Void>() { 
+            @Override
+            protected Void doInBackground(Void unused) throws Exception {
+                return null;
+            }
+
+            @Override
             public Void doInBackground(Void... args) {
                 WidgetPreviewLoader.this.writeToDb(o, generatedPreview);
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+
+            @Override
+            protected void onBackgroundError(Exception e) {
+                e.printStackTrace();
+            }
+        }.execute(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         return generatedPreview;
     }
 
@@ -180,12 +193,12 @@ public class WidgetPreviewLoader {
             this.mContext = context;
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        @Override
         public void onCreate(SQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS shortcut_and_widget_previews (name TEXT NOT NULL, size TEXT NOT NULL, preview_bitmap BLOB NOT NULL, PRIMARY KEY (name, size) );");
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             if (oldVersion != newVersion) {
                 db.execSQL("DELETE FROM shortcut_and_widget_previews");
@@ -218,7 +231,7 @@ public class WidgetPreviewLoader {
         return info.activityInfo.packageName;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void writeToDb(Object o, Bitmap preview) {
         String name = getObjectName(o);
         SQLiteDatabase db = this.mDb.getWritableDatabase();
@@ -231,13 +244,17 @@ public class WidgetPreviewLoader {
         db.insert("shortcut_and_widget_previews", null, values);
     }
 
-    /* JADX WARN: Type inference failed for: r0v2, types: [com.android.launcher66.WidgetPreviewLoader$2] */
     public static void removePackageFromDb(final CacheDb cacheDb, final String packageName) {
         synchronized(sInvalidPackages) {
             sInvalidPackages.add(packageName);
         }
-        new AsyncTask<Void, Void, Void>() { // from class: com.android.launcher66.WidgetPreviewLoader.2
-            @Override // android.os.AsyncTask
+        new AsyncTask<Void, Void, Void>() { 
+            @Override
+            protected Void doInBackground(Void unused) throws Exception {
+                return null;
+            }
+
+            @Override 
             public Void doInBackground(Void... args) {
                 SQLiteDatabase db = cacheDb.getWritableDatabase();
                 db.delete("shortcut_and_widget_previews", "name LIKE ? OR name LIKE ?", new String[]{WidgetPreviewLoader.WIDGET_PREFIX + packageName + "/%", WidgetPreviewLoader.SHORTCUT_PREFIX + packageName + "/%"});
@@ -246,19 +263,33 @@ public class WidgetPreviewLoader {
                 }
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+
+            @Override
+            protected void onBackgroundError(Exception e) {
+                e.printStackTrace();
+            }
+        }.execute(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
     }
 
-    /* JADX WARN: Type inference failed for: r0v0, types: [com.android.launcher66.WidgetPreviewLoader$3] */
     public static void removeItemFromDb(final CacheDb cacheDb, final String objectName) {
-        new AsyncTask<Void, Void, Void>() { // from class: com.android.launcher66.WidgetPreviewLoader.3
-            @Override // android.os.AsyncTask
+        new AsyncTask<Void, Void, Void>() { 
+            @Override
+            protected Void doInBackground(Void unused) throws Exception {
+                return null;
+            }
+
+            @Override 
             public Void doInBackground(Void... args) {
                 SQLiteDatabase db = cacheDb.getWritableDatabase();
                 db.delete("shortcut_and_widget_previews", "name = ? ", new String[]{objectName});
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+
+            @Override
+            protected void onBackgroundError(Exception e) {
+                e.printStackTrace();
+            }
+        }.execute(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
     }
 
     private Bitmap readFromDb(String name, Bitmap b) {
@@ -335,7 +366,7 @@ public class WidgetPreviewLoader {
             if (cellVSpan < 1) {
                 cellVSpan = 1;
             }
-            BitmapDrawable previewDrawable = (BitmapDrawable) this.mContext.getResources().getDrawable(R.drawable.widget_tile);
+            BitmapDrawable previewDrawable = (BitmapDrawable) ContextCompat.getDrawable(this.mContext, R.drawable.widget_tile);
             int previewDrawableWidth = previewDrawable.getIntrinsicWidth();
             int previewDrawableHeight = previewDrawable.getIntrinsicHeight();
             previewWidth = previewDrawableWidth * cellHSpan;

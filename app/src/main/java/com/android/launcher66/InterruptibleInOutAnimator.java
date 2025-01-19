@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.view.View;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class InterruptibleInOutAnimator {
     private static final int IN = 1;
     private static final int OUT = 2;
@@ -23,8 +22,8 @@ public class InterruptibleInOutAnimator {
         this.mOriginalDuration = duration;
         this.mOriginalFromValue = fromValue;
         this.mOriginalToValue = toValue;
-        this.mAnimator.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.InterruptibleInOutAnimator.1
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        this.mAnimator.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 InterruptibleInOutAnimator.this.mDirection = 0;
             }

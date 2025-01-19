@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCLexusRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.huangguan.XCLexusRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 17:
@@ -48,10 +48,10 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         DataCanbus.PROXY.cmd(6, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0429_xc_toyota_lexus_air_rear_control);
+        //setContentView(R.layout.layout_0429_xc_toyota_lexus_air_rear_control);
         init();
     }
 
@@ -72,7 +72,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         findViewById(R.id.air_xts_manual).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -80,7 +80,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -88,7 +88,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -116,7 +116,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
             case R.id.air_xts_frontpage /* 2131427432 */:
                 flag = 2;
                 try {
-                    startActivity(new Intent(this, (Class<?>) XC_429_Lexus_AirControlAct.class));
+                    startActivity(new Intent(this, XC_429_Lexus_AirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -186,16 +186,16 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[17];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[33];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LO");
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LO");
@@ -212,7 +212,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[80];
         if (leave < 0) {
@@ -226,7 +226,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         findViewById(R.id.air_xts_power).setBackgroundResource(leave == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[83];
         int body = DataCanbus.DATA[82];
@@ -257,7 +257,7 @@ public class XCLexusRearAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateManual() {
         int ac = DataCanbus.DATA[30];
         int lo = DataCanbus.DATA[31];

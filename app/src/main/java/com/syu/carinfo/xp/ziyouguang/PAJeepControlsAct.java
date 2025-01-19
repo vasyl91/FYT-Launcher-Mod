@@ -8,10 +8,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepControlsAct extends Activity implements View.OnTouchListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepControlsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -84,7 +83,7 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
                             PAJeepControlsAct.this.findViewById(R.id.btn_minus3).setBackgroundResource(R.drawable.ic_pa_jeep_control3_1);
                             break;
                     }
-                case 96:
+                case 108:
                     switch (value) {
                         case 0:
                             PAJeepControlsAct.this.findViewById(R.id.btn_minus6).setBackgroundResource(R.drawable.ic_pa_jeep_control6_n);
@@ -93,7 +92,7 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
                             PAJeepControlsAct.this.findViewById(R.id.btn_minus6).setBackgroundResource(R.drawable.ic_pa_jeep_control6_p);
                             break;
                     }
-                case 206:
+                case 218:
                     switch (value) {
                         case 0:
                             PAJeepControlsAct.this.findViewById(R.id.btn_minus7).setBackgroundResource(R.drawable.ic_pa_jeep_control7_n);
@@ -106,10 +105,10 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_controls);
+        //setContentView(R.layout.layout_0374_pa_jeep_controls);
         init();
     }
 
@@ -129,29 +128,29 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int value;
         int value2;
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
+                case R.id.btn_minus1 /* 2131427455 */:
                     DataCanbus.PROXY.cmd(6, new int[]{1, 17}, null, null);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
+                case R.id.btn_minus2 /* 2131427458 */:
                     DataCanbus.PROXY.cmd(6, new int[]{1, 22}, null, null);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
+                case R.id.btn_minus3 /* 2131427461 */:
                     DataCanbus.PROXY.cmd(6, new int[]{1, 24}, null, null);
                     break;
-                case R.id.btn_minus4 /* 2131427492 */:
+                case R.id.btn_minus4 /* 2131427464 */:
                     DataCanbus.PROXY.cmd(6, new int[]{1, 18}, null, null);
                     break;
-                case R.id.btn_minus5 /* 2131427496 */:
+                case R.id.btn_minus5 /* 2131427467 */:
                     DataCanbus.PROXY.cmd(6, new int[]{1, 23}, null, null);
                     break;
-                case R.id.btn_minus6 /* 2131427501 */:
-                    int value3 = DataCanbus.DATA[96];
+                case R.id.btn_minus6 /* 2131427470 */:
+                    int value3 = DataCanbus.DATA[108];
                     if (value3 == 1) {
                         value2 = 0;
                     } else {
@@ -159,8 +158,8 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
                     }
                     DataCanbus.PROXY.cmd(0, new int[]{39, value2}, null, null);
                     break;
-                case R.id.btn_minus7 /* 2131427505 */:
-                    int value4 = DataCanbus.DATA[206];
+                case R.id.btn_minus7 /* 2131427473 */:
+                    int value4 = DataCanbus.DATA[218];
                     if (value4 == 1) {
                         value = 0;
                     } else {
@@ -168,19 +167,19 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
                     }
                     DataCanbus.PROXY.cmd(0, new int[]{195, value}, null, null);
                     break;
-                case R.id.btn_minus8 /* 2131427509 */:
+                case R.id.btn_minus8 /* 2131427476 */:
                     DataCanbus.PROXY.cmd(0, new int[]{213, 1}, null, null);
                     break;
-                case R.id.btn_minus9 /* 2131427513 */:
+                case R.id.btn_minus9 /* 2131427479 */:
                     DataCanbus.PROXY.cmd(14, new int[]{2}, null, null);
                     break;
-                case R.id.btn_minus10 /* 2131427517 */:
+                case R.id.btn_minus10 /* 2131427482 */:
                     DataCanbus.PROXY.cmd(14, new int[]{1}, null, null);
                     break;
-                case R.id.btn_minus11 /* 2131427521 */:
+                case R.id.btn_minus11 /* 2131427485 */:
                     DataCanbus.PROXY.cmd(14, new int[]{3}, null, null);
                     break;
-                case R.id.btn_minus12 /* 2131427525 */:
+                case R.id.btn_minus12 /* 2131427488 */:
                     DataCanbus.PROXY.cmd(0, new int[]{214, 1}, null, null);
                     break;
             }
@@ -190,13 +189,13 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -208,8 +207,8 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
         DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
@@ -218,7 +217,7 @@ public class PAJeepControlsAct extends Activity implements View.OnTouchListener 
         DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.mNotifyCanbus);
     }
 }

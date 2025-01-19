@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@id/wallpaper_root"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/wallpaper_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <com.android.launcher66.CropView
         android:id="@+id/cropView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
     <ProgressBar
-        android:layout_gravity="center"
-        android:id="@id/loading"
-        android:background="@android:color/transparent"
+        android:id="@+id/loading"
+        style="@android:style/Widget.Holo.ProgressBar.Large"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:indeterminate="true"
         android:indeterminateOnly="true"
-        style="@android:style/Widget.Holo.ProgressBar.Large" />
+        android:background="@android:color/transparent" />
 </RelativeLayout>

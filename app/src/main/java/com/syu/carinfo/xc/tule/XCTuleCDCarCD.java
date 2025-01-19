@@ -11,45 +11,44 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener {
     public static XCTuleCDCarCD mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xc.tule.XCTuleCDCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 110:
+                case 122:
                     XCTuleCDCarCD.this.mUpdaterCdState(value);
                     break;
-                case 111:
+                case 123:
                     ((Button) XCTuleCDCarCD.this.findViewById(R.id.cd_ramdom)).setSelected(value == 1);
                     break;
-                case 112:
+                case 124:
                     ((Button) XCTuleCDCarCD.this.findViewById(R.id.cd_repeat)).setSelected(value == 1);
                     break;
-                case 113:
-                case 114:
+                case 125:
+                case 126:
                     XCTuleCDCarCD.this.mUpdaterCdTime();
                     break;
-                case 115:
-                case 116:
+                case 127:
+                case 128:
                     XCTuleCDCarCD.this.mUpdaterCdTrack();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_xc_nissan_tule_carcd);
+        //setContentView(R.layout.layout_0452_xc_nissan_tule_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.cd_repeat)).setOnTouchListener(this);
         ((Button) findViewById(R.id.cd_ramdom)).setOnTouchListener(this);
@@ -61,7 +60,7 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
         ((Button) findViewById(R.id.cd_ff)).setOnTouchListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -70,7 +69,7 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
         DataCanbus.PROXY.cmd(7, new int[]{3}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -81,44 +80,44 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
         DataCanbus.PROXY.cmd(8, new int[]{cmdId, touchState}, null, null);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int cmdId = -1;
         int id = v.getId();
         if (event.getAction() == 0) {
             switch (id) {
-                case R.id.cd_repeat /* 2131427913 */:
-                    if (DataCanbus.DATA[112] == 1) {
+                case R.id.cd_repeat /* 2131427916 */:
+                    if (DataCanbus.DATA[124] == 1) {
                         cmdId = 8;
                         break;
                     } else {
                         cmdId = 6;
                         break;
                     }
-                case R.id.cd_ramdom /* 2131427914 */:
-                    if (DataCanbus.DATA[111] == 1) {
+                case R.id.cd_ramdom /* 2131427917 */:
+                    if (DataCanbus.DATA[123] == 1) {
                         cmdId = 7;
                         break;
                     } else {
                         cmdId = 5;
                         break;
                     }
-                case R.id.cd_prev /* 2131427915 */:
+                case R.id.cd_prev /* 2131427918 */:
                     cmdId = 1;
                     break;
-                case R.id.cd_fb /* 2131427916 */:
+                case R.id.cd_fb /* 2131427919 */:
                     cmdId = 10;
                     break;
-                case R.id.cd_play /* 2131427917 */:
+                case R.id.cd_play /* 2131427920 */:
                     cmdId = 3;
                     break;
-                case R.id.cd_pause /* 2131427918 */:
+                case R.id.cd_pause /* 2131427921 */:
                     cmdId = 4;
                     break;
-                case R.id.cd_ff /* 2131427919 */:
+                case R.id.cd_ff /* 2131427922 */:
                     cmdId = 9;
                     break;
-                case R.id.cd_next /* 2131427920 */:
+                case R.id.cd_next /* 2131427923 */:
                     cmdId = 2;
                     break;
             }
@@ -127,10 +126,10 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
             }
         } else if (event.getAction() == 1) {
             switch (id) {
-                case R.id.cd_fb /* 2131427916 */:
+                case R.id.cd_fb /* 2131427919 */:
                     cmdId = 10;
                     break;
-                case R.id.cd_ff /* 2131427919 */:
+                case R.id.cd_ff /* 2131427922 */:
                     cmdId = 9;
                     break;
             }
@@ -141,29 +140,29 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdState(int value) {
         switch (value) {
             case 1:
@@ -199,17 +198,17 @@ public class XCTuleCDCarCD extends BaseActivity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTrack() {
-        int value = DataCanbus.DATA[115];
-        int value2 = DataCanbus.DATA[116];
+        int value = DataCanbus.DATA[127];
+        int value2 = DataCanbus.DATA[128];
         ((TextView) findViewById(R.id.huiteng_cd_track)).setText("Track: " + value + "/" + value2);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTime() {
-        int value1 = DataCanbus.DATA[113];
-        int value2 = DataCanbus.DATA[114];
+        int value1 = DataCanbus.DATA[125];
+        int value2 = DataCanbus.DATA[126];
         int hour1 = value1 / 3600;
         int minute1 = (value1 % 3600) / 60;
         int second1 = value1 % 60;

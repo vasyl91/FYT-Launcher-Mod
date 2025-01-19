@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0203_Oudi_08AodeSai extends AirBase {
     public Air_0203_Oudi_08AodeSai(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0203_Oudi_08Aodesai/oudi_08aodesai.webp";
         this.mPathHighlight = "0203_Oudi_08Aodesai/oudi_08aodesai_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -85,7 +85,7 @@ public class Air_0203_Oudi_08AodeSai extends AirBase {
                 str = "NONE";
                 break;
             default:
-                str = new StringBuilder(String.valueOf(value * 0.1f)).toString();
+                str = String.valueOf(value * 0.1f);
                 break;
         }
         c.drawText(str, 66.0f, 48.0f, this.mPaint);
@@ -101,7 +101,7 @@ public class Air_0203_Oudi_08AodeSai extends AirBase {
                 str2 = "NONE";
                 break;
             default:
-                str2 = new StringBuilder(String.valueOf(value2 * 0.1f)).toString();
+                str2 = String.valueOf(value2 * 0.1f);
                 break;
         }
         c.drawText(str2, 919.0f, 48.0f, this.mPaint);

@@ -10,42 +10,41 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BNRActivityHavaH8SeatSetAct extends BaseActivity {
     public static BNRActivityHavaH8SeatSetAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 50:
+                case 127:
                     ((TextView) BNRActivityHavaH8SeatSetAct.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 54:
+                case 131:
                     ((TextView) BNRActivityHavaH8SeatSetAct.this.findViewById(R.id.tv_text2)).setText(new StringBuilder().append(value).toString());
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_bnr_havalh8_seat_set);
+        //setContentView(R.layout.layout_0439_bnr_havalh8_seat_set);
         init();
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct.2
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     DataCanbus.PROXY.cmd(2, new int[]{11, 1}, null, null);
-                    HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct.2.1
-                        @Override // java.lang.Runnable
+                    HandlerUI.getInstance().postDelayed(new Runnable() { 
+                        @Override
                         public void run() {
                             DataCanbus.PROXY.cmd(2, new int[]{11}, null, null);
                         }
@@ -54,12 +53,12 @@ public class BNRActivityHavaH8SeatSetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct.3
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     DataCanbus.PROXY.cmd(2, new int[]{13, 1}, null, null);
-                    HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct.3.1
-                        @Override // java.lang.Runnable
+                    HandlerUI.getInstance().postDelayed(new Runnable() { 
+                        @Override
                         public void run() {
                             DataCanbus.PROXY.cmd(2, new int[]{13}, null, null);
                         }
@@ -69,29 +68,29 @@ public class BNRActivityHavaH8SeatSetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
     }
 }

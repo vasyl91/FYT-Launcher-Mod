@@ -7,40 +7,41 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0371_BG_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
     int playModeValue;
     int play_state;
     int totalTrackValue;
     int workStateValue;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_CdAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 32:
+                case 129:
                     Bg_CdAct.this.updaterCdTextInfo();
                     break;
-                case 33:
+                case 130:
                     Bg_CdAct.this.updaterPlayMode();
                     break;
-                case 34:
+                case 131:
                     Bg_CdAct.this.updaterWorkState();
                     break;
-                case 35:
+                case 132:
                     Bg_CdAct.this.updaterTrack();
                     break;
-                case 36:
+                case 133:
                     Bg_CdAct.this.updaterAllTime();
                     break;
-                case 37:
+                case 134:
                     Bg_CdAct.this.updaterCurTime();
                     break;
             }
@@ -53,19 +54,19 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
         DataCanbus.PROXY.cmd(4, new int[]{val1, val2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_371_bagoo_ziyouguang_cd11);
+        //setContentView(R.layout.layout_371_bagoo_ziyouguang_cd11);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((ListView) findViewById(R.id.bagoo_ziyouguang_cd_list_view)).setAdapter((ListAdapter) new com.syu.carinfo.wc.ziyouguang.FileAdapter(this, new ArrayList()));
-        ((ListView) findViewById(R.id.bagoo_ziyouguang_cd_list_view)).setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.bg.ziyouguang.Bg_CdAct.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        ((ListView) findViewById(R.id.bagoo_ziyouguang_cd_list_view)).setAdapter(new com.syu.carinfo.wc.ziyouguang.FileAdapter(this, new ArrayList()));
+        ((ListView) findViewById(R.id.bagoo_ziyouguang_cd_list_view)).setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Bg_CdAct.CD_CONRTROL_CMD(15, position + 1);
             }
@@ -85,42 +86,42 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.bagoo_ziyouguang_cd_list_btn).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayMode() {
-        int playModeValue = DataCanbus.DATA[33];
+        int playModeValue = DataCanbus.DATA[130];
         if (playModeValue == 0) {
             tips(getResources().getString(R.string.str_car_cd_putong_mode));
         } else if (playModeValue == 1) {
@@ -130,9 +131,9 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWorkState() {
-        int workStateValue = DataCanbus.DATA[34];
+        int workStateValue = DataCanbus.DATA[131];
         if (workStateValue == 0) {
             tips(getResources().getString(R.string.str_car_cd_work_state_0));
             return;
@@ -172,9 +173,9 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTrack() {
-        int value = DataCanbus.DATA[35];
+        int value = DataCanbus.DATA[132];
         int curTrack = (value >> 16) & 65535;
         int temp = value & 65535;
         if (this.totalTrackValue != temp) {
@@ -189,23 +190,23 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
                 new com.syu.carinfo.wc.ziyouguang.FileAdapter(this, new ArrayList()).notifyDataSetChanged();
             }
         }
-        ((TextView) findViewById(R.id.bagoo_ziyouguang_cd_track)).setText(String.valueOf(curTrack) + "/" + this.totalTrackValue);
+        ((TextView) findViewById(R.id.bagoo_ziyouguang_cd_track)).setText(curTrack + "/" + this.totalTrackValue);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAllTime() {
-        int alltime = DataCanbus.DATA[36];
-        ((TextView) findViewById(R.id.bagoo_ziyouguang_cd_all_time)).setText(String.valueOf(alltime / 3600) + ":" + ((alltime % 3600) / 60) + ":" + ((alltime % 3600) % 60));
+        int alltime = DataCanbus.DATA[133];
+        ((TextView) findViewById(R.id.bagoo_ziyouguang_cd_all_time)).setText(alltime / 3600 + ":" + ((alltime % 3600) / 60) + ":" + ((alltime % 3600) % 60));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCurTime() {
-        if (((TextView) findViewById(R.id.bagoo_ziyouguang_cd_cur_time)) != null) {
+        if (findViewById(R.id.bagoo_ziyouguang_cd_cur_time) != null) {
             ((TextView) findViewById(R.id.bagoo_ziyouguang_cd_cur_time)).setText(Callback_0371_BG_XP1_ZiYouGuang.current_playtime);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCdTextInfo() {
         int infoType = Callback_0371_BG_XP1_ZiYouGuang.infoType;
         int infoIndex = Callback_0371_BG_XP1_ZiYouGuang.infoIndex;
@@ -237,34 +238,34 @@ public class Bg_CdAct extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bagoo_ziyouguang_cd_prev /* 2131429445 */:
+            case R.id.bagoo_ziyouguang_cd_prev /* 2131429401 */:
                 CD_CONRTROL_CMD(2, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_fb /* 2131429446 */:
+            case R.id.bagoo_ziyouguang_cd_fb /* 2131429402 */:
                 CD_CONRTROL_CMD(3, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_repeat /* 2131429447 */:
+            case R.id.bagoo_ziyouguang_cd_repeat /* 2131429403 */:
                 CD_CONRTROL_CMD(8, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_repeat_random /* 2131429448 */:
+            case R.id.bagoo_ziyouguang_cd_repeat_random /* 2131429404 */:
                 CD_CONRTROL_CMD(17, 0);
                 break;
-            case R.id.bagoo_ziyouguang_play /* 2131429449 */:
+            case R.id.bagoo_ziyouguang_play /* 2131429405 */:
                 CD_CONRTROL_CMD(19, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_pause /* 2131429450 */:
+            case R.id.bagoo_ziyouguang_cd_pause /* 2131429406 */:
                 CD_CONRTROL_CMD(20, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_ff /* 2131429451 */:
+            case R.id.bagoo_ziyouguang_cd_ff /* 2131429407 */:
                 CD_CONRTROL_CMD(4, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_next /* 2131429452 */:
+            case R.id.bagoo_ziyouguang_cd_next /* 2131429408 */:
                 CD_CONRTROL_CMD(1, 0);
                 break;
-            case R.id.bagoo_ziyouguang_cd_list_btn /* 2131429453 */:
+            case R.id.bagoo_ziyouguang_cd_list_btn /* 2131429409 */:
                 for (int i = 1; i <= this.totalTrackValue; i++) {
                     CD_CONRTROL_CMD(130, i);
                 }

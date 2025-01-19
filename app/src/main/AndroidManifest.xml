@@ -50,9 +50,7 @@
     <uses-permission android:name="android.permission.BIND_APPWIDGET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
-    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="com.android.launcher66.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -63,15 +61,22 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher66.permission.READ_SETTINGS" />
     <uses-permission android:name="com.android.launcher66.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
-    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
     <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:hardwareAccelerated="true"
@@ -91,16 +96,16 @@
             android:value="9853" />
         <meta-data
             android:name="compile"
-            android:value="2022-05-10 15:56:29/190001066_com.android.launcher66" />
+            android:value="2025-01-13 13:40:22/190001066_com.android.launcher66" />
 
         <activity
             android:clearTaskOnLaunch="true"
             android:configChanges="mcc|mnc"
-            android:launchMode="singleTask"
             android:name="com.android.launcher66.Launcher"
+            android:launchMode="singleTask"
             android:screenOrientation="nosensor"
             android:stateNotNeeded="true"
-            android:theme="@style/Theme"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
@@ -122,7 +127,7 @@
             android:launchMode="singleInstance"
             android:name="com.syu.canbus.NullActi"
             android:screenOrientation="landscape"
-            android:theme="@style/Theme"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
@@ -208,6 +213,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Replace "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi" with your class name provided in the settings -->
+        <service
+            android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
         <service
             android:enabled="@bool/debug_memory_enabled"
             android:name="com.android.launcher66.MemoryTracker" />
@@ -215,12 +227,18 @@
         <service
             android:name="com.android.launcher66.NotificationListener"
             android:label="Notification Listener"
-            android:exported="true"
+            android:exported="false"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="com.android.launcher66.settings.DayNightMode"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
             android:name="com.android.launcher66.PreloadReceiver"
@@ -388,17 +406,10 @@
             </intent-filter>
         </service>
 
-        <service
-            android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-
         <receiver
             android:name="com.syu.util.ServiceRestarter"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true"></receiver>
 
         <service
             android:exported="true"
@@ -407,6 +418,7 @@
                 <action android:name="com.syu.canbus.keepAlive" />
             </intent-filter>
         </service>
+
 
         <activity
             android:exported="true"
@@ -622,6 +634,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.RZCSuzukiSettings"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.CZHHondaNewCarinfoAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1109,6 +1129,22 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.air.Air_Activity_All_NewAdd_HP"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.air.Air_Activity_Daohang_Only_HP"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.od.dongnanv5.OD_Zotye_T700_Pm25"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -1165,14 +1201,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.ODWeiChaiU70AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.ODWeiChaiU70CarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -1182,14 +1210,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.OD_Lamborghini_PanelButton"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.ODChangChengFengjun5AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1445,6 +1465,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.andra.LzNissan05CimaCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.andra.LzNissan03TeanaTireAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -1453,7 +1481,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.andra.LzNissan05CimaTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.andra.LzNissan03TeanaCd"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.andra.LzNissan05CimaCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1534,14 +1578,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenAx7SetFunc"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.fengshen_ax7.RzcDongfengAx7AirSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1749,7 +1785,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.suburu.RZCSuburuCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xp.suburu.SuburuCarEQInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.suburu.RZCSuburuCarEQInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1781,31 +1833,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueIndexAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueSetFunc"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueFrontAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueRearAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -1918,22 +1946,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.feiyate.RzcFYTOilMilePage3Acti"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.golf7_xp.XP_MQB_AllAirControl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.golf7_xp.XP_MQB_All_RearAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2134,6 +2146,22 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc2.tata.LZBMWMiniCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.wc2.tata.LZBMWMiniFenweiLightAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.wc2.tata.LZBMW15MiniAirSetAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2482,7 +2510,84 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.JaguarNewCarinfoAct_SP"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.jaguar.JaguarLandRoverCarInfo"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverDataIndexActi"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage1Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage2Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage3Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage4Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage5Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage6Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverMilePage7Acti"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverAirSet"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.jaguar.RZCLandRoverNewCarinfoAct"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -2513,23 +2618,15 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.od.ford.falcon.FordFalconAirCrtrl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.od.ford.falcon.FordFalconSingleAirCrtrl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.daojun.tianlai.djTianlaiIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.daojun.tianlai.djTianlaiCarKeyActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2577,7 +2674,15 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.baojun.ODFotonTunlandAirControlAct"
+            android:name="com.syu.carinfo.rzc.baojun.ODFotonTOANOSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.baojun.ODXinteDEV1SetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2593,14 +2698,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.baojun.RzcBaojunRs3AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.siwei.RZCSiWeiCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -2609,7 +2706,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.siwei.RZCSiWeiAirControlAct"
+            android:name="com.syu.carinfo.rzc.siwei.ODChangAnRaetonCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2657,14 +2754,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.lz.infinit.fx35.LzInfinitAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.infinit.fx35.LuzInfinitF35CarCD"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -2689,6 +2778,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRCarOilInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -2698,6 +2795,30 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRCarTire"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.nissan.gtr.RZCMaheidraCarTire"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.nissan.gtr.RZCMahindraCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.nissan.gtr.RZCMahindraCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2785,6 +2906,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.NissanJukeCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LuzJaguarXFCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -2865,7 +2994,15 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.LuzTATAAirControlAct"
+            android:name="com.syu.carinfo.rzc.sanlin.ODModerninCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODModerninIndexAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2881,23 +3018,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.ODZhonghuaV6AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.XBSNissanCedricCarSet"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.XBSNissanCedricAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2937,6 +3058,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODHuachenSWMChargeCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LuzJaguar09XFAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -2954,6 +3083,22 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.RZCVinFastPlusCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODChanganLuminCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WCJiliAllCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -2993,7 +3138,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.ODChangfengCS9AirControlAct"
+            android:name="com.syu.carinfo.rzc.sanlin.ODChangfengCS9EVCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3001,7 +3146,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.ODChangfengCS9EVCarInfo"
+            android:name="com.syu.carinfo.rzc.sanlin.LuzAudioOldCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3033,6 +3178,22 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODZhongtaiE200CarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.RZCShanqiDelongCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.RZCMclarenCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3042,6 +3203,38 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.XCFordEDGECarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODRuichiEC75CarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WC2IKCOAllCarSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WCSaipaShahinTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WCUAZPatriotCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3065,6 +3258,46 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODYiqiJiefangJ6GCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODBeiqiEV160CarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.LZFiatInfCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODSanlinCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WC2FordMDOCarSeatSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.XCBenzSmartCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3073,7 +3306,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.TDPorscheCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.ODShanqiZHongkaCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODShanqiZHongkaLightSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3106,6 +3355,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.WCProtonAllCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.WCProtonSunroofSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3153,6 +3410,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.SanwuNissanAllCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LuZMaserati300CAmpCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3170,6 +3435,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.ODBeiqiBJ30CarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.XPFordF150CarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3225,14 +3498,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.KYCZhonghuaAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.XPXiandaiCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3257,6 +3522,22 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.RZCBenzPanelButtonSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.RZCBMWPanelButtonSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LZMaseratiCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3265,7 +3546,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.LZFerrari430AirControlAct"
+            android:name="com.syu.carinfo.rzc.sanlin.RZCMzd3CarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3274,6 +3555,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LZGmAllCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODNissanTeanaCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3321,7 +3610,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.RZCVinFastPlusCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.RZCXiandaiAmpCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODSubaruLegacyCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3338,14 +3643,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.XCHondaAmpCarSet"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.ODLeTinMangguoAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3377,14 +3674,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.RZCLeTinMangguoAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.RZCLeTinMangguoCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3394,14 +3683,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.sanlin.WC2SanlinAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3433,6 +3714,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.KYCToyotaTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.KYCToyotaAllAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3450,6 +3739,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.LZAudiQ5SuspensionSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3529,14 +3826,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.hechi.fordexplorer.HcFordExplorerFrontAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.hechi.fordexplorer.HcFordExplorerSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -3546,14 +3835,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.hechi.fordexplorer.HcFordExplorerRadio"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.hechi.fordexplorer.HcFordExplorerRearAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3865,7 +4146,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.luz.binli.BinliCarAirControlAct"
+            android:name="com.syu.carinfo.luz.binli.BinliCarTire"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -3873,7 +4154,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.luz.binli.BinliCarTire"
+            android:name="com.syu.carinfo.luz.binli.BinliCarAmpSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4121,30 +4402,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.hc.ruijie.XCRuijieAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.benteng.ActivityRzcBenteng19B50"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.benteng.ActivityODBentengB90"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.od.tusheng.OD_19Tusheng_CarSettingAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -4193,7 +4450,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.tusheng.RZC_XiandaiE_InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.haima.HaimaS5SetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.haima.ODJianglingSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4210,6 +4483,38 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_YingFeiNiDi_GX50_CarSettingAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_Infiniti_CarinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_Infiniti_CarTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_Infeiniti_EQSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_Infeiniti_360ViewSetAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4337,7 +4642,79 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ksw.audiq5.RDWBenzSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ksw.audiq5.RDWBenzPennelSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.ZH2PilotcarUnitSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.ZH2PilotcarCarinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.ZH2PilotcarCarAirCtrlAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.ZH2PilotcarChargeCarinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.ZH2PilotcarWARNCodeinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllGMCSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllGMCCarinfoAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4353,7 +4730,55 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZBBAFenweiLightAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZToyotaLexRX450LightAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllMazdaSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.YL6606NewVinFanAllSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllBBANoICSetFunc"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllFordSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4386,6 +4811,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.zhtd.bmw.LZNewAllBBATireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.zhtd.bmw.LZNewAllFordTireAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4505,14 +4938,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.changan.OdChanganAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.changan.OdChanganIndexAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -4562,14 +4987,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.changan_cx70.RzcChanganChargeSetFunc"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.changan_cx70.RzcChanganCOSAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4649,14 +5066,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.zhongtai.RzcZhongtaiE200AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.zhongtai.RzcLandRoverCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -4698,6 +5107,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.jianghuai.RzcJianghuaiCarinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.jianghuai.RzcJianghuaiAmpSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -4841,14 +5258,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.changan.ODChangAnCS95AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -4882,6 +5291,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.bnr.guanzhi.LZRomeoCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.bnr.guanzhi.LZRomeoAmpCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5073,31 +5490,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wccamry.PradoSettingsAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wccamry.CamryTireActWC"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wccamry.Wc18CamryAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wccamry.Wc09LexusESAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5130,22 +5523,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wccamry.Wc09LexusESIndexActi"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wccamry.Wc21SainaAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wccamry.Wc21SainaRearAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5249,7 +5626,31 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.mzd.LZ300CButtonSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.mzd.MzdRZCM6ClockSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.mzd.RZCJiliSkySetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.mzd.GMCPannelSetActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5265,23 +5666,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.b70.BesturnB70AirActi"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.b70.BengTeng_RZC_17B70QC_Index"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.b70.BengTengRzc17B70QCAirActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5321,7 +5706,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.landrover.LandRoverNewCarinfoAct_sp"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.landrover.LandRoverCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.TangduLexusCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5337,7 +5738,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.TangduLexusCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.lexusis.LuzLexusISCarUSB"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.TangduLexusCarUSB"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5361,7 +5778,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.lz.lexusis.LuzLexusISAudio"
+            android:name="com.syu.carinfo.lz.lexusis.LuzLexusISCd"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5369,7 +5786,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.lz.lexusis.LuzLexusISCd"
+            android:name="com.syu.carinfo.lz.lexusis.TangduLexusCd"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5401,7 +5818,31 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.TangduLexusRadio"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.lz.lexusis.KYCLexusRadio"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAirControlAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAlphaAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5545,7 +5986,23 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorCarTire"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.od.mazdall.WCSuzukiAllCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5570,6 +6027,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.od.mazdall.WCSuzukiCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5641,6 +6106,38 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorCurrentCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorTripACarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorLastChargingCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.od.mazdall.WCLeepMotorElecCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -5674,6 +6171,30 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingInfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xbs.tule.TdTuleCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xbs.tule.TDTuleCarTire"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xbs.tule.TdTuleCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -5826,14 +6347,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xbs.tianlai.XBS09TianlaiAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -6025,14 +6538,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.hava.ActivityHavaH2SAirControl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.hava.ActivityHavaH2SCarInfo"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -6201,14 +6706,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.havah6.Wc_320_AirControlAct_newH6"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.havah6.Wc_320_CarSetlAct_newH6"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -6345,7 +6842,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xfy.dx7.ODDx7AirControlAct"
+            android:name="com.syu.carinfo.xfy.dx7.ODDx7HistroyAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -7086,14 +7583,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.cyt.yage7.Yage7AirAct_Cyt"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -7151,14 +7640,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408FuncParkingActi"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -7246,6 +7727,30 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.RzcPeroduaTripAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.RzcPeroduaHistoryAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.RzcPeroduaSettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.camry2012.xp.CamryicPetrolElectricActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -7287,6 +7792,30 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.camry2012.xp.CamrySettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.CamrySettingsAct_RZC"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.RZCToyotaAHDActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.CamrySettingsAct_RZC6606"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -7430,6 +7959,54 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry2012.xp.RzcPeroduaIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry.luz.CamryIndexAct_LuZ"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry.luz.CamryHistoryAct_Luz"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry.luz.CamryTripAct_Luz"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry.luz.CamrySettingsAct_Luz"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.camry.luz.ToyotaLexusEQActi_Luz"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.camry.zh.CamryIndexAct_ZH"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -7518,6 +8095,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.RZC_Honda_ElectricActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.CommpassActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -7551,6 +8136,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.Acrivity_RZC_Yage23_AmbientSettings"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.Acrivity_RZC_DashBord_Settings"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -7615,30 +8208,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.bnr.ford.KXMDOCarTire"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.mengdiou.MDOAirControlActi"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.mengdiou.V11MDOAirControlActi"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.gs4.GS4AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -7719,14 +8288,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.gs4.GS3EnergyFlowAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.gs4.GS3AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8146,7 +8707,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.ruifengs3.ODJianghuaiEV7AirControlAct"
+            android:name="com.syu.carinfo.rzc.ruifengs3.JhRuiFengEV7ChargeSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8154,7 +8715,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.ruifengs3.JhRuiFengEV7ChargeSetFunc"
+            android:name="com.syu.carinfo.rzc.ruifengs3.JhSEHOLEa5hargeSetFunc"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8218,6 +8779,22 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.klc.WcGMKopachBasicInfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.klc.DJGMKopachBasicInfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xp.yinglang.XpMrbAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -8258,6 +8835,30 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.qiya.kx7.ActivityWCXianDaiAllSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.qiya.kx7.ActivityWCXianDaiE_InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.qiya.kx7.ActivityWCXianDaiE45min_InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.qiya.kx7.ActivityQiYaKaiShenSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -8275,6 +8876,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.bnr.Acti_Nissan_Bnr"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.bnr.Acti_Nissan_Sanwu"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8426,7 +9035,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ruijie15.FordMustangAirControlAct_Rzc"
+            android:name="com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8434,7 +9043,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct"
+            android:name="com.syu.carinfo.wc.ruijie15.LZBinliTianyueSeatControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8466,47 +9075,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.dodge.DjDodgeFrontAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.dodge.DjDodgeRearAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.dj.dodge.DjDodgeCarSet"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.dodge.RZCDodgeFrontAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.dodge.RZCDodgeRearAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8826,6 +9395,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_AHDSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Safety"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -8866,6 +9443,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.ziyouguang.RZC_JeepCarAUXPowerSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.ziyouguang.Rzc_RamHY_WindowButton"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -8874,7 +9459,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.ziyouguang.Rzc_AirControl_ZhiNanZhe"
+            android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_CdAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8882,7 +9467,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_CdAct"
+            android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_TireAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8907,14 +9492,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_SafeyActi2"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -8987,14 +9564,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_UnitActi_ZhiNanZhe"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ziyouguang.Wc_372_AirControlAct_17ZhiNanZhe"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9460,47 +10029,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.daojun.kaidilake.ODKaiyiX3AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.daojun.kaidilake.BNR09PradoAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.daojun.kaidilake.OD_HZ_NezhaAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.mingjueruiteng.ActRuiTengAirSet"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.mingjueruiteng.ActRongweiRX8AirSet"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.mingjueruiteng.ActRongweiRX8RearAirSet"
+            android:name="com.syu.carinfo.daojun.kaidilake.BnrChanganCS75AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9573,14 +10102,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.mingjueruiteng.ActivityBNRRongWeiRX5"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.mingjueruiteng.ActDJRongweiI5AirSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9692,6 +10213,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.keleijia.KeLeiJiaRadarSetting"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.keleijia.KeLeiJia_Set_Drive"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -9772,15 +10301,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.keleijia.RzcLeinuoAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.keleijia.RzcKadjarAirControlAct"
+            android:name="com.syu.carinfo.rzc.keleijia.KeLeiJia_Set_AMPSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9797,14 +10318,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.dj.b70.DjB70Act"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.b70.DjB70AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9845,14 +10358,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.jili.BoyueIndexAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.jili.LZJiliBoyueAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -9924,6 +10429,22 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.ODModerninSettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.sanlin.ODModerninTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.jili.RZCNisaanRuiqi6CarSettingsAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -9957,6 +10478,46 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.jili.ODJiliDihaoEVCarSettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.ODJiliDihaoSCarSettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.ODJiliYCXZCarSettingsAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.ODJiliDihaoSSunSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.ODZhonghuaHUDSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.jili.RZCCamryChangjingSetActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -10005,6 +10566,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.qirui.ActivityQiRuiAiRuiZe"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.qirui.LZQiruiDiandongweimenSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -10114,6 +10683,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.guochan.ActivityBaojun530Info"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.guochan.ActivityWC20Baojun530Info"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -10838,6 +11415,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.ziyouguang.Activity_424_BoadFuncSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xp.ziyouguang.Activity_374_VehicleIdentify"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -10852,6 +11437,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.ActivitySiYuIndex"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.ActivityHondaNullBackCar"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -10925,7 +11518,39 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.Wc_16Civic_PersonalizedpostureActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.Wc_16Civic_AMPSetActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.Wc_16Civic_Pannel"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.Wc_16Civic_ElectricActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.Wc_16Civic_ResetActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -10986,13 +11611,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.changan.WCChangAnKesaiAirControlAct"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.changan.WCChanganAllIndexAct"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -11029,14 +11647,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.mzd.cx5.HaiMaV70AirControl"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -11164,6 +11774,14 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ford.RZCFordExplorerPanelAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.ford.FordTireAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -11276,6 +11894,30 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ford.LZFordDoornumSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ford.LuzMustangCarTire"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.ford.LuzMustangBaseCarInfo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.ford.RZCFordNavigatorPanelAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -11309,22 +11951,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.ruijie15.RJ_GC_AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ruijie15.XpZHFordAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc.ruijie15.XpZHFordRearAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -11484,6 +12110,54 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingAirCrtrlAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingPM25Act"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingDoorLockAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingDrivingSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.byd.hcy.BYDAiyingOtherSetAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.byd.RzcBydS6Acti"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -11549,6 +12223,30 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xp.ziyouguang.PAFordF150AirControlAct_SP"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct_HP"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.xp.ziyouguang.WCYuncheUINissanAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -11622,19 +12320,11 @@
             android:theme="@style/Theme" />
         <activity
             android:exported="true"
-            android:name="com.syu.carinfo.accord.ActivityAccord7AirControl"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
             android:name="com.syu.carinfo.accord.ActivityAccord7AirDiagnosis"
             android:theme="@style/Theme" />
         <activity
             android:exported="true"
             android:name="com.syu.carinfo.guochan.Acti_BNR_ShengDaFei"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
-            android:name="com.syu.carinfo.byd.ActAir_Byd_F6"
             android:theme="@style/Theme" />
         <activity
             android:exported="true"
@@ -11655,10 +12345,6 @@
         <activity
             android:exported="true"
             android:name="com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_TripAct"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
-            android:name="com.syu.carinfo.xbs.gs3.GS3AirControlAct"
             android:theme="@style/Theme" />
         <activity
             android:exported="true"
@@ -11717,6 +12403,78 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.xima.OD_NissanXimaIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NissanInfinitiCarInfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_Nissan370zCarInfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NIssanInfinitiIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NissanInfinitiCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_Nissan370zCarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NissanInfinitiElectricActi"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NissanInfinitiCdAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_NissanInfinitiTireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.LZ_Nissan370zTireAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -11794,6 +12552,30 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.RZC_Guanzhi_TireAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.RZC_Guanzhi_CarinfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.xima.RZC_Guanzhi_CarSet"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
             android:name="com.syu.carinfo.wc.jingyix5.JYIndexAct"
             android:theme="@style/Theme" />
         <activity
@@ -11851,21 +12633,6 @@
         <activity
             android:exported="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc2.ford.WC2FordLincoinAirControlAct"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc2.ford.WC2FordEdgeAirControlAct"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.wc2.ford.WC2FordLincoinRearAirControlAct"
-            android:theme="@style/Theme" />
-        <activity
-            android:exported="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc2.ford.WC2FordLincoinIndexAct"
             android:theme="@style/Theme" />
         <activity
@@ -11892,6 +12659,11 @@
             android:exported="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc2.ford.WC2FordLincoinCarRadioAct"
+            android:theme="@style/Theme" />
+        <activity
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.wc2.ford.WC2FordLincoinCarSeatSet"
             android:theme="@style/Theme" />
         <activity
             android:exported="true"
@@ -11953,14 +12725,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_CarSettingAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -11986,6 +12750,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.oudi.hantengx5.Oudi_0452_Hongqi_CarSettingAct"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.oudi.hantengx5.Oudi_0454_Hongqi_EQM5_CarSettingAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -12026,14 +12798,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_IndexAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -12106,6 +12870,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.honda.Acrivity_RZC_17CRVSettings"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.honda.RZCHondaAHDActi"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -12200,21 +12972,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="com.syu.KlcOnStarAct" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.klc.KlcAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="com.syu.KlcAirControlAct" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -12466,19 +13223,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.xp.yinglang.YLAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.xp.yinglang.YLOnStarAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -12516,19 +13260,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.klc.RzcKlcAirAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.klc.RzcKlcAirCtrlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan">
@@ -12668,6 +13399,46 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.klc.RZCChargeIndexAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.klc.RZC_GMChargeSet1InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.klc.RZC_GMChargeSet2InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.klc.RZC_GMChargeSet3InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.klc.RZC_GMChargeSet4InfoAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.saiou3.ActAirSet_GM_SiBo"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar"
@@ -12708,15 +13479,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.klc.RzcChevroletBlazerFrontAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.klc.RzcChevroletBlazerRearAirControlAct"
+            android:name="com.syu.carinfo.rzc.klc.RZCKlcCarAmpSet"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="adjustPan" />
@@ -12741,6 +13504,14 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:name="com.syu.carinfo.rzc.havalh6.RZC_0439_HavalH9AmpSetAct"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="adjustPan" />
@@ -12789,14 +13560,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.havalh6.ActivityHavaRZCH2SCarInfo2"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.havalh6.Rzc_H6_0439_AirFrontCtrl_HP"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="adjustPan" />
@@ -12926,22 +13689,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.shenbao.ActivityM50FAirControl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.rzc.shenbao.ActivityBJ40AirControl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.rzc.jingyix5.ActivityJingYiX5"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -13046,7 +13793,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.beiqi.ActivityOudiBeiqiEcAirControlAct"
+            android:name="com.syu.carinfo.oudi.beiqi.ActivityOudiBeiqiEcCarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -13054,7 +13801,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.oudi.beiqi.ActivityOudiBeiqiEcCarSet"
+            android:name="com.syu.carinfo.oudi.beiqi.ActivityOudi18EU5CarSet"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -13094,39 +13841,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.huangguan.dj_429_crown_AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.huangguan.XC_429_Lexus_AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.huangguan.XCLexusRearAirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.dj.huangguan.rzc_439_Huangguan_AirControlAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.dj.huangguan.rzc_112_Toyota_AirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />
@@ -13293,14 +14008,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.hava.ActivityZhonghuaV6AirControl"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
@@ -13310,14 +14017,6 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.carinfo.wc.sgmws.SgmwsAlarmInfoAct"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:name="com.syu.carinfo.daojun.lexus.djLexusAirControlAct"
             android:screenOrientation="landscape"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan" />

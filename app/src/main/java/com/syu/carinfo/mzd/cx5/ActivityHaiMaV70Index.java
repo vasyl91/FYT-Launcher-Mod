@@ -6,25 +6,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
 import com.syu.canbus.R;
+import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHaiMaV70Index extends Activity {
-    CheckedTextView mCtvAirControl;
-    CheckedTextView mCtvInfo;
-
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_237_index);
-        this.mCtvInfo = (CheckedTextView) findViewById(R.id.haima_car_settings);
-        this.mCtvAirControl = (CheckedTextView) findViewById(R.id.haima_air_control);
-        this.mCtvInfo.setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index.1
+        //setContentView(R.layout.layout_237_index);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnTouchListener(new View.OnTouchListener() { 
             /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
             /* JADX WARN: Code restructure failed: missing block: B:3:0x000b, code lost:
             
                 return true;
              */
-            @Override // android.view.View.OnTouchListener
+            @Override
             /*
                 Code decompiled incorrectly, please refer to instructions dump.
                 To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -55,10 +50,10 @@ public class ActivityHaiMaV70Index extends Activity {
                 throw new UnsupportedOperationException("Method not decompiled: com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index.AnonymousClass1.onTouch(android.view.View, android.view.MotionEvent):boolean");
             }
         });
-        this.mCtvAirControl.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ActivityHaiMaV70Index.this, (Class<?>) HaiMaV70AirControl.class);
+                Intent intent = new Intent(ActivityHaiMaV70Index.this, (Class<?>) Air_Activity_All_NewAdd_HP.class);
                 ActivityHaiMaV70Index.this.startActivity(intent);
             }
         });

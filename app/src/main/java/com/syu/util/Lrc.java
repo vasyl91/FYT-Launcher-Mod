@@ -2,16 +2,18 @@ package com.syu.util;
 
 import android.text.TextUtils;
 import android.util.SparseArray;
+
 import com.syu.ipc.data.FinalCanbus;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.http.protocol.HTTP;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Lrc {
     private static Exception e;
     private static Throwable th;

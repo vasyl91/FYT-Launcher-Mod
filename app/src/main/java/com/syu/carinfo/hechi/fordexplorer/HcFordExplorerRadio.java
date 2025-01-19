@@ -15,20 +15,19 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HcFordExplorerRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static HcFordExplorerRadio mInit;
     byte unit = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hechi.fordexplorer.HcFordExplorerRadio.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 45:
+                case 105:
                     HcFordExplorerRadio.this.updateRadioBand();
                     break;
-                case 46:
+                case 106:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText(new StringBuilder().append(value).toString());
                         break;
@@ -36,10 +35,10 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText((value / 100) + "." + (value % 100));
                         break;
                     }
-                case 47:
+                case 107:
                     HcFordExplorerRadio.this.updateRadioChannel();
                     break;
-                case 48:
+                case 108:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq1)).setText("  " + value + " khz");
                         break;
@@ -47,7 +46,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq1)).setText("  " + (value / 100) + "." + (value % 100) + " mhz");
                         break;
                     }
-                case 49:
+                case 109:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq2)).setText("  " + value + " khz");
                         break;
@@ -55,7 +54,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq2)).setText("  " + (value / 100) + "." + (value % 100) + " mhz");
                         break;
                     }
-                case 50:
+                case 110:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq3)).setText("  " + value + " khz");
                         break;
@@ -63,7 +62,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq3)).setText("  " + (value / 100) + "." + (value % 100) + " mhz");
                         break;
                     }
-                case 51:
+                case 111:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq4)).setText("  " + value + " khz");
                         break;
@@ -71,7 +70,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq4)).setText("  " + (value / 100) + "." + (value % 100) + " mhz");
                         break;
                     }
-                case 52:
+                case 112:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq5)).setText("  " + value + " khz");
                         break;
@@ -79,7 +78,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq5)).setText("  " + (value / 100) + "." + (value % 100) + " mhz");
                         break;
                     }
-                case 53:
+                case 113:
                     if (HcFordExplorerRadio.this.unit == 1) {
                         ((TextView) HcFordExplorerRadio.this.findViewById(R.id.dj_lexus_radio_freq6)).setText("  " + value + " khz");
                         break;
@@ -92,8 +91,8 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
     };
     int num = 0;
     int curnum = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.hechi.fordexplorer.HcFordExplorerRadio.2
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             HcFordExplorerRadio.this.num++;
             if (HcFordExplorerRadio.this.num == 3 && HcFordExplorerRadio.this.curnum != 0) {
@@ -105,16 +104,16 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
     };
     boolean flag = false;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_djlexus_carradio);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_djlexus_carradio);
         } else if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_djlexus_carradio_7731);
+            //setContentView(R.layout.layout_djlexus_carradio_7731);
         } else {
-            setContentView(R.layout.layout_djlexus_carradio);
+            //setContentView(R.layout.layout_djlexus_carradio);
         }
         init();
     }
@@ -133,8 +132,8 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
         findViewById(R.id.lexus_radio_next).setOnTouchListener(this);
         findViewById(R.id.lexus_radio_fm).setOnTouchListener(this);
         findViewById(R.id.lexus_radio_am).setOnTouchListener(this);
-        findViewById(R.id.lexus_radio_toaudio).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hechi.fordexplorer.HcFordExplorerRadio.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_radio_toaudio).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -148,33 +147,33 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
     }
 
     public void updateRadioBand() {
-        int value = DataCanbus.DATA[45];
+        int value = DataCanbus.DATA[105];
         switch (value) {
             case 1:
                 this.unit = (byte) 1;
@@ -205,7 +204,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
     }
 
     public void updateRadioChannel() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[107];
         findViewById(R.id.btn_lexus_radio_frq1).setBackgroundResource(R.drawable.ic_lexus_radio_freq_n);
         findViewById(R.id.btn_lexus_radio_frq2).setBackgroundResource(R.drawable.ic_lexus_radio_freq_n);
         findViewById(R.id.btn_lexus_radio_frq3).setBackgroundResource(R.drawable.ic_lexus_radio_freq_n);
@@ -245,31 +244,31 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
         HandlerUI.getInstance().removeCallbacks(this.mCalTime);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mSetCurFrq(int value) {
         this.flag = true;
         DataCanbus.PROXY.cmd(2, new int[]{11, value}, null, null);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_radio_prev /* 2131427850 */:
+                case R.id.lexus_radio_prev /* 2131427866 */:
                     DataCanbus.PROXY.cmd(2, new int[]{4, 1}, null, null);
                     break;
-                case R.id.lexus_radio_next /* 2131427851 */:
+                case R.id.lexus_radio_next /* 2131427867 */:
                     DataCanbus.PROXY.cmd(2, new int[]{3, 1}, null, null);
                     break;
-                case R.id.lexus_radio_scan_plus /* 2131427853 */:
+                case R.id.lexus_radio_scan_plus /* 2131427869 */:
                     DataCanbus.PROXY.cmd(2, new int[]{1, 1}, null, null);
                     break;
-                case R.id.lexus_radio_scan_minu /* 2131427854 */:
+                case R.id.lexus_radio_scan_minu /* 2131427870 */:
                     DataCanbus.PROXY.cmd(2, new int[]{2, 1}, null, null);
                     break;
-                case R.id.lexus_radio_fm /* 2131427855 */:
-                    int value = DataCanbus.DATA[45];
+                case R.id.lexus_radio_fm /* 2131427871 */:
+                    int value = DataCanbus.DATA[105];
                     switch (value) {
                         case 1:
                         case 2:
@@ -285,8 +284,8 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                             DataCanbus.PROXY.cmd(2, new int[]{6, 3}, null, null);
                             break;
                     }
-                case R.id.lexus_radio_am /* 2131427856 */:
-                    int value2 = DataCanbus.DATA[45];
+                case R.id.lexus_radio_am /* 2131427872 */:
+                    int value2 = DataCanbus.DATA[105];
                     switch (value2) {
                         case 1:
                             DataCanbus.PROXY.cmd(2, new int[]{6, 2}, null, null);
@@ -300,34 +299,34 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                             DataCanbus.PROXY.cmd(2, new int[]{5, 1}, null, null);
                             break;
                     }
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     this.curnum = 1;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     this.curnum = 2;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     this.curnum = 3;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     this.curnum = 4;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     this.curnum = 5;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     this.curnum = 6;
                     mUpdatermCalTime(true);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -335,7 +334,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         DataCanbus.PROXY.cmd(2, new int[]{12, 1}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -343,7 +342,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         DataCanbus.PROXY.cmd(2, new int[]{12, 2}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -351,7 +350,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         DataCanbus.PROXY.cmd(2, new int[]{12, 3}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -359,7 +358,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         DataCanbus.PROXY.cmd(2, new int[]{12, 4}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -367,7 +366,7 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
                         DataCanbus.PROXY.cmd(2, new int[]{12, 5}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -380,25 +379,25 @@ public class HcFordExplorerRadio extends Activity implements View.OnTouchListene
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
         FuncMain.setChannel(11);
-        if (DataCanbus.DATA[62] != 1) {
+        if (DataCanbus.DATA[122] != 1) {
             DataCanbus.PROXY.cmd(3, new int[]{1}, null, null);
         }
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);

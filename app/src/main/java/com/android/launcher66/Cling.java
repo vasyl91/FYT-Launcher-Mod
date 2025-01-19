@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +14,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.StyleableRes;
-import androidx.core.view.ViewCompat;
+import androidx.core.content.ContextCompat;
+
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.FocusFinder;
@@ -26,7 +25,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Cling extends FrameLayout implements Insettable, View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
     static final String FIRST_RUN_CLING_DISMISSED_KEY = "cling_gel.first_run.dismissed";
     static final String FOLDER_CLING_DISMISSED_KEY = "cling_gel.folder.dismissed";
@@ -87,10 +85,10 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
             setOnTouchListener(this);
             this.mErasePaint = new Paint();
             this.mErasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-            this.mErasePaint.setColor(ViewCompat.MEASURED_SIZE_MASK);
+            this.mErasePaint.setColor(MEASURED_SIZE_MASK);
             this.mErasePaint.setAlpha(0);
             this.mErasePaint.setAntiAlias(true);
-            int circleColor = getResources().getColor(R.color.first_run_cling_circle_background_color);
+            int circleColor = ContextCompat.getColor(getContext(), R.color.first_run_cling_circle_background_color);
             this.mBubblePaint = new Paint();
             this.mBubblePaint.setColor(circleColor);
             this.mBubblePaint.setAntiAlias(true);
@@ -110,7 +108,7 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
             Rect pos = hotseat.getCellCoordinates(x, y);
             LauncherAppState app = LauncherAppState.getInstance();
             DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-            this.mFocusedHotseatApp = getResources().getDrawable(drawableId);
+            this.mFocusedHotseatApp = ContextCompat.getDrawable(getContext(), drawableId);
             this.mFocusedHotseatAppComponent = cn2;
             this.mFocusedHotseatAppBounds = new Rect(pos.left, pos.top, pos.left + Utilities.sIconTextureWidth, pos.top + Utilities.sIconTextureHeight);
             Utilities.scaleRectAboutCenter(this.mFocusedHotseatAppBounds, grid.hotseatIconSize / grid.iconSize);
@@ -148,8 +146,8 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
             this.mScrimView.animate().alpha(1.0f).setDuration(duration).setListener(null).start();
         }
         setFocusableInTouchMode(true);
-        post(new Runnable() { // from class: com.android.launcher66.Cling.1
-            @Override // java.lang.Runnable
+        post(new Runnable() { 
+            @Override
             public void run() {
                 Cling.this.setFocusable(true);
                 Cling.this.requestFocus();
@@ -160,16 +158,16 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
     void hide(int duration, final Runnable postCb) {
         if (this.mDrawIdentifier.equals(FIRST_RUN_PORTRAIT) || this.mDrawIdentifier.equals(FIRST_RUN_LANDSCAPE)) {
             View content = getContent();
-            content.animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Cling.2
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            content.animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Cling.this.setVisibility(View.GONE);
                     postCb.run();
                 }
             }).start();
         } else {
-            animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Cling.3
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Cling.this.setVisibility(android.view.View.GONE);
                     postCb.run();
@@ -177,8 +175,8 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
             }).start();
         }
         if (this.mScrimView != null) {
-            this.mScrimView.animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Cling.4
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            this.mScrimView.animate().alpha(0.0f).setDuration(duration).setListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Cling.this.mScrimView.setVisibility(View.GONE);
                 }
@@ -197,7 +195,7 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         }
     }
 
-    @Override // com.android.launcher66.Insettable
+    @Override
     public void setInsets(Rect insets) {
         this.mInsets.set(insets);
         setPadding(insets.left, insets.top, insets.right, insets.bottom);
@@ -211,22 +209,22 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         return this.mDrawIdentifier;
     }
 
-    @Override // android.view.View
+    @Override
     public View focusSearch(int direction) {
         return focusSearch(this, direction);
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public View focusSearch(View focused, int direction) {
         return FocusFinder.getInstance().findNextFocus(this, focused, direction);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onHoverEvent(MotionEvent event) {
         return this.mDrawIdentifier.equals(WORKSPACE_PORTRAIT) || this.mDrawIdentifier.equals(WORKSPACE_LANDSCAPE) || this.mDrawIdentifier.equals(WORKSPACE_LARGE) || this.mDrawIdentifier.equals(WORKSPACE_CUSTOM);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         Folder f;
         if ((this.mDrawIdentifier.equals(FOLDER_PORTRAIT) || this.mDrawIdentifier.equals(FOLDER_LANDSCAPE) || this.mDrawIdentifier.equals(FOLDER_LARGE)) && (f = this.mLauncher.getWorkspace().getOpenFolder()) != null) {
@@ -239,7 +237,7 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         return super.onTouchEvent(event);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent ev) {
         if (ev.getAction() == 0) {
             this.mTouchDownPt[0] = (int) ev.getX();
@@ -248,7 +246,7 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         return false;
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         if ((this.mDrawIdentifier.equals(WORKSPACE_PORTRAIT) || this.mDrawIdentifier.equals(WORKSPACE_LANDSCAPE) || this.mDrawIdentifier.equals(WORKSPACE_LARGE)) && this.mFocusedHotseatAppBounds != null && this.mFocusedHotseatAppBounds.contains(this.mTouchDownPt[0], this.mTouchDownPt[1])) {
             Intent intent = new Intent("android.intent.action.MAIN");
@@ -259,7 +257,7 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         }
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         if (!this.mDrawIdentifier.equals(WORKSPACE_PORTRAIT) && !this.mDrawIdentifier.equals(WORKSPACE_LANDSCAPE) && !this.mDrawIdentifier.equals(WORKSPACE_LARGE)) {
             return false;
@@ -268,12 +266,12 @@ public class Cling extends FrameLayout implements Insettable, View.OnClickListen
         return true;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         if (this.mIsInitialized) {
             canvas.save();
             if (this.mBackground == null && this.mDrawIdentifier.equals(WORKSPACE_CUSTOM)) {
-                this.mBackground = getResources().getDrawable(R.drawable.bg_cling5);
+                this.mBackground = ContextCompat.getDrawable(getContext(), R.drawable.bg_cling5);
             }
             Bitmap eraseBg = null;
             Canvas eraseCanvas = null;

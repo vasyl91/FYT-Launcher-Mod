@@ -12,88 +12,87 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ReizSettingsAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wccamry.ReizSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 8:
+                case 106:
                     ReizSettingsAct.this.mUpdaterAutoAc();
                     break;
-                case 9:
+                case 107:
                     ReizSettingsAct.this.mUpdaterValidVentilation();
                     break;
-                case 26:
+                case 124:
                     ReizSettingsAct.this.mUpdaterKeySystemWithElecKey();
                     break;
-                case 27:
+                case 125:
                     ReizSettingsAct.this.mUpdaterLockUnLockFeedbackByLights();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_reiz_settings);
+        //setContentView(R.layout.layout_reiz_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.ReizSettingsAct.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[26];
+                int value = DataCanbus.DATA[124];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(17, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.ReizSettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[27];
+                int value = DataCanbus.DATA[125];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(18, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.ReizSettingsAct.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[8] == 0) {
+                if (DataCanbus.DATA[106] == 0) {
                     DataCanbus.PROXY.cmd(9, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(9, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.ReizSettingsAct.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[9] == 0) {
+                if (DataCanbus.DATA[107] == 0) {
                     DataCanbus.PROXY.cmd(10, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(10, new int[1], null, null);
@@ -102,7 +101,7 @@ public class ReizSettingsAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             try {
@@ -119,33 +118,33 @@ public class ReizSettingsAct extends BaseActivity {
         return true;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterKeySystemWithElecKey() {
-        int value = DataCanbus.DATA[26];
+        int value = DataCanbus.DATA[124];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLockUnLockFeedbackByLights() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[125];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(value != 0);
         }
@@ -158,17 +157,17 @@ public class ReizSettingsAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAutoAc() {
-        int value = DataCanbus.DATA[8];
+        int value = DataCanbus.DATA[106];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext3)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValidVentilation() {
-        int value = DataCanbus.DATA[9];
+        int value = DataCanbus.DATA[107];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext4)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(value != 0);
         }

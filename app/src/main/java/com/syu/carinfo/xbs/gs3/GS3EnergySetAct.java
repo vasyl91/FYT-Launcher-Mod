@@ -12,7 +12,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS3EnergySetAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     Button mCancleBtn;
@@ -51,34 +50,34 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
     int mWeek5 = 0;
     int mWeek6 = 0;
     int mWeek7 = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.gs3.GS3EnergySetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 27:
+                case 125:
                     GS3EnergySetAct.this.updaterEnergyBack(value);
                     break;
-                case 30:
+                case 128:
                     GS3EnergySetAct.this.updaterEnergyCharge(value);
                     break;
-                case 31:
+                case 129:
                     GS3EnergySetAct.this.updaterReserveTime(value);
                     break;
-                case 32:
+                case 130:
                     GS3EnergySetAct.this.updaterCycleMode(value);
                     break;
-                case 33:
+                case 131:
                     GS3EnergySetAct.this.updaterCycleDate(value);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_165_xbs_gs3_energyset);
+        //setContentView(R.layout.layout_165_xbs_gs3_energyset);
         setUI();
     }
 
@@ -127,11 +126,11 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         setSelfClick(this.mEnergyShowBtn, this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.energy_show_btn /* 2131428697 */:
+            case R.id.energy_show_btn /* 2131428733 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) GS3EnergyFlowAct.class);
                     startActivity(intent);
@@ -140,70 +139,70 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
                     e.printStackTrace();
                     return;
                 }
-            case R.id.energy_back1 /* 2131428698 */:
+            case R.id.energy_back1 /* 2131428734 */:
                 this.mEnergyBack = 0;
                 energy_cmd();
                 break;
-            case R.id.energy_back2 /* 2131428699 */:
+            case R.id.energy_back2 /* 2131428735 */:
                 this.mEnergyBack = 1;
                 energy_cmd();
                 break;
-            case R.id.energy_back3 /* 2131428700 */:
+            case R.id.energy_back3 /* 2131428736 */:
                 this.mEnergyBack = 2;
                 energy_cmd();
                 break;
-            case R.id.energy_reserve0 /* 2131428701 */:
+            case R.id.energy_reserve0 /* 2131428737 */:
                 this.mCharge = 0;
                 energy_cmd();
                 break;
-            case R.id.energy_reserve1 /* 2131428702 */:
+            case R.id.energy_reserve1 /* 2131428738 */:
                 this.mCharge = 1;
                 energy_cmd();
                 break;
-            case R.id.energy_mode_cycle /* 2131428703 */:
+            case R.id.energy_mode_cycle /* 2131428739 */:
                 this.CycleMode = 1;
                 energy_cmd();
                 break;
-            case R.id.energy_mode_one /* 2131428704 */:
+            case R.id.energy_mode_one /* 2131428740 */:
                 this.CycleMode = 0;
                 energy_cmd();
                 break;
-            case R.id.energy_time_set /* 2131428706 */:
+            case R.id.energy_time_set /* 2131428742 */:
                 this.mTimePicker0.setCurrentHour(Integer.valueOf(this.ReserveStarH));
                 this.mTimePicker0.setCurrentMinute(Integer.valueOf(this.ReserveStarM));
                 this.mTimePicker1.setCurrentHour(Integer.valueOf(this.ReserveEndH));
                 this.mTimePicker1.setCurrentMinute(Integer.valueOf(this.ReserveEndM));
                 setViewVisible(this.mTimePicker_View, true);
                 break;
-            case R.id.energy_cycle_date1 /* 2131428707 */:
+            case R.id.energy_cycle_date1 /* 2131428743 */:
                 this.mWeek1 = this.mWeek1 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date2 /* 2131428708 */:
+            case R.id.energy_cycle_date2 /* 2131428744 */:
                 this.mWeek2 = this.mWeek2 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date3 /* 2131428709 */:
+            case R.id.energy_cycle_date3 /* 2131428745 */:
                 this.mWeek3 = this.mWeek3 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date4 /* 2131428710 */:
+            case R.id.energy_cycle_date4 /* 2131428746 */:
                 this.mWeek4 = this.mWeek4 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date5 /* 2131428711 */:
+            case R.id.energy_cycle_date5 /* 2131428747 */:
                 this.mWeek5 = this.mWeek5 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date6 /* 2131428712 */:
+            case R.id.energy_cycle_date6 /* 2131428748 */:
                 this.mWeek6 = this.mWeek6 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.energy_cycle_date7 /* 2131428713 */:
+            case R.id.energy_cycle_date7 /* 2131428749 */:
                 this.mWeek7 = this.mWeek7 != 0 ? 0 : 1;
                 energy_cmd();
                 break;
-            case R.id.timePicker_confirm /* 2131428717 */:
+            case R.id.timePicker_confirm /* 2131428753 */:
                 this.ReserveStarH = this.mTimePicker0.getCurrentHour().intValue();
                 this.ReserveStarM = this.mTimePicker0.getCurrentMinute().intValue();
                 this.ReserveEndH = this.mTimePicker1.getCurrentHour().intValue();
@@ -212,7 +211,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
                 setViewVisible(this.mTimePicker_View, false);
                 updaterReserveTime((this.ReserveStarH << 24) | (this.ReserveStarM << 16) | (this.ReserveEndH << 8) | this.ReserveEndM);
                 break;
-            case R.id.timePicker_cancel /* 2131428718 */:
+            case R.id.timePicker_cancel /* 2131428754 */:
                 setViewVisible(this.mTimePicker_View, false);
                 break;
         }
@@ -223,7 +222,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         DataCanbus.PROXY.cmd(4, new int[]{date[0], date[1], date[2], date[3], date[4], date[5], date[6], date[7]}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -231,7 +230,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -239,25 +238,25 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterEnergyBack(int value) {
         this.mEnergyBack = value;
         switch (this.mEnergyBack) {
@@ -279,7 +278,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterEnergyCharge(int value) {
         this.mCharge = value;
         switch (this.mCharge) {
@@ -294,7 +293,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterReserveTime(int value) {
         this.ReserveStarH = (value >> 24) & 255;
         this.ReserveStarM = (value >> 16) & 255;
@@ -304,7 +303,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         this.mReserveTime.setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCycleMode(int value) {
         this.CycleMode = value;
         switch (this.CycleMode) {
@@ -319,7 +318,7 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCycleDate(int value) {
         int i = R.drawable.ge3_btn3;
         this.mWeek7 = (value >> 7) & 1;
@@ -329,15 +328,15 @@ public class GS3EnergySetAct extends BaseActivity implements View.OnClickListene
         this.mWeek3 = (value >> 3) & 1;
         this.mWeek2 = (value >> 2) & 1;
         this.mWeek1 = (value >> 1) & 1;
-        this.mCycleWeek1.setBackgroundResource(this.mWeek1 == 0 ? 2130838694 : 2130838695);
-        this.mCycleWeek2.setBackgroundResource(this.mWeek2 == 0 ? 2130838694 : 2130838695);
-        this.mCycleWeek3.setBackgroundResource(this.mWeek3 == 0 ? 2130838694 : 2130838695);
-        this.mCycleWeek4.setBackgroundResource(this.mWeek4 == 0 ? 2130838694 : 2130838695);
-        this.mCycleWeek5.setBackgroundResource(this.mWeek5 == 0 ? 2130838694 : 2130838695);
-        this.mCycleWeek6.setBackgroundResource(this.mWeek6 == 0 ? 2130838694 : 2130838695);
+        this.mCycleWeek1.setBackgroundResource(this.mWeek1 == 0 ? 2130838867 : 2130838868);
+        this.mCycleWeek2.setBackgroundResource(this.mWeek2 == 0 ? 2130838867 : 2130838868);
+        this.mCycleWeek3.setBackgroundResource(this.mWeek3 == 0 ? 2130838867 : 2130838868);
+        this.mCycleWeek4.setBackgroundResource(this.mWeek4 == 0 ? 2130838867 : 2130838868);
+        this.mCycleWeek5.setBackgroundResource(this.mWeek5 == 0 ? 2130838867 : 2130838868);
+        this.mCycleWeek6.setBackgroundResource(this.mWeek6 == 0 ? 2130838867 : 2130838868);
         Button button = this.mCycleWeek7;
         if (this.mWeek7 != 0) {
-            i = 2130838695;
+            i = 2130838868;
         }
         button.setBackgroundResource(i);
     }

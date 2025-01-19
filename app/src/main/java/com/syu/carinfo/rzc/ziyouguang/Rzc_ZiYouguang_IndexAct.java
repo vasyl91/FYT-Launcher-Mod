@@ -7,21 +7,21 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_ZiYouguang_IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_indexact);
+        //setContentView(R.layout.layout_jeep_indexact);
         if (LauncherApplication.getConfiguration() == 1 || DataCanbus.DATA[1000] == 1048949) {
             findViewById(R.id.jeep_car_air).setVisibility(8);
         } else {
             findViewById(R.id.jeep_car_air).setVisibility(0);
         }
-        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -36,12 +36,12 @@ public class Rzc_ZiYouguang_IndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_airset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_airset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    intent.setClass(Rzc_ZiYouguang_IndexAct.this, Rzc_AirControl_ZhiNanZhe.class);
+                    intent.setClass(Rzc_ZiYouguang_IndexAct.this, Air_Activity_All_NewAdd_HP.class);
                     Rzc_ZiYouguang_IndexAct.this.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -55,8 +55,8 @@ public class Rzc_ZiYouguang_IndexAct extends BaseActivity {
                 findViewById(R.id.jeep_car_cd_view).setVisibility(0);
             }
         }
-        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

@@ -4,10 +4,9 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.util.HandlerHelper;
 import com.syu.util.HandlerRemove;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HandlerMain {
-    private static final Runnable REQEUST_APP_ID = new Runnable() { // from class: com.syu.module.main.HandlerMain.1
-        @Override // java.lang.Runnable
+    private static final Runnable REQEUST_APP_ID = new Runnable() { 
+        @Override
         public void run() {
             if (LauncherApplication.isAppTop() && DataMain.PROXY.getI(0, -100) != DataMain.sAppIdRequest) {
                 DataMain.PROXY.cmd(0, DataMain.sAppIdRequest);

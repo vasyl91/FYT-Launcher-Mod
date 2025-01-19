@@ -17,7 +17,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_372_FunctionalActi extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;
@@ -26,14 +25,14 @@ public class Wc_372_FunctionalActi extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_372_functional_state);
+        //setContentView(R.layout.layout_372_functional_state);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -46,8 +45,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.1
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Wc_372_FunctionalActi.this.language_set = position;
                 if (Wc_372_FunctionalActi.this.language_set >= 0 && Wc_372_FunctionalActi.this.language_set <= Wc_372_FunctionalActi.this.mLauStylelist.size() && Wc_372_FunctionalActi.this.send_lang != null) {
@@ -64,7 +63,7 @@ public class Wc_372_FunctionalActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -85,8 +84,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Wc_372_FunctionalActi.this.mLauStyle == null) {
                     Wc_372_FunctionalActi.this.initLauStyle();
@@ -138,8 +137,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 findViewById(R.id.layout_view7).setVisibility(0);
                 break;
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -150,8 +149,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -162,8 +161,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -174,8 +173,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -186,8 +185,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -202,8 +201,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -214,8 +213,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -226,8 +225,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -238,8 +237,8 @@ public class Wc_372_FunctionalActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();

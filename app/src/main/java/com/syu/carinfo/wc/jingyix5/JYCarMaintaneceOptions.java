@@ -28,7 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClickListener {
     private Date dsetDate;
     private int iChecked;
@@ -43,12 +42,12 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
     TextView mTitle;
     TextView mTvDate;
     String strFlag = "";
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.jingyix5.JYCarMaintaneceOptions.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 91:
-                    JYCarMaintaneceOptions.this.mCurrentMiles = DataCanbus.DATA[91];
+                case 140:
+                    JYCarMaintaneceOptions.this.mCurrentMiles = DataCanbus.DATA[140];
                     JYCarMaintaneceOptions.this.checkWarning();
                     break;
             }
@@ -59,11 +58,11 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
     @SuppressLint({"SimpleDateFormat"})
     private DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         getWindow().setSoftInputMode(3);
         super.onCreate(arg0);
-        setContentView(R.layout.layout_wc_jyx5_maintain_options);
+        //setContentView(R.layout.layout_wc_jyx5_maintain_options);
         setUI();
         iniData(getIntent());
     }
@@ -80,16 +79,16 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
         this.mReminder.setOnClickListener(this);
         this.mMilesSet.setOnClickListener(this);
         this.mDateSet.setOnClickListener(this);
-        this.mEtMiles.addTextChangedListener(new TextWatcher() { // from class: com.syu.carinfo.wc.jingyix5.JYCarMaintaneceOptions.2
-            @Override // android.text.TextWatcher
+        this.mEtMiles.addTextChangedListener(new TextWatcher() { 
+            @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
 
-            @Override // android.text.TextWatcher
+            @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
-            @Override // android.text.TextWatcher
+            @Override
             public void afterTextChanged(Editable s) {
                 String string = s.toString();
                 if (!TextUtils.isEmpty(string) && TextUtils.isDigitsOnly(string) && !string.equals(new StringBuilder(String.valueOf(JYCarMaintaneceOptions.this.isetMiles)).toString())) {
@@ -124,7 +123,7 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void checkWarning() {
         String tag = SPreUtils.get(getApplicationContext(), String.valueOf(this.strFlag) + "_miles", "0");
         int miles = Integer.valueOf(tag).intValue();
@@ -172,17 +171,17 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
         this.mDateSet.setSelected(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         super.addNotify();
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
         readConfig();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         super.removeNotify();
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
         saveConfig();
     }
 
@@ -214,14 +213,14 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
         SPreUtils.set(getApplicationContext(), String.valueOf(this.strFlag) + "_date", android.text.format.DateFormat.format("yyyy-MM-dd", this.calendar.getTime()).toString());
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.jy_maintain_1 /* 2131433095 */:
+            case R.id.jy_maintain_1 /* 2131432994 */:
                 setChecked();
                 break;
-            case R.id.jy_maintain_3 /* 2131433097 */:
+            case R.id.jy_maintain_3 /* 2131432996 */:
                 showDatePickDialog();
                 break;
         }
@@ -248,8 +247,8 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
             this.calendar.clear();
             this.calendar.setTime(parseDate);
             final DatePickerDialog pickerDlg = new DatePickerDialog(this, null, this.calendar.get(1), this.calendar.get(2), this.calendar.get(5));
-            pickerDlg.setButton(-1, "OK", new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc.jingyix5.JYCarMaintaneceOptions.3
-                @Override // android.content.DialogInterface.OnClickListener
+            pickerDlg.setButton(-1, "OK", new DialogInterface.OnClickListener() { 
+                @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DatePicker datepick = pickerDlg.getDatePicker();
                     Calendar c = Calendar.getInstance(Locale.CHINA);
@@ -268,12 +267,12 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public boolean isValidateDate(Calendar c) {
         return c.getTimeInMillis() > System.currentTimeMillis();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public boolean isValidateMiles(int miles) {
         return miles > this.mCurrentMiles;
     }

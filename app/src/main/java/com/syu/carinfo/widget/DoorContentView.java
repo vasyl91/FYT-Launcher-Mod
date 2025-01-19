@@ -16,7 +16,6 @@ import com.syu.module.main.FinalShare;
 import com.syu.ui.door.DoorHelper;
 import java.lang.ref.WeakReference;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DoorContentView extends View {
     private final Rect RECT_BACK;
     protected final Rect RECT_DRAWABLE;
@@ -173,12 +172,12 @@ public class DoorContentView extends View {
         return content;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(this.mWidth, this.mHeight);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Content content = getContent();
         Canvas c = content.mCanvas;

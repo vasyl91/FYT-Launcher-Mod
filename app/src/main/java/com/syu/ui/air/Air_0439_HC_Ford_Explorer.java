@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_HC_Ford_Explorer extends AirBase {
     public Air_0439_HC_Ford_Explorer(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_hc_ford_explorer/hc_ford_explorer.webp";
         this.mPathHighlight = "0439_hc_ford_explorer/hc_ford_explorer_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -148,9 +148,9 @@ public class Air_0439_HC_Ford_Explorer extends AirBase {
         } else if (temp == 254) {
             c.drawText("OFF", 39.0f, 73.0f, this.mPaint);
         } else if (unit == 1) {
-            c.drawText(new StringBuilder().append(temp).toString(), 39.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 39.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp * 0.5f).toString(), 39.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp * 0.5f), 39.0f, 73.0f, this.mPaint);
         }
         int temp1 = this.DATA[25];
         if (temp1 == -1) {
@@ -162,9 +162,9 @@ public class Air_0439_HC_Ford_Explorer extends AirBase {
         } else if (temp1 == 254) {
             c.drawText("OFF", 722.0f, 73.0f, this.mPaint);
         } else if (unit == 1) {
-            c.drawText(new StringBuilder().append(temp1).toString(), 722.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp1), 722.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp1 * 0.5f).toString(), 722.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp1 * 0.5f), 722.0f, 73.0f, this.mPaint);
         }
         int temp2 = this.DATA[36];
         if (temp2 == -1) {
@@ -176,7 +176,7 @@ public class Air_0439_HC_Ford_Explorer extends AirBase {
         } else if (temp2 == 0) {
             c.drawText("OFF", 974.0f, 73.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2).toString(), 974.0f, 73.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2), 974.0f, 73.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

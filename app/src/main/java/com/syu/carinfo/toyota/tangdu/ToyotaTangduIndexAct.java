@@ -10,13 +10,12 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ToyotaTangduIndexAct extends TabActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 88:
+                case 100:
                     ToyotaTangduIndexAct.this.mUpdaterPEEnable();
                     break;
             }
@@ -24,44 +23,41 @@ public class ToyotaTangduIndexAct extends TabActivity {
     };
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_toyota_tangdu_index);
+        //setContentView(R.layout.layout_toyota_tangdu_index);
         init();
     }
 
     private void init() {
         this.mTabHost = getTabHost();
-        if (DataCanbus.DATA[1000] != 8978884 && ((RadioButton) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((RadioButton) findViewById(R.id.ctv_checkedtext1)).setVisibility(8);
-        }
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTripInfo").setIndicator("tabTripInfo").setContent(new Intent(this, (Class<?>) ToyotaTangduTripAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabHistory").setIndicator("tabHistory").setContent(new Intent(this, (Class<?>) ToyotaTangduHistoryAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTireInfo").setIndicator("tabTireInfo").setContent(new Intent(this, (Class<?>) ToyotaTangduTireAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) ToyotaTangduSettingsAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPE").setIndicator("tabPE").setContent(new Intent(this, (Class<?>) ToyotaTangduIcPetrolElectricActi.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabEQ").setIndicator("tabEQ").setContent(new Intent(this, (Class<?>) ToyotaTangduEQActi.class)));
-        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduIndexAct.2
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.ctv_checkedtext1 /* 2131427478 */:
+                    case R.id.ctv_checkedtext1 /* 2131427525 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabEQ");
                         break;
-                    case R.id.camry_btn_trip_info /* 2131428119 */:
+                    case R.id.camry_btn_trip_info /* 2131428108 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabTripInfo");
                         break;
-                    case R.id.camry_btn_history_info /* 2131428120 */:
+                    case R.id.camry_btn_history_info /* 2131428109 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabHistory");
                         break;
-                    case R.id.camry_btn_settings /* 2131428121 */:
+                    case R.id.camry_btn_settings /* 2131428110 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabSettings");
                         break;
-                    case R.id.camry_btn_trie_info /* 2131430675 */:
+                    case R.id.camry_btn_trie_info /* 2131430651 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabTireInfo");
                         break;
-                    case R.id.camry_btn_pe /* 2131430676 */:
+                    case R.id.camry_btn_pe /* 2131430652 */:
                         ToyotaTangduIndexAct.this.mTabHost.setCurrentTabByTag("tabPE");
                         break;
                 }
@@ -69,23 +65,23 @@ public class ToyotaTangduIndexAct extends TabActivity {
         });
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPEEnable() {
-        int value = DataCanbus.DATA[88];
+        int value = DataCanbus.DATA[100];
         if (((RadioButton) findViewById(R.id.camry_btn_pe)) != null) {
             ((RadioButton) findViewById(R.id.camry_btn_pe)).setVisibility(value == 0 ? 8 : 0);
         }

@@ -22,7 +22,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -30,8 +29,8 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify sNotify = new IUiNotify() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify sNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 174:
@@ -47,8 +46,8 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
             }
         }
     };
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             if (DataCanbus.DATA[1000] == 12648900) {
@@ -241,10 +240,10 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_lz_bba_setfunc);
+        //setContentView(R.layout.layout_lz_bba_setfunc);
         init();
         if (DataCanbus.DATA[1000] == 12648900) {
             findViewById(R.id.layout_view13).setVisibility(0);
@@ -315,7 +314,7 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         setSelfClick((Button) findViewById(R.id.btn_plus15), this);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage2, (ViewGroup) null);
@@ -328,8 +327,8 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.3
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 LZNewAllBBASetFunc_beifen.this.language_set = position;
                 if (LZNewAllBBASetFunc_beifen.this.language_set >= 0 && LZNewAllBBASetFunc_beifen.this.language_set <= LZNewAllBBASetFunc_beifen.this.mLauStylelist.size() && LZNewAllBBASetFunc_beifen.this.send_lang != null) {
@@ -340,7 +339,7 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLauguageSet() {
         int value = Callback_0453_LZ_BBA_All.modevalue;
         int i = 0;
@@ -357,7 +356,7 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -377,8 +376,8 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (LZNewAllBBASetFunc_beifen.this.mLauStyle == null) {
                     LZNewAllBBASetFunc_beifen.this.initLauStyle();
@@ -395,11 +394,11 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.str_aux_activation_progress1));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.5.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         LZNewAllBBASetFunc_beifen.this.setCarInfo(9, 0);
                     }
@@ -407,8 +406,8 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc_beifen.6
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -416,19 +415,19 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataMain.NOTIFY_EVENTS[174].addNotify(this.sNotify);
         updateLauguageSet();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         switch (v.getId()) {
@@ -724,7 +723,7 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         DataCanbus.PROXY.cmd(0, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         if (DataCanbus.DATA[1000] == 12648900) {
             DataCanbus.NOTIFY_EVENTS[195].addNotify(this.notifyCanbus, 1);
@@ -754,7 +753,7 @@ public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnCl
         DataCanbus.NOTIFY_EVENTS[87].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         if (DataCanbus.DATA[1000] == 12648900) {
             DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.notifyCanbus);

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ShapeReader {
     private static Exception e;
     private static Throwable th;
@@ -155,15 +154,15 @@ public class ShapeReader {
     }
 
     public static int bigInt(byte[] data, int offset) {
-        return (data[offset + 0] << 24) | ((data[offset + 1] & 255) << 16) | ((data[offset + 2] & 255) << 8) | (data[offset + 3] & 255);
+        return (data[offset] << 24) | ((data[offset + 1] & 255) << 16) | ((data[offset + 2] & 255) << 8) | (data[offset + 3] & 255);
     }
 
     public static int littleInt(byte[] data, int offset) {
-        return (data[offset + 3] << 24) | ((data[offset + 2] & 255) << 16) | ((data[offset + 1] & 255) << 8) | (data[offset + 0] & 255);
+        return (data[offset + 3] << 24) | ((data[offset + 2] & 255) << 16) | ((data[offset + 1] & 255) << 8) | (data[offset] & 255);
     }
 
     public static double littleDouble(byte[] data, int offset) {
-        long lvalue = (data[offset + 7] << 56) | ((data[offset + 6] & 255) << 48) | ((data[offset + 5] & 255) << 40) | ((data[offset + 4] & 255) << 32) | ((data[offset + 3] & 255) << 24) | ((data[offset + 2] & 255) << 16) | ((data[offset + 1] & 255) << 8) | (data[offset + 0] & 255);
+        long lvalue = ((long) data[offset + 7] << 56) | ((long) (data[offset + 6] & 255) << 48) | ((long) (data[offset + 5] & 255) << 40) | ((long) (data[offset + 4] & 255) << 32) | ((long) (data[offset + 3] & 255) << 24) | ((data[offset + 2] & 255) << 16) | ((data[offset + 1] & 255) << 8) | (data[offset] & 255);
         return Double.longBitsToDouble(lvalue);
     }
 

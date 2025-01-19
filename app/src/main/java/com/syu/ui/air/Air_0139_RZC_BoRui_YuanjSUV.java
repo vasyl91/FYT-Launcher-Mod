@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0139_RZC_BoRui_YuanjSUV extends AirBase {
     public Air_0139_RZC_BoRui_YuanjSUV(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0139_jl_dihaoyuanjing/air_borui_yuanjSUV.webp";
         this.mPathHighlight = "0139_jl_dihaoyuanjing/air_borui_yuanjSUV_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         int left_temp;
         int right_temp;
@@ -105,7 +105,7 @@ public class Air_0139_RZC_BoRui_YuanjSUV extends AirBase {
             } else {
                 left_temp = (left_temp2 * 5) + 170;
             }
-            c.drawText(String.valueOf(left_temp / 10) + "." + (left_temp % 10), 61.0f, 54.0f, this.mPaint);
+            c.drawText(left_temp / 10 + "." + (left_temp % 10), 61.0f, 54.0f, this.mPaint);
         }
         int right_temp2 = this.DATA[28];
         if (right_temp2 == -2) {
@@ -118,7 +118,7 @@ public class Air_0139_RZC_BoRui_YuanjSUV extends AirBase {
             } else {
                 right_temp = (right_temp2 * 5) + 170;
             }
-            c.drawText(String.valueOf(right_temp / 10) + "." + (right_temp % 10), 940.0f, 54.0f, this.mPaint);
+            c.drawText(right_temp / 10 + "." + (right_temp % 10), 940.0f, 54.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

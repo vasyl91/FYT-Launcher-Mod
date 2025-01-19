@@ -1,5 +1,7 @@
 package com.syu.carinfo.wc.axela;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,24 +12,23 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityMzdAllMaintainanceCarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.axela.ActivityMzdAllMaintainanceCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 97:
+                case 165:
                     if (((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         ((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value) + "km");
                         break;
                     }
-                case 98:
+                case 166:
                     if (((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text3)) != null) {
                         ((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value) + "km");
                         break;
                     }
-                case 99:
+                case 167:
                     if (((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         if (value == 1) {
                             ((TextView) ActivityMzdAllMaintainanceCarSet.this.findViewById(R.id.tv_text1)).setText(R.string.rzc_c4l_open);
@@ -42,24 +43,25 @@ public class ActivityMzdAllMaintainanceCarSet extends BaseActivity implements Vi
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc2_mzd_maintainance_settings);
+        //setContentView(R.layout.layout_0443_wc2_mzd_maintainance_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent();
                     intent.setClass(this, ActivityMzdAllReserveSet.class);
@@ -69,7 +71,7 @@ public class ActivityMzdAllMaintainanceCarSet extends BaseActivity implements Vi
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent();
                     intent2.setClass(this, ActivityMzdAllTireChangeSet.class);
@@ -79,7 +81,7 @@ public class ActivityMzdAllMaintainanceCarSet extends BaseActivity implements Vi
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 try {
                     Intent intent3 = new Intent();
                     intent3.setClass(this, ActivityMzdAllOilSet.class);
@@ -89,32 +91,68 @@ public class ActivityMzdAllMaintainanceCarSet extends BaseActivity implements Vi
                     e3.printStackTrace();
                     return;
                 }
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                dialog(R.string.str_clear_alarm_information, 62);
+                break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void dialog(int stringId, final int cmd) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(String.valueOf(getResources().getString(R.string.str_clear_alarm_information)) + " " + getResources().getString(R.string.data));
+        builder.setTitle(getResources().getString(R.string.tips));
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final int i = cmd;
+                new Thread(new Runnable() { 
+                    @Override
+                    public void run() {
+                        DataCanbus.PROXY.cmd(6, new int[]{i, 1}, null, null);
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final int i = cmd;
+                new Thread(new Runnable() { 
+                    @Override
+                    public void run() {
+                        DataCanbus.PROXY.cmd(6, new int[]{i}, null, null);
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
     }
 }

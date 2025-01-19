@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AlwaysMarqueeTextView extends TextView {
     public AlwaysMarqueeTextView(Context context) {
         super(context);
@@ -18,7 +17,7 @@ public class AlwaysMarqueeTextView extends TextView {
         super(context, attrs, defStyle);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean isFocused() {
         return true;
     }

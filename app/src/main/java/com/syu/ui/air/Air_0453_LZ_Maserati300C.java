@@ -5,27 +5,27 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_LZ_Maserati300C extends AirBase {
     public Air_0453_LZ_Maserati300C(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0294_wc_toyota/vw_18prado_air.webp";
         this.mPathHighlight = "0294_wc_toyota/vw_18prado_air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -108,9 +108,9 @@ public class Air_0453_LZ_Maserati300C extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 70.0f, 60.0f, this.mPaint);
         } else if (TempUnit == 1) {
-            c.drawText(new StringBuilder().append(temp / 2).toString(), 70.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2), 70.0f, 60.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 70.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 70.0f, 60.0f, this.mPaint);
         }
         int temp2 = this.DATA[28];
         if (temp2 == -1) {
@@ -120,9 +120,9 @@ public class Air_0453_LZ_Maserati300C extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 925.0f, 60.0f, this.mPaint);
         } else if (TempUnit == 1) {
-            c.drawText(new StringBuilder().append(temp2 / 2).toString(), 925.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2), 925.0f, 60.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 925.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 925.0f, 60.0f, this.mPaint);
         }
         int temp3 = this.DATA[40];
         if (temp3 == -1) {
@@ -132,9 +132,9 @@ public class Air_0453_LZ_Maserati300C extends AirBase {
         } else if (temp3 == -3) {
             c.drawText("HI", 412.0f, 247.0f, this.mPaint);
         } else if (TempUnit == 1) {
-            c.drawText(new StringBuilder().append(temp3 / 2).toString(), 412.0f, 247.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3 / 2), 412.0f, 247.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp3 / 2.0f).toString(), 412.0f, 247.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3 / 2.0f), 412.0f, 247.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

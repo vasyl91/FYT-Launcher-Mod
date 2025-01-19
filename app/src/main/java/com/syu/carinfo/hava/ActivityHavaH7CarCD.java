@@ -12,50 +12,49 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0244_RZC_XP1_HavalH2;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListener {
     public static ActivityHavaH7CarCD mInstance;
     public static boolean mIsFront = false;
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hava.ActivityHavaH7CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 135:
+                case 147:
                     ActivityHavaH7CarCD.this.mUpdaterCdRepeat(value);
                     ActivityHavaH7CarCD.this.mUpdaterCdRandom(value);
                     break;
-                case 136:
+                case 148:
                     ActivityHavaH7CarCD.this.mUpdaterCdState(value);
                     break;
-                case 137:
-                case 138:
+                case 149:
+                case 150:
                     ActivityHavaH7CarCD.this.mUpdaterCdTrack();
                     break;
-                case 139:
-                case 140:
+                case 151:
+                case 152:
                     ActivityHavaH7CarCD.this.mUpdaterCdTime();
                     break;
-                case 141:
+                case 153:
                     ((TextView) ActivityHavaH7CarCD.this.findViewById(R.id.cd_title)).setText(Callback_0244_RZC_XP1_HavalH2.Title);
                     break;
-                case 142:
+                case 154:
                     ((TextView) ActivityHavaH7CarCD.this.findViewById(R.id.cd_album)).setText(Callback_0244_RZC_XP1_HavalH2.Album);
                     break;
-                case 143:
+                case 155:
                     ((TextView) ActivityHavaH7CarCD.this.findViewById(R.id.cd_artist)).setText(Callback_0244_RZC_XP1_HavalH2.Artist);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_daqienuoji_carcd);
+        //setContentView(R.layout.layout_0374_daqienuoji_carcd);
         mInstance = this;
         ((Button) findViewById(R.id.cd_prev)).setOnTouchListener(this);
         ((Button) findViewById(R.id.cd_play)).setOnTouchListener(this);
@@ -67,7 +66,7 @@ public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListene
         ((Button) findViewById(R.id.cd_ramdom)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -75,7 +74,7 @@ public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListene
         FuncMain.setChannel(13);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -86,32 +85,32 @@ public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListene
         DataCanbus.PROXY.cmd(7, new int[]{cmdId}, null, null);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
-            case R.id.cd_repeat /* 2131427913 */:
+            case R.id.cd_repeat /* 2131427916 */:
                 this.cmdId = 17;
                 break;
-            case R.id.cd_ramdom /* 2131427914 */:
+            case R.id.cd_ramdom /* 2131427917 */:
                 this.cmdId = 8;
                 break;
-            case R.id.cd_prev /* 2131427915 */:
+            case R.id.cd_prev /* 2131427918 */:
                 this.cmdId = 2;
                 break;
-            case R.id.cd_fb /* 2131427916 */:
+            case R.id.cd_fb /* 2131427919 */:
                 this.cmdId = 3;
                 break;
-            case R.id.cd_play /* 2131427917 */:
+            case R.id.cd_play /* 2131427920 */:
                 this.cmdId = 19;
                 break;
-            case R.id.cd_pause /* 2131427918 */:
+            case R.id.cd_pause /* 2131427921 */:
                 this.cmdId = 20;
                 break;
-            case R.id.cd_ff /* 2131427919 */:
+            case R.id.cd_ff /* 2131427922 */:
                 this.cmdId = 4;
                 break;
-            case R.id.cd_next /* 2131427920 */:
+            case R.id.cd_next /* 2131427923 */:
                 this.cmdId = 1;
                 break;
         }
@@ -126,42 +125,42 @@ public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListene
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdRandom(int value) {
         ((Button) findViewById(R.id.cd_ramdom)).setSelected(value == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdRepeat(int value) {
         ((Button) findViewById(R.id.cd_repeat)).setSelected(value == 2);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdState(int value) {
         switch (value) {
             case 0:
@@ -194,21 +193,21 @@ public class ActivityHavaH7CarCD extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTrack() {
-        int value = DataCanbus.DATA[138];
-        int value1 = DataCanbus.DATA[137];
+        int value = DataCanbus.DATA[150];
+        int value1 = DataCanbus.DATA[149];
         ((TextView) findViewById(R.id.huiteng_cd_track)).setText("Track: " + value + " / " + value1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTime() {
-        int value = DataCanbus.DATA[140] / 3600;
-        int value1 = (DataCanbus.DATA[140] % 3600) / 60;
-        int value2 = DataCanbus.DATA[140] % 60;
-        int value3 = DataCanbus.DATA[139] / 3600;
-        int value4 = (DataCanbus.DATA[139] % 3600) / 60;
-        int value5 = DataCanbus.DATA[139] % 60;
+        int value = DataCanbus.DATA[152] / 3600;
+        int value1 = (DataCanbus.DATA[152] % 3600) / 60;
+        int value2 = DataCanbus.DATA[152] % 60;
+        int value3 = DataCanbus.DATA[151] / 3600;
+        int value4 = (DataCanbus.DATA[151] % 3600) / 60;
+        int value5 = DataCanbus.DATA[151] % 60;
         ((TextView) findViewById(R.id.huiteng_cd_time)).setText(String.valueOf(value) + ":" + value1 + ":" + value2 + " / " + value3 + ":" + value4 + ":" + value5);
     }
 }

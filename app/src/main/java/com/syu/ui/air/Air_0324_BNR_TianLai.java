@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0324_BNR_TianLai extends AirBase {
     public Air_0324_BNR_TianLai(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0430_wc2_tianlai03/air_wc2_tianlai03_n.webp";
         this.mPathHighlight = "0430_wc2_tianlai03/air_wc2_tianlai03_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String tempStr;
         String tempStr2;
@@ -79,7 +79,7 @@ public class Air_0324_BNR_TianLai extends AirBase {
         } else if (arg == 127) {
             tempStr = "HIGH";
         } else if (arg >= 31 && arg <= 64) {
-            tempStr = new StringBuilder(String.valueOf(arg * 0.5f)).toString();
+            tempStr = String.valueOf(arg * 0.5f);
         } else {
             tempStr = "NONE";
         }
@@ -90,7 +90,7 @@ public class Air_0324_BNR_TianLai extends AirBase {
         } else if (arg2 == 127) {
             tempStr2 = "HIGH";
         } else if (arg2 >= 31 && arg2 <= 64) {
-            tempStr2 = new StringBuilder(String.valueOf(arg2 * 0.5f)).toString();
+            tempStr2 = String.valueOf(arg2 * 0.5f);
         } else {
             tempStr2 = "NONE";
         }

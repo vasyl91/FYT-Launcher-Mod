@@ -5,59 +5,59 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityTianLaiCarCD extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hc.tianlai.ActivityTianLaiCarCD.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 52:
+                case 100:
                     ActivityTianLaiCarCD.this.updateDiscId(value);
                     break;
-                case 53:
+                case 101:
                     ActivityTianLaiCarCD.this.updateDiscTrack(value);
                     break;
-                case 54:
+                case 102:
                     ActivityTianLaiCarCD.this.updatePlayTime(value);
                     break;
-                case 55:
+                case 103:
                     ActivityTianLaiCarCD.this.updateWorkState(value);
                     break;
-                case 56:
+                case 104:
                     ActivityTianLaiCarCD.this.updateRepeateState(value);
                     break;
-                case 57:
+                case 105:
                     ActivityTianLaiCarCD.this.updateRandomState(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_327_hc_tianlai_carcd);
+        //setContentView(R.layout.layout_327_hc_tianlai_carcd);
         setListener();
     }
 
     private void setListener() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(this);
+        findViewById(R.id.btn_plus1).setOnClickListener(this);
+        findViewById(R.id.btn_plus2).setOnClickListener(this);
+        findViewById(R.id.btn_plus3).setOnClickListener(this);
+        findViewById(R.id.btn_plus4).setOnClickListener(this);
+        findViewById(R.id.btn_plus5).setOnClickListener(this);
+        findViewById(R.id.btn_plus6).setOnClickListener(this);
+        findViewById(R.id.btn_plus7).setOnClickListener(this);
+        findViewById(R.id.btn_plus8).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -65,57 +65,57 @@ public class ActivityTianLaiCarCD extends Activity implements View.OnClickListen
         setCmdKey(9);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 setCmdKey(1);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 setCmdKey(4);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 setCmdKey(2);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 setCmdKey(5);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 setCmdKey(6);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 setCmdKey(3);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 setCmdKey(8);
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 setCmdKey(7);
                 break;
         }
@@ -126,9 +126,9 @@ public class ActivityTianLaiCarCD extends Activity implements View.OnClickListen
     }
 
     protected void updateDiscId(int value) {
-        if (((TextView) findViewById(R.id.tv_text1)) != null) {
+        if (findViewById(R.id.tv_text1) != null) {
             if (value > 0 && value < 6) {
-                ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
+                ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value));
             } else {
                 ((TextView) findViewById(R.id.tv_text1)).setText("--");
             }
@@ -136,19 +136,19 @@ public class ActivityTianLaiCarCD extends Activity implements View.OnClickListen
     }
 
     protected void updateDiscTrack(int value) {
-        if (((TextView) findViewById(R.id.tv_text2)) != null) {
-            ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(value).toString());
+        if (findViewById(R.id.tv_text2) != null) {
+            ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value));
         }
     }
 
     protected void updatePlayTime(int value) {
-        if (((TextView) findViewById(R.id.tv_text3)) != null) {
+        if (findViewById(R.id.tv_text3) != null) {
             ((TextView) findViewById(R.id.tv_text3)).setText(String.format("%02d:%02d", Integer.valueOf(value / 60), Integer.valueOf(value % 60)));
         }
     }
 
     protected void updateWorkState(int value) {
-        if (((TextView) findViewById(R.id.tv_text4)) != null) {
+        if (findViewById(R.id.tv_text4) != null) {
             switch (value) {
                 case 0:
                     ((TextView) findViewById(R.id.tv_text4)).setText(R.string.crv_state_stop);
@@ -191,7 +191,7 @@ public class ActivityTianLaiCarCD extends Activity implements View.OnClickListen
     }
 
     protected void updateRepeateState(int value) {
-        if (((TextView) findViewById(R.id.tv_text5)) != null) {
+        if (findViewById(R.id.tv_text5) != null) {
             switch (value) {
                 case 1:
                     ((TextView) findViewById(R.id.tv_text5)).setText(R.string.str_327_one_disc_rep);
@@ -207,7 +207,7 @@ public class ActivityTianLaiCarCD extends Activity implements View.OnClickListen
     }
 
     protected void updateRandomState(int value) {
-        if (((TextView) findViewById(R.id.tv_text6)) != null) {
+        if (findViewById(R.id.tv_text6) != null) {
             switch (value) {
                 case 1:
                     ((TextView) findViewById(R.id.tv_text6)).setText(R.string.str_327_all_disc_random);

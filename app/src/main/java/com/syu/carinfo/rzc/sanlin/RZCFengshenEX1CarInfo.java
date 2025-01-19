@@ -9,14 +9,13 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0255_RZC_XP1_FengShenAX7;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCFengshenEX1CarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.RZCFengshenEX1CarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 67:
+                case 147:
                     int value2 = value - 80;
                     if (value2 >= 0) {
                         ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text1)).setText("电池->车轮  " + value2 + "kw");
@@ -25,25 +24,25 @@ public class RZCFengshenEX1CarInfo extends BaseActivity implements View.OnClickL
                         ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text1)).setText("车轮->电池  " + value2 + "kw");
                         break;
                     }
-                case 68:
+                case 148:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value) + "kw");
                     break;
-                case 69:
+                case 149:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10) + "." + (value % 10) + "kwh/100km");
                     break;
-                case 70:
+                case 150:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value) + "km");
                     break;
-                case 71:
+                case 151:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value) + "%");
                     break;
-                case 72:
+                case 152:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value) + "%");
                     break;
-                case 73:
+                case 153:
                     ((TextView) RZCFengshenEX1CarInfo.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
                     break;
-                case 74:
+                case 154:
                     String[] str = new String[31];
                     for (int i = 0; i < 31; i++) {
                         str[i] = "20" + (Callback_0255_RZC_XP1_FengShenAX7.LIST_EX1_EN[i][0] / 10) + (Callback_0255_RZC_XP1_FengShenAX7.LIST_EX1_EN[i][0] % 10);
@@ -93,49 +92,49 @@ public class RZCFengshenEX1CarInfo extends BaseActivity implements View.OnClickL
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0255_rzc_fengshen_ex1_carinfo);
+        //setContentView(R.layout.layout_0255_rzc_fengshen_ex1_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
     }
 }

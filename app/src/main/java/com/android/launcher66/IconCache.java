@@ -11,6 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.content.ContextCompat;
+
 import com.fyt.skin.SkinUtils;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.CustomIcons;
@@ -18,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class IconCache {
     private static final int INITIAL_ICON_CACHE_CAPACITY = 50;
     private static final String TAG = "Launcher.IconCache";
@@ -54,7 +57,7 @@ public class IconCache {
     public Drawable getFullResIcon(Resources resources, int iconId) {
         Drawable d;
         try {
-            d = resources.getDrawableForDensity(iconId, this.mIconDpi);
+            d = resources.getDrawableForDensity(iconId, this.mIconDpi, new ContextThemeWrapper(this.mContext, R.style.AppTheme).getTheme());
         } catch (Resources.NotFoundException e) {
             d = null;
         }
@@ -87,7 +90,7 @@ public class IconCache {
         int iconId;
         int resid = CustomIcons.getIcon(info);
         if (resid > 0) {
-            return this.mContext.getResources().getDrawable(resid);
+            return ContextCompat.getDrawable(this.mContext, resid);
         }
         try {
             resources = this.mPackageManager.getResourcesForApplication(info.applicationInfo);
@@ -181,7 +184,7 @@ public class IconCache {
     private Bitmap setIcon(String packageName, CacheEntry entry, ResolveInfo info) {
         SkinUtils.getResources();
         int resid = CustomIcons.getIcon(info.activityInfo);
-        return resid != 0 ? Utilities.createIconBitmap_enlarge(SkinUtils.getDrawable(resid)) : Utilities.createIconBitmap_minify(new BitmapDrawable(entry.icon));
+        return resid != 0 ? Utilities.createIconBitmap_enlarge(SkinUtils.getDrawable(resid)) : Utilities.createIconBitmap_minify(new BitmapDrawable(this.mContext.getResources(), entry.icon));
     }
 
     private CacheEntry cacheLocked(ComponentName componentName, ResolveInfo info, HashMap<Object, CharSequence> labelCache) {

@@ -1,50 +1,42 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0010_WC1_FeiyateFeixiang extends CallbackCanbusBase {
-    public static final int U_CNT_MAX = 8;
-    public static final int U_DOOR_BACK = 7;
-    public static final int U_DOOR_BEGIN = 2;
-    public static final int U_DOOR_END = 8;
-    public static final int U_DOOR_ENGINE = 2;
-    public static final int U_DOOR_FL = 3;
-    public static final int U_DOOR_FR = 4;
-    public static final int U_DOOR_RL = 5;
-    public static final int U_DOOR_RR = 6;
+    public static final int U_CNT_MAX = 98;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 98; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 2;
-        DoorHelper.sUcDoorFl = 3;
-        DoorHelper.sUcDoorFr = 4;
-        DoorHelper.sUcDoorRl = 5;
-        DoorHelper.sUcDoorRr = 6;
-        DoorHelper.sUcDoorBack = 7;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 2; i2 < 8; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 2; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode >= 0 && updateCode < 8) {
+        if (updateCode >= 0 && updateCode >= 0 && updateCode < 98) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

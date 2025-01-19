@@ -7,78 +7,77 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RuiTengMeterAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengMeterAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 50:
+                case 123:
                     RuiTengMeterAct.this.mUpdaterValue50();
                     break;
-                case 51:
+                case 124:
                     RuiTengMeterAct.this.mUpdaterValue51();
                     break;
-                case 52:
+                case 125:
                     RuiTengMeterAct.this.mUpdaterValue52();
                     break;
-                case 53:
+                case 126:
                     RuiTengMeterAct.this.mUpdaterValue53();
                     break;
-                case 54:
+                case 127:
                     RuiTengMeterAct.this.mUpdaterValue54();
                     break;
-                case 70:
+                case 143:
                     RuiTengMeterAct.this.mUpdaterValue55();
                     break;
-                case 71:
+                case 144:
                     RuiTengMeterAct.this.mUpdaterValue56();
                     break;
-                case 72:
+                case 145:
                     RuiTengMeterAct.this.mUpdaterValue57();
                     break;
-                case 73:
+                case 146:
                     RuiTengMeterAct.this.mUpdaterValue58();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_ruiteng_meter_info);
+        //setContentView(R.layout.layout_wc_ruiteng_meter_info);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue50() {
-        int value = DataCanbus.DATA[50];
+        int value = DataCanbus.DATA[123];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)).setText("--");
@@ -88,9 +87,9 @@ public class RuiTengMeterAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue51() {
-        int value = DataCanbus.DATA[51];
+        int value = DataCanbus.DATA[124];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)).setText("--");
@@ -100,17 +99,17 @@ public class RuiTengMeterAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue52() {
-        int value = DataCanbus.DATA[52];
+        int value = DataCanbus.DATA[125];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)) != null) {
             ((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)).setText(String.valueOf(value / 10.0f) + "V");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue53() {
-        int value = DataCanbus.DATA[53];
+        int value = DataCanbus.DATA[126];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)) != null) {
             if (value == 255) {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)).setText("-");
@@ -120,56 +119,56 @@ public class RuiTengMeterAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue54() {
-        int value = DataCanbus.DATA[54];
+        int value = DataCanbus.DATA[127];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_remaining_oil)) != null && value >= 0 && value <= 100) {
             ((TextView) findViewById(R.id.wc_ruiteng_func_btn_remaining_oil)).setText(String.valueOf(value) + "%");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue55() {
-        int value = DataCanbus.DATA[70];
+        int value = DataCanbus.DATA[143];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)) != null) {
             if (value == 1) {
-                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)).setText(new StringBuilder().append(DataCanbus.DATA[50]).toString());
+                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)).setText(new StringBuilder().append(DataCanbus.DATA[123]).toString());
             } else {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_motor_speed)).setText(getResources().getString(R.string.wc_ruiteng_string_no_support));
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue56() {
-        int value = DataCanbus.DATA[71];
+        int value = DataCanbus.DATA[144];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)) != null) {
             if (value == 1) {
-                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)).setText(new StringBuilder().append(DataCanbus.DATA[51]).toString());
+                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)).setText(new StringBuilder().append(DataCanbus.DATA[124]).toString());
             } else {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_shunshi_speed)).setText(getResources().getString(R.string.wc_ruiteng_string_no_support));
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue57() {
-        int value = DataCanbus.DATA[72];
+        int value = DataCanbus.DATA[145];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)) != null) {
             if (value == 1) {
-                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)).setText(new StringBuilder().append(DataCanbus.DATA[52]).toString());
+                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)).setText(new StringBuilder().append(DataCanbus.DATA[125]).toString());
             } else {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_battery_voltage)).setText(getResources().getString(R.string.wc_ruiteng_string_no_support));
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue58() {
-        int value = DataCanbus.DATA[73];
+        int value = DataCanbus.DATA[146];
         if (((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)) != null) {
             if (value == 1) {
-                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)).setText(new StringBuilder().append(DataCanbus.DATA[53]).toString());
+                ((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)).setText(new StringBuilder().append(DataCanbus.DATA[126]).toString());
             } else {
                 ((TextView) findViewById(R.id.wc_ruiteng_func_btn_integrity_door_position)).setText(getResources().getString(R.string.wc_ruiteng_string_no_support));
             }

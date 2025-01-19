@@ -59,7 +59,7 @@ class PendingAddWidgetInfo extends PendingAddItemInfo {
     }
 
     @NonNull
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "Widget: " + this.componentName.toShortString();
     }

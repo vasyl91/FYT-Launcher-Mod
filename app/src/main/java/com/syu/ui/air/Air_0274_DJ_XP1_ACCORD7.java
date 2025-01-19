@@ -5,27 +5,27 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0274_DJ_XP1_ACCORD7 extends AirBase {
     public Air_0274_DJ_XP1_ACCORD7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0274_dj_xp1_accord7/air_0274_dj_xp1_accord7_n.webp";
         this.mPathHighlight = "0274_dj_xp1_accord7/air_0274_dj_xp1_accord7_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -87,9 +87,9 @@ public class Air_0274_DJ_XP1_ACCORD7 extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 60.0f, 136.0f, this.mPaint);
         } else if (tempunit == 1) {
-            c.drawText(new StringBuilder().append(((left_temp * 9) / 5) + 32).toString(), 60.0f, 136.0f, this.mPaint);
+            c.drawText(String.valueOf(((left_temp * 9) / 5) + 32), 60.0f, 136.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp).toString(), 60.0f, 136.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp), 60.0f, 136.0f, this.mPaint);
         }
         int right_temp = this.DATA[23];
         if (right_temp == -2) {
@@ -97,9 +97,9 @@ public class Air_0274_DJ_XP1_ACCORD7 extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 930.0f, 136.0f, this.mPaint);
         } else if (tempunit == 1) {
-            c.drawText(new StringBuilder().append(((right_temp * 9) / 5) + 32).toString(), 930.0f, 136.0f, this.mPaint);
+            c.drawText(String.valueOf(((right_temp * 9) / 5) + 32), 930.0f, 136.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp).toString(), 930.0f, 136.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp), 930.0f, 136.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

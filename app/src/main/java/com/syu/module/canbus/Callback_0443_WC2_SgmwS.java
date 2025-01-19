@@ -1,13 +1,13 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0443_WC2_SgmwS;
+//import com.syu.ui.air.Air_0443_WC2_SgmwS;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0443_WC2_SgmwS extends CallbackCanbusBase {
     public static final int U_AIR_AC = 15;
     public static final int U_AIR_AC_MAX = 16;
@@ -57,7 +57,7 @@ public class Callback_0443_WC2_SgmwS extends CallbackCanbusBase {
     public static final int U_LIGHT_RIGHTTURNLIGHT = 38;
     public static final int U_LIGHT_WIDTHLIGHT = 35;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 49; i++) {
@@ -73,13 +73,13 @@ public class Callback_0443_WC2_SgmwS extends CallbackCanbusBase {
         for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        AirHelper.getInstance().buildUi(new Air_0443_WC2_SgmwS(LauncherApplication.getInstance()));
+        //AirHelper.getInstance().buildUi(new Air_0443_WC2_SgmwS(LauncherApplication.getInstance()));
         for (int i3 = 9; i3 < 32; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -91,7 +91,7 @@ public class Callback_0443_WC2_SgmwS extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 49) {
             HandlerCanbus.update(updateCode, ints);

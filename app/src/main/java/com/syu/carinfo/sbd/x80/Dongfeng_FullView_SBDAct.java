@@ -9,12 +9,11 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnClickListener {
     private int f;
     private int l;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.sbd.x80.Dongfeng_FullView_SBDAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -39,10 +38,10 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
     private int r;
     private int s;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_sbd_dongfeng_fullview_set);
+        //setContentView(R.layout.layout_sbd_dongfeng_fullview_set);
         setUI();
     }
 
@@ -54,7 +53,7 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
@@ -63,7 +62,7 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
@@ -72,7 +71,7 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uLeft(int val) {
         this.l = val;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
@@ -80,7 +79,7 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void yRight(int val) {
         this.r = val;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext3)) != null) {
@@ -88,7 +87,7 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uForward(int val) {
         this.f = val;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext5)) != null) {
@@ -96,14 +95,14 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uAnimate(int val) {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(val != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSteer(int val) {
         this.s = val;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext4)) != null) {
@@ -111,30 +110,30 @@ public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View arg0) {
         int id = arg0.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 40;
                 iArr[1] = DataCanbus.DATA[44] != 1 ? 1 : 0;
                 remoteModuleProxy.cmd(1, iArr, null, null);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 this.l = this.l != 0 ? 0 : 1;
                 sendCMD();
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 this.r = this.r != 0 ? 0 : 1;
                 sendCMD();
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 this.s = this.s != 0 ? 0 : 1;
                 sendCMD();
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
                 this.f = this.f != 0 ? 0 : 1;
                 sendCMD();
                 break;

@@ -15,7 +15,6 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCSuzukiSettings extends BaseActivity implements View.OnClickListener {
     int language_set = 255;
     private PopupWindow mLauStyle;
@@ -24,14 +23,14 @@ public class RZCSuzukiSettings extends BaseActivity implements View.OnClickListe
     private View mPopShowView;
     int[] send_lang;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_rzc_suzuki_settings);
+        //setContentView(R.layout.layout_0453_rzc_suzuki_settings);
         setListener();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -44,8 +43,8 @@ public class RZCSuzukiSettings extends BaseActivity implements View.OnClickListe
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.honda.RZCSuzukiSettings.1
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 RZCSuzukiSettings.this.language_set = position;
                 if (RZCSuzukiSettings.this.language_set >= 0 && RZCSuzukiSettings.this.language_set <= RZCSuzukiSettings.this.mLauStylelist.size() && RZCSuzukiSettings.this.send_lang != null) {
@@ -102,8 +101,8 @@ public class RZCSuzukiSettings extends BaseActivity implements View.OnClickListe
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.honda.RZCSuzukiSettings.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RZCSuzukiSettings.this.mLauStyle == null) {
                     RZCSuzukiSettings.this.initLauStyle();
@@ -116,11 +115,11 @@ public class RZCSuzukiSettings extends BaseActivity implements View.OnClickListe
         });
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

@@ -4,14 +4,12 @@ import com.syu.canbus.CarBtActi;
 import com.syu.canbus.JumpPage;
 import com.syu.module.IUiNotify;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HandlerCanbus {
-    private static final IUiNotify NTF_CANBUS_ID = new IUiNotify() { // from class: com.syu.module.canbus.HandlerCanbus.1
-        @Override // com.syu.module.IUiNotify
-        public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
-            CallbackCanbusBase callbackCanbus = HandlerCanbus.getCallbackCanbusById(DataCanbus.DATA[updateCode]);
-            ModuleCallbackCanbusProxy.getInstance().setCallbackCanbus(callbackCanbus);
-        }
+    
+// com.syu.module.IUiNotify
+    private static final IUiNotify NTF_CANBUS_ID = (updateCode, ints, flts, strs) -> {
+        CallbackCanbusBase callbackCanbus = HandlerCanbus.getCallbackCanbusById(DataCanbus.DATA[updateCode]);
+        ModuleCallbackCanbusProxy.getInstance().setCallbackCanbus(callbackCanbus);
     };
 
     public static void update(int updateCode, int[] ints) {
@@ -59,13 +57,11 @@ public class HandlerCanbus {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    /* JADX WARN: Removed duplicated region for block: B:1515:0x1159  */
-    /* JADX WARN: Removed duplicated region for block: B:1517:0x1160  */
-    /* JADX WARN: Removed duplicated region for block: B:1912:0x14d0  */
-    /* JADX WARN: Removed duplicated region for block: B:1915:0x14d9 A[ADDED_TO_REGION] */
+    /* JADX WARN: Removed duplicated region for block: B:1508:0x113f  */
+    /* JADX WARN: Removed duplicated region for block: B:1510:0x1146  */
+    /* JADX WARN: Removed duplicated region for block: B:2133:0x16a9  */
     /*
         Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct code enable 'Show inconsistent code' option in preferences
     */
     public static CallbackCanbusBase getCallbackCanbusById(int id) {
         DataCanbus.sCanbusId = id;
@@ -90,7 +86,6 @@ public class HandlerCanbus {
             case 12:
                 return new Callback_0012_WC2_XueTieLongC4L();
             case 13:
-            case FinalCanbus.CAR_WC2_AngkeWei /* 131085 */:
                 return new Callback_0013_WC2_XinJunWei2013();
             case 14:
                 return new Callback_0014_WC2_Focus();
@@ -101,7 +96,6 @@ public class HandlerCanbus {
             case 19:
                 return new Callback_0019_XP1_JieDe();
             case 20:
-            case FinalCanbus.CAR_XP1_Camry2013_H /* 131092 */:
                 return new Callback_0020_XP1_Camry2013();
             case 21:
                 return new Callback_0021_WC2_MengDiOuZS2013();
@@ -115,8 +109,6 @@ public class HandlerCanbus {
                 return new Callback_0026_XP1_GM_L();
             case 31:
                 return new Callback_0031_XP1_XiandaiIX45();
-            case 33:
-                return new Callback_0033_WC2_XinRuiZhi2013();
             case 34:
                 return new Callback_0034_WC1_Lifan720();
             case 35:
@@ -124,7 +116,6 @@ public class HandlerCanbus {
             case 36:
                 return new Callback_0036_WC2_GM();
             case 37:
-            case FinalCanbus.CAR_WC2_Accord9_H /* 131109 */:
                 return new Callback_0037_WC2_Accord9();
             case 38:
                 return new Callback_0038_WC1_TianLai2013();
@@ -142,8 +133,6 @@ public class HandlerCanbus {
                 return new Callback_0044_XP1_GaoErFu7_Lo();
             case 45:
                 return new Callback_0045_WC2_GaoErFu7_Lo();
-            case 46:
-                return new Callback_0046_WC2_RAV4_2013();
             case 47:
                 return new Callback_0047_XP1_CRV2012();
             case 48:
@@ -234,10 +223,6 @@ public class HandlerCanbus {
                 return new Callback_0107_DJ_QiRuiAiRuiZe7();
             case 108:
                 return new Callback_0108_WC2_GeShiTu();
-            case 109:
-                return new Callback_0109_WC2_Corolla();
-            case 110:
-                return new Callback_0110_WC2_Camry();
             case 112:
                 return new Callback_0112_RZC_XP1_Carmy();
             case 113:
@@ -499,6 +484,8 @@ public class HandlerCanbus {
                 return new Callback_0265_RZC_ZhongTaiT600();
             case 266:
                 return new Callback_0266_XP1_SoNaTa9();
+            case 267:
+                return new Callback_0267_XP1_Audi_Old();
             case 269:
                 return new Callback_0269_WC1_BenzB200();
             case 270:
@@ -540,7 +527,7 @@ public class HandlerCanbus {
             case 289:
                 return new Callback_0289_WC2_ChuanQiGS4();
             case 290:
-                if (carId == 5 || carId == 6 || carId == 7 || carId == 9 || carId == 10 || carId == 11) {
+                if (carId == 5 || carId == 6 || carId == 7 || carId == 9 || carId == 10 || carId == 11 || carId == 13 || carId == 14) {
                     return new Callback_0290_RZC_QICHENG_T90();
                 }
                 return new Callback_0290_RZC_QICHENG_T70();
@@ -551,12 +538,6 @@ public class HandlerCanbus {
             case 293:
                 return new Callback_0293_WC3_RUIJIE15();
             case 294:
-                if (carId == 0) {
-                    return new Callback_0294_WC2_RAV4Corolla();
-                }
-                if (carId == 30) {
-                    return new Callback_0294_WC2_18PRADO();
-                }
                 return new Callback_0294_WC2_TOYOTA_ALL();
             case 295:
                 return new Callback_0295_SBD_FYTA_DongFengFengGuang360();
@@ -604,7 +585,7 @@ public class HandlerCanbus {
                 return new Callback_0316_AY1_BenzC200();
             case 317:
                 return new Callback_0317_WC2_ATS();
-            case Callback_0374_XP1_ZiYouGuang.U_CARSET_D57_D1_B30 /* 318 */:
+            case 318:
                 return new Callback_0318_XP1_15WeiLang();
             case 319:
                 return new Callback_0319_WC2_FOCUS15();
@@ -633,6 +614,8 @@ public class HandlerCanbus {
                 return new Callback_0329_RZC_XP1_DongNanDX7();
             case 330:
                 return new Callback_0330_RZC_XP1_OldFiestar();
+            case 331:
+                return new Callback_0190_RZC_XP1_TianLai();
             case 332:
                 return new Callback_0332_SB_SAIL3();
             case 333:
@@ -693,8 +676,6 @@ public class HandlerCanbus {
                 return new Callback_0362_RZC3_16_QiYaK5();
             case 363:
                 return new Callback_0363_DAOJUN_XP1_ShuPingNewJunWei();
-            case 364:
-                return new Callback_0364_RZC_XP1_MaiRuiBao16();
             case 365:
                 return new Callback_0365_AY1_JeepZYG();
             case 366:
@@ -867,7 +848,7 @@ public class HandlerCanbus {
                     return new Callback_0439_OUDI_17FengJun6();
                 }
                 if (carId == 11 || carId == 12 || carId == 13 || carId == 14 || carId == 15) {
-                    return new Callback_0439_OUDI_CHANGAN();
+                    return new Callback_0439_OD_ZhongTaiT500();
                 }
                 if (carId == 16) {
                     return new Callback_0439_DJ_MAZIDA6();
@@ -1053,7 +1034,7 @@ public class HandlerCanbus {
                     return new Callback_0439_HC_Benz_C200();
                 }
                 if (carId == 159 || carId == 160) {
-                    return new Callback_0439_OUDI_Haval_H9();
+                    return new Callback_0439_DJ_Haval_H8();
                 }
                 if (carId == 161) {
                     return new Callback_0439_HC_HuansuH3();
@@ -1142,7 +1123,7 @@ public class HandlerCanbus {
                 if (carId != 1) {
                     return new Callback_0442_KSW_AUDI_Q5();
                 }
-                if (carId == 11) {
+                if (carId == 11 || carId == 14 || carId == 15 || carId == 16 || carId == 17 || carId == 18) {
                     return new Callback_0442_WC1_AUDI_A3();
                 }
                 return new Callback_0442_CHEKU_ATS();
@@ -1151,7 +1132,7 @@ public class HandlerCanbus {
                 }
                 break;
             case 443:
-                if (carId == 0 || carId == 107 || carId == 133 || carId == 134 || carId == 135 || carId == 136 || carId == 137 || carId == 138 || carId == 139 || carId == 140 || carId == 141) {
+                if (carId == 0 || carId == 107 || carId == 133 || carId == 134 || carId == 135 || carId == 136 || carId == 137 || carId == 138 || carId == 139 || carId == 140 || carId == 141 || carId == 219 || carId == 220 || carId == 226 || carId == 227) {
                     return new Callback_0443_WC2_Oulande();
                 }
                 if (carId == 1) {
@@ -1175,7 +1156,7 @@ public class HandlerCanbus {
                 if (carId == 18 || carId == 72 || carId == 75) {
                     return new Callback_0443_WC2_08_12Tianlai();
                 }
-                if (carId == 19 || carId == 54) {
+                if (carId == 19 || carId == 54 || carId == 217 || carId == 218) {
                     return new Callback_0443_WC2_Benz_Metris();
                 }
                 if (carId == 20) {
@@ -1184,10 +1165,10 @@ public class HandlerCanbus {
                 if (carId == 21 || carId == 22 || carId == 24) {
                     return new Callback_0443_WC2_TOYOTA_09HG();
                 }
-                if (carId == 23 || carId == 62 || carId == 63 || carId == 64 || carId == 65 || carId == 66 || carId == 70 || carId == 81 || carId == 93 || carId == 109 || carId == 110) {
+                if (carId == 23 || carId == 62 || carId == 63 || carId == 64 || carId == 65 || carId == 66 || carId == 70 || carId == 81 || carId == 93 || carId == 109 || carId == 110 || carId == 132 || carId == 232) {
                     return new Callback_0443_WC2_YingFeiNiDi_GX50();
                 }
-                if (carId == 25 || carId == 27 || carId == 28 || carId == 67 || carId == 68 || carId == 69 || carId == 90 || carId == 91 || carId == 94 || carId == 95 || carId == 96 || carId == 97) {
+                if (carId == 25 || carId == 27 || carId == 28 || carId == 67 || carId == 68 || carId == 69 || carId == 90 || carId == 91 || carId == 94 || carId == 95 || carId == 96 || carId == 97 || carId == 231 || carId == 237 || carId == 238) {
                     return new Callback_0443_WC2_19Focus();
                 }
                 if (carId == 26 || carId == 119) {
@@ -1196,10 +1177,10 @@ public class HandlerCanbus {
                 if (carId == 29) {
                     return new Callback_0443_WC2_Tianlai_Gongjue();
                 }
-                if ((carId >= 30 && carId <= 53) || carId == 59 || carId == 98 || carId == 99) {
+                if ((carId >= 30 && carId <= 53) || carId == 59 || carId == 98 || carId == 99 || carId == 152 || carId == 153 || carId == 154 || carId == 155 || carId == 221 || carId == 222 || carId == 230) {
                     return new Callback_0443_WC2_Xiandai_All();
                 }
-                if ((carId >= 55 && carId <= 57) || carId == 60 || carId == 61 || carId == 73 || carId == 74 || carId == 84 || carId == 100 || carId == 101 || carId == 104 || ((carId >= 120 && carId <= 130) || carId == 185 || carId == 186 || carId == 187 || carId == 188 || carId == 189 || carId == 190 || carId == 191 || carId == 192 || carId == 193 || carId == 194 || carId == 195 || carId == 196 || carId == 197 || carId == 198 || carId == 199 || carId == 200 || carId == 201 || carId == 202 || carId == 203 || carId == 204 || carId == 205 || carId == 206 || carId == 207)) {
+                if ((carId >= 55 && carId <= 57) || carId == 60 || carId == 61 || carId == 73 || carId == 74 || carId == 84 || carId == 100 || carId == 101 || carId == 104 || ((carId >= 120 && carId <= 130) || carId == 185 || carId == 186 || carId == 187 || carId == 188 || carId == 189 || carId == 190 || carId == 191 || carId == 192 || carId == 193 || carId == 194 || carId == 195 || carId == 196 || carId == 197 || carId == 198 || carId == 199 || carId == 200 || carId == 201 || carId == 202 || carId == 203 || carId == 204 || carId == 205 || carId == 206 || carId == 207 || carId == 215)) {
                     return new Callback_0443_WC2_Fieyate_All();
                 }
                 if (carId == 58) {
@@ -1208,7 +1189,7 @@ public class HandlerCanbus {
                 if (carId == 71) {
                     return new Callback_0443_WC2_WeiChai();
                 }
-                if (carId == 76 || carId == 77 || carId == 78 || carId == 79 || carId == 85 || carId == 102 || carId == 103) {
+                if (carId == 76 || carId == 77 || carId == 78 || carId == 79 || carId == 85 || carId == 102 || carId == 103 || carId == 235 || carId == 236 || carId == 240 || carId == 241 || carId == 242 || carId == 243 || carId == 244 || carId == 245 || carId == 246 || carId == 247 || carId == 248 || carId == 249 || carId == 250) {
                     return new Callback_0443_WC2_Ford_Lincoin_All();
                 }
                 if (carId == 82 || carId == 83 || carId == 182 || carId == 183 || carId == 184) {
@@ -1229,7 +1210,7 @@ public class HandlerCanbus {
                 if (carId == 117 || carId == 118) {
                     return new Callback_0443_WY_BBA_All();
                 }
-                if (carId == 142 || carId == 143 || carId == 144 || carId == 145 || carId == 146) {
+                if (carId == 142 || carId == 143 || carId == 144 || carId == 145 || carId == 146 || carId == 251 || carId == 252 || carId == 253 || carId == 254) {
                     return new Callback_0443_WC2_Proton_All();
                 }
                 if (carId == 156 || carId == 157 || carId == 158) {
@@ -1238,22 +1219,64 @@ public class HandlerCanbus {
                 if (carId == 177 || carId == 178 || carId == 179 || carId == 180 || carId == 181) {
                     return new Callback_0443_WC2_Suzuki_All();
                 }
+                if (carId == 208 || carId == 209 || carId == 210 || carId == 211 || carId == 212 || carId == 213 || carId == 214) {
+                    return new Callback_0443_WC2_Jili_All();
+                }
+                if (carId == 223 || carId == 224 || carId == 225) {
+                    return new Callback_0443_WC2_LeepMotor_All();
+                }
+                if (carId == 228 || carId == 229) {
+                    return new Callback_0443_WC2_Subaru_All();
+                }
+                if (carId != 0 || carId == 1 || carId == 2) {
+                    return new Callback_0443_WC2_Perodua_All();
+                }
+                if (carId == 3 || carId == 4 || carId == 11 || carId == 13 || carId == 14 || carId == 15 || carId == 16 || carId == 17 || carId == 18 || carId == 19 || carId == 20 || carId == 28 || carId == 29 || carId == 42 || carId == 47) {
+                    return new Callback_0443_WC2_Nissan_Ruiqi6();
+                }
+                if (carId == 5 || carId == 6 || carId == 30 || carId == 31 || carId == 32 || carId == 33 || carId == 34 || carId == 35 || carId == 36 || carId == 37 || carId == 45 || carId == 46 || carId == 49) {
+                    return new Callback_0443_WC2_Xiandai_All();
+                }
+                if (carId == 8 || carId == 9 || carId == 10) {
+                    return new Callback_0443_WY_BBA_All();
+                }
+                if (carId == 12) {
+                    return new Callback_0444_WC2_DAIHATSU_All();
+                }
+                if (carId == 21 || carId == 22 || carId == 23 || carId == 24 || carId == 25 || carId == 26) {
+                    return new Callback_0444_WC2_IKCO_All();
+                }
+                if (carId == 27) {
+                    return new Callback_0444_WC2_Changfeng_CS9();
+                }
+                if (carId == 38 || carId == 39 || carId == 40) {
+                    return new Callback_0444_WC_Volvo_All();
+                }
+                if (carId == 41) {
+                    return new Callback_0443_WC2_Ford_Lincoin_All();
+                }
+                if (carId == 43) {
+                    return new Callback_0443_WY_BBA_All();
+                }
+                if (carId == 44) {
+                    return new Callback_0443_WC2_Perodua_All();
+                }
+                if (carId == 47) {
+                    return new Callback_0443_WC2_YingFeiNiDi_GX50();
+                }
                 if (carId == 1) {
                     return new Callback_0445_WC_RZC1_HaimaS7();
                 }
-                if (carId != 1 || carId == 2 || carId == 3 || carId == 4 || carId == 5 || carId == 6 || carId == 7 || carId == 8 || carId == 9 || carId == 10 || carId == 11 || carId == 12 || carId == 13 || carId == 14 || carId == 15 || carId == 16 || carId == 17 || carId == 18 || carId == 19 || carId == 20 || carId == 21 || carId == 22) {
-                    return new Callback_0447_OD_RZC3_19Tusheng();
+                return new Callback_0447_OD_RZC3_19Tusheng();
+            case 444:
+                if (carId != 0) {
                 }
-                return new Callback_0448_LZ_BWM_CarUi();
+                return new Callback_0443_WC2_Perodua_All();
             case 445:
                 if (carId == 1) {
                 }
-                if (carId != 1) {
-                }
                 return new Callback_0447_OD_RZC3_19Tusheng();
             case 447:
-                if (carId != 1) {
-                }
                 return new Callback_0447_OD_RZC3_19Tusheng();
             case 448:
                 return new Callback_0448_LZ_BWM_CarUi();
@@ -1552,7 +1575,7 @@ public class HandlerCanbus {
                     return new Callback_0452_OD_Weima_E5();
                 }
                 if (carId == 241 || carId == 242 || carId == 243 || carId == 244 || carId == 245) {
-                    return new Callback_0439_OUDI_Haval_H9();
+                    return new Callback_0439_DJ_Haval_H8();
                 }
                 if (carId != 3 || carId == 132) {
                     return new Callback_0453_OD_Chuangwei_ET5();
@@ -1602,7 +1625,7 @@ public class HandlerCanbus {
                 if (carId == 25) {
                     return new Callback_0452_RZC_Aodesai();
                 }
-                if (carId == 26) {
+                if (carId == 26 || carId == 138 || carId == 139) {
                     return new Callback_0453_RZC_Hongqi_H5();
                 }
                 if (carId == 27 || carId == 28) {
@@ -1665,6 +1688,9 @@ public class HandlerCanbus {
                 if (carId == 79 || carId == 80 || carId == 124 || carId == 125) {
                     return new Callback_0439_LUZ_Toyato_All();
                 }
+                if (carId == 81 || carId == 82 || carId == 83 || carId == 84) {
+                    return new Callback_0453_LUZ_NissanInfiniti_All();
+                }
                 if (carId == 85 || carId == 86) {
                     return new Callback_0453_LZ_Maserati_300C();
                 }
@@ -1673,6 +1699,9 @@ public class HandlerCanbus {
                 }
                 if (carId == 92 || carId == 93) {
                     return new Callback_0439_RZC_Jianghuai_All();
+                }
+                if (carId == 94) {
+                    return new Callback_0453_RZC_Landrover_Discovery_19();
                 }
                 if (carId == 95) {
                     return new Callback_0453_OD_Weima_EX5();
@@ -1758,14 +1787,312 @@ public class HandlerCanbus {
                 if (carId == 249) {
                     return new Callback_0453_OD_Zhongqi_HOWO();
                 }
+                if (carId == 250) {
+                    return new Callback_0453_OD_Modernin();
+                }
+                if (carId == 251 || carId == 252 || carId == 253 || carId == 254) {
+                    return new Callback_0453_Tangdu_Porsche();
+                }
+                if (carId != 1 || carId == 2 || carId == 3 || carId == 4 || carId == 5 || carId == 6 || carId == 7 || carId == 8 || carId == 9 || carId == 10) {
+                    return new Callback_0454_TD_Lexus_All();
+                }
+                if (carId == 11 || carId == 12 || carId == 13 || carId == 14 || carId == 15 || carId == 16) {
+                    return new Callback_0454_RZC_Perodua_All();
+                }
+                if (carId == 17 || carId == 18 || carId == 19) {
+                    return new Callback_0454_RZC_MahindraTata_All();
+                }
+                if (carId == 20 || carId == 21 || carId == 22 || carId == 23 || carId == 24 || carId == 25 || carId == 26 || carId == 27) {
+                    return new Callback_0452_LZ_Ford_Mustang();
+                }
+                if (carId == 28) {
+                    return new Callback_0452_Tangdu_Toyota_All();
+                }
+                if (carId == 29 || carId == 39) {
+                    return new Callback_0439_LZ_Kayan();
+                }
+                if (carId == 30 || carId == 31 || carId == 32 || carId == 33 || carId == 34 || carId == 35 || carId == 36 || carId == 37) {
+                    return new Callback_0452_KYC_Toyota_All();
+                }
+                if (carId == 38 || carId == 233) {
+                    return new Callback_0453_OD_Jianghuai_JiayueA5();
+                }
+                if (carId == 40 || carId == 101) {
+                    return new Callback_0439_LUZ_Toyato_All();
+                }
+                if (carId == 41) {
+                    return new Callback_0454_OD_Changan_Lumin();
+                }
+                if (carId == 42 || carId == 43 || carId == 44 || carId == 45 || carId == 46 || carId == 47 || carId == 48 || carId == 49 || carId == 50 || carId == 51 || carId == 52 || carId == 53) {
+                    return new Callback_0454_Sanwu_Nissan_All();
+                }
+                if (carId == 54 || carId == 55 || carId == 58 || carId == 59) {
+                    return new Callback_0439_LUZ_Lexus_IS();
+                }
+                if (carId == 56 || carId == 57) {
+                    return new Callback_0452_OD_Nissan_QUEST();
+                }
+                if (carId == 60 || carId == 61) {
+                    return new Callback_0452_LZ_Ford_Mustang();
+                }
+                if (carId == 62 || carId == 63 || carId == 64 || carId == 65 || carId == 66 || carId == 67 || carId == 68) {
+                    return new Callback_0454_OD_Beiqi_Diandong_New();
+                }
+                if (carId == 69 || carId == 70 || carId == 71 || carId == 72 || carId == 73 || carId == 74 || carId == 75 || carId == 76 || carId == 77 || carId == 78 || carId == 79 || carId == 80 || carId == 81 || carId == 82 || carId == 83 || carId == 84 || carId == 85 || carId == 86 || carId == 87 || carId == 88 || carId == 89 || carId == 90 || carId == 91 || carId == 92 || carId == 93 || carId == 94 || carId == 95 || carId == 96 || carId == 97 || carId == 98 || carId == 99 || carId == 100) {
+                    return new Callback_0454_Sanwu_Ford_All();
+                }
+                if (carId == 102 || carId == 103 || carId == 104 || carId == 128 || carId == 156 || carId == 157 || carId == 158) {
+                    return new Callback_0439_RZC_YinFeiNidi_GX50();
+                }
+                if (carId == 105) {
+                    return new Callback_0439_RZC_BenzAll();
+                }
+                if (carId == 106 || carId == 107) {
+                    return new Callback_0453_LZ_GM_All();
+                }
+                if (carId == 108) {
+                    return new Callback_0453_LZ_Maserati_300C();
+                }
+                if (carId == 109 || carId == 161 || carId == 176 || carId == 177) {
+                    return new Callback_0439_OD_Foton_Tunland();
+                }
+                if (carId == 110 || carId == 111) {
+                    return new Callback_0454_OD_Xinte_DEV1();
+                }
+                if (carId == 112) {
+                    return new Callback_0454_RZC_Racing_EC75();
+                }
+                if (carId == 113 || carId == 114 || carId == 115 || carId == 116 || carId == 117 || carId == 118 || carId == 147 || carId == 148 || carId == 150 || carId == 163 || carId == 167 || carId == 168) {
+                    return new Callback_0439_RZC_BenzAll();
+                }
+                if (carId == 119 || carId == 120 || carId == 121) {
+                    return new Callback_0452_RZC_Volvo_XC60();
+                }
+                if (carId == 122 || carId == 123 || carId == 124) {
+                    return new Callback_0439_RZC_Jianghuai_All();
+                }
+                if (carId == 125 || carId == 126) {
+                    return new Callback_0454_RZC_Guanzhi_All();
+                }
+                if (carId == 127) {
+                    return new Callback_0452_RZC_Subaru();
+                }
+                if (carId == 129) {
+                    return new Callback_0454_OD_Ricing_EC75();
+                }
+                if (carId == 130 || carId == 131 || carId == 132 || carId == 133 || carId == 134 || carId == 135 || carId == 136) {
+                    return new Callback_0453_OD_Shanqi_ZHongka();
+                }
+                if (carId == 138) {
+                    return new Callback_0454_LZ_Nissan_Cima_05();
+                }
+                if (carId == 139) {
+                    return new Callback_0454_OD_Wulin_HongguangEV();
+                }
+                if (carId == 140) {
+                    return new Callback_0454_LZ_Touareg_Screen();
+                }
+                if (carId == 141 || carId == 142 || carId == 143 || carId == 144) {
+                    return new Callback_0439_RZC_Nissan_Tuda();
+                }
+                if (carId == 145) {
+                    return new Callback_0454_LZ_Ford_SCREEN();
+                }
+                if (carId == 146 || carId == 246) {
+                    return new Callback_0453_LZ_BBA_All();
+                }
+                if (carId == 149) {
+                    return new Callback_0453_RZC_Landrover_Discovery_19();
+                }
+                if (carId == 152) {
+                    return new Callback_0454_OD_Qichen_D60();
+                }
+                if (carId == 153) {
+                    return new Callback_0454_RZC_Shanqi_Delong_All();
+                }
+                if (carId == 154 || carId == 155) {
+                    return new Callback_0439_RZC_Changan_CX70();
+                }
+                if (carId == 159 || carId == 160 || carId == 244 || carId == 245) {
+                    return new Callback_0439_RZC_Sanlin_Yige();
+                }
+                if (carId == 162) {
+                    return new Callback_0453_OD_Dongfeng_Energy();
+                }
+                if (carId == 164 || carId == 165) {
+                    return new Callback_0454_OD_Yiqi_JieFang_All();
+                }
+                if (carId == 166) {
+                    return new Callback_0454_OD_Beiqi_EV160();
+                }
+                if (carId == 169 || carId == 170 || carId == 171 || carId == 172) {
+                    return new Callback_0453_Tangdu_Porsche();
+                }
+                if (carId == 173 || carId == 199) {
+                    return new Callback_0454_OD_Yutong_Qingka();
+                }
+                if (carId == 174) {
+                    return new Callback_0454_OD_Dongfeng_Tianlong();
+                }
+                if (carId == 175) {
+                    return new Callback_0452_OD_Weichai_U70();
+                }
+                if (carId == 178 || carId == 179) {
+                    return new Callback_0453_OD_Jianghuai_Chaoyue();
+                }
+                if (carId == 180 || carId == 181) {
+                    return new Callback_0439_OUDI_Haval_H9();
+                }
+                if (carId == 182 || carId == 183) {
+                    return new Callback_0454_LZ_GMC_Chevrolet_Screen();
+                }
+                if (carId == 185 || carId == 186 || carId == 187 || carId == 188 || carId == 189 || carId == 190 || carId == 191 || carId == 192 || carId == 193 || carId == 194 || carId == 195 || carId == 196 || carId == 197 || carId == 198) {
+                    return new Callback_0453_TD_LandRover_All();
+                }
+                if (carId == 200 || carId == 239) {
+                    return new Callback_0439_HuaChengYu_Byd_S7();
+                }
+                if (carId == 201 || carId == 202 || carId == 203 || carId == 204 || carId == 205 || carId == 206 || carId == 207) {
+                    return new Callback_0454_RDW_Benz_All();
+                }
+                if (carId == 208 || carId == 209) {
+                    return new Callback_0454_KYC_Ford_07Mustang();
+                }
+                if (carId == 210 || carId == 211) {
+                    return new Callback_0452_TangDu_Nissan_All();
+                }
+                if (carId == 212) {
+                    return new Callback_0453_LZ_LandRover_KeepCD();
+                }
+                if (carId == 213) {
+                    return new Callback_0454_ZH2_XP_Pilotcar();
+                }
+                if (carId == 214 || carId == 215) {
+                    return new Callback_0439_XC_Feiyate_Feiyue();
+                }
+                if (carId == 216 || carId == 222) {
+                    return new Callback_0452_OD_Fengye_80V();
+                }
+                if (carId == 217 || carId == 218) {
+                    return new Callback_0452_OD_Zhonghua_V6();
+                }
+                if (carId == 219 || carId == 220) {
+                    return new Callback_0454_OD_Raeton_All();
+                }
+                if (carId == 221) {
+                    return new Callback_0452_OD_Ford_PRO();
+                }
+                if (carId == 223) {
+                    return new Callback_0452_OD_Huachen_SWM();
+                }
+                if (carId == 224 || carId == 225 || carId == 226 || carId == 240 || carId == 241 || carId == 242 || carId == 243) {
+                    return new Callback_0454_LZ_Nissan_370z();
+                }
+                if (carId == 227 || carId == 228 || carId == 230 || carId == 232 || carId == 247 || carId == 248 || carId == 249) {
+                    return new Callback_0439_LUZ_Toyato_All();
+                }
+                if (carId == 229 || carId == 231 || carId == 237 || carId == 238 || carId == 253 || carId == 254) {
+                    return new Callback_0439_LUZ_Lexus_IS();
+                }
+                if (carId == 234 || carId == 235 || carId == 231 || carId == 237) {
+                    return new Callback_0454_OD_Sanlin_All();
+                }
+                if (carId == 236) {
+                    return new Callback_0454_OD_Volvo_XC90();
+                }
+                if (carId == 251) {
+                    return new Callback_0454_LZ_Honda_Aodesai_04();
+                }
+                if (carId == 252) {
+                    return new Callback_0452_OD_Hongqi_H7();
+                }
+                if (carId != 1 || carId == 2 || carId == 3 || carId == 49) {
+                    return new Callback_0439_LUZ_Toyato_All();
+                }
+                if (carId == 4 || carId == 5) {
+                    return new Callback_0439_RZC_Nissan_Tuda();
+                }
+                if (carId == 6 || carId == 7 || carId == 8) {
+                    return new Callback_0455_LUZ_Fiat_All();
+                }
+                if (carId == 9 || carId == 10) {
+                    return new Callback_0452_KYC_Toyota_All();
+                }
+                if (carId == 11) {
+                    return new Callback_0453_RZC_Mclaren_All();
+                }
+                if (carId == 12) {
+                    return new Callback_0455_OD_Zhongtai_E200();
+                }
+                if (carId == 13 || carId == 14) {
+                    return new Callback_0455_XP_Ford_F150_12();
+                }
+                if (carId == 15 || carId == 16 || carId == 41 || carId == 42 || carId == 43 || carId == 46 || carId == 47 || carId == 51 || carId == 52) {
+                    return new Callback_0439_LUZ_Lexus_IS();
+                }
+                if (carId == 17 || carId == 18) {
+                    return new Callback_0439_LUZ_Toyato_All();
+                }
+                if (carId == 19 || carId == 20 || carId == 21 || carId == 22) {
+                    return new Callback_0452_LZ_Ford_Mustang();
+                }
+                if (carId == 23 || carId == 24) {
+                    return new Callback_0454_LZ_GMC_Chevrolet_Screen();
+                }
+                if (carId == 25) {
+                    return new Callback_0439_XP_SUBURU();
+                }
+                if (carId == 26 || carId == 27 || carId == 28 || carId == 29 || carId == 30 || carId == 31 || carId == 32) {
+                    return new Callback_0452_TangDu_Nissan_All();
+                }
+                if (carId == 34) {
+                    return new Callback_0452_OD_Fengye_80V();
+                }
+                if (carId == 35) {
+                    return new Callback_0454_OD_Ricing_EC75();
+                }
+                if (carId == 36 || carId == 37 || carId == 38) {
+                    return new Callback_0455_LZ_Mazda_Screen_All();
+                }
+                if (carId == 39) {
+                    return new Callback_0439_HuaChengYu_Byd_S7();
+                }
+                if (carId == 40) {
+                    return new Callback_0439_Luz_Nissac_GTR();
+                }
+                if (carId == 44) {
+                    return new Callback_0454_ZH2_XP_Pilotcar();
+                }
+                if (carId == 45) {
+                    return new Callback_0453_RZC_VinFast5_Plus_23();
+                }
+                if (carId == 48) {
+                    return new Callback_0453_LZ_BBA_All();
+                }
                 return new Callback_0000_null();
             case 453:
                 if (carId != 3) {
                     break;
                 }
                 return new Callback_0453_OD_Chuangwei_ET5();
+            case 454:
+                if (carId != 1) {
+                }
+                return new Callback_0454_TD_Lexus_All();
+            case 455:
+                if (carId != 1) {
+                }
+                return new Callback_0439_LUZ_Toyato_All();
+            case FinalCanbus.CAR_WC2_AngkeWei /* 131085 */:
+                return new Callback_0013_WC2_XinJunWei2013();
+            case FinalCanbus.CAR_XP1_Camry2013_H /* 131092 */:
+                return new Callback_0020_XP1_Camry2013();
+            case FinalCanbus.CAR_WC2_Accord9_H /* 131109 */:
+                return new Callback_0037_WC2_Accord9();
             case FinalCanbus.CAR_XP1_14Prado_L /* 3276820 */:
                 return new Callback_0063_XP1_14Prado();
+            case FinalCanbus.CAR_RZC_XP1_MaiRuiBao16 /* 6422589 */:
+                return new Callback_0364_RZC_XP1_MaiRuiBao16();
             default:
                 return new Callback_0000_null();
         }

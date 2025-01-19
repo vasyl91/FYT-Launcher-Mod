@@ -1,6 +1,5 @@
 package com.android.launcher66;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -9,9 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AddAdapter extends BaseAdapter {
     public static final int ITEM_APPLICATION = 2;
     public static final int ITEM_APPWIDGET = 1;
@@ -19,6 +20,7 @@ public class AddAdapter extends BaseAdapter {
     public static final int ITEM_WALLPAPER = 3;
     private final LayoutInflater mInflater;
     private final ArrayList<ListItem> mItems = new ArrayList<>();
+    private Context mContext;
 
     public class ListItem {
         public final int actionTag;
@@ -28,7 +30,7 @@ public class AddAdapter extends BaseAdapter {
         public ListItem(Resources res, int textResourceId, int imageResourceId, int actionTag) {
             this.text = res.getString(textResourceId);
             if (imageResourceId != -1) {
-                this.image = res.getDrawable(imageResourceId);
+                this.image = ContextCompat.getDrawable(mContext, imageResourceId);
             } else {
                 this.image = null;
             }
@@ -44,6 +46,7 @@ public class AddAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        mContext = convertView.getContext();
         ListItem item = (ListItem) getItem(position);
         if (convertView == null) {
             convertView = this.mInflater.inflate(R.layout.add_list_item, parent, false);
@@ -51,21 +54,21 @@ public class AddAdapter extends BaseAdapter {
         TextView textView = (TextView) convertView;
         textView.setTag(item);
         textView.setText(item.text);
-        textView.setCompoundDrawablesWithIntrinsicBounds(item.image, (Drawable) null, (Drawable) null, (Drawable) null);
+        textView.setCompoundDrawablesWithIntrinsicBounds(item.image, null, null, null);
         return convertView;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public int getCount() {
         return this.mItems.size();
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public Object getItem(int position) {
         return this.mItems.get(position);
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public long getItemId(int position) {
         return position;
     }

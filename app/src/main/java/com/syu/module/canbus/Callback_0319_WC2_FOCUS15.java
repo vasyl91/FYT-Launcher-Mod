@@ -2,109 +2,76 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 import android.util.Log;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0319_WC3_15Fucos;
+//import com.syu.ui.air.Air_0319_WC3_15Fucos;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0319_WC2_FOCUS15 extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 16;
-    public static final int U_AIR_AMB = 29;
-    public static final int U_AIR_AQS = 28;
-    public static final int U_AIR_AUTO = 12;
-    public static final int U_AIR_BEGIN = 11;
-    public static final int U_AIR_BLOW_AUTO_LEFT = 26;
-    public static final int U_AIR_BLOW_BODY_LEFT = 18;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 19;
-    public static final int U_AIR_BLOW_WIN_LEFT = 27;
-    public static final int U_AIR_CYCLE = 13;
-    public static final int U_AIR_ECO = 25;
-    public static final int U_AIR_END = 34;
-    public static final int U_AIR_FRONT_DEFROST = 14;
-    public static final int U_AIR_MAX = 20;
-    public static final int U_AIR_MAXHEAT = 33;
-    public static final int U_AIR_POWER = 24;
-    public static final int U_AIR_REAR_DEFROST = 15;
-    public static final int U_AIR_SEAT_HEAT_LEFT = 30;
-    public static final int U_AIR_SEAT_HEAT_RIGHT = 31;
-    public static final int U_AIR_TEMP_LEFT = 17;
-    public static final int U_AIR_TEMP_RIGHT = 23;
-    public static final int U_AIR_TEMP_UNIT = 32;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 21;
-    public static final int U_AIR_WIND_LEVEL_RIGHT = 22;
-    public static final int U_CARINFO_BEGIN = 0;
-    public static final int U_CARINFO_END = 11;
-    public static final int U_CAR_BT_STATE = 5;
-    public static final int U_CAR_CURRENT_SPEED = 1;
-    public static final int U_CAR_SRC = 43;
-    public static final int U_CAR_WARN = 10;
-    public static final int U_CNT_MAX = 49;
-    public static final int U_CUR_SPEED = 41;
-    public static final int U_DISPLAY_MODE = 4;
-    public static final int U_DOOR_BACK = 39;
-    public static final int U_DOOR_BEGIN = 34;
-    public static final int U_DOOR_END = 40;
-    public static final int U_DOOR_ENGINE = 34;
-    public static final int U_DOOR_FL = 35;
-    public static final int U_DOOR_FR = 36;
-    public static final int U_DOOR_RL = 37;
-    public static final int U_DOOR_RR = 38;
-    public static final int U_DRIVING_TIME = 2;
-    public static final int U_ENGINE_SPEED = 42;
-    public static final int U_FLASH_LIGHT = 44;
-    public static final int U_LINE_GROUP = 9;
-    public static final int U_MESSAGE_SOUND = 47;
-    public static final int U_MILES_UNIT = 46;
-    public static final int U_OPTIMAL_OIL_EXPEND = 3;
-    public static final int U_PLAY_TIME = 6;
-    public static final int U_PULL_CONTROL = 45;
-    public static final int U_SCREEN_ICON = 8;
-    public static final int U_SCREEN_ID = 7;
-    public static final int U_WARN_SOUND = 48;
+    public static final int U_CARINFO_END = 116;
+    public static final int U_CAR_BT_STATE = 110;
+    public static final int U_CAR_CURRENT_SPEED = 106;
+    public static final int U_CAR_SRC = 100;
+    public static final int U_CAR_WARN = 115;
+    public static final int U_CNT_MAX = 117;
+    public static final int U_CUR_SPEED = 98;
+    public static final int U_DISPLAY_MODE = 109;
+    public static final int U_DRIVING_TIME = 107;
+    public static final int U_ENGINE_SPEED = 99;
+    public static final int U_FLASH_LIGHT = 101;
+    public static final int U_LINE_GROUP = 114;
+    public static final int U_MESSAGE_SOUND = 104;
+    public static final int U_MILES_UNIT = 103;
+    public static final int U_OPTIMAL_OIL_EXPEND = 108;
+    public static final int U_PLAY_TIME = 111;
+    public static final int U_PULL_CONTROL = 102;
+    public static final int U_SCREEN_ICON = 113;
+    public static final int U_SCREEN_ID = 112;
+    public static final int U_WARN_SOUND = 105;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 49; i++) {
+        for (int i = 0; i < 117; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 34;
-        DoorHelper.sUcDoorFl = 35;
-        DoorHelper.sUcDoorFr = 36;
-        DoorHelper.sUcDoorRl = 37;
-        DoorHelper.sUcDoorRr = 38;
-        DoorHelper.sUcDoorBack = 39;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        AirHelper.getInstance().buildUi(new Air_0319_WC3_15Fucos(LauncherApplication.getInstance()));
-        for (int i2 = 34; i2 < 40; i2++) {
+        //AirHelper.getInstance().buildUi(new Air_0319_WC3_15Fucos(LauncherApplication.getInstance()));
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        for (int i3 = 11; i3 < 34; i3++) {
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 34; i < 40; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 11; i2 < 34; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode == 10) {
+        if (updateCode == 115) {
             HandlerCanbus.update(updateCode, ints, flts, strs);
             return;
         }
-        if (updateCode >= 0 && updateCode < 49) {
+        if (updateCode >= 0 && updateCode < 117) {
             if (strs == null) {
                 Log.v("zed", " updateCode == " + updateCode + "  ints[0] = " + ints[0]);
                 HandlerCanbus.update(updateCode, ints);

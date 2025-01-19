@@ -12,11 +12,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.KYCZhonghuaAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 8:
@@ -73,8 +72,8 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
     int window = 0;
     int mode = 0;
     private Handler mHandler = new Handler(LauncherApplication.getInstance().getMainLooper());
-    private Runnable mrun = new Runnable() { // from class: com.syu.carinfo.rzc.sanlin.KYCZhonghuaAirControlAct.2
-        @Override // java.lang.Runnable
+    private Runnable mrun = new Runnable() { 
+        @Override
         public void run() {
             KYCZhonghuaAirControlAct.this.updateBtnSource();
         }
@@ -84,10 +83,10 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         DataCanbus.PROXY.cmd(2, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_kyc_zhonghua_air_control);
+        //setContentView(R.layout.layout_0452_kyc_zhonghua_air_control);
         init();
     }
 
@@ -114,7 +113,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         findViewById(R.id.air_xts_maxac).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -122,7 +121,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -130,7 +129,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -239,13 +238,13 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDual() {
         int power = DataCanbus.DATA[18];
         findViewById(R.id.air_xts_dual).setBackgroundResource(power == 1 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatOrWinRight() {
         int value = DataCanbus.DATA[15];
         switch (value) {
@@ -264,7 +263,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatOrWinLeft() {
         int value = DataCanbus.DATA[14];
         switch (value) {
@@ -283,7 +282,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[8];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -297,7 +296,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[9];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -311,31 +310,31 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcMaxOn() {
         int acOn = DataCanbus.DATA[20];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[17];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[19];
         if (cycle == 0) {
@@ -345,19 +344,19 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[22];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[21];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[10];
         if (leave < 0) {
@@ -370,7 +369,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
         this.body = DataCanbus.DATA[12];
         findViewById(R.id.air_xts_mode_body).setBackgroundResource(this.body == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
@@ -378,7 +377,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         this.mHandler.postDelayed(this.mrun, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootLeftOn() {
         this.foot = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(this.foot == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
@@ -386,7 +385,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         this.mHandler.postDelayed(this.mrun, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowWindow() {
         this.window = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_mode_win).setBackgroundResource(this.window == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);
@@ -394,7 +393,7 @@ public class KYCZhonghuaAirControlAct extends Activity implements View.OnTouchLi
         this.mHandler.postDelayed(this.mrun, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         if (this.foot == 1) {
             this.mode |= 1;

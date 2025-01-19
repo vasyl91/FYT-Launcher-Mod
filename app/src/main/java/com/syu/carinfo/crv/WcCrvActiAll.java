@@ -12,118 +12,117 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcCrvActiAll extends BaseActivity {
     public static WcCrvActiAll mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.crv.WcCrvActiAll.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 114:
+                case 175:
                     WcCrvActiAll.this.mUpdaterCurrSource();
                     break;
-                case 115:
+                case 176:
                     WcCrvActiAll.this.mUpdaterTrackTime();
                     break;
-                case 116:
+                case 177:
                     WcCrvActiAll.this.mUpdaterTrack();
                     break;
-                case 117:
+                case 178:
                     WcCrvActiAll.this.mUpdaterTrack();
                     break;
-                case 118:
+                case 179:
                     WcCrvActiAll.this.mUpdaterFolder();
                     break;
-                case 119:
+                case 180:
                     WcCrvActiAll.this.mUpdaterProgress();
                     break;
-                case 120:
+                case 181:
                     WcCrvActiAll.this.playstatus();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_12crv_wc);
+        //setContentView(R.layout.layout_12crv_wc);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.crv_btn_fb_wc)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActiAll.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.crv_btn_fb_wc)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(111, new int[]{7}, null, null);
             }
         });
-        findViewById(R.id.crv_btn_ff_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActiAll.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_ff_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(111, new int[]{7, 1}, null, null);
             }
         });
-        findViewById(R.id.crv_btn_play_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActiAll.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_play_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(111, new int[]{1}, null, null);
             }
         });
-        findViewById(R.id.crv_btn_stop_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActiAll.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_stop_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(111, new int[]{2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
         FuncMain.setChannel(13);
-        if (DataCanbus.DATA[120] != 2) {
+        if (DataCanbus.DATA[181] != 2) {
             DataCanbus.PROXY.cmd(111, new int[]{1}, null, null);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[175].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[175].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrSource() {
-        int value = DataCanbus.DATA[114];
+        int value = DataCanbus.DATA[175];
         switch (value) {
             case 13:
                 ((TextView) findViewById(R.id.crv_tv_source_wc)).setText(R.string.crv_source_usb);
@@ -137,16 +136,16 @@ public class WcCrvActiAll extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFolder() {
-        int value = DataCanbus.DATA[118];
+        int value = DataCanbus.DATA[179];
         ((TextView) findViewById(R.id.crv_tv_mdi_wc)).setText(value == 0 ? R.string.crv_mdi_unsupport : R.string.crv_mdi_support);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
-        int track = DataCanbus.DATA[116];
-        int tarckTotal = DataCanbus.DATA[117];
+        int track = DataCanbus.DATA[177];
+        int tarckTotal = DataCanbus.DATA[178];
         if (track == 65535 || tarckTotal == 65535) {
             ((TextView) findViewById(R.id.crv_tv_track_wc)).setText("--/--");
         } else {
@@ -154,9 +153,9 @@ public class WcCrvActiAll extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
-        int value = DataCanbus.DATA[115];
+        int value = DataCanbus.DATA[176];
         int minute = (value >> 8) & 255;
         int second = value & 255;
         if (value == 16777215) {
@@ -166,9 +165,9 @@ public class WcCrvActiAll extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterProgress() {
-        int progress = DataCanbus.DATA[119];
+        int progress = DataCanbus.DATA[180];
         if (progress < 0) {
             progress = 0;
         } else if (progress > 100) {
@@ -177,9 +176,9 @@ public class WcCrvActiAll extends BaseActivity {
         ((ProgressBar) findViewById(R.id.crv_progress_wc)).setProgress(progress);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void playstatus() {
-        int value = DataCanbus.DATA[120];
+        int value = DataCanbus.DATA[181];
         switch (value) {
             case 1:
                 FuncMain.tips(getResources().getString(R.string.crv_state_pause));
@@ -205,7 +204,7 @@ public class WcCrvActiAll extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);

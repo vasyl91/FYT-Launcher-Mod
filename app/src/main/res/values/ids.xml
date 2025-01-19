@@ -148,13 +148,15 @@
     <item type="id" name="rl_radio" />
     <item type="id" name="tv_band" />
     <item type="id" name="creator" />
-    <item type="id" name="preferences" />
+    <item type="id" name="launcher_preferences" />
+    <item type="id" name="creator_preferences" />
     <item type="id" name="user_layout" />
     <item type="id" name="user_layout_left" />    
     <item type="id" name="absolute_time" />   
     <item type="id" name="absolute_radio" />   
     <item type="id" name="absolute_music" /> 
-    <item type="id" name="creator_second" />  
+    <item type="id" name="creator_second" />
+    <item type="id" name="creator_stats" />
     <item type="id" name="creator_bar" />
     <item type="id" name="rectangle_name" />
     <item type="id" name="top_up" />
@@ -165,7 +167,12 @@
     <item type="id" name="left_to_right" />
     <item type="id" name="right_to_left" />
     <item type="id" name="right_to_right" />
+    <item type="id" name="top_up_bottom" />
+    <item type="id" name="bottom_down_bottom" />
+    <item type="id" name="left_to_left_bottom" />
+    <item type="id" name="right_to_right_bottom" />
     <item type="id" name="confirm_layout" />
+    <item type="id" name="confirm_layout_bottom" />
     <item type="id" name="toast_layout" />
     <item type="id" name="toast_text" />
     <item type="id" name="absolute_stats" />
@@ -181,7 +188,9 @@
     <item type="id" name="textView" />
     <item type="id" name="hexCode" />
     <item type="id" name="okColorButton" />
+    <item type="id" name="set_wallpaper_button" />
 
+    <!-- Ids for canbus -->
     <item type="id" name="LinearLayout1" />
     <item type="id" name="tv_carvol" />
     <item type="id" name="info_id" />

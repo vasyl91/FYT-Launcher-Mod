@@ -12,7 +12,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouchListener {
     public static Wc_320_AirControlAct_newH6 mInstance;
     public static boolean mIsFront = false;
@@ -22,14 +21,14 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.havah6.Wc_320_AirControlAct_newH6.1
-        @Override // java.lang.Runnable
+    Runnable airControl = new Runnable() { 
+        @Override
         public void run() {
             Wc_320_AirControlAct_newH6.this.setAirControl(Wc_320_AirControlAct_newH6.this.cmdId, 0);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.havah6.Wc_320_AirControlAct_newH6.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 4:
@@ -83,10 +82,10 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_320_haval_air_h6_control);
+        //setContentView(R.layout.layout_320_haval_air_h6_control);
         init();
         mInstance = this;
     }
@@ -115,7 +114,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -123,7 +122,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -131,12 +130,12 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmdId, int touchState) {
         DataCanbus.PROXY.cmd(4, cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
@@ -261,7 +260,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirBLowMode() {
         int up = DataCanbus.DATA[10];
         int win = DataCanbus.DATA[14];
@@ -295,7 +294,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[13];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -307,7 +306,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[8];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -319,7 +318,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
         int value = DataCanbus.DATA[4];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -331,7 +330,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirDual() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_dual)) != null) {
@@ -343,7 +342,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[5];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -355,7 +354,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -377,7 +376,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
         int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -399,7 +398,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost() {
         int value = DataCanbus.DATA[6];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -411,7 +410,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int value = DataCanbus.DATA[7];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -423,7 +422,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight() {
         int value = DataCanbus.DATA[68];
         switch (value) {
@@ -442,7 +441,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft() {
         int value = DataCanbus.DATA[67];
         switch (value) {
@@ -461,7 +460,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirSeatHotLeft() {
         int value = DataCanbus.DATA[65];
         if (((Button) findViewById(R.id.air_xts_seathot_left)) != null) {
@@ -479,7 +478,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirSeatHotRight() {
         int value = DataCanbus.DATA[66];
         if (((Button) findViewById(R.id.air_xts_seathot_right)) != null) {
@@ -497,7 +496,7 @@ public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[11];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());

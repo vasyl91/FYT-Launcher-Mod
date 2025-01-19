@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.LZJiliBoyueAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -90,10 +89,10 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_od_jili_ruilan_air_control_set);
+        ////setContentView(R.layout.layout_0453_od_jili_ruilan_air_control_set);
         init();
     }
 
@@ -119,7 +118,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         findViewById(R.id.air_xts_maxac).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -285,7 +284,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -293,7 +292,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -343,7 +342,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UTempLeft(int data) {
         int data2;
         String str;
@@ -364,7 +363,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UTempRight(int data) {
         int data2;
         String str;
@@ -385,7 +384,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[18];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
@@ -393,7 +392,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[9];
         if (((Button) findViewById(R.id.air_cycle_outer)) != null) {
@@ -404,7 +403,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirION() {
         int value = DataCanbus.DATA[23];
         if (((Button) findViewById(R.id.air_xts_ion)) != null) {
@@ -412,7 +411,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[8];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -420,7 +419,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirACMAX() {
         int value = DataCanbus.DATA[10];
         if (((Button) findViewById(R.id.air_xts_maxac)) != null) {
@@ -428,7 +427,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost(int data) {
         int value = DataCanbus.DATA[14];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -436,7 +435,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int value = DataCanbus.DATA[13];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -444,7 +443,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSync() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_dual)) != null) {
@@ -452,7 +451,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAuto() {
         int value = DataCanbus.DATA[11];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -460,7 +459,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[7];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -468,7 +467,7 @@ public class LZJiliBoyueAirControlAct extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UBlowMode() {
         int win = DataCanbus.DATA[15];
         int body = DataCanbus.DATA[17];

@@ -4,7 +4,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.HashMap;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class HideFromAccessibilityHelper implements ViewGroup.OnHierarchyChangeListener {
     boolean mOnlyAllApps;
     private HashMap<View, Integer> mPreviousValues = new HashMap<>();
@@ -63,14 +62,14 @@ public class HideFromAccessibilityHelper implements ViewGroup.OnHierarchyChangeL
         }
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewAdded(View parent, View child) {
         if (this.mHide && includeView(child)) {
             setImportantForAccessibilityToNoHelper(child);
         }
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewRemoved(View parent, View child) {
         if (this.mHide && includeView(child)) {
             restoreImportantForAccessibilityHelper(child);

@@ -6,11 +6,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ChryslerCarEqActi extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     int carvol = 0;
@@ -19,8 +19,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
     int carbass = 0;
     int carmiddle = 0;
     int cartreble = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -46,10 +46,10 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_djlexus_caraudio);
+        //setContentView(R.layout.layout_djlexus_caraudio);
         init();
     }
 
@@ -130,8 +130,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
     }
 
     public void init() {
-        ((Button) findViewById(R.id.btn_lexus_vol_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_vol_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.carvol++;
                 if (ChryslerCarEqActi.this.carvol > 38) {
@@ -140,8 +140,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_vol_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_vol_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.carvol--;
@@ -151,8 +151,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_treb_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_treb_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.cartreble++;
                 if (ChryslerCarEqActi.this.cartreble > 19) {
@@ -161,8 +161,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_treb_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_treb_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.cartreble--;
@@ -172,8 +172,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_mid_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_mid_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.carmiddle++;
                 if (ChryslerCarEqActi.this.carmiddle > 19) {
@@ -182,8 +182,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_mid_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.7
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_mid_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.carmiddle--;
@@ -193,8 +193,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_bass_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.8
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_bass_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.carbass++;
                 if (ChryslerCarEqActi.this.carbass > 19) {
@@ -203,8 +203,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_bass_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.9
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_bass_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.carbass--;
@@ -214,8 +214,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_fad_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.10
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_fad_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.carfader++;
                 if (ChryslerCarEqActi.this.carfader > 19) {
@@ -224,8 +224,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_fad_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.11
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_fad_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.carfader--;
@@ -235,8 +235,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_ban_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.12
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_ban_plus).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi.this.carbalance++;
                 if (ChryslerCarEqActi.this.carbalance > 19) {
@@ -245,8 +245,8 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
                 ChryslerCarEqActi.this.SendEqCmd();
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_ban_munit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hc.chrysler.ChryslerCarEqActi.13
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_ban_munit).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ChryslerCarEqActi chryslerCarEqActi = ChryslerCarEqActi.this;
                 chryslerCarEqActi.carbalance--;
@@ -258,21 +258,21 @@ public class ChryslerCarEqActi extends Activity implements View.OnTouchListener 
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() != 0) {
             event.getAction();

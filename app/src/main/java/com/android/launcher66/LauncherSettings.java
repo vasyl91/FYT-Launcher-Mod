@@ -3,7 +3,6 @@ package com.android.launcher66;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class LauncherSettings {
 
     interface BaseLauncherColumns extends ChangeLogColumns {

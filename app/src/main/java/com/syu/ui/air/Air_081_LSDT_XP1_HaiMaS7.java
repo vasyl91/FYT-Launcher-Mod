@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_081_LSDT_XP1_HaiMaS7 extends AirBase {
     public Air_081_LSDT_XP1_HaiMaS7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0157_daojun_xp1_haimam8s7/air_daojun_haimam8_n.webp";
         this.mPathHighlight = "0157_daojun_xp1_haimam8s7/air_daojun_haimam8_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -65,7 +65,7 @@ public class Air_081_LSDT_XP1_HaiMaS7 extends AirBase {
             c.drawText("HI", 71.0f, 142.0f, this.mPaint);
         } else {
             int lef_temp2 = (lef_temp * 5) + 180;
-            c.drawText(String.valueOf(lef_temp2 / 10) + "." + (lef_temp2 % 10), 71.0f, 142.0f, this.mPaint);
+            c.drawText(lef_temp2 / 10 + "." + (lef_temp2 % 10), 71.0f, 142.0f, this.mPaint);
         }
         int right_temp = this.DATA[7];
         if (right_temp == 0) {
@@ -74,7 +74,7 @@ public class Air_081_LSDT_XP1_HaiMaS7 extends AirBase {
             c.drawText("HI", 915.0f, 142.0f, this.mPaint);
         } else {
             int right_temp2 = (right_temp * 5) + 180;
-            c.drawText(String.valueOf(right_temp2 / 10) + "." + (right_temp2 % 10), 915.0f, 142.0f, this.mPaint);
+            c.drawText(right_temp2 / 10 + "." + (right_temp2 % 10), 915.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

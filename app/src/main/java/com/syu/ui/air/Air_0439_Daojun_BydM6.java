@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_Daojun_BydM6 extends AirBase {
     public Air_0439_Daojun_BydM6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_dj_byd_m6/daojun_byd_m6.webp";
         this.mPathHighlight = "0439_dj_byd_m6/daojun_byd_m6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         int left_temp;
         int right_temp;
@@ -95,7 +95,7 @@ public class Air_0439_Daojun_BydM6 extends AirBase {
             } else {
                 left_temp = ((left_temp2 - 34) * 5) + 310;
             }
-            c.drawText(String.valueOf(left_temp / 10) + "." + (left_temp % 10), 42.0f, 141.0f, this.mPaint);
+            c.drawText(left_temp / 10 + "." + (left_temp % 10), 42.0f, 141.0f, this.mPaint);
         }
         int right_temp2 = this.DATA[19];
         if (right_temp2 == -2) {
@@ -110,7 +110,7 @@ public class Air_0439_Daojun_BydM6 extends AirBase {
             } else {
                 right_temp = ((right_temp2 - 34) * 5) + 310;
             }
-            c.drawText(String.valueOf(right_temp / 10) + "." + (right_temp % 10), 725.0f, 141.0f, this.mPaint);
+            c.drawText(right_temp / 10 + "." + (right_temp % 10), 725.0f, 141.0f, this.mPaint);
         }
         int rear_temp = this.DATA[24];
         if (rear_temp == -2) {
@@ -121,7 +121,7 @@ public class Air_0439_Daojun_BydM6 extends AirBase {
             c.drawText("NONE", 958.0f, 137.0f, this.mPaint);
         } else {
             int rear_temp2 = (rear_temp * 5) + 175;
-            c.drawText(String.valueOf(rear_temp2 / 10) + "." + (rear_temp2 % 10), 958.0f, 137.0f, this.mPaint);
+            c.drawText(rear_temp2 / 10 + "." + (rear_temp2 % 10), 958.0f, 137.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

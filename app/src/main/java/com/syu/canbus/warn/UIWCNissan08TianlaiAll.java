@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIWCNissan08TianlaiAll {
     private static UIWCNissan08TianlaiAll mInstance;
     Context context;
@@ -29,7 +29,7 @@ public class UIWCNissan08TianlaiAll {
     public void showWindowTip(int value, int updateCode) {
         PopupWindow window = WarnUtils.getWindow();
         initTip(value, updateCode);
-        if (DataCanbus.DATA[138] == 0) {
+        if (DataCanbus.DATA[150] == 0) {
             if (window.isShowing()) {
                 window.dismiss();
             }
@@ -41,17 +41,17 @@ public class UIWCNissan08TianlaiAll {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn_bigtext, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn_bigtext, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
-        switch (DataCanbus.DATA[138]) {
+        switch (DataCanbus.DATA[150]) {
             case 1:
-                int val = DataCanbus.DATA[132];
+                int val = DataCanbus.DATA[144];
                 this.mTextWarn.setText("Car Vol : " + val);
                 break;
             case 2:
-                int val2 = DataCanbus.DATA[133];
+                int val2 = DataCanbus.DATA[145];
                 if (val2 > 5) {
                     this.mTextWarn.setText("Bal : +" + (val2 - 5));
                     break;
@@ -63,7 +63,7 @@ public class UIWCNissan08TianlaiAll {
                     break;
                 }
             case 3:
-                int val3 = DataCanbus.DATA[134];
+                int val3 = DataCanbus.DATA[146];
                 if (val3 > 5) {
                     this.mTextWarn.setText("Fad : +" + (val3 - 5));
                     break;
@@ -75,7 +75,7 @@ public class UIWCNissan08TianlaiAll {
                     break;
                 }
             case 4:
-                int val4 = DataCanbus.DATA[135];
+                int val4 = DataCanbus.DATA[147];
                 if (val4 > 5) {
                     this.mTextWarn.setText("Bass : +" + (val4 - 5));
                     break;
@@ -87,7 +87,7 @@ public class UIWCNissan08TianlaiAll {
                     break;
                 }
             case 5:
-                int val5 = DataCanbus.DATA[136];
+                int val5 = DataCanbus.DATA[148];
                 if (val5 > 5) {
                     this.mTextWarn.setText("Treb : +" + (val5 - 5));
                     break;
@@ -99,7 +99,7 @@ public class UIWCNissan08TianlaiAll {
                     break;
                 }
             case 6:
-                int val6 = DataCanbus.DATA[137];
+                int val6 = DataCanbus.DATA[149];
                 switch (val6) {
                     case 0:
                         this.mTextWarn.setText("Beep : Off");

@@ -8,19 +8,23 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+
 import com.fyt.skin.data.SkinPathDataSource;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Observable;
-import java.util.Observer;
 
-public class SkinManager extends Observable {
+public class SkinManager {
     private static SkinResources mSkinRes;
     private static Application sApp;
     private String mPackageName;
     private Resources mResources;
     private SkinFactory mSkinFactory;
+    private String property = "initial";
+    private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
     public static Application getContext() {
         return sApp;
@@ -39,7 +43,7 @@ public class SkinManager extends Observable {
             return false;
         }
         try {
-            AssetManager assetManager = (AssetManager) AssetManager.class.newInstance();
+            AssetManager assetManager = AssetManager.class.newInstance();
             Method method = assetManager.getClass().getMethod("addAssetPath", String.class);
             method.setAccessible(true);
             method.invoke(assetManager, path);
@@ -49,8 +53,9 @@ public class SkinManager extends Observable {
             PackageInfo info = mPm.getPackageArchiveInfo(path, 1);
             this.mPackageName = info.packageName;
             mSkinRes.applySkin(this.mResources, this.mPackageName);
-            setChanged();
-            notifyObservers();
+            String old = property;
+            property = path;
+            mPropertyChangeSupport.firePropertyChange("mProperty", old, path);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,15 +68,17 @@ public class SkinManager extends Observable {
         mSkinRes.reset();
         this.mResources = sApp.getResources();
         this.mPackageName = sApp.getPackageName();
-        setChanged();
-        notifyObservers();
+        String packageName = String.valueOf(this.mPackageName);
+        String old = property;
+        property = packageName;
+        mPropertyChangeSupport.firePropertyChange("mProperty", old, packageName);
     }
 
     Resources getSkinRes(String path) {
         Resources resources = sApp.getResources();
         if (!TextUtils.isEmpty(path)) {
             try {
-                AssetManager assetManager = (AssetManager) AssetManager.class.newInstance();
+                AssetManager assetManager = AssetManager.class.newInstance();
                 Method method = assetManager.getClass().getMethod("addAssetPath", String.class);
                 method.setAccessible(true);
                 method.invoke(assetManager, path);
@@ -126,18 +133,21 @@ public class SkinManager extends Observable {
         return Holder.instance;
     }
 
-    @Override // java.util.Observable
-    public synchronized void addObserver(Observer o) {
-        super.addObserver(o);
-        if (o instanceof SkinFactory) {
-            this.mSkinFactory = (SkinFactory) o;
+    public void addObserver(PropertyChangeListener listener) {
+        mPropertyChangeSupport.addPropertyChangeListener("mProperty", listener);
+        if (listener instanceof SkinFactory) {
+            this.mSkinFactory = (SkinFactory) listener;
         }
+    }
+
+    public void deleteObserver(PropertyChangeListener listener) {
+        mPropertyChangeSupport.removePropertyChangeListener("mProperty", listener);
     }
 
     private SkinManager() {
     }
 
-    /* synthetic */ SkinManager(SkinManager skinManager) {
+    SkinManager(SkinManager skinManager) {
         this();
     }
 

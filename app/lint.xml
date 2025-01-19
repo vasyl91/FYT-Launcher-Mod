@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="Deprecation" severity="Error">
+        <ignore path="app/src/main/java/com.syu.carinfo/**" />
+    </issue>
+</lint>

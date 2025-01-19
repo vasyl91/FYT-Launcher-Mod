@@ -10,14 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.ODFreeLanderCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
+                case 99:
                     if (value == 65535) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text1)).setText("----");
                         break;
@@ -25,7 +24,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10.0f) + " L/100KM");
                         break;
                     }
-                case 88:
+                case 100:
                     if (value == 0) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text2)).setText("----");
                         break;
@@ -33,7 +32,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value) + "%");
                         break;
                     }
-                case 89:
+                case 101:
                     if (value == 65535) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text3)).setText("----");
                         break;
@@ -41,7 +40,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10.0f) + " L/100KM");
                         break;
                     }
-                case 90:
+                case 102:
                     if (value == 0) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text4)).setText("----");
                         break;
@@ -49,7 +48,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value) + "%");
                         break;
                     }
-                case 91:
+                case 103:
                     if (value == 65535) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text5)).setText("----");
                         break;
@@ -57,7 +56,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value / 10.0f) + " L/100KM");
                         break;
                     }
-                case 92:
+                case 104:
                     if (value == 0) {
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text6)).setText("----");
                         break;
@@ -65,13 +64,13 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                         ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value) + "%");
                         break;
                     }
-                case 93:
+                case 105:
                     ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text7)).setText(new StringBuilder(String.valueOf(value)).toString());
                     break;
-                case 94:
+                case 106:
                     ODFreeLanderCarInfo.this.setCheck((CheckedTextView) ODFreeLanderCarInfo.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 95:
+                case 107:
                     switch (value) {
                         case 0:
                             ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text8)).setText(R.string.off);
@@ -86,7 +85,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                             ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text8)).setText(R.string.klc_air_high);
                             break;
                     }
-                case 96:
+                case 108:
                     switch (value) {
                         case 0:
                             ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text9)).setText(R.string.klc_air_low);
@@ -98,21 +97,21 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
                             ((TextView) ODFreeLanderCarInfo.this.findViewById(R.id.tv_text9)).setText(R.string.klc_air_high);
                             break;
                     }
-                case 97:
+                case 109:
                     ODFreeLanderCarInfo.this.setCheck((CheckedTextView) ODFreeLanderCarInfo.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_freelander_carinfo);
+        //setContentView(R.layout.layout_0452_od_freelander_carinfo);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -124,7 +123,7 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
         setSelfClick((Button) findViewById(R.id.btn_plus3), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, new int[]{65}, null, null);
@@ -132,60 +131,60 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[94];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
-                    value = 1;
-                }
-                setCarInfo(1, value);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 DataCanbus.PROXY.cmd(0, new int[]{52}, null, null);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 DataCanbus.PROXY.cmd(0, new int[]{51}, null, null);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value2 = DataCanbus.DATA[95] - 1;
-                if (value2 < 0) {
-                    value2 = 3;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value = DataCanbus.DATA[107] - 1;
+                if (value < 0) {
+                    value = 3;
+                }
+                setCarInfo(2, value);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value2 = DataCanbus.DATA[107] + 1;
+                if (value2 > 3) {
+                    value2 = 0;
                 }
                 setCarInfo(2, value2);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value3 = DataCanbus.DATA[95] + 1;
-                if (value3 > 3) {
-                    value3 = 0;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value3 = DataCanbus.DATA[108] - 1;
+                if (value3 < 0) {
+                    value3 = 2;
                 }
-                setCarInfo(2, value3);
+                setCarInfo(3, value3);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value4 = DataCanbus.DATA[96] - 1;
-                if (value4 < 0) {
-                    value4 = 2;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value4 = DataCanbus.DATA[108] + 1;
+                if (value4 > 2) {
+                    value4 = 0;
                 }
                 setCarInfo(3, value4);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value5 = DataCanbus.DATA[96] + 1;
-                if (value5 > 2) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[106];
+                if (value5 == 1) {
                     value5 = 0;
+                } else if (value5 == 0) {
+                    value5 = 1;
                 }
-                setCarInfo(3, value5);
+                setCarInfo(1, value5);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value6 = DataCanbus.DATA[97];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value6 = DataCanbus.DATA[109];
                 if (value6 == 1) {
                     value6 = 0;
                 } else if (value6 == 0) {
@@ -200,33 +199,33 @@ public class ODFreeLanderCarInfo extends BaseActivity implements View.OnClickLis
         DataCanbus.PROXY.cmd(2, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
     }
 }

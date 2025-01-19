@@ -7,7 +7,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Acti_BNR_ShengDaFei extends BaseActivity {
     private int bitHight;
     private int bitLow;
@@ -20,67 +19,67 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
     int warnFR;
     int warnRL;
     int warnRR;
-    private int[] resIDs = {24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 21, 22};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.guochan.Acti_BNR_ShengDaFei.1
-        @Override // com.syu.module.IUiNotify
+    private int[] resIDs = {101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 98, 99};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 21:
+                case 98:
                     Acti_BNR_ShengDaFei.this.uCurSpeed(value);
                     break;
-                case 22:
+                case 99:
                     Acti_BNR_ShengDaFei.this.uEngineSpeed(value);
                     break;
-                case 24:
+                case 101:
                     Acti_BNR_ShengDaFei.this.uSelfDetect(value);
                     break;
-                case 25:
+                case 102:
                     Acti_BNR_ShengDaFei.this.uTireFL(value);
                     break;
-                case 26:
+                case 103:
                     Acti_BNR_ShengDaFei.this.uTempFL(value);
                     break;
-                case 27:
+                case 104:
                     Acti_BNR_ShengDaFei.this.uBatteryFL(value);
                     break;
-                case 28:
+                case 105:
                     Acti_BNR_ShengDaFei.this.uWarnFL(value);
                     break;
-                case 29:
+                case 106:
                     Acti_BNR_ShengDaFei.this.uTireFR(value);
                     break;
-                case 30:
+                case 107:
                     Acti_BNR_ShengDaFei.this.uTempFR(value);
                     break;
-                case 31:
+                case 108:
                     Acti_BNR_ShengDaFei.this.uBatteryFR(value);
                     break;
-                case 32:
+                case 109:
                     Acti_BNR_ShengDaFei.this.uWarnFR(value);
                     break;
-                case 33:
+                case 110:
                     Acti_BNR_ShengDaFei.this.uTireRL(value);
                     break;
-                case 34:
+                case 111:
                     Acti_BNR_ShengDaFei.this.uTempRL(value);
                     break;
-                case 35:
+                case 112:
                     Acti_BNR_ShengDaFei.this.uBatteryRL(value);
                     break;
-                case 36:
+                case 113:
                     Acti_BNR_ShengDaFei.this.uWarnRL(value);
                     break;
-                case 37:
+                case 114:
                     Acti_BNR_ShengDaFei.this.uTireRR(value);
                     break;
-                case 38:
+                case 115:
                     Acti_BNR_ShengDaFei.this.uTempRR(value);
                     break;
-                case 39:
+                case 116:
                     Acti_BNR_ShengDaFei.this.uBatteryRR(value);
                     break;
-                case 40:
+                case 117:
                     Acti_BNR_ShengDaFei.this.uWarnRR(value);
                     break;
             }
@@ -89,37 +88,37 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
     int[] resTireId = {R.string.tirefllow, R.string.tireflhigh};
     int[] resWarnId = {R.string.wc_damaix5_str7, R.string.wc_damaix5_str2, R.string.str_408_carinfo_81_1, R.string.str_focus_warm_8_7};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_237_bnr_shengdafei_tire);
+        //setContentView(R.layout.layout_237_bnr_shengdafei_tire);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.resIDs.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.resIDs[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.resIDs.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.resIDs[i]].removeNotify(this.mNotifyCanbus);
@@ -166,28 +165,28 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
         setTires(txt, value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireRR(int value) {
         this.tireRR = value;
         TextView txt = (TextView) findViewById(R.id.zt_tv_car_tire_press_3);
         setTires(txt, value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireRL(int value) {
         this.tireRL = value;
         TextView txt = (TextView) findViewById(R.id.zt_tv_car_tire_press_2);
         setTires(txt, value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireFR(int value) {
         this.tireFR = value;
         TextView txt = (TextView) findViewById(R.id.zt_tv_car_tire_press_1);
         setTires(txt, value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uWarnRR(int value) {
         this.warnRR = value;
         setWarnText((TextView) findViewById(R.id.zt_tv_car_tire_press_3), value);
@@ -197,7 +196,7 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uWarnRL(int value) {
         this.warnRL = value;
         setWarnText((TextView) findViewById(R.id.zt_tv_car_tire_press_2), value);
@@ -207,7 +206,7 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uWarnFR(int value) {
         this.warnFR = value;
         setWarnText((TextView) findViewById(R.id.zt_tv_car_tire_press_1), value);
@@ -217,7 +216,7 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uWarnFL(int value) {
         this.warnFL = value;
         setWarnText((TextView) findViewById(R.id.zt_tv_car_tire_press_0), value);
@@ -285,42 +284,42 @@ public class Acti_BNR_ShengDaFei extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uBatteryRR(int value) {
         setBatteryText((TextView) findViewById(R.id.zt_tv_car_tire_battery_3), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uBatteryRL(int value) {
         setBatteryText((TextView) findViewById(R.id.zt_tv_car_tire_battery_2), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uBatteryFR(int value) {
         setBatteryText((TextView) findViewById(R.id.zt_tv_car_tire_battery_1), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uBatteryFL(int value) {
         setBatteryText((TextView) findViewById(R.id.zt_tv_car_tire_battery_0), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTempRR(int value) {
         setTempText((TextView) findViewById(R.id.zt_tv_car_tire_temp_3), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTempRL(int value) {
         setTempText((TextView) findViewById(R.id.zt_tv_car_tire_temp_2), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTempFR(int value) {
         setTempText((TextView) findViewById(R.id.zt_tv_car_tire_temp_1), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTempFL(int value) {
         setTempText((TextView) findViewById(R.id.zt_tv_car_tire_temp_0), value);
     }

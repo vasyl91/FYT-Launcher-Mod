@@ -7,26 +7,25 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_OD_Zotye_T700_Pm25 extends BaseFragment implements View.OnClickListener {
     public static Fragment_OD_Zotye_T700_Pm25 mInstance;
     public static boolean mIsFront = false;
-    int[] ids = {39, 40, 41, 42};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_OD_Zotye_T700_Pm25.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {110, 111, 112, 113};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 39:
+                case 110:
                     Fragment_OD_Zotye_T700_Pm25.this.uCarIn(value);
                     break;
-                case 40:
+                case 111:
                     Fragment_OD_Zotye_T700_Pm25.this.uCarOut(value);
                     break;
-                case 41:
+                case 112:
                     Fragment_OD_Zotye_T700_Pm25.this.uLevelIn(value);
                     break;
-                case 42:
+                case 113:
                     Fragment_OD_Zotye_T700_Pm25.this.uLevelOut(value);
                     break;
             }
@@ -34,17 +33,17 @@ public class Fragment_OD_Zotye_T700_Pm25 extends BaseFragment implements View.On
     };
     private int[] strIdPM = {R.string.str_265_2, R.string.str_265_3, R.string.str_265_4, R.string.str_265_5, R.string.str_265_6, R.string.str_265_7};
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0452_od_zotye_t700_pm25;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(2, new int[]{66}, null, null);
         mIsFront = true;
@@ -53,7 +52,7 @@ public class Fragment_OD_Zotye_T700_Pm25 extends BaseFragment implements View.On
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         mIsFront = false;
         for (int i : this.ids) {
@@ -139,7 +138,7 @@ public class Fragment_OD_Zotye_T700_Pm25 extends BaseFragment implements View.On
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 }

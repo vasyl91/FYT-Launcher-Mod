@@ -1,99 +1,93 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
+import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+import com.syu.carinfo.honda.ActivityHondaNullBackCar;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0439_RZC_Jianghuai_All;
+//import com.syu.ui.air.Air_0439_RZC_Jianghuai_All;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_RZC_Jianghuai_All extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 11;
-    public static final int U_AIR_AUTO = 8;
-    public static final int U_AIR_BEGIN = 7;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 13;
-    public static final int U_AIR_BLOW_MODE = 15;
-    public static final int U_AIR_BLOW_UP_LEFT = 12;
-    public static final int U_AIR_BLOW_WIN_LEFT = 14;
-    public static final int U_AIR_CYCLE = 9;
-    public static final int U_AIR_DUAL = 70;
-    public static final int U_AIR_END = 19;
-    public static final int U_AIR_REAR_DEFROST = 10;
-    public static final int U_AIR_SEAT_HOT_LEFT = 71;
-    public static final int U_AIR_SEAT_HOT_RIGHT = 72;
-    public static final int U_AIR_TEMP_LEFT = 17;
-    public static final int U_AIR_TEMP_RIGHT = 18;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 16;
-    public static final int U_CARSET_D3A_D10_B70 = 78;
-    public static final int U_CARSET_D3A_D11_B70 = 79;
-    public static final int U_CARSET_D3A_D12_B70 = 80;
-    public static final int U_CARSET_D3A_DB_B70 = 73;
-    public static final int U_CARSET_D3A_DC_B70 = 74;
-    public static final int U_CARSET_D3A_DD_B70 = 75;
-    public static final int U_CARSET_D3A_DE_B70 = 76;
-    public static final int U_CARSET_D3A_DF_B70 = 77;
-    public static final int U_CARSET_D40_D0_B76 = 66;
-    public static final int U_CARSET_D40_D1_B5 = 69;
-    public static final int U_CARSET_D40_D1_B6 = 68;
-    public static final int U_CARSET_D40_D1_B7 = 67;
-    public static final int U_CAR_AUTOLOCK_SPEED = 61;
-    public static final int U_CAR_BACKLIGHT = 65;
-    public static final int U_CAR_CHARGING_MODE = 47;
-    public static final int U_CAR_CHARGING_TIME_MODE = 57;
-    public static final int U_CAR_CHARGING_TIME_VALUE1_1 = 48;
-    public static final int U_CAR_CHARGING_TIME_VALUE1_2 = 49;
-    public static final int U_CAR_CHARGING_TIME_VALUE2_1 = 50;
-    public static final int U_CAR_CHARGING_TIME_VALUE2_2 = 51;
-    public static final int U_CAR_CHARGING_TIME_VALUE3_1 = 52;
-    public static final int U_CAR_CHARGING_TIME_VALUE3_2 = 53;
-    public static final int U_CAR_CHARGING_TIME_VALUE4_1 = 54;
-    public static final int U_CAR_CHARGING_TIME_VALUE4_2 = 55;
-    public static final int U_CAR_CHARGING_TIME_VALUE5 = 56;
-    public static final int U_CAR_CURRENT = 36;
-    public static final int U_CAR_DRIVE_MODE = 34;
-    public static final int U_CAR_ELECTRICITY = 40;
-    public static final int U_CAR_ENERGY_AIR = 44;
-    public static final int U_CAR_ENERGY_AVG = 42;
-    public static final int U_CAR_ENERGY_CUR = 43;
-    public static final int U_CAR_ENERGY_DRIVE = 46;
-    public static final int U_CAR_ENERGY_FLOW = 41;
-    public static final int U_CAR_ENERGY_RECYCLE = 45;
-    public static final int U_CAR_FORTIFICATION_BEEP = 62;
-    public static final int U_CAR_GEAR = 35;
-    public static final int U_CAR_INSIDE_LIGHT_DELAY_TIME = 60;
-    public static final int U_CAR_LIGHT_POSITION = 63;
-    public static final int U_CAR_LIGHT_TURN_AID = 64;
-    public static final int U_CAR_MILEAGE = 38;
-    public static final int U_CAR_OUT_LIGHT_DELAY_TIME = 59;
-    public static final int U_CAR_REARVIEW_AUTO = 33;
-    public static final int U_CAR_REMAIN_MILEAGE = 39;
-    public static final int U_CAR_TOUCH_SENSITIVITY = 58;
-    public static final int U_CAR_VOLTAGE = 37;
-    public static final int U_CAR_WIN_AUTODOWN = 32;
-    public static final int U_CNT_MAX = 81;
-    public static final int U_PRESSURE_FL = 20;
-    public static final int U_PRESSURE_FR = 21;
-    public static final int U_PRESSURE_RL = 22;
-    public static final int U_PRESSURE_RR = 23;
-    public static final int U_TEMP_FL = 24;
-    public static final int U_TEMP_FR = 25;
-    public static final int U_TEMP_RL = 26;
-    public static final int U_TEMP_RR = 27;
-    public static final int U_WARNING_FL = 28;
-    public static final int U_WARNING_FR = 29;
-    public static final int U_WARNING_RL = 30;
-    public static final int U_WARNING_RR = 31;
+    public static final int U_CARINF_UBACK_STATE = 166;
+    public static final int U_CARINF_UBACK_STATE_ACT = 167;
+    public static final int U_CARSET_D3A_D10_B70 = 153;
+    public static final int U_CARSET_D3A_D11_B70 = 154;
+    public static final int U_CARSET_D3A_D12_B70 = 155;
+    public static final int U_CARSET_D3A_DB_B70 = 148;
+    public static final int U_CARSET_D3A_DC_B70 = 149;
+    public static final int U_CARSET_D3A_DD_B70 = 150;
+    public static final int U_CARSET_D3A_DE_B70 = 151;
+    public static final int U_CARSET_D3A_DF_B70 = 152;
+    public static final int U_CARSET_D3B_D0_B30 = 165;
+    public static final int U_CARSET_D3B_D0_B54 = 164;
+    public static final int U_CARSET_D40_D0_B76 = 144;
+    public static final int U_CARSET_D40_D1_B5 = 147;
+    public static final int U_CARSET_D40_D1_B6 = 146;
+    public static final int U_CARSET_D40_D1_B7 = 145;
+    public static final int U_CARSET_D60_D0_B4 = 157;
+    public static final int U_CARSET_D60_D0_B6 = 156;
+    public static final int U_CARSET_D60_D1_B70 = 158;
+    public static final int U_CARSET_D60_D2_B70 = 159;
+    public static final int U_CARSET_D60_D3_B70 = 160;
+    public static final int U_CARSET_D60_D4_B70 = 161;
+    public static final int U_CARSET_D60_D5_B70 = 162;
+    public static final int U_CARSET_D60_D6_B70 = 163;
+    public static final int U_CAR_AUTOLOCK_SPEED = 139;
+    public static final int U_CAR_BACKLIGHT = 143;
+    public static final int U_CAR_CHARGING_MODE = 125;
+    public static final int U_CAR_CHARGING_TIME_MODE = 135;
+    public static final int U_CAR_CHARGING_TIME_VALUE1_1 = 126;
+    public static final int U_CAR_CHARGING_TIME_VALUE1_2 = 127;
+    public static final int U_CAR_CHARGING_TIME_VALUE2_1 = 128;
+    public static final int U_CAR_CHARGING_TIME_VALUE2_2 = 129;
+    public static final int U_CAR_CHARGING_TIME_VALUE3_1 = 130;
+    public static final int U_CAR_CHARGING_TIME_VALUE3_2 = 131;
+    public static final int U_CAR_CHARGING_TIME_VALUE4_1 = 132;
+    public static final int U_CAR_CHARGING_TIME_VALUE4_2 = 133;
+    public static final int U_CAR_CHARGING_TIME_VALUE5 = 134;
+    public static final int U_CAR_CURRENT = 114;
+    public static final int U_CAR_DRIVE_MODE = 112;
+    public static final int U_CAR_ELECTRICITY = 118;
+    public static final int U_CAR_ENERGY_AIR = 122;
+    public static final int U_CAR_ENERGY_AVG = 120;
+    public static final int U_CAR_ENERGY_CUR = 121;
+    public static final int U_CAR_ENERGY_DRIVE = 124;
+    public static final int U_CAR_ENERGY_FLOW = 119;
+    public static final int U_CAR_ENERGY_RECYCLE = 123;
+    public static final int U_CAR_FORTIFICATION_BEEP = 140;
+    public static final int U_CAR_GEAR = 113;
+    public static final int U_CAR_INSIDE_LIGHT_DELAY_TIME = 138;
+    public static final int U_CAR_LIGHT_POSITION = 141;
+    public static final int U_CAR_LIGHT_TURN_AID = 142;
+    public static final int U_CAR_MILEAGE = 116;
+    public static final int U_CAR_OUT_LIGHT_DELAY_TIME = 137;
+    public static final int U_CAR_REARVIEW_AUTO = 111;
+    public static final int U_CAR_REMAIN_MILEAGE = 117;
+    public static final int U_CAR_TOUCH_SENSITIVITY = 136;
+    public static final int U_CAR_VOLTAGE = 115;
+    public static final int U_CAR_WIN_AUTODOWN = 110;
+    public static final int U_CNT_MAX = 168;
+    public static final int U_PRESSURE_FL = 98;
+    public static final int U_PRESSURE_FR = 99;
+    public static final int U_PRESSURE_RL = 100;
+    public static final int U_PRESSURE_RR = 101;
+    public static final int U_TEMP_FL = 102;
+    public static final int U_TEMP_FR = 103;
+    public static final int U_TEMP_RL = 104;
+    public static final int U_TEMP_RR = 105;
+    public static final int U_WARNING_FL = 106;
+    public static final int U_WARNING_FR = 107;
+    public static final int U_WARNING_RL = 108;
+    public static final int U_WARNING_RR = 109;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 81; i++) {
+        for (int i = 0; i < 168; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
-        }
-        for (int i2 = ConstRzcAddData.U_CAR_ADD_START; i2 < 560; i2++) {
-            DataCanbus.PROXY.register(callback, i2, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
         DoorHelper.sUcDoorFl = 1;
@@ -102,18 +96,18 @@ public class Callback_0439_RZC_Jianghuai_All extends CallbackCanbusBase {
         DoorHelper.sUcDoorRr = 4;
         DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i3 = 0; i3 < 6; i3++) {
-            DataCanbus.NOTIFY_EVENTS[i3].addNotify(DoorHelper.getInstance(), 0);
+        for (int i2 = 0; i2 < 6; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        AirHelper.getInstance().buildUi(new Air_0439_RZC_Jianghuai_All(LauncherApplication.getInstance()));
-        for (int i4 = 7; i4 < 19; i4++) {
-            DataCanbus.NOTIFY_EVENTS[i4].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
+        //AirHelper.getInstance().buildUi(new Air_0439_RZC_Jianghuai_All(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
+            DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 7; i < 19; i++) {
+        for (int i = 10; i < 97; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
@@ -123,25 +117,24 @@ public class Callback_0439_RZC_Jianghuai_All extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 81) {
-            HandlerCanbus.update(updateCode, ints);
-        }
-        if (updateCode >= 500 && updateCode < 560) {
-            switch (updateCode) {
-                case ConstRzcAddData.U_CAR_FRAME_NUM /* 501 */:
-                    if (strs != null && strs.length > 0) {
-                        ConstRzcAddData.CarFrameNum = strs[0];
-                    } else {
-                        ConstRzcAddData.CarFrameNum = "";
+        if (updateCode == 166) {
+            if (DataCanbus.DATA[1000] == 6095301) {
+                int value = ints[0];
+                if (value == 1) {
+                    if (!ActivityHondaNullBackCar.mIsFront) {
+                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityHondaNullBackCar");
                     }
-                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
-                    break;
-                default:
-                    HandlerCanbus.update(updateCode, ints);
-                    break;
+                } else if (ActivityHondaNullBackCar.mIsFront && ActivityHondaNullBackCar.mInstance != null) {
+                    ActivityHondaNullBackCar.mInstance.finish();
+                }
             }
+            HandlerCanbus.update(updateCode, ints, flts, strs);
+            return;
+        }
+        if (updateCode >= 0 && updateCode < 168) {
+            HandlerCanbus.update(updateCode, ints);
         }
     }
 }

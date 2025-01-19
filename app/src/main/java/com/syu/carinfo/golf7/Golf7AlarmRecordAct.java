@@ -8,15 +8,14 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7AlarmRecordAct extends BaseActivity {
     private TextView[] mTvWarning = new TextView[18];
     private TextView[] mTvWarningLine = new TextView[18];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7AlarmRecordAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 74:
+                case 171:
                     if (ints == null) {
                         for (int i = 0; i < 16; i++) {
                             int[] ints2 = ConstGolf.mVehicleWarning[i];
@@ -34,18 +33,18 @@ public class Golf7AlarmRecordAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setContentView(R.layout.layout_golf7_alarm_record_od);
+            //setContentView(R.layout.layout_golf7_alarm_record_od);
         } else {
-            setContentView(R.layout.layout_golf7_alarm_record);
+            //setContentView(R.layout.layout_golf7_alarm_record);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mTvWarning[0] = (TextView) findViewById(R.id.golf7_tv_warnning_Vehicle_0);
         this.mTvWarning[1] = (TextView) findViewById(R.id.golf7_tv_warnning_Vehicle_1);
@@ -85,7 +84,7 @@ public class Golf7AlarmRecordAct extends BaseActivity {
         this.mTvWarningLine[17] = (TextView) findViewById(R.id.golf7_tv_warnning_Vehicle_line_17);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -142,6 +141,8 @@ public class Golf7AlarmRecordAct extends BaseActivity {
             case FinalCanbus.CAR_RZC_MQB_16_18Weilan /* 3408032 */:
             case FinalCanbus.CAR_RZC_TuGuan_L_20_H /* 3473568 */:
             case FinalCanbus.CAR_6606_MQB_Lavida_23 /* 3539104 */:
+            case FinalCanbus.CAR_RZC_MQB_All_360 /* 3670176 */:
+            case FinalCanbus.CAR_RZC_MaiTeng_20_H_EC /* 3801248 */:
                 for (int i = 7; i < 18; i++) {
                     this.mTvWarning[i].setVisibility(8);
                     this.mTvWarningLine[i].setVisibility(8);
@@ -150,23 +151,23 @@ public class Golf7AlarmRecordAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[171].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[171].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void vehicleWarning(int[] ints) {
         String str = "";
         int index = 0;

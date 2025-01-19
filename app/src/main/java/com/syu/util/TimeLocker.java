@@ -3,7 +3,6 @@ package com.syu.util;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public final class TimeLocker implements Runnable {
     public static final Handler HANDLER;
     private boolean mLock;
@@ -28,7 +27,7 @@ public final class TimeLocker implements Runnable {
         HANDLER.postDelayed(this, ms);
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public synchronized void run() {
         this.mLock = false;
     }

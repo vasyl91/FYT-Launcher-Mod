@@ -4,28 +4,29 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
+
 import java.util.Locale;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
     public Air_0031_Xp2_XianDaiIx3545(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0015_31_xp2_xiandai_ix3545/air_xp1_xiandaiix45.webp";
         this.mPathHighlight = "0015_31_xp2_xiandai_ix3545/air_xp1_xiandaiix45_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -78,7 +79,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
             } else if (temp == 30) {
                 c.drawText("HI", 50.0f, 130.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(((temp * 5) + 170) / 10.0f).toString(), 50.0f, 130.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp * 5) + 170) / 10.0f), 50.0f, 130.0f, this.mPaint);
             }
             int temp2 = this.DATA[11];
             if (temp2 == 0) {
@@ -86,7 +87,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
             } else if (temp2 == 30) {
                 c.drawText("HI", 930.0f, 130.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(((temp2 * 5) + 170) / 10.0f).toString(), 930.0f, 130.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp2 * 5) + 170) / 10.0f), 930.0f, 130.0f, this.mPaint);
             }
         } else {
             int temp3 = this.DATA[10];
@@ -96,7 +97,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
                 } else if (temp3 == 152) {
                     c.drawText("HI", 50.0f, 130.0f, this.mPaint);
                 } else if (temp3 > 124 && temp3 < 152) {
-                    c.drawText(new StringBuilder().append((((temp3 - 124) * 5) + 170) / 10.0f).toString(), 50.0f, 130.0f, this.mPaint);
+                    c.drawText(String.valueOf((((temp3 - 124) * 5) + 170) / 10.0f), 50.0f, 130.0f, this.mPaint);
                 } else {
                     c.drawText("NO", 50.0f, 130.0f, this.mPaint);
                 }
@@ -105,7 +106,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
             } else if (temp3 == 34) {
                 c.drawText("HI", 50.0f, 130.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(((temp3 * 5) + 150) / 10.0f).toString(), 50.0f, 130.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp3 * 5) + 150) / 10.0f), 50.0f, 130.0f, this.mPaint);
             }
             int temp4 = this.DATA[11];
             if (temp4 > 34) {
@@ -114,7 +115,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
                 } else if (temp4 == 152) {
                     c.drawText("HI", 930.0f, 130.0f, this.mPaint);
                 } else if (temp4 > 124 && temp4 < 152) {
-                    c.drawText(new StringBuilder().append((((temp4 - 124) * 5) + 170) / 10.0f).toString(), 930.0f, 130.0f, this.mPaint);
+                    c.drawText(String.valueOf((((temp4 - 124) * 5) + 170) / 10.0f), 930.0f, 130.0f, this.mPaint);
                 } else {
                     c.drawText("NO", 930.0f, 130.0f, this.mPaint);
                 }
@@ -123,7 +124,7 @@ public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
             } else if (temp4 == 34) {
                 c.drawText("HI", 930.0f, 130.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(((temp4 * 5) + 150) / 10.0f).toString(), 930.0f, 130.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp4 * 5) + 150) / 10.0f), 930.0f, 130.0f, this.mPaint);
             }
         }
         canvas.save();

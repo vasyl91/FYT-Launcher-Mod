@@ -9,76 +9,75 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.Locale;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Infiniti_XinCheng_CarTire extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_CarTire.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 31:
+                case 98:
                     Infiniti_XinCheng_CarTire.this.mUpdaterTireFL();
                     break;
-                case 32:
+                case 99:
                     Infiniti_XinCheng_CarTire.this.mUpdaterTireFR();
                     break;
-                case 33:
+                case 100:
                     Infiniti_XinCheng_CarTire.this.mUpdaterTireRL();
                     break;
-                case 34:
+                case 101:
                     Infiniti_XinCheng_CarTire.this.mUpdaterTireRR();
                     break;
-                case 35:
+                case 102:
                     Infiniti_XinCheng_CarTire.this.updaterFLWalm();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, new int[]{112}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[31];
-        int sys = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[98];
+        int sys = DataCanbus.DATA[103];
         if (((sys >> 6) & 1) == 0) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
             return;
@@ -95,10 +94,10 @@ public class Infiniti_XinCheng_CarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[32];
-        int sys = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[99];
+        int sys = DataCanbus.DATA[103];
         if (((sys >> 7) & 1) == 0) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
             return;
@@ -115,10 +114,10 @@ public class Infiniti_XinCheng_CarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[33];
-        int sys = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[100];
+        int sys = DataCanbus.DATA[103];
         if (((sys >> 4) & 1) == 0) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
             return;
@@ -135,10 +134,10 @@ public class Infiniti_XinCheng_CarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[34];
-        int sys = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[101];
+        int sys = DataCanbus.DATA[103];
         if (((sys >> 5) & 1) == 0) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
             return;
@@ -155,9 +154,9 @@ public class Infiniti_XinCheng_CarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm() {
-        int value = DataCanbus.DATA[35];
+        int value = DataCanbus.DATA[102];
         if (((value >> 6) & 1) == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setTextColor(-65536);
             ((TextView) findViewById(R.id.oudi_changan_tire1_warn)).setTextColor(-65536);

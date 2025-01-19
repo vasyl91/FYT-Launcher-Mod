@@ -2,7 +2,6 @@ package com.syu.weather;
 
 import org.json.JSONObject;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DailyWeather {
     String city;
     String date;

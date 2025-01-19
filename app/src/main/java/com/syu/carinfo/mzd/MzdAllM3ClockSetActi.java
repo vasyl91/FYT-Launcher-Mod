@@ -2,6 +2,7 @@ package com.syu.carinfo.mzd;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -11,30 +12,25 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerHelper;
 import com.syu.util.HandlerRemove;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MzdAllM3ClockSetActi extends BaseActivity {
     private boolean mBooleanHour;
-    private Button mBtnHour;
-    private Button mBtnMin;
-    private Button mBtnSet;
     private Handler mHandler;
     private boolean mBooleanMin = false;
-    private final int delay = 200;
-    private Runnable mSet = new Runnable() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.1
-        @Override // java.lang.Runnable
+    private Runnable mSet = new Runnable() { 
+        @Override
         public void run() {
             DataCanbus.PROXY.cmd(0, null, null, null);
             HandlerRemove.getInstance().postDelayed(this, 200L);
         }
     };
-    private Runnable mUp = new Runnable() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.2
-        @Override // java.lang.Runnable
+    private Runnable mUp = new Runnable() { 
+        @Override
         public void run() {
             DataCanbus.PROXY.cmd(3, null, null, null);
         }
     };
-    private Runnable mHour = new Runnable() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.3
-        @Override // java.lang.Runnable
+    private Runnable mHour = new Runnable() { 
+        @Override
         public void run() {
             if (MzdAllM3ClockSetActi.this.mBooleanHour) {
                 DataCanbus.PROXY.cmd(1, null, null, null);
@@ -42,8 +38,8 @@ public class MzdAllM3ClockSetActi extends BaseActivity {
             }
         }
     };
-    private Runnable mMin = new Runnable() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.4
-        @Override // java.lang.Runnable
+    private Runnable mMin = new Runnable() { 
+        @Override
         public void run() {
             if (MzdAllM3ClockSetActi.this.mBooleanMin) {
                 DataCanbus.PROXY.cmd(2, null, null, null);
@@ -52,23 +48,22 @@ public class MzdAllM3ClockSetActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_mazida);
-        this.mHandler = new Handler();
-        this.mBtnSet = (Button) findViewById(R.id.mzd_btn_set);
-        this.mBtnSet.setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.5
-            @Override // android.view.View.OnTouchListener
+        //setContentView(R.layout.layout_mazida);
+        this.mHandler = new Handler(Looper.getMainLooper());
+        ((Button) findViewById(R.id.mzd_btn_set)).setOnTouchListener(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
                 if (action == 0) {
-                    MzdAllM3ClockSetActi.this.mBtnSet.setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_set)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
                     HandlerHelper.postDelayed(HandlerRemove.getInstance(), MzdAllM3ClockSetActi.this.mSet, 0L);
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mSet);
                     DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                 } else if (action == 1) {
-                    MzdAllM3ClockSetActi.this.mBtnSet.setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_set)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
                     HandlerHelper.removeCallbacks(HandlerRemove.getInstance(), MzdAllM3ClockSetActi.this.mSet);
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mUp);
                     DataCanbus.PROXY.cmd(4, new int[1], null, null);
@@ -76,18 +71,17 @@ public class MzdAllM3ClockSetActi extends BaseActivity {
                 return false;
             }
         });
-        this.mBtnHour = (Button) findViewById(R.id.mzd_btn_hour);
-        this.mBtnHour.setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.6
-            @Override // android.view.View.OnTouchListener
+        ((Button) findViewById(R.id.mzd_btn_hour)).setOnTouchListener(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
                 if (action == 0) {
-                    MzdAllM3ClockSetActi.this.mBtnHour.setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_hour)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
                     MzdAllM3ClockSetActi.this.mBooleanHour = true;
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mHour);
                     DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                 } else if (action == 1) {
-                    MzdAllM3ClockSetActi.this.mBtnHour.setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_hour)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
                     MzdAllM3ClockSetActi.this.mBooleanHour = false;
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mUp);
                     DataCanbus.PROXY.cmd(4, new int[1], null, null);
@@ -95,18 +89,17 @@ public class MzdAllM3ClockSetActi extends BaseActivity {
                 return false;
             }
         });
-        this.mBtnMin = (Button) findViewById(R.id.mzd_btn_min);
-        this.mBtnMin.setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.mzd.MzdAllM3ClockSetActi.7
-            @Override // android.view.View.OnTouchListener
+        ((Button) findViewById(R.id.mzd_btn_min)).setOnTouchListener(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
                 if (action == 0) {
-                    MzdAllM3ClockSetActi.this.mBtnMin.setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_min)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_p);
                     MzdAllM3ClockSetActi.this.mBooleanMin = true;
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mMin);
                     DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                 } else if (action == 1) {
-                    MzdAllM3ClockSetActi.this.mBtnMin.setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
+                    ((Button) MzdAllM3ClockSetActi.this.findViewById(R.id.mzd_btn_min)).setBackgroundResource(R.drawable.ic_bz408_btn_oil_n);
                     MzdAllM3ClockSetActi.this.mBooleanMin = false;
                     MzdAllM3ClockSetActi.this.mHandler.post(MzdAllM3ClockSetActi.this.mUp);
                     DataCanbus.PROXY.cmd(4, new int[1], null, null);
@@ -116,26 +109,26 @@ public class MzdAllM3ClockSetActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 459195 || DataCanbus.DATA[1000] == 524731 || DataCanbus.DATA[1000] == 852411 || DataCanbus.DATA[1000] == 590267) {
-            this.mBtnSet.setText("SET");
-            this.mBtnHour.setText("CLOCK");
-            this.mBtnMin.setVisibility(8);
+            ((Button) findViewById(R.id.mzd_btn_set)).setText("SET");
+            ((Button) findViewById(R.id.mzd_btn_hour)).setText("CLOCK");
+            ((Button) findViewById(R.id.mzd_btn_min)).setVisibility(8);
         } else {
-            if (DataCanbus.DATA[1000] == 393659) {
-                this.mBtnSet.setText("SET");
-                this.mBtnHour.setText("HOUR");
-                this.mBtnMin.setText("MIN");
-                this.mBtnMin.setVisibility(0);
+            if (DataCanbus.DATA[1000] == 393659 || DataCanbus.DATA[1000] == 15663547) {
+                ((Button) findViewById(R.id.mzd_btn_set)).setText("SET");
+                ((Button) findViewById(R.id.mzd_btn_hour)).setText("HOUR");
+                ((Button) findViewById(R.id.mzd_btn_min)).setText("MIN");
+                ((Button) findViewById(R.id.mzd_btn_min)).setVisibility(0);
                 return;
             }
             if (DataCanbus.DATA[1000] == 655803 || DataCanbus.DATA[1000] == 1049019) {
-                this.mBtnSet.setText("HOUR");
-                this.mBtnHour.setText("MIN");
-                this.mBtnMin.setText(":00");
-                this.mBtnMin.setVisibility(0);
+                ((Button) findViewById(R.id.mzd_btn_set)).setText("HOUR");
+                ((Button) findViewById(R.id.mzd_btn_hour)).setText("MIN");
+                ((Button) findViewById(R.id.mzd_btn_min)).setText(":00");
+                ((Button) findViewById(R.id.mzd_btn_min)).setVisibility(0);
             }
         }
     }

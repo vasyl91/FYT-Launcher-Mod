@@ -9,59 +9,58 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 114:
+                case 178:
                     Rzc_ZiYouguang_TiaozhanzheOnly.this.mtiaozhanzhe0(value);
                     break;
-                case 115:
+                case 179:
                     Rzc_ZiYouguang_TiaozhanzheOnly.this.mtiaozhanzhe5(value);
                     break;
-                case 117:
+                case 181:
                     Rzc_ZiYouguang_TiaozhanzheOnly.this.mtiaozhanzhe(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_tiaozhanzhe_only);
+        //setContentView(R.layout.layout_jeep_tiaozhanzhe_only);
         init();
     }
 
     private void init() {
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe0_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe0_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[114] + 1;
+                int value = DataCanbus.DATA[178] + 1;
                 if (value > 5) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{176, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe0_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe0_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[114] - 1;
+                int value = DataCanbus.DATA[178] - 1;
                 if (value < 0) {
                     value = 5;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{176, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe1_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe1_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 7) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 7) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -70,11 +69,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{178, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe1_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe1_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 7) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 7) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -83,11 +82,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{178, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe2_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe2_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 6) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 6) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -96,11 +95,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{179, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe2_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe2_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 6) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 6) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -109,11 +108,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{179, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe3_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe3_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 5) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 5) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -122,11 +121,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{180, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe3_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe3_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = (DataCanbus.DATA[117] >> 5) & 1;
+                int value2 = (DataCanbus.DATA[181] >> 5) & 1;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -135,31 +134,31 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{180, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe4_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe4_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = ((DataCanbus.DATA[117] >> 3) & 3) + 1;
+                int value = ((DataCanbus.DATA[181] >> 3) & 3) + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{181, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe4_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe4_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = ((DataCanbus.DATA[117] >> 3) & 3) - 1;
+                int value = ((DataCanbus.DATA[181] >> 3) & 3) - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{181, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe5_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe5_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[115];
+                int value2 = DataCanbus.DATA[179];
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -168,11 +167,11 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
                 DataCanbus.PROXY.cmd(2, new int[]{182, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.jeep_tiaozhanzhe5_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_TiaozhanzheOnly.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_tiaozhanzhe5_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[115];
+                int value2 = DataCanbus.DATA[179];
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -183,34 +182,34 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{177}, null, null);
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mCanbusNotify);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mtiaozhanzhe(int value) {
         if (((TextView) findViewById(R.id.jeep_tiaozhanzhe1_set_show)) != null) {
             switch ((value >> 7) & 1) {
@@ -257,7 +256,7 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mtiaozhanzhe5(int value) {
         if (((TextView) findViewById(R.id.jeep_tiaozhanzhe5_set_show)) != null) {
             if (value == 1) {
@@ -268,7 +267,7 @@ public class Rzc_ZiYouguang_TiaozhanzheOnly extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mtiaozhanzhe0(int value) {
         if (((TextView) findViewById(R.id.jeep_tiaozhanzhe0_set_show)) != null) {
             if (value == 1) {

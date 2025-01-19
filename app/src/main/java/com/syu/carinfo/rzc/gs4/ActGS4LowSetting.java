@@ -9,24 +9,23 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActGS4LowSetting extends BaseActivity implements View.OnClickListener {
     boolean mLanguage;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.gs4.ActGS4LowSetting.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 98:
                     ActGS4LowSetting.this.mUpdaterGS4Settings();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_rzc_gs4_low_setting);
+        //setContentView(R.layout.layout_rzc_gs4_low_setting);
         ((CheckedTextView) findViewById(R.id.ctv_gs4_setting_language)).setOnClickListener(this);
     }
 
@@ -34,10 +33,10 @@ public class ActGS4LowSetting extends BaseActivity implements View.OnClickListen
         DataCanbus.PROXY.cmd(0, new int[]{((cmd & 255) << 8) | (value + 1)}, null, null);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_gs4_setting_language /* 2131432756 */:
+            case R.id.ctv_gs4_setting_language /* 2131432682 */:
                 C_CAR_CMD(1, !this.mLanguage ? 0 : 1);
                 break;
         }
@@ -51,19 +50,19 @@ public class ActGS4LowSetting extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.tv_gs4_language)).setText(str);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterGS4Settings() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         byte data0 = (byte) ((value >> 8) & 255);
         byte data1 = (byte) (value & 255);
         switch (data0) {

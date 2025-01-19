@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+
 import com.android.launcher66.Launcher;
 import com.fyt.widget.Clock;
 import com.fyt.widget.Date;
@@ -16,25 +17,25 @@ import com.fyt.widget.WeekDay;
 import com.fyt.widget.WeekDay2;
 import com.fyt.widget.Year;
 import com.syu.log.LogPreview;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class TimeUpdateReceiver extends BroadcastReceiver {
     public static final String SHOW_TIME = "com.syu.show_time";
     private static final String TAG = "TimeUpdateReceiver";
     static List<Widget> mWidgets = new ArrayList();
     private static TimeUpdateReceiver timeUpdate;
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         LogPreview.show("onReceive");
-        new Thread(new Runnable() { // from class: com.syu.widget.TimeUpdateReceiver.1
-            @Override // java.lang.Runnable
+        new Thread(new Runnable() { 
+            @Override
             public void run() {
                 if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.runOnUiThread(new Runnable() { // from class: com.syu.widget.TimeUpdateReceiver.1.1
-                        @Override // java.lang.Runnable
+                    Launcher.mLauncher.runOnUiThread(new Runnable() { 
+                        @Override
                         public void run() {
                             List<Widget> mList = new ArrayList<>(TimeUpdateReceiver.mWidgets);
                             for (Widget widget : mList) {
@@ -84,9 +85,7 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
     }
 
     public static void removeWidget(Widget widget) {
-        if (mWidgets.contains(widget)) {
-            mWidgets.remove(widget);
-        }
+        mWidgets.remove(widget);
     }
 
     public static void register(Context context) {

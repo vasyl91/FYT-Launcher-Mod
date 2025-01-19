@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0371_BG_XP1_ZiYouGuang extends AirBase {
     public Air_0371_BG_XP1_ZiYouGuang(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0371_bg_ziyouguang/bg_ziyouguang.webp";
         this.mPathHighlight = "0371_bg_ziyouguang/bg_ziyouguang_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -101,7 +101,7 @@ public class Air_0371_BG_XP1_ZiYouGuang extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 70.0f, 140.0f, this.mPaint);
         } else if ((temp >= 13 && temp <= 30) || (temp >= 60 && temp <= 84)) {
-            c.drawText(new StringBuilder().append(temp).toString(), 70.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 70.0f, 140.0f, this.mPaint);
         } else {
             c.drawText("NONE", 70.0f, 140.0f, this.mPaint);
         }
@@ -111,7 +111,7 @@ public class Air_0371_BG_XP1_ZiYouGuang extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 941.0f, 140.0f, this.mPaint);
         } else if ((temp2 >= 13 && temp2 <= 30) || (temp2 >= 60 && temp2 <= 84)) {
-            c.drawText(new StringBuilder().append(temp2).toString(), 941.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2), 941.0f, 140.0f, this.mPaint);
         } else {
             c.drawText("NONE", 941.0f, 140.0f, this.mPaint);
         }

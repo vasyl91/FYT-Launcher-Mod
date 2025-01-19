@@ -1,10 +1,10 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0453_RZC_Hongqi_H5 extends CallbackCanbusBase {
     public static final int U_CARINF_D52_D1_B70 = 7;
     public static final int U_CARINF_D52_D2_B70 = 8;
@@ -16,7 +16,7 @@ public class Callback_0453_RZC_Hongqi_H5 extends CallbackCanbusBase {
     public static final int U_CARINF_D52_D8_B70 = 14;
     public static final int U_CNT_MAX = 15;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 15; i++) {
@@ -34,7 +34,7 @@ public class Callback_0453_RZC_Hongqi_H5 extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -42,7 +42,7 @@ public class Callback_0453_RZC_Hongqi_H5 extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 15) {
             HandlerCanbus.update(updateCode, ints);

@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_BNR_Haval_H9 extends AirBase {
     public Air_0439_BNR_Haval_H9(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_oudi_haval_h9/oudi_haval_h9.webp";
         this.mPathHighlight = "0439_oudi_haval_h9/oudi_haval_h9_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         int temp;
         int temp1;
@@ -120,7 +120,7 @@ public class Air_0439_BNR_Haval_H9 extends AirBase {
             } else {
                 temp = ((temp2 - 116) * 5) + 160;
             }
-            c.drawText(String.valueOf(temp / 10) + "." + (temp % 10), 45.0f, 63.0f, this.mPaint);
+            c.drawText(temp / 10 + "." + (temp % 10), 45.0f, 63.0f, this.mPaint);
         }
         int temp12 = this.DATA[68];
         if (temp12 == -1) {
@@ -135,7 +135,7 @@ public class Air_0439_BNR_Haval_H9 extends AirBase {
             } else {
                 temp1 = ((temp12 - 116) * 5) + 160;
             }
-            c.drawText(String.valueOf(temp1 / 10) + "." + (temp1 % 10), 623.0f, 63.0f, this.mPaint);
+            c.drawText(temp1 / 10 + "." + (temp1 % 10), 623.0f, 63.0f, this.mPaint);
         }
         int temp22 = this.DATA[74];
         if (temp22 == -1) {
@@ -146,12 +146,12 @@ public class Air_0439_BNR_Haval_H9 extends AirBase {
             c.drawText("HI", 961.0f, 63.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 10420663 || DataCanbus.DATA[1000] == 10486199 || DataCanbus.DATA[1000] == 15794628 || DataCanbus.DATA[1000] == 15860164 || DataCanbus.DATA[1000] == 15925700 || DataCanbus.DATA[1000] == 15991236 || DataCanbus.DATA[1000] == 16056772) {
             int temp23 = (temp22 * 5) + 160;
-            c.drawText(String.valueOf(temp23 / 10) + "." + (temp23 % 10), 961.0f, 63.0f, this.mPaint);
+            c.drawText(temp23 / 10 + "." + (temp23 % 10), 961.0f, 63.0f, this.mPaint);
         } else if (temp22 == 0) {
             c.drawText("--.-", 961.0f, 63.0f, this.mPaint);
         } else {
             int temp24 = ((temp22 - 116) * 5) + 160;
-            c.drawText(String.valueOf(temp24 / 10) + "." + (temp24 % 10), 961.0f, 63.0f, this.mPaint);
+            c.drawText(temp24 / 10 + "." + (temp24 % 10), 961.0f, 63.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

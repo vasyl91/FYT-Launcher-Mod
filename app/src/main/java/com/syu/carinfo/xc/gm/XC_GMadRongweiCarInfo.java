@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xc.gm.XC_GMadRongweiCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 71:
+                case 135:
                     if (value == 65535) {
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text1)).setText("----");
                         break;
@@ -26,13 +25,13 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10.0f) + " L/100km");
                         break;
                     }
-                case 72:
+                case 136:
                     ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10.0f) + " Krpm");
                     break;
-                case 73:
+                case 137:
                     ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value) + " km");
                     break;
-                case 74:
+                case 138:
                     if (value == 65535) {
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text4)).setText("----");
                         break;
@@ -40,16 +39,16 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value / 10.0f) + " KWh/100km");
                         break;
                     }
-                case 75:
+                case 139:
                     ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value / 10.0f) + " Krpm");
                     break;
-                case 76:
+                case 140:
                     ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value) + " km");
                     break;
-                case 77:
+                case 141:
                     ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value) + " V");
                     break;
-                case 78:
+                case 142:
                     if ((32768 & value) != 0) {
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text8)).setText("-" + (65536 - value) + " A");
                         break;
@@ -57,7 +56,7 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
                         ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text8)).setText(String.valueOf(value) + " A");
                         break;
                     }
-                case 79:
+                case 143:
                     switch (value) {
                         case 2:
                             ((TextView) XC_GMadRongweiCarInfo.this.findViewById(R.id.tv_text9)).setText("怠速充电模式");
@@ -91,33 +90,33 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_xc_rongwei_gm_carinfo);
+        //setContentView(R.layout.layout_0452_xc_rongwei_gm_carinfo);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 dialog(R.string.bmw_cleanoil, 192);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 dialog(R.string.str_clean_electricl, 193);
                 break;
         }
@@ -127,12 +126,12 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xc.gm.XC_GMadRongweiCarInfo.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.xc.gm.XC_GMadRongweiCarInfo.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(0, new int[]{i}, null, null);
                     }
@@ -140,8 +139,8 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xc.gm.XC_GMadRongweiCarInfo.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -149,29 +148,29 @@ public class XC_GMadRongweiCarInfo extends BaseActivity implements View.OnClickL
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
     }
 }

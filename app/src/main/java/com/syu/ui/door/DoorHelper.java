@@ -6,6 +6,7 @@ import android.os.SystemProperties;
 import android.util.Log;
 import android.view.View;
 import android.widget.PopupWindow;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
@@ -13,7 +14,6 @@ import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DoorHelper implements IUiNotify, Runnable {
     public static boolean sDisableDoorWindowLocal;
     private int mTick;
@@ -27,23 +27,23 @@ public class DoorHelper implements IUiNotify, Runnable {
     private static int sDoorWindowEnable = 1;
     public static boolean sFlagShowDoorWindow = true;
     private static final DoorHelper INSTANCE = new DoorHelper();
-    private Runnable mHideWindow = new Runnable() { // from class: com.syu.ui.door.DoorHelper.1
-        @Override // java.lang.Runnable
+    private final Runnable mHideWindow = new Runnable() { 
+        @Override
         public void run() {
-            DoorHelper.this.mWindow.dismiss();
+            //DoorHelper.this.mWindow.dismiss();
         }
     };
-    private final Runnable SHOW = new Runnable() { // from class: com.syu.ui.door.DoorHelper.2
-        @Override // java.lang.Runnable
+    private final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             if (DataCanbus.DATA[DoorHelper.sUcDoorEngine] != 0 || DataCanbus.DATA[DoorHelper.sUcDoorFl] != 0 || DataCanbus.DATA[DoorHelper.sUcDoorFr] != 0 || DataCanbus.DATA[DoorHelper.sUcDoorRl] != 0 || DataCanbus.DATA[DoorHelper.sUcDoorRr] != 0 || DataCanbus.DATA[DoorHelper.sUcDoorBack] != 0) {
                 DoorHelper.this.mTick = 6;
                 if (!DoorHelper.this.mWindow.isShowing()) {
                     LauncherApplication.addRootView(DoorHelper.this.mWindow);
                     if (LauncherApplication.rootViewWindowToken() != null) {
-                        LauncherApplication.showWindow(DoorHelper.this.mWindow, 17, 0, 0);
+                        //LauncherApplication.showWindow(DoorHelper.this.mWindow, 17, 0, 0);
                     } else {
-                        HandlerUI.getInstance().postDelayed(this, 1L);
+                        //HandlerUI.getInstance().postDelayed(this, 1L);
                         return;
                     }
                 }
@@ -56,7 +56,7 @@ public class DoorHelper implements IUiNotify, Runnable {
             }
             DoorHelper.this.mTick = 0;
             if (DoorHelper.this.mWindow.isShowing()) {
-                DoorHelper.this.mWindow.dismiss();
+                //DoorHelper.this.mWindow.dismiss();
             }
             DataCanbus.PROXY.cmd(FinalCanbus.C_CANBUS_CAR_DOOR, new int[1], null, null);
         }
@@ -74,49 +74,49 @@ public class DoorHelper implements IUiNotify, Runnable {
             this.mWindow.setHeight(-2);
             this.mWindow.setBackgroundDrawable(new ColorDrawable(0));
             this.mWindow.setOutsideTouchable(true);
-            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { // from class: com.syu.ui.door.DoorHelper.3
-                @Override // android.widget.PopupWindow.OnDismissListener
+            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { 
+                @Override
                 public void onDismiss() {
-                    LauncherApplication.removeRootView(DoorHelper.this.mWindow);
+                    //LauncherApplication.removeRootView(DoorHelper.this.mWindow);
                 }
             });
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (this.mTick > 0) {
             this.mTick--;
             if (this.mTick == 0) {
-                hideWindow();
+                //hideWindow();
             }
         }
     }
 
     private void hideWindow() {
-        HandlerUI.getInstance().post(this.mHideWindow);
+        //HandlerUI.getInstance().post(this.mHideWindow);
     }
 
     public static void disableDoorWindowLocal(boolean flag) {
         if (sDisableDoorWindowLocal != flag) {
             sDisableDoorWindowLocal = flag;
-            calcFlagShowDoorWindow();
+            //calcFlagShowDoorWindow();
         }
     }
 
     public static void doorWindowEnable(int value) {
         if (sDoorWindowEnable != value) {
             sDoorWindowEnable = value;
-            calcFlagShowDoorWindow();
+            //calcFlagShowDoorWindow();
         }
     }
 
     private static void calcFlagShowDoorWindow() {
-        boolean flag = (sDisableDoorWindowLocal || sDoorWindowEnable == 0) ? false : true;
+        boolean flag = !sDisableDoorWindowLocal && sDoorWindowEnable != 0;
         if (sFlagShowDoorWindow != flag) {
             sFlagShowDoorWindow = flag;
             if (!flag) {
-                getInstance().hideWindow();
+                //getInstance().hideWindow();
             }
         }
     }
@@ -137,7 +137,7 @@ public class DoorHelper implements IUiNotify, Runnable {
     private DoorHelper() {
     }
 
-    @Override // com.syu.module.IUiNotify
+    @Override
     public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         if (sFlagShowDoorWindow && sUcDoorEngine != -1 && sUcDoorFl != -1 && sUcDoorFr != -1 && sUcDoorRl != -1 && sUcDoorBack != -1) {
             showAndRefresh();
@@ -176,16 +176,16 @@ public class DoorHelper implements IUiNotify, Runnable {
     }
 
     public void showAndRefresh() {
-        HandlerUI.getInstance().post(this.SHOW);
+        //HandlerUI.getInstance().post(this.SHOW);
     }
 
     public void buildUi() {
-        View view = new Door_Default(LauncherApplication.getInstance());
+        /*View view = new Door_Default(LauncherApplication.getInstance());
         this.mWindow.dismiss();
-        this.mWindow.setContentView(view);
+        this.mWindow.setContentView(view);*/
     }
 
     public void destroyUi() {
-        this.mWindow.setContentView(null);
+        //this.mWindow.setContentView(null);
     }
 }

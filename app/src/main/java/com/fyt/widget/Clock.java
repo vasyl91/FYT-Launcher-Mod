@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -40,13 +41,13 @@ public class Clock extends TextView {
         clock = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         setTime();
         super.onAttachedToWindow();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_XC_Honda_Acura extends AirBase {
     public Air_0452_XC_Honda_Acura(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0002_xp_dazhong/air_rzc_audi_q5.webp";
         this.mPathHighlight = "0002_xp_dazhong/air_rzc_audi_q5_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.save(2);
@@ -85,11 +85,11 @@ public class Air_0452_XC_Honda_Acura extends AirBase {
         } else if (value == -3) {
             c.drawText("HI", 47.0f, 47.0f, this.mPaint);
         } else if (value >= 1 && value <= 29) {
-            c.drawText(new StringBuilder().append(((value * 5) + 170) / 10.0f).toString(), 47.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(((value * 5) + 170) / 10.0f), 47.0f, 47.0f, this.mPaint);
         } else if (value >= 32 && value <= 34) {
-            c.drawText(new StringBuilder().append((((value - 32) * 5) + 155) / 10.0f).toString(), 47.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf((((value - 32) * 5) + 155) / 10.0f), 47.0f, 47.0f, this.mPaint);
         } else if (value == 35) {
-            c.drawText(new StringBuilder().append(320 / 10.0f).toString(), 47.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(320 / 10.0f), 47.0f, 47.0f, this.mPaint);
         } else {
             c.drawText("NO", 47.0f, 47.0f, this.mPaint);
         }
@@ -99,17 +99,17 @@ public class Air_0452_XC_Honda_Acura extends AirBase {
         } else if (value2 == -3) {
             c.drawText("HI", 947.0f, 47.0f, this.mPaint);
         } else if (value2 >= 1 && value2 <= 29) {
-            c.drawText(new StringBuilder().append(((value2 * 5) + 170) / 10.0f).toString(), 947.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(((value2 * 5) + 170) / 10.0f), 947.0f, 47.0f, this.mPaint);
         } else if (value2 >= 32 && value2 <= 34) {
-            c.drawText(new StringBuilder().append((((value2 - 32) * 5) + 155) / 10.0f).toString(), 947.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf((((value2 - 32) * 5) + 155) / 10.0f), 947.0f, 47.0f, this.mPaint);
         } else if (value2 == 35) {
-            c.drawText(new StringBuilder().append(320 / 10.0f).toString(), 947.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(320 / 10.0f), 947.0f, 47.0f, this.mPaint);
         } else {
             c.drawText("NO", 947.0f, 47.0f, this.mPaint);
         }
         int value3 = this.DATA[21];
-        c.drawText(new StringBuilder().append(value3).toString(), 330.0f, 139.0f, this.mPaint);
-        c.drawText(new StringBuilder().append(value3).toString(), 729.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(value3), 330.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(value3), 729.0f, 139.0f, this.mPaint);
         c.restore();
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

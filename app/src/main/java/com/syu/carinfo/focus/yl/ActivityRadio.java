@@ -8,12 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import com.syu.canbus.R;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0347_YingLong_Ruijie;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityRadio extends Activity implements DialogInterface.OnClickListener, View.OnLongClickListener {
     public static ActivityRadio mInst;
     public static ActivityRadio mInstance;
@@ -31,30 +29,30 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
     public static final int[] mOffsets = new int[7];
     public Button[] mFmRadio = new Button[10];
     private final int[] FREQ_PRE = {87500, 90100, 98100, 106100, 108000, 87500, 87500, 87500, 87500, 87500};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 22:
+                case 102:
                     ActivityRadio.this.mUpdaterRadioCurChannel();
                     break;
-                case 23:
+                case 103:
                     ActivityRadio.this.mUpdaterRadioCurFreq();
                     break;
-                case 27:
+                case 107:
                     ActivityRadio.this.mUpdaterRadioCurrentChannelPreset();
                     break;
-                case 28:
+                case 108:
                     ActivityRadio.this.mUpdaterRadioChannelPreset();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_radio);
+        //setContentView(R.layout.layout_radio);
         mInstance = this;
         mInst = this;
         createUI();
@@ -84,7 +82,7 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
     
         return true;
      */
-    @Override // android.view.View.OnLongClickListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -97,10 +95,10 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
             r3 = 1
             int r0 = r7.getId()
             switch(r0) {
-                case 2131430079: goto Lc;
-                case 2131430080: goto L16;
-                case 2131432413: goto Lb;
-                case 2131432416: goto Lb;
+                case 2131430035: goto Lc;
+                case 2131430036: goto L16;
+                case 2131432362: goto Lb;
+                case 2131432365: goto Lb;
                 default: goto Lb;
             }
         Lb:
@@ -128,8 +126,8 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
     private void setListener() {
         for (int i = 0; i < 10; i++) {
             final int button_id = i;
-            this.mFmRadio[i].setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.2
-                @Override // android.view.View.OnClickListener
+            this.mFmRadio[i].setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (ActivityRadio.Current_Band == 0) {
                         DataCanbus.PROXY.cmd(3, 18, button_id + 17);
@@ -149,8 +147,8 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         findViewById(R.id.freqp).setOnLongClickListener(this);
         findViewById(R.id.btn_skipb).setOnLongClickListener(this);
         findViewById(R.id.btn_skipf).setOnLongClickListener(this);
-        ((ViewGroup) findViewById(R.id.all_ground)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.3
-            @Override // android.view.View.OnClickListener
+        ((ViewGroup) findViewById(R.id.all_ground)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ActivityRadio.Seek_down == 1) {
                     DataCanbus.PROXY.cmd(3, 18, 12);
@@ -159,20 +157,20 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
                 }
             }
         });
-        ((Button) findViewById(R.id.freqm)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.freqm)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(3, 18, 3);
             }
         });
-        ((Button) findViewById(R.id.freqp)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.freqp)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(3, 18, 2);
             }
         });
-        ((Button) findViewById(R.id.btn_skipb)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_skipb)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ActivityRadio.Current_Band == 0) {
                     if (ActivityRadio.Current_preset_station == 1) {
@@ -210,10 +208,10 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_band)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_band)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[22];
+                int value = DataCanbus.DATA[102];
                 int switchOn = value + 6;
                 if (switchOn == 9) {
                     switchOn = 5;
@@ -221,24 +219,24 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
                 DataCanbus.PROXY.cmd(3, 18, switchOn);
             }
         });
-        ((Button) findViewById(R.id.scan)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.scan)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(3, 18, 4);
             }
         });
-        ((Button) findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
             }
         });
-        ((Button) findViewById(R.id.list)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.list)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
             }
         });
-        ((Button) findViewById(R.id.btn_skipf)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.yl.ActivityRadio.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_skipf)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ActivityRadio.Current_Band == 0) {
                     if (ActivityRadio.Current_preset_station == 10) {
@@ -279,14 +277,14 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         this.mRuler.setCallback(RadioRuler.mRulerListener);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DataCanbus.PROXY.cmd(3, 18, 1);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -294,28 +292,28 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurChannel() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[102];
         if (value == 0 || value == 1) {
             mFreqMin = 8750;
             mFreqMax = 10800;
             mFreqStep = 50;
         } else {
-            mFreqMin = ConstRzcAddData.U_CAR_TEMP_WATER;
+            mFreqMin = 522;
             mFreqMax = 1620;
             mFreqStep = 9;
         }
@@ -330,9 +328,9 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         Current_Band = value;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurFreq() {
-        int value = DataCanbus.DATA[23];
+        int value = DataCanbus.DATA[103];
         if (value == 0) {
             value = 87500;
         }
@@ -345,7 +343,7 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioChannelPreset() {
         if (Current_Band == 2 || Current_Band == 3) {
             for (int i = 0; i < 10; i++) {
@@ -358,12 +356,12 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurrentChannelPreset() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[107];
         this.mFmRadio[Current_preset_station - 1].setBackgroundResource(R.drawable.bk_button);
         if (value >= 1 && value <= 10) {
-            Current_preset_station = DataCanbus.DATA[27];
+            Current_preset_station = DataCanbus.DATA[107];
         }
         if (Current_preset_station >= 1) {
             this.mFmRadio[Current_preset_station - 1].setBackgroundResource(R.drawable.ic_btn_sp);
@@ -390,7 +388,7 @@ public class ActivityRadio extends Activity implements DialogInterface.OnClickLi
         }
     }
 
-    @Override // android.content.DialogInterface.OnClickListener
+    @Override
     public void onClick(DialogInterface dialog, int which) {
     }
 }

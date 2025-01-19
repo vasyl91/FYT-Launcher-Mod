@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0438_DJ_YuanJingX1 extends AirBase {
     public AIR_0438_DJ_YuanJingX1(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0438_yuanjingX1/air_dihaoyuanjingX1.webp";
         this.mPathHighlight = "0438_yuanjingX1/air_dihaoyuanjingX1_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -64,7 +64,7 @@ public class AIR_0438_DJ_YuanJingX1 extends AirBase {
             c.drawText("HI", 65.0f, 132.0f, this.mPaint);
         } else {
             int left_temp2 = (left_temp * 5) + 165;
-            c.drawText(String.valueOf(left_temp2 / 10) + "." + (left_temp2 % 10), 65.0f, 132.0f, this.mPaint);
+            c.drawText(left_temp2 / 10 + "." + (left_temp2 % 10), 65.0f, 132.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

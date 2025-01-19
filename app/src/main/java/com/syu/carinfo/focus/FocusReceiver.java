@@ -9,11 +9,10 @@ import android.os.Looper;
 import android.os.Message;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FocusReceiver extends BroadcastReceiver {
     private static final int msg_handle_back = 0;
-    Handler handler = new Handler(Looper.getMainLooper()) { // from class: com.syu.carinfo.focus.FocusReceiver.1
-        @Override // android.os.Handler
+    Handler handler = new Handler(Looper.getMainLooper()) { 
+        @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
@@ -43,7 +42,7 @@ public class FocusReceiver extends BroadcastReceiver {
     
         if (com.syu.carinfo.focus.FocusSyncBtActi.isFront == false) goto L25;
      */
-    @Override // android.content.BroadcastReceiver
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -126,7 +125,7 @@ public class FocusReceiver extends BroadcastReceiver {
         throw new UnsupportedOperationException("Method not decompiled: com.syu.carinfo.focus.FocusReceiver.onReceive(android.content.Context, android.content.Intent):void");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void toBack(Activity activity) {
         if (activity != null) {
             activity.moveTaskToBack(true);

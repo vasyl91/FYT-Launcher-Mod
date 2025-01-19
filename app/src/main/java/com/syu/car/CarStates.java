@@ -1,14 +1,15 @@
 package com.syu.car;
 
 import android.content.Context;
+
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.remote.Callback;
 import com.syu.remote.RemoteTools;
 import com.syu.util.JTools;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CarStates {
     public static int mCanbusType;
     static CarStates mCar;
@@ -50,8 +51,8 @@ public class CarStates {
         if (tools != null) {
             tools.enableModule(0, this.MAIN_LOOK_CODE);
             tools.enableModule(4, this.SOUND_LOOK_CODE);
-            tools.addRefreshLisenter(0, new Callback.OnRefreshLisenter() { // from class: com.syu.car.CarStates.1
-                @Override // com.syu.remote.Callback.OnRefreshLisenter
+            tools.addRefreshLisenter(0, new Callback.OnRefreshLisenter() { 
+                @Override
                 public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
                     if (updateCode == 0 && JTools.check(ints, 1)) {
                         if (ints != null && ints.length > 0) {
@@ -71,8 +72,8 @@ public class CarStates {
     void setupcanbusModule(RemoteTools tools) {
         if (tools != null) {
             tools.enableModule(7, this.CANBUS_LOOK_CODE);
-            tools.addRefreshLisenter(7, new Callback.OnRefreshLisenter() { // from class: com.syu.car.CarStates.2
-                @Override // com.syu.remote.Callback.OnRefreshLisenter
+            tools.addRefreshLisenter(7, new Callback.OnRefreshLisenter() { 
+                @Override
                 public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
                     if (updateCode == 1000 && JTools.check(ints, 1)) {
                         CarStates.mCanbusType = ints[0];
@@ -137,9 +138,7 @@ public class CarStates {
     }
 
     public void removeHideApp(String app) {
-        if (this.mHideApps.contains(app)) {
-            this.mHideApps.remove(app);
-        }
+        this.mHideApps.remove(app);
     }
 
     public void addShowApp(String app) {
@@ -149,8 +148,6 @@ public class CarStates {
     }
 
     public void removeShowApp(String app) {
-        if (this.mShowApps.contains(app)) {
-            this.mShowApps.remove(app);
-        }
+        this.mShowApps.remove(app);
     }
 }

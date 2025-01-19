@@ -5,29 +5,29 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0002_XP1_DaZhong extends AirBase {
     public Air_0002_XP1_DaZhong(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0002_xp_dazhong/air_xp1_dazhong.webp";
         this.mPathHighlight = "0002_xp_dazhong/air_xp1_dazhong_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.save(2);
@@ -91,9 +91,9 @@ public class Air_0002_XP1_DaZhong extends AirBase {
         int tempunit = SystemProperties.getInt("persist.fyt.temperature", 0);
         this.mPaint.setTextSize(25.0f);
         int value2 = this.DATA[30];
-        c.drawText(new StringBuilder().append(value2).toString(), 98.0f, 148.0f, this.mPaint);
+        c.drawText(String.valueOf(value2), 98.0f, 148.0f, this.mPaint);
         int value3 = this.DATA[33];
-        c.drawText(new StringBuilder().append(value3).toString(), 986.0f, 148.0f, this.mPaint);
+        c.drawText(String.valueOf(value3), 986.0f, 148.0f, this.mPaint);
         this.mPaint.setTextSize(30.0f);
         int value4 = ToolkitMath.clamp(this.DATA[27], 0, 255);
         int carid = (DataCanbus.DATA[1000] >> 16) & 65535;
@@ -138,7 +138,7 @@ public class Air_0002_XP1_DaZhong extends AirBase {
             c.drawText("HI", 71.0f, 60.0f, this.mPaint);
         } else if (value4 >= 1 && value4 <= 17) {
             if (tempunit == 1) {
-                c.drawText(new StringBuilder().append(((value4 * 9) + 635) / 10).append(" ℉").toString(), 71.0f, 60.0f, this.mPaint);
+                c.drawText(((value4 * 9) + 635) / 10 + " ℉", 71.0f, 60.0f, this.mPaint);
             } else {
                 c.drawText((((value4 * 5) + 175) / 10.0f) + " ℃", 71.0f, 60.0f, this.mPaint);
             }
@@ -187,7 +187,7 @@ public class Air_0002_XP1_DaZhong extends AirBase {
             c.drawText("HI", 960.0f, 60.0f, this.mPaint);
         } else if (value5 >= 1 && value5 <= 17) {
             if (tempunit == 1) {
-                c.drawText(new StringBuilder().append(((value5 * 9) + 635) / 10).append(" ℉").toString(), 960.0f, 60.0f, this.mPaint);
+                c.drawText(((value5 * 9) + 635) / 10 + " ℉", 960.0f, 60.0f, this.mPaint);
             } else {
                 c.drawText((((value5 * 5) + 175) / 10.0f) + " ℃", 960.0f, 60.0f, this.mPaint);
             }

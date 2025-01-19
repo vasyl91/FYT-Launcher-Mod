@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZipCompare {
     public static boolean isSameZip(InputStream input1, InputStream input2) {
         ZipEntry entry1;

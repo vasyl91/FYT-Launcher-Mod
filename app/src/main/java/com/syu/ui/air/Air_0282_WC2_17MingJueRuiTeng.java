@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0282_WC2_17MingJueRuiTeng extends AirBase {
     public Air_0282_WC2_17MingJueRuiTeng(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0282_wc2_mingjueruiteng/air_wc_17ruiteng_n.webp";
         this.mPathHighlight = "0282_wc2_mingjueruiteng/air_wc_17ruiteng_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -76,7 +76,7 @@ public class Air_0282_WC2_17MingJueRuiTeng extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 76.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 10.0f).toString(), 76.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 10.0f), 76.0f, 142.0f, this.mPaint);
         }
         int left_temp_real = this.DATA[100];
         if (left_temp_real == -2) {
@@ -84,13 +84,13 @@ public class Air_0282_WC2_17MingJueRuiTeng extends AirBase {
         } else if (left_temp_real == -3) {
             c.drawText("HI", 935.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp_real / 10.0f).toString(), 935.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp_real / 10.0f), 935.0f, 142.0f, this.mPaint);
         }
         int right_temp = this.DATA[22];
         if (right_temp == -2 || right_temp == -3) {
             c.drawText("--.-", 750.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp / 10.0f).toString(), 750.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 10.0f), 750.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

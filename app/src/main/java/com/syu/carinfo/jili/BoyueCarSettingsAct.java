@@ -12,103 +12,102 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickListener {
-    private int[] eventIds = {51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 87, 88, 89, 90, 91};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.BoyueCarSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private int[] eventIds = {122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 153, 154, 155, 156, 157};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 51:
+                case 122:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_langset), value == 1);
                     if (((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_langset_txt)) != null) {
                         ((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_langset_txt)).setText(value == 1 ? R.string.jeep_language_set0 : R.string.jeep_language_set1);
                         break;
                     }
-                case 52:
+                case 123:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_lockautoclosewindow), value == 1);
                     break;
-                case 53:
+                case 124:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_lock_turnoff_positionstate), value == 1);
                     break;
-                case 54:
+                case 125:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_shutdown_unlock), value == 1);
                     break;
-                case 55:
+                case 126:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_remotelock_recall), value == 1);
                     if (((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_remotelock_recall_txt)) != null) {
                         ((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_remotelock_recall_txt)).setText(value == 1 ? R.string.str_boyue_str13 : R.string.str_boyue_str14);
                         break;
                     }
-                case 56:
+                case 127:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_elec_assistmode), value == 1);
                     if (((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_elec_assistmode_txt)) != null) {
                         ((TextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_elec_assistmode_txt)).setText(value == 1 ? R.string.str_driving_sport : R.string.str_driving_comfort);
                         break;
                     }
-                case 57:
+                case 128:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_static_railline), value == 1);
                     break;
-                case 58:
+                case 129:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_dynamic_railline), value == 1);
                     break;
-                case 59:
+                case 130:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_fisheye), value == 1);
                     break;
-                case 60:
+                case 131:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_rmode_5sdelay), value == 1);
                     break;
-                case 61:
+                case 132:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_singlebackcar_video), value == 1);
                     break;
-                case 62:
+                case 133:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_turnbymove), value == 1);
                     break;
-                case 63:
+                case 134:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.boyue_all_open), value == 1);
                     break;
-                case 87:
+                case 153:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.bnr_boyue_intelligent_light), value == 1);
                     break;
-                case 88:
+                case 154:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.bnr_boyue_active_yaw), value == 1);
                     break;
-                case 89:
+                case 155:
                     BoyueCarSettingsAct.this.updaterAlarmDistance(value);
                     break;
-                case 90:
+                case 156:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.bnr_boyue_auto_brak), value == 1);
                     break;
-                case 91:
+                case 157:
                     BoyueCarSettingsAct.this.setCheckView((CheckedTextView) BoyueCarSettingsAct.this.findViewById(R.id.bnr_boyue_warning), value == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_265_rzc_boyue);
+        //setContentView(R.layout.layout_265_rzc_boyue);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((Button) findViewById(R.id.bnr_boyue_alarm_distance_pre), this);
         setSelfClick((Button) findViewById(R.id.bnr_boyue_alarm_distance_next), this);
@@ -119,26 +118,26 @@ public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickLis
             setViewVisible(findViewById(R.id.bnr_boyue_auto_brak_view), true);
             setViewVisible(findViewById(R.id.bnr_boyue_warning_view), true);
         }
-        sendClick((CheckedTextView) findViewById(R.id.boyue_langset), 0, 51);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_remotelock_recall), 4, 55);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_lockautoclosewindow), 1, 52);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_lock_turnoff_positionstate), 2, 53);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_shutdown_unlock), 3, 54);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_elec_assistmode), 5, 56);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_static_railline), 6, 57);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_dynamic_railline), 7, 58);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_fisheye), 8, 59);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_rmode_5sdelay), 9, 60);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_singlebackcar_video), 10, 61);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_turnbymove), 11, 62);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_all_open), 12, 63);
-        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_intelligent_light), 16, 87);
-        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_active_yaw), 17, 88);
-        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_auto_brak), 14, 90);
-        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_warning), 15, 91);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_langset), 0, 122);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_remotelock_recall), 4, 126);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_lockautoclosewindow), 1, 123);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_lock_turnoff_positionstate), 2, 124);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_shutdown_unlock), 3, 125);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_elec_assistmode), 5, 127);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_static_railline), 6, 128);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_dynamic_railline), 7, 129);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_fisheye), 8, 130);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_rmode_5sdelay), 9, 131);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_singlebackcar_video), 10, 132);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_turnbymove), 11, 133);
+        sendClick((CheckedTextView) findViewById(R.id.boyue_all_open), 12, 134);
+        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_intelligent_light), 16, 153);
+        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_active_yaw), 17, 154);
+        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_auto_brak), 14, 156);
+        sendClick((CheckedTextView) findViewById(R.id.bnr_boyue_warning), 15, 157);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAlarmDistance(int value) {
         if (((TextView) findViewById(R.id.bnr_boyue_alarm_distance_TV)) != null) {
             if (value == 0) {
@@ -153,8 +152,8 @@ public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickLis
 
     private void sendClick(View v, final int cmd, final int id) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.BoyueCarSettingsAct.2
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     int value = DataCanbus.DATA[id];
                     BoyueCarSettingsAct.this.sendCmd(cmd, value == 0 ? 1 : 0);
@@ -163,25 +162,25 @@ public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setCheckView(CheckedTextView v, boolean b) {
         if (v != null) {
             v.setChecked(b);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int cmd, int value) {
         Log.i("LG", "send cmd:" + Integer.toHexString(cmd));
         DataCanbus.PROXY.cmd(1, new int[]{cmd, value}, null, null);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
-        int mAlarm = DataCanbus.DATA[89];
+        int mAlarm = DataCanbus.DATA[155];
         switch (id) {
-            case R.id.bnr_boyue_alarm_distance_pre /* 2131429026 */:
+            case R.id.bnr_boyue_alarm_distance_pre /* 2131428991 */:
                 if (mAlarm == 0) {
                     DataCanbus.PROXY.cmd(1, new int[]{18, 2}, null, null);
                     break;
@@ -192,7 +191,7 @@ public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickLis
                     DataCanbus.PROXY.cmd(1, new int[]{18, 1}, null, null);
                     break;
                 }
-            case R.id.bnr_boyue_alarm_distance_next /* 2131429028 */:
+            case R.id.bnr_boyue_alarm_distance_next /* 2131428993 */:
                 if (mAlarm == 0) {
                     DataCanbus.PROXY.cmd(1, new int[]{18, 1}, null, null);
                     break;
@@ -206,7 +205,7 @@ public class BoyueCarSettingsAct extends BaseActivity implements View.OnClickLis
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

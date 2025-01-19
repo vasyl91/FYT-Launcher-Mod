@@ -176,7 +176,7 @@ public class ExifInterface {
     // IFD Interoperability tags
     public static final int TAG_INTEROPERABILITY_INDEX = defineTag(IfdId.TYPE_IFD_INTEROPERABILITY, (short) 1);
 
-    private static HashSet<Short> sOffsetTags = new HashSet<Short>();
+    private static HashSet<Short> sOffsetTags = new HashSet<>();
     static {
         sOffsetTags.add(getTrueTagKey(TAG_GPS_IFD));
         sOffsetTags.add(getTrueTagKey(TAG_EXIF_IFD));
@@ -185,7 +185,7 @@ public class ExifInterface {
         sOffsetTags.add(getTrueTagKey(TAG_STRIP_OFFSETS));
     }
 
-    protected static HashSet<Short> sBannedDefines = new HashSet<Short>(sOffsetTags);
+    protected static HashSet<Short> sBannedDefines = new HashSet<>(sOffsetTags);
     static {
         sBannedDefines.add(getTrueTagKey(TAG_NULL));
         sBannedDefines.add(getTrueTagKey(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH));
@@ -450,7 +450,7 @@ public class ExifInterface {
         if (inStream == null) {
             throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
         }
-        ExifData d = null;
+        ExifData d;
         try {
             d = new ExifReader(this).read(inStream);
         } catch (ExifInvalidFormatException e) {
@@ -465,7 +465,7 @@ public class ExifInterface {
         }
         InputStream is = null;
         try {
-            is = (InputStream) new BufferedInputStream(new FileInputStream(inFileName));
+            is = new BufferedInputStream(new FileInputStream(inFileName));
             readExif(is);
         } catch (IOException e) {
             closeSilently(is);
@@ -518,7 +518,7 @@ public class ExifInterface {
         s.flush();
     }
 
-    public void writeExif(byte[] jpeg, String exifOutFileName) throws FileNotFoundException, IOException {
+    public void writeExif(byte[] jpeg, String exifOutFileName) throws IOException {
         if (jpeg == null || exifOutFileName == null) {
             throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
         }
@@ -534,7 +534,7 @@ public class ExifInterface {
         s.close();
     }
 
-    public void writeExif(Bitmap bmap, String exifOutFileName) throws FileNotFoundException, IOException {
+    public void writeExif(Bitmap bmap, String exifOutFileName) throws IOException {
         if (bmap == null || exifOutFileName == null) {
             throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
         }
@@ -550,7 +550,7 @@ public class ExifInterface {
         s.close();
     }
 
-    public void writeExif(InputStream jpegStream, String exifOutFileName) throws FileNotFoundException, IOException {
+    public void writeExif(InputStream jpegStream, String exifOutFileName) throws IOException {
         if (jpegStream == null || exifOutFileName == null) {
             throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
         }
@@ -566,7 +566,7 @@ public class ExifInterface {
         s.close();
     }
 
-    public void writeExif(String jpegFileName, String exifOutFileName) throws FileNotFoundException, IOException {
+    public void writeExif(String jpegFileName, String exifOutFileName) throws IOException {
         if (jpegFileName == null || exifOutFileName == null) {
             throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
         }
@@ -596,7 +596,7 @@ public class ExifInterface {
         }
         OutputStream out = null;
         try {
-            out = (OutputStream) new FileOutputStream(exifOutFileName);
+            out = new FileOutputStream(exifOutFileName);
         } catch (FileNotFoundException e) {
             closeSilently(out);
             throw e;
@@ -604,7 +604,7 @@ public class ExifInterface {
         return getExifWriterStream(out);
     }
 
-    public boolean rewriteExif(String filename, Collection<ExifTag> tags) throws FileNotFoundException, IOException {
+    public boolean rewriteExif(String filename, Collection<ExifTag> tags) throws IOException {
         RandomAccessFile file = null;
         InputStream is = null;
         boolean ret;
@@ -649,7 +649,7 @@ public class ExifInterface {
     }
 
     public boolean rewriteExif(ByteBuffer buf, Collection<ExifTag> tags) throws IOException {
-        ExifModifier mod = null;
+        ExifModifier mod;
         try {
             mod = new ExifModifier(buf, this);
             for (ExifTag t : tags) {
@@ -661,14 +661,14 @@ public class ExifInterface {
         }
     }
 
-    public void forceRewriteExif(String filename, Collection<ExifTag> tags) throws FileNotFoundException, IOException {
+    public void forceRewriteExif(String filename, Collection<ExifTag> tags) throws IOException {
         // Attempt in-place write
         if (!rewriteExif(filename, tags)) {
             // Fall back to doing a copy
             ExifData tempData = mData;
             mData = new ExifData(DEFAULT_BYTE_ORDER);
             FileInputStream is = null;
-            ByteArrayOutputStream bytes = null;
+            ByteArrayOutputStream bytes;
             try {
                 is = new FileInputStream(filename);
                 bytes = new ByteArrayOutputStream();
@@ -688,7 +688,7 @@ public class ExifInterface {
         }
     }
 
-    public void forceRewriteExif(String filename) throws FileNotFoundException, IOException {
+    public void forceRewriteExif(String filename) throws IOException {
         forceRewriteExif(filename, getAllTags());
     }
 
@@ -744,7 +744,7 @@ public class ExifInterface {
         if (l == null || l.length <= 0) {
             return null;
         }
-        return new Long(l[0]);
+        return l[0];
     }
 
     public Long getTagLongValue(int tagId) {
@@ -757,7 +757,7 @@ public class ExifInterface {
         if (l == null || l.length <= 0) {
             return null;
         }
-        return new Integer(l[0]);
+        return l[0];
     }
 
     public Integer getTagIntValue(int tagId) {
@@ -770,7 +770,7 @@ public class ExifInterface {
         if (l == null || l.length <= 0) {
             return null;
         }
-        return new Byte(l[0]);
+        return l[0];
     }
 
     public Byte getTagByteValue(int tagId) {
@@ -920,8 +920,7 @@ public class ExifInterface {
         int definedCount = getComponentCountFromInfo(info);
         boolean hasDefinedCount = (definedCount != ExifTag.SIZE_UNDEFINED);
         int ifdId = getTrueIfd(tagId);
-        ExifTag t = new ExifTag(getTrueTagKey(tagId), type, definedCount, ifdId, hasDefinedCount);
-        return t;
+        return new ExifTag(getTrueTagKey(tagId), type, definedCount, ifdId, hasDefinedCount);
     }
 
     public boolean setTagValue(int tagId, int ifdId, Object val) {
@@ -1015,7 +1014,7 @@ public class ExifInterface {
             }
         }
         if (counter == 0) {
-            return null;
+            return new int[0];
         }
 
         return Arrays.copyOfRange(defs, 0, counter);
@@ -1134,18 +1133,13 @@ public class ExifInterface {
     }
 
     public static int getRotationForOrientationValue(short orientation) {
-        switch (orientation) {
-            case Orientation.TOP_LEFT:
-                return 0;
-            case Orientation.RIGHT_TOP:
-                return 90;
-            case Orientation.BOTTOM_LEFT:
-                return 180;
-            case Orientation.RIGHT_BOTTOM:
-                return 270;
-            default:
-                return 0;
-        }
+        return switch (orientation) {
+            case Orientation.TOP_LEFT -> 0;
+            case Orientation.RIGHT_TOP -> 90;
+            case Orientation.BOTTOM_LEFT -> 180;
+            case Orientation.RIGHT_BOTTOM -> 270;
+            default -> 0;
+        };
     }
 
     public static double convertLatOrLongToDouble(Rational[] coordinate, String reference) {
@@ -1170,7 +1164,7 @@ public class ExifInterface {
         String longitudeRef = getTagStringValue(TAG_GPS_LONGITUDE_REF);
         if (latitude == null || longitude == null || latitudeRef == null || longitudeRef == null || latitude.length < 3
                 || longitude.length < 3) {
-            return null;
+            return new double[0];
         }
         double[] latLon = new double[2];
         latLon[0] = convertLatOrLongToDouble(latitude, latitudeRef);
@@ -1434,7 +1428,7 @@ public class ExifInterface {
     protected static int[] getAllowedIfdsFromInfo(int info) {
         int ifdFlags = getAllowedIfdFlagsFromInfo(info);
         int[] ifds = IfdData.getIfds();
-        ArrayList<Integer> l = new ArrayList<Integer>();
+        ArrayList<Integer> l = new ArrayList<>();
         for (int i = 0; i < IfdId.TYPE_IFD_COUNT; i++) {
             int flag = (ifdFlags >> i) & 1;
             if (flag == 1) {

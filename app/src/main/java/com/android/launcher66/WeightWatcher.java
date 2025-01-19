@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.util.AttributeSet;
@@ -41,8 +42,8 @@ public class WeightWatcher extends LinearLayout {
 
     public WeightWatcher(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.mHandler = new Handler() { // from class: com.android.launcher66.WeightWatcher.1
-            @Override // android.os.Handler
+        this.mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message m) {
                 switch (m.what) {
                     case 1:
@@ -75,14 +76,14 @@ public class WeightWatcher extends LinearLayout {
                 }
             }
         };
-        ServiceConnection connection = new ServiceConnection() { // from class: com.android.launcher66.WeightWatcher.2
-            @Override // android.content.ServiceConnection
+        ServiceConnection connection = new ServiceConnection() { 
+            @Override
             public void onServiceConnected(ComponentName className, IBinder service) {
                 WeightWatcher.this.mMemoryService = ((MemoryTracker.MemoryTrackerInterface) service).getService();
                 WeightWatcher.this.initViews();
             }
 
-            @Override // android.content.ServiceConnection
+            @Override
             public void onServiceDisconnected(ComponentName className) {
                 WeightWatcher.this.mMemoryService = null;
             }
@@ -106,13 +107,13 @@ public class WeightWatcher extends LinearLayout {
         this(context, null);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         this.mHandler.sendEmptyMessage(1);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.mHandler.sendEmptyMessage(2);
@@ -217,7 +218,7 @@ public class WeightWatcher extends LinearLayout {
                 this(context, null);
             }
 
-            @Override // android.view.View
+            @Override
             public void onDraw(Canvas c) {
                 int w = c.getWidth();
                 int h = c.getHeight();

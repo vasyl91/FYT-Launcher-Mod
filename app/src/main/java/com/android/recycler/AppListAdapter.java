@@ -1,11 +1,14 @@
 package com.android.recycler;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +16,12 @@ import android.view.ViewGroup;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
-import com.android.recycler.AppListDialogFragment;
-import com.syu.util.FytPackage;
+import com.android.launcher66.settings.Helpers;
 import com.syu.util.WindowUtil;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implements AppListDialogFragment.ItemClickDataListener
 {
@@ -28,6 +32,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private Launcher mLauncher;
     private int mMaxCount;
     private boolean showAddAppView;
+    private static final String RECYCLER_APP = "recycler.app";
 
     public AppListAdapter(final Launcher mLauncher, final List<AppListBean> mData) {
         this.mMaxCount = 8;
@@ -76,7 +81,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         }
                     }
                     if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                        AppListAdapter.this.mDialog.show(AppListAdapter.this.mLauncher.getFragmentManager(), "");
+                        AppListAdapter.this.mDialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
                         AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
                     }
                     else if (appListBean.packageName.equals("com.android.launcher66")) {
@@ -86,10 +91,26 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                         AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                        Helpers.overviewMode = false;
+                        Helpers.listOpen = false;
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+                        boolean userLayout = prefs.getBoolean("user_layout", false);
+                        boolean userStats = prefs.getBoolean("user_stats", false);
+                        if (userLayout && userStats)  {  
+                            SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+                            if (apps.contains(appListBean.packageName)) {
+                                Helpers.foregroundAppOpened = true;
+                                Helpers.inAllApps = false;
+                                Helpers.isInRecent = false;
+                                Intent intentApps = new Intent(RECYCLER_APP);
+                                AppListAdapter.this.mLauncher.sendBroadcast(intentApps);
+                            }
+                        }
                     }
         });
         appListHolder.itemView.setOnLongClickListener(view -> {
-            AppListAdapter.this.mDialog.show(AppListAdapter.this.mLauncher.getFragmentManager(), "");
+            AppListAdapter.this.mDialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
             AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             return true;
         });

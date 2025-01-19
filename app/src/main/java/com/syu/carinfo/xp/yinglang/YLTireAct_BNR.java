@@ -8,57 +8,56 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLTireAct_BNR extends Activity {
     public static YLTireAct_BNR mInit;
-    int[] ids = {146, 147, 148, 41, 42, 43, 44, 149};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLTireAct_BNR.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {203, 204, 205, 138, 139, 140, 141, 206};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 41:
+                case 138:
                     YLTireAct_BNR.this.uTireFL(value);
                     break;
-                case 42:
+                case 139:
                     YLTireAct_BNR.this.uTireFR(value);
                     break;
-                case 43:
+                case 140:
                     YLTireAct_BNR.this.uTireRL(value);
                     break;
-                case 44:
+                case 141:
                     YLTireAct_BNR.this.uTireRR(value);
                     break;
-                case 146:
+                case 203:
                     YLTireAct_BNR.this.uTireExist(value);
                     break;
-                case 147:
+                case 204:
                     YLTireAct_BNR.this.uSpareTireExist(value);
                     break;
-                case 148:
+                case 205:
                     YLTireAct_BNR.this.uTireUnit(value);
                     break;
-                case 149:
+                case 206:
                     YLTireAct_BNR.this.uTireSpare(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_tire_bnr);
+        //setContentView(R.layout.layout_xp_yl_tire_bnr);
         init();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -84,7 +83,7 @@ public class YLTireAct_BNR extends Activity {
         mInit = this;
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

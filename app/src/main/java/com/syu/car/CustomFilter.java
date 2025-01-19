@@ -5,15 +5,16 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+
 import com.android.launcher66.AppFilter;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.remote.Callback;
 import com.syu.util.FytPackage;
 import com.syu.util.JTools;
+
 import java.util.HashMap;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CustomFilter extends AppFilter implements Callback.OnRefreshLisenter, Runnable {
     public static HashMap<String, Boolean> mHideApps;
     public static final HashMap<ComponentName, Integer> mIcons = new HashMap<>();
@@ -45,7 +46,7 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         mHideApps.put("com.syu.camera360", false);
     }
 
-    @Override // com.android.launcher66.AppFilter
+    @Override
     public boolean shouldShowApp(ComponentName app) {
         if (app == null) {
             return false;
@@ -58,7 +59,7 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         return result;
     }
 
-    @Override // com.syu.remote.Callback.OnRefreshLisenter
+    @Override
     public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
         switch (updateCode) {
             case 39:
@@ -86,14 +87,14 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (this.mCallback != null) {
             this.mCallback.onRefresh();
         }
     }
 
-    @Override // com.android.launcher66.AppFilter
+    @Override
     public void register() {
         if (this.workLooper == null) {
             HandlerThread work = new HandlerThread("app_visibility_handler");
@@ -105,7 +106,7 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         mStates.getTools().addRefreshLisenter(0, this, 39);
     }
 
-    @Override // com.android.launcher66.AppFilter
+    @Override
     public void unregister() {
         if (this.workLooper != null) {
             this.workLooper.quit();
@@ -123,7 +124,7 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         return false;
     }
 
-    @Override // com.android.launcher66.AppFilter
+    @Override
     public String getAppTitle(ComponentName app) {
         return null;
     }

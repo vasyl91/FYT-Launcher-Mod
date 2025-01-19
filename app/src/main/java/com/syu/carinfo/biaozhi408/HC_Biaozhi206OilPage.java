@@ -8,10 +8,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HC_Biaozhi206OilPage extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.HC_Biaozhi206OilPage.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 7:
@@ -36,30 +35,30 @@ public class HC_Biaozhi206OilPage extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_biaozhi206_hc_oil_page);
+        //setContentView(R.layout.layout_biaozhi206_hc_oil_page);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
@@ -69,7 +68,7 @@ public class HC_Biaozhi206OilPage extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
@@ -79,7 +78,7 @@ public class HC_Biaozhi206OilPage extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FirstFrameAnimatorHelper extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener {
     private static final boolean DEBUG = false;
     private static final int IDEAL_FRAME_DURATION = 16;
@@ -32,7 +31,7 @@ public class FirstFrameAnimatorHelper extends AnimatorListenerAdapter implements
         vpa.setListener(this);
     }
 
-    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+    @Override
     public void onAnimationStart(Animator animation) {
         ValueAnimator va = (ValueAnimator) animation;
         va.addUpdateListener(this);
@@ -47,10 +46,10 @@ public class FirstFrameAnimatorHelper extends AnimatorListenerAdapter implements
         if (sGlobalDrawListener != null) {
             view.getViewTreeObserver().removeOnDrawListener(sGlobalDrawListener);
         }
-        sGlobalDrawListener = new ViewTreeObserver.OnDrawListener() { // from class: com.android.launcher66.FirstFrameAnimatorHelper.1
+        sGlobalDrawListener = new ViewTreeObserver.OnDrawListener() { 
             private long mTime = System.currentTimeMillis();
 
-            @Override // android.view.ViewTreeObserver.OnDrawListener
+            @Override
             public void onDraw() {
                 FirstFrameAnimatorHelper.sGlobalFrameCounter++;
             }
@@ -59,7 +58,7 @@ public class FirstFrameAnimatorHelper extends AnimatorListenerAdapter implements
         sVisible = true;
     }
 
-    @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+    @Override
     public void onAnimationUpdate(final ValueAnimator animation) {
         long currentTime = System.currentTimeMillis();
         if (this.mStartTime == -1) {
@@ -76,8 +75,8 @@ public class FirstFrameAnimatorHelper extends AnimatorListenerAdapter implements
                 animation.setCurrentPlayTime(16L);
                 this.mAdjustedSecondFrameTime = true;
             } else if (frameNum > 1) {
-                this.mTarget.post(new Runnable() { // from class: com.android.launcher66.FirstFrameAnimatorHelper.2
-                    @Override // java.lang.Runnable
+                this.mTarget.post(new Runnable() { 
+                    @Override
                     public void run() {
                         animation.removeUpdateListener(FirstFrameAnimatorHelper.this);
                     }

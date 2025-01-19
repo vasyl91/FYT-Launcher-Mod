@@ -9,37 +9,36 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xc60SettingsAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xfy.xc60.Xc60SettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 59:
+                case 125:
                     Xc60SettingsAct.this.updateCarAudio(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xfy_xc60_setfunc);
-        ((Button) findViewById(R.id.xc60_btn_car_audio_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.xc60.Xc60SettingsAct.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_xfy_xc60_setfunc);
+        ((Button) findViewById(R.id.xc60_btn_car_audio_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[59] - 1;
+                int value = DataCanbus.DATA[125] - 1;
                 if (value < 0) {
                     value = 1;
                 }
                 DataCanbus.PROXY.cmd(4, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xc60_btn_car_audio_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.xc60.Xc60SettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xc60_btn_car_audio_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[59] + 1;
+                int value = DataCanbus.DATA[125] + 1;
                 if (value > 1) {
                     value = 0;
                 }
@@ -48,17 +47,17 @@ public class Xc60SettingsAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarAudio(int value) {
         switch (value) {
             case 0:

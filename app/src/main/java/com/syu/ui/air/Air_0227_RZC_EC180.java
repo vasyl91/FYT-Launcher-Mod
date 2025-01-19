@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0227_RZC_EC180 extends AirBase {
     public Air_0227_RZC_EC180(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0226_fyta_changanyuexiang7/air_rzc_ec180_n.webp";
         this.mPathHighlight = "0226_fyta_changanyuexiang7/air_rzc_ec180_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -66,7 +66,7 @@ public class Air_0227_RZC_EC180 extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("NONE", 86.0f, 142.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 196835 || DataCanbus.DATA[1000] == 1376483 || DataCanbus.DATA[1000] == 786659) {
-            c.drawText(String.valueOf(left_temp + 17) + " ℃", 86.0f, 142.0f, this.mPaint);
+            c.drawText(left_temp + 17 + " ℃", 86.0f, 142.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 458979) {
             if (left_temp >= 1 && left_temp <= 4) {
                 c.drawText("冷风 " + (5 - left_temp), 86.0f, 142.0f, this.mPaint);
@@ -77,7 +77,7 @@ public class Air_0227_RZC_EC180 extends AirBase {
             }
         }
         int airlev = this.DATA[64];
-        c.drawText(new StringBuilder().append(airlev).toString(), 293.0f, 141.0f, this.mPaint);
+        c.drawText(String.valueOf(airlev), 293.0f, 141.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

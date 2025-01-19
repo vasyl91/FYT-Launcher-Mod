@@ -6,10 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
+
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FileAdapter extends BaseAdapter {
     ArrayList<CDInfo> list;
     Context mContext;
@@ -19,34 +20,34 @@ public class FileAdapter extends BaseAdapter {
         this.list = list;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public int getCount() {
         return this.list.size();
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public Object getItem(int position) {
         return this.list.get(position);
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(this.mContext).inflate(R.layout.layout_371_bagoo_ziyouguang_cd_item, (ViewGroup) null);
-            holder.mTextView = (TextView) convertView.findViewById(R.id.item_text);
+            convertView = LayoutInflater.from(this.mContext).inflate(R.layout.layout_371_bagoo_ziyouguang_cd_item, null);
+            holder.mTextView = convertView.findViewById(R.id.item_text);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         CDInfo info = this.list.get(position);
-        holder.mTextView.setText(String.valueOf(position + 1) + ". " + info.getStr());
+        holder.mTextView.setText(position + 1 + ". " + info.getStr());
         return convertView;
     }
 

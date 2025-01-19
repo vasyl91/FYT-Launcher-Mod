@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.syu.widget.util.TimeUtil;
 
 public class Year extends TextView {
     public static Year mDate;
     private IntentFilter filter;
-    private Context mContext;
+    private final Context mContext;
 
     public static Year getYear() {
         return mDate;
@@ -37,13 +38,13 @@ public class Year extends TextView {
         mDate = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setDate();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

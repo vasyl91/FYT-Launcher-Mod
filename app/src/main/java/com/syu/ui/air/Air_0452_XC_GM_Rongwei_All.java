@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_XC_GM_Rongwei_All extends AirBase {
     public Air_0452_XC_GM_Rongwei_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_xc_gm_rongwei/air.webp";
         this.mPathHighlight = "0452_xc_gm_rongwei/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -107,9 +107,9 @@ public class Air_0452_XC_GM_Rongwei_All extends AirBase {
         if (this.DATA[42] == 1) {
             c.drawText("Auto", 202.0f, 139.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(value3)).toString(), 210.0f, 139.0f, this.mPaint);
+            c.drawText(String.valueOf(value3), 210.0f, 139.0f, this.mPaint);
         }
-        c.drawText(new StringBuilder(String.valueOf(this.DATA[58])).toString(), 845.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[58]), 845.0f, 139.0f, this.mPaint);
         int temp = this.DATA[48];
         if (temp == -2) {
             c.drawText("LO", 50.0f, 63.0f, this.mPaint);
@@ -117,7 +117,7 @@ public class Air_0452_XC_GM_Rongwei_All extends AirBase {
             c.drawText("HI", 50.0f, 63.0f, this.mPaint);
         } else if (temp >= 11 && temp <= 44) {
             int temp2 = ((temp - 11) * 5) + 150;
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 50.0f, 63.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 50.0f, 63.0f, this.mPaint);
         } else {
             c.drawText("NO", 50.0f, 63.0f, this.mPaint);
         }
@@ -128,7 +128,7 @@ public class Air_0452_XC_GM_Rongwei_All extends AirBase {
             c.drawText("HI", 715.0f, 63.0f, this.mPaint);
         } else if (temp1 >= 11 && temp1 <= 44) {
             int temp12 = ((temp1 - 11) * 5) + 150;
-            c.drawText(String.valueOf(temp12 / 10) + "." + (temp12 % 10), 715.0f, 63.0f, this.mPaint);
+            c.drawText(temp12 / 10 + "." + (temp12 % 10), 715.0f, 63.0f, this.mPaint);
         } else if (temp1 == -1) {
             c.drawText("NO", 715.0f, 63.0f, this.mPaint);
         }
@@ -139,7 +139,7 @@ public class Air_0452_XC_GM_Rongwei_All extends AirBase {
             c.drawText("HI", 945.0f, 63.0f, this.mPaint);
         } else if (temp22 >= 11 && temp22 <= 44) {
             int temp23 = ((temp22 - 11) * 5) + 150;
-            c.drawText(String.valueOf(temp23 / 10) + "." + (temp23 % 10), 945.0f, 63.0f, this.mPaint);
+            c.drawText(temp23 / 10 + "." + (temp23 % 10), 945.0f, 63.0f, this.mPaint);
         } else if (temp22 == -1) {
             c.drawText("NO", 945.0f, 63.0f, this.mPaint);
         }

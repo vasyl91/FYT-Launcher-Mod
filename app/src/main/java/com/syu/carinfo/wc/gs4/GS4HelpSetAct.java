@@ -9,35 +9,34 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.gs4.GS4HelpSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 8:
+                case 106:
                     GS4HelpSetAct.this.updaterSpeed();
                     break;
-                case 9:
+                case 107:
                     GS4HelpSetAct.this.updaterWarnSound();
                     break;
-                case 10:
+                case 108:
                     GS4HelpSetAct.this.updaterAwayTime();
                     break;
-                case 11:
+                case 109:
                     GS4HelpSetAct.this.updaterStartTime();
                     break;
-                case 12:
+                case 110:
                     GS4HelpSetAct.this.updaterTurnMode();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_289_wc_gs4_help_set);
+        //setContentView(R.layout.layout_289_wc_gs4_help_set);
         setUI();
     }
 
@@ -54,24 +53,24 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         ((Button) findViewById(R.id.wc_gs4_driver_help_turn_mode_next)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.wc_gs4_warn_of_speed_pre /* 2131429067 */:
-                int value = (DataCanbus.DATA[8] / 10) - 1;
+            case R.id.wc_gs4_warn_of_speed_pre /* 2131429032 */:
+                int value = (DataCanbus.DATA[106] / 10) - 1;
                 if (value >= 0 && value <= 20) {
                     DataCanbus.PROXY.cmd(2, new int[]{7, value}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_warn_of_speed_next /* 2131429069 */:
-                int value2 = (DataCanbus.DATA[8] / 10) + 1;
+            case R.id.wc_gs4_warn_of_speed_next /* 2131429034 */:
+                int value2 = (DataCanbus.DATA[106] / 10) + 1;
                 if (value2 >= 0 && value2 <= 20) {
                     DataCanbus.PROXY.cmd(2, new int[]{7, value2}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_sound_pre /* 2131429070 */:
-                int value3 = DataCanbus.DATA[9];
+            case R.id.wc_gs4_driver_help_sound_pre /* 2131429035 */:
+                int value3 = DataCanbus.DATA[107];
                 if (value3 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{8, 2}, null, null);
                     break;
@@ -82,8 +81,8 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
                     DataCanbus.PROXY.cmd(2, new int[]{8, 1}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_sound_next /* 2131429072 */:
-                int value4 = DataCanbus.DATA[9];
+            case R.id.wc_gs4_driver_help_sound_next /* 2131429037 */:
+                int value4 = DataCanbus.DATA[107];
                 if (value4 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{8, 1}, null, null);
                     break;
@@ -94,32 +93,32 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
                     DataCanbus.PROXY.cmd(2, new int[]{8}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_away_time_pre /* 2131429073 */:
-                int value5 = DataCanbus.DATA[10] - 1;
+            case R.id.wc_gs4_driver_help_away_time_pre /* 2131429038 */:
+                int value5 = DataCanbus.DATA[108] - 1;
                 if (value5 >= 0 && value5 <= 30) {
                     DataCanbus.PROXY.cmd(2, new int[]{9, value5}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_away_time_next /* 2131429075 */:
-                int value6 = DataCanbus.DATA[10] + 1;
+            case R.id.wc_gs4_driver_help_away_time_next /* 2131429040 */:
+                int value6 = DataCanbus.DATA[108] + 1;
                 if (value6 >= 0 && value6 <= 30) {
                     DataCanbus.PROXY.cmd(2, new int[]{9, value6}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_start_time_pre /* 2131429076 */:
-                int value7 = DataCanbus.DATA[11] - 1;
+            case R.id.wc_gs4_driver_help_start_time_pre /* 2131429041 */:
+                int value7 = DataCanbus.DATA[109] - 1;
                 if (value7 >= 0 && value7 <= 30) {
                     DataCanbus.PROXY.cmd(2, new int[]{10, value7}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_start_time_next /* 2131429078 */:
-                int value8 = DataCanbus.DATA[11] + 1;
+            case R.id.wc_gs4_driver_help_start_time_next /* 2131429043 */:
+                int value8 = DataCanbus.DATA[109] + 1;
                 if (value8 >= 0 && value8 <= 30) {
                     DataCanbus.PROXY.cmd(2, new int[]{10, value8}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_turn_mode_pre /* 2131429079 */:
-                int value9 = DataCanbus.DATA[12];
+            case R.id.wc_gs4_driver_help_turn_mode_pre /* 2131429044 */:
+                int value9 = DataCanbus.DATA[110];
                 if (value9 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{11, 2}, null, null);
                     break;
@@ -130,8 +129,8 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
                     DataCanbus.PROXY.cmd(2, new int[]{11, 1}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_driver_help_turn_mode_next /* 2131429081 */:
-                int value10 = DataCanbus.DATA[12];
+            case R.id.wc_gs4_driver_help_turn_mode_next /* 2131429046 */:
+                int value10 = DataCanbus.DATA[110];
                 if (value10 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{11, 1}, null, null);
                     break;
@@ -145,27 +144,27 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSpeed() {
-        int mSpeedInt = DataCanbus.DATA[8];
+        int mSpeedInt = DataCanbus.DATA[106];
         if (mSpeedInt > 200) {
             mSpeedInt = 200;
         } else if (mSpeedInt < 0) {
@@ -174,9 +173,9 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         ((TextView) findViewById(R.id.wc_gs4_warn_of_speed_TV)).setText(mSpeedInt + "Km/h");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWarnSound() {
-        int mWarnSoundInt = DataCanbus.DATA[9];
+        int mWarnSoundInt = DataCanbus.DATA[107];
         if (mWarnSoundInt == 0) {
             ((TextView) findViewById(R.id.wc_gs4_driver_help_sound_TV)).setText(R.string.klc_air_low);
         } else if (mWarnSoundInt == 1) {
@@ -186,9 +185,9 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAwayTime() {
-        int mDriverAwayTimeInt = DataCanbus.DATA[10];
+        int mDriverAwayTimeInt = DataCanbus.DATA[108];
         if (mDriverAwayTimeInt > 30) {
             mDriverAwayTimeInt = 30;
         } else if (mDriverAwayTimeInt < 0) {
@@ -197,9 +196,9 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         ((TextView) findViewById(R.id.wc_gs4_driver_help_away_time_TV)).setText(new StringBuilder().append(mDriverAwayTimeInt).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterStartTime() {
-        int mDriverStartTimeInt = DataCanbus.DATA[11];
+        int mDriverStartTimeInt = DataCanbus.DATA[109];
         if (mDriverStartTimeInt > 30) {
             mDriverStartTimeInt = 30;
         } else if (mDriverStartTimeInt < 0) {
@@ -208,9 +207,9 @@ public class GS4HelpSetAct extends BaseActivity implements View.OnClickListener 
         ((TextView) findViewById(R.id.wc_gs4_driver_help_start_time_TV)).setText(new StringBuilder().append(mDriverStartTimeInt).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTurnMode() {
-        int mTurnModeInt = DataCanbus.DATA[12];
+        int mTurnModeInt = DataCanbus.DATA[110];
         if (mTurnModeInt == 0) {
             ((TextView) findViewById(R.id.wc_gs4_driver_help_turn_mode_TV)).setText(R.string.driver_system_sports);
         } else if (mTurnModeInt == 1) {

@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -28,10 +27,8 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 
-import androidx.annotation.StyleableRes;
+import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.DropTarget;
-import com.android.launcher66.FolderIcon;
 import com.syu.util.JLog;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -191,10 +188,10 @@ public class CellLayout extends ViewGroup {
         setAlwaysDrawnWithCacheEnabled(false);
         Resources res = getResources();
         this.mHotseatScale = grid.hotseatIconSize / grid.iconSize;
-        this.mNormalBackground = res.getDrawable(R.drawable.screenpanel);
-        this.mActiveGlowBackground = res.getDrawable(R.drawable.screenpanel_hover);
-        this.mOverScrollLeft = res.getDrawable(R.drawable.overscroll_glow_left);
-        this.mOverScrollRight = res.getDrawable(R.drawable.overscroll_glow_right);
+        this.mNormalBackground = ContextCompat.getDrawable(context, R.drawable.screenpanel);
+        this.mActiveGlowBackground = ContextCompat.getDrawable(context, R.drawable.screenpanel_hover);
+        this.mOverScrollLeft = ContextCompat.getDrawable(context, R.drawable.overscroll_glow_left);
+        this.mOverScrollRight = ContextCompat.getDrawable(context, R.drawable.overscroll_glow_right);
         this.mForegroundPadding = res.getDimensionPixelSize(R.dimen.workspace_overscroll_drawable_padding);
         this.mReorderHintAnimationMagnitude = REORDER_HINT_MAGNITUDE * grid.iconSizePx;
         this.mNormalBackground.setFilterBitmap(true);
@@ -213,20 +210,20 @@ public class CellLayout extends ViewGroup {
             final InterruptibleInOutAnimator anim = new InterruptibleInOutAnimator(this, duration, 0.0f, toAlphaValue);
             anim.getAnimator().setInterpolator(this.mEaseOutInterpolator);
             final int thisIndex = i2;
-            anim.getAnimator().addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.CellLayout.1
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            anim.getAnimator().addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     Bitmap outline = (Bitmap) anim.getTag();
                     if (outline != null) {
                         CellLayout.this.mDragOutlineAlphas[thisIndex] = ((Float) animation.getAnimatedValue()).floatValue();
-                        CellLayout.this.invalidate(CellLayout.this.mDragOutlines[thisIndex]);
+                        CellLayout.this.invalidate();
                     } else {
                         animation.cancel();
                     }
                 }
             });
-            anim.getAnimator().addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.CellLayout.2
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            anim.getAnimator().addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     if (((Float) ((ValueAnimator) animation).getAnimatedValue()).floatValue() == 0.0f) {
                         anim.setTag(null);
@@ -279,9 +276,8 @@ public class CellLayout extends ViewGroup {
         this.mShortcutsAndWidgets.setInvertIfRtl(invert);
     }
 
-    private void invalidateBubbleTextView(BubbleTextView icon) {
-        int padding = icon.getPressedOrFocusedBackgroundPadding();
-        invalidate((icon.getLeft() + getPaddingLeft()) - padding, (icon.getTop() + getPaddingTop()) - padding, icon.getRight() + getPaddingLeft() + padding, icon.getBottom() + getPaddingTop() + padding);
+    private void invalidateBubbleTextView() {
+        invalidate();
     }
 
     void setOverScrollAmount(float r, boolean left) {
@@ -299,10 +295,10 @@ public class CellLayout extends ViewGroup {
         BubbleTextView oldIcon = this.mPressedOrFocusedIcon;
         this.mPressedOrFocusedIcon = icon;
         if (oldIcon != null) {
-            invalidateBubbleTextView(oldIcon);
+            invalidateBubbleTextView();
         }
         if (this.mPressedOrFocusedIcon != null) {
-            invalidateBubbleTextView(this.mPressedOrFocusedIcon);
+            invalidateBubbleTextView();
         }
     }
 
@@ -337,7 +333,7 @@ public class CellLayout extends ViewGroup {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Drawable bg;
         if (this.mBackgroundAlpha > 0.0f) {
@@ -416,7 +412,7 @@ public class CellLayout extends ViewGroup {
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (this.mForegroundAlpha > 0) {
@@ -448,7 +444,7 @@ public class CellLayout extends ViewGroup {
         invalidate();
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean shouldDelayChildPressedState() {
         return false;
     }
@@ -457,7 +453,7 @@ public class CellLayout extends ViewGroup {
         dispatchRestoreInstanceState(states);
     }
 
-    @Override // android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         int count = getChildCount();
@@ -510,13 +506,13 @@ public class CellLayout extends ViewGroup {
         return true;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeAllViews() {
         clearOccupiedCells();
         this.mShortcutsAndWidgets.removeAllViews();
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeAllViewsInLayout() {
         if (this.mShortcutsAndWidgets.getChildCount() > 0) {
             clearOccupiedCells();
@@ -528,25 +524,25 @@ public class CellLayout extends ViewGroup {
         this.mShortcutsAndWidgets.removeView(view);
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewManager
+    @Override
     public void removeView(View view) {
         markCellsAsUnoccupiedForView(view);
         this.mShortcutsAndWidgets.removeView(view);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViewAt(int index) {
         markCellsAsUnoccupiedForView(this.mShortcutsAndWidgets.getChildAt(index));
         this.mShortcutsAndWidgets.removeViewAt(index);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViewInLayout(View view) {
         markCellsAsUnoccupiedForView(view);
         this.mShortcutsAndWidgets.removeViewInLayout(view);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViews(int start, int count) {
         for (int i = start; i < start + count; i++) {
             markCellsAsUnoccupiedForView(this.mShortcutsAndWidgets.getChildAt(i));
@@ -554,7 +550,7 @@ public class CellLayout extends ViewGroup {
         this.mShortcutsAndWidgets.removeViews(start, count);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public void removeViewsInLayout(int start, int count) {
         for (int i = start; i < start + count; i++) {
             markCellsAsUnoccupiedForView(this.mShortcutsAndWidgets.getChildAt(i));
@@ -562,7 +558,7 @@ public class CellLayout extends ViewGroup {
         this.mShortcutsAndWidgets.removeViewsInLayout(start, count);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (getParent() instanceof Workspace) {
@@ -616,7 +612,7 @@ public class CellLayout extends ViewGroup {
         setTag(cellInfo);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         int action = ev.getAction();
         if (action == 0) {
@@ -641,7 +637,7 @@ public class CellLayout extends ViewGroup {
         setTag(cellInfo);
     }
 
-    @Override // android.view.View
+    @Override
     public CellInfo getTag() {
         return (CellInfo) super.getTag();
     }
@@ -742,7 +738,7 @@ public class CellLayout extends ViewGroup {
         this.mFixedHeight = height;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
@@ -756,7 +752,7 @@ public class CellLayout extends ViewGroup {
             int cw = grid.calculateCellWidth(childWidthSize, this.mCountX);
             int ch = grid.calculateCellHeight(childHeightSize, this.mCountY);
             if (cw != this.mCellWidth || ch != this.mCellHeight) {
-                JLog.getInstance().e("mCellWidth = " + this.mCellWidth + " mCellHeight = " + this.mCellHeight);
+                JLog.getInstance().i("mCellWidth = " + this.mCellWidth + " mCellHeight = " + this.mCellHeight);
                 if (this.mIsHotseat) {
                     int max = Math.max(cw, ch);
                     this.mCellHeight = max;
@@ -806,7 +802,7 @@ public class CellLayout extends ViewGroup {
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int offset = ((getMeasuredWidth() - getPaddingLeft()) - getPaddingRight()) - (this.mCountX * this.mCellWidth);
         int left = getPaddingLeft() + ((int) Math.ceil(offset / 2.0f));
@@ -818,7 +814,7 @@ public class CellLayout extends ViewGroup {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         Rect padding = new Rect();
@@ -827,12 +823,12 @@ public class CellLayout extends ViewGroup {
         this.mForegroundRect.set(this.mForegroundPadding, this.mForegroundPadding, w - this.mForegroundPadding, h - this.mForegroundPadding);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawingCacheEnabled(boolean enabled) {
         this.mShortcutsAndWidgets.setChildrenDrawingCacheEnabled(enabled);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawnWithCacheEnabled(boolean enabled) {
         this.mShortcutsAndWidgets.setChildrenDrawnWithCacheEnabled(enabled);
     }
@@ -919,8 +915,8 @@ public class CellLayout extends ViewGroup {
             ValueAnimator va = LauncherAnimUtils.ofFloat(child, 0.0f, 1.0f);
             va.setDuration(duration);
             this.mReorderAnimators.put(lp, va);
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.CellLayout.3
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float r = ((Float) animation.getAnimatedValue()).floatValue();
                     lp.x = (int) (((1.0f - r) * oldX) + (newX * r));
@@ -928,10 +924,10 @@ public class CellLayout extends ViewGroup {
                     child.requestLayout();
                 }
             });
-            va.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.CellLayout.4
+            va.addListener(new AnimatorListenerAdapter() { 
                 boolean cancelled = false;
 
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     if (!this.cancelled) {
                         lp.isLockedToGrid = true;
@@ -942,7 +938,7 @@ public class CellLayout extends ViewGroup {
                     }
                 }
 
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                @Override
                 public void onAnimationCancel(Animator animation) {
                     this.cancelled = true;
                 }
@@ -1223,7 +1219,7 @@ public class CellLayout extends ViewGroup {
             this.rightEdge = new int[CellLayout.this.mCountY];
             this.topEdge = new int[CellLayout.this.mCountX];
             this.bottomEdge = new int[CellLayout.this.mCountX];
-            this.views = (ArrayList) views.clone();
+            this.views = (ArrayList<View>) views.clone();
             this.config = config;
             resetEdges();
         }
@@ -1414,7 +1410,7 @@ public class CellLayout extends ViewGroup {
             PositionComparator() {
             }
 
-            @Override // java.util.Comparator
+            @Override
             public int compare(View left, View right) {
                 CellAndSpan l = ViewCluster.this.config.map.get(left);
                 CellAndSpan r = ViewCluster.this.config.map.get(right);
@@ -1837,8 +1833,8 @@ public class CellLayout extends ViewGroup {
                 va.setRepeatCount(-1);
                 va.setDuration(300L);
                 va.setStartDelay((int) (Math.random() * 60.0d));
-                va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.CellLayout.ReorderHintAnimation.1
-                    @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+                va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                    @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         float r = ((Float) animation.getAnimatedValue()).floatValue();
                         float x = (ReorderHintAnimation.this.finalDeltaX * r) + ((1.0f - r) * ReorderHintAnimation.this.initDeltaX);
@@ -1850,8 +1846,8 @@ public class CellLayout extends ViewGroup {
                         ReorderHintAnimation.this.child.setScaleY(s);
                     }
                 });
-                va.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.CellLayout.ReorderHintAnimation.2
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                va.addListener(new AnimatorListenerAdapter() { 
+                    @Override
                     public void onAnimationRepeat(Animator animation) {
                         ReorderHintAnimation.this.initDeltaX = 0.0f;
                         ReorderHintAnimation.this.initDeltaY = 0.0f;
@@ -1869,7 +1865,7 @@ public class CellLayout extends ViewGroup {
             }
         }
 
-        /* JADX INFO: Access modifiers changed from: private */
+        
         public void completeAnimationImmediately() {
             if (this.a != null) {
                 this.a.cancel();
@@ -2423,17 +2419,17 @@ public class CellLayout extends ViewGroup {
         throw new RuntimeException("Position exceeds the bound of this CellLayout");
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new LayoutParams(getContext(), attrs);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
         return p instanceof LayoutParams;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
         return new LayoutParams(p);
     }
@@ -2443,7 +2439,7 @@ public class CellLayout extends ViewGroup {
             super(animation, delay);
         }
 
-        @Override // android.view.animation.LayoutAnimationController
+        @Override
         protected long getDelayForView(View view) {
             return (int) (Math.random() * 150.0d);
         }

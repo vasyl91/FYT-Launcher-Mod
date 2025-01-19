@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLAirControlAct extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 87:
@@ -47,10 +46,10 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0025_xp_gm_all_air_control);
+        //setContentView(R.layout.layout_0025_xp_gm_all_air_control);
         init();
     }
 
@@ -72,7 +71,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         findViewById(R.id.air_xts_front).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -80,7 +79,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -92,7 +91,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -185,7 +184,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[98];
         int TempUnit = SystemProperties.getInt("persist.fyt.temperature", 0);
@@ -208,7 +207,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[97];
         int TempUnit = SystemProperties.getInt("persist.fyt.temperature", 0);
@@ -231,25 +230,25 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[87];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[93];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBlowAutoOn() {
         int auto = DataCanbus.DATA[110];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[89];
         if (cycle == 0) {
@@ -259,7 +258,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
         int leave = DataCanbus.DATA[102];
@@ -276,7 +275,7 @@ public class YLAirControlAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[99];
         int foot = DataCanbus.DATA[101];

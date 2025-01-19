@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_XC_Ford_EDGE extends AirBase {
     public Air_0453_XC_Ford_EDGE(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0001_wc1_dazhong/air_wc_old_opel.webp";
         this.mPathHighlight = "0001_wc1_dazhong/air_wc_old_opel_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -90,8 +90,8 @@ public class Air_0453_XC_Ford_EDGE extends AirBase {
         c.clipRect(this.mRectDrawable, Region.Op.XOR);
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(30.0f);
-        c.drawText(new StringBuilder(String.valueOf(this.DATA[21])).toString(), 358.0f, 139.0f, this.mPaint);
-        c.drawText(new StringBuilder(String.valueOf(this.DATA[21])).toString(), 692.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[21]), 358.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[21]), 692.0f, 139.0f, this.mPaint);
         int value3 = this.DATA[27];
         switch (value3) {
             case -3:
@@ -104,7 +104,7 @@ public class Air_0453_XC_Ford_EDGE extends AirBase {
                 c.drawText("NO", 51.0f, 67.0f, this.mPaint);
                 break;
             default:
-                c.drawText(String.valueOf(value3 / 10) + "." + (value3 % 10), 51.0f, 67.0f, this.mPaint);
+                c.drawText(value3 / 10 + "." + (value3 % 10), 51.0f, 67.0f, this.mPaint);
                 break;
         }
         int value4 = this.DATA[28];
@@ -119,7 +119,7 @@ public class Air_0453_XC_Ford_EDGE extends AirBase {
                 c.drawText("NO", 940.0f, 67.0f, this.mPaint);
                 break;
             default:
-                c.drawText(String.valueOf(value4 / 10) + "." + (value4 % 10), 940.0f, 67.0f, this.mPaint);
+                c.drawText(value4 / 10 + "." + (value4 % 10), 940.0f, 67.0f, this.mPaint);
                 break;
         }
         canvas.save();

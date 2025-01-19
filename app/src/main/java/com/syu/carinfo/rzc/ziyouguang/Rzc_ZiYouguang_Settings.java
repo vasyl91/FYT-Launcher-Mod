@@ -19,7 +19,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_ZiYouguang_Settings extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -27,28 +26,28 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 24:
+                case 122:
                     Rzc_ZiYouguang_Settings.this.updateLauguageSet();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_settings_rzc);
+        //setContentView(R.layout.layout_jeep_settings_rzc);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
-        View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
+        View layout = inflater.inflate(R.layout.layout_lauguage3, (ViewGroup) null);
         this.mLauStyle = new PopupWindow(layout, 548, 408);
         this.mLauStyle.setBackgroundDrawable(getResources().getDrawable(R.drawable.bk_models_pop));
         this.mLauStyle.setFocusable(true);
@@ -58,8 +57,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Rzc_ZiYouguang_Settings.this.language_set = position;
                 if (Rzc_ZiYouguang_Settings.this.language_set >= 0 && Rzc_ZiYouguang_Settings.this.language_set <= Rzc_ZiYouguang_Settings.this.mLauStylelist.size() && Rzc_ZiYouguang_Settings.this.send_lang != null) {
@@ -71,7 +70,7 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[122];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -86,7 +85,7 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -96,8 +95,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Rzc_ZiYouguang_Settings.this.mLauStyle == null) {
                     Rzc_ZiYouguang_Settings.this.initLauStyle();
@@ -108,8 +107,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_Safety)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_Safety)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -120,8 +119,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_LightEngine)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_LightEngine)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -132,8 +131,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_DoorLock)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_DoorLock)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -144,8 +143,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_suspension)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_suspension)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -161,8 +160,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         } else {
             findViewById(R.id.layout_373_shup_only).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.zyg_271_shup_only)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_shup_only)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -178,8 +177,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         } else {
             findViewById(R.id.layout_373_tiaozhanzhe_only).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.zyg_271_tiaozhanzhe_only)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_tiaozhanzhe_only)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -190,8 +189,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -207,8 +206,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         } else {
             findViewById(R.id.layout_view2).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -219,8 +218,32 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_other)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.12
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(Rzc_ZiYouguang_Settings.this, RZC_JeepCarAUXPowerSet.class);
+                    Rzc_ZiYouguang_Settings.this.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(Rzc_ZiYouguang_Settings.this, Rzc_ZiYouguang_AHDSet.class);
+                    Rzc_ZiYouguang_Settings.this.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.zyg_271_other)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -231,8 +254,8 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.zyg_271_factory_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings.13
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.zyg_271_factory_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -245,25 +268,25 @@ public class Rzc_ZiYouguang_Settings extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -14,7 +14,6 @@ import android.os.PowerManager;
 import android.view.View;
 import android.view.WindowManager;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ObjApp {
     private static ActivityManager sActivityManager;
     private static AssetManager sAssetManager;
@@ -24,7 +23,7 @@ public class ObjApp {
     private static InfoView sInfoView;
     private static LocationManager sLocationManager;
     private static PackageManager sPackageManager;
-    private static Point sPoint = new Point();
+    private static final Point sPoint = new Point();
     private static PowerManager sPowerManager;
     private static Resources sResources;
     private static View sRootView;

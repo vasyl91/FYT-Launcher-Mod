@@ -8,55 +8,54 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_Tangdu_Toyota_All;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ToyotaTangduIcPetrolElectricActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduIcPetrolElectricActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
+                case 99:
                     ToyotaTangduIcPetrolElectricActi.this.mUpdaterBatteryVol();
                     break;
-                case 89:
+                case 101:
                     ToyotaTangduIcPetrolElectricActi.this.mUpdaterPEStates();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_petrol_electric);
+        //setContentView(R.layout.layout_camry_petrol_electric);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBatteryVol() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[99];
         if (value > -1 && value < 9) {
             ((TextView) findViewById(R.id.camry_tv_pe_battery)).setBackgroundResource(Callback_0452_Tangdu_Toyota_All.mPEDrawableId[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPEStates() {
-        int data = DataCanbus.DATA[89];
+        int data = DataCanbus.DATA[101];
         int value1 = data & 1;
         int value2 = data & 2;
         int value3 = data & 4;

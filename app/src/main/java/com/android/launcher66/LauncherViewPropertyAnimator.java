@@ -7,7 +7,6 @@ import android.view.ViewPropertyAnimator;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class LauncherViewPropertyAnimator extends Animator implements Animator.AnimatorListener {
     float mAlpha;
     long mDuration;
@@ -51,44 +50,44 @@ public class LauncherViewPropertyAnimator extends Animator implements Animator.A
         this.mTarget = target;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void addListener(Animator.AnimatorListener listener) {
         this.mListeners.add(listener);
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void cancel() {
         if (this.mViewPropertyAnimator != null) {
             this.mViewPropertyAnimator.cancel();
         }
     }
 
-    @Override // android.animation.Animator
+    @Override
     public Animator clone() {
         throw new RuntimeException("Not implemented");
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void end() {
         throw new RuntimeException("Not implemented");
     }
 
-    @Override // android.animation.Animator
+    @Override
     public long getDuration() {
         return this.mDuration;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public ArrayList<Animator.AnimatorListener> getListeners() {
         return this.mListeners;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public long getStartDelay() {
         return this.mStartDelay;
     }
 
-    @Override // android.animation.Animator.AnimatorListener
+    @Override
     public void onAnimationCancel(Animator animation) {
         for (int i = 0; i < this.mListeners.size(); i++) {
             Animator.AnimatorListener listener = this.mListeners.get(i);
@@ -97,7 +96,7 @@ public class LauncherViewPropertyAnimator extends Animator implements Animator.A
         this.mRunning = false;
     }
 
-    @Override // android.animation.Animator.AnimatorListener
+    @Override
     public void onAnimationEnd(Animator animation) {
         for (int i = 0; i < this.mListeners.size(); i++) {
             Animator.AnimatorListener listener = this.mListeners.get(i);
@@ -106,7 +105,7 @@ public class LauncherViewPropertyAnimator extends Animator implements Animator.A
         this.mRunning = false;
     }
 
-    @Override // android.animation.Animator.AnimatorListener
+    @Override
     public void onAnimationRepeat(Animator animation) {
         for (int i = 0; i < this.mListeners.size(); i++) {
             Animator.AnimatorListener listener = this.mListeners.get(i);
@@ -114,7 +113,7 @@ public class LauncherViewPropertyAnimator extends Animator implements Animator.A
         }
     }
 
-    @Override // android.animation.Animator.AnimatorListener
+    @Override
     public void onAnimationStart(Animator animation) {
         this.mFirstFrameHelper.onAnimationStart(animation);
         for (int i = 0; i < this.mListeners.size(); i++) {
@@ -124,59 +123,59 @@ public class LauncherViewPropertyAnimator extends Animator implements Animator.A
         this.mRunning = true;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public boolean isRunning() {
         return this.mRunning;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public boolean isStarted() {
         return this.mViewPropertyAnimator != null;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void removeAllListeners() {
         this.mListeners.clear();
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void removeListener(Animator.AnimatorListener listener) {
         this.mListeners.remove(listener);
     }
 
-    @Override // android.animation.Animator
+    @Override
     public Animator setDuration(long duration) {
         this.mPropertiesToSet.add(Properties.DURATION);
         this.mDuration = duration;
         return this;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void setInterpolator(TimeInterpolator value) {
         this.mPropertiesToSet.add(Properties.INTERPOLATOR);
         this.mInterpolator = value;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void setStartDelay(long startDelay) {
         this.mPropertiesToSet.add(Properties.START_DELAY);
         this.mStartDelay = startDelay;
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void setTarget(Object target) {
         throw new RuntimeException("Not implemented");
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void setupEndValues() {
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void setupStartValues() {
     }
 
-    @Override // android.animation.Animator
+    @Override
     public void start() {
         this.mViewPropertyAnimator = this.mTarget.animate();
         this.mFirstFrameHelper = new FirstFrameAnimatorHelper(this.mViewPropertyAnimator, this.mTarget);

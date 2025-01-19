@@ -6,35 +6,35 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.LuzLexusLSRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 76:
+                case 35:
+                    LuzLexusLSRearAirControlAct.this.mUpdateBlowOn();
+                    break;
+                case 40:
                     LuzLexusLSRearAirControlAct.this.mUpdateAirTempLeft();
                     break;
-                case 77:
+                case 41:
                     LuzLexusLSRearAirControlAct.this.mUpdateAirTempRight();
                     break;
-                case 78:
-                    LuzLexusLSRearAirControlAct.this.mUpdateManual();
-                    break;
-                case 79:
+                case 43:
                     LuzLexusLSRearAirControlAct.this.mUpdateAutoOn();
                     break;
-                case 80:
+                case 44:
                     LuzLexusLSRearAirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 81:
-                    LuzLexusLSRearAirControlAct.this.mUpdateBlowOn();
+                case 86:
+                    LuzLexusLSRearAirControlAct.this.mUpdateManual();
                     break;
             }
         }
@@ -44,10 +44,10 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_lexus_ls_rear_aircontrol);
+        //setContentView(R.layout.layout_0452_lz_lexus_ls_rear_aircontrol);
         init();
     }
 
@@ -65,7 +65,7 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
         findViewById(R.id.air_xts_blow).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -73,7 +73,7 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -81,7 +81,7 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -105,7 +105,7 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
             case R.id.air_xts_frontpage /* 2131427432 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) LuzLexusLSFrontAirControlAct.class));
+                    startActivity(new Intent(this, LuzLexusLSFrontAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -120,7 +120,7 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 50;
                 break;
-            case R.id.air_xts_manual /* 2131427562 */:
+            case R.id.air_xts_manual /* 2131427568 */:
                 data0 = 59;
                 break;
             case R.id.air_xts_blow /* 2131428582 */:
@@ -138,36 +138,34 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBlowOn() {
-        int acOn = DataCanbus.DATA[81];
+        int acOn = DataCanbus.DATA[35];
         findViewById(R.id.air_xts_blow).setBackgroundResource(acOn == 0 ? R.drawable.ic_lexus_ls_blow_n : R.drawable.ic_lexus_ls_blow_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateManual() {
-        int acOn = DataCanbus.DATA[78];
+        int acOn = DataCanbus.DATA[86];
         switch (acOn) {
             case 0:
                 findViewById(R.id.air_xts_manual).setBackgroundResource(R.drawable.ic_lexus_ls_manual_0);
@@ -196,17 +194,17 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[79];
+        int acOn = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int unit = DataCanbus.DATA[16];
-        int temp = DataCanbus.DATA[76];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[40];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -214,18 +212,18 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
             if (temp == -3) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
             } else if (unit == 0) {
-                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(((temp * 5) + 175) * 0.1f) + "℃");
+                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(((temp * 5) + 175) * 0.1f + "℃");
             } else {
-                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(((((temp * 5) + 175) * 9) / 50) + 32) + "℉");
+                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(((((temp * 5) + 175) * 9) / 50) + 32 + "℉");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int unit = DataCanbus.DATA[16];
-        int temp = DataCanbus.DATA[77];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[41];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -233,16 +231,16 @@ public class LuzLexusLSRearAirControlAct extends Activity implements View.OnTouc
             if (temp == -3) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
             } else if (unit == 0) {
-                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(((temp * 5) + 175) * 0.1f) + "℃");
+                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(((temp * 5) + 175) * 0.1f + "℃");
             } else {
-                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(((((temp * 5) + 175) * 9) / 50) + 32) + "℉");
+                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(((((temp * 5) + 175) * 9) / 50) + 32 + "℉");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[80];
+        int leave = DataCanbus.DATA[44];
         if (leave < 0) {
             leave = 0;
         }

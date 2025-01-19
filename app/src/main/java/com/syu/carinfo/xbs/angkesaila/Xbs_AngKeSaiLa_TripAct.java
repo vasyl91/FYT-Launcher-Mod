@@ -8,13 +8,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.carinfo.wccamry.Rav4Data;
 import com.syu.carinfo.wccamry.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
     private Button mBtnClear;
     private Button mBtnGo2HisOil;
@@ -22,11 +22,11 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
     private VerticalProgressbar mProgressbarCur;
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[30];
     private TextView[] mOilTv = new TextView[4];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_TripAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 83:
+                case 40:
                     if (ints == null) {
                         for (int i = 0; i < 30; i++) {
                             int[] ints2 = ConstWcToyota.mMinuteoilexpend[i];
@@ -40,45 +40,45 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
                         Xbs_AngKeSaiLa_TripAct.this.mUpdaterOilValue(ints);
                         break;
                     }
-                case 85:
+                case 42:
                     Xbs_AngKeSaiLa_TripAct.this.mUpdaterOilExpend();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xbs_angkesaila_trip);
+        //setContentView(R.layout.layout_xbs_angkesaila_trip);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mProgressbar[0] = (VerticalProgressbar) findViewById(R.id.rav4_progressbar_0);
         this.mProgressbar[1] = (VerticalProgressbar) findViewById(R.id.rav4_progressbar_1);
@@ -103,8 +103,8 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
         this.mOilTv[3] = (TextView) findViewById(R.id.rav4_tv_oil_3);
         this.mBtnGo2HisOil = (Button) findViewById(R.id.rav4_btn_iol_expend);
         this.mBtnClear = (Button) findViewById(R.id.rav4_btn_clear);
-        this.mBtnGo2HisOil.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_TripAct.2
-            @Override // android.view.View.OnClickListener
+        this.mBtnGo2HisOil.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -115,14 +115,14 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
                 }
             }
         });
-        this.mBtnClear.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.angkesaila.Xbs_AngKeSaiLa_TripAct.3
-            @Override // android.view.View.OnClickListener
+        this.mBtnClear.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {
             Intent intent = new Intent();
@@ -136,13 +136,13 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[85];
+        int value = DataCanbus.DATA[42];
         int num = value & 16777215;
         if (num != 65535) {
             if (this.mMileageUnit != null) {
-                this.mMileageUnit.setText("L/100km");
+                this.mMileageUnit.setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
             }
             for (int i = 0; i < 4; i++) {
                 if (this.mOilTv[i] != null) {
@@ -166,7 +166,7 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
         this.mProgressbarCur.invalidate();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilValue(int[] ints) {
         if (ints != null && ints.length >= 2 && ints[0] >= 0 && ints[0] < 30) {
             int index = ints[0];
@@ -174,7 +174,7 @@ public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
             int num = value & 16777215;
             if (num != 65535) {
                 if (this.mMileageUnit != null) {
-                    this.mMileageUnit.setText("L/100km");
+                    this.mMileageUnit.setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 }
                 for (int i = 0; i < 4; i++) {
                     if (this.mOilTv[i] != null) {

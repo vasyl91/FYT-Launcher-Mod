@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MyProgressBar extends ProgressBar {
     Paint mPaint;
     String text;
@@ -27,13 +26,13 @@ public class MyProgressBar extends ProgressBar {
         initText();
     }
 
-    @Override // android.widget.ProgressBar
+    @Override
     public synchronized void setProgress(int progress) {
         setText(progress);
         super.setProgress(progress);
     }
 
-    @Override // android.widget.ProgressBar, android.view.View
+    @Override
     protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Rect rect = new Rect();

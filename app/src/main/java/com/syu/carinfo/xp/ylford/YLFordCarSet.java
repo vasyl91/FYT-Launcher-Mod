@@ -10,46 +10,45 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLFordCarSet extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 23:
+                case 121:
                     YLFordCarSet.this.mTowsystem();
                     break;
-                case 24:
+                case 122:
                     YLFordCarSet.this.mInformation();
                     break;
-                case 25:
+                case 123:
                     YLFordCarSet.this.mWarning();
                     break;
-                case 26:
+                case 124:
                     YLFordCarSet.this.mBrightness();
                     break;
-                case 27:
+                case 125:
                     YLFordCarSet.this.mUnit();
                     break;
-                case 28:
+                case 126:
                     YLFordCarSet.this.mVoicemode();
                     break;
-                case 29:
+                case 127:
                     YLFordCarSet.this.mTurnlight();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_carset);
-        ((Button) findViewById(R.id.xp_ylford_brightness_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_xp_yl_carset);
+        ((Button) findViewById(R.id.xp_ylford_brightness_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[26] & 255;
+                int value2 = DataCanbus.DATA[124] & 255;
                 if (value2 == 0) {
                     value = 17;
                 } else {
@@ -58,11 +57,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_brightness_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_brightness_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[26] & 255;
+                int value2 = DataCanbus.DATA[124] & 255;
                 if (value2 == 0) {
                     value = 17;
                 } else {
@@ -71,11 +70,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_unit_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_unit_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[27] & 255;
+                int value2 = DataCanbus.DATA[125] & 255;
                 if (value2 == 0) {
                     value = 15;
                 } else {
@@ -84,11 +83,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_unit_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_unit_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[27] & 255;
+                int value2 = DataCanbus.DATA[125] & 255;
                 if (value2 == 0) {
                     value = 15;
                 } else {
@@ -97,11 +96,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_ylford_set_tow_system_switch)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_ylford_set_tow_system_switch)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value;
-                int value2 = DataCanbus.DATA[23] & 255;
+                int value2 = DataCanbus.DATA[121] & 255;
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -110,11 +109,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_ylford_information_point_state)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_ylford_information_point_state)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value;
-                int value2 = DataCanbus.DATA[24] & 255;
+                int value2 = DataCanbus.DATA[122] & 255;
                 if (value2 == 0) {
                     value = 6;
                 } else {
@@ -123,11 +122,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_ylford_warning_point_state)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_ylford_warning_point_state)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value;
-                int value2 = DataCanbus.DATA[25] & 255;
+                int value2 = DataCanbus.DATA[123] & 255;
                 if (value2 == 0) {
                     value = 8;
                 } else {
@@ -136,11 +135,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_turnlight_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_turnlight_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[29] & 255;
+                int value2 = DataCanbus.DATA[127] & 255;
                 if (value2 == 0) {
                     value = 4;
                 } else {
@@ -149,11 +148,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_turnlight_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_turnlight_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[29] & 255;
+                int value2 = DataCanbus.DATA[127] & 255;
                 if (value2 == 0) {
                     value = 4;
                 } else {
@@ -162,11 +161,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_voice_mode_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_voice_mode_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[28] & 255;
+                int value2 = DataCanbus.DATA[126] & 255;
                 if (value2 < 4) {
                     value = value2 + 10;
                 } else {
@@ -175,11 +174,11 @@ public class YLFordCarSet extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{163, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_ylford_voice_mode_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarSet.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_ylford_voice_mode_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[28] & 255;
+                int value2 = DataCanbus.DATA[126] & 255;
                 if (value2 > 0) {
                     value = value2 + 8;
                 } else {
@@ -190,67 +189,67 @@ public class YLFordCarSet extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mTowsystem() {
-        int temp = DataCanbus.DATA[23] & 65535;
+        int temp = DataCanbus.DATA[121] & 65535;
         if (((CheckedTextView) findViewById(R.id.xp_ylford_set_tow_system_switch)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_ylford_set_tow_system_switch)).setChecked(temp == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mInformation() {
-        int temp = DataCanbus.DATA[24] & 65535;
+        int temp = DataCanbus.DATA[122] & 65535;
         if (((CheckedTextView) findViewById(R.id.xp_ylford_information_point_state)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_ylford_information_point_state)).setChecked(temp == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mWarning() {
-        int temp = DataCanbus.DATA[25] & 65535;
+        int temp = DataCanbus.DATA[123] & 65535;
         if (((CheckedTextView) findViewById(R.id.xp_ylford_warning_point_state)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_ylford_warning_point_state)).setChecked(temp == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mVoicemode() {
-        int temp = DataCanbus.DATA[28] & 65535;
+        int temp = DataCanbus.DATA[126] & 65535;
         if (((TextView) findViewById(R.id.xp_ylford_voice_mode_set_show)) != null) {
             switch (temp) {
                 case 0:
@@ -272,9 +271,9 @@ public class YLFordCarSet extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mBrightness() {
-        int temp = DataCanbus.DATA[26] & 65535;
+        int temp = DataCanbus.DATA[124] & 65535;
         if (((TextView) findViewById(R.id.xp_ylford_brightness_set_show)) != null) {
             switch (temp) {
                 case 0:
@@ -287,9 +286,9 @@ public class YLFordCarSet extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mTurnlight() {
-        int temp = DataCanbus.DATA[29] & 65535;
+        int temp = DataCanbus.DATA[127] & 65535;
         if (((TextView) findViewById(R.id.xp_ylford_turnlight_set_show)) != null) {
             switch (temp) {
                 case 0:
@@ -302,9 +301,9 @@ public class YLFordCarSet extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUnit() {
-        int temp = DataCanbus.DATA[27] & 65535;
+        int temp = DataCanbus.DATA[125] & 65535;
         if (((TextView) findViewById(R.id.xp_ylford_unit_set_show)) != null) {
             switch (temp) {
                 case 0:

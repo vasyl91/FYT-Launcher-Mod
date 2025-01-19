@@ -2,6 +2,7 @@ package com.syu.carinfo.rzc.sanlin;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +17,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
+import com.syu.module.canbus.Callback_0452_LZ_Audi_Q5_All;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -29,12 +31,12 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
     int[] send_lang;
     int language_set = 255;
     int unit_juli = 0;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 26:
+                case 98:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text1)) != null) {
                         if (value == 0 || value == 255) {
                             ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text1)).setText("----");
@@ -45,7 +47,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 27:
+                case 99:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text3)) != null) {
                         if (LZAudiQ5CarSet.this.unit_juli == 1) {
                             ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value) + "mil");
@@ -56,7 +58,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 28:
+                case 100:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text2)) != null) {
                         if (LZAudiQ5CarSet.this.unit_juli == 1) {
                             ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value) + "mil");
@@ -67,10 +69,10 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 29:
+                case 101:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 30:
+                case 102:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text8)) != null) {
                         switch (value) {
                             case 0:
@@ -97,68 +99,68 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 31:
+                case 103:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 32:
+                case 104:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 33:
+                case 105:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 34:
+                case 106:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext6), value == 1);
                     break;
-                case 35:
+                case 107:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 36:
+                case 108:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 37:
+                case 109:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 38:
+                case 110:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 39:
+                case 111:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 40:
+                case 112:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 41:
+                case 113:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     break;
-                case 42:
+                case 114:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 43:
+                case 115:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text9)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text9)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 44:
+                case 116:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text10)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text10)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 45:
+                case 117:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text11)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text11)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 46:
+                case 118:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text12)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text12)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 47:
+                case 119:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text13)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text13)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 48:
+                case 120:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text14)) != null) {
                         switch (value) {
                             case 0:
@@ -170,7 +172,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 49:
+                case 121:
                     LZAudiQ5CarSet.this.unit_juli = value;
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text15)) != null) {
                         if (value == 1) {
@@ -182,7 +184,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 50:
+                case 122:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text16)) != null) {
                         switch (value) {
                             case 0:
@@ -194,7 +196,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 51:
+                case 123:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text17)) != null) {
                         switch (value) {
                             case 0:
@@ -206,7 +208,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 52:
+                case 124:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)) != null) {
                         switch (value) {
                             case 0:
@@ -216,15 +218,15 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                                 ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)).setText("mpg(us)");
                                 break;
                             case 2:
-                                ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)).setText("L/100km");
+                                ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                                 break;
                             case 3:
-                                ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)).setText("km/L");
+                                ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text18)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                                 break;
                         }
                     }
                     break;
-                case 53:
+                case 125:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text19)) != null) {
                         switch (value) {
                             case 0:
@@ -239,10 +241,10 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 54:
+                case 126:
                     LZAudiQ5CarSet.this.updateLauguageSet();
                     break;
-                case 55:
+                case 127:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text4)) != null) {
                         int value2 = value * 100;
                         if (LZAudiQ5CarSet.this.unit_juli == 1) {
@@ -254,12 +256,12 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 56:
+                case 128:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text5)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value) + "Days");
                         break;
                     }
-                case 57:
+                case 129:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text6)) != null) {
                         int value3 = value * 100;
                         if (LZAudiQ5CarSet.this.unit_juli == 1) {
@@ -271,17 +273,22 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 58:
+                case 130:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value) + "Days");
                         break;
                     }
-                case 60:
+                case 131:
+                    if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text24)) != null) {
+                        ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text24)).setText(Callback_0452_LZ_Audi_Q5_All.CarVinID);
+                        break;
+                    }
+                case 132:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text22)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text22)).setText(String.valueOf(value) + "/8");
                         break;
                     }
-                case 61:
+                case 133:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text20)) != null) {
                         switch (value) {
                             case 0:
@@ -296,63 +303,63 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                         }
                     }
                     break;
-                case 62:
+                case 134:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext17), value == 1);
                     break;
-                case 63:
+                case 135:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext18), value == 1);
                     break;
-                case 64:
+                case 136:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext19), value == 1);
                     break;
-                case 65:
+                case 137:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext20), value == 1);
                     break;
-                case 66:
+                case 138:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext21), value == 1);
                     break;
-                case 67:
+                case 139:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext22), value == 1);
                     break;
-                case 68:
+                case 140:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext23), value == 1);
                     break;
-                case 69:
+                case 141:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext24), value == 1);
                     break;
-                case 70:
+                case 142:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext25), value == 1);
                     break;
-                case 71:
+                case 143:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text21)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text21)).setText(String.valueOf((value * 10) + 30) + "km/h");
                         break;
                     }
-                case 72:
+                case 144:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext26), value == 1);
                     break;
-                case 73:
+                case 145:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext27), value == 1);
                     break;
-                case 74:
+                case 146:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext29), value == 1);
                     break;
-                case 75:
+                case 147:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext30), value == 1);
                     break;
-                case 76:
+                case 148:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext31), value == 1);
                     break;
-                case 77:
+                case 149:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext32), value == 1);
                     break;
-                case 78:
+                case 150:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext33), value == 1);
                     break;
-                case 79:
+                case 151:
                     LZAudiQ5CarSet.this.setCheck((CheckedTextView) LZAudiQ5CarSet.this.findViewById(R.id.ctv_checkedtext34), value == 1);
                     break;
-                case 80:
+                case 152:
                     if (((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text23)) != null) {
                         ((TextView) LZAudiQ5CarSet.this.findViewById(R.id.tv_text23)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
@@ -361,14 +368,14 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_audi_q5_settings);
+        //setContentView(R.layout.layout_0452_lz_audi_q5_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -382,8 +389,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 LZAudiQ5CarSet.this.language_set = position;
                 if (LZAudiQ5CarSet.this.language_set >= 0 && LZAudiQ5CarSet.this.language_set <= LZAudiQ5CarSet.this.mLauStylelist.size() && LZAudiQ5CarSet.this.send_lang != null) {
@@ -395,7 +402,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[54];
+        int value = DataCanbus.DATA[126];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -410,7 +417,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -423,8 +430,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (LZAudiQ5CarSet.this.mLauStyle == null) {
                     LZAudiQ5CarSet.this.initLauStyle();
@@ -470,6 +477,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext33), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext34), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext35), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext36), this);
         setSelfClick((Button) findViewById(R.id.btn_minus1), this);
         setSelfClick((Button) findViewById(R.id.btn_plus1), this);
         setSelfClick((Button) findViewById(R.id.btn_minus2), this);
@@ -498,18 +506,20 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         setSelfClick((Button) findViewById(R.id.btn_plus13), this);
         setSelfClick((Button) findViewById(R.id.btn_minus14), this);
         setSelfClick((Button) findViewById(R.id.btn_plus14), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus15), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus15), this);
     }
 
     protected void dialog2(int stringId, final int cmd) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.4
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.4.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(0, new int[]{52, i}, null, null);
                     }
@@ -517,8 +527,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -530,12 +540,12 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.6
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.6.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(0, new int[]{i}, null, null);
                     }
@@ -543,8 +553,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet.7
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -552,224 +562,224 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         builder.create().show();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_minus13 /* 2131427468 */:
-                int value = DataCanbus.DATA[61] - 1;
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[102] - 1;
                 if (value < 0) {
-                    value = 2;
+                    value = 6;
                 }
-                setCarInfo(33, value);
+                setCarInfo(1, value);
                 break;
-            case R.id.btn_plus13 /* 2131427470 */:
-                int value2 = DataCanbus.DATA[61] + 1;
-                if (value2 > 2) {
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[102] + 1;
+                if (value2 > 6) {
                     value2 = 0;
                 }
-                setCarInfo(33, value2);
+                setCarInfo(1, value2);
                 break;
-            case R.id.btn_minus14 /* 2131427471 */:
-                int value3 = DataCanbus.DATA[71] - 1;
-                if (value3 < 0) {
-                    value3 = 21;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[115];
+                if (value3 > 0) {
+                    value3--;
                 }
-                setCarInfo(43, value3);
+                setCarInfo(14, value3);
                 break;
-            case R.id.btn_plus14 /* 2131427473 */:
-                int value4 = DataCanbus.DATA[71] + 1;
-                if (value4 > 21) {
-                    value4 = 0;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[115];
+                if (value4 < 100) {
+                    value4++;
                 }
-                setCarInfo(43, value4);
+                setCarInfo(14, value4);
                 break;
-            case R.id.btn_minus15 /* 2131427474 */:
-                int value5 = DataCanbus.DATA[80] - 1;
-                if (value5 < 0) {
-                    value5 = 4;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value5 = DataCanbus.DATA[116];
+                if (value5 > 0) {
+                    value5--;
                 }
-                setCarInfo(53, value5);
+                setCarInfo(15, value5);
                 break;
-            case R.id.btn_plus15 /* 2131427476 */:
-                int value6 = DataCanbus.DATA[80] + 1;
-                if (value6 > 4) {
-                    value6 = 0;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value6 = DataCanbus.DATA[116];
+                if (value6 < 9) {
+                    value6++;
                 }
-                setCarInfo(53, value6);
+                setCarInfo(15, value6);
                 break;
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                dialog(R.string.str_other_set_Maintenance_Reset, 24);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value7 = DataCanbus.DATA[30] - 1;
-                if (value7 < 0) {
-                    value7 = 6;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value7 = DataCanbus.DATA[117];
+                if (value7 > 0) {
+                    value7--;
                 }
-                setCarInfo(1, value7);
+                setCarInfo(16, value7);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value8 = DataCanbus.DATA[30] + 1;
-                if (value8 > 6) {
-                    value8 = 0;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value8 = DataCanbus.DATA[117];
+                if (value8 < 9) {
+                    value8++;
                 }
-                setCarInfo(1, value8);
+                setCarInfo(16, value8);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value9 = DataCanbus.DATA[43];
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value9 = DataCanbus.DATA[118];
                 if (value9 > 0) {
                     value9--;
                 }
-                setCarInfo(14, value9);
+                setCarInfo(17, value9);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value10 = DataCanbus.DATA[43];
-                if (value10 < 100) {
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value10 = DataCanbus.DATA[118];
+                if (value10 < 9) {
                     value10++;
                 }
-                setCarInfo(14, value10);
+                setCarInfo(17, value10);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value11 = DataCanbus.DATA[44];
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value11 = DataCanbus.DATA[119];
                 if (value11 > 0) {
                     value11--;
                 }
-                setCarInfo(15, value11);
+                setCarInfo(18, value11);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value12 = DataCanbus.DATA[44];
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value12 = DataCanbus.DATA[119];
                 if (value12 < 9) {
                     value12++;
                 }
-                setCarInfo(15, value12);
+                setCarInfo(18, value12);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value13 = DataCanbus.DATA[45];
-                if (value13 > 0) {
-                    value13--;
+            case R.id.btn_minus7 /* 2131427473 */:
+                int value13 = DataCanbus.DATA[120] - 1;
+                if (value13 < 0) {
+                    value13 = 1;
                 }
-                setCarInfo(16, value13);
+                setCarInfo(19, value13);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value14 = DataCanbus.DATA[45];
-                if (value14 < 9) {
-                    value14++;
+            case R.id.btn_plus7 /* 2131427475 */:
+                int value14 = DataCanbus.DATA[120] + 1;
+                if (value14 > 1) {
+                    value14 = 0;
                 }
-                setCarInfo(16, value14);
+                setCarInfo(19, value14);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value15 = DataCanbus.DATA[46];
-                if (value15 > 0) {
-                    value15--;
+            case R.id.btn_minus8 /* 2131427476 */:
+                int value15 = DataCanbus.DATA[121] - 1;
+                if (value15 < 0) {
+                    value15 = 1;
                 }
-                setCarInfo(17, value15);
+                setCarInfo(31, value15);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value16 = DataCanbus.DATA[46];
-                if (value16 < 9) {
-                    value16++;
+            case R.id.btn_plus8 /* 2131427478 */:
+                int value16 = DataCanbus.DATA[121] + 1;
+                if (value16 > 1) {
+                    value16 = 0;
                 }
-                setCarInfo(17, value16);
+                setCarInfo(31, value16);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value17 = DataCanbus.DATA[47];
-                if (value17 > 0) {
-                    value17--;
+            case R.id.btn_minus9 /* 2131427479 */:
+                int value17 = DataCanbus.DATA[122] - 1;
+                if (value17 < 0) {
+                    value17 = 1;
                 }
-                setCarInfo(18, value17);
+                setCarInfo(21, value17);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value18 = DataCanbus.DATA[47];
-                if (value18 < 9) {
-                    value18++;
+            case R.id.btn_plus9 /* 2131427481 */:
+                int value18 = DataCanbus.DATA[122] + 1;
+                if (value18 > 1) {
+                    value18 = 0;
                 }
-                setCarInfo(18, value18);
+                setCarInfo(21, value18);
                 break;
-            case R.id.btn_minus7 /* 2131427505 */:
-                int value19 = DataCanbus.DATA[48] - 1;
+            case R.id.btn_minus10 /* 2131427482 */:
+                int value19 = DataCanbus.DATA[123] - 1;
                 if (value19 < 0) {
                     value19 = 1;
                 }
-                setCarInfo(19, value19);
+                setCarInfo(32, value19);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
-                int value20 = DataCanbus.DATA[48] + 1;
+            case R.id.btn_plus10 /* 2131427484 */:
+                int value20 = DataCanbus.DATA[123] + 1;
                 if (value20 > 1) {
                     value20 = 0;
                 }
-                setCarInfo(19, value20);
+                setCarInfo(32, value20);
                 break;
-            case R.id.btn_minus8 /* 2131427509 */:
-                int value21 = DataCanbus.DATA[49] - 1;
+            case R.id.btn_minus11 /* 2131427485 */:
+                int value21 = DataCanbus.DATA[124] - 1;
                 if (value21 < 0) {
-                    value21 = 1;
+                    value21 = 3;
                 }
-                setCarInfo(31, value21);
+                setCarInfo(22, value21);
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
-                int value22 = DataCanbus.DATA[49] + 1;
-                if (value22 > 1) {
+            case R.id.btn_plus11 /* 2131427487 */:
+                int value22 = DataCanbus.DATA[124] + 1;
+                if (value22 > 3) {
                     value22 = 0;
                 }
-                setCarInfo(31, value22);
+                setCarInfo(22, value22);
                 break;
-            case R.id.btn_minus9 /* 2131427513 */:
-                int value23 = DataCanbus.DATA[50] - 1;
+            case R.id.btn_minus12 /* 2131427488 */:
+                int value23 = DataCanbus.DATA[125] - 1;
                 if (value23 < 0) {
-                    value23 = 1;
+                    value23 = 2;
                 }
-                setCarInfo(21, value23);
+                setCarInfo(23, value23);
                 break;
-            case R.id.btn_plus9 /* 2131427515 */:
-                int value24 = DataCanbus.DATA[50] + 1;
-                if (value24 > 1) {
+            case R.id.btn_plus12 /* 2131427490 */:
+                int value24 = DataCanbus.DATA[125] + 1;
+                if (value24 > 2) {
                     value24 = 0;
                 }
-                setCarInfo(21, value24);
+                setCarInfo(23, value24);
                 break;
-            case R.id.btn_minus10 /* 2131427517 */:
-                int value25 = DataCanbus.DATA[51] - 1;
+            case R.id.btn_minus13 /* 2131427491 */:
+                int value25 = DataCanbus.DATA[133] - 1;
                 if (value25 < 0) {
-                    value25 = 1;
+                    value25 = 2;
                 }
-                setCarInfo(32, value25);
+                setCarInfo(33, value25);
                 break;
-            case R.id.btn_plus10 /* 2131427519 */:
-                int value26 = DataCanbus.DATA[51] + 1;
-                if (value26 > 1) {
+            case R.id.btn_plus13 /* 2131427493 */:
+                int value26 = DataCanbus.DATA[133] + 1;
+                if (value26 > 2) {
                     value26 = 0;
                 }
-                setCarInfo(32, value26);
+                setCarInfo(33, value26);
                 break;
-            case R.id.btn_minus11 /* 2131427521 */:
-                int value27 = DataCanbus.DATA[52] - 1;
+            case R.id.btn_minus14 /* 2131427494 */:
+                int value27 = DataCanbus.DATA[143] - 1;
                 if (value27 < 0) {
-                    value27 = 3;
+                    value27 = 21;
                 }
-                setCarInfo(22, value27);
+                setCarInfo(43, value27);
                 break;
-            case R.id.btn_plus11 /* 2131427523 */:
-                int value28 = DataCanbus.DATA[52] + 1;
-                if (value28 > 3) {
+            case R.id.btn_plus14 /* 2131427496 */:
+                int value28 = DataCanbus.DATA[143] + 1;
+                if (value28 > 21) {
                     value28 = 0;
                 }
-                setCarInfo(22, value28);
+                setCarInfo(43, value28);
                 break;
-            case R.id.btn_minus12 /* 2131427525 */:
-                int value29 = DataCanbus.DATA[53] - 1;
+            case R.id.btn_minus15 /* 2131427515 */:
+                int value29 = DataCanbus.DATA[152] - 1;
                 if (value29 < 0) {
-                    value29 = 2;
+                    value29 = 4;
                 }
-                setCarInfo(23, value29);
+                setCarInfo(53, value29);
                 break;
-            case R.id.btn_plus12 /* 2131427527 */:
-                int value30 = DataCanbus.DATA[53] + 1;
-                if (value30 > 2) {
+            case R.id.btn_plus15 /* 2131427517 */:
+                int value30 = DataCanbus.DATA[152] + 1;
+                if (value30 > 4) {
                     value30 = 0;
                 }
-                setCarInfo(23, value30);
+                setCarInfo(53, value30);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value31 = DataCanbus.DATA[29];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                dialog(R.string.str_other_set_Maintenance_Reset, 24);
+                break;
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value31 = DataCanbus.DATA[101];
                 if (value31 == 1) {
                     value31 = 0;
                 } else if (value31 == 0) {
@@ -777,8 +787,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(0, value31);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value32 = DataCanbus.DATA[31];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value32 = DataCanbus.DATA[103];
                 if (value32 == 1) {
                     value32 = 0;
                 } else if (value32 == 0) {
@@ -786,8 +796,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(2, value32);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int value33 = DataCanbus.DATA[32];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value33 = DataCanbus.DATA[104];
                 if (value33 == 1) {
                     value33 = 0;
                 } else if (value33 == 0) {
@@ -795,8 +805,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(3, value33);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value34 = DataCanbus.DATA[33];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value34 = DataCanbus.DATA[105];
                 if (value34 == 1) {
                     value34 = 0;
                 } else if (value34 == 0) {
@@ -804,8 +814,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(4, value34);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int value35 = DataCanbus.DATA[34];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int value35 = DataCanbus.DATA[106];
                 if (value35 == 1) {
                     value35 = 0;
                 } else if (value35 == 0) {
@@ -813,8 +823,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(5, value35);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int value36 = DataCanbus.DATA[35];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value36 = DataCanbus.DATA[107];
                 if (value36 == 1) {
                     value36 = 0;
                 } else if (value36 == 0) {
@@ -822,8 +832,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(6, value36);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int value37 = DataCanbus.DATA[36];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value37 = DataCanbus.DATA[108];
                 if (value37 == 1) {
                     value37 = 0;
                 } else if (value37 == 0) {
@@ -831,8 +841,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(7, value37);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                int value38 = DataCanbus.DATA[37];
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int value38 = DataCanbus.DATA[109];
                 if (value38 == 1) {
                     value38 = 0;
                 } else if (value38 == 0) {
@@ -840,8 +850,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(8, value38);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                int value39 = DataCanbus.DATA[38];
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                int value39 = DataCanbus.DATA[110];
                 if (value39 == 1) {
                     value39 = 0;
                 } else if (value39 == 0) {
@@ -849,8 +859,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(9, value39);
                 break;
-            case R.id.ctv_checkedtext11 /* 2131427543 */:
-                int value40 = DataCanbus.DATA[39];
+            case R.id.ctv_checkedtext11 /* 2131427553 */:
+                int value40 = DataCanbus.DATA[111];
                 if (value40 == 1) {
                     value40 = 0;
                 } else if (value40 == 0) {
@@ -858,8 +868,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(10, value40);
                 break;
-            case R.id.ctv_checkedtext12 /* 2131427544 */:
-                int value41 = DataCanbus.DATA[40];
+            case R.id.ctv_checkedtext12 /* 2131427554 */:
+                int value41 = DataCanbus.DATA[112];
                 if (value41 == 1) {
                     value41 = 0;
                 } else if (value41 == 0) {
@@ -867,8 +877,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(11, value41);
                 break;
-            case R.id.ctv_checkedtext13 /* 2131427545 */:
-                int value42 = DataCanbus.DATA[41];
+            case R.id.ctv_checkedtext13 /* 2131427555 */:
+                int value42 = DataCanbus.DATA[113];
                 if (value42 == 1) {
                     value42 = 0;
                 } else if (value42 == 0) {
@@ -876,8 +886,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(12, value42);
                 break;
-            case R.id.ctv_checkedtext14 /* 2131427546 */:
-                int value43 = DataCanbus.DATA[42];
+            case R.id.ctv_checkedtext14 /* 2131427556 */:
+                int value43 = DataCanbus.DATA[114];
                 if (value43 == 1) {
                     value43 = 0;
                 } else if (value43 == 0) {
@@ -885,14 +895,14 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(13, value43);
                 break;
-            case R.id.ctv_checkedtext15 /* 2131427547 */:
+            case R.id.ctv_checkedtext15 /* 2131427557 */:
                 dialog(R.string.str_store_tire_pressures, 29);
                 break;
-            case R.id.ctv_checkedtext16 /* 2131427548 */:
+            case R.id.ctv_checkedtext16 /* 2131427558 */:
                 dialog(R.string.str_initialize_tires, 30);
                 break;
-            case R.id.ctv_checkedtext17 /* 2131427647 */:
-                int value44 = DataCanbus.DATA[62];
+            case R.id.ctv_checkedtext17 /* 2131427559 */:
+                int value44 = DataCanbus.DATA[134];
                 if (value44 == 1) {
                     value44 = 0;
                 } else if (value44 == 0) {
@@ -900,8 +910,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(34, value44);
                 break;
-            case R.id.ctv_checkedtext18 /* 2131427649 */:
-                int value45 = DataCanbus.DATA[63];
+            case R.id.ctv_checkedtext18 /* 2131427661 */:
+                int value45 = DataCanbus.DATA[135];
                 if (value45 == 1) {
                     value45 = 0;
                 } else if (value45 == 0) {
@@ -909,8 +919,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(35, value45);
                 break;
-            case R.id.ctv_checkedtext19 /* 2131427651 */:
-                int value46 = DataCanbus.DATA[64];
+            case R.id.ctv_checkedtext19 /* 2131427663 */:
+                int value46 = DataCanbus.DATA[136];
                 if (value46 == 1) {
                     value46 = 0;
                 } else if (value46 == 0) {
@@ -918,8 +928,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(36, value46);
                 break;
-            case R.id.ctv_checkedtext20 /* 2131427653 */:
-                int value47 = DataCanbus.DATA[65];
+            case R.id.ctv_checkedtext20 /* 2131427665 */:
+                int value47 = DataCanbus.DATA[137];
                 if (value47 == 1) {
                     value47 = 0;
                 } else if (value47 == 0) {
@@ -927,8 +937,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(37, value47);
                 break;
-            case R.id.ctv_checkedtext21 /* 2131427655 */:
-                int value48 = DataCanbus.DATA[66];
+            case R.id.ctv_checkedtext21 /* 2131427667 */:
+                int value48 = DataCanbus.DATA[138];
                 if (value48 == 1) {
                     value48 = 0;
                 } else if (value48 == 0) {
@@ -936,8 +946,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(38, value48);
                 break;
-            case R.id.ctv_checkedtext22 /* 2131427657 */:
-                int value49 = DataCanbus.DATA[67];
+            case R.id.ctv_checkedtext22 /* 2131427669 */:
+                int value49 = DataCanbus.DATA[139];
                 if (value49 == 1) {
                     value49 = 0;
                 } else if (value49 == 0) {
@@ -945,8 +955,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(39, value49);
                 break;
-            case R.id.ctv_checkedtext23 /* 2131427660 */:
-                int value50 = DataCanbus.DATA[68];
+            case R.id.ctv_checkedtext23 /* 2131427672 */:
+                int value50 = DataCanbus.DATA[140];
                 if (value50 == 1) {
                     value50 = 0;
                 } else if (value50 == 0) {
@@ -954,8 +964,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(40, value50);
                 break;
-            case R.id.ctv_checkedtext24 /* 2131427832 */:
-                int value51 = DataCanbus.DATA[69];
+            case R.id.ctv_checkedtext24 /* 2131427848 */:
+                int value51 = DataCanbus.DATA[141];
                 if (value51 == 1) {
                     value51 = 0;
                 } else if (value51 == 0) {
@@ -963,8 +973,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(41, value51);
                 break;
-            case R.id.ctv_checkedtext25 /* 2131427834 */:
-                int value52 = DataCanbus.DATA[70];
+            case R.id.ctv_checkedtext25 /* 2131427850 */:
+                int value52 = DataCanbus.DATA[142];
                 if (value52 == 1) {
                     value52 = 0;
                 } else if (value52 == 0) {
@@ -972,8 +982,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(42, value52);
                 break;
-            case R.id.ctv_checkedtext26 /* 2131427836 */:
-                int value53 = DataCanbus.DATA[72];
+            case R.id.ctv_checkedtext26 /* 2131427852 */:
+                int value53 = DataCanbus.DATA[144];
                 if (value53 == 1) {
                     value53 = 0;
                 } else if (value53 == 0) {
@@ -981,8 +991,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(44, value53);
                 break;
-            case R.id.ctv_checkedtext27 /* 2131427838 */:
-                int value54 = DataCanbus.DATA[73];
+            case R.id.ctv_checkedtext27 /* 2131427854 */:
+                int value54 = DataCanbus.DATA[145];
                 if (value54 == 1) {
                     value54 = 0;
                 } else if (value54 == 0) {
@@ -990,8 +1000,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(45, value54);
                 break;
-            case R.id.ctv_checkedtext32 /* 2131427876 */:
-                int value55 = DataCanbus.DATA[77];
+            case R.id.ctv_checkedtext32 /* 2131427892 */:
+                int value55 = DataCanbus.DATA[149];
                 if (value55 == 1) {
                     value55 = 0;
                 } else if (value55 == 0) {
@@ -999,8 +1009,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(49, value55);
                 break;
-            case R.id.ctv_checkedtext29 /* 2131427877 */:
-                int value56 = DataCanbus.DATA[74];
+            case R.id.ctv_checkedtext29 /* 2131427893 */:
+                int value56 = DataCanbus.DATA[146];
                 if (value56 == 1) {
                     value56 = 0;
                 } else if (value56 == 0) {
@@ -1008,8 +1018,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(46, value56);
                 break;
-            case R.id.ctv_checkedtext30 /* 2131427886 */:
-                int value57 = DataCanbus.DATA[75];
+            case R.id.ctv_checkedtext30 /* 2131427902 */:
+                int value57 = DataCanbus.DATA[147];
                 if (value57 == 1) {
                     value57 = 0;
                 } else if (value57 == 0) {
@@ -1017,8 +1027,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(47, value57);
                 break;
-            case R.id.ctv_checkedtext31 /* 2131427887 */:
-                int value58 = DataCanbus.DATA[76];
+            case R.id.ctv_checkedtext31 /* 2131427903 */:
+                int value58 = DataCanbus.DATA[148];
                 if (value58 == 1) {
                     value58 = 0;
                 } else if (value58 == 0) {
@@ -1026,11 +1036,11 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(48, value58);
                 break;
-            case R.id.ctv_checkedtext28 /* 2131427892 */:
+            case R.id.ctv_checkedtext28 /* 2131427904 */:
                 dialog2(R.string.str_car_computer_5, 0);
                 break;
-            case R.id.ctv_checkedtext33 /* 2131428103 */:
-                int value59 = DataCanbus.DATA[78];
+            case R.id.ctv_checkedtext33 /* 2131428105 */:
+                int value59 = DataCanbus.DATA[150];
                 if (value59 == 1) {
                     value59 = 0;
                 } else if (value59 == 0) {
@@ -1038,8 +1048,8 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(50, value59);
                 break;
-            case R.id.ctv_checkedtext34 /* 2131428383 */:
-                int value60 = DataCanbus.DATA[79];
+            case R.id.ctv_checkedtext34 /* 2131428370 */:
+                int value60 = DataCanbus.DATA[151];
                 if (value60 == 1) {
                     value60 = 0;
                 } else if (value60 == 0) {
@@ -1047,9 +1057,19 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
                 }
                 setCarInfo(51, value60);
                 break;
-            case R.id.ctv_checkedtext35 /* 2131428385 */:
+            case R.id.ctv_checkedtext35 /* 2131428372 */:
                 dialog2(R.string.str_car_computer_10, 1);
                 break;
+            case R.id.ctv_checkedtext36 /* 2131428374 */:
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(this, LZAudiQ5SuspensionSet.class);
+                    startActivity(intent);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
         }
     }
 
@@ -1057,7 +1077,7 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         DataCanbus.PROXY.cmd(0, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{13}, null, null);
@@ -1068,125 +1088,127 @@ public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -8,61 +8,60 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityEnergyLevel extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.beiqi.ActivityEnergyLevel.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 93:
-                case 118:
-                case 119:
+                case 105:
+                case 130:
+                case 131:
                     ActivityEnergyLevel.this.updateCarState();
                     break;
-                case 94:
+                case 106:
                     ActivityEnergyLevel.this.updateEnergyLevel(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_227_energy_level);
+        //setContentView(R.layout.layout_227_energy_level);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(6, new int[]{57}, null, null);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
         if (DataCanbus.DATA[1000] == 786659 || DataCanbus.DATA[1000] == 1376483) {
-            DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
             ((TextView) findViewById(R.id.tv_text1)).setVisibility(0);
             return;
         }
         ((TextView) findViewById(R.id.tv_text1)).setVisibility(8);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
         if (DataCanbus.DATA[1000] == 786659 || DataCanbus.DATA[1000] == 1376483) {
-            DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarState() {
-        int state = DataCanbus.DATA[93];
-        int t1 = DataCanbus.DATA[118];
-        int t2 = DataCanbus.DATA[119];
+        int state = DataCanbus.DATA[105];
+        int t1 = DataCanbus.DATA[130];
+        int t2 = DataCanbus.DATA[131];
         if (((TextView) findViewById(R.id.tv_227_car_state)) != null) {
             switch (state) {
                 case 1:
@@ -106,7 +105,7 @@ public class ActivityEnergyLevel extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEnergyLevel(int value) {
         int resId;
         if (((ImageView) findViewById(R.id.iv_energy_level)) != null) {

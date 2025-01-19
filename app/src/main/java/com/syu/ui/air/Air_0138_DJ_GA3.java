@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0138_DJ_GA3 extends AirBase {
     public Air_0138_DJ_GA3(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0138_dj_ga3/air_dj_ga3_n.webp";
         this.mPathHighlight = "0138_dj_ga3/air_dj_ga3_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -64,9 +64,9 @@ public class Air_0138_DJ_GA3 extends AirBase {
         if (temp == 0) {
             c.drawText("NO", 71.0f, 142.0f, this.mPaint);
         } else if (temp >= 1 && temp <= 9) {
-            c.drawText(String.valueOf(temp) + "LEV", 71.0f, 142.0f, this.mPaint);
+            c.drawText(temp + "LEV", 71.0f, 142.0f, this.mPaint);
         } else if (temp >= 10 && temp <= 40) {
-            c.drawText(String.valueOf(temp) + "℃", 71.0f, 142.0f, this.mPaint);
+            c.drawText(temp + "℃", 71.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

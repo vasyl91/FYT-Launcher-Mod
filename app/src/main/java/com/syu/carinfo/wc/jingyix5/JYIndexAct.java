@@ -6,34 +6,33 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JYIndexAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_jyx5_index);
+        //setContentView(R.layout.layout_wc_jyx5_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.index_lock_set).setOnClickListener(this);
         findViewById(R.id.index_carlight_set).setOnClickListener(this);
         findViewById(R.id.index_maintenance_set).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         Class<?> cls = null;
         switch (id) {
-            case R.id.index_lock_set /* 2131433080 */:
+            case R.id.index_lock_set /* 2131432979 */:
                 cls = JYCarLockSet.class;
                 break;
-            case R.id.index_carlight_set /* 2131433081 */:
+            case R.id.index_carlight_set /* 2131432980 */:
                 cls = JYCarLightSet.class;
                 break;
-            case R.id.index_maintenance_set /* 2131433082 */:
+            case R.id.index_maintenance_set /* 2131432981 */:
                 cls = JYCarMaintanece.class;
                 break;
         }

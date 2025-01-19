@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepShitLight extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 323:
+                case 335:
                     if (value == 1) {
                         PAJeepShitLight.this.findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                         ((Button) PAJeepShitLight.this.findViewById(R.id.btn_plus6)).setText(R.string.str_deactivate_shift_light);
@@ -32,7 +31,7 @@ public class PAJeepShitLight extends BaseActivity {
                         ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text6)).setText(R.string.str_inactive);
                         break;
                     }
-                case 324:
+                case 336:
                     if (((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text1)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text1)).setText("----");
@@ -48,7 +47,7 @@ public class PAJeepShitLight extends BaseActivity {
                         }
                     }
                     break;
-                case 325:
+                case 337:
                     if (((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text2)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text2)).setText("----");
@@ -64,7 +63,7 @@ public class PAJeepShitLight extends BaseActivity {
                         }
                     }
                     break;
-                case 326:
+                case 338:
                     if (((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text3)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text3)).setText("----");
@@ -80,7 +79,7 @@ public class PAJeepShitLight extends BaseActivity {
                         }
                     }
                     break;
-                case 327:
+                case 339:
                     if (((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text4)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text4)).setText("----");
@@ -96,7 +95,7 @@ public class PAJeepShitLight extends BaseActivity {
                         }
                     }
                     break;
-                case 328:
+                case 340:
                     if (((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text5)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepShitLight.this.findViewById(R.id.tv_text5)).setText("----");
@@ -116,79 +115,79 @@ public class PAJeepShitLight extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_shitlight);
+        //setContentView(R.layout.layout_0374_pa_jeep_shitlight);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{3, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{4, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{5, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{6, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{6}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{7, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{7}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[323];
+                int value = DataCanbus.DATA[335];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(15, new int[]{1}, null, null);
                 } else {
@@ -196,44 +195,44 @@ public class PAJeepShitLight extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepShitLight.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{88}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[323].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[324].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[325].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[326].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[327].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[328].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[335].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[336].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[337].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[338].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[339].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[340].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[323].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[324].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[325].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[326].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[327].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[328].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[335].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[336].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[337].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[338].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[339].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[340].removeNotify(this.mNotifyCanbus);
     }
 }

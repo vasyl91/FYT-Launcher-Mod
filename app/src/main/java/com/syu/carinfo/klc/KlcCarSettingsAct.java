@@ -10,12 +10,11 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcCarSettingsAct extends Activity implements View.OnClickListener {
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_car_set);
+        //setContentView(R.layout.layout_klc_car_set);
         init();
     }
 
@@ -29,7 +28,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
         findViewById(R.id.klc_btn_default_set_check).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 254) {
@@ -41,11 +40,11 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_btn_Crash_check /* 2131431858 */:
+            case R.id.klc_btn_Crash_check /* 2131431832 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) KlcCrashSetAct.class);
                     startActivity(intent);
@@ -54,7 +53,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_lock_check /* 2131431859 */:
+            case R.id.klc_btn_lock_check /* 2131431833 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) KlcLockAct.class);
                     startActivity(intent2);
@@ -63,7 +62,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_Remote_setting_check /* 2131431860 */:
+            case R.id.klc_btn_Remote_setting_check /* 2131431834 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) KlcRemoteControlAct.class);
                     startActivity(intent3);
@@ -72,7 +71,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_light_set_check /* 2131431861 */:
+            case R.id.klc_btn_light_set_check /* 2131431835 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) KlcLightAct.class);
                     startActivity(intent4);
@@ -81,7 +80,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_Instrument_set_check /* 2131431863 */:
+            case R.id.klc_btn_Instrument_set_check /* 2131431837 */:
                 try {
                     Intent intent5 = new Intent(this, (Class<?>) KlcMeterAct.class);
                     startActivity(intent5);
@@ -90,7 +89,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_sport_mode_check /* 2131431865 */:
+            case R.id.klc_btn_sport_mode_check /* 2131431839 */:
                 try {
                     Intent intent6 = new Intent(this, (Class<?>) KlcSportModeAct.class);
                     startActivity(intent6);
@@ -99,7 +98,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                     e6.printStackTrace();
                     return;
                 }
-            case R.id.klc_btn_default_set_check /* 2131431867 */:
+            case R.id.klc_btn_default_set_check /* 2131431841 */:
                 dialog();
                 break;
         }
@@ -109,11 +108,11 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(" " + getResources().getString(R.string.rzc_klc_default_set_str));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.klc.KlcCarSettingsAct.1
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.klc.KlcCarSettingsAct.1.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(15);
                     }
@@ -121,8 +120,8 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.klc.KlcCarSettingsAct.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -130,7 +129,7 @@ public class KlcCarSettingsAct extends Activity implements View.OnClickListener 
         builder.create().show();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

@@ -11,91 +11,90 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControlMQB_WC_Front extends Activity implements View.OnClickListener {
     public static AirControlMQB_WC_Front mInstance;
     public static boolean mIsFront = false;
     int cmdId = 0;
     int value = -1;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.golf7.AirControlMQB_WC_Front.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
+                case 10:
                     AirControlMQB_WC_Front.this.updatePower(this.value);
                     break;
-                case 88:
-                    AirControlMQB_WC_Front.this.updateMaxAC(this.value);
-                    break;
-                case 89:
-                    AirControlMQB_WC_Front.this.updateAuto(this.value);
-                    break;
-                case 90:
-                    AirControlMQB_WC_Front.this.updateSync(this.value);
-                    break;
-                case 91:
+                case 11:
                     AirControlMQB_WC_Front.this.updateAC(this.value);
                     break;
-                case 92:
-                    AirControlMQB_WC_Front.this.updateSeatHotLeft(this.value);
+                case 12:
+                    AirControlMQB_WC_Front.this.updateCycle(this.value);
                     break;
-                case 93:
-                    AirControlMQB_WC_Front.this.updateSeatHotRight(this.value);
+                case 13:
+                    AirControlMQB_WC_Front.this.updateAuto(this.value);
                     break;
-                case 95:
-                    AirControlMQB_WC_Front.this.updateBlowBody(this.value);
-                    break;
-                case 96:
-                    AirControlMQB_WC_Front.this.updateBlowFoot(this.value);
-                    break;
-                case 97:
-                    AirControlMQB_WC_Front.this.mUpdaterAirWindLevelLeft(this.value);
-                    break;
-                case 98:
-                    AirControlMQB_WC_Front.this.updateTempLeft(this.value);
-                    break;
-                case 99:
-                    AirControlMQB_WC_Front.this.updateTempRight(this.value);
-                    break;
-                case 101:
-                    AirControlMQB_WC_Front.this.updateSteerHot(this.value);
-                    break;
-                case 151:
-                    AirControlMQB_WC_Front.this.updateRearLock(this.value);
-                    break;
-                case 152:
-                    AirControlMQB_WC_Front.this.updateFront(this.value);
-                    break;
-                case 153:
+                case 18:
                     AirControlMQB_WC_Front.this.updateBlowWin(this.value);
                     break;
-                case 155:
+                case 19:
+                    AirControlMQB_WC_Front.this.updateBlowBody(this.value);
+                    break;
+                case 20:
+                    AirControlMQB_WC_Front.this.updateBlowFoot(this.value);
+                    break;
+                case 21:
+                    AirControlMQB_WC_Front.this.mUpdaterAirWindLevelLeft(this.value);
+                    break;
+                case 27:
+                    AirControlMQB_WC_Front.this.updateTempLeft(this.value);
+                    break;
+                case 28:
+                    AirControlMQB_WC_Front.this.updateTempRight(this.value);
+                    break;
+                case 29:
+                    AirControlMQB_WC_Front.this.updateSeatHotLeft(this.value);
+                    break;
+                case 30:
+                    AirControlMQB_WC_Front.this.updateSeatHotRight(this.value);
+                    break;
+                case 31:
+                    AirControlMQB_WC_Front.this.updateSeatBlowLeft(this.value);
+                    break;
+                case 32:
+                    AirControlMQB_WC_Front.this.updateSeatBlowRight(this.value);
+                    break;
+                case 53:
+                    AirControlMQB_WC_Front.this.updateMaxAC(this.value);
+                    break;
+                case 62:
+                    AirControlMQB_WC_Front.this.updateSync(this.value);
+                    break;
+                case 65:
+                    AirControlMQB_WC_Front.this.updateFront(this.value);
+                    break;
+                case 66:
+                    AirControlMQB_WC_Front.this.updateSteerHot(this.value);
+                    break;
+                case 67:
+                    AirControlMQB_WC_Front.this.updateRearLock(this.value);
+                    break;
+                case 69:
                     this.value = DataCanbus.DATA[updateCode] & 255;
                     AirControlMQB_WC_Front.this.updateWindMode(this.value);
                     break;
-                case 157:
-                    AirControlMQB_WC_Front.this.updateCycle(this.value);
-                    break;
-                case 190:
+                case 76:
                     AirControlMQB_WC_Front.this.updateClearAir(this.value);
-                    break;
-                case 191:
-                    AirControlMQB_WC_Front.this.updateSeatBlowRight(this.value);
-                    break;
-                case 192:
-                    AirControlMQB_WC_Front.this.updateSeatBlowLeft(this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0017_wc_mqb_all_air_control);
+        //setContentView(R.layout.layout_0017_wc_mqb_all_air_control);
         setListener();
         mInstance = this;
     }
@@ -128,15 +127,15 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         ((Button) findViewById(R.id.air_xts_rearpage)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         this.value = 0;
         this.cmdId = 0;
         switch (v.getId()) {
             case R.id.btn_air_temp_left_plus /* 2131427425 */:
                 this.cmdId = 20;
-                this.value = DataCanbus.DATA[98] & 255;
-                if (DataCanbus.DATA[156] == 0) {
+                this.value = DataCanbus.DATA[27] & 255;
+                if (DataCanbus.DATA[37] == 0) {
                     if (this.value == 254 || this.value < 32) {
                         this.value = 32;
                         break;
@@ -159,8 +158,8 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.btn_air_temp_left_minus /* 2131427427 */:
                 this.cmdId = 20;
-                this.value = DataCanbus.DATA[98] & 255;
-                if (DataCanbus.DATA[156] == 0) {
+                this.value = DataCanbus.DATA[27] & 255;
+                if (DataCanbus.DATA[37] == 0) {
                     if (this.value == 254 || this.value <= 32) {
                         this.value = 254;
                         break;
@@ -183,39 +182,39 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_power /* 2131427428 */:
                 this.cmdId = 2;
-                this.value = DataCanbus.DATA[87] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[10] != 0 ? 0 : 1;
                 break;
             case R.id.dj_xts_air_win_minuts_btn /* 2131427429 */:
                 this.cmdId = 23;
-                this.value = DataCanbus.DATA[97] - 1;
+                this.value = DataCanbus.DATA[21] - 1;
                 if (this.value <= 0) {
                     this.value = 0;
                     break;
                 }
             case R.id.dj_xts_air_win_plus_btn /* 2131427431 */:
                 this.cmdId = 23;
-                this.value = DataCanbus.DATA[97] + 1;
+                this.value = DataCanbus.DATA[21] + 1;
                 if (this.value >= 7) {
                     this.value = 7;
                     break;
                 }
             case R.id.air_xts_seathot_left /* 2131427433 */:
                 this.cmdId = 33;
-                this.value = DataCanbus.DATA[92] + 1;
+                this.value = DataCanbus.DATA[29] + 1;
                 if (this.value > 3) {
                     this.value = 0;
                     break;
                 }
             case R.id.air_xts_seathot_right /* 2131427435 */:
                 this.cmdId = 34;
-                this.value = DataCanbus.DATA[93] + 1;
+                this.value = DataCanbus.DATA[30] + 1;
                 if (this.value > 3) {
                     this.value = 0;
                     break;
                 }
             case R.id.air_xts_auto /* 2131427436 */:
                 this.cmdId = 129;
-                if (DataCanbus.DATA[89] == 0) {
+                if (DataCanbus.DATA[13] == 0) {
                     this.value = 0;
                     break;
                 } else {
@@ -224,7 +223,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_cycle /* 2131427437 */:
                 this.cmdId = 19;
-                this.value = DataCanbus.DATA[157] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[12] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_front /* 2131427438 */:
                 this.cmdId = 129;
@@ -232,7 +231,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 break;
             case R.id.air_xts_ac /* 2131427439 */:
                 this.cmdId = 15;
-                this.value = DataCanbus.DATA[91] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[11] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_maxac /* 2131427440 */:
                 this.cmdId = 129;
@@ -240,31 +239,31 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 break;
             case R.id.air_xts_sync /* 2131427441 */:
                 this.cmdId = 17;
-                this.value = DataCanbus.DATA[90] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[62] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_winlev /* 2131427442 */:
                 this.cmdId = 1;
-                this.value = (DataCanbus.DATA[155] + 1) % 3;
+                this.value = (DataCanbus.DATA[69] + 1) % 3;
                 break;
             case R.id.air_xts_mode_foot /* 2131427443 */:
                 this.cmdId = 25;
-                this.value = DataCanbus.DATA[96] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[20] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_mode_body /* 2131427444 */:
                 this.cmdId = 24;
-                this.value = DataCanbus.DATA[95] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[19] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_mode_win /* 2131427445 */:
                 this.cmdId = 26;
-                this.value = DataCanbus.DATA[153] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[18] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_rearlock /* 2131427446 */:
                 this.cmdId = 18;
-                this.value = DataCanbus.DATA[151] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[67] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_clearair /* 2131427447 */:
                 this.cmdId = 32;
-                this.value = DataCanbus.DATA[190] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[76] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_rearpage /* 2131427448 */:
                 try {
@@ -276,8 +275,8 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.btn_air_temp_right_plus /* 2131427449 */:
                 this.cmdId = 21;
-                this.value = DataCanbus.DATA[99] & 255;
-                if (DataCanbus.DATA[156] == 0) {
+                this.value = DataCanbus.DATA[28] & 255;
+                if (DataCanbus.DATA[37] == 0) {
                     if (this.value == 254 || this.value < 32) {
                         this.value = 32;
                         break;
@@ -300,8 +299,8 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 this.cmdId = 21;
-                this.value = DataCanbus.DATA[99] & 255;
-                if (DataCanbus.DATA[156] == 0) {
+                this.value = DataCanbus.DATA[28] & 255;
+                if (DataCanbus.DATA[37] == 0) {
                     if (this.value == 254 || this.value <= 32) {
                         this.value = 254;
                         break;
@@ -324,18 +323,18 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                 }
             case R.id.air_xts_seatwin_left /* 2131427452 */:
                 this.cmdId = 37;
-                this.value = DataCanbus.DATA[192] + 1;
+                this.value = DataCanbus.DATA[31] + 1;
                 if (this.value > 3) {
                     this.value = 0;
                     break;
                 }
             case R.id.air_xts_steer_hot /* 2131427453 */:
                 this.cmdId = 35;
-                this.value = DataCanbus.DATA[101] != 0 ? 0 : 1;
+                this.value = DataCanbus.DATA[66] != 0 ? 0 : 1;
                 break;
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 this.cmdId = 38;
-                this.value = DataCanbus.DATA[191] + 1;
+                this.value = DataCanbus.DATA[32] + 1;
                 if (this.value > 3) {
                     this.value = 0;
                     break;
@@ -346,7 +345,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -354,7 +353,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -368,58 +367,58 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mCanbusNotify);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempLeft(int value) {
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             switch (value) {
@@ -430,7 +429,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HIGHT");
                     break;
                 default:
-                    if (DataCanbus.DATA[156] == 0) {
+                    if (DataCanbus.DATA[37] == 0) {
                         ((TextView) findViewById(R.id.tv_air_temp_left)).setText((value / 2.0f) + "℃");
                         break;
                     } else {
@@ -441,7 +440,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempRight(int value) {
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             switch (value) {
@@ -452,7 +451,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
                     ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HIGHT");
                     break;
                 default:
-                    if (DataCanbus.DATA[156] == 0) {
+                    if (DataCanbus.DATA[37] == 0) {
                         ((TextView) findViewById(R.id.tv_air_temp_right)).setText((value / 2.0f) + "℃");
                         break;
                     } else {
@@ -463,7 +462,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowLeft(int value) {
         if (((Button) findViewById(R.id.air_xts_seatwin_left)) != null) {
             switch (value) {
@@ -483,7 +482,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowRight(int value) {
         if (((Button) findViewById(R.id.air_xts_seatwin_right)) != null) {
             switch (value) {
@@ -503,7 +502,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotRight(int value) {
         if (((Button) findViewById(R.id.air_xts_seathot_right)) != null) {
             switch (value) {
@@ -523,7 +522,7 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotLeft(int value) {
         if (((Button) findViewById(R.id.air_xts_seathot_left)) != null) {
             switch (value) {
@@ -543,49 +542,49 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSteerHot(int value) {
         if (((Button) findViewById(R.id.air_xts_steer_hot)) != null) {
             ((Button) findViewById(R.id.air_xts_steer_hot)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_steer_hot_n : R.drawable.ic_xts_steer_hot_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateClearAir(int value) {
         if (((Button) findViewById(R.id.air_xts_clearair)) != null) {
             ((Button) findViewById(R.id.air_xts_clearair)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_clearair_n : R.drawable.ic_xts_clearair_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePower(int value) {
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
             ((Button) findViewById(R.id.air_xts_power)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAC(int value) {
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
             ((Button) findViewById(R.id.air_xts_ac)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCycle(int value) {
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
             ((Button) findViewById(R.id.air_xts_cycle)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_cycle_n : R.drawable.ic_xts_cycle_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFront(int value) {
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
             ((Button) findViewById(R.id.air_xts_front)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_maxfront_n : R.drawable.ic_xts_maxfront_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateWindMode(int value) {
         if (((Button) findViewById(R.id.air_xts_winlev)) != null) {
             switch (value) {
@@ -602,49 +601,49 @@ public class AirControlMQB_WC_Front extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateMaxAC(int value) {
         if (((Button) findViewById(R.id.air_xts_maxac)) != null) {
             ((Button) findViewById(R.id.air_xts_maxac)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearLock(int value) {
         if (((Button) findViewById(R.id.air_xts_rearlock)) != null) {
             ((Button) findViewById(R.id.air_xts_rearlock)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowWin(int value) {
         if (((Button) findViewById(R.id.air_xts_mode_win)) != null) {
             ((Button) findViewById(R.id.air_xts_mode_win)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowBody(int value) {
         if (((Button) findViewById(R.id.air_xts_mode_body)) != null) {
             ((Button) findViewById(R.id.air_xts_mode_body)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowFoot(int value) {
         if (((Button) findViewById(R.id.air_xts_mode_foot)) != null) {
             ((Button) findViewById(R.id.air_xts_mode_foot)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAuto(int value) {
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
             ((Button) findViewById(R.id.air_xts_auto)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSync(int value) {
         if (((Button) findViewById(R.id.air_xts_sync)) != null) {
             ((Button) findViewById(R.id.air_xts_sync)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);

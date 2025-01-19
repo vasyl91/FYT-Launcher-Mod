@@ -1,13 +1,16 @@
 package com.android.launcher66;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -18,8 +21,6 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,25 +37,23 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.StyleableRes;
+import androidx.preference.PreferenceManager;
 
-import com.android.launcher66.AsyncTaskPageData;
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.DragLayer;
-import com.android.launcher66.DropTarget;
-import com.android.launcher66.PagedView;
-import com.android.launcher66.PagedViewIcon;
-import com.android.launcher66.PagedViewWidget;
-import com.android.launcher66.Workspace;
+import com.android.async.AsyncTask;
+import com.android.launcher66.settings.Helpers;
 import com.android.recycler.AppListBean;
 import com.syu.util.JLog;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import share.Config;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AppsCustomizePagedView extends PagedViewWithDraggableItems implements View.OnClickListener, View.OnKeyListener, DragSource, PagedViewIcon.PressedCallback, PagedViewWidget.ShortPressListener, LauncherTransitionable {
     private static final boolean PERFORM_OVERSCROLL_ROTATION = true;
     static final int WIDGET_BOUND = 1;
@@ -119,6 +118,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private static float TRANSITION_MAX_ROTATION = 22.0f;
     public static boolean DISABLE_ALL_APPS = LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_all_disable);
     private static String[] containsWidgets = {"com.syu.widget.DateTimeProvider", "com.syu.music.MAppWidget"};
+    public static final String STATS_APP_FOREGROUND = "stats.app.foreground";
+    public static PagedViewIcon icon;
 
     public enum ContentType {
         Applications,
@@ -184,7 +185,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         setClipChildren(false);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void init() {
         super.init();
         this.mCenterPagesVertically = false;
@@ -193,7 +194,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         setDragSlopeThreshold(r.getInteger(R.integer.config_appsCustomizeDragSlopeThreshold) / 100.0f);
     }
 
-    @Override // android.view.View
+    @Override
     public void onFinishInflate() {
         super.onFinishInflate();
         LauncherAppState app = LauncherAppState.getInstance();
@@ -312,8 +313,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         int page = getPageForComponent(this.mSaveInstanceStateItemIndex);
         invalidatePageData(Math.max(0, page), hostIsTransitioning);
         if (!hostIsTransitioning) {
-            post(new Runnable() { // from class: com.android.launcher66.AppsCustomizePagedView.1
-                @Override // java.lang.Runnable
+            post(new Runnable() { 
+                @Override
                 public void run() {
                     AppsCustomizePagedView.this.showAllAppsCling();
                 }
@@ -321,7 +322,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    void showAllAppsCling() {
+    void showAllAppsCling() {    
         if (!this.mHasShownAllAppsCling && isDataReady()) {
             this.mHasShownAllAppsCling = true;
             int[] offset = new int[2];
@@ -332,7 +333,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = View.MeasureSpec.getSize(widthMeasureSpec);
         int height = View.MeasureSpec.getSize(heightMeasureSpec);
@@ -356,14 +357,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public void onPackagesUpdated(ArrayList<Object> widgetsAndShortcuts) {
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        this.mWidgets.clear();
-        Iterator<Object> it = widgetsAndShortcuts.iterator();
-        while (it.hasNext()) {
-            Object o = it.next();
+
+        // Get the list of widgets and shortcuts
+        mWidgets.clear();
+        for (Object o : widgetsAndShortcuts) {
             if (o instanceof AppWidgetProviderInfo) {
                 AppWidgetProviderInfo widget = (AppWidgetProviderInfo) o;
-                if (app.shouldShowAppOrWidgetProvider(widget.provider) && !isFilterWidgets(widget.provider.getClassName()) && (Config.CUSTOMER_ID != 8 || (!widget.provider.getPackageName().contains("antutu") && !widget.provider.getPackageName().contains("ludashi")))) {
-                    widget.label = widget.label.trim();
+                if (app.shouldShowAppOrWidgetProvider(widget.provider) && !isFilterWidgets(widget.provider.getClassName()) && (Config.CUSTOMER_ID != 8 || (!widget.provider.getPackageName().contains("antutu") && !widget.provider.getPackageName().contains("ludashi"))))  {
                     if (widget.minWidth > 0 && widget.minHeight > 0) {
                         int[] spanXY = Launcher.getSpanForWidget(this.mLauncher, widget);
                         int[] minSpanXY = Launcher.getMinSpanForWidget(this.mLauncher, widget);
@@ -387,8 +387,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                             }
                         }
                     }
+                } else {
+                    Log.i("WIDGET", "Widget " + widget.provider + " has invalid dimensions (" +
+                          widget.minWidth + ", " + widget.minHeight + ")");
                 }
-            }
+            } 
         }
         updatePageCountsAndInvalidateData();
     }
@@ -414,10 +417,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         this.mNeedToUpdatePageCountsAndInvalidateData = false;
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         if (this.mLauncher.isAllAppsVisible() && !this.mLauncher.getWorkspace().isSwitchingState()) {
             if (v instanceof PagedViewIcon) {
+                Helpers.overviewMode = false;
+                Helpers.listOpen = false;
                 AppInfo appInfo = (AppInfo) v.getTag();
                 if (this.mPressedIcon != null) {
                     this.mPressedIcon.lockDrawableState();
@@ -425,7 +430,23 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 this.mLauncher.startActivitySafely(v, appInfo.intent, appInfo);
                 this.mLauncher.getStats().recordLaunch(appInfo.intent);
                 AppListBean bean = new AppListBean(appInfo.title.toString(), appInfo.getPackageName(), appInfo.getClassName());
-                this.mLauncher.refreshLeftCycle(bean);
+                this.mLauncher.refreshLeftCycle(bean);        
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                boolean userLayout = prefs.getBoolean("user_layout", false);
+                boolean userStats = prefs.getBoolean("user_stats", false);
+                if (userLayout && userStats)  {
+                    SharedPreferences statsPrefs = AppsCustomizePagedView.this.getContext().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                    Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+                    if (apps.contains(appInfo.getPackageName())) {
+                        Launcher.mAppsCustomizeTabHost.setVisibility(View.GONE);
+                        Helpers.shouldAllAppsBeVisible = true;
+                        Helpers.foregroundAppOpened = true;
+                        Helpers.inAllApps = false;
+                        Helpers.isInRecent = false;
+                        Intent intent = new Intent(STATS_APP_FOREGROUND);
+                        LauncherApplication.sApp.sendBroadcast(intent);
+                    }                    
+                }
                 return;
             }
             if (v instanceof PagedViewWidget) {
@@ -448,12 +469,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // android.view.View.OnKeyListener
+    @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         return FocusHelper.handleAppsCustomizeKeyEvent(v, keyCode, event);
     }
 
-    @Override // com.android.launcher66.PagedViewWithDraggableItems
+    @Override
     protected void determineDraggingStart(MotionEvent ev) {
     }
 
@@ -484,8 +505,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             return;
         }
         this.mWidgetCleanupState = 0;
-        this.mBindWidgetRunnable = new Runnable() { // from class: com.android.launcher66.AppsCustomizePagedView.2
-            @Override // java.lang.Runnable
+        this.mBindWidgetRunnable = new Runnable() { 
+            @Override
             public void run() {
                 AppsCustomizePagedView.this.mWidgetLoadingId = AppsCustomizePagedView.this.mLauncher.getAppWidgetHost().allocateAppWidgetId();
                 if (options == null) {
@@ -498,8 +519,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             }
         };
         post(this.mBindWidgetRunnable);
-        this.mInflateWidgetRunnable = new Runnable() { // from class: com.android.launcher66.AppsCustomizePagedView.3
-            @Override // java.lang.Runnable
+        this.mInflateWidgetRunnable = new Runnable() { 
+            @Override
             public void run() {
                 if (AppsCustomizePagedView.this.mWidgetCleanupState == 1) {
                     AppWidgetHostView hostView = AppsCustomizePagedView.this.mLauncher.getAppWidgetHost().createView(AppsCustomizePagedView.this.getContext(), AppsCustomizePagedView.this.mWidgetLoadingId, pInfo);
@@ -519,7 +540,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         post(this.mInflateWidgetRunnable);
     }
 
-    @Override // com.android.launcher66.PagedViewWidget.ShortPressListener
+    @Override
     public void onShortPress(View v) {
         if (this.mCreateWidgetInfo != null) {
             cleanupWidgetPreloading(false);
@@ -554,7 +575,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         PagedViewWidget.resetShortPressTarget();
     }
 
-    @Override // com.android.launcher66.PagedViewWidget.ShortPressListener
+    @Override
     public void cleanUpShortPress(View v) {
         if (!this.mDraggingWidget) {
             cleanupWidgetPreloading(false);
@@ -614,7 +635,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return true;
     }
 
-    @Override // com.android.launcher66.PagedViewWithDraggableItems
+    @Override
     protected boolean beginDragging(View v) {
         if (!super.beginDragging(v)) {
             return false;
@@ -624,8 +645,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         } else if ((v instanceof PagedViewWidget) && !beginDraggingWidget(v)) {
             return false;
         }
-        postDelayed(new Runnable() { // from class: com.android.launcher66.AppsCustomizePagedView.4
-            @Override // java.lang.Runnable
+        postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 if (AppsCustomizePagedView.this.mLauncher.getDragController().isDragging()) {
                     AppsCustomizePagedView.this.resetDrawableState();
@@ -643,12 +664,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         this.mLauncher.unlockScreenOrientation(false);
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public View getContent() {
         return null;
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionPrepare(Launcher l, boolean animated, boolean toWorkspace) {
         this.mInTransition = true;
         if (toWorkspace) {
@@ -656,15 +677,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStart(Launcher l, boolean animated, boolean toWorkspace) {
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStep(Launcher l, float t) {
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionEnd(Launcher l, boolean animated, boolean toWorkspace) {
         this.mInTransition = false;
         Iterator<AsyncTaskPageData> it = this.mDeferredSyncWidgetPageItems.iterator();
@@ -682,7 +703,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         this.mForceDrawAllChildrenNextFrame = toWorkspace ? false : true;
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onDropCompleted(View target, DropTarget.DragObject d, boolean isFlingToDelete, boolean success) {
         if (!isFlingToDelete) {
             endDragging(target, false, success);
@@ -708,19 +729,19 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onFlingToDeleteCompleted() {
         endDragging(null, true, true);
         cleanupWidgetPreloading(false);
         this.mDraggingWidget = false;
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public boolean supportsFlingToDelete() {
         return true;
     }
 
-    @Override // com.android.launcher66.PagedViewWithDraggableItems, com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         cancelAllTasks();
@@ -773,7 +794,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return this.mContentType;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void snapToPage(int whichPage, int delta, int duration) {
         super.snapToPage(whichPage, delta, duration);
         updateCurrentTab(whichPage);
@@ -829,7 +850,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         ArrayList<Bitmap> images = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
             AppInfo info = this.mApps.get(i);
-            PagedViewIcon icon = (PagedViewIcon) this.mLayoutInflater.inflate(R.layout.apps_customize_application, (ViewGroup) layout, false);
+            icon = (PagedViewIcon) this.mLayoutInflater.inflate(R.layout.apps_customize_application, (ViewGroup) layout, false);
             icon.applyFromApplicationInfo(info, true, this);
             icon.setOnClickListener(this);
             icon.setOnLongClickListener(this);
@@ -845,6 +866,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             items.add(info);
             images.add(info.iconBitmap);
         }
+
         enableHwLayersOnVisiblePages();
     }
 
@@ -876,7 +898,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return Math.max(0, pageDiff * 200);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void prepareLoadWidgetPreviewsTask(int page, ArrayList<Object> widgets, int cellWidth, int cellHeight, int cellCountX) {
         Iterator<AppsCustomizeAsyncTask> iter = this.mRunningTasks.iterator();
         while (iter.hasNext()) {
@@ -890,8 +912,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             }
         }
         final int sleepMs = getSleepForPage(page);
-        AsyncTaskPageData pageData = new AsyncTaskPageData(page, widgets, cellWidth, cellHeight, new AsyncTaskCallback() { // from class: com.android.launcher66.AppsCustomizePagedView.5
-            @Override // com.android.launcher66.AsyncTaskCallback
+        AsyncTaskPageData pageData = new AsyncTaskPageData(page, widgets, cellWidth, cellHeight, new AsyncTaskCallback() { 
+            @Override
             public void run(AppsCustomizeAsyncTask task2, AsyncTaskPageData data) {
                 try {
                     try {
@@ -905,8 +927,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 }
                 AppsCustomizePagedView.this.loadWidgetPreviewsInBackground(task2, data);
             }
-        }, new AsyncTaskCallback() { // from class: com.android.launcher66.AppsCustomizePagedView.6
-            @Override // com.android.launcher66.AsyncTaskCallback
+        }, new AsyncTaskCallback() { 
+            @Override
             public void run(AppsCustomizeAsyncTask task2, AsyncTaskPageData data) {
                 AppsCustomizePagedView.this.mRunningTasks.remove(task2);
                 if (task2.isCancelled()) {
@@ -917,7 +939,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }, this.mWidgetPreviewLoader);
         AppsCustomizeAsyncTask t = new AppsCustomizeAsyncTask(page, AsyncTaskPageData.Type.LoadWidgetPreviewData);
         t.setThreadPriority(getThreadPriorityForPage(page));
-        t.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, pageData);
+        t.execute(AsyncTask.THREAD_POOL_EXECUTOR, pageData);
         this.mRunningTasks.add(t);
     }
 
@@ -986,8 +1008,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             pagedViewGridLayout.addView(widget, lp);
             JLog.getInstance().e("ResolveInfo ");
         }
-        pagedViewGridLayout.setOnLayoutListener(new Runnable() { // from class: com.android.launcher66.AppsCustomizePagedView.7
-            @Override // java.lang.Runnable
+        pagedViewGridLayout.setOnLayoutListener(new Runnable() { 
+            @Override
             public void run() {
                 int maxPreviewWidth = cellWidth;
                 int maxPreviewHeight = cellHeight;
@@ -1014,7 +1036,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void loadWidgetPreviewsInBackground(AppsCustomizeAsyncTask task, AsyncTaskPageData data) {
         if (task != null) {
             task.syncThreadPriority();
@@ -1034,7 +1056,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onSyncWidgetPageItems(AsyncTaskPageData data) {
         if (this.mInTransition) {
             this.mDeferredSyncWidgetPageItems.add(data);
@@ -1064,7 +1086,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     public void syncPages() {
         if (LauncherAppState.appsWidgetsDetach) {
             disablePagedViewAnimations();
@@ -1105,7 +1127,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         enablePagedViewAnimations();
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     public void syncPageItems(int page, boolean immediate) {
         if (LauncherAppState.appsWidgetsDetach) {
             if (this.mContentType == ContentType.Widgets) {
@@ -1123,17 +1145,17 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     View getPageAt(int index) {
         return getChildAt(indexToPage(index));
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected int indexToPage(int index) {
         return (getChildCount() - index) - 1;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void screenScrolled(int screenCenter) {
         float translationX;
         float interpolatedProgress;
@@ -1239,7 +1261,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void overScroll(float amount) {
         acceleratedOverScroll(amount);
     }
@@ -1248,7 +1270,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return this.mContentWidth;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void onPageEndMoving() {
         super.onPageEndMoving();
         this.mForceDrawAllChildrenNextFrame = true;
@@ -1283,14 +1305,14 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 AppInfo appInfo = this.mApps.get(i);
                 Resources res = getResources();
                 if ("com.syu.voice.VoiceLaunch".equals(appInfo.componentName.getClassName()) || "com.syu.voice.Launch".equals(appInfo.componentName.getClassName())) {
-                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, res.getIdentifier("com_syu_voice_voicelaunch", "drawable", ""));
+                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, getResId("com_syu_voice_voicelaunch"));
                 } else if ("com.syu.voice.VoiceSetup".equals(appInfo.componentName.getClassName())) {
-                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, res.getIdentifier("com_syu_voice_voicesetup", "drawable", ""));
+                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, getResId("com_syu_voice_voicesetup"));
                 } else if ("com.syu.bt.act.ActBtAvStart".equals(appInfo.componentName.getClassName())) {
-                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, res.getIdentifier("com_syu_btbav", "drawable", ""));
+                    appInfo.iconBitmap = BitmapFactory.decodeResource(res, getResId("com_syu_btbav"));
                 } else {
                     String bmpName = appInfo.getPackageName().replace(".", "_");
-                    Bitmap bit = BitmapFactory.decodeResource(res, res.getIdentifier(bmpName, "drawable", ""));
+                    Bitmap bit = BitmapFactory.decodeResource(res, getResId(bmpName));
                     if (bit != null) {
                         appInfo.iconBitmap = bit;
                     } else {
@@ -1305,6 +1327,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 }
             }
             updatePageCountsAndInvalidateData();
+        }
+    }
+
+    public int getResId(String resName) {
+        try {
+            Field idField = R.drawable.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -1394,7 +1425,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             Object i = it.next();
             if (i instanceof AppWidgetProviderInfo) {
                 AppWidgetProviderInfo info = (AppWidgetProviderInfo) i;
-                Log.d(tag, "   label=\"" + info.label + "\" previewImage=" + info.previewImage + " resizeMode=" + info.resizeMode + " configure=" + info.configure + " initialLayout=" + info.initialLayout + " minWidth=" + info.minWidth + " minHeight=" + info.minHeight);
+                Log.d(tag, "   label=\"" + info.loadLabel(this.mPackageManager) + "\" previewImage=" + info.previewImage + " resizeMode=" + info.resizeMode + " configure=" + info.configure + " initialLayout=" + info.initialLayout + " minWidth=" + info.minWidth + " minHeight=" + info.minHeight);
             } else if (i instanceof ResolveInfo) {
                 ResolveInfo info2 = (ResolveInfo) i;
                 Log.d(tag, "   label=\"" + ((Object) info2.loadLabel(this.mPackageManager)) + "\" icon=" + info2.icon);
@@ -1406,7 +1437,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         cancelAllTasks();
     }
 
-    @Override // com.android.launcher66.PagedViewIcon.PressedCallback
+    @Override
     public void iconPressed(PagedViewIcon icon) {
         if (this.mPressedIcon != null) {
             this.mPressedIcon.resetDrawableState();
@@ -1422,7 +1453,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected int getAssociatedLowerPageBound(int page) {
         int count = getChildCount();
         int windowSize = Math.min(count, 5);
@@ -1430,7 +1461,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return windowMinIndex;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected int getAssociatedUpperPageBound(int page) {
         int count = getChildCount();
         int windowSize = Math.min(count, 5);
@@ -1438,7 +1469,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return windowMaxIndex;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected String getCurrentPageDescription() {
         int stringId;
         int count;

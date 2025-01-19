@@ -11,12 +11,11 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchListener {
     public static KYCToyotaAllAirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.KYCToyotaAllAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -67,10 +66,10 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         DataCanbus.PROXY.cmd(3, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_kyc_toyota_air_control);
+        //setContentView(R.layout.layout_0452_kyc_toyota_air_control);
         init();
         mInstance = this;
     }
@@ -94,7 +93,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         findViewById(R.id.air_xts_rearlock).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -102,7 +101,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -110,7 +109,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -151,16 +150,16 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 12;
                 break;
-            case R.id.air_xts_mode_munits /* 2131427455 */:
+            case R.id.air_xts_mode_munits /* 2131427497 */:
                 data0 = 17;
                 break;
-            case R.id.air_xts_mode_plus /* 2131427456 */:
+            case R.id.air_xts_mode_plus /* 2131427498 */:
                 data0 = 17;
                 break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 4;
                 break;
-            case R.id.air_sync /* 2131428351 */:
+            case R.id.air_sync /* 2131428338 */:
                 data0 = 8;
                 break;
         }
@@ -207,7 +206,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[27];
         int unit = DataCanbus.DATA[37];
@@ -232,7 +231,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[28];
         int unit = DataCanbus.DATA[37];
@@ -257,37 +256,37 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearlockOn() {
         int acOn = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDualOn() {
         int acOn = DataCanbus.DATA[62];
         findViewById(R.id.air_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 2 ? R.drawable.ic_xts_ac_p : R.drawable.ic_xts_ac_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[21];
         findViewById(R.id.air_xts_power).setBackgroundResource(power != 0 ? R.drawable.ic_xts_power_p : R.drawable.ic_xts_power_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
@@ -297,19 +296,19 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
         if (leave < 0) {
@@ -322,7 +321,7 @@ public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchL
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[18];
         int body = DataCanbus.DATA[19];

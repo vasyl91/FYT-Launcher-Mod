@@ -10,16 +10,18 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.util.SparseArray;
+
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.IRemoteToolkit;
+
 import java.util.HashMap;
 import java.util.Random;
+
 import org.apache.http.HttpStatus;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Remote implements ServiceConnection {
     static final HashMap<String, Remote> mTools = new HashMap<>();
     final int CONN_DELAY_TIME_MAX;
@@ -38,7 +40,7 @@ public class Remote implements ServiceConnection {
     }
 
     public static Remote getAutoTools(Context mContext, String action, String pkgName) {
-        String key = String.valueOf(pkgName) + "#" + action;
+        String key = pkgName + "#" + action;
         if (mTools.containsKey(key)) {
             return mTools.get(key);
         }
@@ -72,9 +74,9 @@ public class Remote implements ServiceConnection {
         this.autoConn = true;
         intent.setPackage(this.pkgName);
         this.mContext.bindService(intent, this, 1);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() { // from class: com.syu.remote.Remote.1
-            @Override // java.lang.Runnable
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 if (Remote.this.autoConn && Remote.this.mToolkit == null) {
                     Remote.this.bind();
@@ -95,7 +97,7 @@ public class Remote implements ServiceConnection {
         return this.mModules.get(moduleid, null);
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         if (service != null) {
             this.mToolkit = IRemoteToolkit.Stub.asInterface(service);
@@ -118,7 +120,7 @@ public class Remote implements ServiceConnection {
         }
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public void onServiceDisconnected(ComponentName name) {
         this.mToolkit = null;
         if (this.autoConn) {

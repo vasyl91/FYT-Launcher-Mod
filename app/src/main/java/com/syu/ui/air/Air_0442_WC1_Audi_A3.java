@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0442_WC1_Audi_A3 extends AirBase {
     public Air_0442_WC1_Audi_A3(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0442_wc1_audi_a3/air_wc_audi_a3.webp";
         this.mPathHighlight = "0442_wc1_audi_a3/air_wc_audi_a3_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -92,8 +92,8 @@ public class Air_0442_WC1_Audi_A3 extends AirBase {
         c.clipRect(this.mRectDrawable, Region.Op.XOR);
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(30.0f);
-        c.drawText(new StringBuilder().append(this.DATA[23]).toString(), 90.0f, 134.0f, this.mPaint);
-        c.drawText(new StringBuilder().append(this.DATA[27]).toString(), 972.0f, 134.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[23]), 90.0f, 134.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[27]), 972.0f, 134.0f, this.mPaint);
         int temp = this.DATA[18];
         if (temp == -1) {
             c.drawText("NO", 55.0f, 58.0f, this.mPaint);
@@ -102,7 +102,7 @@ public class Air_0442_WC1_Audi_A3 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 55.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp).toString(), 55.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 55.0f, 58.0f, this.mPaint);
         }
         int temp2 = this.DATA[19];
         if (temp2 == -1) {
@@ -112,7 +112,7 @@ public class Air_0442_WC1_Audi_A3 extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 932.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2).toString(), 932.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2), 932.0f, 58.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

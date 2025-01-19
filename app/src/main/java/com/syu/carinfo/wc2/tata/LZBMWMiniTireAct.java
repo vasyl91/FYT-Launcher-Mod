@@ -8,10 +8,9 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZBMWMiniTireAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.tata.LZBMWMiniTireAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 30:
@@ -30,18 +29,18 @@ public class LZBMWMiniTireAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(2, new int[]{54}, null, null);
         DataCanbus.NOTIFY_EVENTS[30].addNotify(this.notifyCanbus, 1);
@@ -50,7 +49,7 @@ public class LZBMWMiniTireAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[33].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyCanbus);
@@ -58,11 +57,11 @@ public class LZBMWMiniTireAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm() {
         int value = DataCanbus.DATA[30];
         switch (value) {
@@ -77,7 +76,7 @@ public class LZBMWMiniTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRWalm() {
         int value = DataCanbus.DATA[31];
         switch (value) {
@@ -92,7 +91,7 @@ public class LZBMWMiniTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLWalm() {
         int value = DataCanbus.DATA[32];
         switch (value) {
@@ -107,7 +106,7 @@ public class LZBMWMiniTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRWalm() {
         int value = DataCanbus.DATA[33];
         switch (value) {

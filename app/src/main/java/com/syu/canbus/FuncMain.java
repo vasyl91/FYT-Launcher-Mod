@@ -6,7 +6,6 @@ import android.widget.Toast;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.main.DataMain;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FuncMain {
     static Toast toast = null;
     static TextView view = null;

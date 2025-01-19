@@ -11,20 +11,19 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 50:
+                case 115:
                     WC2SanlinCarInfo.this.updateCarinfo1();
                     break;
-                case 51:
+                case 116:
                     WC2SanlinCarInfo.this.updateCarinfo2();
                     break;
-                case 52:
-                    int value = DataCanbus.DATA[52];
+                case 117:
+                    int value = DataCanbus.DATA[117];
                     if (value == 16777215) {
                         ((TextView) WC2SanlinCarInfo.this.findViewById(R.id.tv_text3)).setText("----");
                         break;
@@ -32,8 +31,8 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
                         ((TextView) WC2SanlinCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10.0f) + " km");
                         break;
                     }
-                case 53:
-                    int value2 = DataCanbus.DATA[53];
+                case 118:
+                    int value2 = DataCanbus.DATA[118];
                     if (value2 == 65535) {
                         ((TextView) WC2SanlinCarInfo.this.findViewById(R.id.tv_text4)).setText("----");
                         break;
@@ -45,29 +44,29 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc_sanlin_carinfo);
+        //setContentView(R.layout.layout_0443_wc_sanlin_carinfo);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 dialog(R.string.bmw_cleanoil, 1);
                 break;
         }
@@ -77,12 +76,12 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(1, new int[]{i, 1}, null, null);
                     }
@@ -90,8 +89,8 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -99,25 +98,25 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo2() {
-        int value = DataCanbus.DATA[51];
+        int value = DataCanbus.DATA[116];
         if (value == 65535) {
             ((TextView) findViewById(R.id.tv_text2)).setText("----");
         } else {
@@ -125,9 +124,9 @@ public class WC2SanlinCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo1() {
-        int value = DataCanbus.DATA[50];
+        int value = DataCanbus.DATA[115];
         if (value == 16777215) {
             ((TextView) findViewById(R.id.tv_text1)).setText("----");
         } else {

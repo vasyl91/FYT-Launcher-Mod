@@ -1,51 +1,29 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0452_OD_Qirui_Xiaomayi extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 9;
-    public static final int U_AIR_BEGIN = 7;
-    public static final int U_AIR_BLOW_BODY_LEFT = 15;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 16;
-    public static final int U_AIR_BLOW_UP_LEFT = 14;
-    public static final int U_AIR_CYCLE = 10;
-    public static final int U_AIR_END = 20;
-    public static final int U_AIR_MAX_FRONT = 12;
-    public static final int U_AIR_POWER = 8;
-    public static final int U_AIR_PTC = 11;
-    public static final int U_AIR_REAR_DEFROST = 13;
-    public static final int U_AIR_TEMP_LEFT = 18;
-    public static final int U_AIR_TEMP_RIGHT = 19;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 17;
-    public static final int U_CARSET_D41_D0_B0 = 32;
-    public static final int U_CARSET_D41_D0_B1 = 31;
-    public static final int U_CARSET_D41_D0_B2 = 30;
-    public static final int U_CARSET_D41_D0_B3 = 25;
-    public static final int U_CARSET_D41_D0_B4 = 24;
-    public static final int U_CARSET_D41_D0_B5 = 23;
-    public static final int U_CARSET_D41_D0_B6 = 22;
-    public static final int U_CARSET_D41_D0_B7 = 21;
-    public static final int U_CARSET_D41_D1_B70 = 26;
-    public static final int U_CARSET_D41_D2_B70 = 27;
-    public static final int U_CARSET_D44_D0_D1 = 28;
-    public static final int U_CARSET_D44_D2_B70 = 29;
-    public static final int U_CNT_MAX = 33;
-    public static final int U_DOOR_BACK = 5;
-    public static final int U_DOOR_BEGIN = 0;
-    public static final int U_DOOR_END = 6;
-    public static final int U_DOOR_ENGINE = 0;
-    public static final int U_DOOR_FL = 1;
-    public static final int U_DOOR_FR = 2;
-    public static final int U_DOOR_RL = 3;
-    public static final int U_DOOR_RR = 4;
+    public static final int U_CARSET_D41_D0_B0 = 109;
+    public static final int U_CARSET_D41_D0_B1 = 108;
+    public static final int U_CARSET_D41_D0_B2 = 107;
+    public static final int U_CARSET_D41_D0_B3 = 102;
+    public static final int U_CARSET_D41_D0_B4 = 101;
+    public static final int U_CARSET_D41_D0_B5 = 100;
+    public static final int U_CARSET_D41_D0_B6 = 99;
+    public static final int U_CARSET_D41_D0_B7 = 98;
+    public static final int U_CARSET_D41_D1_B70 = 103;
+    public static final int U_CARSET_D41_D2_B70 = 104;
+    public static final int U_CARSET_D44_D0_D1 = 105;
+    public static final int U_CARSET_D44_D2_B70 = 106;
+    public static final int U_CNT_MAX = 110;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < 110; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -60,7 +38,7 @@ public class Callback_0452_OD_Qirui_Xiaomayi extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -68,9 +46,9 @@ public class Callback_0452_OD_Qirui_Xiaomayi extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 33) {
+        if (updateCode >= 0 && updateCode < 110) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

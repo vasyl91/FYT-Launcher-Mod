@@ -6,12 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIXCTianlai {
     private static UIXCTianlai mInstance;
     Context context;
@@ -29,7 +29,7 @@ public class UIXCTianlai {
     public void showWindowTip(int value) {
         WarnUtils.getWindow();
         initTip(value);
-        if (this.sWarnContent != null) {
+        if (this.sWarnContent != null && value != 127) {
             WarnUtils.showWindow();
             WarnUtils.postDimiss(5000);
         }
@@ -38,9 +38,9 @@ public class UIXCTianlai {
     private void initTip(int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_452_XC_Ford_Escape_13_17 /* 6422980 */:

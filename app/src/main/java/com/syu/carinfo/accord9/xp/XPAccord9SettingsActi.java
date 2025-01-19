@@ -12,47 +12,46 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XPAccord9SettingsActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 18:
+                case 116:
                     XPAccord9SettingsActi.this.mUpdaterTripbResetTiming();
                     break;
-                case 19:
+                case 117:
                     XPAccord9SettingsActi.this.mUpdaterTripaResetTiming();
                     break;
-                case 20:
+                case 118:
                     XPAccord9SettingsActi.this.mUpdaterAdjustOutsideTempDisplay();
                     break;
-                case 21:
+                case 119:
                     XPAccord9SettingsActi.this.mUpdaterFuelEfficiencyBacklight();
                     break;
-                case 22:
+                case 120:
                     XPAccord9SettingsActi.this.mUpdaterAutoLightSensitivity();
                     break;
-                case 23:
+                case 121:
                     XPAccord9SettingsActi.this.mUpdaterHeadlightAutOffTimer();
                     break;
-                case 24:
+                case 122:
                     XPAccord9SettingsActi.this.mUpdaterInteriorLightDimmingTime();
                     break;
-                case 25:
+                case 123:
                     XPAccord9SettingsActi.this.mUpdaterKeylessLockAnswerBack();
                     break;
-                case 26:
+                case 124:
                     XPAccord9SettingsActi.this.mUpdaterSecurityRelockTimer();
                     break;
-                case 27:
+                case 125:
                     XPAccord9SettingsActi.this.mUpdaterKeylessAccessBeepVolume();
                     break;
-                case 28:
+                case 126:
                     XPAccord9SettingsActi.this.mUpdaterKeylessAccessBeep();
                     break;
-                case 60:
+                case 150:
                     if (((CheckedTextView) XPAccord9SettingsActi.this.findViewById(R.id.ctv_checkedtext1)) != null) {
                         ((CheckedTextView) XPAccord9SettingsActi.this.findViewById(R.id.ctv_checkedtext1)).setChecked(value != 0);
                         break;
@@ -61,14 +60,14 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_xp_setting);
-        ((Button) findViewById(R.id.xp_accord9_btn_adjust_outside_temp_display_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_accord9_xp_setting);
+        ((Button) findViewById(R.id.xp_accord9_btn_adjust_outside_temp_display_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[20] - 1;
+                int value = DataCanbus.DATA[118] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -77,10 +76,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_adjust_outside_temp_display_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_adjust_outside_temp_display_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[20] + 1;
+                int value = DataCanbus.DATA[118] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -89,17 +88,17 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_fuel_efficiency_backlight)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_fuel_efficiency_backlight)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[21] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[119] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(1, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_tripa_reset_timing_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_tripa_reset_timing_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19];
+                int value = DataCanbus.DATA[117];
                 if (value == 2) {
                     DataCanbus.PROXY.cmd(2, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -109,10 +108,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_tripa_reset_timing_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_tripa_reset_timing_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19];
+                int value = DataCanbus.DATA[117];
                 if (value == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -122,10 +121,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_tripb_reset_timing_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_tripb_reset_timing_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[18];
+                int value = DataCanbus.DATA[116];
                 if (value == 2) {
                     DataCanbus.PROXY.cmd(3, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -135,10 +134,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_tripb_reset_timing_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_tripb_reset_timing_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[18];
+                int value = DataCanbus.DATA[116];
                 if (value == 0) {
                     DataCanbus.PROXY.cmd(3, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -148,10 +147,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_interior_light_dimming_time_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_interior_light_dimming_time_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[24] - 1;
+                int value = DataCanbus.DATA[122] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 2) {
@@ -160,10 +159,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(4, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_interior_light_dimming_time_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_interior_light_dimming_time_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[24] + 1;
+                int value = DataCanbus.DATA[122] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 2) {
@@ -172,10 +171,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(4, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_headlight_aut_off_timer_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_headlight_aut_off_timer_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[23] - 1;
+                int value = DataCanbus.DATA[121] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -184,10 +183,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(5, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_headlight_aut_off_timer_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_headlight_aut_off_timer_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[23] + 1;
+                int value = DataCanbus.DATA[121] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -196,10 +195,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(5, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_auto_light_sensitivity_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_auto_light_sensitivity_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[22] - 1;
+                int value = DataCanbus.DATA[120] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 4) {
@@ -208,10 +207,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(6, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_auto_light_sensitivity_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_auto_light_sensitivity_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[22] + 1;
+                int value = DataCanbus.DATA[120] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 4) {
@@ -220,17 +219,17 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(6, new int[]{value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_lock_answer_back)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_lock_answer_back)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[25] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[123] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(10, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_security_relock_timer_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_security_relock_timer_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[26] - 1;
+                int value = DataCanbus.DATA[124] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 2) {
@@ -239,10 +238,10 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(11, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_security_relock_timer_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_security_relock_timer_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[26] + 1;
+                int value = DataCanbus.DATA[124] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 2) {
@@ -251,55 +250,55 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(11, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_keyless_access_beep_volume_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_keyless_access_beep_volume_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[27] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[125] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(12, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_keyless_access_beep_volume_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.19
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_keyless_access_beep_volume_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[27] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[125] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(12, new int[]{value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_access_beep)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.20
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_access_beep)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[28] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[126] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(13, new int[]{value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.21
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[60] == 0 ? 1 : 0;
+                int value = DataCanbus.DATA[150] == 0 ? 1 : 0;
                 DataCanbus.PROXY.cmd(102, new int[]{value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_reset_maintenance_info)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.22
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_reset_maintenance_info)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 XPAccord9SettingsActi.this.dialog(R.string.xp_accord9_reset_maintenance_info, 14);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_default_all)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.23
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_default_all)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 XPAccord9SettingsActi.this.dialog(R.string.xp_accord9_default_all, 15);
             }
         });
-        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_deflation_warning_system)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.24
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.xp_accord9_btn_deflation_warning_system)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 XPAccord9SettingsActi.this.dialog(R.string.xp_accord9_deflation_warning_system, 17);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(100, new int[]{50}, null, null);
@@ -317,41 +316,41 @@ public class XPAccord9SettingsActi extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAdjustOutsideTempDisplay() {
-        int value = DataCanbus.DATA[20];
+        int value = DataCanbus.DATA[118];
         if (((TextView) findViewById(R.id.xp_accord9_tv_adjust_outside_temp_display)) != null) {
             int value2 = value - 5;
             if (value2 > 0) {
@@ -364,17 +363,17 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFuelEfficiencyBacklight() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[119];
         if (((CheckedTextView) findViewById(R.id.xp_accord9_btn_fuel_efficiency_backlight)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_accord9_btn_fuel_efficiency_backlight)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripaResetTiming() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[117];
         if (((TextView) findViewById(R.id.xp_accord9_tv_tripa_reset_timing)) != null) {
             switch (value) {
                 case 1:
@@ -390,9 +389,9 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripbResetTiming() {
-        int value = DataCanbus.DATA[18];
+        int value = DataCanbus.DATA[116];
         if (((TextView) findViewById(R.id.xp_accord9_tv_tripb_reset_timing)) != null) {
             switch (value) {
                 case 1:
@@ -408,9 +407,9 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterInteriorLightDimmingTime() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[122];
         if (((TextView) findViewById(R.id.xp_accord9_tv_interior_light_dimming_time)) != null) {
             switch (value) {
                 case 1:
@@ -426,9 +425,9 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHeadlightAutOffTimer() {
-        int value = DataCanbus.DATA[23];
+        int value = DataCanbus.DATA[121];
         if (((TextView) findViewById(R.id.xp_accord9_tv_headlight_aut_off_timer)) != null) {
             switch (value) {
                 case 1:
@@ -447,9 +446,9 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAutoLightSensitivity() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[120];
         if (((TextView) findViewById(R.id.xp_accord9_tv_auto_light_sensitivity)) != null) {
             switch (value) {
                 case 1:
@@ -471,17 +470,17 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterKeylessLockAnswerBack() {
-        int value = DataCanbus.DATA[25];
+        int value = DataCanbus.DATA[123];
         if (((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_lock_answer_back)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_lock_answer_back)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSecurityRelockTimer() {
-        int value = DataCanbus.DATA[26];
+        int value = DataCanbus.DATA[124];
         if (((TextView) findViewById(R.id.xp_accord9_tv_security_relock_timer)) != null) {
             switch (value) {
                 case 1:
@@ -497,17 +496,17 @@ public class XPAccord9SettingsActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterKeylessAccessBeepVolume() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[125];
         if (((TextView) findViewById(R.id.xp_accord9_tv_keyless_access_beep_volume)) != null) {
             ((TextView) findViewById(R.id.xp_accord9_tv_keyless_access_beep_volume)).setText(value == 0 ? R.string.xp_accord9_keyless_access_beep_volume_low : R.string.xp_accord9_keyless_access_beep_volume_high);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterKeylessAccessBeep() {
-        int value = DataCanbus.DATA[28];
+        int value = DataCanbus.DATA[126];
         if (((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_access_beep)) != null) {
             ((CheckedTextView) findViewById(R.id.xp_accord9_btn_keyless_access_beep)).setChecked(value != 0);
         }
@@ -517,12 +516,12 @@ public class XPAccord9SettingsActi extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.25
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.25.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(i, new int[1], null, null);
                     }
@@ -530,8 +529,8 @@ public class XPAccord9SettingsActi extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9SettingsActi.26
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }

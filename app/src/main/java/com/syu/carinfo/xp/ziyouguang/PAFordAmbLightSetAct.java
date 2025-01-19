@@ -8,21 +8,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
+import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordAmbLightSetAct extends Activity implements View.OnTouchListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordAmbLightSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 462:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D40_D1_B70 /* 474 */:
                     ((TextView) PAFordAmbLightSetAct.this.findViewById(R.id.tv_text1)).setText(String.valueOf(PAFordAmbLightSetAct.this.getString(R.string.xp_ylford_set_brightness)) + ": " + value);
                     ((ProgressBar) PAFordAmbLightSetAct.this.findViewById(R.id.pa_jeep_seekbar1)).setProgress(value);
                     ((ProgressBar) PAFordAmbLightSetAct.this.findViewById(R.id.pa_jeep_seekbar1)).invalidate();
                     break;
-                case 463:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D40_D2_B30 /* 475 */:
                     PAFordAmbLightSetAct.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_ford_amblight_color1_n);
                     PAFordAmbLightSetAct.this.findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_ford_amblight_color2_n);
                     PAFordAmbLightSetAct.this.findViewById(R.id.btn_plus5).setBackgroundResource(R.drawable.ic_pa_ford_amblight_color3_n);
@@ -57,10 +57,10 @@ public class PAFordAmbLightSetAct extends Activity implements View.OnTouchListen
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_ford_amblightset);
+        //setContentView(R.layout.layout_0374_pa_ford_amblightset);
         init();
     }
 
@@ -77,35 +77,35 @@ public class PAFordAmbLightSetAct extends Activity implements View.OnTouchListen
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     DataCanbus.PROXY.cmd(0, new int[]{64}, null, null);
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     DataCanbus.PROXY.cmd(0, new int[]{64, 1}, null, null);
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65}, null, null);
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
+                case R.id.btn_plus4 /* 2131427466 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 1}, null, null);
                     break;
-                case R.id.btn_plus5 /* 2131427498 */:
+                case R.id.btn_plus5 /* 2131427469 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 2}, null, null);
                     break;
-                case R.id.btn_plus6 /* 2131427503 */:
+                case R.id.btn_plus6 /* 2131427472 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 3}, null, null);
                     break;
-                case R.id.btn_plus7 /* 2131427507 */:
+                case R.id.btn_plus7 /* 2131427475 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 4}, null, null);
                     break;
-                case R.id.btn_plus8 /* 2131427511 */:
+                case R.id.btn_plus8 /* 2131427478 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 5}, null, null);
                     break;
-                case R.id.btn_plus9 /* 2131427515 */:
+                case R.id.btn_plus9 /* 2131427481 */:
                     DataCanbus.PROXY.cmd(0, new int[]{65, 6}, null, null);
                     break;
             }
@@ -113,25 +113,25 @@ public class PAFordAmbLightSetAct extends Activity implements View.OnTouchListen
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[462].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[463].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[474].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[475].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[462].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[463].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[474].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[475].removeNotify(this.notifyCanbus);
     }
 }

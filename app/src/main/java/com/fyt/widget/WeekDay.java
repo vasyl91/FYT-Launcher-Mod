@@ -5,13 +5,15 @@ import android.content.IntentFilter;
 import android.text.SpannableString;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.syu.widget.util.TimeUtil;
+
 import share.ResValue;
 
 public class WeekDay extends TextView {
     public static WeekDay mWeekDay;
     private IntentFilter filter;
-    private Context mContext;
+    private final Context mContext;
     private SpannableString msp;
 
     public WeekDay(Context context, AttributeSet attrs, int defStyle) {
@@ -40,19 +42,19 @@ public class WeekDay extends TextView {
         mWeekDay = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setDate();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }
 
     public void setDate() {
-        TextView mTextView = (TextView) findViewById(ResValue.getInstance().curWeek);
+        TextView mTextView = findViewById(ResValue.getInstance().curWeek);
         if (mTextView != null) {
             mTextView.setText(TimeUtil.getWeekDay(this.mContext));
         }

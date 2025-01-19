@@ -6,117 +6,117 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.OnTouchListener {
     public static rzc_6606_112_Toyota_AirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.huangguan.rzc_6606_112_Toyota_AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 60:
+                case 10:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirPower();
                     break;
-                case 61:
+                case 11:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirAC();
                     break;
-                case 62:
+                case 12:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirCycle();
                     break;
-                case 63:
+                case 13:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirAuto();
                     break;
-                case 65:
+                case 14:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirdual();
                     break;
-                case 70:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirWindLevel();
-                    break;
-                case 71:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempLeft();
-                    break;
-                case 72:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRight();
-                    break;
-                case 152:
+                case 16:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirRearDefrost();
                     break;
-                case 163:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirClean();
-                    break;
-                case 165:
+                case 17:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirCleanIce();
                     break;
-                case 166:
+                case 21:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirWindLevel();
+                    break;
+                case 27:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempLeft();
+                    break;
+                case 28:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRight();
+                    break;
+                case 29:
+                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotLeft(value);
+                    break;
+                case 30:
+                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotRight(value);
+                    break;
+                case 31:
+                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowLeft(value);
+                    break;
+                case 32:
+                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowRight(value);
+                    break;
+                case 35:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirCleanSwing();
                     break;
-                case 167:
+                case 40:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRearLeft();
+                    break;
+                case 41:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRightRear();
+                    break;
+                case 42:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirPowerRear();
+                    break;
+                case 43:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirAutoRear();
+                    break;
+                case 44:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirWindLevelRear();
+                    break;
+                case 46:
+                case 47:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirBlowRear();
+                    break;
+                case 65:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirFrontDefrost();
+                    break;
+                case 67:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirRearCtrl();
+                    break;
+                case 76:
+                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirClean();
+                    break;
+                case 77:
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirBlow();
                     rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirBlowRight();
                     break;
-                case 169:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirFrontDefrost();
-                    break;
-                case 200:
-                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotLeft(value);
-                    break;
-                case 201:
-                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotRight(value);
-                    break;
-                case 202:
-                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowLeft(value);
-                    break;
-                case 203:
-                    rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowRight(value);
-                    break;
-                case 215:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirRearCtrl();
-                    break;
-                case 216:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRearLeft();
-                    break;
-                case 217:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirPowerRear();
-                    break;
-                case 218:
-                case 219:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdateAirBlowRear();
-                    break;
-                case 220:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirAutoRear();
-                    break;
-                case 221:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirWindLevelRear();
-                    break;
-                case 246:
-                    rzc_6606_112_Toyota_AirControlAct.this.mUpdaterAirTempRightRear();
-                    break;
-                case 248:
+                case 88:
                     rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotLeftRear(value);
                     break;
-                case 249:
+                case 89:
                     rzc_6606_112_Toyota_AirControlAct.this.updateSeatHotRightRear(value);
                     break;
-                case 250:
+                case 90:
                     rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowLeftRear(value);
                     break;
-                case 251:
+                case 91:
                     rzc_6606_112_Toyota_AirControlAct.this.updateSeatBlowRightRear(value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_6606_0112_rzc_toyota_all_carairset);
+        //setContentView(R.layout.layout_6606_0112_rzc_toyota_all_carairset);
         init();
         mInstance = this;
     }
@@ -160,7 +160,7 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         findViewById(R.id.air_xts_seathot_right_rear).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -168,7 +168,7 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -176,7 +176,7 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -238,66 +238,66 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data2 = 32;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data1 = 8;
-                break;
-            case R.id.air_xts_clear /* 2131427465 */:
-                data1 = 32;
-                break;
-            case R.id.air_xts_front_hot /* 2131427466 */:
-                data1 = 16;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data1 = 4;
                 break;
-            case R.id.air_xts_front_blow_auto /* 2131427560 */:
+            case R.id.air_xts_dual /* 2131427566 */:
+                data1 = 8;
+                break;
+            case R.id.air_xts_clear /* 2131427569 */:
+                data1 = 32;
+                break;
+            case R.id.air_xts_front_hot /* 2131427571 */:
+                data1 = 16;
+                break;
+            case R.id.air_xts_front_blow_auto /* 2131427572 */:
                 data1 = 64;
                 break;
-            case R.id.air_xts_mode_right /* 2131427724 */:
+            case R.id.air_xts_mode_right /* 2131428024 */:
                 data0 = 64;
                 break;
-            case R.id.air_xts_rearpower /* 2131430131 */:
-                data5 = 64;
-                break;
-            case R.id.air_xts_rearauto /* 2131430132 */:
-                data5 = 4;
-                break;
-            case R.id.air_xts_rearmode /* 2131430133 */:
-                data5 = 8;
-                break;
-            case R.id.btn_air_temp_left_plus_rear /* 2131430134 */:
+            case R.id.btn_air_temp_left_plus_rear /* 2131428654 */:
                 data5 = 2;
                 break;
-            case R.id.btn_air_temp_left_minus_rear /* 2131430136 */:
+            case R.id.btn_air_temp_left_minus_rear /* 2131428656 */:
                 data5 = 1;
                 break;
-            case R.id.dj_xts_air_win_plus_btn_rear /* 2131430137 */:
+            case R.id.dj_xts_air_win_plus_btn_rear /* 2131428657 */:
                 data5 = 32;
                 break;
-            case R.id.dj_xts_air_win_minuts_btn_rear /* 2131430139 */:
+            case R.id.dj_xts_air_win_minuts_btn_rear /* 2131428660 */:
                 data5 = 16;
                 break;
-            case R.id.btn_air_temp_right_plus_rear /* 2131430140 */:
+            case R.id.btn_air_temp_right_plus_rear /* 2131428661 */:
                 data4 = 32;
                 break;
-            case R.id.btn_air_temp_right_minus_rear /* 2131430142 */:
+            case R.id.btn_air_temp_right_minus_rear /* 2131428663 */:
                 data4 = 16;
                 break;
-            case R.id.air_xts_seatwin_left_rear /* 2131430143 */:
+            case R.id.air_xts_seatwin_left_rear /* 2131428677 */:
                 flag = true;
                 data0 = 4;
                 break;
-            case R.id.air_xts_seathot_left_rear /* 2131430144 */:
+            case R.id.air_xts_seathot_left_rear /* 2131428678 */:
                 flag = true;
                 data0 = 1;
                 break;
-            case R.id.air_xts_seatwin_right_rear /* 2131430145 */:
+            case R.id.air_xts_seathot_right_rear /* 2131428679 */:
+                flag = true;
+                data0 = 2;
+                break;
+            case R.id.air_xts_seatwin_right_rear /* 2131428680 */:
                 flag = true;
                 data0 = 8;
                 break;
-            case R.id.air_xts_seathot_right_rear /* 2131430146 */:
-                flag = true;
-                data0 = 2;
+            case R.id.air_xts_rearpower /* 2131430086 */:
+                data5 = 64;
+                break;
+            case R.id.air_xts_rearauto /* 2131430087 */:
+                data5 = 4;
+                break;
+            case R.id.air_xts_rearmode /* 2131430088 */:
+                data5 = 8;
                 break;
         }
         if (!flag) {
@@ -323,239 +323,239 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[247].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[217].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[220].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[219].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[221].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[246].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[215].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[248].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[249].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[250].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[251].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[247].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[217].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[221].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[246].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[215].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[248].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[249].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[250].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[251].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowLeftRear(int value) {
-        if (((Button) findViewById(R.id.air_xts_seatwin_left_rear)) != null) {
+        if (findViewById(R.id.air_xts_seatwin_left_rear) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
+                    findViewById(R.id.air_xts_seatwin_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
+                    findViewById(R.id.air_xts_seatwin_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
+                    findViewById(R.id.air_xts_seatwin_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
+                    findViewById(R.id.air_xts_seatwin_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowRightRear(int value) {
-        if (((Button) findViewById(R.id.air_xts_seatwin_right_rear)) != null) {
+        if (findViewById(R.id.air_xts_seatwin_right_rear) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
+                    findViewById(R.id.air_xts_seatwin_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
+                    findViewById(R.id.air_xts_seatwin_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
+                    findViewById(R.id.air_xts_seatwin_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
+                    findViewById(R.id.air_xts_seatwin_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotRightRear(int value) {
-        if (((Button) findViewById(R.id.air_xts_seathot_right_rear)) != null) {
+        if (findViewById(R.id.air_xts_seathot_right_rear) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seathot_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
+                    findViewById(R.id.air_xts_seathot_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seathot_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
+                    findViewById(R.id.air_xts_seathot_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seathot_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
+                    findViewById(R.id.air_xts_seathot_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seathot_right_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
+                    findViewById(R.id.air_xts_seathot_right_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotLeftRear(int value) {
-        if (((Button) findViewById(R.id.air_xts_seathot_left_rear)) != null) {
+        if (findViewById(R.id.air_xts_seathot_left_rear) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seathot_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
+                    findViewById(R.id.air_xts_seathot_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seathot_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
+                    findViewById(R.id.air_xts_seathot_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seathot_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
+                    findViewById(R.id.air_xts_seathot_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seathot_left_rear)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
+                    findViewById(R.id.air_xts_seathot_left_rear).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowLeft(int value) {
-        if (((Button) findViewById(R.id.air_xts_seatwin_left)) != null) {
+        if (findViewById(R.id.air_xts_seatwin_left) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
+                    findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
+                    findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
+                    findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seatwin_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
+                    findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatBlowRight(int value) {
-        if (((Button) findViewById(R.id.air_xts_seatwin_right)) != null) {
+        if (findViewById(R.id.air_xts_seatwin_right) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
+                    findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
+                    findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
+                    findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seatwin_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
+                    findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_6606_toyota_seatwin_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotRight(int value) {
-        if (((Button) findViewById(R.id.air_xts_seathot_right)) != null) {
+        if (findViewById(R.id.air_xts_seathot_right) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seathot_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
+                    findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seathot_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
+                    findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seathot_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
+                    findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seathot_right)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
+                    findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSeatHotLeft(int value) {
-        if (((Button) findViewById(R.id.air_xts_seathot_left)) != null) {
+        if (findViewById(R.id.air_xts_seathot_left) != null) {
             switch (value) {
                 case 0:
-                    ((Button) findViewById(R.id.air_xts_seathot_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
+                    findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_0);
                     break;
                 case 1:
-                    ((Button) findViewById(R.id.air_xts_seathot_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
+                    findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_1);
                     break;
                 case 2:
-                    ((Button) findViewById(R.id.air_xts_seathot_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
+                    findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_2);
                     break;
                 case 3:
-                    ((Button) findViewById(R.id.air_xts_seathot_left)).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
+                    findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_6606_toyota_seathot_3);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlowRear() {
         int mode;
         int mode2;
-        int body = DataCanbus.DATA[218];
-        int foot = DataCanbus.DATA[219];
+        int body = DataCanbus.DATA[46];
+        int foot = DataCanbus.DATA[47];
         if (body == 1) {
             mode = 0 | 2;
         } else {
@@ -582,59 +582,59 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirRearCtrl() {
-        int value = DataCanbus.DATA[215];
+        int value = DataCanbus.DATA[67];
         if (findViewById(R.id.air_xts_rearlock) != null) {
             findViewById(R.id.air_xts_rearlock).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_rearlock_n : R.drawable.ic_6606_toyota_rearlock_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAutoRear() {
-        int value = DataCanbus.DATA[220];
+        int value = DataCanbus.DATA[43];
         if (findViewById(R.id.air_xts_rearauto) != null) {
             findViewById(R.id.air_xts_rearauto).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_rearauto_n : R.drawable.ic_6606_toyota_rearauto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPowerRear() {
-        int value = DataCanbus.DATA[217];
+        int value = DataCanbus.DATA[42];
         if (findViewById(R.id.air_xts_rearpower) != null) {
             findViewById(R.id.air_xts_rearpower).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_rearpower_n : R.drawable.ic_6606_toyota_rearpower_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirClean() {
-        int value = DataCanbus.DATA[163];
+        int value = DataCanbus.DATA[76];
         if (findViewById(R.id.air_xts_clear) != null) {
             findViewById(R.id.air_xts_clear).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_clearair_n : R.drawable.ic_6606_toyota_clearair_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanIce() {
-        int value = DataCanbus.DATA[165];
+        int value = DataCanbus.DATA[17];
         if (findViewById(R.id.air_xts_front_hot) != null) {
             findViewById(R.id.air_xts_front_hot).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_fronthot_n : R.drawable.ic_6606_toyota_fronthot_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirCleanSwing() {
-        int value = DataCanbus.DATA[166];
+        int value = DataCanbus.DATA[35];
         if (findViewById(R.id.air_xts_front_blow_auto) != null) {
             findViewById(R.id.air_xts_front_blow_auto).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_autowing_n : R.drawable.ic_6606_toyota_autowing_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRearLeft() {
-        int temp = DataCanbus.DATA[216];
-        int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_left_rear)) != null) {
+        int temp = DataCanbus.DATA[40];
+        int unit = DataCanbus.DATA[37];
+        if (findViewById(R.id.tv_air_temp_left_rear) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_left_rear)).setText("HI");
@@ -647,21 +647,21 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
                     break;
                 default:
                     if (unit == 1) {
-                        ((TextView) findViewById(R.id.tv_air_temp_left_rear)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_left_rear)).setText(String.valueOf(temp / 10.0f));
                         break;
                     } else {
-                        ((TextView) findViewById(R.id.tv_air_temp_left_rear)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_left_rear)).setText(String.valueOf(temp / 10.0f));
                         break;
                     }
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
-        int temp = DataCanbus.DATA[71];
-        int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int temp = DataCanbus.DATA[27];
+        int unit = DataCanbus.DATA[37];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
@@ -674,21 +674,21 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
                     break;
                 default:
                     if (unit == 1) {
-                        ((TextView) findViewById(R.id.tv_air_temp_left)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(temp / 10.0f));
                         break;
                     } else {
-                        ((TextView) findViewById(R.id.tv_air_temp_left)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(temp / 10.0f));
                         break;
                     }
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRightRear() {
-        int temp = DataCanbus.DATA[246];
-        int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_right_rear)) != null) {
+        int temp = DataCanbus.DATA[41];
+        int unit = DataCanbus.DATA[37];
+        if (findViewById(R.id.tv_air_temp_right_rear) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_right_rear)).setText("HI");
@@ -701,21 +701,21 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
                     break;
                 default:
                     if (unit == 1) {
-                        ((TextView) findViewById(R.id.tv_air_temp_right_rear)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_right_rear)).setText(String.valueOf(temp / 10.0f));
                         break;
                     } else {
-                        ((TextView) findViewById(R.id.tv_air_temp_right_rear)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_right_rear)).setText(String.valueOf(temp / 10.0f));
                         break;
                     }
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
-        int temp = DataCanbus.DATA[72];
-        int unit = DataCanbus.DATA[181];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int temp = DataCanbus.DATA[28];
+        int unit = DataCanbus.DATA[37];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
@@ -728,48 +728,48 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
                     break;
                 default:
                     if (unit == 1) {
-                        ((TextView) findViewById(R.id.tv_air_temp_right)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(temp / 10.0f));
                         break;
                     } else {
-                        ((TextView) findViewById(R.id.tv_air_temp_right)).setText(new StringBuilder().append(temp / 10.0f).toString());
+                        ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(temp / 10.0f));
                         break;
                     }
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
-        int level = DataCanbus.DATA[70];
-        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
+        int level = DataCanbus.DATA[21];
+        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(String.valueOf(level));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelRear() {
-        int level = DataCanbus.DATA[221];
-        ((TextView) findViewById(R.id.dj_xts_air_winlevel_rear)).setText(new StringBuilder().append(level).toString());
+        int level = DataCanbus.DATA[44];
+        ((TextView) findViewById(R.id.dj_xts_air_winlevel_rear)).setText(String.valueOf(level));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
-        int value = DataCanbus.DATA[63];
+        int value = DataCanbus.DATA[13];
         if (findViewById(R.id.air_xts_auto) != null) {
             findViewById(R.id.air_xts_auto).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_auto_n : R.drawable.ic_6606_toyota_auto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirdual() {
-        int value = DataCanbus.DATA[65];
+        int value = DataCanbus.DATA[14];
         if (findViewById(R.id.air_xts_dual) != null) {
             findViewById(R.id.air_xts_dual).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_dual_n : R.drawable.ic_6606_toyota_dual_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
-        int value = DataCanbus.DATA[62];
-        if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
+        int value = DataCanbus.DATA[12];
+        if (findViewById(R.id.air_xts_cycle) != null) {
             if (value == 0) {
                 findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_6606_toyota_cycle_n);
             } else if (value == 1) {
@@ -778,41 +778,41 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
-        int value = DataCanbus.DATA[61];
+        int value = DataCanbus.DATA[11];
         if (findViewById(R.id.air_xts_ac) != null) {
             findViewById(R.id.air_xts_ac).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_ac_n : R.drawable.ic_6606_toyota_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
-        int value = DataCanbus.DATA[60];
+        int value = DataCanbus.DATA[10];
         if (findViewById(R.id.air_xts_power) != null) {
             findViewById(R.id.air_xts_power).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_power_n : R.drawable.ic_6606_toyota_power_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost() {
-        int value = DataCanbus.DATA[169];
+        int value = DataCanbus.DATA[65];
         if (findViewById(R.id.air_xts_front) != null) {
             findViewById(R.id.air_xts_front).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_frontfrost_n : R.drawable.ic_6606_toyota_frontfrost_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
-        int value = DataCanbus.DATA[152];
+        int value = DataCanbus.DATA[16];
         if (findViewById(R.id.air_xts_rear) != null) {
             findViewById(R.id.air_xts_rear).setBackgroundResource(value == 0 ? R.drawable.ic_6606_toyota_rearfrost_n : R.drawable.ic_6606_toyota_rearfrost_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlow() {
-        int value = DataCanbus.DATA[167];
+        int value = DataCanbus.DATA[77];
         switch (value) {
             case 1:
                 findViewById(R.id.air_xts_mode).setBackgroundResource(R.drawable.ic_6606_toyota_mode_1);
@@ -841,9 +841,9 @@ public class rzc_6606_112_Toyota_AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlowRight() {
-        int value = DataCanbus.DATA[167];
+        int value = DataCanbus.DATA[77];
         switch (value) {
             case 1:
                 findViewById(R.id.air_xts_mode_right).setBackgroundResource(R.drawable.ic_6606_toyota_mode_1);

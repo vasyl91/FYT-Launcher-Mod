@@ -4,26 +4,28 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import com.syu.util.FytPackage;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
+import java.lang.reflect.Field;
+
 public class PreloadReceiver extends BroadcastReceiver {
     public static final String EXTRA_WORKSPACE_NAME = "com.android.launcher66.action.EXTRA_WORKSPACE_NAME";
-    private static final boolean LOGD = false;
-    private static final String TAG = "Launcher.PreloadReceiver";
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         final LauncherProvider provider = LauncherAppState.getLauncherProvider();
         if (provider != null) {
             String name = intent.getStringExtra(EXTRA_WORKSPACE_NAME);
-            final int workspaceResId = !TextUtils.isEmpty(name) ? context.getResources().getIdentifier(name, "xml", FytPackage.AppAction) : 0;
-            new Thread(new Runnable() { // from class: com.android.launcher66.PreloadReceiver.1
-                @Override // java.lang.Runnable
-                public void run() {
-                    provider.loadDefaultFavoritesIfNecessary(workspaceResId);
-                }
-            }).start();
+            final int workspaceResId = !TextUtils.isEmpty(name) ? getResId(name) : 0;
+            new Thread(() -> provider.loadDefaultFavoritesIfNecessary(workspaceResId)).start();
+        }
+    }
+
+    public int getResId(String resName) {
+        try {
+            Field idField = R.xml.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
         }
     }
 }

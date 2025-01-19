@@ -22,7 +22,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -30,15 +29,15 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 97:
+                case 109:
                     Activity_424_ClioFuncSet.this.updateLauguageSet();
                     break;
-                case 98:
+                case 110:
                     if (((TextView) Activity_424_ClioFuncSet.this.findViewById(R.id.tv_text2)) != null) {
                         switch (value) {
                             case 0:
@@ -53,22 +52,22 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 99:
+                case 111:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 100:
+                case 112:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 101:
+                case 113:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 102:
+                case 114:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 103:
+                case 115:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 104:
+                case 116:
                     if (((TextView) Activity_424_ClioFuncSet.this.findViewById(R.id.tv_text3)) != null) {
                         switch (value) {
                             case 0:
@@ -83,7 +82,7 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 105:
+                case 117:
                     if (((TextView) Activity_424_ClioFuncSet.this.findViewById(R.id.tv_text4)) != null) {
                         switch (value) {
                             case 0:
@@ -98,67 +97,67 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 106:
+                case 118:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext6), value == 1);
                     break;
-                case 107:
+                case 119:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 108:
+                case 120:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 109:
+                case 121:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 110:
+                case 122:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 111:
+                case 123:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 112:
+                case 124:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 113:
+                case 125:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     break;
-                case 114:
+                case 126:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 115:
+                case 127:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext15), value == 1);
                     break;
-                case 116:
+                case 128:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext16), value == 1);
                     break;
-                case 117:
+                case 129:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext17), value == 1);
                     break;
-                case 118:
+                case 130:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext18), value == 1);
                     break;
-                case 119:
+                case 131:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext19), value == 1);
                     break;
-                case 120:
+                case 132:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext20), value == 1);
                     break;
-                case 121:
+                case 133:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext21), value == 1);
                     break;
-                case 123:
+                case 135:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext22), value == 1);
                     break;
-                case 124:
+                case 136:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext23), value == 1);
                     break;
-                case 125:
+                case 137:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext24), value == 1);
                     break;
-                case 126:
+                case 138:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext25), value == 1);
                     break;
-                case 127:
+                case 139:
                     if (((TextView) Activity_424_ClioFuncSet.this.findViewById(R.id.tv_text5)) != null) {
                         switch (value) {
                             case 0:
@@ -176,16 +175,16 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 128:
+                case 140:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext26), value == 1);
                     break;
-                case 129:
+                case 141:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext27), value == 1);
                     break;
-                case 130:
+                case 142:
                     Activity_424_ClioFuncSet.this.setCheck((CheckedTextView) Activity_424_ClioFuncSet.this.findViewById(R.id.ctv_checkedtext28), value == 1);
                     break;
-                case 131:
+                case 143:
                     if (((TextView) Activity_424_ClioFuncSet.this.findViewById(R.id.tv_text6)) != null) {
                         switch (value) {
                             case 0:
@@ -204,14 +203,14 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0424_xp_clio_settings);
+        //setContentView(R.layout.layout_0424_xp_clio_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -224,8 +223,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Activity_424_ClioFuncSet.this.language_set = position;
                 if (Activity_424_ClioFuncSet.this.language_set >= 0 && Activity_424_ClioFuncSet.this.language_set <= Activity_424_ClioFuncSet.this.mLauStylelist.size() && Activity_424_ClioFuncSet.this.send_lang != null) {
@@ -237,7 +236,7 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[97];
+        int value = DataCanbus.DATA[109];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -252,7 +251,7 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -281,8 +280,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Activity_424_ClioFuncSet.this.mLauStyle == null) {
                     Activity_424_ClioFuncSet.this.initLauStyle();
@@ -323,6 +322,7 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext28), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext29), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext30), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext31), this);
         setSelfClick((Button) findViewById(R.id.btn_minus2), this);
         setSelfClick((Button) findViewById(R.id.btn_plus2), this);
         setSelfClick((Button) findViewById(R.id.btn_minus3), this);
@@ -333,6 +333,16 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         setSelfClick((Button) findViewById(R.id.btn_plus5), this);
         setSelfClick((Button) findViewById(R.id.btn_minus6), this);
         setSelfClick((Button) findViewById(R.id.btn_plus6), this);
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
+                findViewById(R.id.layout_view37).setVisibility(0);
+                break;
+            default:
+                findViewById(R.id.layout_view37).setVisibility(8);
+                break;
+        }
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_XP_Renault_20Clio_Low /* 786856 */:
                 findViewById(R.id.layout_view1).setVisibility(8);
@@ -417,90 +427,90 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[99];
-                if (value == 0) {
-                    value = 1;
-                } else if (value == 1) {
-                    value = 0;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value = DataCanbus.DATA[110] - 1;
+                if (value < 0) {
+                    value = 2;
                 }
-                setCarInfo(33, value);
+                setCarInfo(32, value);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value2 = DataCanbus.DATA[98] - 1;
-                if (value2 < 0) {
-                    value2 = 2;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value2 = DataCanbus.DATA[110] + 1;
+                if (value2 > 2) {
+                    value2 = 0;
                 }
                 setCarInfo(32, value2);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value3 = DataCanbus.DATA[98] + 1;
-                if (value3 > 2) {
-                    value3 = 0;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value3 = DataCanbus.DATA[116] - 1;
+                if (value3 < 0) {
+                    value3 = 2;
                 }
-                setCarInfo(32, value3);
+                setCarInfo(22, value3);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value4 = DataCanbus.DATA[104] - 1;
-                if (value4 < 0) {
-                    value4 = 2;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value4 = DataCanbus.DATA[116] + 1;
+                if (value4 > 2) {
+                    value4 = 0;
                 }
                 setCarInfo(22, value4);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value5 = DataCanbus.DATA[104] + 1;
-                if (value5 > 2) {
-                    value5 = 0;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value5 = DataCanbus.DATA[117] - 1;
+                if (value5 < 0) {
+                    value5 = 2;
                 }
-                setCarInfo(22, value5);
+                setCarInfo(23, value5);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value6 = DataCanbus.DATA[105] - 1;
-                if (value6 < 0) {
-                    value6 = 2;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value6 = DataCanbus.DATA[117] + 1;
+                if (value6 > 2) {
+                    value6 = 0;
                 }
                 setCarInfo(23, value6);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value7 = DataCanbus.DATA[105] + 1;
-                if (value7 > 2) {
-                    value7 = 0;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value7 = DataCanbus.DATA[139] - 1;
+                if (value7 < 0) {
+                    value7 = 3;
                 }
-                setCarInfo(23, value7);
+                setCarInfo(85, value7);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value8 = DataCanbus.DATA[127] - 1;
-                if (value8 < 0) {
-                    value8 = 3;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value8 = DataCanbus.DATA[139] + 1;
+                if (value8 > 3) {
+                    value8 = 0;
                 }
                 setCarInfo(85, value8);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value9 = DataCanbus.DATA[127] + 1;
-                if (value9 > 3) {
-                    value9 = 0;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value9 = DataCanbus.DATA[143] - 1;
+                if (value9 < 0) {
+                    value9 = 2;
                 }
-                setCarInfo(85, value9);
+                setCarInfo(80, value9);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value10 = DataCanbus.DATA[131] - 1;
-                if (value10 < 0) {
-                    value10 = 2;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value10 = DataCanbus.DATA[143] + 1;
+                if (value10 > 2) {
+                    value10 = 0;
                 }
                 setCarInfo(80, value10);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value11 = DataCanbus.DATA[131] + 1;
-                if (value11 > 2) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value11 = DataCanbus.DATA[111];
+                if (value11 == 0) {
+                    value11 = 1;
+                } else if (value11 == 1) {
                     value11 = 0;
                 }
-                setCarInfo(80, value11);
+                setCarInfo(33, value11);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value12 = DataCanbus.DATA[100];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value12 = DataCanbus.DATA[112];
                 if (value12 == 0) {
                     value12 = 1;
                 } else if (value12 == 1) {
@@ -508,8 +518,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(34, value12);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value13 = DataCanbus.DATA[101];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value13 = DataCanbus.DATA[113];
                 if (value13 == 0) {
                     value13 = 1;
                 } else if (value13 == 1) {
@@ -517,8 +527,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(35, value13);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int value14 = DataCanbus.DATA[102];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value14 = DataCanbus.DATA[114];
                 if (value14 == 0) {
                     value14 = 1;
                 } else if (value14 == 1) {
@@ -526,8 +536,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(36, value14);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value15 = DataCanbus.DATA[103];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value15 = DataCanbus.DATA[115];
                 if (value15 == 0) {
                     value15 = 1;
                 } else if (value15 == 1) {
@@ -535,8 +545,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(37, value15);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int value16 = DataCanbus.DATA[106];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int value16 = DataCanbus.DATA[118];
                 if (value16 == 0) {
                     value16 = 1;
                 } else if (value16 == 1) {
@@ -544,8 +554,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(16, value16);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int value17 = DataCanbus.DATA[107];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value17 = DataCanbus.DATA[119];
                 if (value17 == 0) {
                     value17 = 1;
                 } else if (value17 == 1) {
@@ -553,8 +563,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(17, value17);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int value18 = DataCanbus.DATA[108];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value18 = DataCanbus.DATA[120];
                 if (value18 == 0) {
                     value18 = 1;
                 } else if (value18 == 1) {
@@ -562,8 +572,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(18, value18);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                int value19 = DataCanbus.DATA[109];
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int value19 = DataCanbus.DATA[121];
                 if (value19 == 0) {
                     value19 = 1;
                 } else if (value19 == 1) {
@@ -571,8 +581,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(19, value19);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                int value20 = DataCanbus.DATA[110];
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                int value20 = DataCanbus.DATA[122];
                 if (value20 == 0) {
                     value20 = 1;
                 } else if (value20 == 1) {
@@ -580,8 +590,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(20, value20);
                 break;
-            case R.id.ctv_checkedtext11 /* 2131427543 */:
-                int value21 = DataCanbus.DATA[111];
+            case R.id.ctv_checkedtext11 /* 2131427553 */:
+                int value21 = DataCanbus.DATA[123];
                 if (value21 == 0) {
                     value21 = 1;
                 } else if (value21 == 1) {
@@ -589,8 +599,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(21, value21);
                 break;
-            case R.id.ctv_checkedtext12 /* 2131427544 */:
-                int value22 = DataCanbus.DATA[112];
+            case R.id.ctv_checkedtext12 /* 2131427554 */:
+                int value22 = DataCanbus.DATA[124];
                 if (value22 == 0) {
                     value22 = 1;
                 } else if (value22 == 1) {
@@ -598,8 +608,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(38, value22);
                 break;
-            case R.id.ctv_checkedtext13 /* 2131427545 */:
-                int value23 = DataCanbus.DATA[113];
+            case R.id.ctv_checkedtext13 /* 2131427555 */:
+                int value23 = DataCanbus.DATA[125];
                 if (value23 == 0) {
                     value23 = 1;
                 } else if (value23 == 1) {
@@ -607,8 +617,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(39, value23);
                 break;
-            case R.id.ctv_checkedtext14 /* 2131427546 */:
-                int value24 = DataCanbus.DATA[114];
+            case R.id.ctv_checkedtext14 /* 2131427556 */:
+                int value24 = DataCanbus.DATA[126];
                 if (value24 == 0) {
                     value24 = 1;
                 } else if (value24 == 1) {
@@ -616,8 +626,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(40, value24);
                 break;
-            case R.id.ctv_checkedtext15 /* 2131427547 */:
-                int value25 = DataCanbus.DATA[115];
+            case R.id.ctv_checkedtext15 /* 2131427557 */:
+                int value25 = DataCanbus.DATA[127];
                 if (value25 == 0) {
                     value25 = 1;
                 } else if (value25 == 1) {
@@ -625,8 +635,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(41, value25);
                 break;
-            case R.id.ctv_checkedtext16 /* 2131427548 */:
-                int value26 = DataCanbus.DATA[116];
+            case R.id.ctv_checkedtext16 /* 2131427558 */:
+                int value26 = DataCanbus.DATA[128];
                 if (value26 == 0) {
                     value26 = 1;
                 } else if (value26 == 1) {
@@ -634,8 +644,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(42, value26);
                 break;
-            case R.id.ctv_checkedtext17 /* 2131427647 */:
-                int value27 = DataCanbus.DATA[117];
+            case R.id.ctv_checkedtext17 /* 2131427559 */:
+                int value27 = DataCanbus.DATA[129];
                 if (value27 == 0) {
                     value27 = 1;
                 } else if (value27 == 1) {
@@ -643,8 +653,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(43, value27);
                 break;
-            case R.id.ctv_checkedtext18 /* 2131427649 */:
-                int value28 = DataCanbus.DATA[118];
+            case R.id.ctv_checkedtext18 /* 2131427661 */:
+                int value28 = DataCanbus.DATA[130];
                 if (value28 == 0) {
                     value28 = 1;
                 } else if (value28 == 1) {
@@ -652,8 +662,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(44, value28);
                 break;
-            case R.id.ctv_checkedtext19 /* 2131427651 */:
-                int value29 = DataCanbus.DATA[119];
+            case R.id.ctv_checkedtext19 /* 2131427663 */:
+                int value29 = DataCanbus.DATA[131];
                 if (value29 == 0) {
                     value29 = 1;
                 } else if (value29 == 1) {
@@ -661,8 +671,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(48, value29);
                 break;
-            case R.id.ctv_checkedtext20 /* 2131427653 */:
-                int value30 = DataCanbus.DATA[120];
+            case R.id.ctv_checkedtext20 /* 2131427665 */:
+                int value30 = DataCanbus.DATA[132];
                 if (value30 == 0) {
                     value30 = 1;
                 } else if (value30 == 1) {
@@ -670,8 +680,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(49, value30);
                 break;
-            case R.id.ctv_checkedtext21 /* 2131427655 */:
-                int value31 = DataCanbus.DATA[121];
+            case R.id.ctv_checkedtext21 /* 2131427667 */:
+                int value31 = DataCanbus.DATA[133];
                 if (value31 == 0) {
                     value31 = 1;
                 } else if (value31 == 1) {
@@ -679,8 +689,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(50, value31);
                 break;
-            case R.id.ctv_checkedtext22 /* 2131427657 */:
-                int value32 = DataCanbus.DATA[123];
+            case R.id.ctv_checkedtext22 /* 2131427669 */:
+                int value32 = DataCanbus.DATA[135];
                 if (value32 == 0) {
                     value32 = 1;
                 } else if (value32 == 1) {
@@ -688,8 +698,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(81, value32);
                 break;
-            case R.id.ctv_checkedtext23 /* 2131427660 */:
-                int value33 = DataCanbus.DATA[124];
+            case R.id.ctv_checkedtext23 /* 2131427672 */:
+                int value33 = DataCanbus.DATA[136];
                 if (value33 == 0) {
                     value33 = 1;
                 } else if (value33 == 1) {
@@ -697,8 +707,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(24, value33);
                 break;
-            case R.id.ctv_checkedtext24 /* 2131427832 */:
-                int value34 = DataCanbus.DATA[125];
+            case R.id.ctv_checkedtext24 /* 2131427848 */:
+                int value34 = DataCanbus.DATA[137];
                 if (value34 == 0) {
                     value34 = 1;
                 } else if (value34 == 1) {
@@ -706,8 +716,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(25, value34);
                 break;
-            case R.id.ctv_checkedtext25 /* 2131427834 */:
-                int value35 = DataCanbus.DATA[126];
+            case R.id.ctv_checkedtext25 /* 2131427850 */:
+                int value35 = DataCanbus.DATA[138];
                 if (value35 == 0) {
                     value35 = 1;
                 } else if (value35 == 1) {
@@ -715,8 +725,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(84, value35);
                 break;
-            case R.id.ctv_checkedtext26 /* 2131427836 */:
-                int value36 = DataCanbus.DATA[128];
+            case R.id.ctv_checkedtext26 /* 2131427852 */:
+                int value36 = DataCanbus.DATA[140];
                 if (value36 == 0) {
                     value36 = 1;
                 } else if (value36 == 1) {
@@ -724,8 +734,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(83, value36);
                 break;
-            case R.id.ctv_checkedtext27 /* 2131427838 */:
-                int value37 = DataCanbus.DATA[129];
+            case R.id.ctv_checkedtext27 /* 2131427854 */:
+                int value37 = DataCanbus.DATA[141];
                 if (value37 == 0) {
                     value37 = 1;
                 } else if (value37 == 1) {
@@ -733,10 +743,10 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 }
                 setCarInfo(82, value37);
                 break;
-            case R.id.ctv_checkedtext29 /* 2131427877 */:
+            case R.id.ctv_checkedtext29 /* 2131427893 */:
                 dialog(R.string.tpms_calibration, 64);
                 break;
-            case R.id.ctv_checkedtext30 /* 2131427886 */:
+            case R.id.ctv_checkedtext30 /* 2131427902 */:
                 try {
                     Intent intent = new Intent();
                     intent.setClass(this, Activity_424_MultiSenseFuncSet.class);
@@ -746,8 +756,18 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext28 /* 2131427892 */:
-                int value38 = DataCanbus.DATA[130];
+            case R.id.ctv_checkedtext31 /* 2131427903 */:
+                try {
+                    Intent intent2 = new Intent();
+                    intent2.setClass(this, Activity_424_BoadFuncSet.class);
+                    startActivity(intent2);
+                    break;
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                    return;
+                }
+            case R.id.ctv_checkedtext28 /* 2131427904 */:
+                int value38 = DataCanbus.DATA[142];
                 if (value38 == 0) {
                     value38 = 1;
                 } else if (value38 == 1) {
@@ -766,12 +786,12 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.4
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.4.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(0, new int[]{i, 1}, null, null);
                     }
@@ -779,8 +799,8 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -788,33 +808,21 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{64}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
@@ -838,22 +846,22 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
@@ -877,5 +885,17 @@ public class Activity_424_ClioFuncSet extends BaseActivity implements View.OnCli
         DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
     }
 }

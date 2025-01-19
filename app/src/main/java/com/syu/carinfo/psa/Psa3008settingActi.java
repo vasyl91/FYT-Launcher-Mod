@@ -11,90 +11,89 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Psa3008settingActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa.Psa3008settingActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 10:
+                case 107:
                     Psa3008settingActi.this.mUpdaterValue2();
                     break;
-                case 11:
+                case 108:
                     Psa3008settingActi.this.mUpdaterValue3();
                     break;
-                case 12:
+                case 109:
                     Psa3008settingActi.this.uAutoLockDoor(DataCanbus.DATA[updateCode]);
                     break;
-                case 13:
+                case 110:
                     Psa3008settingActi.this.uLockDoor(DataCanbus.DATA[updateCode]);
                     break;
-                case 14:
+                case 111:
                     Psa3008settingActi.this.mUpdaterValue1();
                     break;
-                case 15:
+                case 112:
                     Psa3008settingActi.this.mUpdaterValue4();
                     break;
-                case 16:
+                case 113:
                     Psa3008settingActi.this.mUpdaterValue5();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa3008_setting);
+        //setContentView(R.layout.layout_psa3008_setting);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.psa3008_parking_rear_window_wiping)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa3008_parking_rear_window_wiping)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[10];
+                int value = DataCanbus.DATA[107];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(0, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa3008_parking_assist)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa3008_parking_assist)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[11];
+                int value = DataCanbus.DATA[108];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value == 0 ? 1 : 0;
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa3008_btn_lock_door_unlocking)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa3008_btn_lock_door_unlocking)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[14];
+                int value = DataCanbus.DATA[111];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(3, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa3008_daytime_running_lights)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa3008_daytime_running_lights)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[15];
+                int value = DataCanbus.DATA[112];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value == 0 ? 0 : 1;
                 remoteModuleProxy.cmd(4, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.psa3008_with_me_home_lighting_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa3008_with_me_home_lighting_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[16] - 1;
+                int value = DataCanbus.DATA[113] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -103,10 +102,10 @@ public class Psa3008settingActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(5, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.psa3008_with_me_home_lighting_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.Psa3008settingActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa3008_with_me_home_lighting_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[16] + 1;
+                int value = DataCanbus.DATA[113] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -117,31 +116,31 @@ public class Psa3008settingActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[14];
+        int value = DataCanbus.DATA[111];
         if (((CheckedTextView) findViewById(R.id.psa3008_btn_lock_door_unlocking)) != null) {
             ((CheckedTextView) findViewById(R.id.psa3008_btn_lock_door_unlocking)).setChecked(value != 0);
         }
@@ -162,33 +161,33 @@ public class Psa3008settingActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[10];
+        int value = DataCanbus.DATA[107];
         if (((CheckedTextView) findViewById(R.id.psa3008_parking_rear_window_wiping)) != null) {
             ((CheckedTextView) findViewById(R.id.psa3008_parking_rear_window_wiping)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value = DataCanbus.DATA[11];
+        int value = DataCanbus.DATA[108];
         if (((CheckedTextView) findViewById(R.id.psa3008_parking_assist)) != null) {
             ((CheckedTextView) findViewById(R.id.psa3008_parking_assist)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
-        int value = DataCanbus.DATA[15];
+        int value = DataCanbus.DATA[112];
         if (((CheckedTextView) findViewById(R.id.psa3008_daytime_running_lights)) != null) {
             ((CheckedTextView) findViewById(R.id.psa3008_daytime_running_lights)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue5() {
-        int value = DataCanbus.DATA[16];
+        int value = DataCanbus.DATA[113];
         if (((TextView) findViewById(R.id.psa3008_with_me_home_lighting)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.psa3008_with_me_home_lighting)).setText("15s");

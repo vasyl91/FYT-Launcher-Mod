@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_Tangdu_Toyota_All extends AirBase {
     public Air_0452_Tangdu_Toyota_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_tangdu_toyota/air_toyota_tangdu.webp";
         this.mPathHighlight = "0452_tangdu_toyota/air_toyota_tangdu_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -104,14 +104,14 @@ public class Air_0452_Tangdu_Toyota_All extends AirBase {
             } else if (temp >= 33 && temp <= 38) {
                 temp = ((temp - 33) * 5) + 150;
             }
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 39.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 39.0f, 135.0f, this.mPaint);
         } else {
             if (temp >= 1 && temp <= 29) {
                 temp += 63;
             } else if (temp >= 33 && temp <= 38) {
                 temp = (temp - 33) + 59;
             }
-            c.drawText(new StringBuilder().append(temp / 1.0f).toString(), 39.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 39.0f, 135.0f, this.mPaint);
         }
         int temp2 = this.DATA[28];
         if (temp2 == -1) {
@@ -126,14 +126,14 @@ public class Air_0452_Tangdu_Toyota_All extends AirBase {
             } else if (temp2 >= 33 && temp2 <= 38) {
                 temp2 = ((temp2 - 33) * 5) + 150;
             }
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 943.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 943.0f, 135.0f, this.mPaint);
         } else {
             if (temp2 >= 1 && temp2 <= 29) {
                 temp2 += 63;
             } else if (temp2 >= 33 && temp2 <= 38) {
                 temp2 = (temp2 - 33) + 59;
             }
-            c.drawText(new StringBuilder().append(temp2 / 1.0f).toString(), 943.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2), 943.0f, 135.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -1,66 +1,58 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0103_RZC_XP1_ELYSION extends CallbackCanbusBase {
-    public static final int U_AVERAGE_OIL = 4;
-    public static final int U_AVERAGE_SPEED = 6;
-    public static final int U_A_DIS_CONTROL_BIT = 2;
-    public static final int U_B_DIS_CONTROL_BIT = 3;
-    public static final int U_CAR_SPEED_INFO = 9;
-    public static final int U_CNT_MAX = 22;
-    public static final int U_DIS_CONTROL_BIT = 1;
-    public static final int U_DOOR_BACK = 21;
-    public static final int U_DOOR_BEGIN = 16;
-    public static final int U_DOOR_END = 22;
-    public static final int U_DOOR_ENGINE = 16;
-    public static final int U_DOOR_FL = 17;
-    public static final int U_DOOR_FR = 18;
-    public static final int U_DOOR_RL = 19;
-    public static final int U_DOOR_RR = 20;
-    public static final int U_FRONT_FOG_LIGHTS_SWITCH = 13;
-    public static final int U_HEADLIGHT_SWITCH = 11;
-    public static final int U_HIGH_BEAM_SWITCH = 12;
-    public static final int U_INSTRUMENT_LIGHT_BRIGHT = 15;
-    public static final int U_OIL_BEGIN = 0;
-    public static final int U_OIL_END = 16;
-    public static final int U_REAR_FOG_LAMPS_SWITCH = 14;
-    public static final int U_SMALL_LIGHTS_SWITCH = 10;
-    public static final int U_TRAVEL_DISTANCE = 5;
-    public static final int U_TRAVEL_TIME = 7;
+    public static final int U_AVERAGE_OIL = 102;
+    public static final int U_AVERAGE_SPEED = 104;
+    public static final int U_A_DIS_CONTROL_BIT = 100;
+    public static final int U_B_DIS_CONTROL_BIT = 101;
+    public static final int U_CAR_SPEED_INFO = 107;
+    public static final int U_CNT_MAX = 115;
+    public static final int U_DIS_CONTROL_BIT = 99;
+    public static final int U_FRONT_FOG_LIGHTS_SWITCH = 111;
+    public static final int U_HEADLIGHT_SWITCH = 109;
+    public static final int U_HIGH_BEAM_SWITCH = 110;
+    public static final int U_INSTRUMENT_LIGHT_BRIGHT = 113;
+    public static final int U_OIL_BEGIN = 98;
+    public static final int U_OIL_END = 114;
+    public static final int U_REAR_FOG_LAMPS_SWITCH = 112;
+    public static final int U_SMALL_LIGHTS_SWITCH = 108;
+    public static final int U_TRAVEL_DISTANCE = 103;
+    public static final int U_TRAVEL_TIME = 105;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 22; i++) {
+        for (int i = 0; i < 115; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 16;
-        DoorHelper.sUcDoorFl = 17;
-        DoorHelper.sUcDoorFr = 18;
-        DoorHelper.sUcDoorRl = 19;
-        DoorHelper.sUcDoorRr = 20;
-        DoorHelper.sUcDoorBack = 21;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 16; i2 < 22; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 16; i < 22; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 22) {
+        if (updateCode >= 0 && updateCode < 115) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

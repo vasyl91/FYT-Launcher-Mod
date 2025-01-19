@@ -13,7 +13,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordDoornumSetAct extends Activity implements View.OnTouchListener {
     public static StringBuffer mTvCurrPasswordBuffer = new StringBuffer();
     private PAFordDoornumWindow mPaFordDoorNumWindow;
@@ -22,12 +21,12 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
     View view_doornum = null;
     StringBuffer mTvCurrPasswordBuffer1 = new StringBuffer();
     StringBuffer mTvCurrPasswordBuffer2 = new StringBuffer();
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordDoornumSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D4C_D0_B70 /* 478 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D4C_D0_B70 /* 490 */:
                     if (PAFordDoornumSetAct.this.view_doornum != null) {
                         if (value == 15) {
                             PAFordDoornumSetAct.this.findViewById(R.id.layout_view2).setVisibility(0);
@@ -58,10 +57,10 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_ford_doornum);
+        //setContentView(R.layout.layout_0374_pa_ford_doornum);
         init();
     }
 
@@ -168,12 +167,12 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         this.view_doornum = v;
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     if (this.Keypad_code == 0) {
                         if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() < 5) {
                             mTvCurrPasswordBuffer.append('1');
@@ -191,7 +190,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     if (this.Keypad_code == 0) {
                         if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() < 5) {
                             mTvCurrPasswordBuffer.append('3');
@@ -209,7 +208,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     if (this.Keypad_code == 0) {
                         if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() < 5) {
                             mTvCurrPasswordBuffer.append('5');
@@ -227,7 +226,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
+                case R.id.btn_plus4 /* 2131427466 */:
                     if (this.Keypad_code == 0) {
                         if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() < 5) {
                             mTvCurrPasswordBuffer.append('7');
@@ -245,7 +244,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus5 /* 2131427498 */:
+                case R.id.btn_plus5 /* 2131427469 */:
                     if (this.Keypad_code == 0) {
                         if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() < 5) {
                             mTvCurrPasswordBuffer.append('9');
@@ -263,7 +262,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus6 /* 2131427503 */:
+                case R.id.btn_plus6 /* 2131427472 */:
                     if (this.Keypad_code == 0) {
                         if (mTvCurrPasswordBuffer.length() == 5) {
                             findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
@@ -287,19 +286,19 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
                         }
                     }
                     break;
-                case R.id.btn_plus7 /* 2131427507 */:
+                case R.id.btn_plus7 /* 2131427475 */:
                     if (((TextView) findViewById(R.id.tv_text1)) != null && mTvCurrPasswordBuffer.length() > 0) {
                         mTvCurrPasswordBuffer.deleteCharAt(mTvCurrPasswordBuffer.length() - 1);
                         UpdatePassWord(mTvCurrPasswordBuffer.length());
                     }
                     break;
-                case R.id.btn_plus8 /* 2131427511 */:
+                case R.id.btn_plus8 /* 2131427478 */:
                     if (((TextView) findViewById(R.id.tv_text2)) != null && this.mTvCurrPasswordBuffer1.length() > 0) {
                         this.mTvCurrPasswordBuffer1.deleteCharAt(this.mTvCurrPasswordBuffer2.length() - 1);
                         UpdatePassWord1(this.mTvCurrPasswordBuffer1.length());
                     }
                     break;
-                case R.id.btn_plus9 /* 2131427515 */:
+                case R.id.btn_plus9 /* 2131427481 */:
                     if (((TextView) findViewById(R.id.tv_text3)) != null && this.mTvCurrPasswordBuffer2.length() > 0) {
                         this.mTvCurrPasswordBuffer2.deleteCharAt(this.mTvCurrPasswordBuffer2.length() - 1);
                         UpdatePassWord2(this.mTvCurrPasswordBuffer2.length());
@@ -308,7 +307,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.btn_plus6 /* 2131427503 */:
+                case R.id.btn_plus6 /* 2131427472 */:
                     if (this.Keypad_code == 0) {
                         if (mTvCurrPasswordBuffer.length() == 5) {
                             findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
@@ -332,7 +331,7 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         findViewById(R.id.layout_view1).setVisibility(0);
@@ -342,17 +341,17 @@ public class PAFordDoornumSetAct extends Activity implements View.OnTouchListene
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[478].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[490].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[478].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[490].removeNotify(this.notifyCanbus);
     }
 }

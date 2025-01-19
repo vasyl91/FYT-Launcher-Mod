@@ -11,7 +11,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.Print;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityWCTianLaiCarCD extends BaseActivity {
     public static ActivityWCTianLaiCarCD mInstance;
     public static boolean mIsFront;
@@ -33,39 +32,39 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
     int random = 0;
     int scan_disc = 0;
     int scan = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Print.log("LG", "updateCode=" + updateCode);
             switch (updateCode) {
-                case 51:
+                case 99:
                     ActivityWCTianLaiCarCD.this.updaterDiscState();
                     break;
-                case 53:
+                case 101:
                     ActivityWCTianLaiCarCD.this.updaterDiscState();
                     break;
-                case 54:
+                case 102:
                     ActivityWCTianLaiCarCD.this.updaterPlayTime();
                     break;
-                case 55:
+                case 103:
                     ActivityWCTianLaiCarCD.this.updaterFiles();
                     break;
-                case 56:
+                case 104:
                     ActivityWCTianLaiCarCD.this.updaterMode();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         mInstance = this;
-        setContentView(R.layout.layout_430_wc_tianlai_carcd);
+        //setContentView(R.layout.layout_430_wc_tianlai_carcd);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.cdView = findViewById(R.id.cd_view);
         this.cdmiaosuShowView = findViewById(R.id.cd_miaosu_view);
@@ -90,7 +89,7 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
         this.textView[5] = (TextView) findViewById(R.id.xuni_cd6_text);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -98,38 +97,38 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDiscState() {
-        int havedisc = DataCanbus.DATA[51] & 65535;
-        int disc = (DataCanbus.DATA[53] >> 8) & 255;
-        int track = DataCanbus.DATA[53] & 255;
+        int havedisc = DataCanbus.DATA[99] & 65535;
+        int disc = (DataCanbus.DATA[101] >> 8) & 255;
+        int track = DataCanbus.DATA[101] & 255;
         if (((havedisc >> 0) & 1) == 1) {
             sHasDisc |= 1;
         } else {
@@ -180,10 +179,10 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = (DataCanbus.DATA[54] >> 8) & 255;
-        int playsecond = DataCanbus.DATA[54] & 255;
+        int playminute = (DataCanbus.DATA[102] >> 8) & 255;
+        int playsecond = DataCanbus.DATA[102] & 255;
         if (playminute > 59) {
             playminute = 59;
         }
@@ -199,9 +198,9 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
         this.timeTv.setText(String.format("%02d:%02d", Integer.valueOf(playminute), Integer.valueOf(playsecond)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFiles() {
-        int files = DataCanbus.DATA[55];
+        int files = DataCanbus.DATA[103];
         switch (files) {
             case 0:
                 this.filesTv.setText("read TOC");
@@ -269,9 +268,9 @@ public class ActivityWCTianLaiCarCD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMode() {
-        int mode = DataCanbus.DATA[56] & 255;
+        int mode = DataCanbus.DATA[104] & 255;
         if (this.rep_disc != ((mode >> 4) & 1) && ((mode >> 4) & 1) == 1) {
             this.modeTv.setText(R.string.str_388_all_disc_rep);
         }

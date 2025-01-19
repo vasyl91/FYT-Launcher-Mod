@@ -1,6 +1,5 @@
 package com.syu.ipc.data;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FinalSound {
     public static final int C_AMP = 7;
     public static final int C_BACKCAR_MUTE = 13;

@@ -8,10 +8,13 @@ import android.content.res.XmlResourceParser;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Xml;
+
 import com.android.launcher66.R;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -121,10 +124,7 @@ public class CustomIcons {
                         }
                         return checkPkg && checkClazz;
                     }
-                    boolean checkClazz2 = false;
-                    if (other.clazzName == null) {
-                        checkClazz2 = true;
-                    }
+                    boolean checkClazz2 = other.clazzName == null;
                     return checkPkg && checkClazz2;
                 }
             }

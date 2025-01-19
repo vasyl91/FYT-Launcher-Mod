@@ -5,17 +5,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepDynoEngineAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDynoEngineAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 331:
+                case 343:
                     if (((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text12)) != null) {
                         int gear = value & 15;
                         switch (gear) {
@@ -58,7 +58,7 @@ public class PAJeepDynoEngineAct extends BaseActivity {
                         }
                     }
                     break;
-                case 332:
+                case 344:
                     if (((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text10)) != null) {
                         int speed = value & 16383;
                         if (((value >> 14) & 3) == 1) {
@@ -72,7 +72,7 @@ public class PAJeepDynoEngineAct extends BaseActivity {
                         }
                     }
                     break;
-                case 333:
+                case 345:
                     if (((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text3)) != null) {
                         int unit = (value >> 14) & 3;
                         int temp = value & 16383;
@@ -93,17 +93,17 @@ public class PAJeepDynoEngineAct extends BaseActivity {
                             ((ProgressBar) PAJeepDynoEngineAct.this.findViewById(R.id.pa_jeep_seekbar1)).invalidate();
                             break;
                         } else {
-                            ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text2)).setText("PSI");
+                            ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text2)).setText(CamryData.PRESSURE_UNIT_PSI);
                             ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text3)).setText(String.valueOf(temp / 10) + "." + (temp % 10));
                             ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text13)).setText(String.valueOf(temp / 10) + "." + (temp % 10));
-                            ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text14)).setText("PSI");
+                            ((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text14)).setText(CamryData.PRESSURE_UNIT_PSI);
                             ((ProgressBar) PAJeepDynoEngineAct.this.findViewById(R.id.pa_jeep_seekbar1)).setProgress(temp);
                             ((ProgressBar) PAJeepDynoEngineAct.this.findViewById(R.id.pa_jeep_seekbar1)).invalidate();
                             break;
                         }
                     }
                     break;
-                case 334:
+                case 346:
                     if (((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text6)) != null) {
                         int temp2 = value & 16383;
                         if (((value >> 14) & 3) == 1) {
@@ -119,7 +119,7 @@ public class PAJeepDynoEngineAct extends BaseActivity {
                         ((ProgressBar) PAJeepDynoEngineAct.this.findViewById(R.id.pa_jeep_seekbar2)).invalidate();
                         break;
                     }
-                case 335:
+                case 347:
                     if (((TextView) PAJeepDynoEngineAct.this.findViewById(R.id.tv_text9)) != null) {
                         int temp3 = value & 16383;
                         int unit2 = (value >> 14) & 3;
@@ -143,45 +143,45 @@ public class PAJeepDynoEngineAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_dyno_engine);
+        //setContentView(R.layout.layout_0374_pa_jeep_dyno_engine);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DataCanbus.PROXY.cmd(4, new int[]{90}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[331].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[332].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[333].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[334].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[335].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[343].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[344].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[345].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[346].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[347].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[331].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[332].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[333].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[334].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[335].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[343].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[344].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[345].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[346].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[347].removeNotify(this.mNotifyCanbus);
     }
 }

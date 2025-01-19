@@ -5,29 +5,29 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0025_XP1_GM_H extends AirBase {
     public Air_0025_XP1_GM_H(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0253_xp1_yinglang/air.webp";
         this.mPathHighlight = "0253_xp1_yinglang/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -109,7 +109,7 @@ public class Air_0025_XP1_GM_H extends AirBase {
                 break;
             default:
                 if (TempUnit != 0) {
-                    c.drawText(new StringBuilder(String.valueOf(((value3 * 9) / 50) + 32)).toString(), 64.0f, 62.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value3 * 9) / 50) + 32), 64.0f, 62.0f, this.mPaint);
                     break;
                 } else {
                     c.drawText(String.format("%.1f", Float.valueOf(value3 / 10.0f)), 64.0f, 62.0f, this.mPaint);
@@ -129,7 +129,7 @@ public class Air_0025_XP1_GM_H extends AirBase {
                 break;
             default:
                 if (TempUnit != 0) {
-                    c.drawText(new StringBuilder(String.valueOf(((value4 * 9) / 50) + 32)).toString(), 926.0f, 62.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value4 * 9) / 50) + 32), 926.0f, 62.0f, this.mPaint);
                     break;
                 } else {
                     c.drawText(String.format("%.1f", Float.valueOf(value4 / 10.0f)), 926.0f, 62.0f, this.mPaint);

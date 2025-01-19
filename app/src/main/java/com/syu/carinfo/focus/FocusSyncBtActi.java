@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.format.DateFormat;
@@ -26,7 +27,6 @@ import com.syu.module.sound.FFuncSound;
 import com.syu.util.HandlerUI;
 import java.util.Calendar;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FocusSyncBtActi extends BaseActivity implements View.OnClickListener {
     public static final int U_HIDE_TIME = 1;
     public static final int U_SYSTEM_TIME = 0;
@@ -40,8 +40,8 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
     public static String sUnicode = "";
     public static int[] sLineIcon = new int[16];
     private boolean isCanTouch = true;
-    Handler handler = new Handler() { // from class: com.syu.carinfo.focus.FocusSyncBtActi.1
-        @Override // android.os.Handler
+    Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
@@ -64,8 +64,8 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
             }
         }
     };
-    private IUiNotify mNotifySound = new IUiNotify() { // from class: com.syu.carinfo.focus.FocusSyncBtActi.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifySound = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 2:
@@ -76,12 +76,22 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.focus.FocusSyncBtActi.3
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (DataCanbus.DATA[1000] == 293 || DataCanbus.DATA[1000] == 319 || DataCanbus.DATA[1000] == 65855) {
                 switch (updateCode) {
-                    case 4:
+                    case 100:
+                    case 106:
+                        FocusSyncBtActi.sLineGroup = ints;
+                        if (strs != null && strs.length > 0) {
+                            FocusSyncBtActi.sUnicode = strs[0];
+                        }
+                        if (FocusSyncBtActi.sLineGroup != null) {
+                            FocusSyncBtActi.this.setWCGroupStr();
+                            break;
+                        }
+                    case 101:
                         if (ints != null && ints.length > 0) {
                             int value = ints[0];
                             if (value == 1 || value == 2) {
@@ -93,7 +103,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                             }
                         }
                         break;
-                    case 5:
+                    case 102:
                         if (ints != null && ints.length > 0) {
                             int value2 = ints[0];
                             if (value2 == 1 || value2 == 2) {
@@ -105,10 +115,10 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                             }
                         }
                         break;
-                    case 6:
-                        FocusSyncBtActi.this.setTime(DataCanbus.DATA[6]);
+                    case 103:
+                        FocusSyncBtActi.this.setTime(DataCanbus.DATA[103]);
                         break;
-                    case 8:
+                    case 105:
                         FocusSyncBtActi.sLineIcon = ints;
                         if (FocusSyncBtActi.sLineIcon != null) {
                             FocusSyncBtActi.this.clearBack();
@@ -118,29 +128,18 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                             }
                         }
                         break;
-                    case 9:
-                    case 20:
-                        FocusSyncBtActi.sLineGroup = ints;
-                        if (strs != null && strs.length > 0) {
-                            FocusSyncBtActi.sUnicode = strs[0];
-                        }
-                        if (FocusSyncBtActi.sLineGroup != null) {
-                            FocusSyncBtActi.this.setWCGroupStr();
-                            break;
-                        }
-                    case 43:
-                        if (DataCanbus.DATA[43] == 1) {
+                    case 111:
+                        if (DataCanbus.DATA[111] == 1) {
                             FuncMain.setChannel(13);
                             break;
-                        } else if (DataCanbus.DATA[43] == 2) {
+                        } else if (DataCanbus.DATA[111] == 2) {
                             FuncMain.setChannel(12);
                             break;
                         }
                 }
             }
             switch (updateCode) {
-                case 1:
-                case 19:
+                case 99:
                     FocusSyncBtActi.sLineIcon = ints;
                     if (FocusSyncBtActi.sLineIcon != null) {
                         if (!FocusSyncBtActi.this.isCanbusWC()) {
@@ -157,8 +156,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 2:
-                case 20:
+                case 100:
                     FocusSyncBtActi.sLineGroup = ints;
                     if (strs != null && strs.length > 0) {
                         FocusSyncBtActi.sUnicode = strs[0];
@@ -173,11 +171,10 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 3:
-                    FocusSyncBtActi.this.setTime(DataCanbus.DATA[3]);
+                case 101:
+                    FocusSyncBtActi.this.setTime(DataCanbus.DATA[101]);
                     break;
-                case 4:
-                case 22:
+                case 102:
                     if (ints != null && ints.length > 0) {
                         int value3 = ints[0];
                         if (value3 == 1 || value3 == 2) {
@@ -189,8 +186,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 5:
-                case 23:
+                case 103:
                     if (ints != null && ints.length > 0) {
                         int value4 = ints[0];
                         if (value4 == 1 || value4 == 2) {
@@ -202,7 +198,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 7:
+                case 105:
                     if (ints != null && ints.length > 1) {
                         int value5 = ints[1];
                         if (value5 == 0) {
@@ -228,37 +224,34 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 8:
-                    int value6 = DataCanbus.DATA[8];
+                case 106:
+                    int value6 = DataCanbus.DATA[106];
                     ((TextView) FocusSyncBtActi.this.findViewById(R.id.sync_playinfo)).setText(String.format("%02d:%02d", Integer.valueOf(value6 / 60), Integer.valueOf(value6 % 60)));
                     FocusSyncBtActi.this.hideTimeShow();
                     break;
-                case 9:
-                case 12:
+                case 107:
+                case 110:
                     if (ints != null) {
                         HandlerUI.getInstance().removeCallbacks(FocusSyncBtActi.this.setAutoRequest);
                         HandlerUI.getInstance().postDelayed(FocusSyncBtActi.this.setAutoRequest, 1000L);
                         break;
                     }
-                case 21:
-                    FocusSyncBtActi.this.setTime(DataCanbus.DATA[21]);
-                    break;
-                case 46:
-                    if (DataCanbus.DATA[46] == 1) {
+                case 114:
+                    if (DataCanbus.DATA[114] == 1) {
                         FuncMain.setChannel(13);
                         break;
-                    } else if (DataCanbus.DATA[46] == 2) {
+                    } else if (DataCanbus.DATA[114] == 2) {
                         FuncMain.setChannel(12);
                         break;
                     }
             }
         }
     };
-    private IUiNotify mNotifyCanbusYL = new IUiNotify() { // from class: com.syu.carinfo.focus.FocusSyncBtActi.4
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbusYL = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 35:
+                case 115:
                     if (ints != null && ints.length > 1) {
                         int value = ints[1];
                         if (value == 0) {
@@ -284,26 +277,26 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 36:
-                case 42:
+                case 116:
+                case 122:
                     if (ints != null && ints.length > 0) {
                         int value2 = ints[0];
                         ((TextView) FocusSyncBtActi.this.findViewById(R.id.sync_playinfo)).setText(String.format("%02d:%02d", Integer.valueOf(value2 / 60), Integer.valueOf(value2 % 60)));
                         FocusSyncBtActi.this.hideTimeShow();
                         break;
                     }
-                case 37:
+                case 117:
                     if (ints != null && ints.length > 0 && ints[0] == 0) {
                         FocusSyncBtActi.this.finish();
                         break;
                     }
-                case 40:
+                case 120:
                     FocusSyncBtActi.sLineIcon = ints;
                     if (FocusSyncBtActi.sLineIcon != null && FocusSyncBtActi.sLineIcon.length >= 3) {
                         FocusSyncBtActi.this.setXPIcon();
                         break;
                     }
-                case 41:
+                case 121:
                     FocusSyncBtActi.sLineGroup = ints;
                     if (strs != null && strs.length > 0) {
                         FocusSyncBtActi.sUnicode = strs[0];
@@ -315,11 +308,11 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
             }
         }
     };
-    Runnable setAutoRequest = new Runnable() { // from class: com.syu.carinfo.focus.FocusSyncBtActi.5
-        @Override // java.lang.Runnable
+    Runnable setAutoRequest = new Runnable() { 
+        @Override
         public void run() {
-            int workState = DataCanbus.DATA[9];
-            int value = DataCanbus.DATA[12];
+            int workState = DataCanbus.DATA[107];
+            int value = DataCanbus.DATA[110];
             if (workState == 0 || workState == 1) {
                 if (value == 0 || value == 2 || value == 5) {
                     FocusSyncBtActi.this.finish();
@@ -332,13 +325,13 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         return mInst;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInst = this;
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_focus_sync);
+        //setContentView(R.layout.layout_focus_sync);
         setupView();
         setListener();
         this.mCalendar = Calendar.getInstance();
@@ -404,25 +397,25 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         ((ViewGroup) findViewById(R.id.sync_layout_line5)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdate();
         isFront = true;
         if (!isCanbusWC()) {
-            int value = DataCanbus.DATA[12];
+            int value = DataCanbus.DATA[110];
             if (value != 1 && value != 3 && value != 4) {
                 FocusFun.C_CONTRAL(161, 129);
             }
             FuncMain.setChannel(12);
         } else if (DataCanbus.DATA[1000] == 293 || DataCanbus.DATA[1000] == 319 || DataCanbus.DATA[1000] == 65855) {
-            if (DataCanbus.DATA[43] == 1) {
+            if (DataCanbus.DATA[111] == 1) {
                 FuncMain.setChannel(13);
             } else {
                 FuncMain.setChannel(12);
             }
         } else if (DataCanbus.DATA[1000] == 14) {
-            if (DataCanbus.DATA[46] == 1) {
+            if (DataCanbus.DATA[114] == 1) {
                 FuncMain.setChannel(13);
             } else {
                 FuncMain.setChannel(12);
@@ -431,7 +424,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         updateSystemTime();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
@@ -439,7 +432,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         removeSystemTime();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mInst = null;
@@ -454,7 +447,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         this.handler.removeMessages(0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void hideTimeShow() {
         this.handler.removeMessages(1);
         this.handler.sendEmptyMessageDelayed(1, 2000L);
@@ -465,7 +458,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
             super(FocusSyncBtActi.this.handler);
         }
 
-        @Override // android.database.ContentObserver
+        @Override
         public void onChange(boolean selfChange) {
             FocusSyncBtActi.this.setFormat();
         }
@@ -488,97 +481,97 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
 
     private boolean isBtState() {
         if (DataCanbus.DATA[1000] == 293 || DataCanbus.DATA[1000] == 319 || DataCanbus.DATA[1000] == 65855) {
-            return DataCanbus.DATA[5] == 2;
+            return DataCanbus.DATA[102] == 2;
         }
         if (isCanbusWC()) {
-            return DataCanbus.DATA[23] == 2;
+            return DataCanbus.DATA[103] == 2;
         }
         return isSyncPhoto();
     }
 
     private boolean isSyncPhoto() {
-        return DataCanbus.DATA[9] == 3;
+        return DataCanbus.DATA[107] == 3;
     }
 
     private void addUpdate() {
         DataSound.NOTIFY_EVENTS[2].addNotify(this.mNotifySound, 1);
         if (DataCanbus.DATA[1000] == 293 || DataCanbus.DATA[1000] == 319 || DataCanbus.DATA[1000] == 65855) {
-            DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
             return;
         }
         if (isCanbusWC()) {
-            DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
             return;
         }
         if (DataCanbus.DATA[1000] == 347) {
-            DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbusYL, 0);
-            DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbusYL, 0);
-            DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbusYL, 0);
+            DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbusYL, 0);
+            DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbusYL, 1);
             return;
         }
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 0);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 0);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 0);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 0);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 0);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 0);
     }
 
     private void removeUpdate() {
         DataSound.NOTIFY_EVENTS[2].removeNotify(this.mNotifySound);
         if (DataCanbus.DATA[1000] == 347) {
-            DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbusYL, 0);
-            DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbusYL, 1);
-            DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbusYL, 0);
+            DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbusYL, 1);
+            DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbusYL, 1);
         }
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setTime(int value) {
         int minute = value / 60;
         int second = value % 60;
@@ -603,7 +596,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
             }
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             this.handleRun = true;
             if (this.value > 0) {
@@ -652,7 +645,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
     private void setViewTouchState(View view, boolean flage) {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void clearBack() {
         ((ViewGroup) findViewById(R.id.sync_layout_line1)).setBackgroundColor(0);
         ((ViewGroup) findViewById(R.id.sync_layout_line2)).setBackgroundColor(0);
@@ -661,7 +654,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         ((ViewGroup) findViewById(R.id.sync_layout_line5)).setBackgroundColor(0);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         if (isCanbusWC()) {
             onClickWCFocus(v);
@@ -688,7 +681,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void getXPGroupStr() {
         if (sLineGroup[0] > 0 && sLineGroup[0] <= 18) {
             if (((sLineGroup[1] >> 4) & 1) == 0) {
@@ -798,7 +791,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setXPIcon() {
         int resLeft = getXPResId(sLineIcon[1]);
         int resRight = getXPResId(sLineIcon[2]);
@@ -1326,7 +1319,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setWCIcon() {
         for (int i = 0; i < 16; i++) {
             if (sLineIcon[i] == 1) {
@@ -1348,7 +1341,7 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setWCGroupStr() {
         switch (sLineGroup[0]) {
             case 1:
@@ -1383,101 +1376,101 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
 
     private void onClickWCFocus(View v) {
         switch (v.getId()) {
-            case R.id.sync_speech /* 2131430958 */:
+            case R.id.sync_speech /* 2131430934 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 18);
                 break;
-            case R.id.sync_usbIpod /* 2131430959 */:
+            case R.id.sync_usbIpod /* 2131430935 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 17);
                 break;
-            case R.id.sync_info /* 2131430960 */:
+            case R.id.sync_info /* 2131430936 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 19);
                 break;
-            case R.id.sync_ok /* 2131430961 */:
+            case R.id.sync_ok /* 2131430937 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 16);
                 break;
-            case R.id.sync_up /* 2131430962 */:
+            case R.id.sync_up /* 2131430938 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 12);
                 break;
-            case R.id.sync_left /* 2131430963 */:
+            case R.id.sync_left /* 2131430939 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 14);
                 break;
-            case R.id.sync_right /* 2131430964 */:
+            case R.id.sync_right /* 2131430940 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 15);
                 break;
-            case R.id.sync_down /* 2131430965 */:
+            case R.id.sync_down /* 2131430941 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 13);
                 break;
-            case R.id.sync_prev /* 2131430966 */:
+            case R.id.sync_prev /* 2131430942 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 10);
                 break;
-            case R.id.sync_next /* 2131430967 */:
+            case R.id.sync_next /* 2131430943 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 11);
                 break;
-            case R.id.sync_bottom_btn1 /* 2131430990 */:
+            case R.id.sync_bottom_btn1 /* 2131430966 */:
                 FocusFun.C_SET_BUTTON_TOUCH(1, 1);
                 break;
-            case R.id.sync_bottom_btn2 /* 2131430991 */:
+            case R.id.sync_bottom_btn2 /* 2131430967 */:
                 FocusFun.C_SET_BUTTON_TOUCH(1, 2);
                 break;
-            case R.id.sync_bottom_btn3 /* 2131430992 */:
+            case R.id.sync_bottom_btn3 /* 2131430968 */:
                 FocusFun.C_SET_BUTTON_TOUCH(1, 3);
                 break;
-            case R.id.sync_bottom_btn4 /* 2131430993 */:
+            case R.id.sync_bottom_btn4 /* 2131430969 */:
                 FocusFun.C_SET_BUTTON_TOUCH(1, 4);
                 break;
-            case R.id.sync_btn_open /* 2131430996 */:
+            case R.id.sync_btn_open /* 2131430972 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 30);
                 break;
-            case R.id.sync_btn_close /* 2131430997 */:
+            case R.id.sync_btn_close /* 2131430973 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 31);
                 break;
-            case R.id.sync_btn2 /* 2131430998 */:
+            case R.id.sync_btn2 /* 2131430974 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 22);
                 break;
-            case R.id.sync_btn1 /* 2131430999 */:
+            case R.id.sync_btn1 /* 2131430975 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 21);
                 break;
-            case R.id.sync_btn3 /* 2131431000 */:
+            case R.id.sync_btn3 /* 2131430976 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 23);
                 break;
-            case R.id.sync_btn5 /* 2131431001 */:
+            case R.id.sync_btn5 /* 2131430977 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 25);
                 break;
-            case R.id.sync_btn4 /* 2131431002 */:
+            case R.id.sync_btn4 /* 2131430978 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 24);
                 break;
-            case R.id.sync_btn6 /* 2131431003 */:
+            case R.id.sync_btn6 /* 2131430979 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 26);
                 break;
-            case R.id.sync_btn8 /* 2131431004 */:
+            case R.id.sync_btn8 /* 2131430980 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 28);
                 break;
-            case R.id.sync_btn7 /* 2131431005 */:
+            case R.id.sync_btn7 /* 2131430981 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 27);
                 break;
-            case R.id.sync_btn9 /* 2131431006 */:
+            case R.id.sync_btn9 /* 2131430982 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 29);
                 break;
-            case R.id.sync_btn0 /* 2131431007 */:
+            case R.id.sync_btn0 /* 2131430983 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 20);
                 break;
-            case R.id.sync_btn_xing /* 2131431008 */:
+            case R.id.sync_btn_xing /* 2131430984 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 32);
                 break;
-            case R.id.sync_btn_jing /* 2131431009 */:
+            case R.id.sync_btn_jing /* 2131430985 */:
                 FocusFun.C_SET_BUTTON_TOUCH(2, 33);
                 break;
-            case R.id.back /* 2131433008 */:
+            case R.id.back /* 2131432937 */:
                 if (!isBtState()) {
                     moveTaskToBack(true);
                     break;
                 }
-            case R.id.home /* 2131433009 */:
+            case R.id.home /* 2131432938 */:
                 if (!isBtState()) {
                     moveToHome(v);
                     break;
                 }
-            case R.id.textvol /* 2131433010 */:
+            case R.id.textvol /* 2131432939 */:
                 FFuncSound.showVol();
                 break;
         }
@@ -1485,119 +1478,119 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
 
     private void onClickXPFocus(View v) {
         switch (v.getId()) {
-            case R.id.sync_speech /* 2131430958 */:
+            case R.id.sync_speech /* 2131430934 */:
                 FocusFun.C_CONTRAL(161, 1);
                 break;
-            case R.id.sync_usbIpod /* 2131430959 */:
+            case R.id.sync_usbIpod /* 2131430935 */:
                 FocusFun.C_CONTRAL(161, 27);
                 break;
-            case R.id.sync_info /* 2131430960 */:
+            case R.id.sync_info /* 2131430936 */:
                 FocusFun.C_CONTRAL(161, 6);
                 break;
-            case R.id.sync_ok /* 2131430961 */:
+            case R.id.sync_ok /* 2131430937 */:
                 FocusFun.C_CONTRAL(161, 12);
                 break;
-            case R.id.sync_up /* 2131430962 */:
+            case R.id.sync_up /* 2131430938 */:
                 FocusFun.C_CONTRAL(161, 10);
                 break;
-            case R.id.sync_left /* 2131430963 */:
+            case R.id.sync_left /* 2131430939 */:
                 FocusFun.C_CONTRAL(161, 25);
                 break;
-            case R.id.sync_right /* 2131430964 */:
+            case R.id.sync_right /* 2131430940 */:
                 FocusFun.C_CONTRAL(161, 26);
                 break;
-            case R.id.sync_down /* 2131430965 */:
+            case R.id.sync_down /* 2131430941 */:
                 FocusFun.C_CONTRAL(161, 11);
                 break;
-            case R.id.sync_prev /* 2131430966 */:
+            case R.id.sync_prev /* 2131430942 */:
                 FocusFun.C_CONTRAL(161, 8);
                 break;
-            case R.id.sync_next /* 2131430967 */:
+            case R.id.sync_next /* 2131430943 */:
                 FocusFun.C_CONTRAL(161, 9);
                 break;
-            case R.id.sync_layout_line1 /* 2131430970 */:
+            case R.id.sync_layout_line1 /* 2131430946 */:
                 FocusFun.C_CONTRAL(161, 145);
                 break;
-            case R.id.sync_layout_line2 /* 2131430974 */:
+            case R.id.sync_layout_line2 /* 2131430950 */:
                 FocusFun.C_CONTRAL(161, 146);
                 break;
-            case R.id.sync_layout_line3 /* 2131430978 */:
+            case R.id.sync_layout_line3 /* 2131430954 */:
                 FocusFun.C_CONTRAL(161, 147);
                 break;
-            case R.id.sync_layout_line4 /* 2131430982 */:
+            case R.id.sync_layout_line4 /* 2131430958 */:
                 FocusFun.C_CONTRAL(161, 148);
                 break;
-            case R.id.sync_layout_line5 /* 2131430986 */:
+            case R.id.sync_layout_line5 /* 2131430962 */:
                 FocusFun.C_CONTRAL(161, 149);
                 break;
-            case R.id.sync_bottom_btn1 /* 2131430990 */:
+            case R.id.sync_bottom_btn1 /* 2131430966 */:
                 FocusFun.C_CONTRAL(161, 28);
                 break;
-            case R.id.sync_bottom_btn2 /* 2131430991 */:
+            case R.id.sync_bottom_btn2 /* 2131430967 */:
                 FocusFun.C_CONTRAL(161, 29);
                 break;
-            case R.id.sync_bottom_btn3 /* 2131430992 */:
+            case R.id.sync_bottom_btn3 /* 2131430968 */:
                 FocusFun.C_CONTRAL(161, 30);
                 break;
-            case R.id.sync_bottom_btn4 /* 2131430993 */:
+            case R.id.sync_bottom_btn4 /* 2131430969 */:
                 FocusFun.C_CONTRAL(161, 31);
                 break;
-            case R.id.sync_photo /* 2131430995 */:
+            case R.id.sync_photo /* 2131430971 */:
                 FocusFun.C_CONTRAL(161, 3);
                 break;
-            case R.id.sync_btn_open /* 2131430996 */:
+            case R.id.sync_btn_open /* 2131430972 */:
                 FocusFun.C_CONTRAL(161, 5);
                 break;
-            case R.id.sync_btn_close /* 2131430997 */:
+            case R.id.sync_btn_close /* 2131430973 */:
                 FocusFun.C_CONTRAL(161, 4);
                 break;
-            case R.id.sync_btn2 /* 2131430998 */:
+            case R.id.sync_btn2 /* 2131430974 */:
                 FocusFun.C_CONTRAL(161, 15);
                 break;
-            case R.id.sync_btn1 /* 2131430999 */:
+            case R.id.sync_btn1 /* 2131430975 */:
                 FocusFun.C_CONTRAL(161, 14);
                 break;
-            case R.id.sync_btn3 /* 2131431000 */:
+            case R.id.sync_btn3 /* 2131430976 */:
                 FocusFun.C_CONTRAL(161, 16);
                 break;
-            case R.id.sync_btn5 /* 2131431001 */:
+            case R.id.sync_btn5 /* 2131430977 */:
                 FocusFun.C_CONTRAL(161, 18);
                 break;
-            case R.id.sync_btn4 /* 2131431002 */:
+            case R.id.sync_btn4 /* 2131430978 */:
                 FocusFun.C_CONTRAL(161, 17);
                 break;
-            case R.id.sync_btn6 /* 2131431003 */:
+            case R.id.sync_btn6 /* 2131430979 */:
                 FocusFun.C_CONTRAL(161, 19);
                 break;
-            case R.id.sync_btn8 /* 2131431004 */:
+            case R.id.sync_btn8 /* 2131430980 */:
                 FocusFun.C_CONTRAL(161, 21);
                 break;
-            case R.id.sync_btn7 /* 2131431005 */:
+            case R.id.sync_btn7 /* 2131430981 */:
                 FocusFun.C_CONTRAL(161, 20);
                 break;
-            case R.id.sync_btn9 /* 2131431006 */:
+            case R.id.sync_btn9 /* 2131430982 */:
                 FocusFun.C_CONTRAL(161, 22);
                 break;
-            case R.id.sync_btn0 /* 2131431007 */:
+            case R.id.sync_btn0 /* 2131430983 */:
                 FocusFun.C_CONTRAL(161, 13);
                 break;
-            case R.id.sync_btn_xing /* 2131431008 */:
+            case R.id.sync_btn_xing /* 2131430984 */:
                 FocusFun.C_CONTRAL(161, 23);
                 break;
-            case R.id.sync_btn_jing /* 2131431009 */:
+            case R.id.sync_btn_jing /* 2131430985 */:
                 FocusFun.C_CONTRAL(161, 24);
                 break;
-            case R.id.back /* 2131433008 */:
+            case R.id.back /* 2131432937 */:
                 if (!isBtState()) {
                     moveTaskToBack(true);
                     break;
                 }
-            case R.id.home /* 2131433009 */:
+            case R.id.home /* 2131432938 */:
                 if (!isBtState()) {
                     moveToHome(v);
                     break;
                 }
-            case R.id.textvol /* 2131433010 */:
+            case R.id.textvol /* 2131432939 */:
                 FFuncSound.showVol();
                 break;
         }
@@ -1605,131 +1598,131 @@ public class FocusSyncBtActi extends BaseActivity implements View.OnClickListene
 
     private void onClickYLFocus(View v) {
         switch (v.getId()) {
-            case R.id.sync_speech /* 2131430958 */:
+            case R.id.sync_speech /* 2131430934 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 1);
                 break;
-            case R.id.sync_usbIpod /* 2131430959 */:
+            case R.id.sync_usbIpod /* 2131430935 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 32);
                 break;
-            case R.id.sync_info /* 2131430960 */:
+            case R.id.sync_info /* 2131430936 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 2);
                 break;
-            case R.id.sync_ok /* 2131430961 */:
+            case R.id.sync_ok /* 2131430937 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 42);
                 break;
-            case R.id.sync_up /* 2131430962 */:
+            case R.id.sync_up /* 2131430938 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 38);
                 break;
-            case R.id.sync_left /* 2131430963 */:
+            case R.id.sync_left /* 2131430939 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 40);
                 break;
-            case R.id.sync_right /* 2131430964 */:
+            case R.id.sync_right /* 2131430940 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 41);
                 break;
-            case R.id.sync_down /* 2131430965 */:
+            case R.id.sync_down /* 2131430941 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 39);
                 break;
-            case R.id.sync_prev /* 2131430966 */:
+            case R.id.sync_prev /* 2131430942 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 6);
                 break;
-            case R.id.sync_next /* 2131430967 */:
+            case R.id.sync_next /* 2131430943 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 7);
                 break;
-            case R.id.sync_layout_line1 /* 2131430970 */:
+            case R.id.sync_layout_line1 /* 2131430946 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 48);
                 break;
-            case R.id.sync_layout_line2 /* 2131430974 */:
+            case R.id.sync_layout_line2 /* 2131430950 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 49);
                 break;
-            case R.id.sync_layout_line3 /* 2131430978 */:
+            case R.id.sync_layout_line3 /* 2131430954 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 50);
                 break;
-            case R.id.sync_layout_line4 /* 2131430982 */:
+            case R.id.sync_layout_line4 /* 2131430958 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 51);
                 break;
-            case R.id.sync_layout_line5 /* 2131430986 */:
+            case R.id.sync_layout_line5 /* 2131430962 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 52);
                 break;
-            case R.id.sync_bottom_btn1 /* 2131430990 */:
+            case R.id.sync_bottom_btn1 /* 2131430966 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 26);
                 break;
-            case R.id.sync_bottom_btn2 /* 2131430991 */:
+            case R.id.sync_bottom_btn2 /* 2131430967 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 27);
                 break;
-            case R.id.sync_bottom_btn3 /* 2131430992 */:
+            case R.id.sync_bottom_btn3 /* 2131430968 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 28);
                 break;
-            case R.id.sync_bottom_btn4 /* 2131430993 */:
+            case R.id.sync_bottom_btn4 /* 2131430969 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 29);
                 break;
-            case R.id.sync_photo /* 2131430995 */:
+            case R.id.sync_photo /* 2131430971 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 3);
                 break;
-            case R.id.sync_btn_open /* 2131430996 */:
+            case R.id.sync_btn_open /* 2131430972 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 5);
                 break;
-            case R.id.sync_btn_close /* 2131430997 */:
+            case R.id.sync_btn_close /* 2131430973 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 4);
                 break;
-            case R.id.sync_btn2 /* 2131430998 */:
+            case R.id.sync_btn2 /* 2131430974 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 18);
                 break;
-            case R.id.sync_btn1 /* 2131430999 */:
+            case R.id.sync_btn1 /* 2131430975 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 17);
                 break;
-            case R.id.sync_btn3 /* 2131431000 */:
+            case R.id.sync_btn3 /* 2131430976 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 19);
                 break;
-            case R.id.sync_btn5 /* 2131431001 */:
+            case R.id.sync_btn5 /* 2131430977 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 21);
                 break;
-            case R.id.sync_btn4 /* 2131431002 */:
+            case R.id.sync_btn4 /* 2131430978 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 20);
                 break;
-            case R.id.sync_btn6 /* 2131431003 */:
+            case R.id.sync_btn6 /* 2131430979 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 22);
                 break;
-            case R.id.sync_btn8 /* 2131431004 */:
+            case R.id.sync_btn8 /* 2131430980 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 24);
                 break;
-            case R.id.sync_btn7 /* 2131431005 */:
+            case R.id.sync_btn7 /* 2131430981 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 23);
                 break;
-            case R.id.sync_btn9 /* 2131431006 */:
+            case R.id.sync_btn9 /* 2131430982 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 25);
                 break;
-            case R.id.sync_btn0 /* 2131431007 */:
+            case R.id.sync_btn0 /* 2131430983 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 16);
                 break;
-            case R.id.sync_btn_xing /* 2131431008 */:
+            case R.id.sync_btn_xing /* 2131430984 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 30);
                 break;
-            case R.id.sync_btn_jing /* 2131431009 */:
+            case R.id.sync_btn_jing /* 2131430985 */:
                 FFuncYLFocus.C_SET_CONTROT(17, 31);
                 break;
-            case R.id.back /* 2131433008 */:
+            case R.id.back /* 2131432937 */:
                 if (!isBtState()) {
                     moveTaskToBack(true);
                     break;
                 }
-            case R.id.home /* 2131433009 */:
+            case R.id.home /* 2131432938 */:
                 if (!isBtState()) {
                     moveToHome(v);
                     break;
                 }
-            case R.id.textvol /* 2131433010 */:
+            case R.id.textvol /* 2131432939 */:
                 FFuncSound.showVol();
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public boolean isCanbusWC() {
         int canbusType = DataCanbus.DATA[1000];
         return canbusType == 14 || canbusType == 115 || canbusType == 49 || canbusType == 293 || canbusType == 65855 || canbusType == 319;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             if (isCanbusWC() && DataMain.DATA[0] == 13) {

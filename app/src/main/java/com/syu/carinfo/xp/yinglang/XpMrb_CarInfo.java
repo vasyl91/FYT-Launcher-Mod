@@ -10,47 +10,46 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XpMrb_CarInfo extends Activity {
-    private int[] events = {124, 125, 126, 127, 128};
+    private int[] events = {187, 188, 189, 190, 191};
     int value = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.XpMrb_CarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             XpMrb_CarInfo.this.value = DataCanbus.DATA[updateCode] & 255;
             switch (updateCode) {
-                case 124:
+                case 187:
                     XpMrb_CarInfo.this.uRF(XpMrb_CarInfo.this.value);
                     break;
-                case 125:
+                case 188:
                     XpMrb_CarInfo.this.uLF(XpMrb_CarInfo.this.value);
                     break;
-                case 126:
+                case 189:
                     XpMrb_CarInfo.this.uRR(XpMrb_CarInfo.this.value);
                     break;
-                case 127:
+                case 190:
                     XpMrb_CarInfo.this.uLR(XpMrb_CarInfo.this.value);
                     break;
-                case 128:
+                case 191:
                     XpMrb_CarInfo.this.uAngel(XpMrb_CarInfo.this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_359_carinfo);
+        //setContentView(R.layout.layout_359_carinfo);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -68,7 +67,7 @@ public class XpMrb_CarInfo extends Activity {
         }
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

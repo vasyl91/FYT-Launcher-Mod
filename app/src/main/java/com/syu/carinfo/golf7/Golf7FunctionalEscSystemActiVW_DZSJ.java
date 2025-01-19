@@ -10,39 +10,38 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalEscSystemActiVW_DZSJ extends BaseActivity {
     public static Golf7FunctionalEscSystemActiVW_DZSJ mInstance;
     public static boolean mIsFront = false;
     private int DriveMode = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode] & 255;
             Golf7FunctionalEscSystemActiVW_DZSJ.this.DriveMode = 0;
             switch (updateCode) {
-                case 127:
+                case 190:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_ss)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_ss_p : R.drawable.ic_esc_ss);
                     break;
-                case 128:
+                case 191:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_bz)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_bz_p : R.drawable.ic_esc_bz);
                     break;
-                case 129:
+                case 192:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_yd)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_yd_p : R.drawable.ic_esc_yd);
                     break;
-                case 130:
+                case 193:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_jj)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_jj_p : R.drawable.ic_esc_jj);
                     break;
-                case 131:
+                case 194:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_diy)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_diy_p : R.drawable.ic_esc_diy);
                     if (((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_xd_set)) != null && value == 1) {
                         Golf7FunctionalEscSystemActiVW_DZSJ.this.DriveMode = 1;
                         break;
                     }
-                case 196:
+                case 246:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_xd)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_xd_p : R.drawable.ic_esc_xd);
                     break;
-                case 197:
+                case 247:
                     ((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_yy)).setBackgroundResource(value == 1 ? R.drawable.ic_esc_yy_p : R.drawable.ic_esc_yy);
                     if (((Button) Golf7FunctionalEscSystemActiVW_DZSJ.this.findViewById(R.id.glf7_btn_esc_system_xd_set)) != null && value == 1) {
                         Golf7FunctionalEscSystemActiVW_DZSJ.this.DriveMode = 2;
@@ -53,60 +52,60 @@ public class Golf7FunctionalEscSystemActiVW_DZSJ extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_state_esc_system_od);
+        //setContentView(R.layout.layout_golf7_functional_state_esc_system_od);
         init();
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.glf7_btn_esc_system_jj)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_jj)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_bz)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_bz)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_yd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_yd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_ss)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_ss)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_diy)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_diy)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_yy)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_yy)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{8}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_xd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_xd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(103, new int[]{6}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_xd_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_xd_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -132,47 +131,47 @@ public class Golf7FunctionalEscSystemActiVW_DZSJ extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[246].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[247].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[248].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[246].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[247].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[248].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             Intent intent = new Intent("android.intent.action.MAIN");

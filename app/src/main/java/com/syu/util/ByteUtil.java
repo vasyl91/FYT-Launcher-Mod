@@ -1,6 +1,5 @@
 package com.syu.util;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ByteUtil {
     public static int indexOf(byte[] tag, byte[] src, int len) {
         int tagLen = tag.length;
@@ -38,9 +37,7 @@ public class ByteUtil {
         int len = end - start;
         if (len > 0) {
             tmp = new byte[len];
-            for (int i = 0; i < len; i++) {
-                tmp[i] = src[start + i];
-            }
+            System.arraycopy(src, start + 0, tmp, 0, len);
         }
         return tmp;
     }

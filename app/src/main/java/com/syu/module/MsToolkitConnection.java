@@ -8,22 +8,24 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+
 import com.syu.ipc.IRemoteToolkit;
+import com.syu.loopview.MessageHandler;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MsToolkitConnection implements ServiceConnection {
     private static final MsToolkitConnection INSTANCE = new MsToolkitConnection();
     static Looper looper;
     private boolean mConnecting;
     private Context mContext;
     private IRemoteToolkit mRemoteToolkit;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
-    private ArrayList<ConnectionObserver> mConnectionObservers = new ArrayList<>();
-    private Runnable mRunnableConnect = new Runnable() { // from class: com.syu.module.MsToolkitConnection.1
-        @Override // java.lang.Runnable
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final ArrayList<ConnectionObserver> mConnectionObservers = new ArrayList<>();
+    private final Runnable mRunnableConnect = new Runnable() { 
+        @Override
         public void run() {
             if (MsToolkitConnection.this.mRemoteToolkit != null) {
                 MsToolkitConnection.this.mConnecting = false;
@@ -32,7 +34,7 @@ public class MsToolkitConnection implements ServiceConnection {
             Intent intent = new Intent("com.syu.ms.toolkit");
             intent.setComponent(new ComponentName("com.syu.ms", "app.ToolkitService"));
             MsToolkitConnection.this.mContext.bindService(intent, MsToolkitConnection.INSTANCE, 1);
-            MsToolkitConnection.this.mHandler.postDelayed(this, new Random().nextInt(3000) + 1000);
+            MsToolkitConnection.this.mHandler.postDelayed(this, new Random().nextInt(MessageHandler.WHAT_ITEM_SELECTED) + 1000);
         }
     };
 
@@ -96,7 +98,7 @@ public class MsToolkitConnection implements ServiceConnection {
         this.mConnectionObservers.clear();
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public synchronized void onServiceConnected(ComponentName name, IBinder service) {
         this.mRemoteToolkit = IRemoteToolkit.Stub.asInterface(service);
         Iterator<ConnectionObserver> it = this.mConnectionObservers.iterator();
@@ -106,7 +108,7 @@ public class MsToolkitConnection implements ServiceConnection {
         }
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public synchronized void onServiceDisconnected(ComponentName name) {
         this.mRemoteToolkit = null;
         Iterator<ConnectionObserver> it = this.mConnectionObservers.iterator();
@@ -114,11 +116,11 @@ public class MsToolkitConnection implements ServiceConnection {
             ConnectionObserver observer = it.next();
             this.mHandler.post(new OnServiceDisconnected(this, observer, null));
         }
-        connect(this.mContext, new Random().nextInt(3000) + 1000);
+        connect(this.mContext, new Random().nextInt(MessageHandler.WHAT_ITEM_SELECTED) + 1000);
     }
 
     private class OnServiceConnected implements Runnable {
-        private ConnectionObserver observer;
+        private final ConnectionObserver observer;
 
         private OnServiceConnected(ConnectionObserver observer) {
             this.observer = observer;
@@ -128,7 +130,7 @@ public class MsToolkitConnection implements ServiceConnection {
             this(connectionObserver);
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             IRemoteToolkit toolkit = MsToolkitConnection.this.mRemoteToolkit;
             if (toolkit != null && this.observer != null) {
@@ -138,7 +140,7 @@ public class MsToolkitConnection implements ServiceConnection {
     }
 
     private class OnServiceDisconnected implements Runnable {
-        private ConnectionObserver observer;
+        private final ConnectionObserver observer;
 
         private OnServiceDisconnected(ConnectionObserver observer) {
             this.observer = observer;
@@ -148,7 +150,7 @@ public class MsToolkitConnection implements ServiceConnection {
             this(connectionObserver);
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             if (this.observer != null) {
                 this.observer.onDisconnected();

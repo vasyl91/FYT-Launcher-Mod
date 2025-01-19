@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.android.launcher66.DragController;
 import com.android.launcher66.DropTarget;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ButtonDropTarget extends TextView implements DropTarget, DragController.DragListener {
     protected boolean mActive;
     private int mBottomDragPadding;
@@ -37,7 +36,7 @@ public class ButtonDropTarget extends TextView implements DropTarget, DragContro
         this.mLauncher = launcher;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean acceptDrop(DropTarget.DragObject d) {
         return false;
     }
@@ -56,42 +55,42 @@ public class ButtonDropTarget extends TextView implements DropTarget, DragContro
         return null;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDrop(DropTarget.DragObject d) {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onFlingToDelete(DropTarget.DragObject d, int x, int y, PointF vec) {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragEnter(DropTarget.DragObject d) {
         d.dragView.setColor(this.mHoverColor);
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragOver(DropTarget.DragObject d) {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragExit(DropTarget.DragObject d) {
         d.dragView.setColor(0);
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean isDropEnabled() {
         return this.mActive;
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragEnd() {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getHitRectRelativeToDragLayer(Rect outRect) {
         super.getHitRect(outRect);
         outRect.bottom += this.mBottomDragPadding;
@@ -126,7 +125,7 @@ public class ButtonDropTarget extends TextView implements DropTarget, DragContro
         return to;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getLocationInDragLayer(int[] loc) {
         this.mLauncher.getDragLayer().getLocationInDragLayer(this, loc);
     }

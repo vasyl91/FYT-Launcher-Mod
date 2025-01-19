@@ -1,9 +1,9 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_HC_Chrysler extends CallbackCanbusBase {
     public static final int CMD_CARSET_CTRL = 0;
     public static final int U_CAR_CD_BAN = 4;
@@ -14,7 +14,7 @@ public class Callback_0439_HC_Chrysler extends CallbackCanbusBase {
     public static final int U_CAR_CD_VOL = 5;
     public static final int U_CNT_MAX = 6;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 6; i++) {
@@ -22,11 +22,11 @@ public class Callback_0439_HC_Chrysler extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 6) {
             HandlerCanbus.update(updateCode, ints);

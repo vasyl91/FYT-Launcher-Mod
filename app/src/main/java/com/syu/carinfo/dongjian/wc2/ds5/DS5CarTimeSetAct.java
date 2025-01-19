@@ -10,43 +10,42 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dongjian.wc2.ds5.DS5CarTimeSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 39:
+                case 136:
                     DS5CarTimeSetAct.this.updaterYear();
                     break;
-                case 40:
+                case 137:
                     DS5CarTimeSetAct.this.updaterMonth();
                     break;
-                case 41:
+                case 138:
                     DS5CarTimeSetAct.this.updaterDay();
                     break;
-                case 42:
+                case 139:
                     DS5CarTimeSetAct.this.updaterHour();
                     break;
-                case 43:
+                case 140:
                     DS5CarTimeSetAct.this.updaterMinute();
                     break;
-                case 44:
+                case 141:
                     DS5CarTimeSetAct.this.updatertimeFromat();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_302_dongjian_wc2_ds5_time_format);
+        //setContentView(R.layout.layout_302_dongjian_wc2_ds5_time_format);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
@@ -64,29 +63,29 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         ((CheckedTextView) findViewById(R.id.dongjian_wc2_ds5_time_format_check)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterHour() {
-        int hourValue = DataCanbus.DATA[42];
+        int hourValue = DataCanbus.DATA[139];
         if (hourValue < 0) {
             hourValue = 0;
         } else if (hourValue > 23) {
@@ -95,9 +94,9 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.dongjian_wc2_ds5_time_hour_tv)).setText(new StringBuilder().append(hourValue).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMinute() {
-        int minuteValue = DataCanbus.DATA[43];
+        int minuteValue = DataCanbus.DATA[140];
         if (minuteValue < 0) {
             minuteValue = 0;
         } else if (minuteValue > 59) {
@@ -106,9 +105,9 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.dongjian_wc2_ds5_time_minutes_tv)).setText(new StringBuilder().append(minuteValue).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDay() {
-        int dayValue = DataCanbus.DATA[41];
+        int dayValue = DataCanbus.DATA[138];
         if (dayValue < 1) {
             dayValue = 1;
         } else if (dayValue > 31) {
@@ -117,9 +116,9 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.dongjian_wc2_ds5_time_day_tv)).setText(new StringBuilder().append(dayValue).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMonth() {
-        int monthValue = DataCanbus.DATA[40];
+        int monthValue = DataCanbus.DATA[137];
         if (monthValue < 1) {
             monthValue = 1;
         } else if (monthValue > 12) {
@@ -128,9 +127,9 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.dongjian_wc2_ds5_time_month_tv)).setText(new StringBuilder().append(monthValue).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterYear() {
-        int yearValue = DataCanbus.DATA[39];
+        int yearValue = DataCanbus.DATA[136];
         if (yearValue < 0) {
             yearValue = 0;
         } else if (yearValue > 99) {
@@ -143,9 +142,9 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatertimeFromat() {
-        int TimeFormatValue = DataCanbus.DATA[44];
+        int TimeFormatValue = DataCanbus.DATA[141];
         if (TimeFormatValue == 1) {
             ((TextView) findViewById(R.id.dongjian_wc2_ds5_time_format_tv)).setText(R.string.str_bogoo_bmw_time_format_1);
             ((CheckedTextView) findViewById(R.id.dongjian_wc2_ds5_time_format_check)).setChecked(true);
@@ -155,71 +154,71 @@ public class DS5CarTimeSetAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.dongjian_wc2_ds5_time_hour_pre /* 2131429266 */:
-                int value1 = DataCanbus.DATA[42] - 1;
+            case R.id.dongjian_wc2_ds5_time_hour_pre /* 2131429226 */:
+                int value1 = DataCanbus.DATA[139] - 1;
                 if (value1 > 0) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], DataCanbus.DATA[41], value1, DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], DataCanbus.DATA[138], value1, DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_hour_next /* 2131429268 */:
-                int value2 = DataCanbus.DATA[42] + 1;
+            case R.id.dongjian_wc2_ds5_time_hour_next /* 2131429228 */:
+                int value2 = DataCanbus.DATA[139] + 1;
                 if (value2 < 12) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], DataCanbus.DATA[41], value2, DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], DataCanbus.DATA[138], value2, DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_minutes_pre /* 2131429269 */:
-                int value3 = DataCanbus.DATA[43] - 1;
+            case R.id.dongjian_wc2_ds5_time_minutes_pre /* 2131429229 */:
+                int value3 = DataCanbus.DATA[140] - 1;
                 if (value3 > 0) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], DataCanbus.DATA[41], DataCanbus.DATA[42], value3, DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], DataCanbus.DATA[138], DataCanbus.DATA[139], value3, DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_minutes_next /* 2131429271 */:
-                int value4 = DataCanbus.DATA[43] + 1;
+            case R.id.dongjian_wc2_ds5_time_minutes_next /* 2131429231 */:
+                int value4 = DataCanbus.DATA[140] + 1;
                 if (value4 < 59) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], DataCanbus.DATA[41], DataCanbus.DATA[42], value4, DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], DataCanbus.DATA[138], DataCanbus.DATA[139], value4, DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_day_pre /* 2131429272 */:
-                int value5 = DataCanbus.DATA[41] - 1;
+            case R.id.dongjian_wc2_ds5_time_day_pre /* 2131429232 */:
+                int value5 = DataCanbus.DATA[138] - 1;
                 if (value5 > 0) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], value5, DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], value5, DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_day_next /* 2131429274 */:
-                int value6 = DataCanbus.DATA[41] + 1;
+            case R.id.dongjian_wc2_ds5_time_day_next /* 2131429234 */:
+                int value6 = DataCanbus.DATA[138] + 1;
                 if (value6 < 31) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], value6, DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], value6, DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_month_pre /* 2131429275 */:
-                int value7 = DataCanbus.DATA[40] - 1;
+            case R.id.dongjian_wc2_ds5_time_month_pre /* 2131429235 */:
+                int value7 = DataCanbus.DATA[137] - 1;
                 if (value7 > 0) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], value7, DataCanbus.DATA[41], DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], value7, DataCanbus.DATA[138], DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_month_next /* 2131429277 */:
-                int value8 = DataCanbus.DATA[40] + 1;
+            case R.id.dongjian_wc2_ds5_time_month_next /* 2131429237 */:
+                int value8 = DataCanbus.DATA[137] + 1;
                 if (value8 < 12) {
-                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], value8, DataCanbus.DATA[41], DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], value8, DataCanbus.DATA[138], DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_year_pre /* 2131429278 */:
-                int value9 = DataCanbus.DATA[39] - 1;
+            case R.id.dongjian_wc2_ds5_time_year_pre /* 2131429238 */:
+                int value9 = DataCanbus.DATA[136] - 1;
                 if (value9 > 0) {
-                    DS5Func.C_TIME_FORMAT_SET(value9, DataCanbus.DATA[40], DataCanbus.DATA[41], DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(value9, DataCanbus.DATA[137], DataCanbus.DATA[138], DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_year_next /* 2131429280 */:
-                int value10 = DataCanbus.DATA[39] + 1;
+            case R.id.dongjian_wc2_ds5_time_year_next /* 2131429240 */:
+                int value10 = DataCanbus.DATA[136] + 1;
                 if (value10 < 99) {
-                    DS5Func.C_TIME_FORMAT_SET(value10, DataCanbus.DATA[40], DataCanbus.DATA[41], DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44]);
+                    DS5Func.C_TIME_FORMAT_SET(value10, DataCanbus.DATA[137], DataCanbus.DATA[138], DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141]);
                     break;
                 }
-            case R.id.dongjian_wc2_ds5_time_format_check /* 2131429281 */:
-                DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[39], DataCanbus.DATA[40], DataCanbus.DATA[41], DataCanbus.DATA[42], DataCanbus.DATA[43], DataCanbus.DATA[44] == 0 ? 1 : 0);
+            case R.id.dongjian_wc2_ds5_time_format_check /* 2131429241 */:
+                DS5Func.C_TIME_FORMAT_SET(DataCanbus.DATA[136], DataCanbus.DATA[137], DataCanbus.DATA[138], DataCanbus.DATA[139], DataCanbus.DATA[140], DataCanbus.DATA[141] == 0 ? 1 : 0);
                 break;
         }
     }

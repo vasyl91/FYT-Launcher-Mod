@@ -8,121 +8,121 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCLexusCd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LuzLexusISRadio mInit;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 119:
+                case 131:
                     KYCLexusCd.this.mUpdateCd1State();
                     break;
-                case 120:
+                case 132:
                     KYCLexusCd.this.mUpdateCd2State();
                     break;
-                case 121:
+                case 133:
                     KYCLexusCd.this.mUpdateCd3State();
                     break;
-                case 122:
+                case 134:
                     KYCLexusCd.this.mUpdateCd4State();
                     break;
-                case 123:
+                case 135:
                     KYCLexusCd.this.mUpdateCd5State();
                     break;
-                case 124:
+                case 136:
                     KYCLexusCd.this.mUpdateCd6State();
                     break;
-                case 126:
+                case 138:
                     KYCLexusCd.this.updateDiscNum(value);
                     break;
-                case 145:
+                case 157:
                     KYCLexusCd.this.mUpdateCdRpt();
                     break;
-                case 146:
+                case 158:
                     KYCLexusCd.this.mUpdateCdRandom();
                     break;
-                case 147:
-                case 148:
+                case 159:
+                case 160:
                     KYCLexusCd.this.updatecdTrack();
                     break;
-                case 149:
-                case 150:
-                case 151:
-                case 152:
-                case 153:
-                case 154:
+                case 161:
+                case 162:
+                case 163:
+                case 164:
+                case 165:
+                case 166:
                     KYCLexusCd.this.updatecdTime();
                     break;
-                case 155:
+                case 167:
                     KYCLexusCd.this.mUpdateCdScan();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_djlexus_carcd);
+        //setContentView(R.layout.layout_djlexus_carcd);
         init();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd1State() {
-        int value = DataCanbus.DATA[119];
+        int value = DataCanbus.DATA[131];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd1)).setText(R.string.jeep_playstate1);
@@ -133,9 +133,9 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd2State() {
-        int value = DataCanbus.DATA[120];
+        int value = DataCanbus.DATA[132];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd2)).setText(R.string.jeep_playstate1);
@@ -146,9 +146,9 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd3State() {
-        int value = DataCanbus.DATA[121];
+        int value = DataCanbus.DATA[133];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd3)).setText(R.string.jeep_playstate1);
@@ -159,9 +159,9 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd4State() {
-        int value = DataCanbus.DATA[122];
+        int value = DataCanbus.DATA[134];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd4)).setText(R.string.jeep_playstate1);
@@ -172,9 +172,9 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd5State() {
-        int value = DataCanbus.DATA[123];
+        int value = DataCanbus.DATA[135];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd5)).setText(R.string.jeep_playstate1);
@@ -185,9 +185,9 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd6State() {
-        int value = DataCanbus.DATA[124];
+        int value = DataCanbus.DATA[136];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd6)).setText(R.string.jeep_playstate1);
@@ -198,15 +198,15 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdScan() {
-        int On = DataCanbus.DATA[155];
+        int On = DataCanbus.DATA[167];
         findViewById(R.id.lexus_cd_scan).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_scan_n : R.drawable.ic_lexus_cd_scan_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
-        int On = DataCanbus.DATA[145];
+        int On = DataCanbus.DATA[157];
         switch (On) {
             case 0:
                 findViewById(R.id.lexus_cd_rpt).setBackgroundResource(R.drawable.ic_lexus_cd_rpt_n);
@@ -223,31 +223,31 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRandom() {
-        int On = DataCanbus.DATA[146];
+        int On = DataCanbus.DATA[158];
         findViewById(R.id.lexus_cd_random).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_random_n : R.drawable.ic_lexus_cd_random_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatecdTrack() {
-        int value = DataCanbus.DATA[147];
-        int value1 = DataCanbus.DATA[148];
+        int value = DataCanbus.DATA[159];
+        int value1 = DataCanbus.DATA[160];
         ((TextView) findViewById(R.id.dj_lexus_cd_track)).setText(String.format("TRACK: %d / %d", Integer.valueOf(value1), Integer.valueOf(value)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatecdTime() {
-        int value = DataCanbus.DATA[149];
-        int value1 = DataCanbus.DATA[150];
-        int value2 = DataCanbus.DATA[151];
-        int value3 = DataCanbus.DATA[152];
-        int value4 = DataCanbus.DATA[153];
-        int value5 = DataCanbus.DATA[154];
+        int value = DataCanbus.DATA[161];
+        int value1 = DataCanbus.DATA[162];
+        int value2 = DataCanbus.DATA[163];
+        int value3 = DataCanbus.DATA[164];
+        int value4 = DataCanbus.DATA[165];
+        int value5 = DataCanbus.DATA[166];
         ((TextView) findViewById(R.id.dj_lexus_cd_time)).setText(String.format("%d%d:%d%d:%d%d / %d%d:%d%d:%d%d", Integer.valueOf(value5 / 10), Integer.valueOf(value5 % 10), Integer.valueOf(value4 / 10), Integer.valueOf(value4 % 10), Integer.valueOf(value3 / 10), Integer.valueOf(value3 % 10), Integer.valueOf(value2 / 10), Integer.valueOf(value2 % 10), Integer.valueOf(value1 / 10), Integer.valueOf(value1 % 10), Integer.valueOf(value / 10), Integer.valueOf(value % 10)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDiscNum(int value) {
         ((TextView) findViewById(R.id.dj_lexus_cd1)).setTextColor(-1);
         ((TextView) findViewById(R.id.dj_lexus_cd2)).setTextColor(-1);
@@ -278,8 +278,8 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
     }
 
     private void init() {
-        ((Button) findViewById(R.id.lexus_cd_toaudio)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_toaudio).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -290,26 +290,26 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_scan)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_scan).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[155] == 1) {
+                if (DataCanbus.DATA[167] == 1) {
                     DataCanbus.PROXY.cmd(1, new int[]{13}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(1, new int[]{13, 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_rpt)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_rpt).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{15, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_random).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[146] == 1) {
+                if (DataCanbus.DATA[158] == 1) {
                     DataCanbus.PROXY.cmd(1, new int[]{14}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(1, new int[]{14, 1}, null, null);
@@ -318,59 +318,59 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         });
         findViewById(R.id.lexus_cd_asl).setVisibility(8);
         findViewById(R.id.tv_text1).setVisibility(8);
-        ((Button) findViewById(R.id.lexus_cd_prev)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_prev).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{19, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_next)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.7
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_next).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{20, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_skipb)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_cd_skipf)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_cd1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.8
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_skipb).setOnTouchListener(this);
+        findViewById(R.id.lexus_cd_skipf).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_cd1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.9
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.10
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.11
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd4).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.12
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd5).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusCd.13
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd6).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(1, new int[]{18, 6}, null, null);
             }
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -378,14 +378,14 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);
@@ -396,23 +396,23 @@ public class KYCLexusCd extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(1, new int[]{21, 1}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(1, new int[]{22, 1}, null, null);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(1, new int[]{21}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(1, new int[]{22}, null, null);
                     break;
             }

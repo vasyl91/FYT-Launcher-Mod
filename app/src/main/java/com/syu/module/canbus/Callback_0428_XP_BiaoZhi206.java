@@ -2,41 +2,24 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 import android.text.TextUtils;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToastInfo;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0428_XP_BiaoZhi206 extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 14;
-    public static final int U_AIR_AUTO = 11;
-    public static final int U_AIR_BEGIN = 10;
-    public static final int U_AIR_BLOW_AUTO_LEFT = 23;
-    public static final int U_AIR_BLOW_BODY_LEFT = 16;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 17;
-    public static final int U_AIR_BLOW_UP_LEFT = 18;
-    public static final int U_AIR_CYCLE = 12;
-    public static final int U_AIR_DUAL = 20;
-    public static final int U_AIR_END = 24;
-    public static final int U_AIR_FRONT_DEFROST = 13;
-    public static final int U_AIR_POWER = 22;
-    public static final int U_AIR_TEMP_LEFT = 15;
-    public static final int U_AIR_TEMP_RIGHT = 21;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 19;
-    public static final int U_AVERAGE_OIL_EXPEND = 30;
-    public static final int U_AVERAGE_SPEED = 25;
-    public static final int U_CARINFO = 31;
-    public static final int U_CNT_MAX = 32;
-    public static final int U_CUR_OIL_EXPEND = 29;
-    public static final int U_CUR_SPEED = 7;
-    public static final int U_DRIVING_MILEAGE = 27;
-    public static final int U_ENGINE_SPEED = 8;
-    public static final int U_TRIP_MILES = 28;
+    public static final int U_AVERAGE_OIL_EXPEND = 103;
+    public static final int U_AVERAGE_SPEED = 98;
+    public static final int U_CARINFO = 104;
+    public static final int U_CNT_MAX = 105;
+    public static final int U_CUR_OIL_EXPEND = 102;
+    public static final int U_DRIVING_MILEAGE = 100;
+    public static final int U_TRIP_MILES = 101;
     private String str = "";
-    private Runnable mRunn = new Runnable() { // from class: com.syu.module.canbus.Callback_0428_XP_BiaoZhi206.1
-        @Override // java.lang.Runnable
+    private final Runnable mRunn = new Runnable() { 
+        @Override
         public void run() {
             if (!TextUtils.isEmpty(Callback_0428_XP_BiaoZhi206.this.str)) {
                 ToastInfo.showToast(LauncherApplication.getInstance().getApplicationContext(), Callback_0428_XP_BiaoZhi206.this.str);
@@ -44,10 +27,10 @@ public class Callback_0428_XP_BiaoZhi206 extends CallbackCanbusBase {
         }
     };
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 105; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -96,7 +79,7 @@ public class Callback_0428_XP_BiaoZhi206 extends CallbackCanbusBase {
         HandlerUI.getInstance().post(this.mRunn);
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -104,11 +87,11 @@ public class Callback_0428_XP_BiaoZhi206 extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 32) {
+        if (updateCode >= 0 && updateCode < 105) {
             HandlerCanbus.update(updateCode, ints);
-            if (updateCode == 31) {
+            if (updateCode == 104) {
                 if (DataCanbus.DATA[updateCode] == 1) {
                     DoorHelper.getInstance().showAndRefresh();
                 } else {

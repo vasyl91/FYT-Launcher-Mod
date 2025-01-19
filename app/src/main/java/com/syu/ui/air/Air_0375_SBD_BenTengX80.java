@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0375_SBD_BenTengX80 extends AirBase {
     public Air_0375_SBD_BenTengX80(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0008_wc1_bentengx80/air_fyta_bentengx80.webp";
         this.mPathHighlight = "0008_wc1_bentengx80/air_fyta_bentengx80_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -77,7 +77,7 @@ public class Air_0375_SBD_BenTengX80 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 70.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 70.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 70.0f, 135.0f, this.mPaint);
         }
         int temp2 = this.DATA[7];
         if (temp2 == -1) {
@@ -87,7 +87,7 @@ public class Air_0375_SBD_BenTengX80 extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 915.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 915.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 915.0f, 135.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

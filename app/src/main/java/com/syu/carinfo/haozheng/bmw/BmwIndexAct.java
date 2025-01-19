@@ -6,16 +6,15 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_haozheng_bmw_index);
+        //setContentView(R.layout.layout_haozheng_bmw_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.bogoo_bmw_car_log_check).setOnClickListener(this);
         findViewById(R.id.bogoo_bmw_system_set_check).setOnClickListener(this);
@@ -23,10 +22,10 @@ public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.bogoo_bmw_seat_heat_check).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bogoo_bmw_car_log_check /* 2131431680 */:
+            case R.id.bogoo_bmw_car_log_check /* 2131431657 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) BmwCarLogAct.class);
                     startActivity(intent);
@@ -35,7 +34,7 @@ public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
                     e.printStackTrace();
                     return;
                 }
-            case R.id.bogoo_bmw_system_set_check /* 2131431681 */:
+            case R.id.bogoo_bmw_system_set_check /* 2131431658 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) BmwSystemSetAct.class);
                     startActivity(intent2);
@@ -44,7 +43,7 @@ public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.bogoo_bmw_time_check /* 2131431682 */:
+            case R.id.bogoo_bmw_time_check /* 2131431659 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) BmwTimeSetAct.class);
                     startActivity(intent3);
@@ -53,7 +52,7 @@ public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.bogoo_bmw_seat_heat_check /* 2131431684 */:
+            case R.id.bogoo_bmw_seat_heat_check /* 2131431661 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) BmwSeatHeatAct.class);
                     startActivity(intent4);

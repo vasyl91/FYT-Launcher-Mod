@@ -6,13 +6,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.RemoteViews;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+
 import java.io.FileOutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public abstract class Widget {
@@ -24,9 +28,9 @@ public abstract class Widget {
     protected static SparseArray<Widget> mWidgets = new SparseArray<>();
     protected static HashMap<Class<? extends WidgetProvider>, Class<? extends Widget>> clazzs = new HashMap<>();
     protected int layoutId = 0;
-    private Handler mHandler = new Handler();
-    private Runnable refresh = new Runnable() { // from class: com.syu.widget.Widget.1
-        @Override // java.lang.Runnable
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable refresh = new Runnable() { 
+        @Override
         public void run() {
             RemoteViews views = Widget.this.getRemoteViews();
             if (views != null) {
@@ -57,7 +61,7 @@ public abstract class Widget {
     public static void check(Context context, AppWidgetManager manager) {
         for (Class<?> clazz : clazzs.keySet()) {
             int[] ids = manager.getAppWidgetIds(new ComponentName(context, clazz));
-            if (ids != null && ids.length != 0) {
+            if (ids != null) {
                 for (int id : ids) {
                     if (getWidget(id) == null) {
                         try {
@@ -77,7 +81,7 @@ public abstract class Widget {
         AppWidgetManager manager = AppWidgetManager.getInstance(LauncherApplication.sApp);
         for (Class<?> clazz : clazzs.keySet()) {
             int[] ids = manager.getAppWidgetIds(new ComponentName(context, clazz));
-            if (ids != null && ids.length != 0) {
+            if (ids != null) {
                 for (int id : ids) {
                     Widget widget = getWidget(id);
                     if (widget != null) {
@@ -184,15 +188,41 @@ public abstract class Widget {
     }
 
     public int getLayoutId(String name) {
-        return getId(name, "layout");
+        return getResourceId(name, "layout");
     }
 
     public int getId(String name) {
-        return getId(name, "id");
+        return getResourceId(name, "id");
     }
 
-    public int getId(String name, String type) {
-        return this.res.getIdentifier(name, type, this.mContext.getPackageName());
+    public int getResId(String resName, Class<?> c) {
+        try {
+            Field idField = c.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public int getResourceId(String name, String type) {
+        switch (type) {
+            case "string":
+                return getResId(name, R.string.class);
+            case "bool":
+                return getResId(name, R.bool.class);
+            case "integer":
+                return getResId(name, R.integer.class);
+            case "layout":
+                return getResId(name, R.layout.class);
+            case "drawable":
+                return getResId(name, R.drawable.class);
+            case "id":
+                return getResId(name, R.id.class);
+            case "xml":
+                return getResId(name, R.xml.class);
+            default:
+                return -1;
+        }
     }
 
     public RemoteViews getRemoteViews(int layoutId) {

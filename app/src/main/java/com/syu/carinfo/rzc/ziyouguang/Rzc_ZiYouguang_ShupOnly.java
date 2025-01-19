@@ -8,49 +8,48 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_ZiYouguang_ShupOnly extends Activity implements View.OnTouchListener {
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_ShupOnly.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 103:
+                case 170:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_front_anticollision)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_front_anticollision)).setChecked(value == 1);
                         break;
                     }
-                case 104:
+                case 171:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_lanewar)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_lanewar)).setChecked(value == 1);
                         break;
                     }
-                case 105:
+                case 172:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_steer_maintain)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_steer_maintain)).setChecked(value == 1);
                         break;
                     }
-                case 106:
+                case 173:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_non_slip)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_non_slip)).setChecked(value == 1);
                         break;
                     }
-                case 107:
+                case 174:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_sport_mode)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_sport_mode)).setChecked(value == 1);
                         break;
                     }
-                case 108:
+                case 175:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_eco_mode)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_eco_mode)).setChecked(value == 1);
                         break;
                     }
-                case 109:
+                case 176:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_auto_stop_start)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_auto_stop_start)).setChecked(value == 1);
                         break;
                     }
-                case 110:
+                case 177:
                     if (((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_radar_onoff)) != null) {
                         ((CheckedTextView) Rzc_ZiYouguang_ShupOnly.this.findViewById(R.id.ctv_373_radar_onoff)).setChecked(value == 1);
                         break;
@@ -60,10 +59,10 @@ public class Rzc_ZiYouguang_ShupOnly extends Activity implements View.OnTouchLis
     };
     int value;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_shup_only);
+        //setContentView(R.layout.layout_jeep_shup_only);
         setListener();
     }
 
@@ -78,38 +77,38 @@ public class Rzc_ZiYouguang_ShupOnly extends Activity implements View.OnTouchLis
         ((CheckedTextView) findViewById(R.id.ctv_373_radar_onoff)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[171].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[175].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[171].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[175].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mCanbusNotify);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
@@ -117,7 +116,7 @@ public class Rzc_ZiYouguang_ShupOnly extends Activity implements View.OnTouchLis
     
         return false;
      */
-    @Override // android.view.View.OnTouchListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences

@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCLexusRearAirControlAct_beifen extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusRearAirControlAct_beifen.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 40:
@@ -38,10 +38,10 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
         DataCanbus.PROXY.cmd(3, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_lexus_ls_rear_aircontrol);
+        //setContentView(R.layout.layout_0452_lz_lexus_ls_rear_aircontrol);
         init();
     }
 
@@ -59,7 +59,7 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
         findViewById(R.id.air_xts_blow).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -67,7 +67,7 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -75,7 +75,7 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -99,7 +99,7 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
             case R.id.air_xts_frontpage /* 2131427432 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) KYCLexusFrontAirControlAct.class));
+                    startActivity(new Intent(this, KYCLexusFrontAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -138,17 +138,17 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
         DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[40];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -156,18 +156,18 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
             if (temp == -3) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
             } else if (unit == 0) {
-                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(temp * 5 * 0.1f) + "℃");
+                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(temp * 5 * 0.1f + "℃");
             } else {
-                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(temp + 31) + "℉");
+                ((TextView) findViewById(R.id.tv_air_temp_left)).setText(temp + 31 + "℉");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[41];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -175,14 +175,14 @@ public class KYCLexusRearAirControlAct_beifen extends Activity implements View.O
             if (temp == -3) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
             } else if (unit == 0) {
-                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(temp * 5 * 0.1f) + "℃");
+                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(temp * 5 * 0.1f + "℃");
             } else {
-                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(String.valueOf(temp + 31) + "℉");
+                ((TextView) findViewById(R.id.tv_air_temp_right)).setText(temp + 31 + "℉");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[44];
         if (leave < 0) {

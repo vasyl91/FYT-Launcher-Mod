@@ -7,9 +7,8 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityNewAir extends Activity {
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         launchCanbus();
@@ -39,6 +38,7 @@ public class ActivityNewAir extends Activity {
             case 392:
             case 406:
             case 407:
+            case 412:
             case 414:
             case 416:
             case 422:
@@ -146,6 +146,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_WeiChi2_18ATS /* 459069 */:
             case FinalCanbus.CAR_WC2_ShuPing10JunYue /* 459097 */:
             case FinalCanbus.CAR_WC2_RENAULT_Megane4 /* 459104 */:
+            case FinalCanbus.CAR_XP1_YearGmcSeries_NoAir /* 459164 */:
             case FinalCanbus.CAR_WC2_RongWei_I5_H /* 459168 */:
             case FinalCanbus.CAR_BNR_16CS75_H_RightCamera /* 524358 */:
             case FinalCanbus.CAR_WC1_Tuda /* 524389 */:
@@ -167,6 +168,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_WC_SP_1516Camery_15Reiz /* 655654 */:
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng /* 655708 */:
             case FinalCanbus.CAR_355_HC_XIANDAI_AMP /* 655715 */:
+            case FinalCanbus.CAR_XP1_RAM1500 /* 655734 */:
             case FinalCanbus.CAR_RZC_BenTeng_19B50_HAND /* 655773 */:
             case FinalCanbus.CAR_WC2_RongWei_I6_17_low /* 655776 */:
             case FinalCanbus.CAR_WC1_Nawala /* 720997 */:
@@ -174,10 +176,12 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ZiDong /* 721190 */:
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng1 /* 721244 */:
             case FinalCanbus.CAR_RZC_BenTeng_19B50_AUTO /* 721309 */:
+            case FinalCanbus.CAR_455_RZC_Mclaren_12C /* 721351 */:
             case FinalCanbus.CAR_WC1_Nawala_Hand /* 786533 */:
             case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ShouDong /* 786726 */:
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng2 /* 786780 */:
             case FinalCanbus.CAR_WC1_Tuda_H /* 852069 */:
+            case FinalCanbus.CAR_RZC_19MingjueHS /* 852241 */:
             case FinalCanbus.CAR_WC_SP_09Camery /* 852262 */:
             case FinalCanbus.CAR_DAOJUN_OD_ATS /* 852316 */:
             case FinalCanbus.CAR_BNR_19COS /* 917574 */:
@@ -189,38 +193,56 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_DAOJUN_SRX_10 /* 983388 */:
             case FinalCanbus.CAR_WC2_RENAULT_Megane4_M /* 983392 */:
             case FinalCanbus.CAR_BNR_17CX70_M /* 1048646 */:
+            case FinalCanbus.CAR_RZC_19MingjueHS_H /* 1048849 */:
             case FinalCanbus.CAR_WC_SP_15HighLand_ShouDong /* 1048870 */:
+            case FinalCanbus.CAR_DAOJUN_CT5 /* 1048924 */:
             case FinalCanbus.CAR_BNR_17CX70_H /* 1114182 */:
             case FinalCanbus.CAR_WC_SP_09HighLand_Zidong /* 1114406 */:
+            case FinalCanbus.CAR_DAOJUN_XT4 /* 1114460 */:
+            case FinalCanbus.CAR_WC1_TMK_BENZ_MPV_ALL /* 1114484 */:
             case FinalCanbus.CAR_WC_SP_09HighLand_ShouDong /* 1179942 */:
             case FinalCanbus.CAR_WC_SP_07KaluoLa_ZiDong /* 1245478 */:
             case FinalCanbus.CAR_XP1_Meiganna4_TR_HAND /* 1245558 */:
             case FinalCanbus.CAR_WC_SP_14KaluoLa_ZiDong /* 1311014 */:
             case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO /* 1311094 */:
+            case FinalCanbus.CAR_XP_TuGuan_L_20_H /* 1376296 */:
             case FinalCanbus.CAR_WC_SP_Alpha /* 1376550 */:
             case FinalCanbus.CAR_443_WC2_TOYOTA_09HG /* 1376699 */:
             case FinalCanbus.CAR_453_LZ_AstonMartin /* 1376709 */:
             case FinalCanbus.CAR_WC_SP_02_09Prado /* 1442086 */:
             case FinalCanbus.CAR_WC2_RENAULT_Megane4_H /* 1442144 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
             case FinalCanbus.CAR_443_WC2_TOYOTA_09RAV4 /* 1442235 */:
             case FinalCanbus.CAR_WC_SP_09_13RAV4 /* 1507622 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
             case FinalCanbus.CAR_RZC_XP1_Lexus_ES200_13 /* 1572976 */:
             case FinalCanbus.CAR_RZC_17Rongwei_EI6 /* 1573137 */:
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350 /* 1573158 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
             case FinalCanbus.CAR_443_WC2_TOYOTA_08Camery /* 1573307 */:
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350_H /* 1638694 */:
             case FinalCanbus.CAR_RZC_XP1_21Xiaomayi_EQ1 /* 1638804 */:
             case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_05 /* 1704048 */:
             case FinalCanbus.CAR_WC2_RENAULT_23Megane4 /* 1704288 */:
             case FinalCanbus.CAR_439_Oudi_Haval_H3 /* 1704375 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_ESQ /* 1704391 */:
             case FinalCanbus.CAR_WC2_RENAULT_23Megane4_M /* 1769824 */:
             case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO_H /* 1769846 */:
+            case FinalCanbus.CAR_444_WC2_ChangfengLiebao_CS9_17 /* 1769916 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_G /* 1769927 */:
             case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_20 /* 1835120 */:
             case FinalCanbus.CAR_WC2_RENAULT_23Megane4_H /* 1835360 */:
+            case FinalCanbus.CAR_RZC3_XianDai_I30_15 /* 1835370 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_QX50 /* 1835463 */:
             case FinalCanbus.CAR_WC2_RENAULT_Talisman /* 1900896 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CEED_11 /* 1900906 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_06FX /* 1900999 */:
             case FinalCanbus.CAR_WC2_RENAULT_Talisman_M /* 1966432 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_08FX /* 1966535 */:
             case FinalCanbus.CAR_WC2_RENAULT_Talisman_H /* 2031968 */:
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU7 /* 2032055 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_14QX70 /* 2032071 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_12FX /* 2097607 */:
             case FinalCanbus.CAR_DJ_XP1_ParkAvenue /* 2162713 */:
             case FinalCanbus.CAR_453_LZ_GM_Camaro_17 /* 2163141 */:
             case FinalCanbus.CAR_453_LZ_GM_GMC_TERRAIN_17 /* 2228677 */:
@@ -228,8 +250,10 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_453_LZ_GM_Equinox_17 /* 2294213 */:
             case FinalCanbus.CAR_439_RZC_ZhongTaiSR9_H /* 2359735 */:
             case FinalCanbus.CAR_439_XBS_NISSAN_TuLe /* 2425271 */:
+            case FinalCanbus.CAR_454_OD_Jianghuai_SEHOL_E50A /* 2490822 */:
             case FinalCanbus.CAR_XP1_XFY_SHUPING_Benpaozhe /* 2555924 */:
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_L /* 2621792 */:
+            case FinalCanbus.CAR_455_LUZ_Nissan_GTR_EN /* 2621895 */:
             case FinalCanbus.CAR_XP1_TOYOTA_12Camry_SP /* 2686996 */:
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_M /* 2687328 */:
             case FinalCanbus.CAR_452_Mixun_Liebao_CS9 /* 2687428 */:
@@ -254,6 +278,16 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_439_XFY_LAGAN /* 3670455 */:
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU5 /* 3932599 */:
             case FinalCanbus.CAR_439_HC_OuGeTL /* 3998135 */:
+            case FinalCanbus.CAR_XP1_RAM1500_M /* 4063606 */:
+            case FinalCanbus.CAR_XP1_RAM1500_H /* 4129142 */:
+            case FinalCanbus.CAR_XP1_RAM1500_H_AUTO /* 4194678 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Edge_2013 /* 4260293 */:
+            case FinalCanbus.CAR_453_XP1_Ford_F150_2013 /* 4325829 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Explorer_2013 /* 4391365 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Taurus_2013 /* 4456901 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Expedition_2013 /* 4522437 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Edge_2015 /* 4587973 */:
+            case FinalCanbus.CAR_453_XP1_Ford_Mustang_2015 /* 4653509 */:
             case FinalCanbus.CAR_453_RZC_Mclaren_16_560S /* 4915653 */:
             case FinalCanbus.CAR_453_RZC_Mclaren_19_720S /* 4981189 */:
             case FinalCanbus.CAR_453_RZC_SWM_G05Pro_22 /* 5964229 */:
@@ -266,9 +300,27 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_443_WC2_XianDai_All_12SORENTO /* 6488507 */:
             case FinalCanbus.CAR_439_HC_Ruijie /* 6816183 */:
             case FinalCanbus.CAR_439_HC_Ruijie_H /* 6881719 */:
+            case FinalCanbus.CAR_454_LZ_GM_Camaro_17_Auto /* 6947270 */:
             case FinalCanbus.CAR_443_WC2_OULANDE_H /* 7012795 */:
+            case FinalCanbus.CAR_454_LZ_GM_Equinox_17_Auto /* 7012806 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_04Verso_SP /* 7078000 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Prius_SP /* 7536752 */:
             case FinalCanbus.CAR_439_RZC_ZhongTaiSR7 /* 7537079 */:
             case FinalCanbus.CAR_439_BNR_Rongwei_RX5 /* 7995831 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_16Prius_SP /* 8126576 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_14Tundra /* 8192112 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_14Tundra_Auto /* 8257648 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Sequoia /* 8323184 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Sequoia_Auto /* 8388720 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_08Camry /* 8454256 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_13Camry /* 8519792 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10AURIS_Auto /* 8585328 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_13Avalon_Auto /* 8650864 */:
+            case FinalCanbus.CAR_453_LZ_LandRover_13_CD /* 9175493 */:
+            case FinalCanbus.CAR_453_LZ_LandRover_18_CD /* 9241029 */:
+            case FinalCanbus.CAR_453_LZ_Jaguar_12_CD /* 9306565 */:
+            case FinalCanbus.CAR_454_OD_Qichen_D60_EV /* 9961926 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_EV160 /* 10879430 */:
             case FinalCanbus.CAR_452_OuDi_NaZhiJieU6 /* 11534788 */:
             case FinalCanbus.CAR_452_LZ_Maserati_SP /* 12255684 */:
             case FinalCanbus.CAR_452_OD_Qirui_Xiaomayi /* 12517828 */:
@@ -283,9 +335,12 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_439_XFY_Keleiao_17_H /* 13697463 */:
             case FinalCanbus.CAR_439_XFY_Keleiao_18_L /* 13762999 */:
             case FinalCanbus.CAR_439_XFY_Keleiao_18_H /* 13828535 */:
+            case FinalCanbus.CAR_454_LZ_LandRover_CD_Discovery5 /* 13894086 */:
             case FinalCanbus.CAR_452_CYT_Toyota_Tundra /* 13959620 */:
             case FinalCanbus.CAR_452_CYT_Toyota_Tundra_H /* 14025156 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_370Z_L /* 14680518 */:
             case FinalCanbus.CAR_452_Luz_Audi_A4L_Low /* 14811588 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_370Z_TW /* 14811590 */:
             case FinalCanbus.CAR_452_Luz_Audi_A4L_H /* 14877124 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q5_Low /* 14942660 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q5_H /* 15008196 */:
@@ -293,8 +348,14 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_452_Luz_Audi_A6L_H /* 15139268 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q7_Low /* 15204804 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q7_H /* 15270340 */:
+            case FinalCanbus.CAR_453_LZ_Teana_08_L /* 15532485 */:
+            case FinalCanbus.CAR_453_LZ_Teana_08_H /* 15598021 */:
+            case FinalCanbus.CAR_453_LZ_Teana_08_TW /* 15663557 */:
             case FinalCanbus.CAR_452_LUZ_LANDROVER_CYTAIR /* 15729092 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_L /* 15729094 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_TW /* 15860166 */:
             case FinalCanbus.CAR_453_OD_Beiqi_Changhe_Q7_SP /* 15925701 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_H_NP /* 15925702 */:
                 cls = Air_Activity_All_Normal.class;
                 break;
             case 21:
@@ -330,6 +391,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_M /* 262165 */:
             case FinalCanbus.CAR_RZC_DaZhong_SUP_H /* 262195 */:
             case FinalCanbus.CAR_DJ_ShuPing_BYD_G6_H /* 262295 */:
+            case FinalCanbus.CAR_LZ_WC2_DaZhong_TuRui /* 262414 */:
             case FinalCanbus.CAR_WC2_Honda_AllCom_CIVIC /* 262465 */:
             case FinalCanbus.CAR_RZC_ZhiSheng_Old /* 262478 */:
             case FinalCanbus.CAR_BoGoo_XP1_ShuPing_GrdCherokee_CYT_AIRPANEL /* 262515 */:
@@ -338,6 +400,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_17LIENUO_L /* 262546 */:
             case FinalCanbus.CAR_XFY_ShuPing_Honda_06CRV /* 262569 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_12Crown_ShuPing /* 262573 */:
+            case FinalCanbus.CAR_455_RZC_Nissan_Tuda_SP_18 /* 262599 */:
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_H /* 327701 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_5 /* 327741 */:
             case FinalCanbus.CAR_RZC_HavalLow_H2_HongBiao /* 327924 */:
@@ -345,6 +408,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_17LIENUO_M /* 328082 */:
             case FinalCanbus.CAR_RCW_BYD_10_11F6 /* 328097 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_12Crown_H_ShuPing /* 328109 */:
+            case FinalCanbus.CAR_455_RZC_Nissan_Tuda_SP_18_Auto /* 328135 */:
             case FinalCanbus.CAR_BNR_HONDA_16Civic_Vsceen_L /* 393514 */:
             case FinalCanbus.CAR_BNR_ShuPing_Sonata8 /* 393571 */:
             case FinalCanbus.CAR_BNR_17LIENUO_H /* 393618 */:
@@ -361,10 +425,12 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_17KeLeiJia_L /* 459154 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_14Prodo_H_ShuPing /* 459181 */:
             case FinalCanbus.CAR_RZC_DaZhong_MQB_SUP_H /* 524448 */:
+            case FinalCanbus.CAR_WC2_Honda_17CRV_H /* 524609 */:
             case FinalCanbus.CAR_BNR_XP1_New_KLZ /* 524667 */:
             case FinalCanbus.CAR_BNR_12Camry /* 524685 */:
             case FinalCanbus.CAR_BNR_17KeLeiJia_H /* 524690 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_14Prodo_ShuPing /* 524717 */:
+            case FinalCanbus.CAR_CZH_WC2_MengDiOuZS2013_M /* 589845 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_9 /* 589885 */:
             case FinalCanbus.CAR_RZC_Nissan_Qijun_HW /* 590014 */:
             case FinalCanbus.CAR_RZC4_PSA_19_408 /* 590163 */:
@@ -386,6 +452,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_ShuPing_16LandCruise /* 721293 */:
             case FinalCanbus.CAR_RZC_17LIENUO_M /* 721298 */:
             case FinalCanbus.CAR_DJ_XC_TOYOTA_12Crown_L /* 721325 */:
+            case FinalCanbus.CAR_RZC_XP1_17CRV /* 786730 */:
             case FinalCanbus.CAR_WC2_Honda_16SIYU_HAND /* 786753 */:
             case FinalCanbus.CAR_BNR_NISSAN_14QiJun_L /* 786756 */:
             case FinalCanbus.CAR_BNR_XP1_JunWei_H /* 786811 */:
@@ -401,6 +468,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_DJ_XC_Nissan_Tianlai_03_07 /* 852397 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_14 /* 917565 */:
             case FinalCanbus.CAR_RZC_XP1_M6_17 /* 917748 */:
+            case FinalCanbus.CAR_RZC_XP1_17CRV_H /* 917802 */:
             case FinalCanbus.CAR_BNR_NISSAN_13TianLai_H /* 917828 */:
             case FinalCanbus.CAR_RZC_XP1_ZiYouGuang_19_H /* 917877 */:
             case FinalCanbus.CAR_RZC_17KeLeiJia_H /* 917906 */:
@@ -423,11 +491,13 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_NISSAN_08TianLai_H /* 1114436 */:
             case FinalCanbus.CAR_BNR_XP1_New_GL8_ES_L /* 1114491 */:
             case FinalCanbus.CAR_RZC_18KeLeiAo_L /* 1114514 */:
+            case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER /* 1114541 */:
             case FinalCanbus.CAR_452_XFY_PSA_3008_L /* 1114564 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_18 /* 1179709 */:
             case FinalCanbus.CAR_BNR_NISSAN_08TianLai_L /* 1179972 */:
             case FinalCanbus.CAR_BNR_XP1_New_GL8_ES_H /* 1180027 */:
             case FinalCanbus.CAR_BNR_ShuPing_07Corolla /* 1180045 */:
+            case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER_H /* 1180077 */:
             case FinalCanbus.CAR_452_XFY_PSA_3008_H /* 1180100 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_19 /* 1245245 */:
             case FinalCanbus.CAR_RZC_HavalH4_20 /* 1245428 */:
@@ -467,7 +537,9 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_XP1_JunYue_H /* 1835387 */:
             case FinalCanbus.CAR_439_BNR_LEXUS_ES /* 1835447 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_14QX50 /* 1835460 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LexusIS /* 1835462 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_29 /* 1900605 */:
+            case FinalCanbus.CAR_RZC_Nissan_JUKE_HW /* 1900734 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_HY /* 1900917 */:
             case FinalCanbus.CAR_BNR_XP1_Mairuibao_Top /* 1900923 */:
             case FinalCanbus.CAR_439_BNR_LEXUS_ES_H /* 1900983 */:
@@ -478,17 +550,22 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_05Reiz /* 1966477 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_14QX70 /* 1966532 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_31 /* 2031677 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_L /* 2031955 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_HY_H /* 2031989 */:
             case FinalCanbus.CAR_BNR_XP1_OldJunYue_L /* 2031995 */:
             case FinalCanbus.CAR_RZC_CLIO5_Turkey /* 2032018 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_13Q70L /* 2032068 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_32 /* 2097213 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_M /* 2097491 */:
             case FinalCanbus.CAR_BNR_XP1_OldJunYue_H /* 2097531 */:
             case FinalCanbus.CAR_RZC_CLIO5_Turkey_M /* 2097554 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_33 /* 2162749 */:
+            case FinalCanbus.CAR_RZC_Nissan_ALTIMA_12 /* 2162878 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_H /* 2163027 */:
             case FinalCanbus.CAR_BNR_12Crown_L /* 2163085 */:
             case FinalCanbus.CAR_RZC_CLIO5_Turkey_H /* 2163090 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_34 /* 2228285 */:
+            case FinalCanbus.CAR_RZC_HONDA_21Fit /* 2228522 */:
             case FinalCanbus.CAR_BNR_12Crown_M /* 2228621 */:
             case FinalCanbus.CAR_RZC_MEGANE_Turkey_L_AUTO /* 2228626 */:
             case FinalCanbus.CAR_452_XP_Megane4_SP_L_HAND /* 2228676 */:
@@ -500,31 +577,51 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_Mustang_NO_CD /* 2359630 */:
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_L /* 2359675 */:
             case FinalCanbus.CAR_452_XP_Megane4_SP_H_AUTO /* 2359748 */:
+            case FinalCanbus.CAR_RZC_Nissan_Xtrail_Import_22 /* 2425022 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_Auto /* 2425166 */:
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_H /* 2425211 */:
+            case FinalCanbus.CAR_RZC_Nissan_Xtrail_Import_22_H /* 2490558 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_Hand /* 2490702 */:
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_Top /* 2490747 */:
+            case FinalCanbus.CAR_RZC_Nissan_Tuda_18 /* 2556094 */:
+            case FinalCanbus.CAR_RZC_Nissan_Tuda_18_H /* 2621630 */:
             case FinalCanbus.CAR_RZC_Mustang_15_NO_CD /* 2621774 */:
             case FinalCanbus.CAR_BNR_07_15LandCruise_AMP /* 2621837 */:
             case FinalCanbus.CAR_RZC_Mustang_HY_LEFT /* 2687310 */:
             case FinalCanbus.CAR_BNR_07_15LandCruise /* 2687373 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_L /* 2687431 */:
             case FinalCanbus.CAR_RZC_Mustang_HY_RIGHT /* 2752846 */:
             case FinalCanbus.CAR_RZC_12Camry /* 2752909 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_M /* 2752967 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_18_Import /* 2818238 */:
             case FinalCanbus.CAR_RZC_Mustang_HY_LOW /* 2818382 */:
             case FinalCanbus.CAR_RZC_ShuPing_15_Camery /* 2818445 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_H /* 2818503 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_18_Import_H /* 2883774 */:
             case FinalCanbus.CAR_RZC_Mustang_HY_H /* 2883918 */:
             case FinalCanbus.CAR_RZC_ShuPing_12LandCruise /* 2883981 */:
+            case FinalCanbus.CAR_RZC_Nissan_TITAN_19_Import /* 2949310 */:
             case FinalCanbus.CAR_RZC_ShuPing_16LandCruise /* 2949517 */:
+            case FinalCanbus.CAR_RZC_Nissan_TITAN_19_Import_H /* 3014846 */:
             case FinalCanbus.CAR_RZC_ShuPing_09Camery /* 3015053 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import /* 3080382 */:
             case FinalCanbus.CAR_RZC_Ford_F150 /* 3080526 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_IS /* 3080631 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import_H /* 3145918 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_IS_H /* 3146167 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_ES /* 3211703 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_13 /* 3277134 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_ES_H /* 3277239 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_10 /* 3342670 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_12 /* 3408206 */:
             case FinalCanbus.CAR_RZC_ShuPing_07Corolla /* 3408269 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_10_Auto /* 3473742 */:
             case FinalCanbus.CAR_RZC_ShuPing_14Corolla /* 3473805 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_12_Auto /* 3539278 */:
+            case FinalCanbus.CAR_RZC_Ford_F150_DZ /* 3604814 */:
             case FinalCanbus.CAR_RZC_12Camry_AMP /* 3604877 */:
             case FinalCanbus.CAR_RZC_BMW_X3_11_13 /* 3670067 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_17AstraJ /* 3670077 */:
             case FinalCanbus.CAR_RZC_ShuPing_15_Camery_AMP /* 3670413 */:
             case FinalCanbus.CAR_RZC_BMW_X3_13_16 /* 3735603 */:
             case FinalCanbus.CAR_RZC_ShuPing_12LandCruise_AMP /* 3735949 */:
@@ -532,6 +629,7 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_ShuPing_16LandCruise_AMP /* 3801485 */:
             case FinalCanbus.CAR_RZC_Turkey_16KADJAR_L /* 3801490 */:
             case FinalCanbus.CAR_RZC_BMW_3_13_17 /* 3866675 */:
+            case FinalCanbus.CAR_CZH_RZC_Focus2015 /* 3866958 */:
             case FinalCanbus.CAR_RZC_Turkey_16KADJAR_M /* 3867026 */:
             case FinalCanbus.CAR_RZC_Turkey_16KADJAR_H /* 3932562 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_12FX /* 3998148 */:
@@ -546,8 +644,13 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_12Crown_M /* 4456845 */:
             case FinalCanbus.CAR_RZC_12Crown_H /* 4522381 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_10G37 /* 4587963 */:
+            case FinalCanbus.CAR_WC2_Honda_12CRV_SP /* 4653377 */:
+            case FinalCanbus.CAR_WC2_Honda_12Civic_SP /* 4718913 */:
             case FinalCanbus.CAR_443_WC2_Tianlai08_12_CD /* 4719035 */:
+            case FinalCanbus.CAR_WC2_Honda_14Civic_L_SP /* 4784449 */:
+            case FinalCanbus.CAR_WC2_Honda_14Civic_H_SP /* 4849985 */:
             case FinalCanbus.CAR_RZC_07_15LandCruise_AMP /* 4850061 */:
+            case FinalCanbus.CAR_RZC_HONDA_21Fit_H /* 4915498 */:
             case FinalCanbus.CAR_RZC_07_15LandCruise /* 4915597 */:
             case FinalCanbus.CAR_439_RZC_TuDa /* 4915639 */:
             case FinalCanbus.CAR_443_WC2_Tianlai08_12_CD_HW /* 4915643 */:
@@ -556,22 +659,17 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_16_18RAV4 /* 5046669 */:
             case FinalCanbus.CAR_439_XFY_SanLing_17Oulande_H /* 5046711 */:
             case FinalCanbus.CAR_439_XFY_SanLing_Tai_Pajieluo_H /* 5112247 */:
-            case FinalCanbus.CAR_BNR_Toyota_14Tundra /* 5177741 */:
             case FinalCanbus.CAR_439_XFY_SanLing_13Oulande_Low /* 5177783 */:
-            case FinalCanbus.CAR_BNR_Toyota_14Tundra_AUTO /* 5243277 */:
             case FinalCanbus.CAR_439_XFY_SanLing_17Oulande_Low /* 5243319 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_4RUNNER_AUTO /* 5308813 */:
             case FinalCanbus.CAR_439_XFY_SanLing_Tai_Pajieluo_Low /* 5308855 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_16Q50l_SP /* 5308859 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_4RUNNER /* 5374349 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Chevrolet_12 /* 5374013 */:
             case FinalCanbus.CAR_439_RZC_14QiJun_Auto /* 5374391 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_AUTO /* 5439885 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_06_SP /* 5439786 */:
             case FinalCanbus.CAR_439_RZC_14QiJun_Hand /* 5439927 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA /* 5505421 */:
             case FinalCanbus.CAR_439_RZC_16Xiaoke_Auto /* 5505463 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_AUTO_19 /* 5570957 */:
             case FinalCanbus.CAR_439_RZC_16Xiaoke_Hand /* 5570999 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_19 /* 5636493 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Kopach_SP /* 5636157 */:
             case FinalCanbus.CAR_439_RZC_13Tianlai_Auto /* 5636535 */:
             case FinalCanbus.CAR_RZC_13Reiz_TOP /* 5702029 */:
             case FinalCanbus.CAR_439_RZC_13Tianlai_Hand /* 5702071 */:
@@ -579,37 +677,71 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_12Reiz /* 5767565 */:
             case FinalCanbus.CAR_439_RZC_08Tianlai_Auto /* 5767607 */:
             case FinalCanbus.CAR_452_CYT_Hyundai_VERACRUZ /* 5767620 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_10 /* 5833101 */:
             case FinalCanbus.CAR_439_RZC_08Tianlai_Hand /* 5833143 */:
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9_Auto /* 5833156 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra /* 5898637 */:
             case FinalCanbus.CAR_439_RZC_16Qida_Auto /* 5898679 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra_AUTO /* 5964173 */:
             case FinalCanbus.CAR_RZC_Turkey_22KADJAR_M /* 5964178 */:
             case FinalCanbus.CAR_439_RZC_16Qida_Hand /* 5964215 */:
-            case FinalCanbus.CAR_PA_BNR_Toyota_Sequoia_22 /* 6029709 */:
+            case FinalCanbus.CAR_RZC_CLIO5_Turkey_L_ATUO /* 6029714 */:
+            case FinalCanbus.CAR_RZC_17LIENUO_M_NoAQS /* 6095250 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_11FX35 /* 6095291 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_06_SP_H /* 6422826 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_08_TypeR /* 6488362 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_08_TypeR_H /* 6553898 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_17AstraJ_H /* 6619197 */:
+            case FinalCanbus.CAR_RZC_HONDA_Yage_03 /* 6619434 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_12Insignia_L /* 6684733 */:
+            case FinalCanbus.CAR_RZC_HONDA_Yage_03_H /* 6684970 */:
             case FinalCanbus.CAR_439_HC_Nissan_XiaoKe /* 6685111 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_12Insignia_H /* 6750269 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18_23Suburban /* 6815805 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22Colorado /* 6881341 */:
+            case FinalCanbus.CAR_RZC_17LIENUO_L_AUTO /* 6881682 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18Traverse /* 6946877 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_12_19Silverado /* 7012413 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_13_14Yukon /* 7077949 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_18_23Terrain /* 7143485 */:
             case FinalCanbus.CAR_452_XBS_Nissan_Cedric /* 7143876 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_15_17Sierra /* 7209021 */:
             case FinalCanbus.CAR_LUZ_Toyato_All /* 7274935 */:
             case FinalCanbus.CAR_LUZ_Toyato_All_H /* 7340471 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18_23Suburban_H /* 7405629 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban /* 7471165 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_OUSAN_KESAI /* 7471543 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban_H /* 7536701 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18Traverse_H /* 7602237 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_15_17Sierra_H /* 7667773 */:
             case FinalCanbus.CAR_BNR_02_09Toyato_Prado /* 7668151 */:
             case FinalCanbus.CAR_452_TangDu_Nissan_Tuda_Hand /* 7668164 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_12_19Silverado_H /* 7733309 */:
             case FinalCanbus.CAR_BNR_02_09Toyato_Prado_H /* 7733687 */:
             case FinalCanbus.CAR_452_TangDu_Nissan_Tuda_Auto /* 7733700 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_18_23Terrain_H /* 7798845 */:
             case FinalCanbus.CAR_452_OD_LandRover_Freelander /* 7799236 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Terrain /* 7864381 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Terrain_H /* 7929917 */:
             case FinalCanbus.CAR_452_OD_Lamborghini /* 7930308 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Equinox /* 7995453 */:
             case FinalCanbus.CAR_452_LZ_Volvo /* 7995844 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Equinox_H /* 8060989 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22Colorado_H /* 8126525 */:
             case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_11 /* 8126917 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_21Silverado /* 8192061 */:
             case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_05 /* 8192453 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_21Silverado_H /* 8257597 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_19_20Sierra /* 8323133 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7 /* 8323524 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_19_20Sierra_H /* 8388669 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7_H /* 8389060 */:
             case FinalCanbus.CAR_453_RCW_Honda_YaGe7 /* 8520133 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14Q50_L /* 8651195 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Loulan_SP /* 9241030 */:
             case FinalCanbus.CAR_452_LZ_Audi_A3_SP /* 9306564 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Nawala_SP /* 9306566 */:
             case FinalCanbus.CAR_452_LZ_Audi_A4_SP /* 9372100 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Loulan_SP_Auto /* 9372102 */:
             case FinalCanbus.CAR_452_LZ_Audi_TT_SP /* 9437636 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Nawala_SP_Auto /* 9437638 */:
             case FinalCanbus.CAR_452_KYC_Sanlin_outlander_13_H /* 9634244 */:
             case FinalCanbus.CAR_439_RCW_BYD_12_18Surui /* 9699767 */:
             case FinalCanbus.CAR_452_KYC_Sanlin_outlander_17_H /* 9699780 */:
@@ -664,14 +796,22 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_BNR_ShuPing_15HighLand_H /* 983437 */:
             case FinalCanbus.CAR_BNR_ShuPing_09HighLand_L /* 1048973 */:
             case FinalCanbus.CAR_BNR_ShuPing_09HighLand_H /* 1114509 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8 /* 1573184 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_M /* 1638720 */:
             case FinalCanbus.CAR_BNR_ShuPing_14PradoShouDong_AMP /* 1638797 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_H /* 1704256 */:
             case FinalCanbus.CAR_BNR_10PradoAuto /* 1704333 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
             case FinalCanbus.CAR_BNR_10PradoAuto_AMP /* 1769869 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
             case FinalCanbus.CAR_BNR_14PradoAuto /* 1835405 */:
             case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
             case FinalCanbus.CAR_BNR_14PradoAuto_AMP /* 1900941 */:
@@ -699,15 +839,21 @@ public class ActivityNewAir extends Activity {
             case FinalCanbus.CAR_RZC_18PradoAuto /* 4718989 */:
             case FinalCanbus.CAR_RZC_18PradoAuto_AMP /* 4784525 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Enclave_SP /* 4980797 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
             case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
             case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11 /* 5177797 */:
             case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_18 /* 5243333 */:
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100 /* 5439940 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100_H /* 5505476 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
             case FinalCanbus.CAR_452_ZH_PAJERO_SP /* 5964228 */:
             case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+            case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
             case FinalCanbus.CAR_439_HC_Nissan_Toread /* 7012791 */:
             case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
             case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:

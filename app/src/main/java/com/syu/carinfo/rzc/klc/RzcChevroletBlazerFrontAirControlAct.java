@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcChevroletBlazerFrontAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcChevroletBlazerFrontAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 32:
@@ -59,10 +58,10 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0061_rzc_chevroletblazer_air_control_f);
+        //setContentView(R.layout.layout_0061_rzc_chevroletblazer_air_control_f);
         init();
     }
 
@@ -84,7 +83,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         findViewById(R.id.air_xts_rearpage).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -92,7 +91,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -100,7 +99,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -195,7 +194,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[37];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -216,7 +215,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[38];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -237,31 +236,31 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[58];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[57];
         findViewById(R.id.air_xts_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[34];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[32];
         if (cycle == 0) {
@@ -271,7 +270,7 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[42];
         if (leave < 0) {
@@ -281,19 +280,19 @@ public class RzcChevroletBlazerFrontAirControlAct extends Activity implements Vi
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
         int acOn = DataCanbus.DATA[40];
         findViewById(R.id.air_xts_mode_body).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootLeftOn() {
         int acOn = DataCanbus.DATA[41];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowWindow() {
         int acOn = DataCanbus.DATA[39];
         findViewById(R.id.air_xts_mode_win).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);

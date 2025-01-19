@@ -5,23 +5,23 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.jaguar.TDLandRoverNewECOCarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 158:
-                case 159:
-                    int bit1 = DataCanbus.DATA[158];
-                    int bit0 = DataCanbus.DATA[159];
+                case 170:
+                case 171:
+                    int bit1 = DataCanbus.DATA[170];
+                    int bit0 = DataCanbus.DATA[171];
                     if (bit1 == 1 && bit0 == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image7)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_ac_p));
                         break;
@@ -35,7 +35,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image7)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_ac_n));
                         break;
                     }
-                case 160:
+                case 172:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image6)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_light_p));
                         break;
@@ -43,7 +43,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image6)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_light_n));
                         break;
                     }
-                case 161:
+                case 173:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image1)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_front_p));
                         break;
@@ -51,7 +51,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image1)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_front_n));
                         break;
                     }
-                case 162:
+                case 174:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image2)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_steer_p));
                         break;
@@ -59,7 +59,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image2)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_steer_n));
                         break;
                     }
-                case 163:
+                case 175:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image5)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_rear_p));
                         break;
@@ -67,7 +67,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image5)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_rear_n));
                         break;
                     }
-                case 164:
+                case 176:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image8)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_p));
                         break;
@@ -75,7 +75,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image8)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_n));
                         break;
                     }
-                case 165:
+                case 177:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image3)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_p));
                         break;
@@ -83,7 +83,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image3)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_n));
                         break;
                     }
-                case 166:
+                case 178:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image9)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_p));
                         break;
@@ -91,7 +91,7 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image9)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_n));
                         break;
                     }
-                case 167:
+                case 179:
                     if (value == 1) {
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image4)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_p));
                         break;
@@ -99,13 +99,13 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
                         ((ImageView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.id_image4)).setImageDrawable(TDLandRoverNewECOCarinfoAct.this.getResources().getDrawable(R.drawable.ic_ta_landrover_seat_n));
                         break;
                     }
-                case 168:
+                case 180:
                     ((ProgressBar) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.pa_jeep_seekbar1)).setProgress(value);
-                    ((ProgressBar) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.pa_jeep_seekbar1)).invalidate();
+                    TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.pa_jeep_seekbar1).invalidate();
                     break;
-                case 169:
+                case 181:
                     if (value >= 10 && value <= 50) {
-                        ((TextView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "." + (value % 10));
+                        ((TextView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.tv_text2)).setText(value / 10 + "." + (value % 10));
                         break;
                     } else {
                         ((TextView) TDLandRoverNewECOCarinfoAct.this.findViewById(R.id.tv_text2)).setText("---");
@@ -115,59 +115,59 @@ public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.On
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_td_landrover_neweco_info);
+        //setContentView(R.layout.layout_0453_td_landrover_neweco_info);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         v.getId();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(0, new int[]{101}, null, null);
-        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[171].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[175].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[171].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[175].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -7,31 +7,30 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_Surui_CarSet2 extends BaseFragment implements View.OnClickListener {
-    int[] ids = {54, 55, 56, 57, 58};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet2.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {118, 119, 120, 121, 122};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 54:
+                case 118:
                     Fragment_Surui_CarSet2.this.updateSteering(value);
                     break;
-                case 55:
+                case 119:
                     Fragment_Surui_CarSet2.this.updateEnergyback(value);
                     break;
-                case 56:
+                case 120:
                     Fragment_Surui_CarSet2.this.updateChargingPort(value);
                     break;
-                case 58:
+                case 122:
                     Fragment_Surui_CarSet2.this.updateSOCValue(value);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         bindViewOnClick(R.id.btn_minus1, this);
         bindViewOnClick(R.id.btn_plus1, this);
@@ -43,16 +42,16 @@ public class Fragment_Surui_CarSet2 extends BaseFragment implements View.OnClick
         bindViewOnClick(R.id.btn_plus4, this);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0439_hcy_byds7_carset2;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         if (DataCanbus.sCanbusId == 8782263) {
             DataCanbus.PROXY.cmd(5, 16);
@@ -62,45 +61,45 @@ public class Fragment_Surui_CarSet2 extends BaseFragment implements View.OnClick
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         if (DataCanbus.sCanbusId == 8782263) {
             int value = 0;
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
+                case R.id.btn_minus1 /* 2131427455 */:
                     value = 5;
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     value = 6;
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
+                case R.id.btn_minus2 /* 2131427458 */:
                     value = 3;
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     value = 4;
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
+                case R.id.btn_minus3 /* 2131427461 */:
                     value = 1;
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     value = 2;
                     break;
-                case R.id.btn_minus4 /* 2131427492 */:
-                    int data = DataCanbus.DATA[58];
+                case R.id.btn_minus4 /* 2131427464 */:
+                    int data = DataCanbus.DATA[122];
                     if (data > 25) {
                         data--;
                     }
                     DataCanbus.PROXY.cmd(4, data);
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
-                    int data2 = DataCanbus.DATA[58];
+                case R.id.btn_plus4 /* 2131427466 */:
+                    int data2 = DataCanbus.DATA[122];
                     if (data2 < 70) {
                         data2++;
                     }
@@ -113,65 +112,65 @@ public class Fragment_Surui_CarSet2 extends BaseFragment implements View.OnClick
             }
             return;
         }
-        int sendvalue = DataCanbus.DATA[57];
-        int SOCvalue = DataCanbus.DATA[58];
+        int sendvalue = DataCanbus.DATA[121];
+        int SOCvalue = DataCanbus.DATA[122];
         switch (v.getId()) {
-            case R.id.btn_minus1 /* 2131427480 */:
-                if (((DataCanbus.DATA[57] >> 1) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 253;
+            case R.id.btn_minus1 /* 2131427455 */:
+                if (((DataCanbus.DATA[121] >> 1) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 253;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 2;
+                    sendvalue = DataCanbus.DATA[121] | 2;
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                if (((DataCanbus.DATA[57] >> 1) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 253;
+            case R.id.btn_plus1 /* 2131427457 */:
+                if (((DataCanbus.DATA[121] >> 1) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 253;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 2;
+                    sendvalue = DataCanbus.DATA[121] | 2;
                     break;
                 }
-            case R.id.btn_minus2 /* 2131427484 */:
-                if (((DataCanbus.DATA[57] >> 2) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 251;
+            case R.id.btn_minus2 /* 2131427458 */:
+                if (((DataCanbus.DATA[121] >> 2) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 251;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 4;
+                    sendvalue = DataCanbus.DATA[121] | 4;
                     break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
-                if (((DataCanbus.DATA[57] >> 2) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 251;
+            case R.id.btn_plus2 /* 2131427460 */:
+                if (((DataCanbus.DATA[121] >> 2) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 251;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 4;
+                    sendvalue = DataCanbus.DATA[121] | 4;
                     break;
                 }
-            case R.id.btn_minus3 /* 2131427488 */:
-                if (((DataCanbus.DATA[57] >> 3) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 247;
+            case R.id.btn_minus3 /* 2131427461 */:
+                if (((DataCanbus.DATA[121] >> 3) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 247;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 8;
+                    sendvalue = DataCanbus.DATA[121] | 8;
                     break;
                 }
-            case R.id.btn_plus3 /* 2131427490 */:
-                if (((DataCanbus.DATA[57] >> 3) & 1) == 1) {
-                    sendvalue = DataCanbus.DATA[57] & 247;
+            case R.id.btn_plus3 /* 2131427463 */:
+                if (((DataCanbus.DATA[121] >> 3) & 1) == 1) {
+                    sendvalue = DataCanbus.DATA[121] & 247;
                     break;
                 } else {
-                    sendvalue = DataCanbus.DATA[57] | 8;
+                    sendvalue = DataCanbus.DATA[121] | 8;
                     break;
                 }
-            case R.id.btn_minus4 /* 2131427492 */:
-                SOCvalue = DataCanbus.DATA[58] - 5;
+            case R.id.btn_minus4 /* 2131427464 */:
+                SOCvalue = DataCanbus.DATA[122] - 5;
                 if (SOCvalue < 15) {
                     SOCvalue = 15;
                     break;
                 }
-            case R.id.btn_plus4 /* 2131427494 */:
-                SOCvalue = DataCanbus.DATA[58] + 5;
+            case R.id.btn_plus4 /* 2131427466 */:
+                SOCvalue = DataCanbus.DATA[122] + 5;
                 if (SOCvalue > 70) {
                     SOCvalue = 70;
                     break;

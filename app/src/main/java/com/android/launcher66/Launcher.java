@@ -8,12 +8,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.app.WallpaperManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -46,17 +46,21 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.text.DecimalFormat;
+import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -100,7 +104,9 @@ import cn.kuwo.autosdk.api.PlayState;
 import cn.kuwo.autosdk.api.PlayerStatus;
 import cn.kuwo.autosdk.bean.Music;
 
+import com.android.async.AsyncTask;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.SunTask;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppMultiple;
@@ -115,6 +121,9 @@ import com.fyt.flow.TrifficReceiver;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.popwindow.PopWindowBright;
@@ -135,6 +144,9 @@ import com.syu.widget.DateMusicProvider;
 import com.syu.widget.DateTimeProvider;
 import com.syu.widget.TimeUpdateReceiver;
 import com.syu.widget.Widget;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -143,6 +155,7 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -151,21 +164,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+
 import org.apache.http.HttpStatus;
 import org.litepal.LitePal;
 import share.Config;
 import share.ResValue;
 import share.ShareHandler;
 
-import com.syu.carinfo.accord.ActivityAccord7AirDiagnosis;
 import com.syu.carinfo.accord.ActivityAccord7Index;
 import com.syu.carinfo.accord9.wc.Accord9HIndexAct;
 import com.syu.carinfo.accord9.wc.Accord9LowIndexAct;
 import com.syu.carinfo.accord9.xp.XPAccord9IndexActi;
-import com.syu.carinfo.air.ActivityNewAir;
-import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.carinfo.aiying.ziyouguang.JeepIndexAct;
 import com.syu.carinfo.ansheng.mzd6.AnSheng_167_Mzd6_CarCdAct;
 import com.syu.carinfo.b70.BenTeng14B70ClockSet;
@@ -187,6 +196,7 @@ import com.syu.carinfo.biaozhi408.XpPsa301Acti;
 import com.syu.carinfo.bmw.BMWX1IndexActi;
 import com.syu.carinfo.bnr.Acti_Crow_Amp_Bnr;
 import com.syu.carinfo.bnr.Acti_Nissan_Bnr;
+import com.syu.carinfo.bnr.Acti_Nissan_Sanwu;
 import com.syu.carinfo.bnr.Bnr_255_FengShengax7_Allvideo;
 import com.syu.carinfo.bnr.arrizo.BNR_Arrizo_CarSettingAct;
 import com.syu.carinfo.bnr.ford.Activity_ford_index;
@@ -194,9 +204,7 @@ import com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct;
 import com.syu.carinfo.bnr.guanzhi.LZFerrariF12CarInfo;
 import com.syu.carinfo.bnr.jeep.ActiIndex_Bnr_117_Functionl;
 import com.syu.carinfo.bnr.tule.BnrTuleIndexAct;
-import com.syu.carinfo.bus.ActivityBusAirControl;
 import com.syu.carinfo.bus.ActivityBusCarCheck;
-import com.syu.carinfo.byd.ActAir_Byd_F6;
 import com.syu.carinfo.byd.Act_Byd_Tang_XBS;
 import com.syu.carinfo.byd.RzcBydS6Acti;
 import com.syu.carinfo.byd.hcy.Activity_DaojunSetCrtrl;
@@ -206,11 +214,15 @@ import com.syu.carinfo.byd.hcy.Activity_OD_BYD_ALL;
 import com.syu.carinfo.byd.hcy.Activity_OD_Zotye_T700;
 import com.syu.carinfo.byd.hcy.Activity_RCW_BYD_S7;
 import com.syu.carinfo.byd.hcy.Activity_XBS_BYD_Song;
+import com.syu.carinfo.byd.hcy.BYDAiyingIndexAct;
+import com.syu.carinfo.camry.luz.CamryIndexAct_LuZ;
+import com.syu.carinfo.camry.luz.ToyotaLexusEQActi_Luz;
 import com.syu.carinfo.camry.zh.CamryIndexAct_ZH;
 import com.syu.carinfo.camry2012.xp.CamryIndexAct;
 import com.syu.carinfo.camry2012.xp.CamryIndexAct_XP;
 import com.syu.carinfo.camry2012.xp.CamryIndexEVAct;
 import com.syu.carinfo.camry2012.xp.LadaSettingsAct;
+import com.syu.carinfo.camry2012.xp.RzcPeroduaIndexAct;
 import com.syu.carinfo.camry2012.xp.ToyotaLexusEQActi;
 import com.syu.carinfo.camry2012.xp.ToyotaLexusIndexActi;
 import com.syu.carinfo.crv.CrvXBSActi;
@@ -237,8 +249,6 @@ import com.syu.carinfo.dj.b70.DjB70Act;
 import com.syu.carinfo.dj.dodge.DjDodgeCarSet;
 import com.syu.carinfo.dj.havalh8.Dj_0439_HavalH8_IndexAct;
 import com.syu.carinfo.dj.huangguan.ActivityHuangGuanIndex;
-import com.syu.carinfo.dj.huangguan.dj_429_crown_AirControlAct;
-import com.syu.carinfo.dongjian.ga6.GA6AirSeatControlAct;
 import com.syu.carinfo.dongjian.ga6.GA6CarSetIndexAct;
 import com.syu.carinfo.dongjian.wc2.ds5.DS5IndexAct;
 import com.syu.carinfo.focus.ActivityIndex_14Festia;
@@ -259,11 +269,10 @@ import com.syu.carinfo.golf7_xp.Golf7_XP_IndexAct;
 import com.syu.carinfo.guochan.Acti_BNR_ShengDaFei;
 import com.syu.carinfo.guochan.ActivityBaojun530Info;
 import com.syu.carinfo.guochan.ActivityBiSuT3;
-import com.syu.carinfo.guochan.ActivityHaiMaV70AirControl;
 import com.syu.carinfo.guochan.ActivityHuanSuS6Index;
+import com.syu.carinfo.guochan.ActivityWC20Baojun530Info;
 import com.syu.carinfo.guochan.ActivityZhongHuaH3;
 import com.syu.carinfo.guochan.Activity_RZC_SettingT60;
-import com.syu.carinfo.guochan.AirQiChenT90;
 import com.syu.carinfo.haozheng.bmw.BmwIndexAct;
 import com.syu.carinfo.hava.ActivityHava18H6Index;
 import com.syu.carinfo.hava.ActivityHava18H6SetAct;
@@ -303,11 +312,13 @@ import com.syu.carinfo.jili.ODJiliRuilanX3CarSettingsAct;
 import com.syu.carinfo.jili.RZCBoyueCarSettingsAct;
 import com.syu.carinfo.jili.RZCNisaanGuishiCarSettingsAct;
 import com.syu.carinfo.jili.YuanJingX1CarSettingsAct;
-import com.syu.carinfo.jili.YuanJingX1_AirControlAct_DJ;
 import com.syu.carinfo.jili.YuanjingX3TireAct;
+import com.syu.carinfo.klc.DJGMKopachBasicInfoAct;
 import com.syu.carinfo.klc.KlcIndexAct;
+import com.syu.carinfo.klc.WcGMKopachBasicInfoAct;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5SetFunc;
 import com.syu.carinfo.ksw.audiq5.LZBmwIndexFunc;
+import com.syu.carinfo.ksw.audiq5.RDWBenzSetFunc;
 import com.syu.carinfo.ksw.audiq5.ZXMZDSetFunc;
 import com.syu.carinfo.ky.ActivityDaMaiX7;
 import com.syu.carinfo.ky.ActivityHaimaS3;
@@ -318,7 +329,6 @@ import com.syu.carinfo.lifan720.LiFan720IndexAct;
 import com.syu.carinfo.luz.binli.BinliIndexAct;
 import com.syu.carinfo.luz.oubao.Luz_Oubao_IndexAct;
 import com.syu.carinfo.lz.infinit.fx35.LuzInfinitF35IndexAct;
-import com.syu.carinfo.lz.jaguar.JaguarIndexAct;
 import com.syu.carinfo.lz.jaguar.TDLandRoverIndexAct;
 import com.syu.carinfo.lz.kayan.LuzKayanSetFunc;
 import com.syu.carinfo.lz.landrover.LandRoverIndexAct;
@@ -326,9 +336,7 @@ import com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct;
 import com.syu.carinfo.lz.lexusis.LuzLexusLSClockSetAct;
 import com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRIndexAct;
 import com.syu.carinfo.lz.spirior.Lz_425_Spirior_IndexActi;
-import com.syu.carinfo.mengdiou.MDOAirControlActi;
-import com.syu.carinfo.mengdiou.V11MDOAirControlActi;
-import com.syu.carinfo.mzd.MzdAllM3ClockSetActi;
+import com.syu.carinfo.mzd.GMCPannelSetActi;
 import com.syu.carinfo.mzd.MzdClockSetActi;
 import com.syu.carinfo.mzd.MzdRZCM3ClockSetActi;
 import com.syu.carinfo.mzd.MzdRZCM6ClockSetActi;
@@ -357,7 +365,6 @@ import com.syu.carinfo.oudi.RZC_0314_Dongfeng_Ev3_IndexAct;
 import com.syu.carinfo.oudi.baojun530.ActivityOudiBaojun530Info;
 import com.syu.carinfo.oudi.beiqi.ActivityODBeiqiECIndex;
 import com.syu.carinfo.oudi.bisu.ActivityBiSuT3AndM3;
-import com.syu.carinfo.oudi.changan.OdChanganAirControlAct;
 import com.syu.carinfo.oudi.changan.OdChanganIndexAct;
 import com.syu.carinfo.oudi.changan.OdChanganSetFunc;
 import com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_IndexAct;
@@ -374,13 +381,14 @@ import com.syu.carinfo.qirui.ActivityWCQiruiJietuX70;
 import com.syu.carinfo.qirui.DaojunQiruiCarSet;
 import com.syu.carinfo.qiya.kx7.ActivityKX7CameraSet;
 import com.syu.carinfo.qiya.kx7.ActivityQiYaKaiShenSet;
+import com.syu.carinfo.qiya.kx7.ActivityWCXianDaiAllSet;
 import com.syu.carinfo.rongwei.Wc_416_RongWei_CarSetAct;
 import com.syu.carinfo.rongwei.Wc_416_RongWei_IndexAct;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard_HP;
 import com.syu.carinfo.rzc.andra.GmAndraIndexActi;
 import com.syu.carinfo.rzc.baojun.ODDongnanSetFunc;
+import com.syu.carinfo.rzc.baojun.ODFotonTOANOSetFunc;
 import com.syu.carinfo.rzc.baojun.ODFotonTunlandSetFunc;
+import com.syu.carinfo.rzc.baojun.ODXinteDEV1SetFunc;
 import com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc;
 import com.syu.carinfo.rzc.beiqi.Activity18EU5CarSet;
 import com.syu.carinfo.rzc.beiqi.Activity19EC5Index;
@@ -391,6 +399,7 @@ import com.syu.carinfo.rzc.changan.ODChanganCS95AllSetAct;
 import com.syu.carinfo.rzc.changan.RzcChanganAllIndexAct;
 import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct;
 import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70SetFunc;
+import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70TireAct;
 import com.syu.carinfo.rzc.feiyate.RzcFYTOilMileIndexActi;
 import com.syu.carinfo.rzc.feiyate.RzcFeiyateIndexAct;
 import com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenAx7SetFunc;
@@ -400,6 +409,7 @@ import com.syu.carinfo.rzc.gs4.ActGS4LowSetting;
 import com.syu.carinfo.rzc.gs4.RzcGS4IndexAct;
 import com.syu.carinfo.rzc.gs4.Rzc_Gs8_IndexAct;
 import com.syu.carinfo.rzc.haima.HaimaS5SetFunc;
+import com.syu.carinfo.rzc.haima.ODJianglingSetFunc;
 import com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct;
 import com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_IndexAct;
 import com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_TireAct;
@@ -407,6 +417,7 @@ import com.syu.carinfo.rzc.havalh6.RZC_Oudi_0439_HavalH9_IndexAct;
 import com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct;
 import com.syu.carinfo.rzc.jingyix5.ActivityJingYiX5;
 import com.syu.carinfo.rzc.keleijia.KeLeiJiaIndexActi;
+import com.syu.carinfo.rzc.keleijia.KeLeiJiaRadarSetting;
 import com.syu.carinfo.rzc.keleijia.KeleiaoCarCD;
 import com.syu.carinfo.rzc.klc.RzcKlcIndex;
 import com.syu.carinfo.rzc.lufengxiaoyao.RZCLufengXiaoyaoIndexAct;
@@ -431,23 +442,27 @@ import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
 import com.syu.carinfo.rzc.sanlin.KYCZhonghuaCarSet;
 import com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet;
 import com.syu.carinfo.rzc.sanlin.LZCadillacCarSet;
+import com.syu.carinfo.rzc.sanlin.LZFiatInfCarSet;
 import com.syu.carinfo.rzc.sanlin.LZHonda06CivicCarInfo;
 import com.syu.carinfo.rzc.sanlin.LZNissanFugaCarInfo;
 import com.syu.carinfo.rzc.sanlin.LuZAstonMartinCarInfo;
 import com.syu.carinfo.rzc.sanlin.LuZMaserati300CCarSet;
+import com.syu.carinfo.rzc.sanlin.LuzAudioOldCarInfo;
 import com.syu.carinfo.rzc.sanlin.LuzBenzC200CarSet;
 import com.syu.carinfo.rzc.sanlin.LuzJaguarXFCarSet;
 import com.syu.carinfo.rzc.sanlin.LuzTATACarSet;
 import com.syu.carinfo.rzc.sanlin.LuzVolvoCarSet;
+import com.syu.carinfo.rzc.sanlin.NissanJukeCarSet;
 import com.syu.carinfo.rzc.sanlin.NissanXiaokeCarSet;
 import com.syu.carinfo.rzc.sanlin.ODBMWCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ30CarSet;
 import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ80CarSet;
 import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ90CarSet;
+import com.syu.carinfo.rzc.sanlin.ODBeiqiEV160CarSet;
 import com.syu.carinfo.rzc.sanlin.ODBentNATCarSet;
 import com.syu.carinfo.rzc.sanlin.ODCHuangWeiET5CarSet;
 import com.syu.carinfo.rzc.sanlin.ODChangChengOulaCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODChangfengCS9AirControlAct;
+import com.syu.carinfo.rzc.sanlin.ODChanganLuminCarSet;
 import com.syu.carinfo.rzc.sanlin.ODChangfengCS9EVCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODDongfengChenglongH7CarSet;
 import com.syu.carinfo.rzc.sanlin.ODDongfengEVCarInfo;
@@ -457,13 +472,19 @@ import com.syu.carinfo.rzc.sanlin.ODHuachenSWMCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODJianghuaiChaoyueCarSet;
 import com.syu.carinfo.rzc.sanlin.ODKaiyiX3CarSet;
 import com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet;
+import com.syu.carinfo.rzc.sanlin.ODModerninIndexAct;
 import com.syu.carinfo.rzc.sanlin.ODNissanQuystCarSet;
 import com.syu.carinfo.rzc.sanlin.ODQiruiXiaomayiCarInfo;
+import com.syu.carinfo.rzc.sanlin.ODRuichiEC75CarSet;
+import com.syu.carinfo.rzc.sanlin.ODSanlinCarSet;
 import com.syu.carinfo.rzc.sanlin.ODShanqiZHongkaCarSet;
+import com.syu.carinfo.rzc.sanlin.ODSubaruLegacyCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODWeimaEx5IndexAct;
+import com.syu.carinfo.rzc.sanlin.ODYiqiJiefangJ6GCarSet;
 import com.syu.carinfo.rzc.sanlin.ODZhidouD1EVCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODZhidouEVCarInfo;
 import com.syu.carinfo.rzc.sanlin.ODZhonghuaV6CarSet;
+import com.syu.carinfo.rzc.sanlin.ODZhongtaiE200CarInfo;
 import com.syu.carinfo.rzc.sanlin.PANissanAllCarSet;
 import com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ40CarSet;
 import com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ90CarSet;
@@ -471,35 +492,45 @@ import com.syu.carinfo.rzc.sanlin.RZCFengshenEX1CarInfo;
 import com.syu.carinfo.rzc.sanlin.RZCHongqiH5CarSet;
 import com.syu.carinfo.rzc.sanlin.RZCLeTinMangguoCarSet;
 import com.syu.carinfo.rzc.sanlin.RZCMclarenCarSet;
+import com.syu.carinfo.rzc.sanlin.RZCMzd3CarInfo;
 import com.syu.carinfo.rzc.sanlin.RZCNissanAmpCarSet;
 import com.syu.carinfo.rzc.sanlin.RZCNissanJUKECarSet;
-import com.syu.carinfo.rzc.sanlin.RZCVinFastPlusCarSet;
+import com.syu.carinfo.rzc.sanlin.RZCShanqiDelongCarInfo;
 import com.syu.carinfo.rzc.sanlin.RZCXiandaiAmpCarSet;
 import com.syu.carinfo.rzc.sanlin.RZCXiandaiRohensCarSet;
 import com.syu.carinfo.rzc.sanlin.RzcBenzCCarSet;
+import com.syu.carinfo.rzc.sanlin.SanlinCarSet;
 import com.syu.carinfo.rzc.sanlin.SanlinIndexAct;
+import com.syu.carinfo.rzc.sanlin.SanwuNissanAllCarSet;
+import com.syu.carinfo.rzc.sanlin.TDPorscheCarSet;
+import com.syu.carinfo.rzc.sanlin.WC2FordMDOCarSeatSet;
+import com.syu.carinfo.rzc.sanlin.WC2IKCOAllCarSetAct;
 import com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo;
+import com.syu.carinfo.rzc.sanlin.WCJiliAllCarSet;
 import com.syu.carinfo.rzc.sanlin.WCNissanCarSet;
 import com.syu.carinfo.rzc.sanlin.WCOldJeepAmpSet;
 import com.syu.carinfo.rzc.sanlin.WCPeroduaAllCarSet;
 import com.syu.carinfo.rzc.sanlin.WCProtonAllCarSet;
+import com.syu.carinfo.rzc.sanlin.WCSaipaShahinTireAct;
+import com.syu.carinfo.rzc.sanlin.WCUAZPatriotCarSet;
 import com.syu.carinfo.rzc.sanlin.WYBBACarInfo;
 import com.syu.carinfo.rzc.sanlin.XBSNissanCedricCarSet;
 import com.syu.carinfo.rzc.sanlin.XCBenzSmartCarSet;
 import com.syu.carinfo.rzc.sanlin.XCFordEDGECarSet;
 import com.syu.carinfo.rzc.sanlin.XCHondaAmpCarSet;
+import com.syu.carinfo.rzc.sanlin.XPFordF150CarSet;
 import com.syu.carinfo.rzc.sanlin.XPMeganeCarInfo;
 import com.syu.carinfo.rzc.sanlin.XPNissanCarSet;
 import com.syu.carinfo.rzc.sanlin.XPXiandaiCarSet;
 import com.syu.carinfo.rzc.sanlin.ZHToyotaProaceCarSet;
-import com.syu.carinfo.rzc.shenbao.ActivityM50FAirControl;
+import com.syu.carinfo.rzc.siwei.ODChangAnRaetonCarSet;
 import com.syu.carinfo.rzc.siwei.RZCSiWeiCarSet;
 import com.syu.carinfo.rzc.siwei.XCXiandaiSuolataCarSet;
 import com.syu.carinfo.rzc.t70.ActivityNaZhiJie;
-import com.syu.carinfo.rzc.t70.AirRzcQiChenT90;
 import com.syu.carinfo.rzc.t70.BNR_QiChenT70Act;
 import com.syu.carinfo.rzc.t70.QiChenT70Act;
 import com.syu.carinfo.rzc.xima.Acti_Xima_Xfy;
+import com.syu.carinfo.rzc.xima.LZ_NIssanInfinitiIndexAct;
 import com.syu.carinfo.rzc.xima.LZ_Nissan08TeanaIndexAct;
 import com.syu.carinfo.rzc.xima.OD_NissanXimaCarinfoAct;
 import com.syu.carinfo.rzc.xima.OD_NissanXimaIndexAct;
@@ -520,14 +551,13 @@ import com.syu.carinfo.rzc.ziyouguang.RZC_JeepCarEQSet;
 import com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct;
 import com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings;
 import com.syu.carinfo.saiou3.SaiOu3Index;
-import com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing;
 import com.syu.carinfo.sbd.ruifengs5.ActivityTireRuiFengS5;
 import com.syu.carinfo.sbd.x80.Dongfeng_FullView_SBDAct;
 import com.syu.carinfo.sbd.x80.TianLai09Act;
 import com.syu.carinfo.sbd.x80.X80Act;
-import com.syu.carinfo.sbd_electric.Sbd_24vW3AirControlAct;
 import com.syu.carinfo.sbd_electric.Sbd_IndexAct;
 import com.syu.carinfo.toyota.tangdu.ToyotaTangduIndexAct;
+import com.syu.carinfo.wc.axela.ActivityMzdAllHUDCarSet;
 import com.syu.carinfo.wc.axela.ActivityMzdAllIndexAct;
 import com.syu.carinfo.wc.benz.WCBenzSprinterCarSet;
 import com.syu.carinfo.wc.bydyuan.BYDYuanCarSettingsAct;
@@ -536,7 +566,6 @@ import com.syu.carinfo.wc.changan.ActivityChangAnCS75;
 import com.syu.carinfo.wc.changan.WCChanganAllIndexAct;
 import com.syu.carinfo.wc.changan.WCChanganAllTireAct;
 import com.syu.carinfo.wc.crown.Wc_420_IndexAct;
-import com.syu.carinfo.wc.crown.wc_420_crown_AirControlAct;
 import com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct;
 import com.syu.carinfo.wc.feiyate.FYTOilMileIndexActi;
 import com.syu.carinfo.wc.feiyate.WCFeiyateIndexAct;
@@ -544,18 +573,17 @@ import com.syu.carinfo.wc.gs4.GS4CarSettingsAct;
 import com.syu.carinfo.wc.gs4.GS4IndexAct;
 import com.syu.carinfo.wc.gs4.GS4SetAct_Bnr;
 import com.syu.carinfo.wc.infeinidi.WcInfeinidiCarSet;
-import com.syu.carinfo.wc.infeinidi.WcInfeinidiFrontAirControlAct;
 import com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct;
 import com.syu.carinfo.wc.infeinidi.WcInfinitCarTire;
 import com.syu.carinfo.wc.jianghuai.WcJianghuaiIEV6EIndexAct;
 import com.syu.carinfo.wc.jingyix5.JYIndexAct;
 import com.syu.carinfo.wc.leinuo.DusterOilMileIndexActi;
 import com.syu.carinfo.wc.leinuo.LeinuoGuanjingSetActi;
+import com.syu.carinfo.wc.leinuo.Megane4SetActi;
 import com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi;
 import com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi;
 import com.syu.carinfo.wc.nissan.Wc_443_TianlaiGongjueAct;
 import com.syu.carinfo.wc.ruijie15.Focus19CarSetAct;
-import com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct;
 import com.syu.carinfo.wc.ruijie15.RJIndexAct;
 import com.syu.carinfo.wc.ruijie15.RJXpCarSetAct;
 import com.syu.carinfo.wc.ruiteng.MingjueZS_Wc;
@@ -565,6 +593,7 @@ import com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct;
 import com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi;
 import com.syu.carinfo.wc.ziyouguang.Wc_372_IndexAct;
+import com.syu.carinfo.wc2.ford.WC2FordLincoinCarSettingsAct;
 import com.syu.carinfo.wc2.ford.WC2FordLincoinIndexAct;
 import com.syu.carinfo.wc2.huangguan.WC209HuangguanEQAct;
 import com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet;
@@ -586,7 +615,7 @@ import com.syu.carinfo.xbs.tule.XBSTuleIndexAct;
 import com.syu.carinfo.xbs.tule.XBSZTT600CarTire;
 import com.syu.carinfo.xbs.xbshaimam8.XbsHaiMaM8IndexActi;
 import com.syu.carinfo.xbs.yage8.XBS08YageIndexAct;
-import com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueIndexAct;
+import com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueSetFunc;
 import com.syu.carinfo.xc.gm.XC_GMandRongweiIndexAct;
 import com.syu.carinfo.xc.lexus.XCLexusIndexAct;
 import com.syu.carinfo.xc.tule.XCTuleCDIndexAct;
@@ -608,6 +637,7 @@ import com.syu.carinfo.xp.SanlinSeries.SanlinXPIndexAct;
 import com.syu.carinfo.xp.psa_all.LZPsaAllIndexAct;
 import com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi;
 import com.syu.carinfo.xp.psa_all.XpPsaAllOrinalCarActivity;
+import com.syu.carinfo.xp.suburu.RZCSuburuCarSet;
 import com.syu.carinfo.xp.suburu.SuburuCarSet;
 import com.syu.carinfo.xp.yinglang.DjXp1_ParkAvenue_25to33_info;
 import com.syu.carinfo.xp.yinglang.YLCarSettingsAct;
@@ -624,7 +654,11 @@ import com.syu.carinfo.xp.ziyouguang.Xp_374_IndexActi;
 import com.syu.carinfo.xp_angkesailam3.M3CarCD;
 import com.syu.carinfo.zhtd.bmw.LZBenzSmartSetFunc;
 import com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc;
+import com.syu.carinfo.zhtd.bmw.LZNewAllGMCSetFunc;
+import com.syu.carinfo.zhtd.bmw.LZNewAllMazdaSetFunc;
 import com.syu.carinfo.zhtd.bmw.LZNewLandRoverSetFunc;
+import com.syu.carinfo.zhtd.bmw.YL6606NewVinFanAllSetFunc;
+import com.syu.carinfo.zhtd.bmw.ZH2PilotcarCarinfoAct;
 import com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc;
 import com.syu.carinfo.zhtd.bmw.ZhtdBmwSetFunc;
 import com.syu.carinfo.ztt600.IndexAct_Bnr;
@@ -635,15 +669,13 @@ import com.syu.carinfo.zx6606.ZX6606HondaIndexActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.module.main.FinalShare;
-import com.syu.canbus.NullActi;
 import com.syu.canbus.FuncMain;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-public class Launcher extends Activity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, Observer {
+public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener {
     private static Throwable th;
     private ViewTreeObserver.OnDrawListener onDrawListener;
-    public static final int launcher = 0x7f040024;
     static final String CORRUPTION_EMAIL_SENT_KEY = "corruptionEmailSent";
     static final boolean DEBUG_DUMP_LOG = false;
     static final boolean DEBUG_RESUME_TIME = false;
@@ -670,6 +702,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private static final int REQUEST_PICK_APPWIDGET = 9;
     private static final int REQUEST_PICK_SHORTCUT = 7;
     private static final int REQUEST_PICK_WALLPAPER = 10;
+    private static final int REQUEST_PICK_WALLPAPER_NIGHT = 20;
     private static final String RUNTIME_STATE = "launcher.state";
     private static final String RUNTIME_STATE_CURRENT_SCREEN = "launcher.current_screen";
     private static final String RUNTIME_STATE_PENDING_ADD_CELL_X = "launcher.add_cell_x";
@@ -730,7 +763,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private LauncherAppWidgetHost mAppWidgetHost;
     private AppWidgetManager mAppWidgetManager;
     private AppsCustomizePagedView mAppsCustomizeContent;
-    private AppsCustomizeTabHost mAppsCustomizeTabHost;
+    public static AppsCustomizeTabHost mAppsCustomizeTabHost;
     private long mAutoAdvanceSentTime;
     private MyAutoMapReceiver mAutoMap;
     private int mBrightLevel;
@@ -937,22 +970,28 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
-    private Runnable mBuildLayersRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.1
-        @Override // java.lang.Runnable
+    private SharedPreferences mPrefs;
+	private boolean fytData = true;  
+    private final String SYSTEM_DIALOG_REASON_KEY = "reason";
+    private final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
+    private final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
+    public static final String ALL_APPS = "all.apps";
+    private Runnable mBuildLayersRunnable = new Runnable() { 
+        @Override
         public void run() {
             if (Launcher.mWorkspace != null) {
                 Launcher.mWorkspace.buildPageHardwareLayers();
             }
         }
     };
-    Runnable runnable_register = new Runnable() { // from class: com.android.launcher66.Launcher.2
-        @Override // java.lang.Runnable
+    Runnable runnable_register = new Runnable() { 
+        @Override
         public void run() {
             TimeUpdateReceiver.register(Launcher.mLauncher);
             Launcher.this.sendBroadcast(new Intent(TimeUpdateReceiver.SHOW_TIME));
         }
     };
-    private OnPlayerStatusListener onRefreshKwStatus = new OnPlayerStatusListener() { // from class: com.android.launcher66.Launcher.3
+    private OnPlayerStatusListener onRefreshKwStatus = new OnPlayerStatusListener() { 
         private /* synthetic */ int[] $SWITCH_TABLE$cn$kuwo$autosdk$api$PlayerStatus;
 
         /* synthetic */ int[] $SWITCH_TABLE$cn$kuwo$autosdk$api$PlayerStatus() {
@@ -984,7 +1023,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             return iArr;
         }
 
-        @Override // cn.kuwo.autosdk.api.OnPlayerStatusListener
+        @Override
         public void onPlayerStatus(PlayerStatus status, Music music) {
             if (status != null) {
                 switch ($SWITCH_TABLE$cn$kuwo$autosdk$api$PlayerStatus()[status.ordinal()]) {
@@ -1030,33 +1069,44 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     };
     public String str_toast = "";
-    private BroadcastReceiver removeMusic = new BroadcastReceiver() { // from class: com.android.launcher66.Launcher.4
-        @Override // android.content.BroadcastReceiver
+    private BroadcastReceiver removeMusic = new BroadcastReceiver() { 
+        @Override 
         public void onReceive(Context arg0, Intent intent) {
             String action = intent.getAction();
-            if (mediaSource == "fyt" && "com.fyt.systemui.remove".equals(action)) {
+            if ((mediaSource == "fyt" || activeController == null) && "com.fyt.systemui.remove".equals(action)) {
                 Bundle bundle = intent.getExtras();
                 String packageName = bundle.getString("pkg");
                 if ("com.syu.music".equals(packageName)) {
                     MusicService.state = false;
-                    Launcher.this.handler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.4.1
-                        @Override // java.lang.Runnable
+                    Launcher.this.handler.postDelayed(new Runnable() { 
+                        @Override 
                         public void run() {
                             String[] strArr = new String[5];
-                            File file = new File(MusicService.music_path);
-                            String filename = file.getName();
-                            musictitle = filename.substring(0, filename.lastIndexOf("."));
-                            strArr[0] = musictitle; //LauncherApplication.sApp.getResources().getString(R.string.music_name);
-                            strArr[1] = MusicService.author_name; //LauncherApplication.sApp.getResources().getString(R.string.music_author);
-                            strArr[2] = MusicService.state.toString();
-                            strArr[3] = MusicService.album;
-                            strArr[4] = MusicService.music_path; //"/" + LauncherApplication.sApp.getResources().getString(R.string.music_name);
+                            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
+				            	if (fytData) { // from metadata
+					                strArr[0] = MusicService.music_name;
+				            	} else { // from file title
+		                            File file = new File(MusicService.music_path);
+		                            String filename = file.getName();
+		                            musictitle = filename.substring(0, filename.lastIndexOf("."));
+		                            strArr[0] = musictitle;
+				            	}
+	                            strArr[1] = MusicService.author_name;
+	                            strArr[2] = MusicService.state.toString();
+	                            strArr[3] = MusicService.album;
+	                            strArr[4] = MusicService.music_path;                            	
+                            } else {
+	                            strArr[0] = LauncherApplication.sApp.getResources().getString(R.string.music_name);
+	                            strArr[1] = LauncherApplication.sApp.getResources().getString(R.string.music_author);
+	                            strArr[2] = MusicService.state.toString();
+	                            strArr[4] = "/" + LauncherApplication.sApp.getResources().getString(R.string.music_author);             
+                            }
                             LauncherNotify.NOTIFIER_MUSIC.set(null, new long[2], new float[]{0.0f, 0.0f}, strArr, MusicService.album_cover, mediaSource);
                         }
                     }, 1000L);
                 } else if (FytPackage.GaodeACTION.equals(packageName)) {
-                    Launcher.this.handler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.4.2
-                        @Override // java.lang.Runnable
+                    Launcher.this.handler.postDelayed(new Runnable() { 
+                        @Override
                         public void run() {
                             if (Launcher.this.mInitNaviInfoView != null && Launcher.this.mNaviRunView != null) {
                                 Launcher.this.mInitNaviInfoView.setVisibility(View.VISIBLE);
@@ -1101,8 +1151,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
     };
-    private IUiRefresher refreshBtav = new IUiRefresher() { // from class: com.android.launcher66.Launcher.5
-        @Override // com.fyt.car.IUiRefresher
+    private IUiRefresher refreshBtav = new IUiRefresher() { 
+        @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
             String musicName = null;
             String artist = null;
@@ -1118,8 +1168,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
     };
-    IUiRefresher refreshDvr = new IUiRefresher() { // from class: com.android.launcher66.Launcher.6
-        @Override // com.fyt.car.IUiRefresher
+    IUiRefresher refreshDvr = new IUiRefresher() { 
+        @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
             if (ints != null && ints.length > 0) {
                 int mDvrRecState = ints[0];
@@ -1133,14 +1183,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
     };
-    private IUiRefresher refreshNaviState = new IUiRefresher() { // from class: com.android.launcher66.Launcher.7
-        @Override // com.fyt.car.IUiRefresher
+    private IUiRefresher refreshNaviState = new IUiRefresher() { 
+        @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
             Launcher.this.handleNaviState();
         }
     };
-    private IUiRefresher refreshNaviView = new IUiRefresher() { // from class: com.android.launcher66.Launcher.8
-        @Override // com.fyt.car.IUiRefresher
+    private IUiRefresher refreshNaviView = new IUiRefresher() { 
+        @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
             Launcher.this.handleView();
         }
@@ -1276,7 +1326,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
             if (updateCode == 4) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.sNightMode = ints[0] == 1;
                     if (ints[0] == 1) {
                         if (Launcher.this.mCarLightView != null) {
                             Launcher.this.mCarLightView.setBackgroundResource(ResValue.getInstance().navi_mycar2);
@@ -1347,10 +1396,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
     };
-    QSBScroller mQsbScroller = new QSBScroller() { // from class: com.android.launcher66.Launcher.10
+    QSBScroller mQsbScroller = new QSBScroller() { 
         int scrollY = 0;
 
-        @Override // com.android.launcher66.Launcher.QSBScroller
+        @Override
         public void setScrollY(int scroll) {
             this.scrollY = scroll;
             if (Launcher.mWorkspace.isOnOrMovingToCustomContent()) {
@@ -1380,13 +1429,56 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     artist = strs[3];
                 }
                 if (artist == "null") {
-                    artist = "Unknown";
+                    artist = "\u0020";
                 }
                 state = strs[2];
                 album = strs[3];
                 path = strs[4];
                 activeController = strs[5];
             }
+	        if (mediaSource == "mediaController") {
+	        	boolean activeControllerAppRunning = false;
+	            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+	            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+	            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+	            	if (appProcess.processName.contains(activeController)) {
+	            		activeControllerAppRunning = true;
+	            	} 
+	            }
+	            if (!activeControllerAppRunning) {
+					if (Launcher.this.tvMusicName != null) {
+						Launcher.this.tvMusicName.setText(R.string.music_name);
+					}
+					if (Launcher.this.tvMusicNameTwo != null) {
+						Launcher.this.tvMusicNameTwo.setText(R.string.music_name);
+					}
+					if (Launcher.this.music_playpause != null) {
+						Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+	                }
+	                if (Launcher.this.music_playpause_two != null) {
+	                    Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+	                }
+			        if (Launcher.this.tvAritst != null) {
+			            Launcher.this.tvAritst.setText(R.string.music_author);
+			        }
+			        if (Launcher.this.tvAlbum != null) {
+			            Launcher.this.tvAlbum.setText(R.string.music_album);
+			        }  
+			        if (Launcher.this.tvCurTime != null) {
+			            Launcher.this.tvCurTime.setText("00:00");
+			        }
+			        if (Launcher.this.tvTotalTime != null) {
+			            Launcher.this.tvTotalTime.setText("00:00");
+			        }
+                    if (Launcher.this.musicProgress != null) {
+                        Launcher.this.musicProgress.setProgress(0);
+                    }
+			        if (Launcher.this.musicSeekBar != null) {
+			            Launcher.this.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.this, null));
+			        } 
+			        return;			
+	    		}
+	        }
             if (Launcher.this.music_playpause != null) {
                 if (MusicService.state.booleanValue() || am.isMusicActive()) {
                     Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
@@ -1401,7 +1493,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 }
             }
-
             if ("true".equals(state)) {
 	            Lrc lrc = new Lrc();
 	            Id3Info info = lrc.getId3Info(path);
@@ -1419,7 +1510,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 	                            bp = Launcher.makeRoundCorner(bp);
 	                        }
 	                    }
-	                    Drawable drawable = new BitmapDrawable(bp);
+	                    Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), bp);
 	                    if (Launcher.this.ivALbumBg != null) {
 	                        Launcher.this.ivALbumBg.setImageDrawable(drawable);
 	                    }
@@ -1444,11 +1535,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     	} else {
 	                        if (!mediaSource.equals(Helpers.mediaSourcePre)) {
 	                        	Helpers.mediaSourcePre = mediaSource;
-	                        	Launcher.this.tvMusicName.setText(musictitle + " "); 
+	                        	Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
 	                        } 
 	                        if (Helpers.backFromApp) {
 	                        	Helpers.backFromApp = false;
-	                        	Launcher.this.tvMusicName.setText(musictitle + " "); 
+	                        	Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
 	                        }                    		
                     	}
 	                    Launcher.this.tvMusicName.setSelected(true);  
@@ -1459,17 +1550,17 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     	} else {
 	                        if (!mediaSource.equals(Helpers.mediaSourcePre)) {
 	                        	Helpers.mediaSourcePre = mediaSource;
-	                        	Launcher.this.tvMusicNameTwo.setText(musictitle + " "); 
+	                        	Launcher.this.tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
 	                        } 
 	                        if (Helpers.backFromApp) {
 	                        	Helpers.backFromApp = false;
-	                        	Launcher.this.tvMusicNameTwo.setText(musictitle + " "); 
+	                        	Launcher.this.tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
 	                        }                    		
                     	}
 	                    Launcher.this.tvMusicNameTwo.setSelected(true);  
                     }
                 }
-                if (artist != null && !artist.isEmpty() && !artist.trim().isEmpty() && Launcher.this.tvAritst != null) {
+                if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
                     if (Launcher.this.tvAritst != null) {
                     	if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
 	                        Launcher.this.tvAritst.setText(artist);                   		
@@ -1487,22 +1578,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         if (curProgress < 0) {
                             curProgress = 0;
                         }
-                        int precent = (int) ((1000 * curProgress) / totalProgress);
-                        if (precent < 5) {
+                        int progressPercent = (int) ((1000 * curProgress) / totalProgress);
+                        if (progressPercent < 5) {
                             if (Launcher.this.musicSeekBar != null) {
                                 Launcher.this.musicSeekBar.setProgress(5);
                             }
                             if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(precent);
+                                Launcher.this.musicProgress.setProgress(progressPercent);
                             }
                         } else {
                             if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(precent);
+                                Launcher.this.musicSeekBar.setProgress(progressPercent);
                             }
                             if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(precent);
+                                Launcher.this.musicProgress.setProgress(progressPercent);
                             }
                         }
+                    }
+                    if (curProgress == 0 && totalProgress == 0) {
+                        if (Launcher.this.musicProgress != null) {
+                            Launcher.this.musicProgress.setProgress(0);
+                        }  
+				        if (Launcher.this.tvAritst != null) {
+				            Launcher.this.tvAritst.setText("Live");
+				        }                	
                     }
                     String cur = Launcher.this.timeParse(curProgress);
                     String total = Launcher.this.timeParse(totalProgress);
@@ -1517,10 +1616,24 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
                 return;
             }
-            if (CarStates.mAppID != 8 && mediaSource == "fyt") {
-                Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
-                Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name);
+            if (CarStates.mAppID != 8 && (mediaSource == "fyt" || activeController == null)) {
+	            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
+	            	if (fytData) { // from metadata
+		                musictitle = MusicService.music_name;
+	            	} else { // from file title
+                        File file = new File(MusicService.music_path);
+                        String filename = file.getName();
+                        musictitle = filename.substring(0, filename.lastIndexOf("."));
+	            	}
+	                Utils.setTextStr(Launcher.this.tvMusicName, musictitle);
+	                Utils.setTextStr(Launcher.this.tvAritst, MusicService.author_name);
+	                Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle);                         	
+	            } else {
+	                Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
+	                Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
+	                Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name);          
+	            }
+
                 Utils.setTextStr(Launcher.this.tvCurTime, "00:00");
                 Utils.setTextStr(Launcher.this.tvTotalTime, "00:00");
                 if (Launcher.this.musicSeekBar != null) {
@@ -1563,7 +1676,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     Launcher.this.tvMusicNameTwo.setSelected(true); 
                 }
             }
-            if (artist != null && !artist.isEmpty() && !artist.trim().isEmpty() && Launcher.this.tvAritst != null) {
+            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
                 if (Launcher.this.tvAritst != null) {
                     if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
                         Launcher.this.tvAritst.setText(artist);              
@@ -1574,9 +1687,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             Widget.update(LauncherApplication.sApp);
         }
     };
+
     private int radioBand = -1;
-    Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { // from class: com.android.launcher66.Launcher.12
-        @Override // com.syu.remote.Callback.OnRefreshLisenter
+    Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
+        @Override
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0 && ints != null && ints.length > 0) {
                 int band = ints[0];
@@ -1589,8 +1703,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
     };
-    Callback.OnRefreshLisenter refreshRadioFreq = new Callback.OnRefreshLisenter() { // from class: com.android.launcher66.Launcher.13
-        @Override // com.syu.remote.Callback.OnRefreshLisenter
+    Callback.OnRefreshLisenter refreshRadioFreq = new Callback.OnRefreshLisenter() { 
+        @Override
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 1 && ints != null && ints.length > 0) {
                 Launcher.radioFreqState = ints[0];
@@ -1640,8 +1754,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             Widget.update(LauncherApplication.sApp);
         }
     };
-    private IUiRefresher refreshVideo = new IUiRefresher() { // from class: com.android.launcher66.Launcher.14
-        @Override // com.fyt.car.IUiRefresher
+    private IUiRefresher refreshVideo = new IUiRefresher() { 
+        @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) { 
             if (strs != null && strs.length > 0) {
                 Launcher.this.mVideoPlayState = strs[0];
@@ -1656,8 +1770,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     };
     boolean bClear = false;
-    Callback.OnRefreshLisenter refreshBtInfo = new Callback.OnRefreshLisenter() { // from class: com.android.launcher66.Launcher.15
-        @Override // com.syu.remote.Callback.OnRefreshLisenter
+    Callback.OnRefreshLisenter refreshBtInfo = new Callback.OnRefreshLisenter() { 
+        @Override
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0) {
                 if (strs != null && strs.length > 0) {
@@ -1723,13 +1837,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         if (Launcher.btCurTime < 0) {
                             Launcher.btCurTime = 0;
                         }
-                        int precent = (Launcher.btCurTime * 1000) / Launcher.btTotalTime;
-                        if (precent < 5) {
+                        int progressPercent = (Launcher.btCurTime * 1000) / Launcher.btTotalTime;
+                        if (progressPercent < 5) {
                             if (Launcher.this.btavProgress != null) {
                                 Launcher.this.btavProgress.setProgress(5);
                             }
                         } else if (Launcher.this.btavProgress != null) {
-                            Launcher.this.btavProgress.setProgress(precent);
+                            Launcher.this.btavProgress.setProgress(progressPercent);
                         }
                     }
                 }
@@ -1777,28 +1891,60 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             Widget.update(LauncherApplication.sApp);
         }
     };
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() { // from class: com.android.launcher66.Launcher.16
-        @Override // android.content.BroadcastReceiver
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() { 
+        @Override 
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if ("android.intent.action.SCREEN_OFF".equals(action)) {
-                Launcher.this.mUserPresent = false;
-                Launcher.this.mDragLayer.clearAllResizeFrames();
-                Launcher.this.updateRunning();
-                if (Launcher.this.mAppsCustomizeTabHost != null && Launcher.this.mPendingAddInfo.container == -1) {
-                    Launcher.this.showWorkspace(true);
-                    return;
+            if (intent.getAction() != null) {
+                switch (intent.getAction()) {
+                    case "android.intent.action.SCREEN_OFF":
+		                Launcher.this.mUserPresent = false;
+		                Launcher.this.mDragLayer.clearAllResizeFrames();
+		                Launcher.this.updateRunning();
+		                if (Launcher.this.mAppsCustomizeTabHost != null && Launcher.this.mPendingAddInfo.container == -1) {
+		                    Launcher.this.showWorkspace(true);
+		                }
+                        break;  
+                    case "android.intent.action.USER_PRESENT":
+		                Launcher.this.mUserPresent = true;
+		                Launcher.this.updateRunning();
+                        break;                     
+                    case Intent.ACTION_CLOSE_SYSTEM_DIALOGS:
+                        String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
+                        if (reason != null) {
+                            if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
+                                if (!Helpers.isInRecent && !Helpers.listOpen) {
+                                    Helpers.pipStarted = true;
+                                } 
+                                Helpers.inAllApps = false;
+                                Helpers.foregroundAppOpened = false;
+                            	if (Helpers.listOpen || Helpers.overviewMode) {
+                            		Helpers.wasInRecents = false;
+                            	} else {
+                            		Helpers.wasInRecents = true;
+                            	}
+                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+                            } else if (reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
+                                Helpers.isInRecent = true;
+                                Helpers.pipStarted = false;
+                                Helpers.inAllApps = false;
+                                Helpers.foregroundAppOpened = false;
+                            	if (Helpers.listOpen || Helpers.overviewMode) {
+                            		Helpers.wasInRecents = false;
+                            	} else {
+                            		Helpers.wasInRecents = true;
+                            	}
+                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+                            }                        
+                        }
+                        break;                	
                 }
-                return;
-            }
-            if ("android.intent.action.USER_PRESENT".equals(action)) {
-                Launcher.this.mUserPresent = true;
-                Launcher.this.updateRunning();
             }
         }
     };
-    private final Handler mHandler = new Handler() { // from class: com.android.launcher66.Launcher.17
-        @Override // android.os.Handler
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
                 int i = 0;
@@ -1806,8 +1952,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     final View v = key.findViewById(((AppWidgetProviderInfo) Launcher.this.mWidgetsToAdvance.get(key)).autoAdvanceViewId);
                     int delay = i * 250;
                     if (v instanceof Advanceable) {
-                        postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.17.1
-                            @Override // java.lang.Runnable
+                        postDelayed(new Runnable() { 
+                            @Override
                             public void run() {
                                 ((Advanceable) v).advance();
                             }
@@ -1820,8 +1966,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     };
     boolean success = false;
-    private Runnable mBindPackagesUpdatedRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.18
-        @Override // java.lang.Runnable
+    private Runnable mBindPackagesUpdatedRunnable = new Runnable() { 
+        @Override
         public void run() {
             Launcher.this.bindPackagesUpdated(Launcher.this.mWidgetsAndShortcuts);
             Launcher.this.mWidgetsAndShortcuts = null;
@@ -1899,23 +2045,27 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return Log.isLoggable(propertyName, Log.VERBOSE);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getBoolean("transparent_statusbar", false)) {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        fytData = mPrefs.getBoolean("fyt_data", true);
+    	Helpers.onCreateJobInit = true;
+        checkWallpapers();           
+        if (mPrefs.getBoolean("transparent_statusbar", false)) {
             getWindow().addFlags(Integer.MIN_VALUE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         super.onCreate(savedInstanceState);
         checkNotificationPermission();        
-        userLayout = prefs.getBoolean("user_layout", false);
-        leftBar = prefs.getBoolean("left_bar", false); 
+        userLayout = mPrefs.getBoolean("user_layout", false);
+        leftBar = mPrefs.getBoolean("left_bar", false); 
         if (userLayout) {
             setWindowLocUser();
         } else {
             setWindowLocDefault();
         }
+        Helpers.windowHeight = getResources().getDisplayMetrics().heightPixels;
         getWindow().addFlags(Integer.MIN_VALUE);
         float density = getResources().getDisplayMetrics().density;
         LogPreview.show("------------------->>> density:" + density);
@@ -1947,10 +2097,98 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
             SharedPreferences.Editor editor = this.mSharedPrefs.edit();
             editor.putBoolean("cling_gel.first_run.dismissed", true);
-            editor.commit();
+            editor.apply();
         }
         initRegisterReceiver();
         Widget.update(LauncherApplication.sApp);
+		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+		    @Override
+		    public void handleOnBackPressed() {
+		        if (isAllAppsVisible()) {
+		            if (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
+		                showWorkspace(true);
+		            } else {
+		                setButtonVisible(true);
+                        Launcher.this.mAllAppsButton.setVisibility(android.view.View.VISIBLE);
+		                showOverviewMode(true);
+		            }
+		        } else if (mWorkspace.isInOverviewMode()) {
+		            showHotseat(true, true);
+		            mWorkspace.exitOverviewMode(true);
+		            updateWallpaperVisibility(true);
+		        } else if (mWorkspace.getOpenFolder() != null) {
+		            Folder openFolder = mWorkspace.getOpenFolder();
+		            if (openFolder.isEditingName()) {
+		                openFolder.dismissEditingName();
+		            } else {
+		                closeFolder();
+		            }
+		        } else {
+		            mWorkspace.exitWidgetResizeMode();
+		            mWorkspace.showOutlinesTemporarily();
+		        }
+		        if (ResValue.getInstance().clickapp_cling > 0) {
+		            Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
+		            cling.setVisibility(android.view.View.GONE);
+		            stopVoice();
+		            LogPreview.show("onBackPressed");
+		            if (Launcher.this.mWaitingForResume != null) {
+                        Launcher.this.mWaitingForResume.setStayPressed(false);
+		            }
+		            if (Launcher.this.mAppsCustomizeContent != null) {
+                        Launcher.this.mAppsCustomizeContent.resetDrawableState();
+		            }
+		        }
+		        if (Launcher.this.firstLayout != null) {
+                    Launcher.this.firstLayout.setVisibility(android.view.View.VISIBLE);
+		        }
+		    }
+		});
+    }
+
+    private void checkWallpapers() {
+     	FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) { 
+            	double lat;
+            	double longt;
+                if (location != null) {
+                	SharedPreferences.Editor editor = Launcher.this.mPrefs.edit();
+	                lat = location.getLatitude();
+	                longt = location.getLongitude();
+		            editor.putString("latiude", String.valueOf(lat));
+		            editor.putString("longitude", String.valueOf(longt));
+		            editor.apply();
+                } else {
+                	// in case the head unit has lost both GPS and internet connection on boot
+	                lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
+	                longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
+                }
+                final JobScheduler jobScheduler = (JobScheduler) Launcher.this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        		jobScheduler.cancelAll();
+                String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng="   + longt + "&date=today";
+                SunTask sunTask = new SunTask(getApplicationContext(), lat, longt);
+                sunTask.execute(AsyncTask.THREAD_POOL_EXECUTOR, urlString);
+            }
+        }); 
+    }
+
+    private int hemisphere(long lat) {
+    	// 0 - northern hemisphere, 
+    	if (lat > 0) {
+    		return 0;
+    	} else return 1;
     }
 
     private void checkNotificationPermission() {
@@ -2002,7 +2240,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     }
 
     private void setWindowLocUser() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         int mapTopLeftX, mapBottomRightX, leftBarSize; 
         SystemProperties.set("persist.syu.launcher.haspip", "true");
         if (getResources().getDisplayMetrics().widthPixels == 1024) {
@@ -2017,14 +2255,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             SystemProperties.set("persist.lsec.radius", "14");              
         }  
         if (leftBar) {
-            mapTopLeftX = prefs.getInt("mapTopLeftX", 114) + leftBarSize;
-            mapBottomRightX = prefs.getInt("mapBottomRightX", 677) + leftBarSize;   
+            mapTopLeftX = mPrefs.getInt("mapTopLeftX", 114) + leftBarSize;
+            mapBottomRightX = mPrefs.getInt("mapBottomRightX", 677) + leftBarSize;   
         } else {
-            mapTopLeftX = prefs.getInt("mapTopLeftX", 114);
-            mapBottomRightX = prefs.getInt("mapBottomRightX", 677);
+            mapTopLeftX = mPrefs.getInt("mapTopLeftX", 114);
+            mapBottomRightX = mPrefs.getInt("mapBottomRightX", 677);
         }
-        int mapTopLeftY = prefs.getInt("mapTopLeftY", 74) + getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt("mapBottomRightY", 522) + getStatusBarHeight();
+        int mapTopLeftY = mPrefs.getInt("mapTopLeftY", 74) + getStatusBarHeight();
+        int mapBottomRightY = mPrefs.getInt("mapBottomRightY", 522) + getStatusBarHeight();
         Intent intent = new Intent();
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory("android.intent.category.HOME");
@@ -2067,7 +2305,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mStats = new Stats(this);
         this.mCurrWallpaperRes = this.mSharedPrefs.getString(SP_WALLPAPER, "");
         if (TextUtils.isEmpty(this.mCurrWallpaperRes)) {
-            this.mCurrWallpaperRes = "def_bg";
+	        if (Helpers.isDay) {
+	        	this.mCurrWallpaperRes = "def_bg";
+	        } else {
+	        	this.mCurrWallpaperRes = "def_bg_n";
+	        }
         }
         this.mAppWidgetManager = AppWidgetManager.getInstance(this);
         this.mAppWidgetHost = new LauncherAppWidgetHost(this, APPWIDGET_HOST_ID);
@@ -2079,40 +2321,23 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private void initRegisterReceiver() {
         IntentFilter filter = new IntentFilter("android.intent.action.CLOSE_SYSTEM_DIALOGS");
         filter.addAction("com.lsec.pipdie");
         filter.addAction("com.lsec.tyz.action.voice.launcher");
         filter.addAction("FOURCAMERA2_BROADCAST_SEND");
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(this.mCloseSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(this.mCloseSystemDialogsReceiver, filter);
-        }
+        registerReceiver(this.mCloseSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED);
         IntentFilter musicFilter = new IntentFilter();
         musicFilter.addAction("com.fyt.systemui.remove");
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(this.removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(this.removeMusic, musicFilter);
-        }
+        registerReceiver(this.removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
         this.mAutoMap = new MyAutoMapReceiver();
         IntentFilter amapFilter = new IntentFilter();
         amapFilter.addAction("AUTONAVI_STANDARD_BROADCAST_SEND");
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(this.mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(this.mAutoMap, amapFilter);
-        }
+        registerReceiver(this.mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
         this.mTrifficReceiver = new TrifficReceiver();
         IntentFilter trifficFilter = new IntentFilter();
         trifficFilter.addAction("intent.action.mapgoo.simtool.info.triffic.v2");
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(this.mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(this.mTrifficReceiver, trifficFilter);
-        }
+        registerReceiver(this.mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
     }
 
     public void updateView() {
@@ -2180,12 +2405,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     public void showWeatherInfo() {
         if (this.manager != null) {
-            this.manager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { // from class: com.android.launcher66.Launcher.19
-                @Override // com.syu.weather.WeatherManager.OnWeatherChangedListener
+            this.manager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { 
+                @Override
                 public void onWeatherChanged(WeatherDescription weather) {
                     if (weather != null) {
                         if (Launcher.this.weatherImg != null) {
-                            Launcher.this.weatherImg.setImageResource(WeatherUtils.getWeatherImagId(Launcher.this.getApplicationContext(), weather.getWeather()));
+                            Launcher.this.weatherImg.setImageResource(WeatherUtils.getWeatherImagId(weather.getWeather()));
                         }
                         String range = weather.getTemDescription().replaceAll("\\.\\d", "");
                         String temp = weather.getCurTem().replaceAll("\\.\\d", "");
@@ -2202,7 +2427,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                             Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
                         }
                         if (Launcher.this.weatherImg1 != null) {
-                            Launcher.this.weatherImg1.setImageResource(WeatherUtils.getWeatherImagId(Launcher.this.getApplicationContext(), weather.getWeather()));
+                            Launcher.this.weatherImg1.setImageResource(WeatherUtils.getWeatherImagId(weather.getWeather()));
                         }
                         if (Launcher.this.weatherCity1 != null) {
                             Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
@@ -2225,7 +2450,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onUserLeaveHint() {
         super.onUserLeaveHint();
         sPausedFromUserAction = true;
@@ -2275,8 +2500,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         boolean localeChanged = false;
         if (sLocaleConfiguration == null) {
             new AsyncTask<Void, Void, LocaleConfiguration>() {
-                
-                public LocaleConfiguration doInBackground(Void... unused) {
+
+                @Override
+                protected LocaleConfiguration doInBackground(Void unused) throws Exception {
+                    return null;
+                }
+
+                @Override
+                protected LocaleConfiguration doInBackground(Void... unused) throws Exception {
                     LocaleConfiguration localeConfiguration = new LocaleConfiguration((LocaleConfiguration) null);
                     Launcher.readConfiguration(Launcher.this, localeConfiguration);
                     return localeConfiguration;
@@ -2286,12 +2517,17 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     Launcher.sLocaleConfiguration = result;
                     Launcher.this.checkForLocaleChange();
                 }
+
+                @Override
+                protected void onBackgroundError(Exception e) {
+
+                }
             }.execute(new Void[0]);
             return;
         }
         Configuration configuration = getResources().getConfiguration();
         String previousLocale = sLocaleConfiguration.locale;
-        String locale = configuration.locale.toString();
+        String locale = configuration.getLocales().get(0).toString();
         int previousMcc = sLocaleConfiguration.mcc;
         int mcc = configuration.mcc;
         int previousMnc = sLocaleConfiguration.mnc;
@@ -2332,7 +2568,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static void readConfiguration(Context context, LocaleConfiguration configuration) {
         DataInputStream in = null;
         try {
@@ -2381,7 +2617,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static void writeConfiguration(Context context, LocaleConfiguration configuration) throws Throwable {
         DataOutputStream out = null;
         DataOutputStream out2 = null;
@@ -2501,8 +2737,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return b_return;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         this.mWaitingForResult = false;
         if (requestCode == 11) {
             int appWidgetId = data != null ? data.getIntExtra("appWidgetId", -1) : -1;
@@ -2517,19 +2754,22 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 return;
             }
         }
-        if (requestCode == 10) {
+        if (requestCode == REQUEST_PICK_WALLPAPER) {
+        	
             if (resultCode == 202 && mWorkspace.isInOverviewMode()) {
                 showHotseat(true);
                 updateWallpaperVisibility(true);
                 mWorkspace.exitOverviewMode(false);
             }
             if (resultCode == 202 && data != null) {
-                this.mCurrWallpaperRes = data.getStringExtra("wallpaperRes");
+            	if (Helpers.isDay) {
+	                this.mCurrWallpaperRes = data.getStringExtra("wallpaperRes");          		
+            	}
                 Log.d("LZP", "resultCode == WALLPAPER_RRESULT_CODE");
                 SharedPreferences.Editor editor = this.mSharedPrefs.edit();
-                editor.putString(SP_WALLPAPER, this.mCurrWallpaperRes);
-                editor.commit();
-                return;
+                editor.putString(SP_WALLPAPER, data.getStringExtra("wallpaperRes"));
+                editor.apply();
+                return;  
             }
             return;
         }
@@ -2575,8 +2815,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             animationType = 3;
             final AppWidgetHostView layout = this.mAppWidgetHost.createView(this, appWidgetId, this.mPendingAddWidgetInfo);
             boundWidget = layout;
-            onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.22
-                @Override // java.lang.Runnable
+            onCompleteRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     Launcher.this.completeAddAppWidget(appWidgetId, Launcher.this.mPendingAddInfo.container, Launcher.this.mPendingAddInfo.screenId, layout, null);
                     Launcher.this.exitSpringLoadedDragModeDelayed(resultCode != 0, false, null);
@@ -2584,8 +2824,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             };
         } else if (resultCode == 0) {
             animationType = 4;
-            onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.23
-                @Override // java.lang.Runnable
+            onCompleteRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     Launcher.this.exitSpringLoadedDragModeDelayed(resultCode != 0, false, null);
                 }
@@ -2598,7 +2838,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onStop() {
         Log.d("LZP", "---->>> onStop");
         WindowUtil.removePip(this.pipViews);
@@ -2607,27 +2847,36 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         FirstFrameAnimatorHelper.setIsVisible(false);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onStart() {
         super.onStart();
         WindowUtil.initDefaultApp();
         FirstFrameAnimatorHelper.setIsVisible(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
-        super.onResume();
+        super.onResume(); 
+        if (!Helpers.onCreateJobInit && !isJobServiceOn(this)) {
+        	checkWallpapers();
+        }
+        fytData = mPrefs.getBoolean("fyt_data", true); 
         this.preOnResumeTime = System.currentTimeMillis();
         LogPreview.show("onResume----->");
+        if (Helpers.shouldAllAppsBeVisible) {
+        	Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
+        	Helpers.shouldAllAppsBeVisible = false;
+        }
         if (isAllAppsVisible()) {
             WindowUtil.removePip(null);
         } else {
-            if (!Helpers.firstPreferenceWindow && !Helpers.wallpaperWindow) {
+            if (!Helpers.firstPreferenceWindow && !Helpers.wallpaperWindow && !Helpers.overviewMode || (!Helpers.wasInRecents && Helpers.listOpen)) {
                 Log.d("LZP", "startMapPip");
                 WindowUtil.startMapPip(null, false, 250);
             }
             Helpers.firstPreferenceWindow = false;
             Helpers.wallpaperWindow = false;
+            Helpers.wasInRecents = false;
         }
         handleView();
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
@@ -2733,7 +2982,21 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+	public static boolean isJobServiceOn(Context context) {
+	    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+	    boolean hasBeenScheduled = false;
+	    for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
+	        if (jobInfo.getId() == 123) {
+	            hasBeenScheduled = true;
+	            break;
+	        }
+	    }
+	    if (Helpers.onCreateJobInit) {
+	    	hasBeenScheduled = true;
+	    }
+	    return hasBeenScheduled;
+	}
+
     public void setSoundBtn() {
         if (this.customView.get(Config.SOUND) != null) {
             this.customView.get(Config.SOUND).setBackgroundResource(R.drawable.car_sound_icon);
@@ -2749,7 +3012,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
     public void setSoundCloseBtn() {
         if (this.customView.get(Config.SOUND) != null) {
             this.customView.get(Config.SOUND).setBackgroundResource(R.drawable.car_sound_close_icon);
@@ -2765,7 +3027,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override 
     protected void onPause() {
         Log.d("LZP", "---->>> onPause");
         if (AppUtil.topApp(this, FytPackage.hicarAction)) {
@@ -2811,7 +3073,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return mWorkspace.getPaddingTop();
     }
 
-    @Override // android.app.Activity
+    /*@Override
     public Object onRetainNonConfigurationInstance() {
         int delay = mModel.mFirstUse ? 300000 : 0;
         if (SystemClock.elapsedRealtime() > delay) {
@@ -2821,9 +3083,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.mAppsCustomizeContent.surrender();
         }
         return Boolean.TRUE;
-    }
+    }*/
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         this.mHasFocus = hasFocus;
@@ -2834,7 +3096,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return !inputManager.isFullscreenMode();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         int uniChar = event.getUnicodeChar();
         boolean handled = super.onKeyDown(keyCode, event);
@@ -2892,7 +3154,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 this.mPendingAddInfo.cellY = savedState.getInt(RUNTIME_STATE_PENDING_ADD_CELL_Y);
                 this.mPendingAddInfo.spanX = savedState.getInt(RUNTIME_STATE_PENDING_ADD_SPAN_X);
                 this.mPendingAddInfo.spanY = savedState.getInt(RUNTIME_STATE_PENDING_ADD_SPAN_Y);
-                this.mPendingAddWidgetInfo = (AppWidgetProviderInfo) savedState.getParcelable(RUNTIME_STATE_PENDING_ADD_WIDGET_INFO);
+                this.mPendingAddWidgetInfo = savedState.getParcelable(RUNTIME_STATE_PENDING_ADD_WIDGET_INFO);
                 this.mWaitingForResult = true;
                 this.mRestoring = true;
             }
@@ -3064,18 +3326,18 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.mAllAppsButton.setOnClickListener(this);
         }
         if (wallpaperButton != null) {
-            wallpaperButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.25
-                @Override // android.view.View.OnClickListener
+            wallpaperButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    onClickWallpaperPicker(arg0);
+                    onClickWallpaperPicker(arg0); //startWallpaper(); 
                 }
             });
             wallpaperButton.setOnTouchListener(getHapticFeedbackTouchListener());
         }
         settingsButton = findViewById(ResValue.getInstance().settings_button);
         if (settingsButton != null) {
-            settingsButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.27
-                @Override // android.view.View.OnClickListener
+            settingsButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     onClickSettingsButton(arg0); //Launcher.this.startSettings();
                 }
@@ -3109,8 +3371,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.firstLayout = (RelativeLayout) findViewById(ResValue.getInstance().first_layout);
         ImageView firstClickApp = (ImageView) findViewById(ResValue.getInstance().first_app);
         if (firstClickApp != null) {
-            firstClickApp.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.28
-                @Override // android.view.View.OnClickListener
+            firstClickApp.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     if (Launcher.this.firstLayout != null) {
                         Launcher.this.firstLayout.setVisibility(android.view.View.GONE);
@@ -3119,8 +3381,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.firstLayout != null) {
-            this.firstLayout.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.29
-                @Override // android.view.View.OnClickListener
+            this.firstLayout.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                 }
             });
@@ -3223,13 +3485,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.tvCurFreq = mWorkspace.findViewById(ResValue.getInstance().tv_freq);
         }
         if (this.tvMusicName != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.equals("") && MusicService.music_path.lastIndexOf("/") >= 0) {
-                File file = new File(MusicService.music_path);
-                String filename = file.getName();
-                musictitle = filename.substring(0, filename.lastIndexOf("."));
-                if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                    this.tvMusicName.setText(musictitle);                        
-                }
+            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
+            	if (fytData) { // from metadata
+	                if (!(Launcher.this.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
+	                    this.tvMusicName.setText(MusicService.music_name);                        
+	                }
+            	} else { // from file title
+	                File file = new File(MusicService.music_path);
+	                String filename = file.getName();
+	                musictitle = filename.substring(0, filename.lastIndexOf("."));
+	                if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
+	                    this.tvMusicName.setText(musictitle);                        
+	                }
+            	}
                 this.tvMusicName.setSelected(true);
             } else {
                 this.tvMusicName.setText(R.string.music_name);
@@ -3237,14 +3505,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
         if (this.tvMusicNameTwo != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.equals("") && MusicService.music_path.lastIndexOf("/") >= 0) {
-                File file = new File(MusicService.music_path);
-                String filename = file.getName();
-                musictitle = filename.substring(0, filename.lastIndexOf("."));
-                if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                    this.tvMusicNameTwo.setText(musictitle);                        
-                }
-                this.tvMusicNameTwo.setSelected(true); 
+            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
+            	if (fytData) { // from metadata
+	                if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
+	                    this.tvMusicNameTwo.setText(MusicService.music_name);                        
+	                }
+            	} else { // from file title
+	                File file = new File(MusicService.music_path);
+	                String filename = file.getName();
+	                musictitle = filename.substring(0, filename.lastIndexOf("."));
+	                if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+	                    this.tvMusicNameTwo.setText(musictitle);                        
+	                }
+            	}
+                this.tvMusicNameTwo.setSelected(true);
             } else {
                 this.tvMusicNameTwo.setText(R.string.music_name);
                 this.tvMusicNameTwo.setSelected(true);
@@ -3325,7 +3599,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
         LinearLayoutManager leftLayoutManager = new LinearLayoutManager(this);
         leftLayoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.VERTICAL);
-        this.mLeftAppListData = new ArrayList();
+        this.mLeftAppListData = new ArrayList<AppListBean>();
         List<LeftAppMultiple> leftAppData = LitePal.findAll(LeftAppMultiple.class, new long[0]);
         if (leftAppData != null && !leftAppData.isEmpty()) {
             for (int i = 0; i < leftAppData.size(); i++) {
@@ -3344,7 +3618,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
             }
         }
-        this.mAppListData = new ArrayList();
+        this.mAppListData = new ArrayList<AppListBean>();
         List<AppMultiple> appData = LitePal.findAll(AppMultiple.class, new long[0]);
         if (appData != null && !appData.isEmpty()) {
             for (int i2 = 0; i2 < appData.size(); i2++) {
@@ -3530,7 +3804,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this();
         }
 
-        @Override // android.widget.SeekBar.OnSeekBarChangeListener
+        @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
                 Launcher.this.mPlayer.seekTo(progress);
@@ -3538,16 +3812,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             }
         }
 
-        @Override // android.widget.SeekBar.OnSeekBarChangeListener
+        @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
         }
 
-        @Override // android.widget.SeekBar.OnSeekBarChangeListener
+        @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void needStartKuwo() {
         if (!AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
             startActivitySafely(this.customView.get(Config.WS_Kuwo), FytPackage.getIntent(this, FytPackage.KWACTION), "music");
@@ -3565,8 +3839,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private void bindOnclickListener() {
         am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (this.mRadioPrevButton != null) {
-            this.mRadioPrevButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.30
-                @Override // android.view.View.OnClickListener
+            this.mRadioPrevButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
                         Launcher.this.tools.sendInt(1, 1, 0);
@@ -3575,8 +3849,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mRadioBandButton != null) {
-            this.mRadioBandButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.31
-                @Override // android.view.View.OnClickListener
+            this.mRadioBandButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
                         Log.d("LZP", "---------------------->>> mRadioBandButton");
@@ -3586,8 +3860,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mRadioPauseButton != null) {
-            this.mRadioPauseButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.32
-                @Override // android.view.View.OnClickListener
+            this.mRadioPauseButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (Launcher.this.tools != null) {
                         if (CarStates.mAppID == 1) {
@@ -3602,8 +3876,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mRadioNextButton != null) {
-            this.mRadioNextButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.33
-                @Override // android.view.View.OnClickListener
+            this.mRadioNextButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
                         Launcher.this.tools.sendInt(1, 0, 0);
@@ -3612,8 +3886,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mMusicPrevButton != null) {
-            this.mMusicPrevButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.34
-                @Override // android.view.View.OnClickListener
+            this.mMusicPrevButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") {
                         Intent intent = new Intent();
@@ -3621,15 +3895,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
                     } else if (mediaSource == "mediaController" && !MusicService.state) {
-                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                        am.dispatchMediaKeyEvent(event);  
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+			                        am.dispatchMediaKeyEvent(event);  
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.mMusicPrevButtonTwo != null) {
-            this.mMusicPrevButtonTwo.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.35
-                @Override // android.view.View.OnClickListener
+            this.mMusicPrevButtonTwo.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") {
                         Intent intent = new Intent();
@@ -3637,15 +3926,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
                     } else if (mediaSource == "mediaController" && !MusicService.state) {
-                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                        am.dispatchMediaKeyEvent(event);                        
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+			                        am.dispatchMediaKeyEvent(event);  
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.mMusicNextButton != null) {
-            this.mMusicNextButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.36
-                @Override // android.view.View.OnClickListener
+            this.mMusicNextButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") {
                         Intent intent = new Intent();
@@ -3653,15 +3957,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
                     } else if (mediaSource == "mediaController" && !MusicService.state) {
-                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
-                        am.dispatchMediaKeyEvent(event);                             
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
+			                        am.dispatchMediaKeyEvent(event);   
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.mMusicNextButtonTwo != null) {
-            this.mMusicNextButtonTwo.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.37
-                @Override // android.view.View.OnClickListener
+            this.mMusicNextButtonTwo.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") {
                         Intent intent = new Intent();
@@ -3669,15 +3988,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
                     } else if (mediaSource == "mediaController" && !MusicService.state) {
-                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
-                        am.dispatchMediaKeyEvent(event);                        
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
+			                        am.dispatchMediaKeyEvent(event);   
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.music_playpause != null) {
-            this.music_playpause.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.38
-                @Override // android.view.View.OnClickListener
+            this.music_playpause.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") {
                         if (MusicService.state.booleanValue()) {
@@ -3690,22 +4024,37 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);                 
                     } else if (mediaSource == "mediaController") {
-                        if (am.isMusicActive() && !MusicService.state) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                            am.dispatchMediaKeyEvent(event);                            
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                            am.dispatchMediaKeyEvent(event);                           
-                        }
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        if (am.isMusicActive() && !MusicService.state) {
+			                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+			                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
+			                            am.dispatchMediaKeyEvent(event);                            
+			                        } else {
+			                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+			                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
+			                            am.dispatchMediaKeyEvent(event);                           
+			                        }	
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.music_playpause_two != null) {
-            this.music_playpause_two.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.39
-                @Override // android.view.View.OnClickListener
+            this.music_playpause_two.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (mediaSource == "fyt") { 
                         if (MusicService.state.booleanValue()) {
@@ -3718,22 +4067,37 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);                               
                     } else if (mediaSource == "mediaController") {
-                        if (am.isMusicActive() && !MusicService.state) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                            am.dispatchMediaKeyEvent(event);                            
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                            am.dispatchMediaKeyEvent(event);                           
-                        }                        
+                    	boolean activeControllerAppRunning = false;
+			            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+			            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();			            
+			            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+			            	if (appProcess.processName.contains(activeController)) {
+			            		activeControllerAppRunning = true;
+				            	if (activeController != null && !activeController.isEmpty()) {
+			                        if (am.isMusicActive() && !MusicService.state) {
+			                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+			                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
+			                            am.dispatchMediaKeyEvent(event);                            
+			                        } else {
+			                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+			                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
+			                            am.dispatchMediaKeyEvent(event);                           
+			                        }	
+				            	}
+			            	} 
+			            }
+			            if (!activeControllerAppRunning) {
+	                        WindowUtil.removePip(Launcher.this.pipViews);
+	                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+	                        startActivity(launchIntent);			            			
+	            		}
                     }
                 }
             });
         }
         if (this.kuwomusic_playpause != null) {
-            this.kuwomusic_playpause.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.40
-                @Override // android.view.View.OnClickListener
+            this.kuwomusic_playpause.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (Launcher.kwAPi != null) {
                         Launcher.this.needStartKuwo();
@@ -3747,8 +4111,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.kuwomusic_prev != null) {
-            this.kuwomusic_prev.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.41
-                @Override // android.view.View.OnClickListener
+            this.kuwomusic_prev.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (Launcher.kwAPi != null) {
                         Launcher.this.needStartKuwo();
@@ -3758,8 +4122,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.kuwomusic_next != null) {
-            this.kuwomusic_next.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.42
-                @Override // android.view.View.OnClickListener
+            this.kuwomusic_next.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (Launcher.kwAPi != null) {
                         Launcher.this.needStartKuwo();
@@ -3769,8 +4133,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mBtavPrevButton != null) {
-            this.mBtavPrevButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.43
-                @Override // android.view.View.OnClickListener
+            this.mBtavPrevButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.setAction("com.syu.bt.byav.widgetPrev");
@@ -3780,8 +4144,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mBtavNextButton != null) {
-            this.mBtavNextButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.44
-                @Override // android.view.View.OnClickListener
+            this.mBtavNextButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.setAction("com.syu.bt.byav.widgetNext");
@@ -3791,8 +4155,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mBtavPlayPauseButton != null) {
-            this.mBtavPlayPauseButton.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.45
-                @Override // android.view.View.OnClickListener
+            this.mBtavPlayPauseButton.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.setAction("com.syu.bt.byav.widgetPlayPause");
@@ -3802,8 +4166,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mBtavIcon != null) {
-            this.mBtavIcon.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.46
-                @Override // android.view.View.OnClickListener
+            this.mBtavIcon.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
@@ -3812,24 +4176,24 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.mRadioIcon != null) {
-            this.mRadioIcon.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.47
-                @Override // android.view.View.OnClickListener
+            this.mRadioIcon.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Launcher.this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt");
                 }
             });
         }
         if (this.mMusicIcon != null) {
-            this.mMusicIcon.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.48
-                @Override // android.view.View.OnClickListener
+            this.mMusicIcon.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Launcher.this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt");
                 }
             });
         }
         if (this.mNaviView != null) {
-            this.mNaviView.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.49
-                @Override // android.view.View.OnClickListener
+            this.mNaviView.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     Intent launchIntent = new Intent();
                     launchIntent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
@@ -3838,8 +4202,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.video_playpause != null) {
-            this.video_playpause.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.50
-                @Override // android.view.View.OnClickListener
+            this.video_playpause.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     if (Launcher.this.mVideoPlayState != null) {
                         if (Launcher.this.mVideoPlayState.equals("true")) {
@@ -3852,16 +4216,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             });
         }
         if (this.video_prev != null) {
-            this.video_prev.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.51
-                @Override // android.view.View.OnClickListener
+            this.video_prev.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 10);
                 }
             });
         }
         if (this.video_next != null) {
-            this.video_next.setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.52
-                @Override // android.view.View.OnClickListener
+            this.video_next.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 11);
                 }
@@ -4202,7 +4566,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return bd.setScale(0, 4).toString();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public String freqToString(int freq2) {
         float val = freq2 / 1.0f;
         BigDecimal bd = new BigDecimal(val);
@@ -4249,7 +4613,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         if (info != null) {
             info.setActivity(this, data.getComponent(), Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             info.container = -1L;
-            mWorkspace.addApplicationShortcut(info, layout, container, screenId, cellXY[0], cellXY[1], isWorkspaceLocked(), cellX, cellY);
+            int[] intArr = new int[5];
+            intArr[0] = cellXY[0];
+            intArr[1] = cellXY[1];
+            intArr[2] = cellX;
+            intArr[3] = cellY;
+            mWorkspace.addApplicationShortcut(info, layout, container, screenId, intArr, isWorkspaceLocked());
             return;
         }
         Log.e(TAG, "Couldn't find ActivityInfo for selected application: " + data);
@@ -4375,19 +4744,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         resetAddInfo();
     }
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.intent.action.SCREEN_OFF");
         filter.addAction("android.intent.action.USER_PRESENT");
-        registerReceiver(this.mReceiver, filter);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        registerReceiver(this.mReceiver, filter, Context.RECEIVER_EXPORTED);
         FirstFrameAnimatorHelper.initializeDrawListener(getWindow().getDecorView());
         this.mAttached = true;
         this.mVisible = true;
     }
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.mVisible = false;
@@ -4414,8 +4784,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                             this.mStarted = true;
                             Launcher.mWorkspace.postDelayed(Launcher.this.mBuildLayersRunnable, 500L);
                             //final ViewTreeObserver.OnDrawListener listener = this;
-                            Launcher.mWorkspace.post(new Runnable() { // from class: com.android.launcher66.Launcher.54.1
-                                @Override // java.lang.Runnable
+                            Launcher.mWorkspace.post(new Runnable() { 
+                                @Override
                                 public void run() {
                                     if (Launcher.mWorkspace != null && Launcher.mWorkspace.getViewTreeObserver() != null) {
                                         Launcher.mWorkspace.getViewTreeObserver().removeOnDrawListener(onDrawListener);
@@ -4431,7 +4801,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendAdvanceMessage(long delay) {
         this.mHandler.removeMessages(1);
         Message msg = this.mHandler.obtainMessage(1);
@@ -4439,7 +4809,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mAutoAdvanceSentTime = System.currentTimeMillis();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRunning() {
         boolean autoAdvanceRunning = this.mVisible && this.mUserPresent && !this.mWidgetsToAdvance.isEmpty();
         if (autoAdvanceRunning != this.mAutoAdvanceRunning) {
@@ -4498,7 +4868,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mWaitingForResult = false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if ("android.intent.action.MAIN".equals(intent.getAction())) {
@@ -4528,7 +4898,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     public void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
         Iterator<Integer> it = this.mSynchronouslyBoundPages.iterator();
@@ -4538,7 +4908,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (mWorkspace.getChildCount() > 0) {
             outState.putInt(RUNTIME_STATE_CURRENT_SCREEN, mWorkspace.getRestorePage());
@@ -4569,7 +4939,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     public void onDestroy() {
         WindowUtil.removePip(this.pipViews);
         super.onDestroy();
@@ -4611,7 +4981,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return this.mDragController;
     }
 
-    @Override // android.app.Activity
+    @Override
     public void startActivityForResult(Intent intent, int requestCode) {
         if (requestCode >= 0) {
             this.mWaitingForResult = true;
@@ -4619,7 +4989,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         super.startActivityForResult(intent, requestCode);
     }
 
-    @Override // android.app.Activity
+    @Override
     public void startSearch(String initialQuery, boolean selectInitialQuery, Bundle appSearchData, boolean globalSearch) {
         showWorkspace(true);
         if (initialQuery == null) {
@@ -4674,7 +5044,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         if (!mWorkspace.isInOverviewMode()) {
@@ -4684,7 +5054,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return false;
     }
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public boolean onSearchRequested() {
         startSearch((String) null, false, (Bundle) null, true);
         return true;
@@ -4821,6 +5191,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         sFolders.remove(Long.valueOf(folder.id));
     }
 
+    protected void startWallpaper() {
+        Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+        pickWallpaper.setComponent(getWallpaperPickerComponent());
+        startActivityForResult(pickWallpaper, REQUEST_PICK_WALLPAPER);
+    }
+
     protected ComponentName getWallpaperPickerComponent() {
         return new ComponentName(getPackageName(), WallpaperPickerActivity.class.getName());
     }
@@ -4830,7 +5206,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         resolver.registerContentObserver(LauncherProvider.CONTENT_APPWIDGET_RESET_URI, true, this.mWidgetObserver);
     }
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == 0) {
             switch (event.getKeyCode()) {
@@ -4869,57 +5245,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
         wallpaperButton.setVisibility(android.view.View.GONE);
     }
-
-    @Override // android.app.Activity
-    public void onBackPressed() {
-        if (isAllAppsVisible()) {
-            if (this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
-                showWorkspace(true);
-            } else {
-                setButtonVisible(true);
-                this.mAllAppsButton.setVisibility(android.view.View.VISIBLE);
-                showOverviewMode(true);
-            }
-        } else if (mWorkspace.isInOverviewMode()) {
-            showHotseat(true, true);
-            mWorkspace.exitOverviewMode(true);
-            updateWallpaperVisibility(true);
-        } else if (mWorkspace.getOpenFolder() != null) {
-            Folder openFolder = mWorkspace.getOpenFolder();
-            if (openFolder.isEditingName()) {
-                openFolder.dismissEditingName();
-            } else {
-                closeFolder();
-            }
-        } else {
-            mWorkspace.exitWidgetResizeMode();
-            mWorkspace.showOutlinesTemporarily();
-        }
-        if (ResValue.getInstance().clickapp_cling > 0) {
-            Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
-            cling.setVisibility(android.view.View.GONE);
-            stopVoice();
-            LogPreview.show("onBackPressed");
-            if (this.mWaitingForResume != null) {
-                this.mWaitingForResume.setStayPressed(false);
-            }
-            if (this.mAppsCustomizeContent != null) {
-                this.mAppsCustomizeContent.resetDrawableState();
-            }
-        }
-        if (this.firstLayout != null) {
-            this.firstLayout.setVisibility(android.view.View.VISIBLE);
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onAppWidgetReset() {
         if (this.mAppWidgetHost != null) {
             this.mAppWidgetHost.startListening();
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         if (v.getWindowToken() != null && mWorkspace.isFinishedSwitchingState()) {
             if (v instanceof Workspace) {
@@ -5024,7 +5357,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     WindowUtil.removePip(this.pipViews);
                     startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 } else if (mediaSource == "mediaController" && activeController != null) {
-                    if (!activeController.isEmpty()) {             	
+                    if (!activeController.isEmpty()) { 
                         WindowUtil.removePip(this.pipViews);
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
                         startActivity(launchIntent);
@@ -5299,7 +5632,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         context.sendBroadcast(intent);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return false;
     }
@@ -5345,8 +5678,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     public View.OnTouchListener getHapticFeedbackTouchListener() {
         if (this.mHapticFeedbackTouchListener == null) {
-            this.mHapticFeedbackTouchListener = new View.OnTouchListener() { // from class: com.android.launcher66.Launcher.55
-                @Override // android.view.View.OnTouchListener
+            this.mHapticFeedbackTouchListener = new View.OnTouchListener() { 
+                @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if ((event.getAction() & 255) == 0) {
                         v.performHapticFeedback(1);
@@ -5446,8 +5779,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
                 testRemoveTask("com.baidu.carlifevehicle");
                 SystemProperties.set("sys.bdcl.enable", "0");
-                this.handler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.56
-                    @Override // java.lang.Runnable
+                this.handler.postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         LogPreview.show("easyconnACTION");
                         Launcher.this.success = Launcher.this.start(v, intent, tag);
@@ -5462,8 +5795,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
                 testRemoveTask("net.easyconn");
                 SystemProperties.set("service.adbec.enable", "0");
-                this.handler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.57
-                    @Override // java.lang.Runnable
+                this.handler.postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         LogPreview.show("carlifeACTION");
                         Launcher.this.success = Launcher.this.start(v, intent, tag);
@@ -5479,12 +5812,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.success = start(v, intent, tag);
         } else {
             if (findViewById(ResValue.getInstance().clickapp) != null) {
-                findViewById(ResValue.getInstance().clickapp).setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.58
-                    @Override // android.view.View.OnClickListener
+                findViewById(ResValue.getInstance().clickapp).setOnClickListener(new View.OnClickListener() { 
+                    @Override
                     public void onClick(View arg0) {
                         Cling cling = (Cling) Launcher.this.findViewById(ResValue.getInstance().clickapp_cling);
-                        Runnable cb = new Runnable() { // from class: com.android.launcher66.Launcher.58.1
-                            @Override // java.lang.Runnable
+                        Runnable cb = new Runnable() { 
+                            @Override
                             public void run() {
                             }
                         };
@@ -5494,12 +5827,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     }
                 });
             }
-            findViewById(ResValue.getInstance().clickapp_cancel).setOnClickListener(new View.OnClickListener() { // from class: com.android.launcher66.Launcher.59
-                @Override // android.view.View.OnClickListener
+            findViewById(ResValue.getInstance().clickapp_cancel).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     Cling cling = (Cling) Launcher.this.findViewById(ResValue.getInstance().clickapp_cling);
-                    Runnable cb = new Runnable() { // from class: com.android.launcher66.Launcher.59.1
-                        @Override // java.lang.Runnable
+                    Runnable cb = new Runnable() { 
+                        @Override
                         public void run() {
                         }
                     };
@@ -5711,8 +6044,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             copyFolderIconToImage(fi);
             ObjectAnimator oa = LauncherAnimUtils.ofPropertyValuesHolder(this.mFolderIconImageView, alpha, scaleX, scaleY);
             oa.setDuration(getResources().getInteger(R.integer.config_folderAnimDuration));
-            oa.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Launcher.60
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            oa.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     if (cl != null) {
                         cl.clearFolderLeaveBehind();
@@ -5763,7 +6096,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         getDragLayer().sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         LogPreview.show("onLongClick");
         if (!isDraggingEnabled() || isWorkspaceLocked() || this.mState != State.WORKSPACE) {
@@ -5815,8 +6148,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     WindowUtil.removePip(this.pipViews);
                     hideHotseat(true, true);
                 }
-                new Handler().postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.61
-                    @Override // java.lang.Runnable
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
                     public void run() {
                         if (!Launcher.this.getDragController().isDragging() || Launcher.this.mState != State.WORKSPACE) {
                             return;
@@ -5871,7 +6204,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return this.mState == State.APPS_CUSTOMIZE || this.mOnResumeState == State.APPS_CUSTOMIZE;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setPivotsForZoom(View view, float scaleFactor) {
         view.setPivotX(view.getWidth() / 2.0f);
         view.setPivotY(view.getHeight() / 2.0f);
@@ -5952,8 +6285,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             toView.setAlpha(0.0f);
             ObjectAnimator alphaAnim = LauncherAnimUtils.ofFloat(toView, "alpha", 0.0f, 1.0f).setDuration(fadeDuration);
             alphaAnim.setInterpolator(new DecelerateInterpolator(1.5f));
-            alphaAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.Launcher.62
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            alphaAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     if (animation == null) {
                         throw new RuntimeException("animation is null");
@@ -5966,15 +6299,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.mStateAnimation = LauncherAnimUtils.createAnimatorSet();
             this.mStateAnimation.play(scaleAnim).after(startDelay);
             this.mStateAnimation.play(alphaAnim).after(startDelay);
-            this.mStateAnimation.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Launcher.63
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            this.mStateAnimation.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationStart(Animator animation) {
                     toView.setTranslationX(0.0f);
                     toView.setTranslationY(0.0f);
                     toView.setVisibility(android.view.View.VISIBLE);
                 }
 
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Launcher.this.dispatchOnLauncherTransitionEnd(fromView, animated, false);
                     Launcher.this.dispatchOnLauncherTransitionEnd(toView, animated, false);
@@ -5993,8 +6326,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 delayAnim = true;
             }
             final AnimatorSet stateAnimation = this.mStateAnimation;
-            final Runnable startAnimRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.64
-                @Override // java.lang.Runnable
+            final Runnable startAnimRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     if (Launcher.this.mStateAnimation == stateAnimation) {
                         Launcher.this.setPivotsForZoom(toView, scale);
@@ -6006,8 +6339,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             };
             if (delayAnim) {
                 ViewTreeObserver observer = toView.getViewTreeObserver();
-                observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() { // from class: com.android.launcher66.Launcher.65
-                    @Override // android.view.ViewTreeObserver.OnGlobalLayoutListener
+                observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() { 
+                    @Override
                     public void onGlobalLayout() {
                         startAnimRunnable.run();
                         toView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -6038,7 +6371,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void hideAppsCustomizeHelper(Workspace.State toState, final boolean animated, boolean springLoaded, Runnable onCompleteRunnable) {
         if (this.mStateAnimation != null) {
             this.mStateAnimation.setDuration(0L);
@@ -6070,8 +6403,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             workspace.setAlpha(0.0f);
             ObjectAnimator alphaAnim = LauncherAnimUtils.ofFloat(workspace, "alpha", 0.0f, 1.0f).setDuration(fadeOutDuration);
             alphaAnim.setInterpolator(new DecelerateInterpolator(1.5f));
-            alphaAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.Launcher.66
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            alphaAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     if (animation == null) {
                         throw new RuntimeException("animation is null");
@@ -6086,8 +6419,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             this.mStateAnimation = LauncherAnimUtils.createAnimatorSet();
             this.mStateAnimation.play(scaleAnim).after(startDelay);
             this.mStateAnimation.play(alphaAnim).after(startDelay);
-            this.mStateAnimation.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Launcher.67
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            this.mStateAnimation.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationStart(Animator animation) {
                     fromView.setVisibility(android.view.View.GONE);
                     workspace.setTranslationX(0.0f);
@@ -6107,8 +6440,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 delayAnim = true;
             }
             final AnimatorSet stateAnimation = this.mStateAnimation;
-            final Runnable startAnimRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.68
-                @Override // java.lang.Runnable
+            final Runnable startAnimRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     if (Launcher.this.mStateAnimation == stateAnimation) {
                         Launcher.this.setPivotsForZoom(workspace, scale);
@@ -6120,8 +6453,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             };
             if (delayAnim) {
                 ViewTreeObserver observer = workspace.getViewTreeObserver();
-                observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() { // from class: com.android.launcher66.Launcher.69
-                    @Override // android.view.ViewTreeObserver.OnGlobalLayoutListener
+                observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() { 
+                    @Override
                     public void onGlobalLayout() {
                         startAnimRunnable.run();
                         workspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -6142,7 +6475,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         dispatchOnLauncherTransitionEnd(workspace, animated, true);
     }
 
-    @Override // android.app.Activity, android.content.ComponentCallbacks2
+    @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         if (level >= 60) {
@@ -6197,6 +6530,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) {
         if (this.mState == State.WORKSPACE) {
+            Helpers.foregroundAppOpened = false;
+            Helpers.inAllApps = true;
+            Helpers.isInRecent = false;
+            Helpers.overviewMode = false;
+            Helpers.listOpen = false;
+			Intent intent = new Intent(ALL_APPS);
+            LauncherApplication.sApp.sendBroadcast(intent);
             if (resetPageToZero) {
                 this.mAppsCustomizeTabHost.reset();
             }
@@ -6223,8 +6563,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     void exitSpringLoadedDragModeDelayed(final boolean successfulDrop, boolean extendedDelay, final Runnable onCompleteRunnable) {
         if (this.mState == State.APPS_CUSTOMIZE_SPRING_LOADED) {
-            this.mHandler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.70
-                @Override // java.lang.Runnable
+            this.mHandler.postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     if (successfulDrop) {
                         Launcher.this.mAppsCustomizeTabHost.setVisibility(android.view.View.GONE);
@@ -6321,8 +6661,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             PackageManager packageManager = getPackageManager();
             Bundle metaData = packageManager.getActivityInfo(activityName, 128).metaData;
             if (metaData != null && (iconResId = metaData.getInt(resourceName)) != 0) {
-                Resources res = packageManager.getResourcesForActivity(activityName);
-                return res.getDrawable(iconResId);
+                return ContextCompat.getDrawable(getApplicationContext(), iconResId);
             }
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Failed to load toolbar icon; " + activityName.flattenToShortString() + " not found", e);
@@ -6339,7 +6678,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         int h = r.getDimensionPixelSize(R.dimen.toolbar_external_icon_height);
         TextView button = (TextView) findViewById(buttonId);
         if (toolbarIcon == null) {
-            Drawable toolbarIcon2 = r.getDrawable(fallbackDrawableId);
+            Drawable toolbarIcon2 = ContextCompat.getDrawable(getApplicationContext(), fallbackDrawableId);
             toolbarIcon2.setBounds(0, 0, w, h);
             if (button == null) {
                 return null;
@@ -6494,7 +6833,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     private void updateAppMarketIcon(Drawable.ConstantState d) {
     }
 
-    @Override // android.app.Activity, android.view.Window.Callback
+    @Override
     public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
         boolean result = super.dispatchPopulateAccessibilityEvent(event);
         List<CharSequence> text = event.getText();
@@ -6511,11 +6850,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         private CloseSystemDialogsIntentReceiver() {
         }
 
-        /* synthetic */ CloseSystemDialogsIntentReceiver(Launcher launcher, CloseSystemDialogsIntentReceiver closeSystemDialogsIntentReceiver) {
+        CloseSystemDialogsIntentReceiver(Launcher launcher, CloseSystemDialogsIntentReceiver closeSystemDialogsIntentReceiver) {
             this();
         }
 
-        @Override // android.content.BroadcastReceiver
+        @Override 
         public void onReceive(Context context, Intent intent) {
             Log.d("LZP", "CloseSystemDialogsIntentReceiver");
             Intent i = new Intent();
@@ -6527,8 +6866,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                     return;
                 } else {
                     if (!"FOURCAMERA2_BROADCAST_SEND".equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && WindowUtil.visible && CarStates.mAccState == 1) {
-                        new Thread(new Runnable() { // from class: com.android.launcher66.Launcher.CloseSystemDialogsIntentReceiver.1
-                            @Override // java.lang.Runnable
+                        new Thread(new Runnable() {
+                            @Override 
                             public void run() {
                                 Intent i2 = FytPackage.getIntent(Launcher.getLauncher(), WindowUtil.AppPackageName);
                                 SystemProperties.set("sys.lsec.force_pip", "true");
@@ -6551,10 +6890,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     private class AppWidgetResetObserver extends ContentObserver {
         public AppWidgetResetObserver() {
-            super(new Handler());
+            super(new Handler(Looper.getMainLooper()));
         }
 
-        @Override // android.database.ContentObserver
+        @Override
         public void onChange(boolean selfChange) {
             Launcher.this.onAppWidgetReset();
         }
@@ -6581,7 +6920,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mOnResumeCallbacks.add(run);
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public boolean setLoadOnResume() {
         if (!this.mPaused) {
             return false;
@@ -6591,7 +6930,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return true;
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public int getCurrentWorkspaceScreen() {
         if (mWorkspace != null) {
             return mWorkspace.getCurrentPage();
@@ -6599,7 +6938,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return 2;
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void startBinding() {
         this.mBindOnResumeCallbacks.clear();
         mWorkspace.clearDropTargets();
@@ -6607,7 +6946,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         this.mWidgetsToAdvance.clear();
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindScreens(ArrayList<Long> orderedScreenIds) {
         bindAddScreens(orderedScreenIds);
         Log.d("LZP", "bindScreens");
@@ -6624,7 +6963,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindAddScreens(ArrayList<Long> orderedScreenIds) {
         Log.d("LZP", "bindAddScreens");
         int count2 = orderedScreenIds.size();
@@ -6646,17 +6985,17 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         boolean show = !sp.getBoolean(SHOW_WEIGHT_WATCHER, true);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(SHOW_WEIGHT_WATCHER, show);
-        editor.commit();
+        editor.apply();
         if (this.mWeightWatcher != null) {
             this.mWeightWatcher.setVisibility(show ? android.view.View.VISIBLE : android.view.View.GONE);
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindAppsAdded(final ArrayList<Long> newScreens, final ArrayList<ItemInfo> addNotAnimated, final ArrayList<ItemInfo> addAnimated, final ArrayList<AppInfo> addedApps) {
         Log.d("LZP", "bindAppsAdded");
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.71
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindAppsAdded(newScreens, addNotAnimated, addAnimated, addedApps);
             }
@@ -6676,12 +7015,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindItems(final ArrayList<ItemInfo> shortcuts, final int start, final int end, final boolean forceAnimateIcons) {
         CellLayout cl;
         Log.d("LZP", "bindItems");
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.72
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindItems(shortcuts, start, end, forceAnimateIcons);
             }
@@ -6727,16 +7066,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             if (animateIcons && newShortcutsScreenId > -1) {
                 long currentScreenId = mWorkspace.getScreenIdForPageIndex(mWorkspace.getNextPage());
                 final int newScreenIndex = mWorkspace.getPageIndexForScreenId(newShortcutsScreenId);
-                final Runnable startBounceAnimRunnable = new Runnable() { // from class: com.android.launcher66.Launcher.73
-                    @Override // java.lang.Runnable
+                final Runnable startBounceAnimRunnable = new Runnable() { 
+                    @Override
                     public void run() {
                         anim.playTogether(bounceAnims);
                         anim.start();
                     }
                 };
                 if (newShortcutsScreenId != currentScreenId) {
-                    mWorkspace.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.74
-                        @Override // java.lang.Runnable
+                    mWorkspace.postDelayed(new Runnable() { 
+                        @Override
                         public void run() {
                             Launcher.mWorkspace.snapToPage(newScreenIndex);
                             Launcher.mWorkspace.postDelayed(startBounceAnimRunnable, Launcher.NEW_APPS_ANIMATION_DELAY);
@@ -6750,10 +7089,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindFolders(final HashMap<Long, FolderInfo> folders) {
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.75
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindFolders(folders);
             }
@@ -6764,10 +7103,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindAppWidget(final LauncherAppWidgetInfo item) {
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.76
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindAppWidget(item);
             }
@@ -6789,16 +7128,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void onPageBoundSynchronously(int page) {
         this.mSynchronouslyBoundPages.add(Integer.valueOf(page));
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void finishBindingItems(final boolean upgradePath) {
         Log.d("LZP", "finishBindingItems");
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.77
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.finishBindingItems(upgradePath);
             }
@@ -6820,8 +7159,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 mWorkspace.getUniqueComponents(true, null);
                 mIntentsOnWorkspaceFromUpgradePath = mWorkspace.getUniqueComponents(true, null);
             }
-            mWorkspace.post(new Runnable() { // from class: com.android.launcher66.Launcher.78
-                @Override // java.lang.Runnable
+            mWorkspace.post(new Runnable() { 
+                @Override
                 public void run() {
                     Launcher.this.onFinishBindingItems();
                 }
@@ -6829,7 +7168,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public boolean isAllAppsButtonRank(int rank) {
         if (this.mHotseat != null) {
         }
@@ -6849,7 +7188,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         return bounceAnim;
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindSearchablesChanged() {
         boolean searchVisible = updateGlobalSearchIcon();
         boolean voiceVisible = updateVoiceSearchIcon(searchVisible);
@@ -6858,7 +7197,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
         Log.d("LZP", "bindAllApplications");
         initAppData();
@@ -6871,11 +7210,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindAppsUpdated(final ArrayList<AppInfo> apps) {
         Log.d("LZP", "bindAppsUpdated");
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.79
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindAppsUpdated(apps);
             }
@@ -6890,10 +7229,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindComponentsRemoved(final ArrayList<String> packageNames, final ArrayList<AppInfo> appInfos, final boolean packageRemoved) {
-        Runnable r = new Runnable() { // from class: com.android.launcher66.Launcher.80
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.bindComponentsRemoved(packageNames, appInfos, packageRemoved);
             }
@@ -6911,7 +7250,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void bindPackagesUpdated(ArrayList<Object> widgetsAndShortcuts) {
         if (waitUntilResume(this.mBindPackagesUpdatedRunnable, true)) {
             this.mWidgetsAndShortcuts = widgetsAndShortcuts;
@@ -6961,8 +7300,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             if (immediate) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             } else {
-                this.mHandler.postDelayed(new Runnable() { // from class: com.android.launcher66.Launcher.81
-                    @Override // java.lang.Runnable
+                this.mHandler.postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         Launcher.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     }
@@ -6997,7 +7336,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 public void run() {
                     cling.cleanup();
                     final Intent intent2 = intent;
-                    new Thread("dismissClingThread") { // from class: com.android.launcher66.Launcher.82.1
+                    new Thread("dismissClingThread") { 
                         public void run() {
                             if (intent2.getComponent().getPackageName().equals("com.syu.music")) {
                                 int a = SystemProperties.getInt("persist.sys.clingmusic", 0);
@@ -7072,7 +7411,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                         public void run() {
                             SharedPreferences.Editor editor = mSharedPrefs.edit();
                             editor.putBoolean(flag, true);
-                            editor.commit();
+                            editor.apply();
                         }
                     }.start();
                     if (postAnimationCb != null) {
@@ -7098,8 +7437,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         final View cling = findViewById(id);
         if (cling != null) {
             final ViewGroup parent = (ViewGroup) cling.getParent();
-            parent.post(new Runnable() { // from class: com.android.launcher66.Launcher.84
-                @Override // java.lang.Runnable
+            parent.post(new Runnable() { 
+                @Override
                 public void run() {
                     parent.removeView(cling);
                 }
@@ -7147,8 +7486,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
             }
             if (animate) {
-                ccHint.animate().alpha(0.0f).setDuration(250L).setListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Launcher.85
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                ccHint.animate().alpha(0.0f).setDuration(250L).setListener(new AnimatorListenerAdapter() { 
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         ccHint.setVisibility(android.view.View.GONE);
                     }
@@ -7231,7 +7570,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         LauncherApplication.mAppWallPaper = true;
         SharedPreferences.Editor editor = Utils.getSp().edit();
         editor.putBoolean("mAppWallPaper", LauncherApplication.mAppWallPaper);
-        editor.commit();
+        editor.apply();
         try {
             if (ResValue.getInstance().def_bg != 0) {
                 wm.setResource(ResValue.getInstance().def_bg);
@@ -7251,13 +7590,31 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 LauncherApplication.mAppWallPaper = true;
                 SharedPreferences.Editor editor = Utils.getSp().edit();
                 editor.putBoolean("mAppWallPaper", LauncherApplication.mAppWallPaper);
-                editor.commit();
+                editor.apply();
                 WallpaperManager wm = WallpaperManager.getInstance(getApplicationContext());
-                int resid = getResources().getIdentifier(resName, "drawable", getPackageName());
+                int resid = getResId(resName);
                 wm.setStream(new BufferedInputStream(getResources().openRawResource(resid)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void setWallpaper(String name) {
+        new Thread() { 
+            @Override
+            public void run() {
+                Launcher.this.setDefaultWallpaper(name);
+            }
+        }.start();
+    }
+
+    public int getResId(String resName) {
+        try {
+            Field idField = R.drawable.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -7280,8 +7637,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
 
     public void dismissFirstRunCling(View v) {
         Cling cling = (Cling) findViewById(R.id.first_run_cling);
-        Runnable cb = new Runnable() { // from class: com.android.launcher66.Launcher.86
-            @Override // java.lang.Runnable
+        Runnable cb = new Runnable() { 
+            @Override
             public void run() {
                 Launcher.this.showFirstRunWorkspaceCling();
             }
@@ -7294,8 +7651,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         Cling cling = (Cling) findViewById(R.id.workspace_cling);
         Runnable cb = null;
         if (v == null) {
-            cb = new Runnable() { // from class: com.android.launcher66.Launcher.87
-                @Override // java.lang.Runnable
+            cb = new Runnable() { 
+                @Override
                 public void run() {
                     Launcher.mWorkspace.enterOverviewMode();
                 }
@@ -7311,7 +7668,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
     }
 
     public void dumpState() {
-        Log.d(TAG, "BEGIN launcher3 dump state for launcher " + this);
+        Log.d(TAG, "BEGIN launcher66 dump state for launcher " + this);
         Log.d(TAG, "mSavedState=" + this.mSavedState);
         Log.d(TAG, "mWorkspaceLoading=" + this.mWorkspaceLoading);
         Log.d(TAG, "mRestoring=" + this.mRestoring);
@@ -7322,7 +7679,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         if (this.mAppsCustomizeContent != null) {
             this.mAppsCustomizeContent.dumpState();
         }
-        Log.d(TAG, "END launcher3 dump state");
+        Log.d(TAG, "END launcher66 dump state");
     }
 
     public void appTextVisible(boolean visible) {
@@ -7331,7 +7688,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
         synchronized (sDumpLogs) {
@@ -7352,15 +7709,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
         }
     }
 
-    @Override // com.android.launcher66.LauncherModel.Callbacks
+    @Override
     public void dumpLogsToLocalData() {
     }
 
-    @Override // java.util.Observer
-    public void update(Observable arg0, Object arg1) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
         Widget.widgetUpdate(LauncherApplication.sApp, DateTimeProvider.class);
         Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
-    }
+	}
 
     public void launchCanbus() {
         Class<?> cls = null;
@@ -7396,6 +7753,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC1_VW_TIGUAN_10_16 /* 2031617 */:
             case FinalCanbus.CAR_WC1_VW_MAGOTAN_07_10 /* 2097153 */:
             case FinalCanbus.CAR_WC1_VW_MAGOTAN_11_15 /* 2162689 */:
+            case FinalCanbus.CAR_WC1_Benz_Smart_17_L /* 2228225 */:
                 cls = DasAutoWcAct.class;
                 break;
             case 2:
@@ -7405,6 +7763,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Audi_A4_03_07 /* 2555955 */:
             case FinalCanbus.CAR_RZC_Audi_Q3_13_18 /* 2883635 */:
             case FinalCanbus.CAR_RZC_Audi_Q5_10_18 /* 2949171 */:
+            case FinalCanbus.CAR_RZC_BMW_320i_05_12 /* 3145779 */:
+            case FinalCanbus.CAR_RZC_BMW_320i_05_12_H /* 3211315 */:
             case FinalCanbus.CAR_RZC_BMW_X1_12_14 /* 3538995 */:
             case FinalCanbus.CAR_RZC_BMW_X3_11_13 /* 3670067 */:
             case FinalCanbus.CAR_RZC_BMW_X3_13_16 /* 3735603 */:
@@ -7413,6 +7773,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_BMW_CCC /* 4128819 */:
             case FinalCanbus.CAR_RZC_Audi_R8_12 /* 4194355 */:
             case FinalCanbus.CAR_RZC_BMW_EVO /* 4390963 */:
+            case FinalCanbus.CAR_RZC_BMW_E53 /* 4522035 */:
+            case FinalCanbus.CAR_RZC_Audi_A4L_13 /* 4587571 */:
+            case FinalCanbus.CAR_RZC_BMW_E53_H /* 4653107 */:
+            case FinalCanbus.CAR_RZC_BMW_E39_L /* 4718643 */:
+            case FinalCanbus.CAR_RZC_BMW_E39_H /* 4784179 */:
+            case FinalCanbus.CAR_RZC_Audi_Q5L_18 /* 4849715 */:
+            case FinalCanbus.CAR_RZC_Audi_A4L_22 /* 4915251 */:
+            case FinalCanbus.CAR_RZC_Audi_RS3_17 /* 4980787 */:
+            case FinalCanbus.CAR_RZC_Audi_A4L_17 /* 5046323 */:
                 cls = DasAutoIndexAct.class;
                 break;
             case 12:
@@ -7427,11 +7796,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP1_Focus2012_H /* 131094 */:
             case FinalCanbus.CAR_BNR_Yihu2012 /* 131120 */:
             case FinalCanbus.CAR_WC2_12RANGER /* 131391 */:
-            case FinalCanbus.CAR_RZC_XP1_YiHu2017 /* 131406 */:
             case FinalCanbus.CAR_BNR_Yihu2012_H /* 196656 */:
             case FinalCanbus.CAR_WC2_12BT50 /* 196927 */:
-            case FinalCanbus.CAR_RZC_XP1_YiHu2017_M /* 655694 */:
-            case FinalCanbus.CAR_RZC_XP1_YiHu2017_H /* 721230 */:
+            case FinalCanbus.CAR_CZH_RZC_YiHu2017_H /* 3932494 */:
                 cls = FocusSyncBtActi.class;
                 break;
             case 16:
@@ -7536,6 +7903,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_TuGuan_L_20_H /* 3473568 */:
             case FinalCanbus.CAR_6606_MQB_Lavida_23 /* 3539104 */:
             case FinalCanbus.CAR_RZC_MQB_17Passat_B8 /* 3604640 */:
+            case FinalCanbus.CAR_RZC_MQB_All_360 /* 3670176 */:
+            case FinalCanbus.CAR_RZC_MQB_Caddy_22 /* 3735712 */:
+            case FinalCanbus.CAR_RZC_MaiTeng_20_H_EC /* 3801248 */:
                 cls = Golf7IndexAct.class;
                 break;
             case 19:
@@ -7579,6 +7949,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP1_14Prado_L /* 3276820 */:
             case FinalCanbus.CAR_XP1_14Prado_M /* 3342356 */:
             case FinalCanbus.CAR_XP1_14Prado_H /* 3407892 */:
+            case FinalCanbus.CAR_ZH2_XP1_Toyota_All /* 3473428 */:
                 cls = CamryIndexAct_XP.class;
                 break;
             case 21:
@@ -7587,13 +7958,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL /* 196629 */:
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_M /* 262165 */:
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_H /* 327701 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = ActivityNewAir.class;
-                    break;
-                } else {
-                    cls = MDOAirControlActi.class;
-                    break;
-                }
+            case FinalCanbus.CAR_CZH_WC2_MengDiOuZS2013_M /* 589845 */:
+                cls = WC2FordMDOCarSeatSet.class;
+                break;
             case 22:
             case FinalCanbus.CAR_XP1_Ford_KUGA_2013 /* 65558 */:
             case FinalCanbus.CAR_XP1_Ford_Ecosport_2013 /* 196630 */:
@@ -7618,15 +7985,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case 263:
             case 309:
             case 359:
-            case 364:
             case FinalCanbus.CAR_XP1_GM_H1 /* 65561 */:
             case FinalCanbus.CAR_XP1_MaiRuiBao16_M /* 65895 */:
-            case FinalCanbus.CAR_RZC_XP1_16_18MaiRuiBaoXL /* 65900 */:
             case FinalCanbus.CAR_XP1_GM_H2 /* 131097 */:
             case FinalCanbus.CAR_XP1_MaiRuiBao16_H /* 131431 */:
-            case FinalCanbus.CAR_RZC_XP1_19MaiRuiBaoXL /* 131436 */:
             case FinalCanbus.CAR_XP1_GM_H3 /* 196633 */:
             case FinalCanbus.CAR_XP1_MaiRuiBao16_XL_L /* 196967 */:
+            case FinalCanbus.CAR_XP1_GM_Camaro_10 /* 262169 */:
             case FinalCanbus.CAR_RZC_17Gl8 /* 262407 */:
             case FinalCanbus.CAR_XP1_MaiRuiBao16_XL_H /* 262503 */:
             case FinalCanbus.CAR_RZC_ALL_GM_11_15GL8 /* 327943 */:
@@ -7642,6 +8007,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_DJ_Saiou3 /* 2359321 */:
             case FinalCanbus.CAR_DJ_GM_ALL /* 2424857 */:
             case FinalCanbus.CAR_XP1_GM_AJcd650 /* 2490393 */:
+            case FinalCanbus.CAR_XP1_GM_Opel_Meriva /* 2621465 */:
                 cls = YLIndexAct.class;
                 break;
             case 31:
@@ -7673,49 +8039,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP_18KIA_carnival /* 2163043 */:
             case FinalCanbus.CAR_XP_16QiYaKX5_H_Noamp /* 2228579 */:
                 cls = XP_19ShengDafei_CarSettingAct.class;
-                break;
-            case 33:
-            case 46:
-            case 109:
-            case 110:
-            case 294:
-            case FinalCanbus.CAR_WC2_TOYOTA_REIZ /* 65830 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_RAV4 /* 131366 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_CAMRY /* 196902 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_COROLLA /* 262438 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_HIGHLANDER /* 327974 */:
-            case FinalCanbus.CAR_WC2_16RAV4_VIEW /* 459046 */:
-            case FinalCanbus.CAR_WC2_16RAV4_VIEW_AMP /* 524582 */:
-            case FinalCanbus.CAR_WC_SP_1213Camery /* 590118 */:
-            case FinalCanbus.CAR_WC_SP_1516Camery_15Reiz /* 655654 */:
-            case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ZiDong /* 721190 */:
-            case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ShouDong /* 786726 */:
-            case FinalCanbus.CAR_WC_SP_09Camery /* 852262 */:
-            case FinalCanbus.CAR_WC_SP_12LuXun /* 917798 */:
-            case FinalCanbus.CAR_WC_SP_15HighLand_Zidong /* 983334 */:
-            case FinalCanbus.CAR_WC_SP_15HighLand_ShouDong /* 1048870 */:
-            case FinalCanbus.CAR_WC_SP_09HighLand_Zidong /* 1114406 */:
-            case FinalCanbus.CAR_WC_SP_09HighLand_ShouDong /* 1179942 */:
-            case FinalCanbus.CAR_WC_SP_07KaluoLa_ZiDong /* 1245478 */:
-            case FinalCanbus.CAR_WC_SP_14KaluoLa_ZiDong /* 1311014 */:
-            case FinalCanbus.CAR_WC_SP_Alpha /* 1376550 */:
-            case FinalCanbus.CAR_WC_SP_02_09Prado /* 1442086 */:
-            case FinalCanbus.CAR_WC_Toyota_21Sienna /* 1704230 */:
-            case FinalCanbus.CAR_WC2_18PRADO /* 1966374 */:
-            case FinalCanbus.CAR_WC2_18Camery /* 2031910 */:
-            case FinalCanbus.CAR_WC2_18PRADO_H /* 2097446 */:
-            case FinalCanbus.CAR_WC2_16PRADO /* 2162982 */:
-            case FinalCanbus.CAR_WC2_16PRADO_H /* 2228518 */:
-            case FinalCanbus.CAR_WC2_19RAV4 /* 2294054 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_22Vios /* 2359590 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_22Vios_H /* 2425126 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_23Vios /* 2490662 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_23Vios_H /* 2556198 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_23Corolla /* 2621734 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_23Corolla_H /* 2687270 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_22Corolla /* 2752806 */:
-            case FinalCanbus.CAR_WC2_TOYOTA_22Corolla_H /* 2818342 */:
-                cls = Rav4TripAct.class;
                 break;
             case 35:
             case 306:
@@ -7792,6 +8115,31 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_GM_Suburban_15 /* 3932196 */:
             case FinalCanbus.CAR_WC2_GM_Tahoe_16_18 /* 3997732 */:
             case FinalCanbus.CAR_WC2_GM_Colorado_18 /* 4063268 */:
+            case FinalCanbus.CAR_WC2_OPEL_Meriva_10 /* 4194340 */:
+            case FinalCanbus.CAR_WC2_GM_Onix_14 /* 4259876 */:
+            case FinalCanbus.CAR_WC2_GM_Onix_19 /* 4325412 */:
+            case FinalCanbus.CAR_WC2_GM_Montana_23 /* 4390948 */:
+            case FinalCanbus.CAR_WC2_GM_Tracker_19 /* 4456484 */:
+            case FinalCanbus.CAR_WC2_GM_Spin_Brazil_13 /* 4522020 */:
+            case FinalCanbus.CAR_WC2_GM_S10_Brazil_10 /* 4587556 */:
+            case FinalCanbus.CAR_WC2_GM_EQUINOX_22 /* 4653092 */:
+            case FinalCanbus.CAR_WC2_GM_EQUINOX_22_H /* 4718628 */:
+            case FinalCanbus.CAR_WC2_GM_Colorado_14 /* 4784164 */:
+            case FinalCanbus.CAR_WC2_GM_Colorado_14_H /* 4849700 */:
+            case FinalCanbus.CAR_WC2_GM_Silverado_07 /* 4915236 */:
+            case FinalCanbus.CAR_WC2_GM_Silverado_14 /* 4980772 */:
+            case FinalCanbus.CAR_WC2_GM_Silverado_14_H /* 5046308 */:
+            case FinalCanbus.CAR_WC2_GM_Canyon_14 /* 5111844 */:
+            case FinalCanbus.CAR_WC2_GM_Canyon_14_H /* 5177380 */:
+            case FinalCanbus.CAR_WC2_GMC_Acadia_07 /* 5242916 */:
+            case FinalCanbus.CAR_WC2_GMC_Yukon_07 /* 5308452 */:
+            case FinalCanbus.CAR_WC2_GMC_Savana_08 /* 5373988 */:
+            case FinalCanbus.CAR_WC2_GMC_Sierra_07 /* 5439524 */:
+            case FinalCanbus.CAR_WC2_GMC_Sierra_14 /* 5505060 */:
+            case FinalCanbus.CAR_WC2_GMC_Sierra_14_H /* 5570596 */:
+            case FinalCanbus.CAR_WC2_GM_ExpressVan_08 /* 5636132 */:
+            case FinalCanbus.CAR_WC2_GM_Impala_06 /* 5701668 */:
+            case FinalCanbus.CAR_WC2_GM_Avalanch_07 /* 5767204 */:
                 cls = KlcIndexAct.class;
                 break;
             case 37:
@@ -7808,7 +8156,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC1_CYT_ShuPing_07_11_MENGDIOU /* 65759 */:
             case FinalCanbus.CAR_DJ_MENGDIOU2013_H /* 65767 */:
             case FinalCanbus.CAR_DJ_ShuPing_MENGDIOU /* 65836 */:
-            case FinalCanbus.CAR_DAOJUN_XP1_ATS_M /* 65884 */:
             case FinalCanbus.CAR_DAOJUN_XP1_ShuPingNewJunWei_M /* 65899 */:
             case FinalCanbus.CAR_XFY_XP1_ChangAnCsSerial /* 65942 */:
             case FinalCanbus.CAR_CYT_YaGe7_Portrait /* 65953 */:
@@ -7832,11 +8179,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_DJ_Shuping_YEMA /* 262444 */:
             case FinalCanbus.CAR_WC_16_QiYaKX5_WITH_CYT_SHUPING_K3AIR /* 262538 */:
             case FinalCanbus.CAR_XFY_ShuPing_Honda_06CRV /* 262569 */:
+            case FinalCanbus.CAR_455_RZC_Nissan_Tuda_SP_18 /* 262599 */:
             case FinalCanbus.CAR_WC2_ShuPing_Prado_L /* 327801 */:
             case FinalCanbus.CAR_WC2_HavalH2_CYT_AIR_H /* 327812 */:
             case FinalCanbus.CAR_XP1_QiJun_CYT_SHOUDONG /* 327823 */:
             case FinalCanbus.CAR_CYT_SHuPing_SoNaTa8_D /* 327848 */:
-            case FinalCanbus.CAR_DAOJUN_XP1_ATSL_High /* 328028 */:
+            case FinalCanbus.CAR_455_RZC_Nissan_Tuda_SP_18_Auto /* 328135 */:
             case FinalCanbus.CAR_WC2_ShuPing_14Prado_L /* 393337 */:
             case FinalCanbus.CAR_BNR_ShuPing_Sonata8 /* 393571 */:
             case FinalCanbus.CAR_XP1_CYT_XuanYi_L /* 458895 */:
@@ -7849,8 +8197,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng /* 655708 */:
             case FinalCanbus.CAR_355_HC_XIANDAI_AMP /* 655715 */:
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng1 /* 721244 */:
+            case FinalCanbus.CAR_455_RZC_Mclaren_12C /* 721351 */:
             case FinalCanbus.CAR_DAOJUN_14Junwei_Luzheng2 /* 786780 */:
             case FinalCanbus.CAR_439_Oudi_Haval_H3 /* 1704375 */:
+            case FinalCanbus.CAR_444_WC2_ChangfengLiebao_CS9_17 /* 1769916 */:
             case FinalCanbus.CAR_452_Mixun_Liebao_CS9 /* 2687428 */:
             case FinalCanbus.CAR_439_HC_OuGeTL /* 3998135 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Enclave_SP /* 4980797 */:
@@ -7873,9 +8223,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_BNR_02_09Toyato_Prado /* 7668151 */:
             case FinalCanbus.CAR_452_TangDu_Nissan_Tuda_Hand /* 7668164 */:
             case FinalCanbus.CAR_452_TangDu_Nissan_Tuda_Auto /* 7733700 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Loulan_SP /* 9241030 */:
             case FinalCanbus.CAR_452_LZ_Audi_A3_SP /* 9306564 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Nawala_SP /* 9306566 */:
             case FinalCanbus.CAR_452_LZ_Audi_A4_SP /* 9372100 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Loulan_SP_Auto /* 9372102 */:
             case FinalCanbus.CAR_452_LZ_Audi_TT_SP /* 9437636 */:
+            case FinalCanbus.CAR_454_RZC_Nissan_Nawala_SP_Auto /* 9437638 */:
             case FinalCanbus.CAR_452_LZ_Audi_A3_SP_H /* 11076036 */:
             case FinalCanbus.CAR_452_LZ_Audi_A4_SP_H /* 11141572 */:
             case FinalCanbus.CAR_452_LZ_Audi_TT_SP_H /* 11207108 */:
@@ -7884,14 +8238,27 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_CYT_Toyota_Tundra_H /* 14025156 */:
             case FinalCanbus.CAR_439_DJ_Siyu /* 14549431 */:
             case FinalCanbus.CAR_453_OD_Beiqi_Changhe_Q7_SP /* 15925701 */:
-                cls = ActivityNewAir.class;
-                break;
             case 39:
             case FinalCanbus.CAR_RZCexc_FeiyateZhiyue /* 65575 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_TORO /* 131111 */:
             case FinalCanbus.CAR_RZCexc_Feiyate_FLORLNO /* 327719 */:
             case FinalCanbus.CAR_RZCexc_Feiyate_LINEA /* 458791 */:
             case FinalCanbus.CAR_RZCexc_Feiyate_PUNTO /* 524327 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_11Bravo /* 655399 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_BRAVO_12 /* 917543 */:
+            case FinalCanbus.CAR_RZCexc_FeiyateZhiyue_M /* 1310759 */:
+            case FinalCanbus.CAR_RZCexc_FeiyateZhiyue_H /* 1376295 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_FLORLNO_M /* 1703975 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_FLORLNO_H /* 1769511 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_LINEA_M /* 1966119 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_LINEA_H /* 2031655 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_PUNTO_M /* 2097191 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_PUNTO_H /* 2162727 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_11Bravo_M /* 2359335 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_11Bravo_H /* 2424871 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_BRAVO_12_M /* 2490407 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_BRAVO_12_H /* 2555943 */:
+            case FinalCanbus.CAR_RZCexc_FeiyateFeixiang_M /* 3014695 */:
+            case FinalCanbus.CAR_RZCexc_FeiyateFeixiang_H /* 3080231 */:
                 cls = RzcFYTOilMileIndexActi.class;
                 break;
             case 40:
@@ -7910,6 +8277,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP_MQB_Seat_LeonFR /* 1179688 */:
             case FinalCanbus.CAR_XP_MQB_Seat_Ateca /* 1245224 */:
             case FinalCanbus.CAR_ZH_XP_MQB_T_CROSS /* 1310760 */:
+            case FinalCanbus.CAR_XP_TuGuan_L_20_H /* 1376296 */:
                 cls = Golf7_XP_IndexAct.class;
                 break;
             case 41:
@@ -7980,8 +8348,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_PQ_11_15Magotan_B7 /* 2818099 */:
             case FinalCanbus.CAR_RZC_BMW_318i_05_12 /* 3014707 */:
             case FinalCanbus.CAR_RZC_BMW_318i_05_12_H /* 3080243 */:
-            case FinalCanbus.CAR_RZC_BMW_320i_05_12 /* 3145779 */:
-            case FinalCanbus.CAR_RZC_BMW_320i_05_12_H /* 3211315 */:
             case FinalCanbus.CAR_RZC_BMW_3_98_06 /* 3276851 */:
             case FinalCanbus.CAR_RZC_BMW_5_95_03 /* 3342387 */:
             case FinalCanbus.CAR_RZC_BMW_X5_99_06 /* 3407923 */:
@@ -8073,7 +8439,53 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_ALL_GM_20Equinox /* 4915261 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Menlo_EV_L /* 5046333 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Laccrose_15_H /* 5111869 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Verano_22_L /* 5177405 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Laccrose_10_L /* 5242941 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_HUMMER_09_H2 /* 5308477 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Chevrolet_12 /* 5374013 */:
             case FinalCanbus.CAR_RZC_CYC_GM_All /* 5439549 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_17AstraK /* 5505085 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_13_16Mokka /* 5570621 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_MerivaB /* 5767229 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23ONIX /* 6357053 */:
+            case FinalCanbus.CAR_RZC_XP1_MaiRuiBao16 /* 6422589 */:
+            case FinalCanbus.CAR_RZC_XP1_16_18MaiRuiBaoXL /* 6488125 */:
+            case FinalCanbus.CAR_RZC_XP1_19MaiRuiBaoXL /* 6553661 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_17AstraJ_H /* 6619197 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_12Insignia_L /* 6684733 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11_12Insignia_H /* 6750269 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18_23Suburban /* 6815805 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22Colorado /* 6881341 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18Traverse /* 6946877 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_12_19Silverado /* 7012413 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_13_14Yukon /* 7077949 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_18_23Terrain /* 7143485 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_15_17Sierra /* 7209021 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22VELITE6_EV /* 7274557 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22VELITE6_PHEV /* 7340093 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18_23Suburban_H /* 7405629 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban /* 7471165 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban_H /* 7536701 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_18Traverse_H /* 7602237 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_15_17Sierra_H /* 7667773 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_12_19Silverado_H /* 7733309 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_18_23Terrain_H /* 7798845 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Terrain /* 7864381 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Terrain_H /* 7929917 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Equinox /* 7995453 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_10_17Equinox_H /* 8060989 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22Colorado_H /* 8126525 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_21Silverado /* 8192061 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_21Silverado_H /* 8257597 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_19_20Sierra /* 8323133 */:
+            case FinalCanbus.CAR_RZC_ALL_GMC_19_20Sierra_H /* 8388669 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_24Onix /* 8454205 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23BOIT /* 8519741 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23Regal /* 8585277 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23Lacrosse /* 8650813 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23Equinox /* 8716349 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23MaiRuiBaoXL /* 8781885 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_23ChevroletBlazer /* 8847421 */:
                 cls = RzcKlcIndex.class;
                 break;
             case 67:
@@ -8117,6 +8529,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_17QiJun_H /* 458832 */:
             case FinalCanbus.CAR_OD_XP1_Nissan_All_L /* 524368 */:
             case FinalCanbus.CAR_OD_XP1_Nissan_All_H /* 589904 */:
+            case FinalCanbus.CAR_RZC_SwMar_17 /* 1441872 */:
+            case FinalCanbus.CAR_RZC_SwMar_Amp_17 /* 1507408 */:
                 cls = Rzc_80_DspinfoActi.class;
                 break;
             case 86:
@@ -8156,7 +8570,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS3_17_H /* 1769752 */:
             case FinalCanbus.CAR_RZC_ChuanQiGS8_20 /* 1835288 */:
             case FinalCanbus.CAR_RZC_ChuanQi_GiaoXinglang /* 1900824 */:
+            case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_22 /* 2031896 */:
             case FinalCanbus.CAR_RZC_OD_ChuanQiGS4 /* 2097432 */:
+            case FinalCanbus.CAR_RZC_XP1_ChuanQiM8_21 /* 2162968 */:
+            case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_TF /* 2294040 */:
                 cls = GS4SetAct_Bnr.class;
                 break;
             case 101:
@@ -8189,6 +8606,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC1_21Xiaoke_Hand /* 1966181 */:
             case FinalCanbus.CAR_WC1_21Xiaoke_Auto /* 2031717 */:
             case FinalCanbus.CAR_WC1_13QiJun /* 2097253 */:
+            case FinalCanbus.CAR_WC1_23Xiaoke /* 2228325 */:
+            case FinalCanbus.CAR_WC1_22Serena /* 2293861 */:
+            case FinalCanbus.CAR_WC1_23Serena /* 2359397 */:
                 cls = WCNissanCarSet.class;
                 break;
             case 106:
@@ -8225,7 +8645,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_BNR_ShuPing_14PradoShouDong /* 852365 */:
             case FinalCanbus.CAR_RZC_XP1_18Carmy_H /* 917616 */:
             case FinalCanbus.CAR_BNR_ShuPing_15HighLand_L /* 917901 */:
-            case FinalCanbus.CAR_RZC_XP1_98_05Lexus_Rx300 /* 983152 */:
             case FinalCanbus.CAR_BNR_ShuPing_15HighLand_H /* 983437 */:
             case FinalCanbus.CAR_RZC_XP1_09_15Previa /* 1048688 */:
             case FinalCanbus.CAR_BNR_ShuPing_09HighLand_L /* 1048973 */:
@@ -8301,11 +8720,63 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_14PradoAuto /* 4063629 */:
             case FinalCanbus.CAR_RZC_XP1_15_LandCruiser /* 4128880 */:
             case FinalCanbus.CAR_RZC_14PradoAuto_AMP /* 4129165 */:
+            case FinalCanbus.CAR_RZC_23_Corolla_Malaysia /* 4194416 */:
             case FinalCanbus.CAR_RZC_05Reiz /* 4194701 */:
+            case FinalCanbus.CAR_RZC_23_Vios_Malaysia /* 4259952 */:
             case FinalCanbus.CAR_RZC_09Rav4 /* 4260237 */:
+            case FinalCanbus.CAR_DUDU_RZC_Toyota_Corolla_14 /* 4325488 */:
+            case FinalCanbus.CAR_DUDU_RZC_Toyota_RAV4_20_Hand /* 4391024 */:
+            case FinalCanbus.CAR_DUDU_RZC_Toyota_RAV4_20_Auto /* 4456560 */:
+            case FinalCanbus.CAR_DUDU_RZC_Toyota_Highlander_15_Hand /* 4522096 */:
+            case FinalCanbus.CAR_DUDU_RZC_Toyota_Highlander_15_Auto /* 4587632 */:
+            case FinalCanbus.CAR_ZX_6606_XP1_Bz4x /* 4915312 */:
             case FinalCanbus.CAR_RZC_18Camery /* 4981133 */:
+            case FinalCanbus.CAR_RZC_XP1_22_CROSS_H /* 5046384 */:
             case FinalCanbus.CAR_RZC_16_18RAV4 /* 5046669 */:
+            case FinalCanbus.CAR_RZC_XP1_22_FRONTLANDER_H /* 5111920 */:
             case FinalCanbus.CAR_BNR_18PradoHand_AirP /* 5112205 */:
+            case FinalCanbus.CAR_DUDU_RZC_XP1_18Carmy /* 5177456 */:
+            case FinalCanbus.CAR_DUDU_RZC_XP1_18Carmy_H /* 5242992 */:
+            case FinalCanbus.CAR_DUDU_RZC_XP1_18Carmy_TOP /* 5308528 */:
+            case FinalCanbus.CAR_RZC_XP1_20_Sienta /* 5374064 */:
+            case FinalCanbus.CAR_RZC_XP1_20_Sienta_H /* 5439600 */:
+            case FinalCanbus.CAR_RZC_Toyota_PRIUS_NOCD /* 5832816 */:
+            case FinalCanbus.CAR_RZC_XP1_23_VOXY_H /* 6160496 */:
+            case FinalCanbus.CAR_RZC_XP1_23_VOXY /* 6226032 */:
+            case FinalCanbus.CAR_RZC_XP1_23_NOAH_H /* 6291568 */:
+            case FinalCanbus.CAR_RZC_XP1_23_NOAH /* 6357104 */:
+            case FinalCanbus.CAR_RZC_Toyota_Corolla_CROSS_23_H /* 6422640 */:
+            case FinalCanbus.CAR_RZC_Toyota_Corolla_CROSS_23 /* 6488176 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_21Fortuner_ASEAN /* 6553712 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_21Fortuner_ASEAN_H /* 6619248 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Yaris_ASEAN /* 6684784 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Yaris_ASEAN_H /* 6750320 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Veloz_ASEAN /* 6815856 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Veloz_ASEAN_H /* 6881392 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Innova_ASEAN /* 6946928 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Innova_ASEAN_H /* 7012464 */:
+            case FinalCanbus.CAR_RZC_23_Corolla_Malaysia_H /* 7143536 */:
+            case FinalCanbus.CAR_RZC_23_Vios_Malaysia_H /* 7209072 */:
+            case FinalCanbus.CAR_ZX_6606_XP1_24Camry /* 7274608 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Granvia /* 7340144 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_23Granvia_H /* 7405680 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_Alpha_17 /* 7471216 */:
+            case FinalCanbus.CAR_RZC_Toyota_Corolla_cross_America /* 7602288 */:
+            case FinalCanbus.CAR_RZC_Toyota_Corolla_cross_AmericaH /* 7667824 */:
+            case FinalCanbus.CAR_RZC_Toyota_Prado_24 /* 7733360 */:
+            case FinalCanbus.CAR_RZC_Toyota_Prado_24_H /* 7798896 */:
+            case FinalCanbus.CAR_RZC_Toyota_RAV4_24 /* 7864432 */:
+            case FinalCanbus.CAR_RZC_Toyota_RAV4_24_H /* 7929968 */:
+            case FinalCanbus.CAR_RZC_XP1_22_Harrier_H /* 8061040 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_16Prius_SP /* 8126576 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_14Tundra /* 8192112 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_14Tundra_Auto /* 8257648 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Sequoia /* 8323184 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Sequoia_Auto /* 8388720 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_08Camry /* 8454256 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_13Camry /* 8519792 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10AURIS_Auto /* 8585328 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_13Avalon_Auto /* 8650864 */:
                 cls = CamryIndexAct.class;
                 break;
             case 115:
@@ -8348,6 +8819,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XHCN_DianDongChe /* 655503 */:
             case FinalCanbus.CAR_XP1_15QiJun_Shuping /* 721039 */:
             case FinalCanbus.CAR_XP1_15Tule_Shuping_L /* 786575 */:
+            case FinalCanbus.CAR_XP1_Nissan_Qashqai /* 852111 */:
+            case FinalCanbus.CAR_XP1_Nissan_Qashqai_H /* 917647 */:
+            case FinalCanbus.CAR_XP1_Nissan_SYLPHY_20 /* 983183 */:
+            case FinalCanbus.CAR_XP1_Nissan_SYLPHY_20_H /* 1048719 */:
                 cls = XPNissanCarSet.class;
                 break;
             case 144:
@@ -8361,6 +8836,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RCW_BYD_6 /* 524439 */:
             case FinalCanbus.CAR_RCW_BYD_12_18Surui /* 589975 */:
                 cls = Activity_DaojunSetCrtrl.class;
+                break;
+            case 153:
+            case 249:
+            case 393:
+            case FinalCanbus.CAR_RZC_16_QiYaKX5_M /* 65929 */:
+            case FinalCanbus.CAR_RZC3_XiandaiIX35_H /* 131209 */:
+            case FinalCanbus.CAR_RZC3_MingTu_H /* 131225 */:
+            case FinalCanbus.CAR_RZC3_SoNaTa9_H /* 131321 */:
+            case FinalCanbus.CAR_RZC_16_QiYaKX5_H /* 131465 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_M /* 262506 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_H /* 328042 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_All_H /* 524650 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Rohens_Coupe_12_H /* 1376618 */:
+                cls = RZCXiandaiAmpCarSet.class;
                 break;
             case 163:
             case 221:
@@ -8393,8 +8882,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = CrvXBSActi.class;
                 break;
             case 190:
+            case 331:
             case FinalCanbus.CAR_RZC_XP1_TianLai_H /* 65726 */:
             case FinalCanbus.CAR_RZC_XP1_04_07TianLai /* 131262 */:
+            case FinalCanbus.CAR_RZC_XP1_LuoLan_H /* 131403 */:
             case FinalCanbus.CAR_RZC_XP1_04_07TianLai_SP /* 196798 */:
             case FinalCanbus.CAR_RZC_XP1_20Xuanyi /* 262334 */:
             case FinalCanbus.CAR_RZC_XP1_20Xuanyi_H /* 327870 */:
@@ -8412,6 +8903,25 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Nissan_LANNIA_H /* 1310910 */:
             case FinalCanbus.CAR_RZC_Nissan_Sylphy_20 /* 1441982 */:
             case FinalCanbus.CAR_RZC_Nissan_Sylphy_20_H /* 1507518 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATHFINDER_14 /* 1966270 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATHFINDER_11 /* 2031806 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATROL_13 /* 2097342 */:
+            case FinalCanbus.CAR_RZC_Nissan_ALTIMA_12 /* 2162878 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATHFINDER_14_H /* 2228414 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATHFINDER_11_H /* 2293950 */:
+            case FinalCanbus.CAR_RZC_Nissan_PATROL_13_H /* 2359486 */:
+            case FinalCanbus.CAR_RZC_Nissan_Xtrail_Import_22 /* 2425022 */:
+            case FinalCanbus.CAR_RZC_Nissan_Xtrail_Import_22_H /* 2490558 */:
+            case FinalCanbus.CAR_RZC_Nissan_Tuda_18 /* 2556094 */:
+            case FinalCanbus.CAR_RZC_Nissan_Tuda_18_H /* 2621630 */:
+            case FinalCanbus.CAR_RZC_Nissan_NAVANA_16 /* 2687166 */:
+            case FinalCanbus.CAR_RZC_Nissan_NAVANA_16_H /* 2752702 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_18_Import /* 2818238 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_18_Import_H /* 2883774 */:
+            case FinalCanbus.CAR_RZC_Nissan_TITAN_19_Import /* 2949310 */:
+            case FinalCanbus.CAR_RZC_Nissan_TITAN_19_Import_H /* 3014846 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import /* 3080382 */:
+            case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import_H /* 3145918 */:
                 cls = NissanXiaokeCarSet.class;
                 break;
             case 217:
@@ -8420,11 +8930,21 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC4_PSA_408_SW /* 196825 */:
             case FinalCanbus.CAR_RZC4_PSA_408_CC /* 262361 */:
             case FinalCanbus.CAR_RZC4_PSA_RCZ /* 327897 */:
+            case FinalCanbus.CAR_RZC4_PSA_3008_KeepScreen /* 393433 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_Screen /* 458969 */:
                 cls = RZC_BZ408_Panel_IndexActi.class;
                 break;
             case 223:
-                cls = V11MDOAirControlActi.class;
-                break;
+            case FinalCanbus.CAR_RZC_FengGuang18Y580 /* 393530 */:
+            case FinalCanbus.CAR_RZC_FengGuang18Y580_H /* 459066 */:
+            case FinalCanbus.CAR_RZC1_MZDRX8 /* 524367 */:
+            case FinalCanbus.CAR_RZC_Jiangxi_Wushiling_Mux /* 852282 */:
+            case FinalCanbus.CAR_RZC_Jiangxi_FengguangS560_21 /* 1179962 */:
+            case FinalCanbus.CAR_RZC_FengGuang21Y580 /* 1245498 */:
+            case FinalCanbus.CAR_RZC_FengGuang21Y580_H /* 1311034 */:
+            case FinalCanbus.CAR_452_LZ_Ferrari_430 /* 2556357 */:
+            case FinalCanbus.CAR_OuDi_XP1_Borui_18 /* 3080331 */:
+            case FinalCanbus.CAR_OuDi_XP1_Borui_18_L /* 3145867 */:
             case 230:
             case FinalCanbus.CAR_WC1_BMW_E9X /* 65766 */:
             case FinalCanbus.CAR_WC1_BMW_F30 /* 131302 */:
@@ -8441,6 +8961,21 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case 237:
             case FinalCanbus.CAR_RZC_XP1_16HAIMAM3 /* 65773 */:
                 cls = ActivityHaiMaSettings.class;
+                break;
+            case 244:
+            case FinalCanbus.CAR_RZC_XP1_HavalH2_H /* 65780 */:
+            case FinalCanbus.CAR_RZC_HavalLow_H2_LanBiao /* 262388 */:
+            case FinalCanbus.CAR_RZC_HavalLow_H2_HongBiao /* 327924 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6 /* 458996 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_HongBiao /* 524532 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_LanBiao /* 590068 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_16 /* 786676 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_16_top /* 983284 */:
+            case FinalCanbus.CAR_RZC_HavalLow_Changchengpao_19 /* 1114356 */:
+            case FinalCanbus.CAR_RZC_XP1_HavalH6_H /* 1573108 */:
+            case FinalCanbus.CAR_RZC_Haval_H3_05 /* 1966324 */:
+            case FinalCanbus.CAR_RZC_HavalLow_Changchengpao_19_L /* 2294004 */:
+                cls = ActivityHava18H6SetAct.class;
                 break;
             case 252:
             case FinalCanbus.CAR_WC2_PSAALL_1 /* 65788 */:
@@ -8467,28 +9002,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_PSAALL_C4_09 /* 1442044 */:
             case FinalCanbus.CAR_WC2_PSAALL_Partner_09 /* 1507580 */:
             case FinalCanbus.CAR_WC2_PSAALL_Belingo_17 /* 1573116 */:
+            case FinalCanbus.CAR_WC2_PSAALL_5008_21 /* 1704188 */:
+            case FinalCanbus.CAR_WC2_PSAALL_208_23_SA /* 1769724 */:
+            case FinalCanbus.CAR_WC2_PSAALL_C3_22_SA /* 1835260 */:
                 cls = PSAIndexActi.class;
                 break;
-            case 255:
-            case 362:
-            case 413:
-            case FinalCanbus.CAR_RZC3_18_Zhipao /* 65898 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_All /* 131434 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_L /* 196970 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_10_15IX35 /* 393578 */:
-            case FinalCanbus.CAR_RZC_FengShenAX7_18 /* 590079 */:
-            case FinalCanbus.CAR_RZC_BenTeng_19B50_HAND /* 655773 */:
-            case FinalCanbus.CAR_RZC_FengShenAX5 /* 721151 */:
-            case FinalCanbus.CAR_RZC_BenTeng_19B50_AUTO /* 721309 */:
-            case FinalCanbus.CAR_RZC_FengShenA60 /* 786687 */:
-            case FinalCanbus.CAR_RZC_BenTeng_OLDB50 /* 786845 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = RZCAddCanDashBoard.class;
-                    break;
-                } else {
-                    cls = RZCAddCanDashBoard_HP.class;
-                    break;
-                }
             case 260:
             case FinalCanbus.CAR_WC2_ChuanQiGA6_M /* 65796 */:
             case FinalCanbus.CAR_WC2_ChuanQiGA6_H /* 131332 */:
@@ -8496,6 +9014,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_17ChuanQiGA4 /* 327969 */:
             case FinalCanbus.CAR_WC2_17ChuanQiGA4_H /* 393505 */:
             case FinalCanbus.CAR_WC2_18ChuanQiGE3 /* 459041 */:
+            case FinalCanbus.CAR_WC2_ChuanQiG_GS4_20 /* 590113 */:
+            case FinalCanbus.CAR_WC2_ChuanQiG_AION_19 /* 655649 */:
+            case FinalCanbus.CAR_WC2_ChuanQiG_GS8_17 /* 721185 */:
+            case FinalCanbus.CAR_WC2_ChuanQiG_AION_22 /* 786721 */:
                 cls = GS4CarSettingsAct.class;
                 break;
             case 262:
@@ -8534,23 +9056,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case 274:
             case FinalCanbus.CAR_DJ_XP1_ACCORD7_H /* 65810 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = ActivityAccord7AirDiagnosis.class;
-                    break;
-                } else {
-                    cls = ActivityAccord7Index.class;
+                if (LauncherApplication.getConfiguration() != 1) {
+					cls = ActivityAccord7Index.class;
                     break;
                 }
             case 276:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = ActivityNewAir.class;
-                    break;
-                } else {
-                    cls = ActAir_Byd_F6.class;
-                    break;
-                }
             case 281:
             case FinalCanbus.CAR_BNR_XP1_PsaAll /* 65817 */:
+            case FinalCanbus.CAR_XP1_PsaAll_AutoPark /* 262425 */:
                 cls = XpPsaAllIndexActi.class;
                 break;
             case 282:
@@ -8574,7 +9087,129 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = GS4IndexAct.class;
                 break;
             case 290:
+            case FinalCanbus.CAR_CZH_RZC_QiChenT70 /* 786722 */:
                 cls = QiChenT70Act.class;
+                break;
+            case 294:
+            case FinalCanbus.CAR_WC2_TOYOTA_REIZ /* 65830 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_RAV4 /* 131366 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_CAMRY /* 196902 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_COROLLA /* 262438 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_HIGHLANDER /* 327974 */:
+            case FinalCanbus.CAR_WC2_16RAV4_VIEW /* 459046 */:
+            case FinalCanbus.CAR_WC2_16RAV4_VIEW_AMP /* 524582 */:
+            case FinalCanbus.CAR_WC_SP_1213Camery /* 590118 */:
+            case FinalCanbus.CAR_WC_SP_1516Camery_15Reiz /* 655654 */:
+            case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ZiDong /* 721190 */:
+            case FinalCanbus.CAR_WC_SP_101416Prado_LuXun_12Rezi_ShouDong /* 786726 */:
+            case FinalCanbus.CAR_WC_SP_09Camery /* 852262 */:
+            case FinalCanbus.CAR_WC_SP_12LuXun /* 917798 */:
+            case FinalCanbus.CAR_WC_SP_15HighLand_Zidong /* 983334 */:
+            case FinalCanbus.CAR_WC_SP_15HighLand_ShouDong /* 1048870 */:
+            case FinalCanbus.CAR_WC_SP_09HighLand_Zidong /* 1114406 */:
+            case FinalCanbus.CAR_WC_SP_09HighLand_ShouDong /* 1179942 */:
+            case FinalCanbus.CAR_WC_SP_07KaluoLa_ZiDong /* 1245478 */:
+            case FinalCanbus.CAR_WC_SP_14KaluoLa_ZiDong /* 1311014 */:
+            case FinalCanbus.CAR_WC_SP_Alpha /* 1376550 */:
+            case FinalCanbus.CAR_WC_SP_02_09Prado /* 1442086 */:
+            case FinalCanbus.CAR_WC_SP_09_13RAV4 /* 1507622 */:
+            case FinalCanbus.CAR_WC_Toyota_21Sienna /* 1704230 */:
+            case FinalCanbus.CAR_WC2_18PRADO /* 1966374 */:
+            case FinalCanbus.CAR_WC2_18Camery /* 2031910 */:
+            case FinalCanbus.CAR_WC2_18PRADO_H /* 2097446 */:
+            case FinalCanbus.CAR_WC2_16PRADO /* 2162982 */:
+            case FinalCanbus.CAR_WC2_16PRADO_H /* 2228518 */:
+            case FinalCanbus.CAR_WC2_19RAV4 /* 2294054 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Vios /* 2359590 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Vios_H /* 2425126 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Vios /* 2490662 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Vios_H /* 2556198 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Corolla /* 2621734 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Corolla_H /* 2687270 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Corolla /* 2752806 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Corolla_H /* 2818342 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23GRANVIA /* 3014950 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23GRANVIA_H /* 3080486 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Veloz /* 3146022 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Veloz_H /* 3211558 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Fortuner /* 3277094 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Fortuner_H /* 3342630 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Innova /* 3408166 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Innova_H /* 3473702 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22RAV4 /* 3539238 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22RAV4_H /* 3604774 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22NOAH /* 3670310 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22NOAH_H /* 3735846 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19RAV4_TW /* 3801382 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19RAV4_TW_H /* 3866918 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19Corolla_TW /* 3932454 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19Corolla_TW_H /* 3997990 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23YarisCross_TW /* 4063526 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23YarisCross_TW_H /* 4129062 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Sienta_TW /* 4194598 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Sienta_TW_H /* 4260134 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_17Fortuner /* 4325670 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_13Vellfire /* 4391206 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_17Fortuner_H /* 4456742 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_13Vellfire_H /* 4522278 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_17CHR /* 4587814 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_17CHR_H /* 4653350 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_20Runner /* 4718886 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_20Runner_H /* 4784422 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Sienna_H /* 4849958 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Harrier /* 4915494 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Harrier_H /* 4981030 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22VENZA /* 5046566 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22VENZA_H /* 5112102 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21CROWNKLUGER /* 5177638 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21CROWNKLUGER_H /* 5243174 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22COROLLACROSS /* 5308710 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22COROLLACROSS_H /* 5374246 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Frontlander /* 5439782 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Frontlander_H /* 5505318 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22COROLLA_SA /* 5570854 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22COROLLA_SA_H /* 5636390 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_02Alpha /* 5701926 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Yaris_ASEAN /* 5767462 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Yaris_ASEAN_H /* 5832998 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_TMK_BENZ_EV_ALL /* 5898534 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_13Harrier_ASEAN /* 5964070 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_16Sienna /* 6029606 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_17Sienna_NA /* 6095142 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Tacoma_NA /* 6160678 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_22Camery_NA /* 6226214 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_18Prius_NA /* 6291750 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_16PriusV_NA /* 6357286 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21RAV4_NA /* 6422822 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_18IZOA /* 6488358 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_18IZOA_H /* 6553894 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_13Yaris /* 6619430 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Yaris /* 6684966 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_10ReiZ /* 6750502 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_14ReiZ /* 6816038 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_13Prius /* 6881574 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_14PRADO /* 6947110 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_10Avalon /* 7012646 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_15Avalon /* 7078182 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19Avalon /* 7143718 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_10Sienna /* 7209254 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_15Sienna /* 7274790 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21Sienna_NA /* 7340326 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_10Sequoia /* 7405862 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_14Tundra /* 7471398 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_18Tundra /* 7536934 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_16Hilux /* 7602470 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_16LuXun /* 7668006 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19ProACECity /* 7733542 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_07Previa /* 7799078 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_21HIACE /* 7864614 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_20Willander /* 7930150 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_15Crown /* 7995686 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_14Levin /* 8061222 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_19Levin /* 8126758 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Altis /* 8192294 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_23Altis_H /* 8257830 */:
+                cls = Rav4TripAct.class;
                 break;
             case 298:
             case FinalCanbus.CAR_XP1_2015SIYU_CRV_M /* 65834 */:
@@ -8584,12 +9219,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_ELYSION /* 1638698 */:
             case FinalCanbus.CAR_RZC_XP1_15ELYSION /* 1704234 */:
             case FinalCanbus.CAR_XP_2015SiYu_CRV /* 2294058 */:
+            case FinalCanbus.CAR_XP1_2015SiYu_CRV_H /* 4325674 */:
+            case FinalCanbus.CAR_RZC_CRV2012_H /* 4391210 */:
+            case FinalCanbus.CAR_RZC_2014SIYU_CRV_H /* 4456746 */:
+            case FinalCanbus.CAR_RZC_2014_CRV_H /* 4522282 */:
+            case FinalCanbus.CAR_RZC_SIYU2012_H /* 4587818 */:
                 cls = HondaIndexActi.class;
-                break;
-            case 300:
-            case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_L /* 131372 */:
-            case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_H /* 196908 */:
-                cls = RJIndexAct.class;
                 break;
             case 301:
                 cls = HC_Biaozhi206OilPage.class;
@@ -8672,20 +9307,85 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_Honda_23XRV /* 2883905 */:
             case FinalCanbus.CAR_RZC_HONDA_22INTEGRA /* 2949418 */:
             case FinalCanbus.CAR_WC2_Honda_15Aodesai_T /* 2949441 */:
+            case FinalCanbus.CAR_WC2_Honda_16CRV_OverSea_H /* 3080513 */:
             case FinalCanbus.CAR_DJ_RZC_HONDA_22Aodesai_Tai /* 3146026 */:
+            case FinalCanbus.CAR_WC2_Honda_16CRV_OverSea_L /* 3146049 */:
             case FinalCanbus.CAR_RZC_XP1_22ZRV /* 3211562 */:
             case FinalCanbus.CAR_RZC_XP1_22ZRV_H /* 3277098 */:
             case FinalCanbus.CAR_RZC_HONDA_22Aodesai_Tai /* 3342634 */:
+            case FinalCanbus.CAR_WC2_Honda_15_18Aodesai_H /* 3342657 */:
             case FinalCanbus.CAR_RZC_HONDA_22CRV /* 3408170 */:
+            case FinalCanbus.CAR_WC2_Honda_19Aodesai /* 3408193 */:
             case FinalCanbus.CAR_RZC_XP1_22ELYSION /* 3473706 */:
+            case FinalCanbus.CAR_WC2_Honda_14Freed /* 3473729 */:
             case FinalCanbus.CAR_RZC_XP1_XRV /* 3539242 */:
+            case FinalCanbus.CAR_WC2_Honda_23Freed /* 3539265 */:
             case FinalCanbus.CAR_RZC_XP1_XRV_H /* 3604778 */:
+            case FinalCanbus.CAR_WC2_Honda_22ZRV /* 3604801 */:
             case FinalCanbus.CAR_RZC_XP1_298JieDe /* 3670314 */:
+            case FinalCanbus.CAR_WC2_Honda_23HRV /* 3670337 */:
             case FinalCanbus.CAR_RZC_15FengFan /* 3735850 */:
+            case FinalCanbus.CAR_WC2_Honda_17URV /* 3735873 */:
             case FinalCanbus.CAR_RZC_16LingPai_HI /* 3801386 */:
+            case FinalCanbus.CAR_WC2_Honda_21LIFE /* 3801409 */:
             case FinalCanbus.CAR_RZC_15LingPai_MILOW /* 3866922 */:
+            case FinalCanbus.CAR_WC2_Honda_21MNV /* 3866945 */:
+            case FinalCanbus.CAR_WC2_Honda_22Integra /* 3932481 */:
+            case FinalCanbus.CAR_WC2_Honda_14Vezel /* 3998017 */:
             case FinalCanbus.CAR_RZC_HONDA_23CRV /* 4063530 */:
+            case FinalCanbus.CAR_WC2_Honda_13Jade /* 4063553 */:
             case FinalCanbus.CAR_RZC_HONDA_23XRV /* 4129066 */:
+            case FinalCanbus.CAR_WC2_Honda_15Greiz /* 4129089 */:
+            case FinalCanbus.CAR_WC2_Honda_17Gienia /* 4194625 */:
+            case FinalCanbus.CAR_WC2_Honda_14Jazz /* 4260161 */:
+            case FinalCanbus.CAR_WC2_Honda_15Spirior /* 4325697 */:
+            case FinalCanbus.CAR_WC2_Honda_18Clarity /* 4391233 */:
+            case FinalCanbus.CAR_WC2_Honda_15Pilot /* 4456769 */:
+            case FinalCanbus.CAR_WC2_Honda_19Passport /* 4522305 */:
+            case FinalCanbus.CAR_WC2_Honda_18Insight /* 4587841 */:
+            case FinalCanbus.CAR_RZC_HONDA_23FIT_Taiwan /* 4653354 */:
+            case FinalCanbus.CAR_WC2_Honda_12CRV_SP /* 4653377 */:
+            case FinalCanbus.CAR_RZC_HONDA_23HRV_Taiwan /* 4718890 */:
+            case FinalCanbus.CAR_WC2_Honda_12Civic_SP /* 4718913 */:
+            case FinalCanbus.CAR_WC2_Honda_14Civic_L_SP /* 4784449 */:
+            case FinalCanbus.CAR_WC2_Honda_14Civic_H_SP /* 4849985 */:
+            case FinalCanbus.CAR_RZC_HONDA_21Fit_H /* 4915498 */:
+            case FinalCanbus.CAR_WC2_Honda_19CRV_H /* 4915521 */:
+            case FinalCanbus.CAR_RZC_HONDA_23StepWGN /* 4981034 */:
+            case FinalCanbus.CAR_WC2_Honda_14Vezel_H /* 4981057 */:
+            case FinalCanbus.CAR_RZC_HONDA_21StepWGN /* 5046570 */:
+            case FinalCanbus.CAR_WC2_Honda_21CRV_H /* 5046593 */:
+            case FinalCanbus.CAR_RZC_HONDA_23HRV /* 5112106 */:
+            case FinalCanbus.CAR_WC2_Honda_17Elysion_H /* 5112129 */:
+            case FinalCanbus.CAR_RZC_HONDA_23BRV /* 5177642 */:
+            case FinalCanbus.CAR_WC2_Honda_19Elysion_H /* 5177665 */:
+            case FinalCanbus.CAR_RZC_HONDA_19NBox /* 5243178 */:
+            case FinalCanbus.CAR_WC2_Honda_19Aodesai_H /* 5243201 */:
+            case FinalCanbus.CAR_RZC_HONDA_19Freed /* 5308714 */:
+            case FinalCanbus.CAR_WC2_Honda_21BREEZE_H /* 5308737 */:
+            case FinalCanbus.CAR_RZC_HONDA_CRV_TW6_L /* 5374250 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_06_SP /* 5439786 */:
+            case FinalCanbus.CAR_WC2_Honda_22Accord_H /* 5439809 */:
+            case FinalCanbus.CAR_RZC_HONDA_CRV_TW6_CCD /* 5505322 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_EV /* 5898538 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_EV_H /* 5964074 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_EV /* 6029610 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_EV_H /* 6095146 */:
+            case FinalCanbus.CAR_RZC_HONDA_24Aodesai /* 6160682 */:
+            case FinalCanbus.CAR_RZC_HONDA_24Aodesai_H /* 6226218 */:
+            case FinalCanbus.CAR_RZC_HONDA_18Pilot /* 6291754 */:
+            case FinalCanbus.CAR_RZC_HONDA_18Pilot_H /* 6357290 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_06_SP_H /* 6422826 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_08_TypeR /* 6488362 */:
+            case FinalCanbus.CAR_RZC_HONDA_SIYU_08_TypeR_H /* 6553898 */:
+            case FinalCanbus.CAR_RZC_HONDA_Yage_03 /* 6619434 */:
+            case FinalCanbus.CAR_RZC_HONDA_Yage_03_H /* 6684970 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_CEV /* 6750506 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_CEV_H /* 6816042 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV /* 6881578 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV_H /* 6947114 */:
+            case FinalCanbus.CAR_RZC_HONDA_17URV /* 7012650 */:
+            case FinalCanbus.CAR_RZC_HONDA_17URV_H /* 7078186 */:
                 if (LauncherApplication.getConfiguration() == 1) {
                     cls = HondaIndexActi.class;
                     break;
@@ -8699,17 +9399,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_OD_DongNanDX7_15_17 /* 328009 */:
             case FinalCanbus.CAR_RZC_OD_DongNanDX5_18_20 /* 393545 */:
             case FinalCanbus.CAR_RZC_XP1_DongNanDX7_Low /* 459081 */:
+            case FinalCanbus.CAR_RZC_OD_DongNanDX7_18_20_H /* 655689 */:
+            case FinalCanbus.CAR_CZH_OD_DongNanDX7_18_20_H /* 721225 */:
                 cls = XfyDx7IndexAct.class;
                 break;
-            case 332:
-            case FinalCanbus.CAR_SB_GM /* 65868 */:
-                cls = SaiOu3Index.class;
-                break;
+            case 330:
             case 334:
+            case FinalCanbus.CAR_RZC_XP1_YiHu2017 /* 131406 */:
             case FinalCanbus.CAR_RZC_15Ruijie /* 196942 */:
             case FinalCanbus.CAR_RZC_ZhiSheng_Old /* 262478 */:
             case FinalCanbus.CAR_RZC_Lingjie2019 /* 459086 */:
             case FinalCanbus.CAR_RZC_Explorer /* 590158 */:
+            case FinalCanbus.CAR_RZC_XP1_YiHu2017_M /* 655694 */:
+            case FinalCanbus.CAR_RZC_XP1_YiHu2017_H /* 721230 */:
             case FinalCanbus.CAR_RZC_Escape_20 /* 917838 */:
             case FinalCanbus.CAR_RZC_NewFiestar /* 983374 */:
             case FinalCanbus.CAR_RZC_Ford_Transit /* 1114446 */:
@@ -8729,10 +9431,39 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Foed_YiBo /* 2163022 */:
             case FinalCanbus.CAR_RZC_Foed_YiBo_19 /* 2228558 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_Auto /* 2425166 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_Hand /* 2490702 */:
             case FinalCanbus.CAR_RCW_XP1_Focus2015 /* 2556238 */:
             case FinalCanbus.CAR_RZC_XP1_Focus2015_Air /* 2949454 */:
             case FinalCanbus.CAR_RZC_Explorer_13 /* 3014990 */:
+            case FinalCanbus.CAR_RZC_Ford_Transit_22_Overseas /* 3211598 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_13 /* 3277134 */:
+            case FinalCanbus.CAR_RZC_Ford_Puma_22 /* 3670350 */:
+            case FinalCanbus.CAR_RZC_Ford_Ranger_15_Vietnam /* 3735886 */:
+            case FinalCanbus.CAR_RZC_Ford_Ranger_20_Turkey /* 3801422 */:
+            case FinalCanbus.CAR_CZH_RZC_Focus2015 /* 3866958 */:
+            case FinalCanbus.CAR_RZC_XP1_Focus2015_M /* 4063566 */:
+            case FinalCanbus.CAR_RZC_XP1_Focus2015_H /* 4129102 */:
+            case FinalCanbus.CAR_RZC_Foed_Yihu_M /* 4194638 */:
+            case FinalCanbus.CAR_RZC_Foed_Yihu_H /* 4260174 */:
+            case FinalCanbus.CAR_RZC_Ecosport_M /* 4325710 */:
+            case FinalCanbus.CAR_RZC_Ecosport_H /* 4391246 */:
+            case FinalCanbus.CAR_RZC_NewFiestar_M /* 4456782 */:
+            case FinalCanbus.CAR_RZC_NewFiestar_H /* 4522318 */:
+            case FinalCanbus.CAR_RZC_Ford_YiBH_19_M /* 4849998 */:
+            case FinalCanbus.CAR_RZC_Ford_YiBH_19_H /* 4915534 */:
+            case FinalCanbus.CAR_RZC_XP1_OldFiestar_M /* 4981070 */:
+            case FinalCanbus.CAR_RZC_XP1_OldFiestar_H /* 5046606 */:
+            case FinalCanbus.CAR_RZC_Ford_Transit_M /* 5112142 */:
+            case FinalCanbus.CAR_RZC_Ford_Transit_H /* 5177678 */:
+            case FinalCanbus.CAR_RZC_Ford_Transit_22_OS_M /* 5243214 */:
+            case FinalCanbus.CAR_RZC_Ford_Transit_22_OS_H /* 5308750 */:
+            case FinalCanbus.CAR_RZC_Ford_Puma_22_M /* 5636430 */:
+            case FinalCanbus.CAR_RZC_Ford_Puma_22_H /* 5701966 */:
                 cls = FordIndexAct.class;
+                break;
+            case 332:
+            case FinalCanbus.CAR_SB_GM /* 65868 */:
+                cls = SaiOu3Index.class;
                 break;
             case 339:
             case FinalCanbus.CAR_RZC4_PSA_19_C4L /* 131411 */:
@@ -8757,6 +9488,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC4_PSA_16_CELYSEE_Turkey /* 1507667 */:
             case FinalCanbus.CAR_RZC4_PSA_19_BerLingo_Turkey /* 1573203 */:
             case FinalCanbus.CAR_RZC4_PSA_04_407 /* 1638739 */:
+            case FinalCanbus.CAR_RZC4_PSA_C4_OE_L /* 2228563 */:
+            case FinalCanbus.CAR_RZC4_PSA_C4_OE_M /* 2294099 */:
+            case FinalCanbus.CAR_RZC4_PSA_C4_OE_H /* 2359635 */:
                 cls = RZC_BZ408IndexActi.class;
                 break;
             case 347:
@@ -8775,12 +9509,61 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_HAOZHENG_XP1_Bmw_325i /* 459102 */:
                 cls = BmwIndexAct.class;
                 break;
+            case 352:
+            case FinalCanbus.CAR_WC2_RENAULT_KeLeiAo /* 65888 */:
+            case FinalCanbus.CAR_WC2_RENAULT_KeLeiJia /* 131424 */:
+            case FinalCanbus.CAR_WC2_RENAULT_CLIO4 /* 196960 */:
+            case FinalCanbus.CAR_WC2_RENAULT_04_07Megane2 /* 328032 */:
+            case FinalCanbus.CAR_WC2_RENAULT_Megane3 /* 393568 */:
+            case FinalCanbus.CAR_WC2_RENAULT_12Fluence /* 524640 */:
+            case FinalCanbus.CAR_WC2_RENAULT_DUSTER /* 590176 */:
+            case FinalCanbus.CAR_WC2_RENAULT_LATITUDE /* 655712 */:
+            case FinalCanbus.CAR_WC2_RENAULT_12Fluence_M /* 721248 */:
+            case FinalCanbus.CAR_WC2_RENAULT_12Fluence_H /* 786784 */:
+            case FinalCanbus.CAR_WC2_RENAULT_16DACIA_SANDERO /* 852320 */:
+            case FinalCanbus.CAR_WC2_RENAULT_Symbol /* 917856 */:
+            case FinalCanbus.CAR_WC2_RENAULT_CLIO3 /* 2294112 */:
+                cls = Megane4SetActi.class;
+                break;
             case 354:
             case FinalCanbus.CAR_XP1_14SanLinPajero_M /* 65890 */:
                 cls = SanlinXPCarSet.class;
                 break;
             case 360:
                 cls = Wc_360_DspinfoActi.class;
+                break;
+            case 362:
+            case FinalCanbus.CAR_RZC3_18_Zhipao /* 65898 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_All /* 131434 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_L /* 196970 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_10_15IX35 /* 393578 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_19FeiSiTa /* 459114 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Rohens /* 590186 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_19FeiSiTa_L /* 655722 */:
+            case FinalCanbus.CAR_RZC3_XianDai_15Veloster /* 721258 */:
+            case FinalCanbus.CAR_RZC3_XianDai_15I40 /* 786794 */:
+            case FinalCanbus.CAR_RZC3_Qiya_16Cadenza /* 852330 */:
+            case FinalCanbus.CAR_RZC3_Qiya_15Grandeur /* 917866 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_15Sonata8 /* 983402 */:
+            case FinalCanbus.CAR_RZC3_Qiya_16K3 /* 1048938 */:
+            case FinalCanbus.CAR_RZC3_Qiya_17KX7 /* 1114474 */:
+            case FinalCanbus.CAR_RZC3_Qiya_17KX_CORSS /* 1180010 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Rohens_Coupe /* 1245546 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Rohens_Coupe_12 /* 1311082 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SPORTAGE_16 /* 1442154 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SOUL_19 /* 1638762 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CARNIVAL_19 /* 1704298 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_IX35_10 /* 1769834 */:
+            case FinalCanbus.CAR_RZC3_XianDai_I30_15 /* 1835370 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CEED_11 /* 1900906 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Sorento_18 /* 2031978 */:
+            case FinalCanbus.CAR_RZC3_Qiya_16KX7_Import /* 2097514 */:
+            case FinalCanbus.CAR_RZC3_Qiya_18Tucson_Import /* 2163050 */:
+            case FinalCanbus.CAR_RZC3_Qiya_15K5_Import /* 2228586 */:
+            case FinalCanbus.CAR_RZC3_XianDai_13Rohens /* 2294122 */:
+            case FinalCanbus.CAR_RZC3_XianDai_12GRANDEUR_HG240 /* 2359658 */:
+            case FinalCanbus.CAR_RZC3_XianDai_14GENESIS_G330 /* 2425194 */:
+                cls = RZCXiandaiRohensCarSet.class;
                 break;
             case 365:
             case FinalCanbus.CAR_AY1_JeepZiYouGuang_M /* 65901 */:
@@ -8805,6 +9588,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC1_Jeep_15_RAM /* 917876 */:
             case FinalCanbus.CAR_WC1_Jeep_18_Zhihuiguan_H /* 983412 */:
             case FinalCanbus.CAR_WC1_Jeep_15_RAM_H /* 1048948 */:
+            case FinalCanbus.CAR_WC1_TMK_BENZ_MPV_ALL /* 1114484 */:
                 cls = Wc_372_IndexAct.class;
                 break;
             case 373:
@@ -8922,6 +9706,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_18KeLeiAo_LOW /* 3342738 */:
             case FinalCanbus.CAR_RZC_RENAULT_ARKANA /* 3408274 */:
             case FinalCanbus.CAR_RZC_RENAULT_ARKANA_H /* 3473810 */:
+            case FinalCanbus.CAR_RZC_UAZ /* 3539346 */:
             case FinalCanbus.CAR_RZC_Turkey_22KOLEOS_L /* 3604882 */:
             case FinalCanbus.CAR_RZC_Turkey_22KOLEOS_M /* 3670418 */:
             case FinalCanbus.CAR_RZC_Turkey_22KOLEOS_H /* 3735954 */:
@@ -8959,6 +9744,18 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Russian_20ARKANA_M /* 5833106 */:
             case FinalCanbus.CAR_RZC_Russian_20ARKANA_H /* 5898642 */:
             case FinalCanbus.CAR_RZC_Turkey_22KADJAR_M /* 5964178 */:
+            case FinalCanbus.CAR_RZC_CLIO5_Turkey_L_ATUO /* 6029714 */:
+            case FinalCanbus.CAR_RZC_17LIENUO_M_NoAQS /* 6095250 */:
+            case FinalCanbus.CAR_RZC_Vesta_21 /* 6160786 */:
+            case FinalCanbus.CAR_RZC_Renault_SM6_18 /* 6226322 */:
+            case FinalCanbus.CAR_RZC_Renault_SCENIC_16 /* 6291858 */:
+            case FinalCanbus.CAR_RZC_Renault_SM6_18_M /* 6357394 */:
+            case FinalCanbus.CAR_RZC_Renault_SCENIC_16_M /* 6422930 */:
+            case FinalCanbus.CAR_RZC_Renault_SM6_18_H /* 6488466 */:
+            case FinalCanbus.CAR_RZC_Renault_SCENIC_16_H /* 6554002 */:
+            case FinalCanbus.CAR_RZC_Renault_Dokker_18 /* 6750610 */:
+            case FinalCanbus.CAR_RZC_Renault_Dokker_18_H /* 6816146 */:
+            case FinalCanbus.CAR_RZC_17LIENUO_L_AUTO /* 6881682 */:
                 cls = KeLeiJiaIndexActi.class;
                 break;
             case 403:
@@ -8990,10 +9787,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_21Ruihu_3X /* 1507732 */:
             case FinalCanbus.CAR_RZC_LUZ_18QiRuiRuiHu8 /* 1704340 */:
             case FinalCanbus.CAR_RZC_XP1_19X90 /* 1835412 */:
+            case FinalCanbus.CAR_RZC_OD_18JieTU_X70 /* 1900948 */:
             case FinalCanbus.CAR_RZC_XP1_22Ruihu_3X /* 2032020 */:
             case FinalCanbus.CAR_RZC_XP1_23Ruihu_3X /* 2097556 */:
             case FinalCanbus.CAR_RZC_XP1_22AiRuiZe5 /* 2163092 */:
             case FinalCanbus.CAR_RZC_QiRui_Guojin_Junxing /* 2228628 */:
+            case FinalCanbus.CAR_RZC_XP1_23Ruihu_5X /* 2294164 */:
+            case FinalCanbus.CAR_OD_RZC_23QiRuiAiRuiZeE /* 2359700 */:
+            case FinalCanbus.CAR_RZC_XP1_23AiRuiZe5 /* 2425236 */:
+            case FinalCanbus.CAR_RZC_XP1_23AiRuiZe5_EV /* 2490772 */:
+            case FinalCanbus.CAR_OD_RZC_20Showjet /* 2687380 */:
+            case FinalCanbus.CAR_RZC_OD_18JieTU_X70_H /* 2752916 */:
+            case FinalCanbus.CAR_RZC_OD_19JieTU_X90 /* 2818452 */:
+            case FinalCanbus.CAR_RZC_OD_19JieTU_X90_H /* 2883988 */:
                 cls = ActivityQiRuiAiRuiZe.class;
                 break;
             case 406:
@@ -9061,6 +9867,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_DJ_XC_Nissan_Tianlai_03_07 /* 852397 */:
             case FinalCanbus.CAR_DJ_XC_TOYOTA_10_13PRADO /* 917933 */:
             case FinalCanbus.CAR_DJ_XC_TOYOTA_08_15LAND_CRUISER /* 983469 */:
+            case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER /* 1114541 */:
+            case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER_H /* 1180077 */:
                 cls = ActivityHuangGuanIndex.class;
                 break;
             case 430:
@@ -9076,6 +9884,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case 439:
             case FinalCanbus.CAR_RZC4_PSA_19_408 /* 590163 */:
             case FinalCanbus.CAR_RZC4_PSA_19_408_H /* 655699 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_L /* 2031955 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_M /* 2097491 */:
+            case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_H /* 2163027 */:
                 cls = RZC_BZ408IndexActi.class;
                 break;
             case 443:
@@ -9089,7 +9900,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Galant_07 /* 9109947 */:
             case FinalCanbus.CAR_443_WC2_Triton_23_H /* 9175483 */:
             case FinalCanbus.CAR_443_WC2_Xpander_23_H /* 9241019 */:
+            case FinalCanbus.CAR_443_WC2_Pajero_17 /* 14352827 */:
+            case FinalCanbus.CAR_443_WC2_Pajero_23 /* 14418363 */:
+            case FinalCanbus.CAR_443_WC2_Xpander_22 /* 14811579 */:
+            case FinalCanbus.CAR_443_WC2_Xpander_22_H /* 14877115 */:
                 cls = WC2SanlinCarInfo.class;
+                break;
+            case 444:
+            case FinalCanbus.CAR_444_WC2_Perodua_Aruz_17 /* 65980 */:
+            case FinalCanbus.CAR_444_WC2_Perodua_Bezza_16 /* 131516 */:
+            case FinalCanbus.CAR_444_WC2_Perodua_ALZA_H /* 2884028 */:
+            case FinalCanbus.CAR_443_WC2_Perodua_ALZA /* 10224059 */:
+            case FinalCanbus.CAR_443_WC2_Perodua_ATIVA /* 10289595 */:
+            case FinalCanbus.CAR_443_WC2_Perodua_AXIA /* 10355131 */:
+                cls = WCPeroduaAllCarSet.class;
                 break;
             case 448:
             case FinalCanbus.CAR_448_ZX_Yage10 /* 131520 */:
@@ -9121,7 +9945,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = WCChanganAllTireAct.class;
                 break;
             case FinalCanbus.CAR_DJ_ChuanQiGA6_M /* 65793 */:
-                cls = GA6AirSeatControlAct.class;
+            case FinalCanbus.CAR_XP2_LUZ_Audi_A3 /* 65803 */:
+            case FinalCanbus.CAR_XP2_LUZ_Audi_A4 /* 131339 */:
+            case FinalCanbus.CAR_XP2_LUZ_Audi_TT /* 196875 */:
+            case FinalCanbus.CAR_XP2_LUZ_Audi_A6_97 /* 262411 */:
+            case FinalCanbus.CAR_XP2_LUZ_Audi_R8_08 /* 327947 */:
+                cls = LuzAudioOldCarInfo.class;
                 break;
             case FinalCanbus.CAR_RZC_MingjueZS /* 65809 */:
             case FinalCanbus.CAR_RZC_XP1_RongWei_RX3 /* 327953 */:
@@ -9155,8 +9984,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = ActivityHavaH3.class;
                 break;
             case FinalCanbus.CAR_SBD_WC1_24vW3 /* 65849 */:
-                cls = Sbd_24vW3AirControlAct.class;
-                break;
             case FinalCanbus.CAR_WC2_14FIESTA /* 65855 */:
                 cls = ActivityIndex_14Festia.class;
                 break;
@@ -9166,6 +9993,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XC_OLD_YinFeiNiDi_Fx35 /* 262471 */:
                 cls = IndexAct_Hc_03TianLai.class;
                 break;
+            case FinalCanbus.CAR_DAOJUN_XP1_ATS_M /* 65884 */:
+            case FinalCanbus.CAR_DAOJUN_XP1_ATSL_High /* 328028 */:
+            case FinalCanbus.CAR_DAOJUN_CT5 /* 1048924 */:
+            case FinalCanbus.CAR_DAOJUN_XT4 /* 1114460 */:
             case FinalCanbus.CAR_WC2_GUOCHAN_1 /* 65931 */:
             case FinalCanbus.CAR_WC2_GUOCHAN_2 /* 131467 */:
             case FinalCanbus.CAR_WC2_GUOCHAN_4 /* 262539 */:
@@ -9175,11 +10006,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = ZTTireAct_Wc.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQiM50F /* 65932 */:
-                cls = ActivityM50FAirControl.class;
-                break;
             case FinalCanbus.CAR_DJ_SHA_BUS /* 65944 */:
-                cls = ActivityBusAirControl.class;
-                break;
             case FinalCanbus.CAR_XP_Renault_17Captur /* 65960 */:
             case FinalCanbus.CAR_XP_Renault_17Clio /* 131496 */:
             case FinalCanbus.CAR_XP_Renault_17Symbol /* 197032 */:
@@ -9197,6 +10024,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP_Renault_05_17Duster /* 1180072 */:
             case FinalCanbus.CAR_XP_Renault_20ARKANA /* 1245608 */:
             case FinalCanbus.CAR_XP_Renault_15KOLEOS /* 1376680 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
+            case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
                 cls = Xp_374_AegeaIndexActi.class;
                 break;
             case FinalCanbus.CAR_434_XP_Bravo_11 /* 65970 */:
@@ -9223,6 +10053,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_448_ZX_MZD /* 65984 */:
             case FinalCanbus.CAR_448_ZX_MZD_360 /* 197056 */:
             case FinalCanbus.CAR_448_6606_ZX_MZD /* 262592 */:
+            case FinalCanbus.CAR_448_6606_ZX_Honda_CRV_24 /* 328128 */:
+            case FinalCanbus.CAR_448_6606_ZX_Honda_CRV_17 /* 393664 */:
+            case FinalCanbus.CAR_448_6606_ZX_Honda_Accord_8 /* 459200 */:
+            case FinalCanbus.CAR_448_6606_ZX_Honda_Accord_7 /* 524736 */:
+            case FinalCanbus.CAR_448_ZX_Chuanqi_GS7 /* 590272 */:
+            case FinalCanbus.CAR_448_6606_ZX_MAZ /* 655808 */:
+            case FinalCanbus.CAR_448_6606_ZX_Honda_CRV_17_RIGHT /* 721344 */:
                 cls = ZXMZDSetFunc.class;
                 break;
             case FinalCanbus.CAR_452_XC_Tianlai_GJ /* 65988 */:
@@ -9232,9 +10069,72 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_HC_Nissan_GuiShi /* 7799223 */:
                 cls = ActivityTianLaiCarSettings.class;
                 break;
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_H /* 65990 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_M /* 131526 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_L_Auto /* 197062 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_L_Hand /* 262598 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_Lexus_Lx570_10_CD /* 328134 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_Lexus_Lx570_15_CD /* 393670 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_15_TCD /* 459206 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_16_TCD /* 524742 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LexusGX_13_CD /* 590278 */:
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LexusGX_14_CD /* 655814 */:
+                cls = LuzLexusISIndexAct.class;
+                break;
+            case FinalCanbus.CAR_455_LZ_CG_Toyota_4Runner_Auto /* 65991 */:
+            case FinalCanbus.CAR_455_LZ_Toyota_Alpha_DH_2 /* 131527 */:
+            case FinalCanbus.CAR_455_LZ_Toyota_Alpha_DH_3 /* 197063 */:
+            case FinalCanbus.CAR_455_LZ_YL_Toyota_Prado_14 /* 3211719 */:
+            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11 /* 5177797 */:
+            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_18 /* 5243333 */:
+            case FinalCanbus.CAR_454_LZ_TOYOTA_LC300_KycAir /* 6619590 */:
+            case FinalCanbus.CAR_LUZ_Toyato_All /* 7274935 */:
+            case FinalCanbus.CAR_LUZ_Toyato_All_H /* 7340471 */:
+            case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
+            case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:
+            case FinalCanbus.CAR_452_LZ_Toyato_RX270 /* 12714436 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_Prado /* 14877126 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_FJ_CRUISER /* 14942662 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_4Runner /* 15073734 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_Alpha /* 15204806 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_Alpha_3 /* 16187846 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_FJ_CRUISER_3 /* 16253382 */:
+            case FinalCanbus.CAR_454_LZ_6606_Toyota_FJ_CRUISER /* 16318918 */:
+            case FinalCanbus.CAR_454_LZ_6606_Toyota_FJ_CRUISER_3 /* 16384454 */:
+                cls = CamryIndexAct_LuZ.class;
+                break;
             case FinalCanbus.CAR_WC1_DaZhong_DZSJ /* 131073 */:
             case FinalCanbus.CAR_WC1_DaZhong_DZSJ1 /* 196609 */:
                 cls = VwDashBoard_DZSJ.class;
+                break;
+            case FinalCanbus.CAR_RZCexc_Feiyate_TORO /* 131111 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_DOBLO /* 196647 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_EGEA /* 262183 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500L /* 393255 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500X /* 589863 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_All_L /* 720935 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_All_M /* 786471 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_All_H /* 852007 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_ARGO_19 /* 983079 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_GIULIETTA_16 /* 1048615 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_159_09 /* 1114151 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_EGEA_M /* 1179687 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_EGEA_H /* 1245223 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_TORO_M /* 1441831 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_TORO_H /* 1507367 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_DOBLO_M /* 1572903 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_DOBLO_H /* 1638439 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500L_M /* 1835047 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500L_H /* 1900583 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500X_M /* 2228263 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_500X_H /* 2293799 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_ARGO_19_M /* 2621479 */:
+            case FinalCanbus.CAR_RZCexc_Feiyate_ARGO_19_H /* 2687015 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_GIULIETTA_16_M /* 2752551 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_GIULIETTA_16_H /* 2818087 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_159_09_M /* 2883623 */:
+            case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_159_09_H /* 2949159 */:
+                cls = RzcFeiyateIndexAct.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_OUSHANG /* 131142 */:
                 cls = ChangAnOuShangAct.class;
@@ -9247,23 +10147,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_20Oushang_X7_M /* 589952 */:
                 cls = ActivityChangAn17CS75.class;
                 break;
-            case FinalCanbus.CAR_RZC3_XiandaiIX35_H /* 131209 */:
-            case FinalCanbus.CAR_RZC3_MingTu_H /* 131225 */:
-            case FinalCanbus.CAR_RZC3_SoNaTa9_H /* 131321 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_M /* 262506 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_H /* 328042 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Qiya_All_H /* 524650 */:
-            case FinalCanbus.CAR_RZC3_XianDai_Rohens_Coupe_12_H /* 1376618 */:
-                cls = RZCXiandaiAmpCarSet.class;
-                break;
             case FinalCanbus.CAR_RZC_XP1_YuanJingX6 /* 131211 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = RZCAddCanDashBoard.class;
-                    break;
-                } else {
-                    cls = YuanJingX1CarSettingsAct.class;
-                    break;
-                }
+                cls = YuanJingX1CarSettingsAct.class;
+                break;
             case FinalCanbus.CAR_OUDI_BaoJun530 /* 131214 */:
                 cls = ActivityOudiBaojun530Info.class;
                 break;
@@ -9317,6 +10203,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP1_PsaAll_Berlingo /* 131353 */:
                 cls = XpPsaAllOrinalCarActivity.class;
                 break;
+            case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_L /* 131372 */:
+            case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_H /* 196908 */:
+                cls = RJIndexAct.class;
+                break;
             case FinalCanbus.CAR_WeiChi2_17ChangChengH6 /* 131392 */:
             case FinalCanbus.CAR_WeiChi2_18ChangChengH6 /* 196928 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengM6 /* 262464 */:
@@ -9336,6 +10226,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WeiChi2_Changcheng_pao /* 1507648 */:
             case FinalCanbus.CAR_WeiChi2_ChangCheng_18Copue /* 1769792 */:
             case FinalCanbus.CAR_WeiChi2_ChangCheng_18Copue_H /* 1835328 */:
+            case FinalCanbus.CAR_WeiChi2_ChangCheng_JOLION_21 /* 1900864 */:
+            case FinalCanbus.CAR_WeiChi2_ChangCheng_JOLION_21_H /* 1966400 */:
+            case FinalCanbus.CAR_WeiChi2_ChangCheng_F7X_19 /* 2031936 */:
+            case FinalCanbus.CAR_WeiChi2_ChangCheng_F7X_19_H /* 2097472 */:
                 cls = WcHaval17and18H6Acti.class;
                 break;
             case FinalCanbus.CAR_XP1_14SanLinPajero_H /* 131426 */:
@@ -9349,18 +10243,26 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_19Tiaozhanzhe_H /* 721269 */:
             case FinalCanbus.CAR_RZC_18Zhihuiguan_H /* 786805 */:
             case FinalCanbus.CAR_RZC_Dodge_JCUV /* 1114485 */:
+            case FinalCanbus.CAR_RZC_Jeep_Patriot /* 1180021 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM /* 1311093 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_H /* 1376629 */:
+            case FinalCanbus.CAR_RZC_10ZhiNanZhe /* 1442165 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_M /* 1835381 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_HY /* 1900917 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_HY_M /* 1966453 */:
             case FinalCanbus.CAR_RZC_Dodge_RAM_HY_H /* 2031989 */:
+            case FinalCanbus.CAR_RZC_XP1_ZiYouXia_H /* 2163061 */:
+            case FinalCanbus.CAR_RZC_Jeep_Patriot_H /* 2228597 */:
+            case FinalCanbus.CAR_RZC_10ZhiNanZhe_H /* 2294133 */:
+            case FinalCanbus.CAR_RZC_Dodge_JCUV_H /* 2359669 */:
                 cls = Rzc_ZiYouguang_Settings.class;
                 break;
             case FinalCanbus.CAR_XP1_ZiYouXia /* 131446 */:
             case FinalCanbus.CAR_XP1_RAM1500 /* 655734 */:
             case FinalCanbus.CAR_XP1_18ZiYouXia /* 721270 */:
             case FinalCanbus.CAR_BNR_XP1_ZiYouXia /* 1048950 */:
+            case FinalCanbus.CAR_XP1_RAM1500_M /* 4063606 */:
+            case FinalCanbus.CAR_XP1_RAM1500_H /* 4129142 */:
                 cls = Xp_374_FunctionlActi.class;
                 break;
             case FinalCanbus.CAR_WC2_RongWei_I5 /* 131488 */:
@@ -9368,17 +10270,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_RongWei_I5_H /* 459168 */:
                 cls = Wc_416_RongWei_IndexAct.class;
                 break;
-            case FinalCanbus.CAR_RZC_BENZ_MLSERIES_Portrait /* 131489 */:
-            case FinalCanbus.CAR_439_RZC_BenzAll_H /* 4522423 */:
-            case FinalCanbus.CAR_439_RZC_CanAdd /* 4784567 */:
-            case FinalCanbus.CAR_439_RZC_CanAdd2 /* 6160823 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = RZCAddCanDashBoard.class;
-                    break;
-                } else {
-                    cls = RZCAddCanDashBoard_HP.class;
-                    break;
-                }
             case FinalCanbus.CAR_RZC_HaiMaS5YOUNG /* 131494 */:
             case FinalCanbus.CAR_RZC_19HaiMaS5 /* 197030 */:
             case FinalCanbus.CAR_RZC_HaiMaS5YOUNG_H /* 262566 */:
@@ -9401,16 +10292,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos_M /* 3015108 */:
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos_H /* 3080644 */:
                 cls = Baogu_Renault_IndexAct.class;
-                break;
-            case FinalCanbus.CAR_RZCexc_Feiyate_DOBLO /* 196647 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_EGEA /* 262183 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_500L /* 393255 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_500X /* 589863 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_11Bravo /* 655399 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_All_L /* 720935 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_All_M /* 786471 */:
-            case FinalCanbus.CAR_RZCexc_Feiyate_All_H /* 852007 */:
-                cls = RzcFeiyateIndexAct.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_CX70 /* 196678 */:
             case FinalCanbus.CAR_BNR_CX70 /* 262214 */:
@@ -9453,9 +10334,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_Haoyue_20 /* 2556043 */:
             case FinalCanbus.CAR_RZC_XP1_Dihaoe_22 /* 2621579 */:
             case FinalCanbus.CAR_RZC_XP1_Xingrui_22 /* 2687115 */:
-            case FinalCanbus.CAR_RZC_BoYue_21 /* 2752651 */:
             case FinalCanbus.CAR_RZC_Xiongmao_Mini_23 /* 2818187 */:
             case FinalCanbus.CAR_RZC_Jili_TX5 /* 2883723 */:
+            case FinalCanbus.CAR_RZC_XP1_BingyuePro_19 /* 2949259 */:
+            case FinalCanbus.CAR_RZC_XP1_Bingyue_21_RS /* 3276939 */:
+            case FinalCanbus.CAR_RZC_XP1_Dihao_23 /* 3342475 */:
                 cls = YuanJingX1CarSettingsAct.class;
                 break;
             case FinalCanbus.CAR_WC2_07_AoDeSai /* 196774 */:
@@ -9525,25 +10408,57 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_BNR_XP1_ZiYouGuang_H /* 983414 */:
             case FinalCanbus.CAR_BNR_XP1_17ZhiNanZhe /* 1114486 */:
             case FinalCanbus.CAR_BNR_XP1_17ZhiNanZhe_H /* 1180022 */:
+            case FinalCanbus.CAR_XP1_RAM1500_H_AUTO /* 4194678 */:
                 cls = Xp_374_IndexActi.class;
+                break;
+            case FinalCanbus.CAR_RZC_XP1_RENAULT_KaBin /* 197010 */:
+            case FinalCanbus.CAR_RZC_Kangoo_Turkey_12 /* 2294162 */:
+            case FinalCanbus.CAR_RZC_FLUENCE_Turkey_14 /* 2359698 */:
+            case FinalCanbus.CAR_RZC_Symbol_Turkey_15 /* 2425234 */:
+            case FinalCanbus.CAR_RZC_SANDERO_Turkey /* 2490770 */:
+            case FinalCanbus.CAR_RZC_LODGY_Turkey /* 2556306 */:
+            case FinalCanbus.CAR_RZC_DUSTER_Turkey /* 2621842 */:
+            case FinalCanbus.CAR_RZC_MEGANE2 /* 2687378 */:
+            case FinalCanbus.CAR_RZC_MEGANE3 /* 2752914 */:
+            case FinalCanbus.CAR_RZC_Latltude_11 /* 2818450 */:
+            case FinalCanbus.CAR_RZC_Logan_17 /* 2883986 */:
+            case FinalCanbus.CAR_RZC_Dokker_17 /* 2949522 */:
+            case FinalCanbus.CAR_RZC_Lodgy_19 /* 3015058 */:
+            case FinalCanbus.CAR_RZC_Symbol_15 /* 3080594 */:
+            case FinalCanbus.CAR_RZC_Kangoo_12 /* 3146130 */:
+            case FinalCanbus.CAR_RZC_Kiwd_17 /* 3211666 */:
+            case FinalCanbus.CAR_RZC_Renault_CLIO3_05 /* 6619538 */:
+            case FinalCanbus.CAR_RZC_Renault_L9_05 /* 6685074 */:
+                cls = KeLeiJiaRadarSetting.class;
                 break;
             case FinalCanbus.CAR_DJ_SHA_BUS_JiuLong /* 197016 */:
                 cls = ActivityBusCarCheck.class;
                 break;
             case FinalCanbus.CAR_WC2_ToYoTa_10_Crown_ALL /* 197028 */:
-                cls = wc_420_crown_AirControlAct.class;
-                break;
+            case FinalCanbus.CAR_WC2_ToYoTa_Lexus_NX_SCREEN /* 852388 */:
             case FinalCanbus.CAR_LuZhen_Honda_Spirior /* 197033 */:
                 cls = Lz_425_Spirior_IndexActi.class;
                 break;
             case FinalCanbus.CAR_443_WC_12ELYSION /* 197051 */:
                 cls = HondaIndexActi.class;
                 break;
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_Auto /* 197052 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_P15_MC_EV /* 262588 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Auto /* 721340 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_GCC /* 852412 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_EV1 /* 917948 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_EV2 /* 983484 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_EV3 /* 1049020 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_OFFROAD /* 1114556 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_Auto2 /* 1180092 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_Iran /* 1900988 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_ADAS /* 3080636 */:
             case FinalCanbus.CAR_453_OD_Chuangwei_EV /* 197061 */:
             case FinalCanbus.CAR_453_RZC_Chuangwei_EV /* 8651205 */:
                 cls = ODCHuangWeiET5CarSet.class;
                 break;
             case FinalCanbus.CAR_XP1_DaZhong_L /* 262146 */:
+            case FinalCanbus.CAR_LZ_XP1_DaZhong_TuRui_03 /* 327682 */:
                 cls = DasAutoXpAct.class;
                 break;
             case FinalCanbus.CAR_WC2_CHANGAN_19KeSai /* 262272 */:
@@ -9606,6 +10521,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_RongWei_EI6 /* 262560 */:
                 cls = Act20ZSIndexAct.class;
                 break;
+            case FinalCanbus.CAR_CYT_YaGe7_38400 /* 262561 */:
+            case FinalCanbus.CAR_RCW_BYD_10_11F6 /* 328097 */:
+            case FinalCanbus.CAR_RCW_BYD_10_13G6 /* 393633 */:
+            case FinalCanbus.CAR_RCW_YaGe7_38400 /* 459169 */:
+            case FinalCanbus.CAR_WC_YaGe7_38400 /* 524705 */:
+            case FinalCanbus.CAR_454_LZ_Honda_AoDeSai_04 /* 16449990 */:
             case FinalCanbus.CAR_WC2_HuanSuS6 /* 262563 */:
             case FinalCanbus.CAR_WC2_HuanSuS6_H /* 328099 */:
             case FinalCanbus.CAR_OD_WC2_HuanSuS6 /* 1180067 */:
@@ -9625,6 +10546,36 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC3_XianDai_Sorento_21 /* 1311167 */:
             case FinalCanbus.CAR_RZC3_XianDai_Sorento_21_H /* 1376703 */:
             case FinalCanbus.CAR_RZC3_XianDai_Sorento_21_M /* 1442239 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SONATA_21 /* 1507775 */:
+            case FinalCanbus.CAR_RZC3_XianDai_AZERA_22 /* 1573311 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CRETA_22 /* 1638847 */:
+            case FinalCanbus.CAR_RZC3_XianDai_STARGAZER_22 /* 1704383 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SONATA_21_M /* 1769919 */:
+            case FinalCanbus.CAR_RZC3_XianDai_AZERA_22_M /* 1835455 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CRETA_22_M /* 1900991 */:
+            case FinalCanbus.CAR_RZC3_XianDai_STARGAZER_22_M /* 1966527 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SONATA_21_H /* 2032063 */:
+            case FinalCanbus.CAR_RZC3_XianDai_AZERA_22_H /* 2097599 */:
+            case FinalCanbus.CAR_RZC3_XianDai_CRETA_22_H /* 2163135 */:
+            case FinalCanbus.CAR_RZC3_XianDai_STARGAZER_22_H /* 2228671 */:
+            case FinalCanbus.CAR_RZC3_XianDai_OPTIMA_17 /* 2294207 */:
+            case FinalCanbus.CAR_RZC3_XianDai_OPTIMA_17_H /* 2359743 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SANTAFE_17 /* 2425279 */:
+            case FinalCanbus.CAR_RZC3_XianDai_SANTAFE_17_H /* 2490815 */:
+            case FinalCanbus.CAR_RZC3_XianDai_HB20S_23 /* 2556351 */:
+            case FinalCanbus.CAR_RZC3_XianDai_HB20S_23_M /* 2621887 */:
+            case FinalCanbus.CAR_RZC3_XianDai_HB20S_23_H /* 2687423 */:
+            case FinalCanbus.CAR_RZC3_XianDai_19Palisade /* 2752959 */:
+            case FinalCanbus.CAR_RZC3_XianDai_19Palisade_H /* 2818495 */:
+            case FinalCanbus.CAR_RZC3_XianDai_20CARNIVAL /* 2884031 */:
+            case FinalCanbus.CAR_RZC3_XianDai_20CARNIVAL_H /* 2949567 */:
+            case FinalCanbus.CAR_RZC3_XianDai_17KX7_H /* 3015103 */:
+            case FinalCanbus.CAR_RZC3_XianDai_15Sorento /* 3080639 */:
+            case FinalCanbus.CAR_RZC3_XianDai_15Sorento_H /* 3146175 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_19KX5_M /* 3211711 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_KX3_M /* 3277247 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_23Staria /* 3539391 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_23Staria_H /* 3604927 */:
                 cls = OD_19Tusheng_CarSettingAct.class;
                 break;
             case FinalCanbus.CAR_452_RZC_ChangAn_CS15_19 /* 262596 */:
@@ -9635,6 +10586,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_RZC_ChangAn_18CS55_H /* 3932612 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_18CS55 /* 7406007 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_18CS75 /* 8257975 */:
+            case FinalCanbus.CAR_454_RZC_Changan_Hunter_22_H /* 10092998 */:
             case FinalCanbus.CAR_452_RZC_ChangAn_Oushang_Changxing /* 11469252 */:
                 cls = RzcChanganCX70SetFunc.class;
                 break;
@@ -9655,18 +10607,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_OuDi_XP1_T60 /* 327819 */:
                 cls = BoyueCarSettingsAct.class;
                 break;
-            case FinalCanbus.CAR_RZC_HavalLow_H2_HongBiao /* 327924 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6 /* 458996 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_HongBiao /* 524532 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_LanBiao /* 590068 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_16 /* 786676 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_16_top /* 983284 */:
-            case FinalCanbus.CAR_RZC_HavalLow_Changchengpao_19 /* 1114356 */:
-            case FinalCanbus.CAR_RZC_XP1_HavalH6_H /* 1573108 */:
-            case FinalCanbus.CAR_RZC_Haval_H3_05 /* 1966324 */:
-            case FinalCanbus.CAR_RZC_HavalLow_Changchengpao_19_L /* 2294004 */:
-                cls = ActivityHava18H6SetAct.class;
-                break;
             case FinalCanbus.CAR_WC2_18BaoJun530 /* 327926 */:
                 cls = ActivityBaojun530Info.class;
                 break;
@@ -9679,8 +10619,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_QiChenT90 /* 327970 */:
             case FinalCanbus.CAR_RZC_XP1_QiChenD60 /* 393506 */:
             case FinalCanbus.CAR_RZC_XP1_QiChen18T70 /* 459042 */:
-                cls = AirRzcQiChenT90.class;
-                break;
+            case FinalCanbus.CAR_CZH_RZC_QiChenD60 /* 852258 */:
+            case FinalCanbus.CAR_CZH_RZC_QiChen18T70 /* 917794 */:
             case FinalCanbus.CAR_BNR_XP1_AoDeSai /* 327978 */:
                 cls = Act_CarCD_AoDeSai.class;
                 break;
@@ -9704,6 +10644,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Mustang_HY_LOW /* 2818382 */:
             case FinalCanbus.CAR_RZC_Mustang_HY_H /* 2883918 */:
             case FinalCanbus.CAR_RZC_Ford_F150 /* 3080526 */:
+            case FinalCanbus.CAR_RZC_Ford_F150_DZ /* 3604814 */:
+            case FinalCanbus.CAR_CZH_RZC_13_20Mengdiou /* 3998030 */:
+            case FinalCanbus.CAR_RZC_Focus2019_M /* 4587854 */:
+            case FinalCanbus.CAR_RZC_Focus2019_H /* 4653390 */:
+            case FinalCanbus.CAR_RZC_Jinniu2019_M /* 4718926 */:
+            case FinalCanbus.CAR_RZC_Jinniu2019_H /* 4784462 */:
+            case FinalCanbus.CAR_RZC_Mustang_NOCD_M /* 5505358 */:
+            case FinalCanbus.CAR_RZC_Mustang_NOCD_H /* 5570894 */:
                 cls = FordCarSet_RZC.class;
                 break;
             case FinalCanbus.CAR_XP1_KeLeiAo_L /* 328054 */:
@@ -9711,10 +10659,49 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = Act_Keleijia_Index.class;
                 break;
             case FinalCanbus.CAR_SBD_Ford_LieYing /* 328078 */:
-                cls = AirSBDFordLieYing.class;
-                break;
             case FinalCanbus.CAR_438_DJ_YuanJingX1 /* 328118 */:
-                cls = YuanJingX1_AirControlAct_DJ.class;
+            case FinalCanbus.CAR_444_WC2_XianDai_All_22Staria /* 328124 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_22Staria_H /* 393660 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_IX35 /* 1966523 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_15Carnival /* 1966524 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_IX35_H /* 2032059 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_15Carnival_H /* 2032060 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_IX45 /* 2097595 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_23NewZealand /* 2097596 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_IX45_H /* 2163131 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_23NewZealand_H /* 2163132 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata8 /* 2228667 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_15Sonata9_M /* 2228668 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata8_H /* 2294203 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_15Sonata9_H /* 2294204 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata9 /* 2359739 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_18Sonata9_H /* 2359740 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata9_H /* 2425275 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_11Veloster /* 2425276 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Mingtu /* 2490811 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Mingtu_H /* 2556347 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_TuSheng /* 2621883 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Lingdong /* 2687419 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_16K5 /* 2752955 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_16KX5 /* 2818491 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Suolantuo /* 2884027 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_17Sonata9 /* 2949563 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_21Elantra /* 2949564 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_15IX45_H /* 3015099 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_21Elantra_H /* 3015100 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_17KX7 /* 3080635 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_17KX7_H /* 3146171 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sonata9_M /* 3211707 */:
+            case FinalCanbus.CAR_444_WC2_XianDai_All_21Elantra_EV /* 3211708 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sonata9_L /* 3277243 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_18Encino /* 3342779 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sportage /* 3408315 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_19Shengda /* 3473851 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_19Shengda_H /* 3867067 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_Santafe /* 10092987 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_22NIRO /* 10158523 */:
+            case FinalCanbus.CAR_443_WC2_XianDai_All_18OPTIMA /* 15073723 */:
+                cls = ActivityWCXianDaiAllSet.class;
                 break;
             case FinalCanbus.CAR_452_RZC_ChangAn_Oushangx7_20 /* 328132 */:
             case FinalCanbus.CAR_453_RZC_Changan_CS15_EPro_21 /* 3473861 */:
@@ -9729,49 +10716,25 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_MengDiOuZS2018 /* 458773 */:
                 cls = Wc_21_EcosportSetAct.class;
                 break;
+            case FinalCanbus.CAR_WC2_20BaoJun530_Auto /* 393462 */:
+            case FinalCanbus.CAR_WC2_20BaoJun530_Hand /* 458998 */:
+                cls = ActivityWC20Baojun530Info.class;
+                break;
             case FinalCanbus.CAR_Oudi_HanTeng_X5 /* 393471 */:
             case FinalCanbus.CAR_Oudi_XiaoYao /* 459007 */:
             case FinalCanbus.CAR_452_OD_Hongqi_H7 /* 12124612 */:
+            case FinalCanbus.CAR_454_CZH_OD_Hongqi_EQM5 /* 16515526 */:
                 cls = Oudi_0255_HanTengX5_IndexAct.class;
                 break;
             case FinalCanbus.CAR_BNR_ZhongTaiT600 /* 393481 */:
                 cls = IndexAct_Bnr.class;
                 break;
-            case FinalCanbus.CAR_RZC_FengGuang18Y580 /* 393530 */:
-            case FinalCanbus.CAR_RZC_FengGuang18Y580_H /* 459066 */:
-            case FinalCanbus.CAR_RZC_Jiangxi_Wushiling_Mux /* 852282 */:
-            case FinalCanbus.CAR_RZC_Jiangxi_FengguangS560_21 /* 1179962 */:
-            case FinalCanbus.CAR_RZC_FengGuang21Y580 /* 1245498 */:
-            case FinalCanbus.CAR_RZC_FengGuang21Y580_H /* 1311034 */:
-                cls = Air_Activity_All_Toyota_prado_HP.class;
-                break;
             case FinalCanbus.CAR_WC_17KX7_ARM /* 393610 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_IX35 /* 1966523 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_IX35_H /* 2032059 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_IX45 /* 2097595 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_IX45_H /* 2163131 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata8 /* 2228667 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata8_H /* 2294203 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata9 /* 2359739 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Sonata9_H /* 2425275 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Mingtu /* 2490811 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Mingtu_H /* 2556347 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_TuSheng /* 2621883 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Lingdong /* 2687419 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_16K5 /* 2752955 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_16KX5 /* 2818491 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_Suolantuo /* 2884027 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_17Sonata9 /* 2949563 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_15IX45_H /* 3015099 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_17KX7 /* 3080635 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_17KX7_H /* 3146171 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sonata9_M /* 3211707 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sonata9_L /* 3277243 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_18Encino /* 3342779 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_18Sportage /* 3408315 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_19Shengda /* 3473851 */:
-            case FinalCanbus.CAR_443_WC2_XianDai_All_19Shengda_H /* 3867067 */:
                 cls = ActivityKX7CameraSet.class;
+                break;
+            case FinalCanbus.CAR_OD_Jiangxi_Wushiling_Mux /* 393638 */:
+            case FinalCanbus.CAR_OD_Jiangxi_Lingtuo /* 459174 */:
+                cls = ODJianglingSetFunc.class;
                 break;
             case FinalCanbus.CAR_439_DJ_XP1_HuiTeng /* 393655 */:
             case FinalCanbus.CAR_439_DJ_XP1_HuiTeng_H /* 459191 */:
@@ -9784,7 +10747,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_CX7_H /* 655803 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_M7 /* 852411 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_CX7_L /* 1049019 */:
-                cls = MzdAllM3ClockSetActi.class;
+            case FinalCanbus.CAR_443_WC2_MAZD_ALL_M6_Ruiyi /* 15663547 */:
+                cls = ActivityMzdAllHUDCarSet.class;
+                break;
+            case FinalCanbus.CAR_455_LZ_Fiat_500_07 /* 393671 */:
+            case FinalCanbus.CAR_455_LZ_Fiat_Bravo_08 /* 459207 */:
+            case FinalCanbus.CAR_455_LZ_Alfa_MITO_08 /* 524743 */:
+                cls = LZFiatInfCarSet.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_08_12TianLai /* 458942 */:
                 cls = XBS09TianlaiIndexAct.class;
@@ -9819,6 +10788,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_L /* 2621792 */:
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_M /* 2687328 */:
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_H /* 2752864 */:
+            case FinalCanbus.CAR_WC2_LADA_VESTA /* 2818400 */:
                 cls = WCRenaultIndexActi.class;
                 break;
             case FinalCanbus.CAR_XP1_FAITAEGEA /* 459126 */:
@@ -9827,7 +10797,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = Xp_374_AegeaIndexActi.class;
                 break;
             case FinalCanbus.CAR_WC2_GUOCHAN_7 /* 459147 */:
-                cls = ActivityHaiMaV70AirControl.class;
+            case FinalCanbus.CAR_XP1_YearGmcSeries_NoAir /* 459164 */:
+                cls = GMCPannelSetActi.class;
                 break;
             case FinalCanbus.CAR_452_Oudi_DongnanV5_13_16 /* 459204 */:
             case FinalCanbus.CAR_452_Oudi_DongnanV6_13_16 /* 524740 */:
@@ -9844,6 +10815,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_BNR_SR7 /* 524553 */:
                 cls = ActivitySR7Setting_Bnr.class;
                 break;
+            case FinalCanbus.CAR_RZC_OD_Sibalu_Legacy_20 /* 524560 */:
+                cls = ODSubaruLegacyCarInfo.class;
+                break;
             case FinalCanbus.CAR_RZC_DongFengYiZhi_19EV3 /* 524602 */:
             case FinalCanbus.CAR_RZC_DongFengYiZhi_18E400 /* 721210 */:
             case FinalCanbus.CAR_RZC_FengGuang19E3 /* 1769786 */:
@@ -9856,15 +10830,24 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = JYIndexAct.class;
                 break;
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_14Prodo_ShuPing /* 524717 */:
-                cls = dj_429_crown_AirControlAct.class;
-                break;
             case FinalCanbus.CAR_439_DJ_14B70 /* 524727 */:
                 cls = DaojunB70LowCarSettingAct.class;
+                break;
+            case FinalCanbus.CAR_444_WC2_TD_LandRover_Bose /* 524732 */:
+            case FinalCanbus.CAR_444_WC2_TD_LandRover_Haman /* 590268 */:
+            case FinalCanbus.CAR_444_WC2_TD_BBA_SCREEN /* 655804 */:
+            case FinalCanbus.CAR_444_WY_Audi_Q4 /* 2818492 */:
+            case FinalCanbus.CAR_443_WY_Audi_Q3 /* 7668155 */:
+            case FinalCanbus.CAR_443_WY_MZD_All /* 7733691 */:
+                cls = WYBBACarInfo.class;
                 break;
             case FinalCanbus.CAR_453_OD_GuanZhi /* 524741 */:
             case FinalCanbus.CAR_439_BNR_GuanZhi /* 1638839 */:
             case FinalCanbus.CAR_452_DJ_Guanzhi /* 11272644 */:
                 cls = BnrGuanzhiIndexAct.class;
+                break;
+            case FinalCanbus.CAR_RZC1_MZD3_05 /* 589903 */:
+                cls = RZCMzd3CarInfo.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTongT60 /* 590089 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTongV80 /* 721161 */:
@@ -9876,13 +10859,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_ChuanQiGE3_18 /* 786712 */:
             case FinalCanbus.CAR_RZC_Qizhi_EV /* 1179928 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_20_EV /* 1966360 */:
+            case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
                 cls = RzcGS4IndexAct.class;
-                break;
-            case FinalCanbus.CAR_RZC3_XianDai_Rohens /* 590186 */:
-                cls = RZCXiandaiRohensCarSet.class;
                 break;
             case FinalCanbus.CAR_439_DJ_14B70_H /* 590263 */:
                 cls = DaojunB70CarSettingAct.class;
+                break;
+            case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15_YC /* 590279 */:
+            case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15H_YC /* 655815 */:
+                cls = KYCToyotaAllCarSet.class;
                 break;
             case FinalCanbus.CAR_OD_NISSAN_Qijun_L /* 655440 */:
             case FinalCanbus.CAR_OD_NISSAN_Qijun_H /* 720976 */:
@@ -9921,6 +10906,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case FinalCanbus.CAR_452_Oudi_Jianghuai_Ruifeng_S7 /* 655812 */:
             case FinalCanbus.CAR_452_Oudi_Jianghuai_Ruifeng_S7_H /* 721348 */:
+            case FinalCanbus.CAR_454_OD_Jianghuai_SEHOL_E50A /* 2490822 */:
             case FinalCanbus.CAR_453_OD_Jianghuai_YuejiaA5 /* 2818501 */:
             case FinalCanbus.CAR_453_OD_Jianghuai_YuejiaA5_H /* 2884037 */:
             case FinalCanbus.CAR_453_KYC_OD_Jianghuai_YuejiaA5 /* 3015109 */:
@@ -9937,6 +10923,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_KYC_Sanlin_Pajero_V97_L /* 10092996 */:
             case FinalCanbus.CAR_452_KYC_Sanlin_Pajero_20_H /* 10158532 */:
             case FinalCanbus.CAR_452_KYC_Sanlin_Pajero_20_L /* 10224068 */:
+            case FinalCanbus.CAR_454_OD_Jianghuai_IC5 /* 15270342 */:
                 cls = JhRuiFengR3IndexAct.class;
                 break;
             case FinalCanbus.CAR_BNR_NISSAN_14QiJun_H /* 721220 */:
@@ -9963,6 +10950,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = ActivityMzdAllIndexAct.class;
                 break;
             case FinalCanbus.CAR_453_PA_Ford_F150_10_CD /* 721349 */:
+            case FinalCanbus.CAR_PA_Ford_Explorer_19 /* 2883958 */:
+            case FinalCanbus.CAR_PA_Ford_Fusion_22 /* 2949494 */:
+            case FinalCanbus.CAR_PA_Ford_F150_14 /* 3015030 */:
+            case FinalCanbus.CAR_PA_Ford_F150_20 /* 3080566 */:
+            case FinalCanbus.CAR_PA_Ford_Focus_18 /* 3146102 */:
+            case FinalCanbus.CAR_PA_Ford_Expedition_21 /* 3211638 */:
+            case FinalCanbus.CAR_PA_Ford_Expedition_17 /* 3277174 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_21 /* 3342710 */:
             case FinalCanbus.CAR_PA_Ford_Explorer_19_CD /* 3408246 */:
             case FinalCanbus.CAR_PA_Ford_Fusion_22_CD /* 3473782 */:
             case FinalCanbus.CAR_PA_Ford_F150_14_CD /* 3539318 */:
@@ -9971,9 +10966,30 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_PA_Ford_Expedition_21_CD /* 3735926 */:
             case FinalCanbus.CAR_PA_Ford_Expedition_17_CD /* 3801462 */:
             case FinalCanbus.CAR_PA_Ford_F_Super_duty_21_CD /* 3866998 */:
+            case FinalCanbus.CAR_PA_Ford_mustang_15 /* 3932534 */:
             case FinalCanbus.CAR_PA_Ford_mustang_15_CD /* 3998070 */:
+            case FinalCanbus.CAR_PA_Ford_Explorer_19_Amp /* 4260214 */:
+            case FinalCanbus.CAR_PA_Ford_Fusion_22_Amp /* 4325750 */:
+            case FinalCanbus.CAR_PA_Ford_F150_14_Amp /* 4391286 */:
+            case FinalCanbus.CAR_PA_Ford_F150_20_Amp /* 4456822 */:
+            case FinalCanbus.CAR_PA_Ford_Focus_18_Amp /* 4522358 */:
+            case FinalCanbus.CAR_PA_Ford_Expedition_21_Amp /* 4587894 */:
+            case FinalCanbus.CAR_PA_Ford_Expedition_17_Amp /* 4653430 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_21_Amp /* 4718966 */:
+            case FinalCanbus.CAR_PA_Ford_mustang_15_Amp /* 4784502 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_16 /* 4850038 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_CD /* 4915574 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_Amp /* 4981110 */:
             case FinalCanbus.CAR_453_PA_Ford_Mustang_10_CD /* 5702085 */:
                 cls = PAFordAllIndexActi.class;
+                break;
+            case FinalCanbus.CAR_454_RZC_Perodua_Alza_22 /* 721350 */:
+            case FinalCanbus.CAR_454_RZC_Perodua_Aruz_22 /* 786886 */:
+            case FinalCanbus.CAR_454_RZC_Perodua_Ativa_22 /* 852422 */:
+            case FinalCanbus.CAR_454_RZC_Perodua_Axia_22 /* 917958 */:
+            case FinalCanbus.CAR_454_RZC_Perodua_Bezza_22 /* 983494 */:
+            case FinalCanbus.CAR_454_RZC_Perodua_Myvi_22 /* 1049030 */:
+                cls = RzcPeroduaIndexAct.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQi_18HuansuS7 /* 786828 */:
             case FinalCanbus.CAR_RZC_XP1_BeiQi_18HuansuS7_H /* 852364 */:
@@ -9984,11 +11000,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_19K5_E /* 917951 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_Sonata9M_E /* 983487 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_Sonata9H_E /* 1049023 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_ENCINO /* 3342783 */:
+            case FinalCanbus.CAR_RZC3_XianDai_Qiya_ENCINO_H /* 3408319 */:
                 cls = RZC_Xiandai_E_IndexAct.class;
                 break;
             case FinalCanbus.CAR_452_RZC_LandRover_Discovery_15 /* 786884 */:
             case FinalCanbus.CAR_452_RZC_LandRover_RANGE_12 /* 2163140 */:
                 cls = RzcLandRoverIndexAct.class;
+                break;
+            case FinalCanbus.CAR_455_OD_Zhongtai_E200 /* 786887 */:
+                cls = ODZhongtaiE200CarInfo.class;
                 break;
             case FinalCanbus.CAR_RZC_Nissan_Tianlai_Gongjue /* 852158 */:
                 cls = RZCNissanAmpCarSet.class;
@@ -10011,6 +11032,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_RZC_ZHongtai_E200_18 /* 852420 */:
                 cls = RzcZhongtaiE200CarInfo.class;
                 break;
+            case FinalCanbus.CAR_455_XP_Ford_F150_2012 /* 852423 */:
+            case FinalCanbus.CAR_455_XP_Ford_F150_2012_Auto /* 917959 */:
+                cls = XPFordF150CarSet.class;
+                break;
             case FinalCanbus.CAR_RZC_Nissan_JUKE_H /* 917694 */:
                 cls = RZCNissanJUKECarSet.class;
                 break;
@@ -10031,13 +11056,50 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_Rx_H /* 983492 */:
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09 /* 1114565 */:
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09_H /* 1180101 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_L /* 2687431 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_M /* 2752967 */:
+            case FinalCanbus.CAR_455_LZ_ToYoTa_12Crown_H /* 2818503 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_IS /* 3080631 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_IS_H /* 3146167 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_ES /* 3211703 */:
             case FinalCanbus.CAR_439_LUZ_LEXUS_ES_H /* 3277239 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_Prius_03_L /* 3539398 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_Prius_03_H /* 3604934 */:
+            case FinalCanbus.CAR_454_LZ_Lexus_RX330_L /* 3801542 */:
+            case FinalCanbus.CAR_454_LZ_Lexus_RX330_H /* 3867078 */:
             case FinalCanbus.CAR_453_LZ_Toyota_markII_L /* 9634245 */:
             case FinalCanbus.CAR_453_LZ_Toyota_markII_H /* 9699781 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_LEUXS_RX300 /* 15008198 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_FJ_CRUISER /* 15139270 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_FJ_CRUISER_H /* 15532486 */:
+            case FinalCanbus.CAR_454_LZ_CG_Toyota_LEUXS_RX300_H /* 15598022 */:
                 cls = LuzLexusISIndexAct.class;
+                break;
+            case FinalCanbus.CAR_RZC_XP1_98_05Lexus_Rx300 /* 983152 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_NX200_17 /* 1507440 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_ES200_13 /* 1572976 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_RX270_14 /* 1638512 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_RX_09_14 /* 1769584 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_20 /* 1835120 */:
+            case FinalCanbus.CAR_RZC_XC_Huangguan_14 /* 2162800 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_GS_04_07 /* 2818160 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_LS_04_06 /* 2883696 */:
+            case FinalCanbus.CAR_RZC_XP1_05_REIZ /* 3407984 */:
+            case FinalCanbus.CAR_RZC_Toyota_Prado_02_L /* 4653168 */:
+            case FinalCanbus.CAR_RZC_Toyota_Prado_02_H /* 4718704 */:
+            case FinalCanbus.CAR_RZC_XP1_05_REIZ_H /* 4784240 */:
+            case FinalCanbus.CAR_RZC_Toyota_Prado_10_CD /* 4849776 */:
+            case FinalCanbus.CAR_RZC_Toyota_LandCruiser_13_ABC /* 4980848 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_IS_06 /* 5505136 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_IS_06_H /* 5570672 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_ES_06 /* 5636208 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_ES_06_H /* 5701744 */:
+            case FinalCanbus.CAR_RZC_Toyota_PRIUS_CD /* 5767280 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_LS460 /* 5898352 */:
+            case FinalCanbus.CAR_RZC_XP1_Lexus_LS460_H /* 5963888 */:
+            case FinalCanbus.CAR_RZC_XP1_LC100 /* 6029424 */:
+            case FinalCanbus.CAR_RZC_XP1_LC100_H /* 6094960 */:
+                cls = ToyotaLexusIndexActi.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40_21 /* 983436 */:
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40_21_H /* 1048972 */:
@@ -10045,14 +11107,34 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = RZCBeiqiBJ40CarSet.class;
                 break;
             case FinalCanbus.CAR_439_OuDi_Z560 /* 983479 */:
-                cls = OdChanganAirControlAct.class;
-                break;
+            case FinalCanbus.CAR_455_LZ_Toyota_LAND_CRUISER_11_CD_YL /* 983495 */:
+            case FinalCanbus.CAR_455_LZ_Toyota_LAND_CRUISER_11_CD_YL_H /* 1049031 */:
+            case FinalCanbus.CAR_455_LZ_CG_Toyota_LEUXS_GX /* 3015111 */:
+            case FinalCanbus.CAR_455_LZ_CG_Toyota_LEUXS_GX_H /* 3080647 */:
+            case FinalCanbus.CAR_455_LZ_YL_Toyota_LEUXS_GX /* 3342791 */:
+            case FinalCanbus.CAR_455_LZ_YL_Toyota_LEUXS_GX_H /* 3408327 */:
+            case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
+            case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
+            case FinalCanbus.CAR_452_LZ_Toyota_LC100 /* 5439940 */:
+            case FinalCanbus.CAR_452_LZ_Toyota_LC100_H /* 5505476 */:
+            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD /* 8913349 */:
+            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD_H /* 8978885 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH /* 16581062 */:
+            case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH_H /* 16646598 */:
+                if (LauncherApplication.getConfiguration() == 1) {
+                    cls = LuzLexusLSClockSetAct.class;
+                    break;
+                } else {
+                    cls = LuzLexusISIndexAct.class;
+                    break;
+                }
             case FinalCanbus.CAR_OD_NISSAN_Xima_L /* 1048656 */:
             case FinalCanbus.CAR_OD_NISSAN_Xima_H /* 1114192 */:
             case FinalCanbus.CAR_OD_NISSAN_Loulan_L /* 1179728 */:
             case FinalCanbus.CAR_OD_NISSAN_Loulan_H /* 1245264 */:
             case FinalCanbus.CAR_OD_NISSAN_Gongjue_L /* 1310800 */:
             case FinalCanbus.CAR_OD_NISSAN_Gongjue_H /* 1376336 */:
+            case FinalCanbus.CAR_CZH_OD_NISSAN_22Teana_Top /* 1572944 */:
                 cls = OD_NissanXimaIndexAct.class;
                 break;
             case FinalCanbus.CAR_RZC_FengShen_YiXuan /* 1048831 */:
@@ -10069,9 +11151,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_18RongWei_RX8 /* 1638673 */:
             case FinalCanbus.CAR_RZC_21RongWei_I5 /* 1900817 */:
             case FinalCanbus.CAR_RZC_21RongWei_I5_H /* 1966353 */:
+            case FinalCanbus.CAR_CZH_RZC_19Mingjue_MG6 /* 2097425 */:
                 cls = Act20ZSIndexAct.class;
                 break;
             case FinalCanbus.CAR_RZC_Mustang /* 1048910 */:
+            case FinalCanbus.CAR_RZC_Mustang_M /* 5374286 */:
+            case FinalCanbus.CAR_RZC_Mustang_H /* 5439822 */:
             case FinalCanbus.CAR_452_LZ_Subaru_TRIBECA /* 7078340 */:
                 cls = MustangIndexAct.class;
                 break;
@@ -10085,8 +11170,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_Jili_18Dihao /* 1507467 */:
             case FinalCanbus.CAR_RZC_XP1_DiHao_S1_18 /* 1704075 */:
             case FinalCanbus.CAR_RZC_XP1_YuanJingX3_19_20 /* 1835147 */:
+            case FinalCanbus.CAR_455_OD_Jilie_JiheA /* 2228679 */:
             case FinalCanbus.CAR_452_OD_Ruilan_X3_Pro /* 2425285 */:
             case FinalCanbus.CAR_452_OD_Jihe_EX3 /* 2490821 */:
+            case FinalCanbus.CAR_454_OD_Jilie_DihaoS /* 14156230 */:
+            case FinalCanbus.CAR_454_OD_Jilie_YuanchengXingzhi /* 14549446 */:
             case FinalCanbus.CAR_453_OD_Jili_Dihao_EV /* 16056773 */:
                 cls = BoyueIndexAct.class;
                 break;
@@ -10104,8 +11192,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_XFY_PSA_3008_H /* 1180100 */:
                 cls = ActivityPSA3008Index.class;
                 break;
+            case FinalCanbus.CAR_454_RZC_Mahindra_Thar_21 /* 1114566 */:
+            case FinalCanbus.CAR_454_RZC_Mahindra_XUV_16_Hand /* 1180102 */:
+            case FinalCanbus.CAR_454_RZC_TATA_NEXON_21_Hand /* 1245638 */:
+                cls = LuzNissanGTRIndexAct.class;
+                break;
+            case FinalCanbus.CAR_455_LZ_CG_Toyota_Alpha_Screen /* 1114567 */:
+            case FinalCanbus.CAR_455_LZ_CG_Toyota_Alpha_Screen_3 /* 1180103 */:
+            case FinalCanbus.CAR_454_LZ_Alpha_35_SCREEN /* 2621894 */:
+            case FinalCanbus.CAR_454_LZ_VW_Touareg_Screen /* 9175494 */:
+                cls = LZNewAllBBASetFunc.class;
+                break;
             case FinalCanbus.CAR_RZC_BoYue /* 1179787 */:
             case FinalCanbus.CAR_RZC_BoYue_H /* 1245323 */:
+            case FinalCanbus.CAR_RZC_BoYue_21 /* 2752651 */:
                 cls = RZCBoyueCarSettingsAct.class;
                 break;
             case FinalCanbus.CAR_WC2_RENAULT_Jinbei_Guanjing /* 1180000 */:
@@ -10124,6 +11224,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_DJ_LEXUS_ES_H /* 3801527 */:
                 cls = djLexusIndexAct.class;
                 break;
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Hand1 /* 1245628 */:
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Hand2 /* 1311164 */:
             case FinalCanbus.CAR_452_OD_Toyota_Lexus /* 1245636 */:
             case FinalCanbus.CAR_439_RZC_TOYATO_13HuangGuan /* 6947255 */:
                 cls = ActivityHuangGuanIndex.class;
@@ -10132,6 +11234,29 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_453_OD_Dongfeng_EX1_Pro /* 1311173 */:
                 cls = ODDongfengEVCarInfo.class;
                 break;
+            case FinalCanbus.CAR_455_LZ_Ford_Mustang_L_CYT /* 1245639 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+            case FinalCanbus.CAR_455_LZ_Ford_Mustang_H_CYT /* 1311175 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+            case FinalCanbus.CAR_455_LZ_Ford_Mustang_RH_CYT /* 1376711 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+            case FinalCanbus.CAR_455_LZ_Ford_Mustang_RL_CYT /* 1442247 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
+            case FinalCanbus.CAR_454_LZ_Ford_F150_15_L /* 3932614 */:
+            case FinalCanbus.CAR_454_LZ_Ford_F150_15_H /* 3998150 */:
+            case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
+            case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
+                if (LauncherApplication.getConfiguration() == 1) {
+                    cls = LZMustangCarEQSet.class;
+                    break;
+                } else {
+                    cls = MustangIndexAct.class;
+                    break;
+                }
             case FinalCanbus.CAR_RZC_XP1_CHR_EV /* 1310832 */:
                 cls = CamryIndexEVAct.class;
                 break;
@@ -10141,6 +11266,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_HavalH7_19_H_NoAmp /* 1769716 */:
             case FinalCanbus.CAR_RZC_Haval_H7Hongbiao_18 /* 2097396 */:
             case FinalCanbus.CAR_RZC_Haval_H7Hongbiao_18_H /* 2162932 */:
+            case FinalCanbus.CAR_RZC_HavalH7L_17 /* 2359540 */:
+            case FinalCanbus.CAR_RZC_HavalH7L_17_H /* 2425076 */:
                 cls = ActivityHava18H6Index.class;
                 break;
             case FinalCanbus.CAR_XP_Renault_21Duster /* 1311144 */:
@@ -10163,12 +11290,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_PA_GrandCherokee_14_22 /* 2687350 */:
             case FinalCanbus.CAR_PA_Chrysler_300C_11_22 /* 2752886 */:
             case FinalCanbus.CAR_PA_Dodge_Challenger_08_14 /* 2818422 */:
+            case FinalCanbus.CAR_PA_RAM_13_18_Low_win4 /* 5177718 */:
+            case FinalCanbus.CAR_PA_Cherokee_14_22_Amp /* 5243254 */:
+            case FinalCanbus.CAR_PA_GrandCherokee_14_22_Amp /* 5308790 */:
+            case FinalCanbus.CAR_PA_Gladiator_20_23 /* 5374326 */:
+            case FinalCanbus.CAR_PA_Gladiator_20_23_Amp /* 5439862 */:
                 cls = PAJeepAllIndexActi.class;
                 break;
             case FinalCanbus.CAR_WC2_QiChen_T90 /* 1376651 */:
             case FinalCanbus.CAR_WC2_QiChen_D60 /* 1507723 */:
-                cls = AirQiChenT90.class;
-                break;
             case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
             case FinalCanbus.CAR_RZC_Haval_H9 /* 2490807 */:
@@ -10178,6 +11308,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_XP1_HavalH6Couple_19 /* 7602615 */:
             case FinalCanbus.CAR_452_RZC_Haval_H9_Low /* 8651204 */:
             case FinalCanbus.CAR_439_RZC_Haval_18_19H6 /* 11272631 */:
+            case FinalCanbus.CAR_454_RZC_Haval_H8_15 /* 11796934 */:
+            case FinalCanbus.CAR_454_RZC_Haval_H8_15_H /* 11862470 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_RS /* 15598007 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H_RS /* 15663543 */:
             case FinalCanbus.CAR_452_OD_Haval_VV5 /* 16122308 */:
@@ -10191,10 +11323,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_TOYOTA_09HG /* 1376699 */:
                 cls = WC209HuangguanEQAct.class;
                 break;
+            case FinalCanbus.CAR_444_WC2_IKCO_Tara_21 /* 1376700 */:
+            case FinalCanbus.CAR_444_WC2_IKCO_Dena_15 /* 1442236 */:
+                cls = WC2IKCOAllCarSetAct.class;
+                break;
             case FinalCanbus.CAR_453_LZ_AstonMartin /* 1376709 */:
                 cls = LuZAstonMartinCarInfo.class;
                 break;
             case FinalCanbus.CAR_RZC_Jili_19Dihao_GL_E /* 1441931 */:
+            case FinalCanbus.CAR_Oudi_Jili_Binyue_Pro /* 3211403 */:
                 cls = Dihao19GLECarSettingsAct.class;
                 break;
             case FinalCanbus.CAR_RZC_FengShen_X37_21 /* 1442047 */:
@@ -10207,17 +11344,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_LUZ_BinLi_H /* 1442244 */:
             case FinalCanbus.CAR_439_LUZ_BinLi /* 9241015 */:
                 cls = BinliIndexAct.class;
-                break;
-            case FinalCanbus.CAR_RZC_XP1_Lexus_NX200_17 /* 1507440 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_ES200_13 /* 1572976 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_RX270_14 /* 1638512 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_RX_09_14 /* 1769584 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_20 /* 1835120 */:
-            case FinalCanbus.CAR_RZC_XC_Huangguan_14 /* 2162800 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_GS_04_07 /* 2818160 */:
-            case FinalCanbus.CAR_RZC_XP1_Lexus_LS_04_06 /* 2883696 */:
-            case FinalCanbus.CAR_RZC_XP1_05_REIZ /* 3407984 */:
-                cls = ToyotaLexusIndexActi.class;
                 break;
             case FinalCanbus.CAR_RZC_HONDA_9Yage /* 1507626 */:
             case FinalCanbus.CAR_RZC_HONDA_9Yage_H /* 1573162 */:
@@ -10243,8 +11369,18 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_RZC_Sanlin_19Yige /* 10224055 */:
             case FinalCanbus.CAR_439_RZC_Sanlin_19Yige_H /* 10289591 */:
             case FinalCanbus.CAR_439_RZC_Sanlin_19Yige_Top /* 10355127 */:
+            case FinalCanbus.CAR_454_RZC_Sanlin_Pajero_22_Sport /* 10420678 */:
+            case FinalCanbus.CAR_454_RZC_Sanlin_Pajero_22_Sport_H /* 10486214 */:
             case FinalCanbus.CAR_452_LZ_Maserati_SP /* 12255684 */:
+            case FinalCanbus.CAR_454_RZC_Sanlin_LancerEVO_08 /* 15991238 */:
+            case FinalCanbus.CAR_454_RZC_Sanlin_Pajero_22_Sport_Top /* 16056774 */:
                 cls = SanlinIndexAct.class;
+                break;
+            case FinalCanbus.CAR_455_LZ_GMC_Sierra_19_RScreen /* 1507783 */:
+            case FinalCanbus.CAR_455_LZ_Chevrolet_Silverado_19_RScreen /* 1573319 */:
+            case FinalCanbus.CAR_454_LZ_GMC_Sierra_19_Screen /* 11928006 */:
+            case FinalCanbus.CAR_454_LZ_Chevrolet_Silverado_19_Screen /* 11993542 */:
+                cls = LZNewAllGMCSetFunc.class;
                 break;
             case FinalCanbus.CAR_RZC_Nissan_QUEST_13 /* 1573054 */:
             case FinalCanbus.CAR_RZC_Nissan_QUEST_13_H /* 1638590 */:
@@ -10256,6 +11392,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350 /* 1573158 */:
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350_H /* 1638694 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_06ReiZ_KeepAir /* 2883878 */:
+            case FinalCanbus.CAR_WC2_TOYOTA_06ReiZ_ChangeAir /* 2949414 */:
                 if (LauncherApplication.getConfiguration() == 1) {
                     cls = Wc09LexusESEQActi.class;
                     break;
@@ -10265,6 +11403,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 }
             case FinalCanbus.CAR_439_OuDi_17DongNanV5 /* 1573303 */:
                 cls = Dongnanv5IndexActi.class;
+                break;
+            case FinalCanbus.CAR_444_WC2_Saipa_Shahin_20 /* 1573308 */:
+            case FinalCanbus.CAR_444_WC2_IKCO_207i_17 /* 1638844 */:
+                cls = WCSaipaShahinTireAct.class;
                 break;
             case FinalCanbus.CAR_452_XinCheng_Infiniti_ESQ /* 1573316 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_06FX /* 1638852 */:
@@ -10285,6 +11427,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_WC2_Honda_14Siyu_L /* 1704257 */:
             case FinalCanbus.CAR_WC2_Honda_15CRV_L /* 1769793 */:
             case FinalCanbus.CAR_WC2_Honda_12Siyu /* 1966401 */:
+            case FinalCanbus.CAR_WC2_Honda_15CIVIC_OverSea_L /* 3277121 */:
                 cls = ActivitySiYuIndex.class;
                 break;
             case FinalCanbus.CAR_RZC_XP1_21Xiaomayi_EQ1 /* 1638804 */:
@@ -10302,6 +11445,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Ford_Everest_SUV_Low2 /* 6226363 */:
             case FinalCanbus.CAR_443_WC2_Ford_Everest_PickUP_Low /* 6291899 */:
             case FinalCanbus.CAR_443_WC2_Ford_Everest_PickUP_H /* 6357435 */:
+            case FinalCanbus.CAR_443_WC2_Ford_12Focus_Overseas /* 15139259 */:
+            case FinalCanbus.CAR_443_WC2_Ford_FIESTA_13 /* 15532475 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Tourneo_21 /* 15598011 */:
                 cls = Focus19CarSetAct.class;
                 break;
             case FinalCanbus.CAR_453_RZC_Honda_SPIRIOR_09 /* 1638853 */:
@@ -10310,9 +11456,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_RZC_Crosstour_13 /* 10289604 */:
                 cls = Act_RZC_CarCD_AoDeSai.class;
                 break;
+            case FinalCanbus.CAR_455_XP_SUBARU_19FORESTER_H /* 1638855 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_15_17FORESTER /* 12124599 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_15_16EMPREZA /* 12190135 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_15_17CROSSTREK /* 12255671 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_15_19OUTBACK /* 12321207 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_15_19LEGACY /* 12386743 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_17_19EMPREZA /* 12452279 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_18_19CROSSTREK /* 12517815 */:
+            case FinalCanbus.CAR_439_XP_SUBARU_19FORESTER /* 12583351 */:
+                cls = SuburuCarSet.class;
+                break;
             case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_05 /* 1704048 */:
-            case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_11 /* 8126917 */:
-            case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_05 /* 8192453 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_04Verso_SP /* 7078000 */:
+            case FinalCanbus.CAR_RZC_TOYOTA_10Prius_SP /* 7536752 */:
                 if (LauncherApplication.getConfiguration() == 1) {
                     cls = ToyotaLexusEQActi.class;
                     break;
@@ -10325,6 +11482,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = BoyueIndexAct.class;
                 break;
             case FinalCanbus.CAR_443_WC2_Nissan_Ruiqi /* 1704379 */:
+            case FinalCanbus.CAR_444_WC2_Dongfeng_Xiaokang_Ix5 /* 1835452 */:
             case FinalCanbus.CAR_443_WC2_Nissan_Ruiqi7 /* 7799227 */:
                 cls = WCNissanRuiqi6IndexAct.class;
                 break;
@@ -10332,6 +11490,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_453_RZC_Hongqi_H5_M /* 9044421 */:
             case FinalCanbus.CAR_453_RZC_Hongqi_H5_H /* 9109957 */:
                 cls = RZCHongqiH5CarSet.class;
+                break;
+            case FinalCanbus.CAR_455_TD_INFINIT_ESQ /* 1704391 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_G /* 1769927 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_QX50 /* 1835463 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_06FX /* 1900999 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_08FX /* 1966535 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_14QX70 /* 2032071 */:
+            case FinalCanbus.CAR_455_TD_INFINIT_12FX /* 2097607 */:
+            case FinalCanbus.CAR_439_XBS_NISSAN_TuLe /* 2425271 */:
+            case FinalCanbus.CAR_439_XBS_NISSAN_TuLe_ALLV /* 3342775 */:
+            case FinalCanbus.CAR_454_Tangdu_Nissan_PATROL_L /* 13763014 */:
+            case FinalCanbus.CAR_454_Tangdu_Nissan_PATROL_H /* 13828550 */:
+                cls = XBSTuleIndexAct.class;
                 break;
             case FinalCanbus.CAR_WC2_18BYD_YUAN /* 1769867 */:
                 cls = BYDYuanCarSettingsAct.class;
@@ -10342,6 +11513,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_OD_Ford_PRO /* 8454596 */:
             case FinalCanbus.CAR_452_OD_Ford_PRO_H /* 9241028 */:
             case FinalCanbus.CAR_453_OD_JMC_Energy_Yizhi_EV3 /* 12648901 */:
+            case FinalCanbus.CAR_454_OD_Jiangling_Dadao /* 14483910 */:
                 cls = BnrGuanzhiIndexAct.class;
                 break;
             case FinalCanbus.CAR_Oudi_Zhongxing_Terralord /* 1835263 */:
@@ -10350,7 +11522,57 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case FinalCanbus.CAR_WC2_Honda_14Siyu_H /* 1835329 */:
             case FinalCanbus.CAR_WC2_Honda_15CRV_H /* 1900865 */:
+            case FinalCanbus.CAR_WC2_Honda_15CIVIC_OverSea_H /* 3211585 */:
                 cls = HondaIndexActi.class;
+                break;
+            case FinalCanbus.CAR_454_Tangdu_Toyota_LexusIS /* 1835462 */:
+            case FinalCanbus.CAR_452_Tangdu_Toyota_All /* 8913348 */:
+            case FinalCanbus.CAR_452_Tangdu_Toyota_All_H /* 8978884 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_12 /* 9765317 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_14_Auto /* 9830853 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusRX_07_H /* 9896389 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_15 /* 9961925 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_15 /* 10027461 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusRX_07_L /* 10092997 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_12 /* 10158533 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16 /* 10224069 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_12 /* 10289605 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_09_A /* 10355141 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_14_Hand /* 10420677 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_15_A /* 10486213 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_15_A /* 10551749 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_15_H /* 10617285 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_09_H /* 10682821 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_09_A /* 10748357 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_11_A /* 10813893 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Corolla_07_A /* 10879429 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Corolla_14_A /* 10944965 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_09_A /* 11010501 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_RAV4_12_A /* 11076037 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_14_A /* 11141573 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_14_H /* 11207109 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_18_Auto /* 11272645 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_18_H /* 11338181 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_15_T /* 11403717 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusLX570_10 /* 11469253 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_18 /* 11534789 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_18_A /* 11600325 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_15_A /* 11665861 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_16_L /* 11731397 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_10_A /* 11796933 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_10_H /* 11862469 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16_T /* 11928005 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusLX570_14 /* 11993541 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusGX_13 /* 12059077 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusGX_14 /* 12124613 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_09_H /* 12190149 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_08_M /* 12255685 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16_M /* 12321221 */:
+            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_16_H /* 12386757 */:
+                cls = ToyotaTangduIndexAct.class;
+                break;
+            case FinalCanbus.CAR_RZC_Nissan_JUKE_HW /* 1900734 */:
+                cls = NissanJukeCarSet.class;
                 break;
             case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
             case FinalCanbus.CAR_RZC_Ford_Lincoln_Continental /* 2031950 */:
@@ -10387,6 +11609,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_XP1_ZH2_RUIJIE2015 /* 14680516 */:
                 cls = RJXpCarSetAct.class;
                 break;
+            case FinalCanbus.CAR_454_LUZ_KAYAN_MACAN_CD_HP_LOW /* 1900998 */:
+            case FinalCanbus.CAR_454_LUZ_KAYAN_LOW /* 2556358 */:
+            case FinalCanbus.CAR_439_LUZ_KAYAN /* 3408311 */:
+            case FinalCanbus.CAR_439_LUZ_KAYAN2 /* 6226359 */:
+            case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD /* 6291895 */:
+            case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD_HP /* 6422967 */:
+                cls = LuzKayanSetFunc.class;
+                break;
             case FinalCanbus.CAR_PA_dorango_10 /* 1966454 */:
             case FinalCanbus.CAR_PA_GMC_13 /* 2031990 */:
             case FinalCanbus.CAR_PA_SONOTEC_13 /* 2294134 */:
@@ -10394,19 +11624,38 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_PA_Ford_F250 /* 2425206 */:
             case FinalCanbus.CAR_PA_Ford_F450 /* 2490742 */:
             case FinalCanbus.CAR_PA_Ford_F650 /* 2556278 */:
-            case FinalCanbus.CAR_PA_Ford_Explorer_19 /* 2883958 */:
-            case FinalCanbus.CAR_PA_Ford_Fusion_22 /* 2949494 */:
-            case FinalCanbus.CAR_PA_Ford_F150_14 /* 3015030 */:
-            case FinalCanbus.CAR_PA_Ford_F150_20 /* 3080566 */:
-            case FinalCanbus.CAR_PA_Ford_Focus_18 /* 3146102 */:
-            case FinalCanbus.CAR_PA_Ford_Expedition_21 /* 3211638 */:
-            case FinalCanbus.CAR_PA_Ford_Expedition_17 /* 3277174 */:
-            case FinalCanbus.CAR_PA_Ford_F_Super_duty_21 /* 3342710 */:
-            case FinalCanbus.CAR_PA_Ford_mustang_15 /* 3932534 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_08 /* 5046646 */:
+            case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_Low /* 5112182 */:
                 cls = Xp_374_FunctionlActi.class;
                 break;
             case FinalCanbus.CAR_439_LUZ_LANDROVER /* 1966519 */:
                 cls = LandRoverIndexAct.class;
+                break;
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_MO /* 1966534 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_TX /* 2032070 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_12_MO /* 2097606 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_12_TX /* 2163142 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_10_MO /* 2228678 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_10_TX /* 2294214 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_14_MO /* 2359750 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_14_TX /* 2425286 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_TX /* 6881733 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_MO10 /* 6947269 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_MO13 /* 7012805 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_16_MO /* 7078341 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_Hand /* 7143877 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_Audo /* 7209413 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_CD /* 7274949 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_DVD /* 7340485 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Hand /* 7406021 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Auto /* 7471557 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Top /* 7537093 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08 /* 7602629 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08_TX /* 7668165 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08_MO /* 7733701 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15 /* 7799237 */:
+            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15_Top /* 7864773 */:
+                cls = LuzLexusISIndexAct.class;
                 break;
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU7 /* 2032055 */:
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU5 /* 3932599 */:
@@ -10434,6 +11683,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_453_LZ_GM_Camaro_17 /* 2163141 */:
             case FinalCanbus.CAR_453_LZ_GM_GMC_TERRAIN_17 /* 2228677 */:
             case FinalCanbus.CAR_453_LZ_GM_Equinox_17 /* 2294213 */:
+            case FinalCanbus.CAR_454_LZ_GM_Camaro_17_Auto /* 6947270 */:
+            case FinalCanbus.CAR_454_LZ_GM_Equinox_17_Auto /* 7012806 */:
                 cls = OD_NissanXimaIndexAct.class;
                 break;
             case FinalCanbus.CAR_BNR_12Crown_M /* 2228621 */:
@@ -10445,21 +11696,25 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_XP_Megane4_SP_H_AUTO /* 2359748 */:
                 cls = XPMeganeCarInfo.class;
                 break;
+            case FinalCanbus.CAR_455_OD_Dongfeng_Racing_EC75_23H /* 2294215 */:
+                cls = ODRuichiEC75CarSet.class;
+                break;
             case FinalCanbus.CAR_453_LZ_Benz_C200 /* 2359749 */:
                 cls = LuzBenzC200CarSet.class;
                 break;
-            case FinalCanbus.CAR_439_XBS_NISSAN_TuLe /* 2425271 */:
-            case FinalCanbus.CAR_439_XBS_NISSAN_TuLe_ALLV /* 3342775 */:
-                cls = XBSTuleIndexAct.class;
+            case FinalCanbus.CAR_455_LZ_MZD_CX30_Sreen /* 2359751 */:
+            case FinalCanbus.CAR_455_LZ_MZD_Axela_Sreen /* 2425287 */:
+            case FinalCanbus.CAR_455_LZ_MZD_CX5_Sreen /* 2490823 */:
+                cls = LZNewAllMazdaSetFunc.class;
                 break;
             case FinalCanbus.CAR_Lada_2019Westa /* 2490388 */:
                 cls = LadaSettingsAct.class;
                 break;
-            case FinalCanbus.CAR_RZC_LHT_Ford_F150_Hand /* 2490702 */:
-                cls = FordCarSet_RZC.class;
-                break;
             case FinalCanbus.CAR_452_HC_Nissan_XiaoKe_H /* 2556356 */:
                 cls = Nissan_Xiaoke_XinCheng_CarTire.class;
+                break;
+            case FinalCanbus.CAR_455_OUDI_Aiying_BYD_ALL /* 2556359 */:
+                cls = BYDAiyingIndexAct.class;
                 break;
             case FinalCanbus.CAR_XP1_TOYOTA_TR1151 /* 2621460 */:
                 cls = CamryIndexAct_ZH.class;
@@ -10469,6 +11724,9 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_RZC_JiangHuai_ALL_H /* 2752951 */:
             case FinalCanbus.CAR_453_RZC_Jianghuai_S7 /* 6029765 */:
             case FinalCanbus.CAR_453_RZC_Jianghuai_S7_H /* 6095301 */:
+            case FinalCanbus.CAR_454_RZC_Jianghuai_M4_16 /* 7995846 */:
+            case FinalCanbus.CAR_454_RZC_Jianghuai_S2_15 /* 8061382 */:
+            case FinalCanbus.CAR_454_RZC_Jianghuai_M5_17 /* 8126918 */:
             case FinalCanbus.CAR_439_RZC_JiangHuai_19S4 /* 8323511 */:
             case FinalCanbus.CAR_439_RZC_JiangHuai_19S4_H /* 8389047 */:
             case FinalCanbus.CAR_452_RZC_Jianghuai_IEV7S /* 10879428 */:
@@ -10481,12 +11739,52 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = XCTuleIndexAct.class;
                 break;
             case FinalCanbus.CAR_452_LZ_Bentley_Bentayga /* 2621893 */:
-                cls = LZBinliTianyueAirControlAct.class;
+            case FinalCanbus.CAR_455_LUZ_Nissan_GTR_EN /* 2621895 */:
+            case FinalCanbus.CAR_439_LUZ_Nissan_GTR /* 13566391 */:
+                cls = LuzNissanGTRIndexAct.class;
+                break;
+            case FinalCanbus.CAR_DJ_GM_Kopach /* 2687001 */:
+                cls = DJGMKopachBasicInfoAct.class;
+                break;
+            case FinalCanbus.CAR_444_WC2_JMC_Fusun_24 /* 2687420 */:
+                cls = WC2FordLincoinCarSettingsAct.class;
                 break;
             case FinalCanbus.CAR_453_LZ_Nissan_Teana_03 /* 2687429 */:
             case FinalCanbus.CAR_453_LZ_Nissan_Teana_03_H /* 2752965 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08_10AstraH /* 3866685 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11CorsaD /* 3932221 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08Combo /* 3997757 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Antara_CD /* 4653117 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Antara /* 4718653 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Kopach_SP /* 5636157 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_04_Tigra /* 5701693 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_06_Astra /* 5832765 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08_Zafira /* 5898301 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_05_Vectra /* 5963837 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_06_Astra_CD /* 6029373 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08_Zafira_CD /* 6094909 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08_10AstraH_CD /* 6160445 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_11CorsaD_CD /* 6225981 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_08Combo_CD /* 6291517 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_05_Cima /* 9044422 */:
                 cls = GmAndraIndexActi.class;
+                break;
+            case FinalCanbus.CAR_454_OD_Changan_Lumin /* 2687430 */:
+                cls = ODChanganLuminCarSet.class;
+                break;
+            case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7 /* 2752956 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TRAIL_2014_Auto /* 2752966 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TRAIL_2014_Hand /* 2818502 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_Qashqai_2016_Auto /* 2884038 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_Qashqai_2016_Hand /* 2949574 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TEANA_2013_Auto /* 3015110 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TEANA_2013_Hand /* 3080646 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TEANA_2008_Auto /* 3146182 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_TEANA_2008_Hand /* 3211718 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_Tiida_2011_Auto /* 3277254 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_Tiida_2011_Hand /* 3342790 */:
+            case FinalCanbus.CAR_454_Sanwu_Nissan_307Z_2008_Auto /* 3408326 */:
+                cls = Acti_Nissan_Sanwu.class;
                 break;
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_1 /* 2818487 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_2 /* 2884023 */:
@@ -10494,18 +11792,37 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_4 /* 3015095 */:
                 cls = RzcChanganAllIndexAct.class;
                 break;
+            case FinalCanbus.CAR_455_XP_ZH2_Pilotcar_P133 /* 2884039 */:
+            case FinalCanbus.CAR_455_6606_RZC_VinFast_PLUS_23 /* 2949575 */:
+                cls = YL6606NewVinFanAllSetFunc.class;
+                break;
             case FinalCanbus.CAR_ZX_6606_HONDA_10Yage /* 3014954 */:
             case FinalCanbus.CAR_ZX_6606_HONDA_10Yage_H /* 3080490 */:
             case FinalCanbus.CAR_ZX_6606_HONDA_17CRV /* 3932458 */:
             case FinalCanbus.CAR_ZX_6606_HONDA_17BREEZE /* 3997994 */:
             case FinalCanbus.CAR_ZX_6606_HONDA_17CRV_H /* 4194602 */:
+            case FinalCanbus.CAR_ZX_6606_HONDA_23CRV /* 4784426 */:
+            case FinalCanbus.CAR_ZX_6606_HONDA_23CRV_H /* 4849962 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_Civic /* 5636394 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_10Yage /* 5701930 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_Haoying /* 5767466 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_CRV /* 5833002 */:
                 cls = ZX6606HondaIndexActi.class;
                 break;
             case FinalCanbus.CAR_WC2_Honda_17Acura_MDX /* 3014977 */:
+            case FinalCanbus.CAR_WC2_CG_Honda_16Civic /* 5505345 */:
+            case FinalCanbus.CAR_WC2_CG_Honda_16Civic_H /* 5570881 */:
                 cls = HondaIndexActi.class;
                 break;
             case FinalCanbus.CAR_RZC_15Ruijie_CD /* 3146062 */:
                 cls = FordRuijieCDIndexAct.class;
+                break;
+            case FinalCanbus.CAR_455_LZ_BBA_LUXFT_FN /* 3146183 */:
+            case FinalCanbus.CAR_453_LZ_BBA_All /* 5112261 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Screen /* 9503174 */:
+            case FinalCanbus.CAR_454_LZ_BBA_All /* 9568710 */:
+            case FinalCanbus.CAR_454_LZ_BBA_All_LOW /* 16122310 */:
+                cls = ZhtdBmwIndexFunc.class;
                 break;
             case FinalCanbus.CAR_453_RZC_MZD_3_20 /* 3211717 */:
             case FinalCanbus.CAR_453_RZC_MZD_ATZ_20 /* 3277253 */:
@@ -10521,16 +11838,25 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_RZC_MZD_CX3_15_ML /* 15204791 */:
                 cls = Rzc_Mazda_IndexAct.class;
                 break;
-            case FinalCanbus.CAR_439_LUZ_KAYAN /* 3408311 */:
-            case FinalCanbus.CAR_439_LUZ_KAYAN2 /* 6226359 */:
-            case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD /* 6291895 */:
-            case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD_HP /* 6422967 */:
-                cls = LuzKayanSetFunc.class;
+            case FinalCanbus.CAR_455_OD_ChangAn_CS95_H /* 3277255 */:
+            case FinalCanbus.CAR_439_OD_ChangAn_CS95 /* 7930295 */:
+                cls = ODChanganCS95AllSetAct.class;
+                break;
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_10 /* 3342670 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_12 /* 3408206 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_10_Auto /* 3473742 */:
+            case FinalCanbus.CAR_RZC_LHT_Ford_F150_12_Auto /* 3539278 */:
+                cls = FordCarSet_RZC.class;
+                break;
+            case FinalCanbus.CAR_454_Sanwu_Nissan_QX56_2004_Auto /* 3473862 */:
+                cls = SanwuNissanAllCarSet.class;
                 break;
             case FinalCanbus.CAR_439_HC_CHRYSLER_H /* 3539383 */:
                 cls = ChryslerCarEqActi.class;
                 break;
             case FinalCanbus.CAR_443_WC2_BENZ_19Sprinter /* 3539387 */:
+            case FinalCanbus.CAR_443_WC2_BENZ_C200_08 /* 14221755 */:
+            case FinalCanbus.CAR_443_WC2_BENZ_C200_08_CD /* 14287291 */:
                 cls = WCBenzSprinterCarSet.class;
                 break;
             case FinalCanbus.CAR_452_RZC_ZhongTaiDaMai_X5 /* 3539396 */:
@@ -10557,6 +11883,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Feiyate_19_500L /* 4850107 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_17Panda /* 5505467 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_Doblo_18 /* 6554043 */:
+            case FinalCanbus.CAR_443_WC2_Feiyate_Linea_09 /* 6619579 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_500_11 /* 6816187 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_Ducato_23 /* 7864763 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_500_07 /* 7930299 */:
@@ -10592,6 +11919,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Feiyate_Doblo_18_H /* 13435323 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_Panda_15_H /* 13500859 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_500L_15_H /* 13566395 */:
+            case FinalCanbus.CAR_443_WC2_Feiyate_All_Brazil /* 14090683 */:
                 cls = WCFeiyateIndexAct.class;
                 break;
             case FinalCanbus.CAR_452_LZ_Jaguar_XK /* 3670468 */:
@@ -10600,7 +11928,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_LZ_Jaguar_XFL_PACE /* 12779972 */:
             case FinalCanbus.CAR_452_LZ_Jaguar_XFL_PACE_H /* 13238724 */:
             case FinalCanbus.CAR_452_LUZ_LANDROVER_CYTAIR /* 15729092 */:
-                cls = JaguarIndexAct.class;
+            case FinalCanbus.CAR_454_OD_Nissan_ELGRAND /* 3670470 */:
+            case FinalCanbus.CAR_454_OD_Nissan_ELGRAND_H /* 3736006 */:
+            case FinalCanbus.CAR_452_OD_Nissan_QUEST /* 5636548 */:
+                cls = ODNissanQuystCarSet.class;
                 break;
             case FinalCanbus.CAR_439_HCY_BYD_E6_H /* 3735991 */:
             case FinalCanbus.CAR_439_HCY_BYD_S6_H /* 6750647 */:
@@ -10612,11 +11943,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Nazhijie_U6 /* 3801531 */:
                 cls = WCNazhijieU6CarSet.class;
                 break;
-            case FinalCanbus.CAR_RZC_ALL_GM_08_10AstraH /* 3866685 */:
-            case FinalCanbus.CAR_RZC_ALL_GM_11CorsaD /* 3932221 */:
-            case FinalCanbus.CAR_RZC_ALL_GM_08Combo /* 3997757 */:
-                cls = OPELCarKeyActivity.class;
-                break;
             case FinalCanbus.CAR_452_OD_BMW_Mini_14_20 /* 3867076 */:
                 cls = ODBMWMiniIndexAct.class;
                 break;
@@ -10626,6 +11952,23 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_15Q70_All /* 4063675 */:
                 cls = WcInfinitCarTire.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Beijing_X3_18 /* 4063686 */:
+            case FinalCanbus.CAR_454_OD_Beijing_X5_18 /* 4129222 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_EU5_18 /* 4194758 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_Shenbao_D50_19 /* 4260294 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_Shenbao_X35_19 /* 4325830 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_Shenbao_X55_18 /* 4391366 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_Zhixing_18 /* 4456902 */:
+            case FinalCanbus.CAR_439_OUDI_Beiqi_EC3 /* 14090679 */:
+            case FinalCanbus.CAR_439_OUDI_Beiqi_EC5 /* 14156215 */:
+            case FinalCanbus.CAR_439_OUDI_Beiqi_EC180 /* 14221751 */:
+            case FinalCanbus.CAR_439_OUDI_Beiqi_EC220 /* 14287287 */:
+            case FinalCanbus.CAR_439_OUDI_Beiqi_EU5 /* 14352823 */:
+                cls = ActivityODBeiqiECIndex.class;
+                break;
+            case FinalCanbus.CAR_WC2_GM_Kopach_12 /* 4128804 */:
+                cls = WcGMKopachBasicInfoAct.class;
+                break;
             case FinalCanbus.CAR_439_HC_RongWei950 /* 4129207 */:
                 cls = Hc_Rongwei950_IndexAct.class;
                 break;
@@ -10633,6 +11976,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_16Q50l_SP /* 5308859 */:
             case FinalCanbus.CAR_443_WC_12Cedric /* 7209403 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14Q50_L /* 8651195 */:
+            case FinalCanbus.CAR_443_WC2_YingFeiNiDi_20QX60 /* 15204795 */:
                 cls = WcInfeonidiIndexAct.class;
                 break;
             case FinalCanbus.CAR_439_BNR_ARRIZO /* 4194743 */:
@@ -10649,8 +11993,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = ODBMWMiniIndexAct.class;
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14QX60_SP /* 4260283 */:
-                cls = WcInfeinidiFrontAirControlAct.class;
-                break;
             case FinalCanbus.CAR_439_RZC_LufengXiaoyao /* 4325815 */:
                 cls = RZCLufengXiaoyaoIndexAct.class;
                 break;
@@ -10658,8 +12000,35 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_10G37 /* 4587963 */:
                 cls = WcInfeinidiCarSet.class;
                 break;
-            case FinalCanbus.CAR_RZC_ALL_GM_Antara /* 4718653 */:
-                cls = OPELCarKeyActivity.class;
+            case FinalCanbus.CAR_439_RZC_BenzAll /* 4456887 */:
+            case FinalCanbus.CAR_439_RZC_BenzAll_H /* 4522423 */:
+            case FinalCanbus.CAR_454_RZC_Benz_C_02_07 /* 7406022 */:
+            case FinalCanbus.CAR_454_RZC_Benz_E200_02_08 /* 7471558 */:
+            case FinalCanbus.CAR_454_RZC_Benz_Sprinter_14 /* 7537094 */:
+            case FinalCanbus.CAR_454_RZC_Benz_S_99_05 /* 7602630 */:
+            case FinalCanbus.CAR_454_RZC_Benz_CLS_12_13 /* 7668166 */:
+            case FinalCanbus.CAR_454_RZC_Benz_C_15 /* 7733702 */:
+            case FinalCanbus.CAR_452_RZC_Benz_Vito_16_18 /* 8257988 */:
+            case FinalCanbus.CAR_454_RZC_Benz_GLK300_12 /* 9634246 */:
+            case FinalCanbus.CAR_454_RZC_Benz_GLK350_09 /* 9699782 */:
+            case FinalCanbus.CAR_454_RZC_Benz_S350_10 /* 9830854 */:
+            case FinalCanbus.CAR_454_RZC_Benz_E260_09 /* 10682822 */:
+            case FinalCanbus.CAR_454_RZC_Benz_GLA200_17 /* 10944966 */:
+            case FinalCanbus.CAR_454_RZC_Benz_C180_17 /* 11010502 */:
+            case FinalCanbus.CAR_439_RZC_Benz_GLK300 /* 11534775 */:
+            case FinalCanbus.CAR_439_RZC_Benz_A180 /* 11600311 */:
+            case FinalCanbus.CAR_439_RZC_Benz_14ML350 /* 11665847 */:
+            case FinalCanbus.CAR_439_RZC_Benz_14ML320 /* 11731383 */:
+            case FinalCanbus.CAR_439_RZC_Benz_04_12A /* 11796919 */:
+            case FinalCanbus.CAR_439_RZC_Benz_05_11B /* 11862455 */:
+            case FinalCanbus.CAR_439_RZC_Benz_06_15R /* 11927991 */:
+            case FinalCanbus.CAR_439_RZC_Benz_05_13GL /* 11993527 */:
+            case FinalCanbus.CAR_439_RZC_Benz_10_WeiYaNuo /* 12059063 */:
+            case FinalCanbus.CAR_452_RZC_Benz_C_11_13 /* 12190148 */:
+            case FinalCanbus.CAR_452_RZC_Benz_SLK200_11 /* 12845508 */:
+            case FinalCanbus.CAR_452_RZC_Benz_E260_10 /* 13500868 */:
+            case FinalCanbus.CAR_452_RZC_Benz_CLK_06 /* 13566404 */:
+                cls = RzcBenzCCarSet.class;
                 break;
             case FinalCanbus.CAR_439_HC_Qiya_KaiZunK7 /* 4719031 */:
                 cls = HCQiyaKaizunK7Audio.class;
@@ -10708,13 +12077,23 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
             case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
             case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F150_18 /* 15401403 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F150_18_CD /* 15466939 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F150_18_M /* 15729083 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F150_18_H /* 15794619 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F250_18_L /* 15860155 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F250_18_M /* 15925691 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F250_18_H /* 15991227 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F350_18_L /* 16056763 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F350_18_M /* 16122299 */:
+            case FinalCanbus.CAR_443_WC2_Ford_F350_18_H /* 16187835 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_L /* 16253371 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_M /* 16318907 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_H /* 16384443 */:
                 cls = WC2FordLincoinIndexAct.class;
                 break;
             case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
                 cls = DjDodgeCarSet.class;
-                break;
-            case FinalCanbus.CAR_453_LZ_BBA_All /* 5112261 */:
-                cls = ZhtdBmwIndexFunc.class;
                 break;
             case FinalCanbus.CAR_BNR_Toyota_14Tundra /* 5177741 */:
             case FinalCanbus.CAR_BNR_Toyota_14Tundra_AUTO /* 5243277 */:
@@ -10729,33 +12108,35 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra_AUTO /* 5964173 */:
             case FinalCanbus.CAR_PA_BNR_Toyota_Sequoia_22 /* 6029709 */:
             case FinalCanbus.CAR_PA_BNR_Toyota_LS460_06 /* 6095245 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_GS_06 /* 6160781 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_IS_06 /* 6226317 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_ES_06 /* 6291853 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_GX460_10 /* 6357389 */:
+            case FinalCanbus.CAR_BNR_Toyota_14Tundra_AMP /* 6422925 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_4RUNNER_AMP /* 6488461 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_AMP /* 6553997 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_AMP_19 /* 6619533 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_10_AMP /* 6685069 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra_AMP /* 6750605 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_Sequoia_AMP /* 6816141 */:
                 cls = PAToyotaAllIndexActi.class;
                 break;
             case FinalCanbus.CAR_452_OD_Porsche_15_20 /* 5177796 */:
                 cls = ODPorscheIndexAct.class;
                 break;
-            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11 /* 5177797 */:
-            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_18 /* 5243333 */:
-            case FinalCanbus.CAR_LUZ_Toyato_All /* 7274935 */:
-            case FinalCanbus.CAR_LUZ_Toyato_All_H /* 7340471 */:
-            case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
-            case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:
-            case FinalCanbus.CAR_452_LZ_Toyato_RX270 /* 12714436 */:
-                cls = CamryIndexAct.class;
+            case FinalCanbus.CAR_453_LZ_NISSAN_patrol /* 5308869 */:
+            case FinalCanbus.CAR_453_LZ_YinFeiNiDi_QX60 /* 5374405 */:
+            case FinalCanbus.CAR_453_LZ_YinFeiNiDi_QX80 /* 5439941 */:
+            case FinalCanbus.CAR_453_LZ_YinFeiNiDi_QX56 /* 5505477 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_370Z_L /* 14680518 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_370Z_H /* 14746054 */:
+            case FinalCanbus.CAR_454_LZ_Nissan_370Z_TW /* 14811590 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_L /* 15729094 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_H /* 15794630 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_TW /* 15860166 */:
+            case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_H_NP /* 15925702 */:
+                cls = LZ_NIssanInfinitiIndexAct.class;
                 break;
-            case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
-            case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
-            case FinalCanbus.CAR_452_LZ_Toyota_LC100 /* 5439940 */:
-            case FinalCanbus.CAR_452_LZ_Toyota_LC100_H /* 5505476 */:
-            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD /* 8913349 */:
-            case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD_H /* 8978885 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = LuzLexusLSClockSetAct.class;
-                    break;
-                } else {
-                    cls = LuzLexusISIndexAct.class;
-                    break;
-                }
             case FinalCanbus.CAR_443_WC2_TATA_HEXA /* 5374395 */:
             case FinalCanbus.CAR_443_WC2_TATA_NWXON /* 5439931 */:
             case FinalCanbus.CAR_443_WC2_TATA_Altroz /* 11927995 */:
@@ -10764,20 +12145,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case FinalCanbus.CAR_453_LZ_Chrysler_300C_15 /* 5571013 */:
             case FinalCanbus.CAR_453_LZ_Maserati_Levante_18 /* 5636549 */:
+            case FinalCanbus.CAR_454_LZ_Chrysler_300C_15_Daohang /* 7078342 */:
                 cls = LuZMaserati300CCarSet.class;
-                break;
-            case FinalCanbus.CAR_452_OD_Nissan_QUEST /* 5636548 */:
-                cls = ODNissanQuystCarSet.class;
                 break;
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9 /* 5702084 */:
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9_Auto /* 5833156 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = ActivityNewAir.class;
-                    break;
-                } else {
-                    cls = ODChangfengCS9AirControlAct.class;
-                    break;
-                }
+            case FinalCanbus.CAR_454_OD_Qichen_D60_EV /* 9961926 */:
             case FinalCanbus.CAR_453_PA_Ford_Mustang_10 /* 5767621 */:
             case FinalCanbus.CAR_452_PA_Ford_F150_10 /* 15598020 */:
                 cls = PAFord_FunctionlActi.class;
@@ -10790,6 +12163,13 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = LuzTATACarSet.class;
                 break;
             case FinalCanbus.CAR_439_RZC_YinFeiNiDi_QX50 /* 6029751 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX70_13 /* 6685126 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_Q70_16_L /* 6750662 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_Q70_16_H /* 6816198 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_FX50S_09 /* 8389062 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_FX37_13 /* 10224070 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX70_15 /* 10289606 */:
+            case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX37_11 /* 10355142 */:
                 cls = Rzc_YingFeiNiDi_GX50_CarSettingAct.class;
                 break;
             case FinalCanbus.CAR_443_WC2_Mahindra_SCORPIO /* 6029755 */:
@@ -10804,11 +12184,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = XCTuleIndexAct.class;
                 break;
             case FinalCanbus.CAR_452_OD_Zhonghua_V6_18 /* 6160836 */:
+            case FinalCanbus.CAR_454_OD_Zhonghua_V7 /* 14221766 */:
+            case FinalCanbus.CAR_454_OD_Zhonghua_V7_H /* 14287302 */:
                 cls = ODZhonghuaV6CarSet.class;
                 break;
+            case FinalCanbus.CAR_453_RZC_LandRover_Discovery_19 /* 6160837 */:
+            case FinalCanbus.CAR_454_RZC_LandRover_Discovery_04 /* 9765318 */:
+                cls = TDLandRoverIndexAct.class;
+                break;
             case FinalCanbus.CAR_452_Xinchi_Dodge_JCUV /* 6226372 */:
+            case FinalCanbus.CAR_454_OD_Maserati_Ghibli_14 /* 14025158 */:
+            case FinalCanbus.CAR_454_OD_Maserati_Quattroporte_13 /* 14090694 */:
             case FinalCanbus.CAR_439_XC_Feiyate_Feiyue /* 15532471 */:
-                cls = XCFeiyateFeiyueIndexAct.class;
+                cls = XCFeiyateFeiyueSetFunc.class;
                 break;
             case FinalCanbus.CAR_453_OD_WeiMa_EX5 /* 6226373 */:
                 cls = ODWeimaEx5IndexAct.class;
@@ -10852,23 +12240,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_OD_Zhongtai_Z700 /* 12452292 */:
                 cls = Activity_OD_Zotye_T700.class;
                 break;
-            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_TX /* 6881733 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_MO10 /* 6947269 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_08_MO13 /* 7012805 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_LANDCRUISER_16_MO /* 7078341 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_Hand /* 7143877 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_Audo /* 7209413 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_CD /* 7274949 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_04_DVD /* 7340485 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Hand /* 7406021 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Auto /* 7471557 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_PRADO_10_Top /* 7537093 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08 /* 7602629 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08_TX /* 7668165 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08_MO /* 7733701 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15 /* 7799237 */:
-            case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15_Top /* 7864773 */:
-                cls = LuzLexusISIndexAct.class;
+            case FinalCanbus.CAR_454_RZC_Sprinter_22 /* 6881734 */:
+                cls = SanlinIndexAct.class;
+                break;
+            case FinalCanbus.CAR_443_WC2_UAZ_Patriot /* 6947259 */:
+                cls = WCUAZPatriotCarSet.class;
                 break;
             case FinalCanbus.CAR_443_WC_14Aodesai_CD /* 7078331 */:
                 cls = ActivitySiYuIndex.class;
@@ -10876,8 +12252,15 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_XBS_Nissan_Cedric /* 7143876 */:
                 cls = XBSNissanCedricCarSet.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Futon_TOANO /* 7143878 */:
+                cls = ODFotonTOANOSetFunc.class;
+                break;
             case FinalCanbus.CAR_DJ_Yage_9 /* 7209399 */:
                 cls = DJYage9CarSet.class;
+                break;
+            case FinalCanbus.CAR_452_RZC_Subaru /* 7209412 */:
+            case FinalCanbus.CAR_454_RZC_Suburu_OUTBACK_18 /* 8323526 */:
+                cls = RZCSuburuCarSet.class;
                 break;
             case FinalCanbus.CAR_443_WC_OPEL_Astra_04 /* 7274939 */:
             case FinalCanbus.CAR_443_WC_OPEL_Zafira_05 /* 7340475 */:
@@ -10896,6 +12279,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_RZC_Beiqi_BJ90 /* 7274948 */:
                 cls = RZCBeiqiBJ90CarSet.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Xinte_DEV1_H /* 7274950 */:
+                cls = ODXinteDEV1SetFunc.class;
+                break;
+            case FinalCanbus.CAR_454_RZC_Racing_EC75_23 /* 7340486 */:
+            case FinalCanbus.CAR_454_OD_Dongfeng_Racing_EC75_23 /* 8454598 */:
+            case FinalCanbus.CAR_454_OD_Yutong_Qingka /* 11338182 */:
+            case FinalCanbus.CAR_454_OD_Dongfeng_Tianlong /* 11403718 */:
+            case FinalCanbus.CAR_454_OD_WeiCai_EHPro_24 /* 11469254 */:
             case FinalCanbus.CAR_452_XC_Rongwei_ALl /* 7471556 */:
             case FinalCanbus.CAR_452_XC_GM_ALl /* 7537092 */:
                 cls = XC_GMandRongweiIndexAct.class;
@@ -10903,18 +12294,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_RZC_ZhongTaiSR7 /* 7537079 */:
                 cls = RzcChanganSetFunc.class;
                 break;
-            case FinalCanbus.CAR_443_WY_Audi_Q3 /* 7668155 */:
-            case FinalCanbus.CAR_443_WY_MZD_All /* 7733691 */:
-                cls = WYBBACarInfo.class;
-                break;
             case FinalCanbus.CAR_452_OD_LandRover_Freelander /* 7799236 */:
                 cls = ODFreeLanderCarInfo.class;
                 break;
             case FinalCanbus.CAR_452_LZ_OUBao_Andela_CD /* 7864772 */:
                 cls = Luz_Oubao_IndexAct.class;
-                break;
-            case FinalCanbus.CAR_439_OD_ChangAn_CS95 /* 7930295 */:
-                cls = ODChanganCS95AllSetAct.class;
                 break;
             case FinalCanbus.CAR_452_OD_Lamborghini /* 7930308 */:
                 cls = OD_Lamborghini_PanelButton.class;
@@ -10935,13 +12319,23 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 break;
             case FinalCanbus.CAR_453_OD_BYD_Sirui /* 8061381 */:
             case FinalCanbus.CAR_439_OUDI_BYD_ALL /* 12976567 */:
+            case FinalCanbus.CAR_454_CZH_OUDI_BYD_ALL /* 15663558 */:
                 cls = Activity_OD_BYD_ALL.class;
+                break;
+            case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_11 /* 8126917 */:
+            case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_05 /* 8192453 */:
+                cls = ToyotaLexusEQActi_Luz.class;
+                break;
+            case FinalCanbus.CAR_454_RZC_Guanzhi3_14 /* 8192454 */:
+            case FinalCanbus.CAR_454_RZC_Guanzhi5_16 /* 8257990 */:
+                cls = LZ_Nissan08TeanaIndexAct.class;
                 break;
             case FinalCanbus.CAR_453_XP_OPEL /* 8257989 */:
                 cls = XP_Opel_Panel_New.class;
                 break;
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7 /* 8323524 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7_H /* 8389060 */:
+            case FinalCanbus.CAR_454_OD_HuaChen_SWM_Dahu /* 14614982 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_G05 /* 15335876 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_G05_H /* 15401412 */:
                 cls = ODHuachenSWMCarInfo.class;
@@ -10959,6 +12353,16 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_XC_Lexus_NX200 /* 14549444 */:
             case FinalCanbus.CAR_452_XC_Lexus_RX350 /* 14614980 */:
                 cls = XCLexusIndexAct.class;
+                break;
+            case FinalCanbus.CAR_454_OD_Shanqi_Delong_M3000S /* 8520134 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Delong_L5000 /* 8585670 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Delong_M6000 /* 8651206 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Delong_X5000 /* 8716742 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Xuandeyi_6 /* 8782278 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Xuandeyi_9 /* 8847814 */:
+            case FinalCanbus.CAR_454_OD_Shanqi_Zhiyun_E2 /* 8913350 */:
+            case FinalCanbus.CAR_453_OD_Shanqi_ZHongka /* 15991237 */:
+                cls = ODShanqiZHongkaCarSet.class;
                 break;
             case FinalCanbus.CAR_439_XBS_NISSAN_TuLe_DZSJ /* 8716727 */:
                 cls = XBSTuleDZSJIndexAct.class;
@@ -10979,64 +12383,6 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_ZH_Toyota_Proace /* 8847812 */:
                 cls = ZHToyotaProaceCarSet.class;
                 break;
-            case FinalCanbus.CAR_439_RZC_Sanlin_Yige /* 8913335 */:
-            case FinalCanbus.CAR_439_RZC_Sanlin_19Oulande /* 9372087 */:
-            case FinalCanbus.CAR_439_RZC_Sanlin_18Pajieluo /* 9437623 */:
-            case FinalCanbus.CAR_439_RZC_Sanlin_Yige_H /* 9503159 */:
-            case FinalCanbus.CAR_439_RZC_Sanlin_19Oulande_H /* 9568695 */:
-            case FinalCanbus.CAR_439_RZC_Sanlin_18Pajieluo_H /* 9634231 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = RZCAddCanDashBoard.class;
-                    break;
-                } else {
-                    cls = RZCAddCanDashBoard_HP.class;
-                    break;
-                }
-            case FinalCanbus.CAR_452_Tangdu_Toyota_All /* 8913348 */:
-            case FinalCanbus.CAR_452_Tangdu_Toyota_All_H /* 8978884 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_12 /* 9765317 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_14_Auto /* 9830853 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusRX_07_H /* 9896389 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_15 /* 9961925 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_15 /* 10027461 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusRX_07_L /* 10092997 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_12 /* 10158533 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16 /* 10224069 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_12 /* 10289605 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_09_A /* 10355141 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_14_Hand /* 10420677 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_15_A /* 10486213 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_15_A /* 10551749 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_15_H /* 10617285 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_09_H /* 10682821 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_HIGHLANDER_09_A /* 10748357 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_11_A /* 10813893 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Corolla_07_A /* 10879429 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Corolla_14_A /* 10944965 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Reiz_09_A /* 11010501 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_RAV4_12_A /* 11076037 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_14_A /* 11141573 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_14_H /* 11207109 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_18_Auto /* 11272645 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Prado_18_H /* 11338181 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_15_T /* 11403717 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusLX570_10 /* 11469253 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_18 /* 11534789 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_ALPHARD_18_A /* 11600325 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_15_A /* 11665861 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_16_L /* 11731397 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_10_A /* 11796933 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Tundra_10_H /* 11862469 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16_T /* 11928005 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusLX570_14 /* 11993541 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusGX_13 /* 12059077 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LexusGX_14 /* 12124613 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_Camery_09_H /* 12190149 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_08_M /* 12255685 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16_M /* 12321221 */:
-            case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_16_H /* 12386757 */:
-                cls = ToyotaTangduIndexAct.class;
-                break;
             case FinalCanbus.CAR_452_DJ_Ford_Fiesta_09_15 /* 9044420 */:
             case FinalCanbus.CAR_452_DJ_Ford_Kuga_09_15 /* 9109956 */:
                 cls = DJFordFiestaCarSet.class;
@@ -11047,6 +12393,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_453_LZ_LandRover_13_CD /* 9175493 */:
             case FinalCanbus.CAR_453_LZ_LandRover_18_CD /* 9241029 */:
             case FinalCanbus.CAR_453_LZ_Jaguar_12_CD /* 9306565 */:
+            case FinalCanbus.CAR_454_LZ_LandRover_CD_Discovery5 /* 13894086 */:
                 cls = LZNewLandRoverSetFunc.class;
                 break;
             case FinalCanbus.CAR_443_WC2_Proton_X50_22 /* 9306555 */:
@@ -11054,7 +12401,14 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC2_Proton_Persona_22 /* 9437627 */:
             case FinalCanbus.CAR_443_WC2_Proton_X70_22 /* 9503163 */:
             case FinalCanbus.CAR_443_WC2_Proton_X70_22_H /* 9568699 */:
+            case FinalCanbus.CAR_443_WC2_Proton_S70_24 /* 16449979 */:
+            case FinalCanbus.CAR_443_WC2_Proton_S70_24_H /* 16515515 */:
+            case FinalCanbus.CAR_443_WC2_Proton_X90_24 /* 16581051 */:
+            case FinalCanbus.CAR_443_WC2_Proton_X90_24_H /* 16646587 */:
                 cls = WCProtonAllCarSet.class;
+                break;
+            case FinalCanbus.CAR_439_RZC_Sanlin_18Pajieluo_H /* 9634231 */:
+                cls = SanlinCarSet.class;
                 break;
             case FinalCanbus.CAR_439_RCW_BYD_12_18Surui /* 9699767 */:
             case FinalCanbus.CAR_439_RCW_BYD_14_15G5 /* 9765303 */:
@@ -11065,10 +12419,11 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_RCW_BYD_12_17E6 /* 10092983 */:
                 cls = Activity_RCW_BYD_S7.class;
                 break;
-            case FinalCanbus.CAR_443_WC2_Perodua_ALZA /* 10224059 */:
-            case FinalCanbus.CAR_443_WC2_Perodua_ATIVA /* 10289595 */:
-            case FinalCanbus.CAR_443_WC2_Perodua_AXIA /* 10355131 */:
-                cls = WCPeroduaAllCarSet.class;
+            case FinalCanbus.CAR_454_RZC_Shanqi_DelongG2 /* 10027462 */:
+                cls = RZCShanqiDelongCarInfo.class;
+                break;
+            case FinalCanbus.CAR_454_RZC_Changan_BenBen_22 /* 10158534 */:
+                cls = RzcChanganCX70TireAct.class;
                 break;
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9_EV /* 10355140 */:
                 cls = ODChangfengCS9EVCarInfo.class;
@@ -11088,11 +12443,18 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_LZ_Nissan_Fuga /* 10551748 */:
                 cls = LZNissanFugaCarInfo.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Futon_Dajiangjun /* 10551750 */:
+            case FinalCanbus.CAR_439_OD_Futon_Tunland /* 16449975 */:
+                cls = ODFotonTunlandSetFunc.class;
+                break;
             case FinalCanbus.CAR_452_KYC_Zhonghua_All /* 10617284 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_H /* 10682820 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_V7 /* 10748356 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_V7_H /* 10813892 */:
                 cls = KYCZhonghuaCarSet.class;
+                break;
+            case FinalCanbus.CAR_454_OD_Yiqi_Jiefang_J6G_23 /* 10748358 */:
+                cls = ODYiqiJiefangJ6GCarSet.class;
                 break;
             case FinalCanbus.CAR_443_WC_OPEL_Astra_04_P /* 10813883 */:
             case FinalCanbus.CAR_443_WC_OPEL_Zafira_05_P /* 10879419 */:
@@ -11108,6 +12470,12 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_443_WC_OPEL_Meriva_03_H_P /* 11534779 */:
                 cls = WCOPELCarKeyActivity.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Yiqi_Jiefang_J7_23 /* 10813894 */:
+            case FinalCanbus.CAR_454_KYC_Ford_Mustang_07_H /* 13631942 */:
+            case FinalCanbus.CAR_454_KYC_Ford_Mustang_07_L /* 13697478 */:
+            case FinalCanbus.CAR_454_OD_Beiqi_EV160 /* 10879430 */:
+                cls = ODBeiqiEV160CarSet.class;
+                break;
             case FinalCanbus.CAR_439_BNR_Qichen_17T70 /* 10944951 */:
             case FinalCanbus.CAR_439_BNR_Qichen_16T70 /* 11010487 */:
                 cls = BNR_QiChenT70Act.class;
@@ -11115,25 +12483,34 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_BNR_Haval_H6 /* 11076023 */:
                 cls = BNRActivityHavaH6SetAct.class;
                 break;
+            case FinalCanbus.CAR_454_Tangdu_Porsche_Cayenne_12_H /* 11076038 */:
+            case FinalCanbus.CAR_454_Tangdu_Porsche_Cayenne_16_H /* 11141574 */:
+            case FinalCanbus.CAR_454_Tangdu_Porsche_macan_17_H /* 11207110 */:
+            case FinalCanbus.CAR_454_Tangdu_Porsche_macan_13_H /* 11272646 */:
+            case FinalCanbus.CAR_453_Tangdu_Porsche_macan_17 /* 16449989 */:
+            case FinalCanbus.CAR_453_Tangdu_Porsche_macan_13 /* 16515525 */:
+            case FinalCanbus.CAR_453_Tangdu_Porsche_Cayenne_12 /* 16581061 */:
+            case FinalCanbus.CAR_453_Tangdu_Porsche_Cayenne_16 /* 16646597 */:
+                cls = TDPorscheCarSet.class;
+                break;
             case FinalCanbus.CAR_439_BNR_Nissan_Tule /* 11141559 */:
                 cls = BnrTuleIndexAct.class;
                 break;
-            case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
-            case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
-                if (LauncherApplication.getConfiguration() == 1) {
-                    cls = LZMustangCarEQSet.class;
-                    break;
-                } else {
-                    cls = MustangIndexAct.class;
-                    break;
-                }
             case FinalCanbus.CAR_443_WC_Suzuki_S_croos_22_L /* 11600315 */:
             case FinalCanbus.CAR_443_WC_Suzuki_S_croos_22_M /* 11665851 */:
             case FinalCanbus.CAR_443_WC_Suzuki_S_croos_22_H /* 11731387 */:
             case FinalCanbus.CAR_443_WC_Suzuki_Baleno_23 /* 11796923 */:
             case FinalCanbus.CAR_443_WC_Suzuki_Fronx_23 /* 11862459 */:
             case FinalCanbus.CAR_443_WC2_TATA_harrier /* 12059067 */:
+            case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_L /* 14614971 */:
+            case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_M /* 14680507 */:
+            case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_H /* 14746043 */:
                 cls = WCSuzukiAllIndexAct.class;
+                break;
+            case FinalCanbus.CAR_454_OD_Jianghuai_Xingrui_24 /* 11665862 */:
+            case FinalCanbus.CAR_454_OD_Jianghuai_KanglingL3_24 /* 11731398 */:
+            case FinalCanbus.CAR_453_OD_Jianghuai_Chaoyue /* 12779973 */:
+                cls = ODJianghuaiChaoyueCarSet.class;
                 break;
             case FinalCanbus.CAR_452_PA_Nissan_XTrail_21 /* 11731396 */:
             case FinalCanbus.CAR_452_PA_Nissan_Loulan_21 /* 11796932 */:
@@ -11145,77 +12522,20 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_TZY_UAZ_Patriot /* 11993540 */:
                 cls = FaultCodeWindow.class;
                 break;
-            case FinalCanbus.CAR_439_XP_SUBARU_15_17FORESTER /* 12124599 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_15_16EMPREZA /* 12190135 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_15_17CROSSTREK /* 12255671 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_15_19OUTBACK /* 12321207 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_15_19LEGACY /* 12386743 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_17_19EMPREZA /* 12452279 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_18_19CROSSTREK /* 12517815 */:
-            case FinalCanbus.CAR_439_XP_SUBARU_19FORESTER /* 12583351 */:
-                cls = SuburuCarSet.class;
-                break;
-            case FinalCanbus.CAR_452_RZC_Benz_C_11_13 /* 12190148 */:
-            case FinalCanbus.CAR_452_RZC_Benz_SLK200_11 /* 12845508 */:
-            case FinalCanbus.CAR_452_RZC_Benz_E260_10 /* 13500868 */:
-                cls = RzcBenzCCarSet.class;
-                break;
-            case FinalCanbus.CAR_453_XC_Honda_Acura_RL /* 12452293 */:
-            case FinalCanbus.CAR_452_XC_Honda_Acura_TL /* 12911044 */:
-            case FinalCanbus.CAR_452_XC_Honda_Acura_RDX /* 12976580 */:
-            case FinalCanbus.CAR_452_XC_Honda_Acura_TLX /* 13042116 */:
-                cls = XCHondaAmpCarSet.class;
-                break;
-            case FinalCanbus.CAR_452_OD_Qirui_Xiaomayi /* 12517828 */:
-                cls = ODQiruiXiaomayiCarInfo.class;
-                break;
-            case FinalCanbus.CAR_452_OD_Ford_Lincoln_navigator /* 12583364 */:
-                cls = ODFordNavigatorCarSet.class;
-                break;
-            case FinalCanbus.CAR_452_LZ_Toyato_RX450 /* 12648900 */:
-                if (readFile("/sys/fytver/fyt_bin_version").contains("Ls18") || readFile("/sys/fytver/fyt_bin_version").contains("Lt18")) {
-                    cls = LZNewAllBBASetFunc.class;
-                    break;
-                } else {
-                    cls = CamryIndexAct.class;
-                    break;
-                }
-            case FinalCanbus.CAR_439_LZ_INFINIT_FX35 /* 12714423 */:
-                cls = LuzInfinitF35IndexAct.class;
-                break;
-            case FinalCanbus.CAR_453_OD_Dongfeng_Chenglong_H7 /* 12714437 */:
-                cls = ODDongfengChenglongH7CarSet.class;
-                break;
-            case FinalCanbus.CAR_439_DJ_Nissan /* 12779959 */:
-            case FinalCanbus.CAR_439_DJ_Nissan_H /* 12845495 */:
-                cls = djTianlaiIndexAct.class;
-                break;
-            case FinalCanbus.CAR_453_OD_Jianghuai_Chaoyue /* 12779973 */:
-                cls = ODJianghuaiChaoyueCarSet.class;
-                break;
-            case FinalCanbus.CAR_453_OD_BQ_BJ30_21 /* 12845509 */:
-                cls = ODBeiqiBJ30CarSet.class;
-                break;
-            case FinalCanbus.CAR_453_OD_BQ_BJ90 /* 12911045 */:
-                cls = ODBeiqiBJ90CarSet.class;
-                break;
-            case FinalCanbus.CAR_453_OD_RENAUL_KOLEOS_05 /* 12976581 */:
-                cls = ActivityODRenaultKeleosCD.class;
-                break;
-            case FinalCanbus.CAR_439_OUDI_Falcon_New_Single /* 13042103 */:
-            case FinalCanbus.CAR_439_OUDI_Falcon_New_Double /* 13107639 */:
-            case FinalCanbus.CAR_439_OUDI_Territory_New_Single /* 13173175 */:
-            case FinalCanbus.CAR_439_OUDI_Territory_New_Double /* 13238711 */:
-            case FinalCanbus.CAR_439_OUDI_Territory_Old_Single /* 13304247 */:
-            case FinalCanbus.CAR_439_OUDI_Territory_Old_Double /* 13369783 */:
-            case FinalCanbus.CAR_439_OUDI_Falcon_Old_Single /* 13435319 */:
-            case FinalCanbus.CAR_439_OUDI_Falcon_Old_Double /* 13500855 */:
-                cls = FordFalconIndexAct.class;
-                break;
-            case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_L /* 13107652 */:
-            case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_H /* 13173188 */:
-                cls = ODLeTinMangguoCarSet.class;
-                break;
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_13_SCREEN /* 12124614 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_16_SCREEN /* 12190150 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_17_SCREEN /* 12255686 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_SCREEN /* 12321222 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_Sport_10_SCREEN /* 12386758 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_Sport_14_SCREEN /* 12452294 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_Sport_17_SCREEN /* 12517830 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_Sport_SCREEN /* 12583366 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Evoque_12_SCREEN /* 12648902 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Evoque_13_SCREEN /* 12714438 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Evoque_16_SCREEN /* 12779974 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Evoque_17_SCREEN /* 12845510 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Evoque_SCREEN /* 12911046 */:
+            case FinalCanbus.CAR_454_Tangdu_LR_Velar_SCREEN /* 12976582 */:
             case FinalCanbus.CAR_453_Tangdu_LR_RangeRover_13 /* 13369797 */:
             case FinalCanbus.CAR_453_Tangdu_LR_RangeRover_16 /* 13435333 */:
             case FinalCanbus.CAR_453_Tangdu_LR_RangeRover_17 /* 13500869 */:
@@ -11251,11 +12571,79 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_453_Tangdu_Jaguar_XJXJL /* 15466949 */:
                 cls = TDLandRoverIndexAct.class;
                 break;
+            case FinalCanbus.CAR_453_XC_Honda_Acura_RL /* 12452293 */:
+            case FinalCanbus.CAR_452_XC_Honda_Acura_TL /* 12911044 */:
+            case FinalCanbus.CAR_452_XC_Honda_Acura_RDX /* 12976580 */:
+            case FinalCanbus.CAR_452_XC_Honda_Acura_TLX /* 13042116 */:
+                cls = XCHondaAmpCarSet.class;
+                break;
+            case FinalCanbus.CAR_452_OD_Qirui_Xiaomayi /* 12517828 */:
+                cls = ODQiruiXiaomayiCarInfo.class;
+                break;
+            case FinalCanbus.CAR_452_OD_Ford_Lincoln_navigator /* 12583364 */:
+                cls = ODFordNavigatorCarSet.class;
+                break;
+            case FinalCanbus.CAR_452_LZ_Toyato_RX450 /* 12648900 */:
+                if (readFile("/sys/fytver/fyt_bin_version").contains("Ls18") || readFile("/sys/fytver/fyt_bin_version").contains("Lt18")) {
+                    cls = LZNewAllBBASetFunc.class;
+                    break;
+                } else {
+                    cls = CamryIndexAct_LuZ.class;
+                    break;
+                }
+            case FinalCanbus.CAR_439_LZ_INFINIT_FX35 /* 12714423 */:
+                cls = LuzInfinitF35IndexAct.class;
+                break;
+            case FinalCanbus.CAR_453_OD_Dongfeng_Chenglong_H7 /* 12714437 */:
+                cls = ODDongfengChenglongH7CarSet.class;
+                break;
+            case FinalCanbus.CAR_439_DJ_Nissan /* 12779959 */:
+            case FinalCanbus.CAR_439_DJ_Nissan_H /* 12845495 */:
+                cls = djTianlaiIndexAct.class;
+                break;
+            case FinalCanbus.CAR_453_OD_BQ_BJ30_21 /* 12845509 */:
+                cls = ODBeiqiBJ30CarSet.class;
+                break;
+            case FinalCanbus.CAR_453_OD_BQ_BJ90 /* 12911045 */:
+                cls = ODBeiqiBJ90CarSet.class;
+                break;
+            case FinalCanbus.CAR_453_OD_RENAUL_KOLEOS_05 /* 12976581 */:
+                cls = ActivityODRenaultKeleosCD.class;
+                break;
+            case FinalCanbus.CAR_439_OUDI_Falcon_New_Single /* 13042103 */:
+            case FinalCanbus.CAR_439_OUDI_Falcon_New_Double /* 13107639 */:
+            case FinalCanbus.CAR_439_OUDI_Territory_New_Single /* 13173175 */:
+            case FinalCanbus.CAR_439_OUDI_Territory_New_Double /* 13238711 */:
+            case FinalCanbus.CAR_439_OUDI_Territory_Old_Single /* 13304247 */:
+            case FinalCanbus.CAR_439_OUDI_Territory_Old_Double /* 13369783 */:
+            case FinalCanbus.CAR_439_OUDI_Falcon_Old_Single /* 13435319 */:
+            case FinalCanbus.CAR_439_OUDI_Falcon_Old_Double /* 13500855 */:
+                cls = FordFalconIndexAct.class;
+                break;
+            case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_L /* 13107652 */:
+            case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_H /* 13173188 */:
+                cls = ODLeTinMangguoCarSet.class;
+                break;
+            case FinalCanbus.CAR_454_RDW_BENZ_ML350_08_T1 /* 13173190 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_ML350_08_T2 /* 13238726 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_R350_08_T1 /* 13304262 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_R350_08_T2 /* 13369798 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_ML350_12 /* 13435334 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_GL450_08 /* 13500870 */:
+            case FinalCanbus.CAR_454_RDW_BENZ_GL_12 /* 13566406 */:
+                cls = RDWBenzSetFunc.class;
+                break;
             case FinalCanbus.CAR_452_LZ_Benz_Smart /* 13435332 */:
                 cls = LZBenzSmartSetFunc.class;
                 break;
-            case FinalCanbus.CAR_439_LUZ_Nissan_GTR /* 13566391 */:
-                cls = LuzNissanGTRIndexAct.class;
+            case FinalCanbus.CAR_443_WC2_Jili_GS_18 /* 13631931 */:
+            case FinalCanbus.CAR_443_WC2_Jili_GL_18 /* 13697467 */:
+            case FinalCanbus.CAR_443_WC2_Jili_Boyue_18 /* 13763003 */:
+            case FinalCanbus.CAR_443_WC2_Jili_Boyue_20 /* 13828539 */:
+            case FinalCanbus.CAR_443_WC2_Jili_Dihao_22 /* 13894075 */:
+            case FinalCanbus.CAR_443_WC2_Jili_Binyue_22 /* 13959611 */:
+            case FinalCanbus.CAR_443_WC2_Jili_All /* 14025147 */:
+                cls = WCJiliAllCarSet.class;
                 break;
             case FinalCanbus.CAR_452_LZ_Volvo_10 /* 13631940 */:
                 if (LauncherApplication.getConfiguration() == 1) {
@@ -11272,12 +12660,8 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_DJ_Rongwei_i5_H /* 14025143 */:
                 cls = ActDaojunRongweI5CarSet.class;
                 break;
-            case FinalCanbus.CAR_439_OUDI_Beiqi_EC3 /* 14090679 */:
-            case FinalCanbus.CAR_439_OUDI_Beiqi_EC5 /* 14156215 */:
-            case FinalCanbus.CAR_439_OUDI_Beiqi_EC180 /* 14221751 */:
-            case FinalCanbus.CAR_439_OUDI_Beiqi_EC220 /* 14287287 */:
-            case FinalCanbus.CAR_439_OUDI_Beiqi_EU5 /* 14352823 */:
-                cls = ActivityODBeiqiECIndex.class;
+            case FinalCanbus.CAR_454_XP_ZH2_Pilotcar /* 13959622 */:
+                cls = ZH2PilotcarCarinfoAct.class;
                 break;
             case FinalCanbus.CAR_452_OD_Changcheng_Oula /* 14156228 */:
                 cls = ODChangChengOulaCarInfo.class;
@@ -11286,6 +12670,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
             case FinalCanbus.CAR_452_KYC_Toyota_Alpha /* 14352836 */:
                 cls = KYCToyotaAllCarSet.class;
+                break;
+            case FinalCanbus.CAR_454_OD_ChangAn_Raeton /* 14352838 */:
+            case FinalCanbus.CAR_454_OD_ChangAn_Raeton_H /* 14418374 */:
+                cls = ODChangAnRaetonCarSet.class;
                 break;
             case FinalCanbus.CAR_439_DJ_BYD_M6 /* 14418359 */:
                 cls = DaojunBydM6SetFunc.class;
@@ -11306,6 +12694,10 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_LUZ_BMW_MINI /* 15270327 */:
                 cls = LZBMWMiniCarSet.class;
                 break;
+            case FinalCanbus.CAR_454_OD_Sanlin_Pajero_18 /* 15335878 */:
+            case FinalCanbus.CAR_454_OD_Sanlin_LC200_23 /* 15401414 */:
+                cls = ODSanlinCarSet.class;
+                break;
             case FinalCanbus.CAR_439_XC_Xiandai_Suolantuo_Amp /* 15466935 */:
                 cls = XCXiandaiSuolataCarSet.class;
                 break;
@@ -11324,10 +12716,7 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
                 cls = DaojunQiruiCarSet.class;
                 break;
             case FinalCanbus.CAR_453_RZC_VinFast_PLUS_23 /* 15860165 */:
-                cls = RZCVinFastPlusCarSet.class;
-                break;
-            case FinalCanbus.CAR_453_OD_Shanqi_ZHongka /* 15991237 */:
-                cls = ODShanqiZHongkaCarSet.class;
+                cls = SanlinIndexAct.class;
                 break;
             case FinalCanbus.CAR_439_OD_Opel_Adan_CD /* 16056759 */:
                 cls = ODOpelAdanIndexActi.class;
@@ -11343,19 +12732,19 @@ public class Launcher extends Activity implements View.OnClickListener, View.OnL
             case FinalCanbus.CAR_439_BNR_HAVAL_H9 /* 16384439 */:
                 cls = RZC_Oudi_0439_HavalH9_IndexAct.class;
                 break;
-            case FinalCanbus.CAR_439_OD_Futon_Tunland /* 16449975 */:
-                cls = ODFotonTunlandSetFunc.class;
+            case FinalCanbus.CAR_453_OD_Modernin /* 16384453 */:
+                cls = ODModerninIndexAct.class;
                 break;
             case FinalCanbus.CAR_439_OD_BMW_ALL /* 16646583 */:
                 cls = ODBMWCarInfo.class;
                 break;
         }
         if (cls != null) {   
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);  
-        	boolean userStats = prefs.getBoolean("user_stats", false);     	
-        	SharedPreferences.Editor editor = prefs.edit();
+            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
+        	boolean userStats = mPrefs.getBoolean("user_stats", false);     	
+        	SharedPreferences.Editor editor = mPrefs.edit();
             editor.putString("canbus_class", String.valueOf(cls));
-            editor.commit();
+            editor.apply();
             if (userLayout && userStats) {
 	            if (DataCanbus.DATA[1000] == 76 || DataCanbus.DATA[1000] == 67) {
 	                if (DataCanbus.DATA[11] != 13 && DataCanbus.DATA[11] != 14 && FinalShare.CUSTOMER_ID != 31) {

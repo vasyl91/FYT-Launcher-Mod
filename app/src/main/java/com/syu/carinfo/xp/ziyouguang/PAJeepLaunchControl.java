@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepLaunchControl extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepLaunchControl.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 329:
+                case 341:
                     if (value == 1) {
                         PAJeepLaunchControl.this.findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_jeep_menu_button_p);
                         ((Button) PAJeepLaunchControl.this.findViewById(R.id.btn_plus2)).setText(R.string.str_cancel_launch_control);
@@ -32,7 +31,7 @@ public class PAJeepLaunchControl extends BaseActivity {
                         ((TextView) PAJeepLaunchControl.this.findViewById(R.id.tv_text1)).setText(R.string.str_inactive);
                         break;
                     }
-                case 330:
+                case 342:
                     if (((TextView) PAJeepLaunchControl.this.findViewById(R.id.tv_text1)) != null) {
                         if (value == 255) {
                             ((TextView) PAJeepLaunchControl.this.findViewById(R.id.tv_text2)).setText("----");
@@ -54,31 +53,31 @@ public class PAJeepLaunchControl extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_launchcontrol);
+        //setContentView(R.layout.layout_0374_pa_jeep_launchcontrol);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepLaunchControl.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{9, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepLaunchControl.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(15, new int[]{9}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepLaunchControl.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[329];
+                int value = DataCanbus.DATA[341];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(15, new int[]{8}, null, null);
                 } else {
@@ -88,28 +87,28 @@ public class PAJeepLaunchControl extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{89}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[329].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[330].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[341].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[342].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[329].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[330].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[341].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[342].removeNotify(this.mNotifyCanbus);
     }
 }

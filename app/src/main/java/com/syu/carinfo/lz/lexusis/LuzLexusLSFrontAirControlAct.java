@@ -7,6 +7,7 @@ import android.os.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
@@ -14,70 +15,69 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.LuzLexusLSFrontAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 10:
                     LuzLexusLSFrontAirControlAct.this.mUpdatePowerOn();
                     break;
-                case 2:
+                case 11:
                     LuzLexusLSFrontAirControlAct.this.mUpdateAcOn();
                     break;
-                case 3:
-                case 15:
+                case 12:
+                case 54:
                     LuzLexusLSFrontAirControlAct.this.mUpdateCycle();
                     break;
-                case 4:
+                case 13:
                     LuzLexusLSFrontAirControlAct.this.mUpdateAutoOn();
                     break;
-                case 5:
+                case 14:
                     LuzLexusLSFrontAirControlAct.this.mUpdateDualOn();
                     break;
-                case 6:
+                case 15:
                     LuzLexusLSFrontAirControlAct.this.mUpdateFrontDefrost();
                     break;
-                case 7:
-                case 8:
-                case 9:
-                    LuzLexusLSFrontAirControlAct.this.updateBtnSource();
-                    break;
-                case 10:
-                    LuzLexusLSFrontAirControlAct.this.mUpdaterAirWindLevelLeft();
-                    break;
-                case 11:
-                    LuzLexusLSFrontAirControlAct.this.mUpdateAirTempLeft();
-                    break;
-                case 12:
-                    LuzLexusLSFrontAirControlAct.this.mUpdateAirTempRight();
-                    break;
-                case 13:
-                case 72:
-                    LuzLexusLSFrontAirControlAct.this.mUpdateClearOn();
-                    break;
-                case 14:
+                case 16:
                     LuzLexusLSFrontAirControlAct.this.mUpdateRearDefrost();
                     break;
-                case 16:
+                case 17:
+                    LuzLexusLSFrontAirControlAct.this.mUpdateFrontHotOn();
+                    break;
+                case 18:
+                case 19:
+                case 20:
+                    LuzLexusLSFrontAirControlAct.this.updateBtnSource();
+                    break;
+                case 21:
+                    LuzLexusLSFrontAirControlAct.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 22:
+                case 23:
+                case 24:
+                    LuzLexusLSFrontAirControlAct.this.updateBtnSourceRight();
+                    break;
+                case 27:
+                    LuzLexusLSFrontAirControlAct.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    LuzLexusLSFrontAirControlAct.this.mUpdateAirTempRight();
+                    break;
+                case 33:
+                case 76:
+                    LuzLexusLSFrontAirControlAct.this.mUpdateClearOn();
+                    break;
+                case 35:
+                    LuzLexusLSFrontAirControlAct.this.mUpdaterBlowFrontAutoOn();
+                    break;
+                case 37:
                     LuzLexusLSFrontAirControlAct.this.mUpdateAirTempLeft();
                     LuzLexusLSFrontAirControlAct.this.mUpdateAirTempRight();
                     break;
-                case 69:
-                case 70:
-                case 71:
-                    LuzLexusLSFrontAirControlAct.this.updateBtnSourceRight();
-                    break;
-                case 73:
-                    LuzLexusLSFrontAirControlAct.this.mUpdateFrontHotOn();
-                    break;
-                case 75:
+                case 38:
                     LuzLexusLSFrontAirControlAct.this.mUpdateRearLockOn();
-                    break;
-                case 81:
-                    LuzLexusLSFrontAirControlAct.this.mUpdaterBlowFrontAutoOn();
                     break;
             }
         }
@@ -87,20 +87,20 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09 /* 1114565 */:
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09_H /* 1180101 */:
-                setContentView(R.layout.layout_0452_lz_toyota_reiz_air_control);
+                //setContentView(R.layout.layout_0452_lz_toyota_reiz_air_control);
                 break;
             case FinalCanbus.CAR_453_LZ_Toyota_markII_L /* 9634245 */:
             case FinalCanbus.CAR_453_LZ_Toyota_markII_H /* 9699781 */:
-                setContentView(R.layout.layout_0453_lz_toyota_mark2_air_control);
+                //setContentView(R.layout.layout_0453_lz_toyota_mark2_air_control);
                 break;
             default:
-                setContentView(R.layout.layout_0452_lz_lexus_ls_air_control);
+                //setContentView(R.layout.layout_0452_lz_lexus_ls_air_control);
                 break;
         }
         init();
@@ -151,7 +151,7 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         findViewById(R.id.btn_air_temp_right_minus).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -159,7 +159,7 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -167,7 +167,7 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -189,7 +189,7 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
                 data0 = 10;
                 break;
             case R.id.air_xts_mode /* 2131427434 */:
-            case R.id.air_xts_mode_left /* 2131427723 */:
+            case R.id.air_xts_mode_left /* 2131428283 */:
                 data0 = 36;
                 break;
             case R.id.air_xts_auto /* 2131427436 */:
@@ -210,7 +210,7 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
             case R.id.air_xts_rearpage /* 2131427448 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) LuzLexusLSRearAirControlAct.class));
+                    startActivity(new Intent(this, LuzLexusLSRearAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -222,44 +222,42 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 4;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
+            case R.id.air_xts_rear /* 2131427560 */:
+                data0 = 20;
+                break;
+            case R.id.air_xts_dual /* 2131427566 */:
                 data0 = 16;
                 break;
-            case R.id.air_xts_clear /* 2131427465 */:
+            case R.id.air_xts_clear /* 2131427569 */:
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
                     case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
-                    case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD /* 8913349 */:
-                    case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD_H /* 8978885 */:
                         data0 = 39;
                         break;
                     default:
                         data0 = 40;
                         break;
                 }
-            case R.id.air_xts_front_hot /* 2131427466 */:
+            case R.id.air_xts_front_hot /* 2131427571 */:
                 data0 = 38;
                 break;
-            case R.id.air_xts_rear /* 2131427534 */:
-                data0 = 20;
-                break;
-            case R.id.air_cycle_outer /* 2131427557 */:
-                if (DataCanbus.DATA[3] == 1) {
-                    data0 = 25;
-                    break;
-                }
-            case R.id.air_cycle_inter /* 2131427558 */:
-                if (DataCanbus.DATA[3] == 0) {
-                    data0 = 25;
-                    break;
-                }
-            case R.id.air_xts_front_blow_auto /* 2131427560 */:
+            case R.id.air_xts_front_blow_auto /* 2131427572 */:
                 data0 = 60;
                 break;
-            case R.id.air_xts_mode_right /* 2131427724 */:
+            case R.id.air_xts_mode_right /* 2131428024 */:
                 data0 = 37;
                 break;
-            case R.id.air_xts_outside /* 2131428626 */:
+            case R.id.air_cycle_outer /* 2131428106 */:
+                if (DataCanbus.DATA[12] == 1) {
+                    data0 = 25;
+                    break;
+                }
+            case R.id.air_cycle_inter /* 2131428107 */:
+                if (DataCanbus.DATA[12] == 0) {
+                    data0 = 25;
+                    break;
+                }
+            case R.id.air_xts_outside /* 2131428634 */:
                 data0 = 15;
                 break;
         }
@@ -274,64 +272,64 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = SystemProperties.getInt("persist.fyt.temperature", 0);
-        int temp = DataCanbus.DATA[11];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int temp = DataCanbus.DATA[27];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -346,11 +344,11 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = SystemProperties.getInt("persist.fyt.temperature", 0);
-        int temp = DataCanbus.DATA[12];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int temp = DataCanbus.DATA[28];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -365,77 +363,75 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[4];
+        int acOn = DataCanbus.DATA[13];
         if (findViewById(R.id.air_xts_auto) != null) {
             findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
-        int acOn = DataCanbus.DATA[5];
+        int acOn = DataCanbus.DATA[14];
         if (findViewById(R.id.air_xts_dual) != null) {
             findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[2];
+        int acOn = DataCanbus.DATA[11];
         if (findViewById(R.id.air_xts_ac) != null) {
             findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateClearOn() {
         if (findViewById(R.id.air_xts_clear) != null) {
             switch (DataCanbus.DATA[1000]) {
                 case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
                 case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
-                case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD /* 8913349 */:
-                case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11_CD_H /* 8978885 */:
-                    int power = DataCanbus.DATA[72];
+                    int power = DataCanbus.DATA[76];
                     findViewById(R.id.air_xts_clear).setBackgroundResource(power == 0 ? R.drawable.ic_xts_clearair_n : R.drawable.ic_xts_clearair_p);
                     break;
                 default:
-                    int power2 = DataCanbus.DATA[13];
+                    int power2 = DataCanbus.DATA[33];
                     findViewById(R.id.air_xts_clear).setBackgroundResource(power2 == 0 ? R.drawable.ic_xts_clear_air_n : R.drawable.ic_xts_clear_air_p);
                     break;
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontHotOn() {
-        int power = DataCanbus.DATA[73];
+        int power = DataCanbus.DATA[17];
         if (findViewById(R.id.air_xts_front_hot) != null) {
             findViewById(R.id.air_xts_front_hot).setBackgroundResource(power == 0 ? R.drawable.ic_xts_fronthot_n : R.drawable.ic_xts_fronthot_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
-        int power = DataCanbus.DATA[75];
+        int power = DataCanbus.DATA[38];
         if (findViewById(R.id.air_xts_rearlock) != null) {
             findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[1];
+        int power = DataCanbus.DATA[10];
         if (findViewById(R.id.air_xts_power) != null) {
             findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[3];
-        int auto = DataCanbus.DATA[15];
+        int cycle = DataCanbus.DATA[12];
+        int auto = DataCanbus.DATA[54];
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09 /* 1114565 */:
             case FinalCanbus.CAR_453_LZ_Toyota_REIZ_09_H /* 1180101 */:
@@ -469,33 +465,33 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[6];
+        int front = DataCanbus.DATA[15];
         if (findViewById(R.id.air_xts_front) != null) {
             findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[14];
+        int rear = DataCanbus.DATA[16];
         if (findViewById(R.id.air_xts_rear) != null) {
             findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFrontAutoOn() {
-        int rear = DataCanbus.DATA[81];
+        int rear = DataCanbus.DATA[35];
         if (findViewById(R.id.air_xts_front_blow_auto) != null) {
             findViewById(R.id.air_xts_front_blow_auto).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_blow_auto_n : R.drawable.ic_xts_blow_auto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[10];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -506,11 +502,11 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[7];
-        int foot = DataCanbus.DATA[9];
-        int body = DataCanbus.DATA[8];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;
@@ -618,11 +614,11 @@ public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRight() {
-        int body_right = DataCanbus.DATA[70];
-        int foot_right = DataCanbus.DATA[71];
-        int window_right = DataCanbus.DATA[69];
+        int body_right = DataCanbus.DATA[23];
+        int foot_right = DataCanbus.DATA[24];
+        int window_right = DataCanbus.DATA[22];
         int mode_right = 0;
         if (foot_right == 1) {
             mode_right = 0 | 1;

@@ -14,72 +14,71 @@ import com.syu.module.canbus.Callback_0121_WC2_14Prado;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PardoSettingsAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 4:
+                case 102:
                     PardoSettingsAct.this.mUpdaterInteriorLightOffTime();
                     break;
-                case 5:
+                case 103:
                     PardoSettingsAct.this.mUpdaterRemote2PressUnlock();
                     break;
-                case 6:
+                case 104:
                     PardoSettingsAct.this.mUpdaterHeadLampsOnSensitivity();
                     break;
-                case 7:
+                case 105:
                     PardoSettingsAct.this.m2TimesKeyUnLock();
                     break;
-                case 8:
+                case 106:
                     PardoSettingsAct.this.mUpdaterLockUnLockFeedbackByLights();
                     break;
-                case 9:
+                case 107:
                     PardoSettingsAct.this.mUpdaterKeySystemWithElecKey();
                     break;
-                case 10:
+                case 108:
                     PardoSettingsAct.this.mUpdaterSmartLockAndOneKeyBoot();
                     break;
-                case 13:
+                case 111:
                     PardoSettingsAct.this.mUpdaterRadarSwitch();
                     break;
-                case 14:
+                case 112:
                     PardoSettingsAct.this.mUpdaterRadarAlarmVol();
                     break;
-                case 15:
+                case 113:
                     PardoSettingsAct.this.mUpdaterRadarfrontRange();
                     break;
-                case 16:
+                case 114:
                     PardoSettingsAct.this.mUpdaterRadarrearRange();
                     break;
-                case 17:
+                case 115:
                     PardoSettingsAct.this.mUpdaterInOutAirByAutoKey();
                     break;
-                case 18:
+                case 116:
                     PardoSettingsAct.this.mUpdaterAirByAutoKey();
                     break;
-                case 19:
+                case 117:
                     PardoSettingsAct.this.mUpdaterOutLightOffTime();
                     break;
-                case 21:
+                case 119:
                     PardoSettingsAct.this.mUpdaterDsplinkspeed();
                     break;
-                case 22:
+                case 120:
                     PardoSettingsAct.this.mUpdaterDspsurround();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_pardo_settings);
+        //setContentView(R.layout.layout_pardo_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         CallbackCanbusBase callback = ModuleCallbackCanbusProxy.getInstance().getCallbackCanbus();
@@ -104,198 +103,198 @@ public class PardoSettingsAct extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_remote_2_press_unlock)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_remote_2_press_unlock)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[5] == 0) {
+                if (DataCanbus.DATA[103] == 0) {
                     DataCanbus.PROXY.cmd(1, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(1, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_operation_key_two_times)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_operation_key_two_times)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[7] == 0) {
+                if (DataCanbus.DATA[105] == 0) {
                     DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(4, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_intelligent_door)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_intelligent_door)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[9] == 0) {
+                if (DataCanbus.DATA[107] == 0) {
                     DataCanbus.PROXY.cmd(5, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(5, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_intelligent_lock_and_one_key_start)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_intelligent_lock_and_one_key_start)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[10] == 0) {
+                if (DataCanbus.DATA[108] == 0) {
                     DataCanbus.PROXY.cmd(6, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(6, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_lock_unlock_emergency_flashers_response)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_lock_unlock_emergency_flashers_response)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[8] == 0) {
+                if (DataCanbus.DATA[106] == 0) {
                     DataCanbus.PROXY.cmd(7, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(7, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_air_conditioning_and_AUTO_bond_linkage)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_air_conditioning_and_AUTO_bond_linkage)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[18] == 0) {
+                if (DataCanbus.DATA[116] == 0) {
                     DataCanbus.PROXY.cmd(8, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(8, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_gas_switch_and_AUTO_bond_linkage)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_gas_switch_and_AUTO_bond_linkage)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[17] == 0) {
+                if (DataCanbus.DATA[115] == 0) {
                     DataCanbus.PROXY.cmd(9, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(9, new int[1], null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_sens_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_sens_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[6];
+                int value = DataCanbus.DATA[104];
                 if (value > 0) {
                     DataCanbus.PROXY.cmd(0, new int[]{value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_sens_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_sens_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[6];
+                int value = DataCanbus.DATA[104];
                 if (value < 4) {
                     DataCanbus.PROXY.cmd(0, new int[]{value + 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_interior_lighting_off_time_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_interior_lighting_off_time_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[4];
+                int value = DataCanbus.DATA[102];
                 if (value > 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_interior_lighting_off_time_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_interior_lighting_off_time_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[4];
+                int value = DataCanbus.DATA[102];
                 if (value < 3) {
                     DataCanbus.PROXY.cmd(2, new int[]{value + 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_out_lighting_off_time_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_out_lighting_off_time_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19];
+                int value = DataCanbus.DATA[117];
                 if (value > 0) {
                     DataCanbus.PROXY.cmd(3, new int[]{value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_out_lighting_off_time_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_out_lighting_off_time_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19];
+                int value = DataCanbus.DATA[117];
                 if (value < 3) {
                     DataCanbus.PROXY.cmd(3, new int[]{value + 1}, null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_radar_switch)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_radar_switch)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[13] == 0) {
+                if (DataCanbus.DATA[111] == 0) {
                     DataCanbus.PROXY.cmd(10, new int[1], null, null);
                 } else {
                     DataCanbus.PROXY.cmd(10, new int[]{1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_alarm_volume_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_alarm_volume_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[14];
+                int value = DataCanbus.DATA[112];
                 if (value > 0) {
                     DataCanbus.PROXY.cmd(11, new int[]{value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_alarm_volume_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_alarm_volume_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[14];
+                int value = DataCanbus.DATA[112];
                 if (value < 4) {
                     DataCanbus.PROXY.cmd(11, new int[]{value + 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_front_range_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_front_range_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(12, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_front_range)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.19
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_front_range)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(12, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_rear_range_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.20
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_rear_range_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(12, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.pardo_btn_radar_rear_range)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.21
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_radar_rear_range)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(12, new int[]{1}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_vol_link_speed)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.22
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_vol_link_speed)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[21] == 0) {
+                if (DataCanbus.DATA[119] == 0) {
                     DataCanbus.PROXY.cmd(15, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(15, new int[1], null, null);
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.pardo_btn_surround)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoSettingsAct.23
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.pardo_btn_surround)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[22] == 0) {
+                if (DataCanbus.DATA[120] == 0) {
                     DataCanbus.PROXY.cmd(16, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(16, new int[1], null, null);
@@ -304,65 +303,65 @@ public class PardoSettingsAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRemote2PressUnlock() {
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[103];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_remote_2_press_unlock)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_remote_2_press_unlock)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m2TimesKeyUnLock() {
-        int value = DataCanbus.DATA[7];
+        int value = DataCanbus.DATA[105];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_operation_key_two_times)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_operation_key_two_times)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterKeySystemWithElecKey() {
-        int value = DataCanbus.DATA[9];
+        int value = DataCanbus.DATA[107];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_intelligent_door)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_unlock_intelligent_door)).setChecked(value != 0);
         }
@@ -373,81 +372,81 @@ public class PardoSettingsAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSmartLockAndOneKeyBoot() {
-        int value = DataCanbus.DATA[10];
+        int value = DataCanbus.DATA[108];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_intelligent_lock_and_one_key_start)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_intelligent_lock_and_one_key_start)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLockUnLockFeedbackByLights() {
-        int value = DataCanbus.DATA[8];
+        int value = DataCanbus.DATA[106];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_lock_unlock_emergency_flashers_response)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_lock_set_lock_unlock_emergency_flashers_response)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirByAutoKey() {
-        int value = DataCanbus.DATA[18];
+        int value = DataCanbus.DATA[116];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_air_conditioning_and_AUTO_bond_linkage)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_air_conditioning_and_AUTO_bond_linkage)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterInOutAirByAutoKey() {
-        int value = DataCanbus.DATA[17];
+        int value = DataCanbus.DATA[115];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_gas_switch_and_AUTO_bond_linkage)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_climate_set_gas_switch_and_AUTO_bond_linkage)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHeadLampsOnSensitivity() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[104];
         if (((TextView) findViewById(R.id.pardo_tv_sens_cur)) != null && value > -1 && value < 5) {
             ((TextView) findViewById(R.id.pardo_tv_sens_cur)).setBackgroundResource(ConstWcToyota.mSensDrawableId[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterInteriorLightOffTime() {
-        int value = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.pardo_tv_interior_lighting_off_time)) != null && value > -1 && value < 4) {
             ((TextView) findViewById(R.id.pardo_tv_interior_lighting_off_time)).setText(PardoData.mStrLightOffTime[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOutLightOffTime() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[117];
         if (((TextView) findViewById(R.id.pardo_tv_out_lighting_off_time)) != null && value > -1 && value < 4) {
             ((TextView) findViewById(R.id.pardo_tv_out_lighting_off_time)).setText(PardoData.mStrLightOffTime[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadarSwitch() {
-        int value = DataCanbus.DATA[13];
+        int value = DataCanbus.DATA[111];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_radar_switch)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_radar_switch)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadarAlarmVol() {
-        int value = DataCanbus.DATA[14];
+        int value = DataCanbus.DATA[112];
         if (((TextView) findViewById(R.id.pardo_tv_radar_alarm_volume)) != null && value > -1 && value < 5) {
             ((TextView) findViewById(R.id.pardo_tv_radar_alarm_volume)).setBackgroundResource(ConstWcToyota.mSensDrawableId[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadarfrontRange() {
-        int mFrontRamge = DataCanbus.DATA[15];
+        int mFrontRamge = DataCanbus.DATA[113];
         if (((TextView) findViewById(R.id.pardo_tv_radar_front_range)) != null) {
             if (mFrontRamge == 0) {
                 ((TextView) findViewById(R.id.pardo_tv_radar_front_range)).setText(R.string.radar_range_level1);
@@ -457,9 +456,9 @@ public class PardoSettingsAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadarrearRange() {
-        int mRearRamge = DataCanbus.DATA[16];
+        int mRearRamge = DataCanbus.DATA[114];
         if (((TextView) findViewById(R.id.pardo_tv_radar_rear_range)) != null) {
             if (mRearRamge == 0) {
                 ((TextView) findViewById(R.id.pardo_tv_radar_rear_range)).setText(R.string.radar_range_level1);
@@ -469,17 +468,17 @@ public class PardoSettingsAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDsplinkspeed() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[119];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_vol_link_speed)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_vol_link_speed)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDspsurround() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[120];
         if (((CheckedTextView) findViewById(R.id.pardo_btn_surround)) != null) {
             ((CheckedTextView) findViewById(R.id.pardo_btn_surround)).setChecked(value != 0);
         }

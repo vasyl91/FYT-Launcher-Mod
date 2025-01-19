@@ -5,46 +5,46 @@ import android.view.View;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BZ408OilMilePage1Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.BZ408OilMilePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 98:
                     BZ408OilMilePage1Acti.this.mUpdaterStartStopTime();
                     break;
-                case 5:
+                case 102:
                     BZ408OilMilePage1Acti.this.mUpdaterOilExpend();
                     break;
-                case 6:
+                case 103:
                     BZ408OilMilePage1Acti.this.mUpdaterDrivingMileage();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_biaozhi408_oil_page1);
+        //setContentView(R.layout.layout_biaozhi408_oil_page1);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        findViewById(R.id.bz408_btn_oil_page1_btn).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408OilMilePage1Acti.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.bz408_btn_oil_page1_btn).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(24, new int[]{1}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -52,23 +52,23 @@ public class BZ408OilMilePage1Acti extends BaseActivity {
         DataCanbus.PROXY.cmd(57, new int[]{1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
         DataCanbus.PROXY.cmd(57, new int[1], null, null);
     }
 
     private void mUpdaterCanbusType() {
-        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 281) {
             DataCanbus.PROXY.cmd(49, new int[1], null, null);
             DataCanbus.PROXY.cmd(53, new int[]{51}, null, null);
             if (((TextView) findViewById(R.id.bz408_tv_oil_page1_tv3_text)) != null) {
@@ -104,15 +104,15 @@ public class BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
         String str;
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.bz408_tv_oil_page1_tv1)) != null) {
-            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
-                if (DataCanbus.DATA[34] == 2) {
-                    str = "MPG";
-                } else if (DataCanbus.DATA[34] != 0) {
+            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 281) {
+                if (DataCanbus.DATA[131] == 2) {
+                    str = CamryData.OIL_EXPEND_UNIT_MPG;
+                } else if (DataCanbus.DATA[131] != 0) {
                     str = "L/100KM-KM";
                 } else {
                     str = "KM/L-KM";
@@ -133,11 +133,11 @@ public class BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[103];
         if (((TextView) findViewById(R.id.bz408_tv_oil_page1_tv2)) != null) {
-            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 281) {
                 if (value > -1 && value < 2001) {
                     ((TextView) findViewById(R.id.bz408_tv_oil_page1_tv2)).setText(String.valueOf(value) + " KM");
                     return;
@@ -154,14 +154,14 @@ public class BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStartStopTime() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[98];
         int hour = (16711680 & value) >> 16;
         int min = (65280 & value) >> 8;
         int second = value & 255;
         if (((TextView) findViewById(R.id.bz408_tv_oil_page1_tv3)) != null) {
-            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+            if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 278 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 281) {
                 if (hour == 255 || min == 255 || second == 255) {
                     ((TextView) findViewById(R.id.bz408_tv_oil_page1_tv3)).setText("--:--:--");
                     return;

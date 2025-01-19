@@ -9,35 +9,34 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DaojunBydM6SetFunc extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.daojun.bydm6.DaojunBydM6SetFunc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 27:
+                case 98:
                     DaojunBydM6SetFunc.this.uCheckedtext1(DataCanbus.DATA[updateCode]);
                     break;
-                case 28:
+                case 99:
                     DaojunBydM6SetFunc.this.uCheckedtext2(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_0439_daojun_bydm6);
+        //setContentView(R.layout.layout_0439_daojun_bydm6);
         setupView();
     }
 
     private void setupView() {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.daojun.bydm6.DaojunBydM6SetFunc.2
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[27] & 255;
+                    int value = DataCanbus.DATA[98] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 1;
@@ -47,10 +46,10 @@ public class DaojunBydM6SetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.daojun.bydm6.DaojunBydM6SetFunc.3
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[28] & 255;
+                    int value = DataCanbus.DATA[99] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 2;
@@ -61,16 +60,16 @@ public class DaojunBydM6SetFunc extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uCheckedtext2(int i) {

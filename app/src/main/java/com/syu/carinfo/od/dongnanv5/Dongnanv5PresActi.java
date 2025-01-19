@@ -8,7 +8,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dongnanv5PresActi extends BaseActivity {
     public View mLayoutNone;
     public View mLayoutTrieCar;
@@ -16,8 +15,8 @@ public class Dongnanv5PresActi extends BaseActivity {
     public TextView mTvCarTirePress1;
     public TextView mTvCarTirePress2;
     public TextView mTvCarTirePress3;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5PresActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -37,14 +36,14 @@ public class Dongnanv5PresActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_oudi_dongnanv5_tire);
+        //setContentView(R.layout.layout_oudi_dongnanv5_tire);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[9].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.notifyCanbus, 1);
@@ -52,7 +51,7 @@ public class Dongnanv5PresActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.notifyCanbus);
@@ -60,7 +59,7 @@ public class Dongnanv5PresActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mLayoutTrieCar = findViewById(R.id.zt_layout_car);
         this.mLayoutNone = findViewById(R.id.zt_layout_none);

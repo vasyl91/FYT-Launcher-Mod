@@ -4,7 +4,7 @@ import com.syu.module.IUiNotify;
 
 public class HandleCanUp {
     private static final IUiNotify NTF_CANBUS_UP_ID = new IUiNotify() { 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             CallbackCanUpBase callbackCanbus = HandleCanUp.getCallbackCanbusById(DataCanUp.DATA[updateCode]);
             ModuleCallbackCanUpProxy.getInstance().setCallbackCanbus(callbackCanbus);

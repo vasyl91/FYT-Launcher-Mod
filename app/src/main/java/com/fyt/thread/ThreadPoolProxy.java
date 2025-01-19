@@ -10,10 +10,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadPoolProxy {
-    private int mCorePoolSize;
+    private final int mCorePoolSize;
     private ThreadPoolExecutor mExecutor;
-    private long mKeepAliveTime;
-    private int mMaximumPoolSize;
+    private final long mKeepAliveTime;
+    private final int mMaximumPoolSize;
 
     public ThreadPoolProxy(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
         this.mCorePoolSize = corePoolSize;

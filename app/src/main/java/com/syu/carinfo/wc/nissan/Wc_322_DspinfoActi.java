@@ -11,10 +11,9 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_322_DspinfoActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 1:
@@ -33,17 +32,17 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_322_xima_dspinfo);
+        //setContentView(R.layout.layout_322_xima_dspinfo);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.wc_322_sound_state)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_322_sound_state)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[1] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -53,8 +52,8 @@ public class Wc_322_DspinfoActi extends BaseActivity {
                 remoteModuleProxy.cmd(0, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.wc_322_bose_state)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_322_bose_state)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[2] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -64,8 +63,8 @@ public class Wc_322_DspinfoActi extends BaseActivity {
                 remoteModuleProxy.cmd(0, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_322_volume_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_volume_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[3] & 255;
                 if (value > 0) {
@@ -74,8 +73,8 @@ public class Wc_322_DspinfoActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{7, 255}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_322_volume_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_volume_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[3] & 255;
                 if (value < 5) {
@@ -84,8 +83,8 @@ public class Wc_322_DspinfoActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{7, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_322_surround_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_surround_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[4] & 255;
                 if (value > -5) {
@@ -94,8 +93,8 @@ public class Wc_322_DspinfoActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{8, 255}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_322_surround_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_surround_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[3] & 255;
                 if (value < 5) {
@@ -106,19 +105,19 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
@@ -126,7 +125,7 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
@@ -134,7 +133,7 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void ma6d64() {
         int temp = DataCanbus.DATA[1] & 65535;
         int value = temp & 255;
@@ -143,7 +142,7 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void ma6d63() {
         int temp = DataCanbus.DATA[2] & 65535;
         int value = temp & 255;
@@ -152,7 +151,7 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void ma6d60() {
         int temp = DataCanbus.DATA[3] & 65535;
         int value = temp & 255;
@@ -179,7 +178,7 @@ public class Wc_322_DspinfoActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void ma6d70() {
         int temp = DataCanbus.DATA[4] & 65535;
         int value = temp & 255;

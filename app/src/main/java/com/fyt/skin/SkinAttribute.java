@@ -3,17 +3,19 @@ package com.fyt.skin;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.android.launcher66.R;
 import com.fyt.skin.util.SkinThemeUitls;
 import com.fyt.skin.view.SkinAttrParms;
 import com.fyt.skin.view.SkinView;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class SkinAttribute {
     public static final List<String> list = new ArrayList();
-    private ArrayList<SkinView> skinViews = new ArrayList<>();
+    private final ArrayList<SkinView> skinViews = new ArrayList<>();
 
     static {
         list.add("background");

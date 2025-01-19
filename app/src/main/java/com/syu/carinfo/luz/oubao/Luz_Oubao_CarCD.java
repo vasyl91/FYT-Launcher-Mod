@@ -10,16 +10,15 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_LZ_Oubao_Andela;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListener {
     public static Luz_Oubao_CarCD mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.luz.oubao.Luz_Oubao_CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 19:
+                case 98:
                     if (value == 1) {
                         ((TextView) Luz_Oubao_CarCD.this.findViewById(R.id.tv_text1)).setText("POWER: ON");
                         break;
@@ -27,10 +26,10 @@ public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListene
                         ((TextView) Luz_Oubao_CarCD.this.findViewById(R.id.tv_text1)).setText("POWER: Off");
                         break;
                     }
-                case 20:
-                case 22:
+                case 99:
+                case 101:
                     String str = Callback_0452_LZ_Oubao_Andela.D07Title;
-                    switch (DataCanbus.DATA[20]) {
+                    switch (DataCanbus.DATA[99]) {
                         case 2:
                             str = "Settings: " + str;
                             break;
@@ -52,10 +51,10 @@ public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListene
                     }
                     ((TextView) Luz_Oubao_CarCD.this.findViewById(R.id.tv_text2)).setText(str);
                     break;
-                case 23:
-                case 24:
+                case 102:
+                case 103:
                     String str2 = Callback_0452_LZ_Oubao_Andela.D0BTitle;
-                    switch (DataCanbus.DATA[23]) {
+                    switch (DataCanbus.DATA[102]) {
                         case 10:
                             str2 = "Settings: " + str2;
                             break;
@@ -81,23 +80,23 @@ public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListene
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_luz_oubao_andela_carcd);
+        //setContentView(R.layout.layout_0452_luz_oubao_andela_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -106,30 +105,30 @@ public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListene
         DataCanbus.PROXY.cmd(0, new int[]{9}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 }

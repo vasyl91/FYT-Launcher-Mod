@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_OD_Opel_Adan extends AirBase {
     public Air_0439_OD_Opel_Adan(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0151_daojun_xp1_byds6/ansheng_byd_yuan.webp";
         this.mPathHighlight = "0151_daojun_xp1_byds6/ansheng_byd_yuan_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -80,7 +80,7 @@ public class Air_0439_OD_Opel_Adan extends AirBase {
                 c.drawText("NO", 70.0f, 132.0f, this.mPaint);
                 break;
             default:
-                c.drawText(new StringBuilder().append(((temp * 5) + 170) / 10.0f).toString(), 70.0f, 132.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp * 5) + 170) / 10.0f), 70.0f, 132.0f, this.mPaint);
                 break;
         }
         int temp2 = this.DATA[16];
@@ -95,7 +95,7 @@ public class Air_0439_OD_Opel_Adan extends AirBase {
                 c.drawText("NO", 920.0f, 132.0f, this.mPaint);
                 break;
             default:
-                c.drawText(new StringBuilder().append(((temp2 * 5) + 170) / 10.0f).toString(), 920.0f, 132.0f, this.mPaint);
+                c.drawText(String.valueOf(((temp2 * 5) + 170) / 10.0f), 920.0f, 132.0f, this.mPaint);
                 break;
         }
         canvas.save();

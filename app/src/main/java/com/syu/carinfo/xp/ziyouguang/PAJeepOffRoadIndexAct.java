@@ -11,14 +11,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepOffRoadIndexAct extends TabActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 298:
+                case 310:
                     if (value == 1) {
                         PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabVehicleDynamics");
                         PAJeepOffRoadIndexAct.this.ClearGroup();
@@ -31,10 +30,10 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
     };
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_off_road_index);
+        //setContentView(R.layout.layout_0374_pa_jeep_off_road_index);
         init();
     }
 
@@ -45,8 +44,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSuspension").setIndicator("tabSuspension").setContent(new Intent(this, (Class<?>) PAJeepSuspensionAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabAccessoryGauges").setIndicator("tabAccessoryGauges").setContent(new Intent(this, (Class<?>) PAJeepAccessoryGaugesAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSelectTerrain").setIndicator("tabSelectTerrain").setContent(new Intent(this, (Class<?>) PAJeepSelectTerrainAct.class)));
-        ((RadioButton) findViewById(R.id.pa_jeep_btn5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabPitchAndRoll");
@@ -58,8 +57,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabVehicleDynamics");
@@ -71,8 +70,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.4
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabSuspension");
@@ -84,8 +83,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.5
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabAccessoryGauges");
@@ -97,8 +96,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.6
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.mTabHost.setCurrentTabByTag("tabSelectTerrain");
@@ -110,8 +109,8 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepOffRoadIndexAct.7
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepOffRoadIndexAct.this.ClearGroup();
@@ -140,17 +139,17 @@ public class PAJeepOffRoadIndexAct extends TabActivity {
         ((RadioButton) findViewById(R.id.pa_jeep_btn10)).setTextColor(Color.parseColor("#FFFFFF"));
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[298].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[310].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[298].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[310].removeNotify(this.mNotifyCanbus);
     }
 }

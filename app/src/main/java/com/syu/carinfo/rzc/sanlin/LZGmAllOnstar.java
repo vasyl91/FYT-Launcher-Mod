@@ -9,19 +9,18 @@ import com.syu.carinfo.klc.KlcFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZGmAllOnstar extends Activity {
     StringBuffer buffer;
     int[] showints;
     public static boolean mIsFront = false;
     public static boolean isChannle = true;
     boolean IsIntentOn = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.LZGmAllOnstar.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 52:
+                case 120:
                     if (((TextView) LZGmAllOnstar.this.findViewById(R.id.showOnstarNum)) != null) {
                         switch (value) {
                             case 1:
@@ -46,25 +45,25 @@ public class LZGmAllOnstar extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_lz_gm_all_onstar);
+        //setContentView(R.layout.layout_0453_lz_gm_all_onstar);
     }
 
     public void onExtraClik(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.callanswer /* 2131428621 */:
+            case R.id.callanswer /* 2131428629 */:
                 DataCanbus.PROXY.cmd(1, new int[]{0, 2}, null, null);
                 break;
-            case R.id.callhang /* 2131428622 */:
+            case R.id.callhang /* 2131428630 */:
                 DataCanbus.PROXY.cmd(1, new int[]{0, 3}, null, null);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -73,7 +72,7 @@ public class LZGmAllOnstar extends Activity {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -83,10 +82,10 @@ public class LZGmAllOnstar extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
     }
 }

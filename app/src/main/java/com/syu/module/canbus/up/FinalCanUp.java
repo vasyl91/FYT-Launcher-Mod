@@ -1,6 +1,5 @@
 package com.syu.module.canbus.up;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FinalCanUp {
     public static final int CAN_UP_AY = 4;
     public static final int CAN_UP_BNR = 15;

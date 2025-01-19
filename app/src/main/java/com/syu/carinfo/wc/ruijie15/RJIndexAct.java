@@ -10,12 +10,11 @@ import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.carinfo.ford.FordCarSet;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RJIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc3_15ruijie_index);
+        //setContentView(R.layout.layout_wc3_15ruijie_index);
         setUI();
         if (DataCanbus.DATA[1000] == 300) {
             if (LauncherApplication.getConfiguration() == 1) {
@@ -30,8 +29,8 @@ public class RJIndexAct extends BaseActivity {
     }
 
     private void setUI() {
-        findViewById(R.id.wc_15ruijie_car_settings_check).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruijie15.RJIndexAct.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.wc_15ruijie_car_settings_check).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     if (DataCanbus.DATA[1000] == 22 || DataCanbus.DATA[1000] == 131094 || DataCanbus.DATA[1000] == 300) {
@@ -46,8 +45,8 @@ public class RJIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.wc_15ruijie_sync_set_check).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruijie15.RJIndexAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.wc_15ruijie_sync_set_check).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     RJIndexAct.this.startActivity(new Intent(RJIndexAct.this, (Class<?>) FocusSyncBtActi.class));
@@ -56,8 +55,8 @@ public class RJIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.wc_15ruijie_air_set_check).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruijie15.RJIndexAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.wc_15ruijie_air_set_check).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     RJIndexAct.this.startActivity(new Intent(RJIndexAct.this, (Class<?>) RJ_GC_AirControlAct.class));

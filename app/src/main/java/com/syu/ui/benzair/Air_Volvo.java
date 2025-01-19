@@ -4,22 +4,22 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_Volvo extends Air_BenzBase {
     public Air_Volvo(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1280;
         this.mContentHeight = 110;
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0450_benz_air/volvo_air_null.png";
         this.mPathHighlight1 = "0450_benz_air/volvo_air_highlight1.png";
@@ -31,7 +31,7 @@ public class Air_Volvo extends Air_BenzBase {
         this.mDrawableHighlight3 = ToolkitRes.loadDrawable(this.mPathHighlight3);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -94,7 +94,7 @@ public class Air_Volvo extends Air_BenzBase {
             int value = this.DATA[33];
             if (value > 0 && value <= 18) {
                 this.mPaint.setTextSize(20.0f);
-                c.drawText(new StringBuilder().append(value).toString(), 835.0f, 74.0f, this.mPaint);
+                c.drawText(String.valueOf(value), 835.0f, 74.0f, this.mPaint);
             } else if (value == 255) {
                 this.mPaint.setTextSize(15.0f);
                 c.drawText("AUTO", 840.0f, 75.0f, this.mPaint);

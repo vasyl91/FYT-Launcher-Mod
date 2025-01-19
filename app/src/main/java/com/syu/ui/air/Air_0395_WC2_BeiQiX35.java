@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0395_WC2_BeiQiX35 extends AirBase {
     public Air_0395_WC2_BeiQiX35(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0395_wc2_guochan/air_guochan_beiqi_x5.webp";
         this.mPathHighlight = "0395_wc2_guochan/air_guochan_beiqi_x5_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -73,9 +73,9 @@ public class Air_0395_WC2_BeiQiX35 extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 72.0f, 57.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 2228619) {
-            c.drawText(new StringBuilder().append(left_temp).toString(), 80.0f, 62.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp), 80.0f, 62.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((left_temp * 5) / 10.0f).toString(), 72.0f, 62.0f, this.mPaint);
+            c.drawText(String.valueOf((left_temp * 5) / 10.0f), 72.0f, 62.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

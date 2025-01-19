@@ -11,21 +11,20 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0281_XP_PSA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LZPsaAllCarRadio mInit;
     byte unit = 0;
     int band = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.psa_all.LZPsaAllCarRadio.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 123:
+                case 189:
                     LZPsaAllCarRadio.this.updateRadioBand();
                     break;
-                case 124:
+                case 190:
                     if (LZPsaAllCarRadio.this.unit == 1) {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText(new StringBuilder().append(value).toString());
                         break;
@@ -33,7 +32,7 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText(String.valueOf(value / 10) + "." + (value % 10));
                         break;
                     }
-                case 125:
+                case 191:
                     if (value == 1) {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text1)).setText("电台锁定： 启用");
                         break;
@@ -41,7 +40,7 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text1)).setText("电台锁定： 停用");
                         break;
                     }
-                case 126:
+                case 192:
                     if (value == 1) {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text2)).setText("区域模式： 启用");
                         break;
@@ -49,7 +48,7 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text2)).setText("区域模式： 停用");
                         break;
                     }
-                case 127:
+                case 193:
                     if (value == 1) {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text3)).setText("文本显示： 启用");
                         break;
@@ -57,40 +56,40 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
                         ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text3)).setText("文本显示： 停用");
                         break;
                     }
-                case 140:
+                case 206:
                     ((TextView) LZPsaAllCarRadio.this.findViewById(R.id.tv_text4)).setText(Callback_0281_XP_PSA_ALL.RadioText);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0281_lz_psa_407_carradio);
+        //setContentView(R.layout.layout_0281_lz_psa_407_carradio);
         mInit = this;
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.notifyCanbus);
     }
 
     public void updateRadioBand() {
-        int value = DataCanbus.DATA[123];
+        int value = DataCanbus.DATA[189];
         switch (value) {
             case 1:
             case 2:
@@ -107,12 +106,12 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -120,7 +119,7 @@ public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;

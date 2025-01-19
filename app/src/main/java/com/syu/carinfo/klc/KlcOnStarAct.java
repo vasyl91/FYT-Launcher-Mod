@@ -18,7 +18,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.module.main.DataMain;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcOnStarAct extends Activity {
     StringBuffer buffer;
     int hour;
@@ -28,32 +27,32 @@ public class KlcOnStarAct extends Activity {
     public static boolean mIsFront = false;
     public static boolean isChannle = true;
     boolean IsIntentOn = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcOnStarAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 51:
+                case 148:
                     KlcOnStarAct.this.updateAnjixingState();
                     break;
-                case 53:
+                case 150:
                     KlcOnStarAct.this.updateAnjixingPhoneFlag();
                     break;
-                case 54:
+                case 151:
                     KlcOnStarAct.this.updateAnjixingPhoneHour();
                     break;
-                case 55:
+                case 152:
                     KlcOnStarAct.this.updateAnjixingPhoneMinute();
                     break;
-                case 56:
+                case 153:
                     KlcOnStarAct.this.updateAnjixingPhoneSecond();
                     break;
-                case 62:
+                case 159:
                     KlcOnStarAct.this.updateAnjixingNumber();
                     break;
-                case 63:
+                case 160:
                     KlcOnStarAct.this.updateBtPassWord();
                     break;
-                case 64:
+                case 161:
                     KlcOnStarAct.this.updateBtNumber();
                     break;
             }
@@ -63,10 +62,10 @@ public class KlcOnStarAct extends Activity {
     boolean IsChange = false;
     int OnCallFlag = -1;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_onstar);
+        //setContentView(R.layout.layout_klc_onstar);
         init();
         setUI();
     }
@@ -86,7 +85,7 @@ public class KlcOnStarAct extends Activity {
     public void onExtraClik(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.callanswer /* 2131428621 */:
+            case R.id.callanswer /* 2131428629 */:
                 if (this.OnStarState == 1) {
                     KlcFunc.C_CAR_ONSTAR_CMD(1, 0);
                     break;
@@ -101,7 +100,7 @@ public class KlcOnStarAct extends Activity {
                     KlcFunc.C_CAR_ONSTAR_CMD(1, 0);
                     break;
                 }
-            case R.id.callhang /* 2131428622 */:
+            case R.id.callhang /* 2131428630 */:
                 if (this.OnStarState == 1) {
                     KlcFunc.C_CAR_ONSTAR_CMD(2, 0);
                     break;
@@ -115,13 +114,13 @@ public class KlcOnStarAct extends Activity {
                     KlcFunc.C_CAR_ONSTAR_CMD(3, 0);
                     break;
                 }
-            case R.id.onStarDelete /* 2131430891 */:
+            case R.id.onStarDelete /* 2131430867 */:
                 if (this.buffer != null && this.buffer.length() > 0) {
                     this.buffer.deleteCharAt(this.buffer.length() - 1);
                     ((TextView) findViewById(R.id.showInputTv)).setText(this.buffer.toString());
                     break;
                 }
-            case R.id.btn1 /* 2131430892 */:
+            case R.id.btn1 /* 2131430868 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(1);
@@ -135,7 +134,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn2 /* 2131430893 */:
+            case R.id.btn2 /* 2131430869 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(2);
@@ -149,7 +148,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn3 /* 2131430894 */:
+            case R.id.btn3 /* 2131430870 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(3);
@@ -163,7 +162,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn11 /* 2131430895 */:
+            case R.id.btn11 /* 2131430871 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append('*');
@@ -177,7 +176,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn4 /* 2131430896 */:
+            case R.id.btn4 /* 2131430872 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(4);
@@ -191,7 +190,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn5 /* 2131430897 */:
+            case R.id.btn5 /* 2131430873 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(5);
@@ -205,7 +204,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn6 /* 2131430898 */:
+            case R.id.btn6 /* 2131430874 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(6);
@@ -219,7 +218,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn0 /* 2131430899 */:
+            case R.id.btn0 /* 2131430875 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(0);
@@ -233,7 +232,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn7 /* 2131430900 */:
+            case R.id.btn7 /* 2131430876 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(7);
@@ -247,7 +246,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn8 /* 2131430901 */:
+            case R.id.btn8 /* 2131430877 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(8);
@@ -261,7 +260,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn9 /* 2131430902 */:
+            case R.id.btn9 /* 2131430878 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append(9);
@@ -275,7 +274,7 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.btn10 /* 2131430903 */:
+            case R.id.btn10 /* 2131430879 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 3) {
                         this.buffer.append('#');
@@ -289,19 +288,19 @@ public class KlcOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.Canclebt /* 2131430905 */:
+            case R.id.Canclebt /* 2131430881 */:
                 KlcFunc.C_CAR_BT(1, 0);
                 break;
-            case R.id.muteBt /* 2131430906 */:
+            case R.id.muteBt /* 2131430882 */:
                 KlcFunc.C_CAR_ONSTAR_CMD(5, this.OnCallFlag == 0 ? 1 : 0);
                 break;
-            case R.id.deletebt /* 2131431960 */:
+            case R.id.deletebt /* 2131431910 */:
                 KlcFunc.C_CAR_BT(2, 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -312,14 +311,14 @@ public class KlcOnStarAct extends Activity {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
         mIsFront = false;
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             KlcFunc.SWITCH_MAIN_STATE(0);
@@ -330,28 +329,28 @@ public class KlcOnStarAct extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtPassWord() {
         String str;
         int value = DataCanbus.DATA[1000];
@@ -384,7 +383,7 @@ public class KlcOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtNumber() {
         String str;
         int value = DataCanbus.DATA[1000];
@@ -417,9 +416,9 @@ public class KlcOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingState() {
-        this.OnStarState = DataCanbus.DATA[51];
+        this.OnStarState = DataCanbus.DATA[148];
         if (this.OnStarState == 0 && this.IsChange && this.IsIntentOn) {
             KlcFunc.SWITCH_MAIN_STATE(0);
             moveTaskToBack(true);
@@ -432,9 +431,9 @@ public class KlcOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingPhoneFlag() {
-        this.OnCallFlag = DataCanbus.DATA[53];
+        this.OnCallFlag = DataCanbus.DATA[150];
         if (this.OnCallFlag == 0) {
             ((Button) findViewById(R.id.muteBt)).setBackgroundResource(R.drawable.ic_klc_mute_n);
         } else if (this.OnCallFlag == 1) {
@@ -442,7 +441,7 @@ public class KlcOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingNumber() {
         String str = GmConstData.anjixingNumber;
         if (str != null) {
@@ -450,21 +449,21 @@ public class KlcOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingPhoneHour() {
-        this.hour = DataCanbus.DATA[54];
+        this.hour = DataCanbus.DATA[151];
         ShowCallTime();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingPhoneMinute() {
-        this.minute = DataCanbus.DATA[55];
+        this.minute = DataCanbus.DATA[152];
         ShowCallTime();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAnjixingPhoneSecond() {
-        this.second = DataCanbus.DATA[56];
+        this.second = DataCanbus.DATA[153];
         ShowCallTime();
     }
 

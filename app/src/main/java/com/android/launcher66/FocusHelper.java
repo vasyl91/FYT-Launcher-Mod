@@ -486,8 +486,8 @@ public class FocusHelper {
         for (int j = 0; j < count; j++) {
             views.add(parent.getChildAt(j));
         }
-        Collections.sort(views, new Comparator<View>() { // from class: com.android.launcher66.FocusHelper.1
-            @Override // java.util.Comparator
+        Collections.sort(views, new Comparator<View>() { 
+            @Override
             public int compare(View lhs, View rhs) {
                 CellLayout.LayoutParams llp = (CellLayout.LayoutParams) lhs.getLayoutParams();
                 CellLayout.LayoutParams rlp = (CellLayout.LayoutParams) rhs.getLayoutParams();

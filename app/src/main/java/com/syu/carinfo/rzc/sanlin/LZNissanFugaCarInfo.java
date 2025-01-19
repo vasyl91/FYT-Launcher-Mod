@@ -8,35 +8,34 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZNissanFugaCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.LZNissanFugaCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 24:
+                case 99:
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value - 40) + "℃");
                     break;
-                case 26:
+                case 101:
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value) + "km");
                     break;
-                case 28:
+                case 103:
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value) + "km");
                     break;
-                case 31:
+                case 106:
                     int value2 = value * 172;
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value2 / 100) + "." + ((value2 % 100) / 10) + (value2 % 10) + "kPa");
                     break;
-                case 32:
+                case 107:
                     int value3 = value * 172;
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value3 / 100) + "." + ((value3 % 100) / 10) + (value3 % 10) + "kPa");
                     break;
-                case 33:
+                case 108:
                     int value4 = value * 172;
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value4 / 100) + "." + ((value4 % 100) / 10) + (value4 % 10) + "kPa");
                     break;
-                case 34:
+                case 109:
                     int value5 = value * 172;
                     ((TextView) LZNissanFugaCarInfo.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value5 / 100) + "." + ((value5 % 100) / 10) + (value5 % 10) + "kPa");
                     break;
@@ -44,13 +43,13 @@ public class LZNissanFugaCarInfo extends BaseActivity implements View.OnClickLis
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_nissan_fuga_carinfo);
+        //setContentView(R.layout.layout_0452_lz_nissan_fuga_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -58,35 +57,35 @@ public class LZNissanFugaCarInfo extends BaseActivity implements View.OnClickLis
         DataCanbus.PROXY.cmd(0, new int[]{53}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
     }
 }

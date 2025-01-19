@@ -6,53 +6,53 @@ import android.os.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.huangguan.LZ_0439_Nissan_GTR_AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 8:
+                case 10:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdatePowerOn();
                     break;
-                case 9:
+                case 11:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAcOn();
                     break;
-                case 10:
+                case 12:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateCycle();
                     break;
-                case 11:
+                case 13:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAutoOn();
                     break;
-                case 12:
+                case 14:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdaterDual();
                     break;
-                case 13:
-                case 14:
-                case 15:
-                    LZ_0439_Nissan_GTR_AirControlAct.this.updateBtnSource();
-                    break;
-                case 17:
-                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAirTempLeft();
-                    break;
-                case 18:
-                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAirTempRight();
-                    break;
-                case 19:
-                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateFrontDefrost();
-                    break;
-                case 20:
+                case 16:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateRearDefrost();
                     break;
-                case 22:
+                case 18:
+                case 19:
+                case 20:
+                    LZ_0439_Nissan_GTR_AirControlAct.this.updateBtnSource();
+                    break;
+                case 21:
                     LZ_0439_Nissan_GTR_AirControlAct.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 27:
+                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateAirTempRight();
+                    break;
+                case 65:
+                    LZ_0439_Nissan_GTR_AirControlAct.this.mUpdateFrontDefrost();
                     break;
             }
         }
@@ -62,10 +62,10 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0348_dj_ats_air_control);
+        //setContentView(R.layout.layout_0348_dj_ats_air_control);
         init();
     }
 
@@ -87,7 +87,7 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         findViewById(R.id.air_xts_ac).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -95,7 +95,7 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -103,7 +103,7 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -141,17 +141,17 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 4;
                 break;
-            case R.id.air_xts_mode_munits /* 2131427455 */:
+            case R.id.air_xts_mode_munits /* 2131427497 */:
                 data0 = 13;
                 break;
-            case R.id.air_xts_mode_plus /* 2131427456 */:
+            case R.id.air_xts_mode_plus /* 2131427498 */:
                 data0 = 13;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data0 = 14;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 8;
+                break;
+            case R.id.air_xts_dual /* 2131427566 */:
+                data0 = 14;
                 break;
         }
         if (event.getAction() == 0) {
@@ -163,41 +163,41 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[17];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int temp = DataCanbus.DATA[27];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -224,10 +224,10 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[18];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int temp = DataCanbus.DATA[28];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -254,33 +254,33 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[11];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[9];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[8];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDual() {
-        int power = DataCanbus.DATA[12];
+        int power = DataCanbus.DATA[14];
         findViewById(R.id.air_xts_dual).setBackgroundResource(power == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[10];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_n);
         } else if (cycle == 0) {
@@ -288,21 +288,21 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[19];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[20];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[22];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -313,11 +313,11 @@ public class LZ_0439_Nissan_GTR_AirControlAct extends Activity implements View.O
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[13];
-        int foot = DataCanbus.DATA[15];
-        int body = DataCanbus.DATA[14];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

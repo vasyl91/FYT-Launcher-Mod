@@ -9,7 +9,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClickListener {
     public static PsaC4L_MemSpeedSetActi mInstance;
     public static boolean mIsFront;
@@ -18,27 +17,27 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
     private int i3;
     private int i4;
     private int i5;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.PsaC4L_MemSpeedSetActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             PsaC4L_MemSpeedSetActi.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 115:
+                case 181:
                     PsaC4L_MemSpeedSetActi.this.uSpeedSelect(PsaC4L_MemSpeedSetActi.this.val);
                     break;
-                case 117:
+                case 183:
                     PsaC4L_MemSpeedSetActi.this.mUpdaterValue1(PsaC4L_MemSpeedSetActi.this.val);
                     break;
-                case 118:
+                case 184:
                     PsaC4L_MemSpeedSetActi.this.mUpdaterValue2(PsaC4L_MemSpeedSetActi.this.val);
                     break;
-                case 119:
+                case 185:
                     PsaC4L_MemSpeedSetActi.this.mUpdaterValue3(PsaC4L_MemSpeedSetActi.this.val);
                     break;
-                case 120:
+                case 186:
                     PsaC4L_MemSpeedSetActi.this.mUpdaterValue4(PsaC4L_MemSpeedSetActi.this.val);
                     break;
-                case 121:
+                case 187:
                     PsaC4L_MemSpeedSetActi.this.mUpdaterValue5(PsaC4L_MemSpeedSetActi.this.val);
                     break;
             }
@@ -52,15 +51,15 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
     private int state;
     private int val;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_psa_mem_speed_set);
+        //setContentView(R.layout.layout_xp_psa_mem_speed_set);
         init();
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.bz408_cruising_speed_speed_1).setOnClickListener(this);
         findViewById(R.id.bz408_cruising_speed_speed_2).setOnClickListener(this);
@@ -79,57 +78,57 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
         findViewById(R.id.bz408_btn_cruising_speed_5_set_plus).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bz408_cruising_speed_speed_1 /* 2131433419 */:
+            case R.id.bz408_cruising_speed_speed_1 /* 2131433341 */:
                 this.i1 = this.i1 != 1 ? 1 : 0;
                 setState();
                 break;
-            case R.id.bz408_btn_cruising_speed_1_set_minus /* 2131433421 */:
+            case R.id.bz408_btn_cruising_speed_1_set_minus /* 2131433343 */:
                 this.speed1 = setSpeedDown(this.speed1);
                 break;
-            case R.id.bz408_btn_cruising_speed_1_set_plus /* 2131433423 */:
+            case R.id.bz408_btn_cruising_speed_1_set_plus /* 2131433345 */:
                 this.speed1 = setSpeedUp(this.speed1);
                 break;
-            case R.id.bz408_cruising_speed_speed_2 /* 2131433425 */:
+            case R.id.bz408_cruising_speed_speed_2 /* 2131433347 */:
                 this.i2 = this.i2 != 1 ? 1 : 0;
                 setState();
                 break;
-            case R.id.bz408_btn_cruising_speed_2_set_minus /* 2131433427 */:
+            case R.id.bz408_btn_cruising_speed_2_set_minus /* 2131433349 */:
                 this.speed2 = setSpeedDown(this.speed2);
                 break;
-            case R.id.bz408_btn_cruising_speed_2_set_plus /* 2131433429 */:
+            case R.id.bz408_btn_cruising_speed_2_set_plus /* 2131433351 */:
                 this.speed2 = setSpeedUp(this.speed2);
                 break;
-            case R.id.bz408_cruising_speed_speed_3 /* 2131433431 */:
+            case R.id.bz408_cruising_speed_speed_3 /* 2131433353 */:
                 this.i3 = this.i3 != 1 ? 1 : 0;
                 setState();
                 break;
-            case R.id.bz408_btn_cruising_speed_3_set_minus /* 2131433433 */:
+            case R.id.bz408_btn_cruising_speed_3_set_minus /* 2131433355 */:
                 this.speed3 = setSpeedDown(this.speed3);
                 break;
-            case R.id.bz408_btn_cruising_speed_3_set_plus /* 2131433435 */:
+            case R.id.bz408_btn_cruising_speed_3_set_plus /* 2131433357 */:
                 this.speed3 = setSpeedUp(this.speed3);
                 break;
-            case R.id.bz408_cruising_speed_speed_4 /* 2131433437 */:
+            case R.id.bz408_cruising_speed_speed_4 /* 2131433359 */:
                 this.i4 = this.i4 != 1 ? 1 : 0;
                 setState();
                 break;
-            case R.id.bz408_btn_cruising_speed_4_set_minus /* 2131433439 */:
+            case R.id.bz408_btn_cruising_speed_4_set_minus /* 2131433361 */:
                 this.speed4 = setSpeedDown(this.speed4);
                 break;
-            case R.id.bz408_btn_cruising_speed_4_set_plus /* 2131433441 */:
+            case R.id.bz408_btn_cruising_speed_4_set_plus /* 2131433363 */:
                 this.speed4 = setSpeedUp(this.speed4);
                 break;
-            case R.id.bz408_cruising_speed_speed_5 /* 2131433443 */:
+            case R.id.bz408_cruising_speed_speed_5 /* 2131433365 */:
                 this.i5 = this.i5 != 1 ? 1 : 0;
                 setState();
                 break;
-            case R.id.bz408_btn_cruising_speed_5_set_minus /* 2131433445 */:
+            case R.id.bz408_btn_cruising_speed_5_set_minus /* 2131433367 */:
                 this.speed5 = setSpeedDown(this.speed5);
                 break;
-            case R.id.bz408_btn_cruising_speed_5_set_plus /* 2131433447 */:
+            case R.id.bz408_btn_cruising_speed_5_set_plus /* 2131433369 */:
                 this.speed5 = setSpeedUp(this.speed5);
                 break;
         }
@@ -162,14 +161,14 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
         cmd();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         mIsFront = false;
         super.onPause();
@@ -177,7 +176,7 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
 
     private void cmd() {
         int[] data = new int[6];
-        if (DataCanbus.DATA[114] == 1) {
+        if (DataCanbus.DATA[180] == 1) {
             data[0] = ((this.state & 31) << 1) | 64;
             data[1] = this.speed1;
             data[2] = this.speed2;
@@ -188,51 +187,51 @@ public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClick
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[183].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[184].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[186].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[183].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[184].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[186].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1(int value) {
         this.speed1 = value;
         uText((TextView) findViewById(R.id.bz408_tv_cruising_speed_1_set), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2(int value) {
         this.speed2 = value;
         uText((TextView) findViewById(R.id.bz408_tv_cruising_speed_2_set), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3(int value) {
         this.speed3 = value;
         uText((TextView) findViewById(R.id.bz408_tv_cruising_speed_3_set), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4(int value) {
         this.speed4 = value;
         uText((TextView) findViewById(R.id.bz408_tv_cruising_speed_4_set), value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue5(int value) {
         this.speed5 = value;
         uText((TextView) findViewById(R.id.bz408_tv_cruising_speed_5_set), value);

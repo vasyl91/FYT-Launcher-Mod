@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public abstract class BaseFragment extends Fragment {
     public static Activity mActivity;
     public View mView;
@@ -21,23 +20,23 @@ public abstract class BaseFragment extends Fragment {
 
     public abstract void removeNotify();
 
-    @Override // android.app.Fragment
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = getActivity();
-        this.mView = inflater.inflate(getViewLayout(), (ViewGroup) null);
+        this.mView = inflater.inflate(getViewLayout(), null);
         this.mView.setClickable(true);
         initView();
         initListener();
         return this.mView;
     }
 
-    @Override // android.app.Fragment
+    @Override
     public void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Fragment
+    @Override
     public void onPause() {
         super.onPause();
         removeNotify();
@@ -50,7 +49,7 @@ public abstract class BaseFragment extends Fragment {
         if (this.mView == null) {
             return null;
         }
-        return (T) this.mView.findViewById(i);
+        return this.mView.findViewById(i);
     }
 
     public void setCheck(CheckedTextView v, boolean on) {
@@ -80,7 +79,7 @@ public abstract class BaseFragment extends Fragment {
     public <T extends View> T bindViewOnClick(int i, View.OnClickListener onClickListener) {
         T t = null;
         if (this.mView != null) {
-            t = (T) this.mView.findViewById(i);
+            t = this.mView.findViewById(i);
         }
         setSelfClick(t, onClickListener);
         return t;

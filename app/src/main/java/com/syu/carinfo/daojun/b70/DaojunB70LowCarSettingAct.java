@@ -11,79 +11,78 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DaojunB70LowCarSettingAct extends BaseActivity {
     public static DaojunB70LowCarSettingAct mInit;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 24:
+                case 98:
                     DaojunB70LowCarSettingAct.this.mUpdaterCarType(DataCanbus.DATA[updateCode]);
                     break;
-                case 25:
+                case 99:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioBand((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_band), DataCanbus.DATA[updateCode]);
                     break;
-                case 26:
+                case 100:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioNum(DataCanbus.DATA[updateCode]);
                     break;
-                case 27:
+                case 101:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq), DataCanbus.DATA[updateCode]);
                     break;
-                case 28:
+                case 102:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq1), DataCanbus.DATA[updateCode]);
                     break;
-                case 29:
+                case 103:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq2), DataCanbus.DATA[updateCode]);
                     break;
-                case 30:
+                case 104:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq3), DataCanbus.DATA[updateCode]);
                     break;
-                case 31:
+                case 105:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq4), DataCanbus.DATA[updateCode]);
                     break;
-                case 32:
+                case 106:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq5), DataCanbus.DATA[updateCode]);
                     break;
-                case 33:
+                case 107:
                     DaojunB70LowCarSettingAct.this.mUpdaterRadioFreq((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_radio_freq6), DataCanbus.DATA[updateCode]);
                     break;
-                case 34:
+                case 108:
                     DaojunB70LowCarSettingAct.this.mUpdaterCDTrack((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_cd_track), DataCanbus.DATA[updateCode]);
                     break;
-                case 36:
+                case 110:
                     DaojunB70LowCarSettingAct.this.mUpdaterCDCycleMode((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_cd_cycle_mode), DataCanbus.DATA[updateCode]);
                     break;
-                case 37:
+                case 111:
                     DaojunB70LowCarSettingAct.this.mUpdaterCDPalystate((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_cd_play_state), DataCanbus.DATA[updateCode]);
                     break;
-                case 38:
-                case 39:
+                case 112:
+                case 113:
                     DaojunB70LowCarSettingAct.this.mUpdaterCDTime((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_cd_time));
                     break;
-                case 40:
-                case 41:
+                case 114:
+                case 115:
                     DaojunB70LowCarSettingAct.this.mUpdaterCarVol((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_vol));
                     break;
-                case 48:
+                case 122:
                     DaojunB70LowCarSettingAct.this.mUpdaterOntherInfo((TextView) DaojunB70LowCarSettingAct.this.findViewById(R.id.b70_tv_car_Otherinfo), DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInit = this;
-        setContentView(R.layout.layout_0439_daojunlow14b70_time_setting);
+        //setContentView(R.layout.layout_0439_daojunlow14b70_time_setting);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        findViewById(R.id.btn_b70_tv_car_setinfo).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_b70_tv_car_setinfo).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -96,59 +95,59 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);
@@ -158,7 +157,7 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         return true;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioNum(int value) {
         ((TextView) findViewById(R.id.b70_tv_car_radio_freq1)).setTextColor(-1);
         ((TextView) findViewById(R.id.b70_tv_car_radio_freq2)).setTextColor(-1);
@@ -188,7 +187,7 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioBand(TextView tvView, int value) {
         if (tvView != null) {
             switch (value) {
@@ -214,25 +213,25 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioFreq(TextView tvView, int value) {
         if (tvView != null) {
-            if (DataCanbus.DATA[25] == 1 || DataCanbus.DATA[25] == 2 || DataCanbus.DATA[25] == 3) {
+            if (DataCanbus.DATA[99] == 1 || DataCanbus.DATA[99] == 2 || DataCanbus.DATA[99] == 3) {
                 tvView.setText(String.format("%d.%d Mhz", Integer.valueOf(value / 100), Integer.valueOf((value % 100) / 10)));
-            } else if (DataCanbus.DATA[25] == 17 || DataCanbus.DATA[25] == 18) {
+            } else if (DataCanbus.DATA[99] == 17 || DataCanbus.DATA[99] == 18) {
                 tvView.setText(String.format("%d Khz", Integer.valueOf(value)));
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCDTrack(TextView tvView, int value) {
         if (tvView != null) {
             tvView.setText(String.format(" Track %d", Integer.valueOf(value)));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCDCycleMode(TextView tvView, int value) {
         if (tvView != null) {
             switch (value) {
@@ -255,20 +254,20 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCDTime(TextView tvView) {
         if (tvView != null) {
-            int cdtimeMin = DataCanbus.DATA[38];
-            int cdtimeSec = DataCanbus.DATA[39];
+            int cdtimeMin = DataCanbus.DATA[112];
+            int cdtimeSec = DataCanbus.DATA[113];
             tvView.setText(String.format("%d : %d", Integer.valueOf(cdtimeMin), Integer.valueOf(cdtimeSec)));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCarVol(TextView tvView) {
         if (tvView != null) {
-            int value = DataCanbus.DATA[40];
-            int mutevalue = DataCanbus.DATA[41];
+            int value = DataCanbus.DATA[114];
+            int mutevalue = DataCanbus.DATA[115];
             if (mutevalue == 2) {
                 tvView.setText(String.format("0", new Object[0]));
             } else {
@@ -277,11 +276,11 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCarType(int value) {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOntherInfo(TextView tvView, int value) {
         if (tvView != null) {
             switch (value) {
@@ -322,7 +321,7 @@ public class DaojunB70LowCarSettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCDPalystate(TextView tvView, int value) {
         if (tvView != null) {
             switch (value) {

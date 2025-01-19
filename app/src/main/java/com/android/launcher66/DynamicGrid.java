@@ -6,7 +6,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DynamicGrid {
     private static final String TAG = "DynamicGrid";
     private float mMinHeight;

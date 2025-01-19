@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_OD_BenzAll extends AirBase {
     public Air_0439_OD_BenzAll(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_oudi_benz_all/od_benz_all.webp";
         this.mPathHighlight = "0439_oudi_benz_all/od_benz_all_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -76,7 +76,7 @@ public class Air_0439_OD_BenzAll extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 70.0f, 58.0f, this.mPaint);
         } else if (temp >= 30 && temp <= 64) {
-            c.drawText(new StringBuilder().append(15.0f + ((temp - 30) * 0.5f)).toString(), 70.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(15.0f + ((temp - 30) * 0.5f)), 70.0f, 58.0f, this.mPaint);
         } else {
             c.drawText("--", 70.0f, 58.0f, this.mPaint);
         }
@@ -86,7 +86,7 @@ public class Air_0439_OD_BenzAll extends AirBase {
         } else if (temp1 == -3) {
             c.drawText("HI", 921.0f, 58.0f, this.mPaint);
         } else if (temp1 >= 30 && temp1 <= 64) {
-            c.drawText(new StringBuilder().append(15.0f + ((temp1 - 30) * 0.5f)).toString(), 921.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(15.0f + ((temp1 - 30) * 0.5f)), 921.0f, 58.0f, this.mPaint);
         } else {
             c.drawText("--", 921.0f, 58.0f, this.mPaint);
         }

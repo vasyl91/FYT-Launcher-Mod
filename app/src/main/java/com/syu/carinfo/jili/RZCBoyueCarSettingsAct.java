@@ -1,55 +1,71 @@
 package com.syu.carinfo.jili;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClickListener {
-    private int[] eventIds = {100, 101, 102, 103, 104, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private PopupWindow mLauStyle;
+    public ArrayList<String> mLauStylelist;
+    public ListView mLauStylelv;
+    private View mPopShowView;
+    int[] send_lang;
+    private int[] eventIds = {112, 113, 114, 115, 116, 137, 138, 139, 140, 141, 142, 143, 144, 130, 214, 145, 146, 147, 148, 149, 150};
+    int language_set = 255;
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 100:
+                case 112:
                     if (((TextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.tv_text1)).setText(value == 1 ? R.string.driver_system_sports : R.string.wc_gs4_driver_help_turn_mode_comfort);
                     }
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 101:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_remotelock_recall), value == 1);
+                case 113:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 102:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_lockautoclosewindow), value == 1);
+                case 114:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 103:
+                case 115:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 104:
+                case 116:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext6), value == 1);
                     break;
-                case 126:
+                case 130:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext18), value == 1);
+                    break;
+                case 138:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 127:
+                case 139:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 128:
+                case 140:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 129:
+                case 141:
                     RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 130:
+                case 142:
                     switch (value) {
                         case 0:
                             ((TextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.tv_text2)).setText(R.string.jeep_forwardcollisionwarn_0);
@@ -61,96 +77,152 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                             ((TextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.tv_text2)).setText(R.string.jeep_forwardcollisionwarn_1);
                             break;
                     }
-                case 131:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_shutdown_unlock), value == 1);
+                case 143:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 132:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_lock_turnoff_positionstate), value == 1);
+                case 144:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 133:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_static_railline), value == 1);
+                case 145:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 134:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_dynamic_railline), value == 1);
+                case 146:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     break;
-                case 135:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_fisheye), value == 1);
+                case 147:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 136:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_rmode_5sdelay), value == 1);
+                case 148:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext15), value == 1);
                     break;
-                case 137:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_singlebackcar_video), value == 1);
+                case 149:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext16), value == 1);
                     break;
-                case 138:
-                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.boyue_turnbymove), value == 1);
+                case 150:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext17), value == 1);
+                    break;
+                case 214:
+                    RZCBoyueCarSettingsAct.this.setCheckView((CheckedTextView) RZCBoyueCarSettingsAct.this.findViewById(R.id.ctv_checkedtext19), value == 1);
                     break;
             }
         }
     };
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_139_rzc_boyue);
+        //setContentView(R.layout.layout_139_rzc_boyue);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    
+    public void initLauStyle() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
+        View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
+        this.mLauStyle = new PopupWindow(layout, 548, 408);
+        this.mLauStyle.setBackgroundDrawable(getResources().getDrawable(R.drawable.bk_models_pop));
+        this.mLauStyle.setFocusable(true);
+        this.mLauStyle.setTouchable(true);
+        this.mLauStyle.setOutsideTouchable(true);
+        this.mLauStylelv = (ListView) layout.findViewById(R.id.lauguageListview);
+        this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
+        this.mLauStylelv.setItemsCanFocus(false);
+        this.mLauStylelv.setChoiceMode(1);
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                RZCBoyueCarSettingsAct.this.language_set = position;
+                if (RZCBoyueCarSettingsAct.this.language_set >= 0 && RZCBoyueCarSettingsAct.this.language_set <= RZCBoyueCarSettingsAct.this.mLauStylelist.size() && RZCBoyueCarSettingsAct.this.send_lang != null) {
+                    DataCanbus.PROXY.cmd(1, new int[]{26, RZCBoyueCarSettingsAct.this.send_lang[RZCBoyueCarSettingsAct.this.language_set]}, null, null);
+                }
+                RZCBoyueCarSettingsAct.this.mLauStyle.dismiss();
+            }
+        });
+    }
+
+    public void updateLauguageSet() {
+        if (this.language_set >= 0 && this.language_set < this.mLauStylelist.size() && this.mLauStylelv != null) {
+            this.mLauStylelv.setItemChecked(this.language_set, true);
+        }
+    }
+
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.2
-            @Override // android.view.View.OnClickListener
+        this.mPopShowView = getWindow().getDecorView();
+        this.mLauStylelist = new ArrayList<>();
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_2));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_1));
+        this.send_lang = new int[]{0, 1};
+        if (this.send_lang.length != this.mLauStylelist.size()) {
+            throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
+        }
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[130] - 1;
+                if (RZCBoyueCarSettingsAct.this.mLauStyle == null) {
+                    RZCBoyueCarSettingsAct.this.initLauStyle();
+                }
+                if (RZCBoyueCarSettingsAct.this.mLauStyle != null && RZCBoyueCarSettingsAct.this.mPopShowView != null) {
+                    RZCBoyueCarSettingsAct.this.mLauStyle.showAtLocation(RZCBoyueCarSettingsAct.this.mPopShowView, 17, 0, 0);
+                    RZCBoyueCarSettingsAct.this.updateLauguageSet();
+                }
+            }
+        });
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[142] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{25, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[130] + 1;
+                int value = DataCanbus.DATA[142] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{25, value}, null, null);
             }
         });
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), 6, 100);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), 21, 126);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), 22, 127);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), 23, 128);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), 24, 129);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext6), 10, 104);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_remotelock_recall), 7, 101);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_lockautoclosewindow), 8, 102);
-        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext7), 9, 103);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_lock_turnoff_positionstate), 4, 132);
-        sendClick((CheckedTextView) findViewById(R.id.boyue_shutdown_unlock), 1, 131);
-        ((CheckedTextView) findViewById(R.id.boyue_static_railline)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.4
-            @Override // android.view.View.OnClickListener
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), 6, 112);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), 21, 138);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), 22, 139);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), 23, 140);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), 24, 141);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext6), 10, 116);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext7), 9, 115);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext8), 7, 113);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext9), 8, 114);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext10), 4, 144);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext11), 1, 143);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), 20, 130);
+        sendClick((CheckedTextView) findViewById(R.id.ctv_checkedtext19), 18, 214);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[133];
+                int value = DataCanbus.DATA[145];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{13}, null, null);
                 } else {
@@ -158,10 +230,10 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.boyue_dynamic_railline)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[134];
+                int value = DataCanbus.DATA[146];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{15}, null, null);
                 } else {
@@ -169,10 +241,10 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.boyue_fisheye)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[135];
+                int value = DataCanbus.DATA[147];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{17}, null, null);
                 } else {
@@ -180,10 +252,10 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.boyue_rmode_5sdelay)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[136];
+                int value = DataCanbus.DATA[148];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{19}, null, null);
                 } else {
@@ -191,10 +263,10 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.boyue_singlebackcar_video)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[137];
+                int value = DataCanbus.DATA[149];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{21}, null, null);
                 } else {
@@ -202,10 +274,10 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.boyue_turnbymove)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[138];
+                int value = DataCanbus.DATA[150];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(2, new int[]{23}, null, null);
                 } else {
@@ -217,8 +289,8 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
 
     private void sendClick(View v, final int cmd, final int id) {
         if (v != null) {
-            v.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.jili.RZCBoyueCarSettingsAct.10
-                @Override // android.view.View.OnClickListener
+            v.setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v2) {
                     int value = DataCanbus.DATA[id];
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -231,7 +303,7 @@ public class RZCBoyueCarSettingsAct extends BaseActivity implements View.OnClick
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setCheckView(CheckedTextView v, boolean b) {
         if (v != null) {
             v.setChecked(b);

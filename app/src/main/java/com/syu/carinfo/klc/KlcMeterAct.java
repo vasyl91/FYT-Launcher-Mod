@@ -9,29 +9,28 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcMeterAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcMeterAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 45:
+                case 142:
                     KlcMeterAct.this.updateECOZhishiSet();
                     break;
-                case 46:
+                case 143:
                     KlcMeterAct.this.updateYiBiaoInfoSet();
                     break;
-                case 47:
+                case 144:
                     KlcMeterAct.this.updateSpeedModeSet();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_meter_set);
+        //setContentView(R.layout.layout_klc_meter_set);
         setUI();
     }
 
@@ -41,32 +40,32 @@ public class KlcMeterAct extends Activity implements View.OnClickListener {
         ((CheckedTextView) findViewById(R.id.klc_meter_Speed_Range_Tips_check)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_btn_eco_Instructio_check /* 2131431951 */:
-                int valEcoIns = DataCanbus.DATA[45] & 255;
+            case R.id.klc_btn_eco_Instructio_check /* 2131431901 */:
+                int valEcoIns = DataCanbus.DATA[142] & 255;
                 KlcFunc.C_CAR_METER(1, valEcoIns == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Instrument_navigation_information_display_check /* 2131431953 */:
-                int valInsInfo = DataCanbus.DATA[46] & 255;
+            case R.id.klc_btn_Instrument_navigation_information_display_check /* 2131431903 */:
+                int valInsInfo = DataCanbus.DATA[143] & 255;
                 KlcFunc.C_CAR_METER(2, valInsInfo != 0 ? 0 : 1);
                 break;
-            case R.id.klc_meter_Speed_Range_Tips_check /* 2131431955 */:
-                int valSpeed = DataCanbus.DATA[47] & 255;
+            case R.id.klc_meter_Speed_Range_Tips_check /* 2131431905 */:
+                int valSpeed = DataCanbus.DATA[144] & 255;
                 KlcFunc.C_CAR_METER(3, valSpeed != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -77,20 +76,20 @@ public class KlcMeterAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateECOZhishiSet() {
-        int val = DataCanbus.DATA[45];
+        int val = DataCanbus.DATA[142];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {
@@ -104,9 +103,9 @@ public class KlcMeterAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateYiBiaoInfoSet() {
-        int val = DataCanbus.DATA[46];
+        int val = DataCanbus.DATA[143];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {
@@ -120,9 +119,9 @@ public class KlcMeterAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeedModeSet() {
-        int val = DataCanbus.DATA[47];
+        int val = DataCanbus.DATA[144];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {

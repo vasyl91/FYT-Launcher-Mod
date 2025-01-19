@@ -22,7 +22,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS4SetAct_Bnr extends BaseActivity {
     protected Handler mHandler;
     private PopupWindow mLauStyle;
@@ -31,121 +30,121 @@ public class GS4SetAct_Bnr extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    int[] ids = {43, 68, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 61, 62, 63, 64, 65, 66, 67, 27, 28, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 117};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {106, 131, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 123, 124, 125, 126, 127, 128, 129, 130, 29, 30, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 179};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 27:
+                case 29:
                     GS4SetAct_Bnr.this.uSet27(val);
                     break;
-                case 28:
+                case 30:
                     GS4SetAct_Bnr.this.uSet28(val);
                     break;
-                case 43:
+                case 106:
                     GS4SetAct_Bnr.this.uSet1(val);
                     break;
-                case 44:
+                case 107:
                     GS4SetAct_Bnr.this.uSet3(val);
                     break;
-                case 45:
+                case 108:
                     GS4SetAct_Bnr.this.uSet4(val);
                     break;
-                case 46:
+                case 109:
                     GS4SetAct_Bnr.this.uSet5(val);
                     break;
-                case 47:
+                case 110:
                     GS4SetAct_Bnr.this.uSet6(val);
                     break;
-                case 48:
+                case 111:
                     GS4SetAct_Bnr.this.uSet7(val);
                     break;
-                case 49:
+                case 112:
                     GS4SetAct_Bnr.this.uSet8(val);
                     break;
-                case 50:
+                case 113:
                     GS4SetAct_Bnr.this.uSet9(val);
                     break;
-                case 51:
+                case 114:
                     GS4SetAct_Bnr.this.uSet10(val);
                     break;
-                case 52:
+                case 115:
                     GS4SetAct_Bnr.this.uSet11(val);
                     break;
-                case 53:
+                case 116:
                     GS4SetAct_Bnr.this.uSet12(val);
                     break;
-                case 54:
+                case 117:
                     GS4SetAct_Bnr.this.uSet13(val);
                     break;
-                case 55:
+                case 118:
                     GS4SetAct_Bnr.this.uSet14(val);
                     break;
-                case 56:
+                case 119:
                     GS4SetAct_Bnr.this.uSet15(val);
                     break;
-                case 57:
+                case 120:
                     GS4SetAct_Bnr.this.uSet16(val);
                     break;
-                case 58:
+                case 121:
                     GS4SetAct_Bnr.this.uSet17(val);
                     break;
-                case 60:
+                case 123:
                     GS4SetAct_Bnr.this.uSet19(val);
                     break;
-                case 61:
+                case 124:
                     GS4SetAct_Bnr.this.uSet20(val);
                     break;
-                case 62:
+                case 125:
                     GS4SetAct_Bnr.this.uSet21(val);
                     break;
-                case 63:
+                case 126:
                     GS4SetAct_Bnr.this.uSet22(val);
                     break;
-                case 64:
+                case 127:
                     GS4SetAct_Bnr.this.uSet23(val);
                     break;
-                case 65:
+                case 128:
                     GS4SetAct_Bnr.this.uSet24(val);
                     break;
-                case 66:
+                case 129:
                     GS4SetAct_Bnr.this.uSet25(val);
                     break;
-                case 67:
+                case 130:
                     GS4SetAct_Bnr.this.uSet26(val);
                     break;
-                case 68:
+                case 131:
                     GS4SetAct_Bnr.this.uSet2(val);
                     break;
-                case 90:
+                case 152:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext1), val == 1);
                     break;
-                case 91:
+                case 153:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext2), val == 1);
                     break;
-                case 92:
+                case 154:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext3), val == 1);
                     break;
-                case 93:
+                case 155:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext4), val == 1);
                     break;
-                case 94:
+                case 156:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext5), val == 1);
                     break;
-                case 95:
+                case 157:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext6), val == 1);
                     break;
-                case 96:
+                case 158:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext8), val == 1);
                     break;
-                case 97:
+                case 159:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext9), val == 1);
                     break;
-                case 98:
+                case 160:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext7), val == 1);
                     break;
-                case 99:
+                case 161:
                     TextView v = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text1);
                     if (v != null) {
                         int id = R.string.klc_air_low;
@@ -158,7 +157,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
                         v.setText(id);
                         break;
                     }
-                case 100:
+                case 162:
                     TextView v2 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text2);
                     if (v2 != null) {
                         int id2 = R.string.klc_air_low;
@@ -171,7 +170,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
                         v2.setText(id2);
                         break;
                     }
-                case 102:
+                case 164:
                     TextView v3 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text3);
                     if (v3 != null) {
                         int id3 = R.string.off;
@@ -184,62 +183,122 @@ public class GS4SetAct_Bnr extends BaseActivity {
                         v3.setText(id3);
                         break;
                     }
-                case 103:
+                case 165:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext10), val == 1);
                     break;
-                case 104:
+                case 166:
                     TextView v4 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text4);
                     if (v4 != null) {
                         v4.setText(new StringBuilder().append(val + 1).toString());
                         break;
                     }
-                case 105:
+                case 167:
                     TextView v5 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text5);
                     if (v5 != null) {
                         v5.setText(new StringBuilder().append(val + 1).toString());
                         break;
                     }
-                case 106:
-                    GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext11), val == 1);
-                    break;
-                case 107:
-                    GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext12), val == 1);
-                    break;
-                case 108:
-                    GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext13), val == 1);
-                    break;
-                case 109:
-                    TextView v6 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text6);
-                    if (v6 != null) {
-                        int id4 = R.string.driver_system;
-                        if (val == 2) {
-                            id4 = R.string.str_cruise_integrated;
-                        }
-                        v6.setText(id4);
-                        break;
+                case 168:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext17), val == 1);
+                            break;
+                        default:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext11), val == 1);
+                            break;
                     }
-                case 110:
-                    GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext14), val == 1);
-                    break;
-                case 111:
-                    TextView v7 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text7);
-                    if (v7 != null) {
-                        int id5 = R.string.klc_air_middle;
-                        if (val == 2) {
-                            id5 = R.string.jeep_forwardcollisionwarn_0;
-                        }
-                        if (val == 3) {
-                            id5 = R.string.jeep_forwardcollisionwarn_1;
-                        }
-                        v7.setText(id5);
-                        break;
+                case 169:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext18), val == 1);
+                            break;
+                        default:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext12), val == 1);
+                            break;
                     }
-                case 112:
+                case 170:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            TextView v6 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text10);
+                            if (v6 != null) {
+                                if (val == 2) {
+                                    v6.setText("澎湃");
+                                    break;
+                                } else if (val == 3) {
+                                    v6.setText("灵动");
+                                    break;
+                                } else {
+                                    v6.setText("舒缓");
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext13), val == 1);
+                            break;
+                    }
+                case 171:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            TextView v7 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text11);
+                            if (v7 != null) {
+                                if (val == 2) {
+                                    v7.setText("标准");
+                                    break;
+                                } else if (val == 3) {
+                                    v7.setText("舒适");
+                                    break;
+                                } else {
+                                    v7.setText("运动");
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            TextView v8 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text6);
+                            if (v8 != null) {
+                                int id4 = R.string.driver_system;
+                                if (val == 2) {
+                                    id4 = R.string.str_cruise_integrated;
+                                }
+                                v8.setText(id4);
+                                break;
+                            }
+                    }
+                case 172:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext19), val == 1);
+                            break;
+                        default:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext14), val == 1);
+                            break;
+                    }
+                case 173:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                            GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext20), val == 1);
+                            break;
+                        default:
+                            TextView v9 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text7);
+                            if (v9 != null) {
+                                int id5 = R.string.klc_air_middle;
+                                if (val == 2) {
+                                    id5 = R.string.jeep_forwardcollisionwarn_0;
+                                }
+                                if (val == 3) {
+                                    id5 = R.string.jeep_forwardcollisionwarn_1;
+                                }
+                                v9.setText(id5);
+                                break;
+                            }
+                    }
+                case 174:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext15), val == 1);
                     break;
-                case 113:
-                    TextView v8 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text8);
-                    if (v8 != null) {
+                case 175:
+                    TextView v10 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text8);
+                    if (v10 != null) {
                         int id6 = R.string.str_steering_assist;
                         if (val == 2) {
                             id6 = R.string.str_warning;
@@ -247,23 +306,23 @@ public class GS4SetAct_Bnr extends BaseActivity {
                         if (val == 3) {
                             id6 = R.string.str_steering_assist_warning;
                         }
-                        v8.setText(id6);
+                        v10.setText(id6);
                         break;
                     }
-                case 114:
+                case 176:
                     GS4SetAct_Bnr.this.setCheck((CheckedTextView) GS4SetAct_Bnr.this.bindViewClick(R.id.ctv_checkedtext16), val == 1);
                     break;
-                case 117:
-                    TextView v9 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text9);
-                    if (v9 != null) {
+                case 179:
+                    TextView v11 = (TextView) GS4SetAct_Bnr.this.findViewById(R.id.tv_text9);
+                    if (v11 != null) {
                         if (val == 2) {
-                            v9.setText("灵动");
+                            v11.setText("灵动");
                             break;
                         } else if (val == 3) {
-                            v9.setText("澎湃");
+                            v11.setText("澎湃");
                             break;
                         } else {
-                            v9.setText("舒缓");
+                            v11.setText("舒缓");
                             break;
                         }
                     }
@@ -272,16 +331,16 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_280_bnr_gs4_set);
+        //setContentView(R.layout.layout_280_bnr_gs4_set);
         this.mHandler = new Handler(Looper.getMainLooper());
         initClick();
         setUI();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -294,8 +353,8 @@ public class GS4SetAct_Bnr extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 GS4SetAct_Bnr.this.language_set = position;
                 if (GS4SetAct_Bnr.this.language_set >= 0 && GS4SetAct_Bnr.this.language_set <= GS4SetAct_Bnr.this.mLauStylelist.size() && GS4SetAct_Bnr.this.send_lang != null) {
@@ -321,8 +380,8 @@ public class GS4SetAct_Bnr extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (GS4SetAct_Bnr.this.mLauStyle == null) {
                     GS4SetAct_Bnr.this.initLauStyle();
@@ -335,216 +394,262 @@ public class GS4SetAct_Bnr extends BaseActivity {
                 GS4SetAct_Bnr.this.updateLauguageSet();
             }
         });
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.4
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int iAirComfort;
                 switch (v.getId()) {
-                    case R.id.ctv_checkedtext1 /* 2131427478 */:
-                        GS4SetAct_Bnr.this.setCMD(28, DataCanbus.DATA[90] == 1 ? 2 : 1);
-                        break;
-                    case R.id.btn_minus1 /* 2131427480 */:
-                        int value = DataCanbus.DATA[99] - 1;
+                    case R.id.btn_minus1 /* 2131427455 */:
+                        int value = DataCanbus.DATA[161] - 1;
                         if (value < 1) {
                             value = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(37, value);
                         break;
-                    case R.id.btn_plus1 /* 2131427482 */:
-                        int value2 = DataCanbus.DATA[99] + 1;
+                    case R.id.btn_plus1 /* 2131427457 */:
+                        int value2 = DataCanbus.DATA[161] + 1;
                         if (value2 > 3) {
                             value2 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(37, value2);
                         break;
-                    case R.id.btn_minus2 /* 2131427484 */:
-                        int value3 = DataCanbus.DATA[100] - 1;
+                    case R.id.btn_minus2 /* 2131427458 */:
+                        int value3 = DataCanbus.DATA[162] - 1;
                         if (value3 < 1) {
                             value3 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(38, value3);
                         break;
-                    case R.id.btn_plus2 /* 2131427486 */:
-                        int value4 = DataCanbus.DATA[100] + 1;
+                    case R.id.btn_plus2 /* 2131427460 */:
+                        int value4 = DataCanbus.DATA[162] + 1;
                         if (value4 > 3) {
                             value4 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(38, value4);
                         break;
-                    case R.id.btn_minus3 /* 2131427488 */:
-                        int value5 = DataCanbus.DATA[102] - 1;
+                    case R.id.btn_minus3 /* 2131427461 */:
+                        int value5 = DataCanbus.DATA[164] - 1;
                         if (value5 < 1) {
                             value5 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(39, value5);
                         break;
-                    case R.id.btn_plus3 /* 2131427490 */:
-                        int value6 = DataCanbus.DATA[102] + 1;
+                    case R.id.btn_plus3 /* 2131427463 */:
+                        int value6 = DataCanbus.DATA[164] + 1;
                         if (value6 > 3) {
                             value6 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(39, value6);
                         break;
-                    case R.id.btn_minus4 /* 2131427492 */:
-                        int value7 = DataCanbus.DATA[104];
+                    case R.id.btn_minus4 /* 2131427464 */:
+                        int value7 = DataCanbus.DATA[166];
                         if (value7 > 0) {
                             value7--;
                         }
                         GS4SetAct_Bnr.this.setCMD(41, value7);
                         break;
-                    case R.id.btn_plus4 /* 2131427494 */:
-                        int value8 = DataCanbus.DATA[104];
+                    case R.id.btn_plus4 /* 2131427466 */:
+                        int value8 = DataCanbus.DATA[166];
                         if (value8 < 7) {
                             value8++;
                         }
                         GS4SetAct_Bnr.this.setCMD(41, value8);
                         break;
-                    case R.id.btn_minus5 /* 2131427496 */:
-                        int value9 = DataCanbus.DATA[105];
+                    case R.id.btn_minus5 /* 2131427467 */:
+                        int value9 = DataCanbus.DATA[167];
                         if (value9 > 0) {
                             value9--;
                         }
                         GS4SetAct_Bnr.this.setCMD(42, value9);
                         break;
-                    case R.id.btn_plus5 /* 2131427498 */:
-                        int value10 = DataCanbus.DATA[105];
+                    case R.id.btn_plus5 /* 2131427469 */:
+                        int value10 = DataCanbus.DATA[167];
                         if (value10 < 31) {
                             value10++;
                         }
                         GS4SetAct_Bnr.this.setCMD(42, value10);
                         break;
-                    case R.id.btn_minus6 /* 2131427501 */:
-                        int value11 = DataCanbus.DATA[109] - 1;
+                    case R.id.btn_minus6 /* 2131427470 */:
+                        int value11 = DataCanbus.DATA[171] - 1;
                         if (value11 < 1) {
                             value11 = 2;
                         }
                         GS4SetAct_Bnr.this.setCMD(46, value11);
                         break;
-                    case R.id.btn_plus6 /* 2131427503 */:
-                        int value12 = DataCanbus.DATA[109] + 1;
+                    case R.id.btn_plus6 /* 2131427472 */:
+                        int value12 = DataCanbus.DATA[171] + 1;
                         if (value12 > 2) {
                             value12 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(46, value12);
                         break;
-                    case R.id.btn_minus7 /* 2131427505 */:
-                        int value13 = DataCanbus.DATA[111] - 1;
+                    case R.id.btn_minus7 /* 2131427473 */:
+                        int value13 = DataCanbus.DATA[173] - 1;
                         if (value13 < 1) {
                             value13 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(48, value13);
                         break;
-                    case R.id.btn_plus7 /* 2131427507 */:
-                        int value14 = DataCanbus.DATA[111] + 1;
+                    case R.id.btn_plus7 /* 2131427475 */:
+                        int value14 = DataCanbus.DATA[173] + 1;
                         if (value14 > 3) {
                             value14 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(48, value14);
                         break;
-                    case R.id.btn_minus8 /* 2131427509 */:
-                        int value15 = DataCanbus.DATA[113] - 1;
+                    case R.id.btn_minus8 /* 2131427476 */:
+                        int value15 = DataCanbus.DATA[175] - 1;
                         if (value15 < 1) {
                             value15 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(50, value15);
                         break;
-                    case R.id.btn_plus8 /* 2131427511 */:
-                        int value16 = DataCanbus.DATA[113] + 1;
+                    case R.id.btn_plus8 /* 2131427478 */:
+                        int value16 = DataCanbus.DATA[175] + 1;
                         if (value16 > 3) {
                             value16 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(50, value16);
                         break;
-                    case R.id.btn_minus9 /* 2131427513 */:
-                        int value17 = DataCanbus.DATA[117] - 1;
+                    case R.id.btn_minus9 /* 2131427479 */:
+                        int value17 = DataCanbus.DATA[179] - 1;
                         if (value17 < 1) {
                             value17 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(52, value17);
                         break;
-                    case R.id.btn_plus9 /* 2131427515 */:
-                        int value18 = DataCanbus.DATA[117] + 1;
+                    case R.id.btn_plus9 /* 2131427481 */:
+                        int value18 = DataCanbus.DATA[179] + 1;
                         if (value18 > 3) {
                             value18 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(52, value18);
                         break;
-                    case R.id.ctv_checkedtext2 /* 2131427531 */:
-                        GS4SetAct_Bnr.this.setCMD(29, DataCanbus.DATA[91] == 1 ? 2 : 1);
+                    case R.id.btn_minus10 /* 2131427482 */:
+                        int value19 = DataCanbus.DATA[170] - 1;
+                        if (value19 < 1) {
+                            value19 = 3;
+                        }
+                        GS4SetAct_Bnr.this.setCMD(45, value19);
                         break;
-                    case R.id.ctv_checkedtext3 /* 2131427532 */:
-                        GS4SetAct_Bnr.this.setCMD(30, DataCanbus.DATA[92] == 1 ? 2 : 1);
+                    case R.id.btn_plus10 /* 2131427484 */:
+                        int value20 = DataCanbus.DATA[170] + 1;
+                        if (value20 > 3) {
+                            value20 = 1;
+                        }
+                        GS4SetAct_Bnr.this.setCMD(45, value20);
                         break;
-                    case R.id.ctv_checkedtext4 /* 2131427533 */:
-                        GS4SetAct_Bnr.this.setCMD(31, DataCanbus.DATA[93] == 1 ? 2 : 1);
+                    case R.id.btn_minus11 /* 2131427485 */:
+                        int value21 = DataCanbus.DATA[171] - 1;
+                        if (value21 < 1) {
+                            value21 = 3;
+                        }
+                        GS4SetAct_Bnr.this.setCMD(46, value21);
                         break;
-                    case R.id.ctv_checkedtext5 /* 2131427537 */:
-                        GS4SetAct_Bnr.this.setCMD(32, DataCanbus.DATA[94] == 1 ? 2 : 1);
+                    case R.id.btn_plus11 /* 2131427487 */:
+                        int value22 = DataCanbus.DATA[171] + 1;
+                        if (value22 > 3) {
+                            value22 = 1;
+                        }
+                        GS4SetAct_Bnr.this.setCMD(46, value22);
                         break;
-                    case R.id.ctv_checkedtext6 /* 2131427538 */:
-                        GS4SetAct_Bnr.this.setCMD(33, DataCanbus.DATA[95] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext1 /* 2131427525 */:
+                        GS4SetAct_Bnr.this.setCMD(28, DataCanbus.DATA[152] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext7 /* 2131427539 */:
-                        GS4SetAct_Bnr.this.setCMD(36, DataCanbus.DATA[98] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext2 /* 2131427541 */:
+                        GS4SetAct_Bnr.this.setCMD(29, DataCanbus.DATA[153] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext8 /* 2131427540 */:
-                        GS4SetAct_Bnr.this.setCMD(34, DataCanbus.DATA[96] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext3 /* 2131427542 */:
+                        GS4SetAct_Bnr.this.setCMD(30, DataCanbus.DATA[154] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext9 /* 2131427541 */:
-                        GS4SetAct_Bnr.this.setCMD(35, DataCanbus.DATA[97] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext4 /* 2131427544 */:
+                        GS4SetAct_Bnr.this.setCMD(31, DataCanbus.DATA[155] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext10 /* 2131427542 */:
-                        GS4SetAct_Bnr.this.setCMD(40, DataCanbus.DATA[103] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext5 /* 2131427547 */:
+                        GS4SetAct_Bnr.this.setCMD(32, DataCanbus.DATA[156] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext11 /* 2131427543 */:
-                        GS4SetAct_Bnr.this.setCMD(43, DataCanbus.DATA[106] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext6 /* 2131427548 */:
+                        GS4SetAct_Bnr.this.setCMD(33, DataCanbus.DATA[157] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext12 /* 2131427544 */:
-                        GS4SetAct_Bnr.this.setCMD(44, DataCanbus.DATA[107] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext7 /* 2131427549 */:
+                        GS4SetAct_Bnr.this.setCMD(36, DataCanbus.DATA[160] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext13 /* 2131427545 */:
-                        GS4SetAct_Bnr.this.setCMD(45, DataCanbus.DATA[108] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext8 /* 2131427550 */:
+                        GS4SetAct_Bnr.this.setCMD(34, DataCanbus.DATA[158] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext14 /* 2131427546 */:
-                        GS4SetAct_Bnr.this.setCMD(47, DataCanbus.DATA[110] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext9 /* 2131427551 */:
+                        GS4SetAct_Bnr.this.setCMD(35, DataCanbus.DATA[159] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext15 /* 2131427547 */:
-                        GS4SetAct_Bnr.this.setCMD(49, DataCanbus.DATA[112] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext10 /* 2131427552 */:
+                        GS4SetAct_Bnr.this.setCMD(40, DataCanbus.DATA[165] == 1 ? 2 : 1);
                         break;
-                    case R.id.ctv_checkedtext16 /* 2131427548 */:
-                        GS4SetAct_Bnr.this.setCMD(51, DataCanbus.DATA[114] == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext11 /* 2131427553 */:
+                        GS4SetAct_Bnr.this.setCMD(43, DataCanbus.DATA[168] == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_language /* 2131429053 */:
-                        int iLang = DataCanbus.DATA[43];
-                        GS4SetAct_Bnr.this.setCMD(1, iLang == 1 ? 2 : 1);
+                    case R.id.ctv_checkedtext12 /* 2131427554 */:
+                        GS4SetAct_Bnr.this.setCMD(44, DataCanbus.DATA[169] == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_seathot_left /* 2131429055 */:
+                    case R.id.ctv_checkedtext13 /* 2131427555 */:
+                        GS4SetAct_Bnr.this.setCMD(45, DataCanbus.DATA[170] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext14 /* 2131427556 */:
+                        GS4SetAct_Bnr.this.setCMD(47, DataCanbus.DATA[172] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext15 /* 2131427557 */:
+                        GS4SetAct_Bnr.this.setCMD(49, DataCanbus.DATA[174] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext16 /* 2131427558 */:
+                        GS4SetAct_Bnr.this.setCMD(51, DataCanbus.DATA[176] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext17 /* 2131427559 */:
+                        GS4SetAct_Bnr.this.setCMD(43, DataCanbus.DATA[168] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext18 /* 2131427661 */:
+                        GS4SetAct_Bnr.this.setCMD(44, DataCanbus.DATA[169] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext19 /* 2131427663 */:
+                        GS4SetAct_Bnr.this.setCMD(47, DataCanbus.DATA[172] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext20 /* 2131427665 */:
+                        GS4SetAct_Bnr.this.setCMD(48, DataCanbus.DATA[173] == 1 ? 2 : 1);
+                        break;
+                    case R.id.ctv_checkedtext21 /* 2131427667 */:
+                        GS4SetAct_Bnr.this.setCMD(49, 1);
+                        break;
+                    case R.id.wc_gs4_language /* 2131429018 */:
+                        int iLang = DataCanbus.DATA[106] + 1;
+                        if (iLang > 4) {
+                            iLang = 1;
+                        }
+                        GS4SetAct_Bnr.this.setCMD(1, iLang);
+                        break;
+                    case R.id.wc_gs4_seathot_left /* 2131429020 */:
                         GS4SetAct_Bnr.this.sendCmd(22);
                         break;
-                    case R.id.wc_gs4_seathot_right /* 2131429057 */:
+                    case R.id.wc_gs4_seathot_right /* 2131429022 */:
                         GS4SetAct_Bnr.this.sendCmd(23);
                         break;
-                    case R.id.wc_gs4_air_set_auto_compressor_check /* 2131429059 */:
-                        int iAutoCompress = DataCanbus.DATA[68];
+                    case R.id.wc_gs4_air_set_auto_compressor_check /* 2131429024 */:
+                        int iAutoCompress = DataCanbus.DATA[131];
                         GS4SetAct_Bnr.this.setCMD(2, iAutoCompress == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_air_set_auto_cycle_state_check /* 2131429060 */:
-                        int iAutoCycle = DataCanbus.DATA[44];
+                    case R.id.wc_gs4_air_set_auto_cycle_state_check /* 2131429025 */:
+                        int iAutoCycle = DataCanbus.DATA[107];
                         GS4SetAct_Bnr.this.setCMD(3, iAutoCycle == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_air_set_auto_neg_ions /* 2131429061 */:
-                        int iNegIons = DataCanbus.DATA[64];
+                    case R.id.wc_gs4_air_set_auto_neg_ions /* 2131429026 */:
+                        int iNegIons = DataCanbus.DATA[127];
                         GS4SetAct_Bnr.this.setCMD(24, iNegIons == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_air_set_comfort_curve_pre /* 2131429062 */:
-                        int iAirComfort2 = DataCanbus.DATA[45] - 1;
+                    case R.id.wc_gs4_air_set_comfort_curve_pre /* 2131429027 */:
+                        int iAirComfort2 = DataCanbus.DATA[108] - 1;
                         if (iAirComfort2 < 1) {
                             iAirComfort2 = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(4, iAirComfort2);
                         break;
-                    case R.id.wc_gs4_air_set_comfort_curve_next /* 2131429064 */:
-                        int iAirComfort3 = DataCanbus.DATA[45];
+                    case R.id.wc_gs4_air_set_comfort_curve_next /* 2131429029 */:
+                        int iAirComfort3 = DataCanbus.DATA[108];
                         if (iAirComfort3 > 2) {
                             iAirComfort = 1;
                         } else {
@@ -552,157 +657,157 @@ public class GS4SetAct_Bnr extends BaseActivity {
                         }
                         GS4SetAct_Bnr.this.setCMD(4, iAirComfort);
                         break;
-                    case R.id.wc_gs4_seat_set_drive_seat_check /* 2131429065 */:
-                        int iSeatHeatLeft = DataCanbus.DATA[46];
+                    case R.id.wc_gs4_seat_set_drive_seat_check /* 2131429030 */:
+                        int iSeatHeatLeft = DataCanbus.DATA[109];
                         GS4SetAct_Bnr.this.setCMD(5, iSeatHeatLeft == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_air_set_the_pilot_drive_seat_check /* 2131429066 */:
-                        int iSeatHeatRight = DataCanbus.DATA[47];
+                    case R.id.wc_gs4_air_set_the_pilot_drive_seat_check /* 2131429031 */:
+                        int iSeatHeatRight = DataCanbus.DATA[110];
                         GS4SetAct_Bnr.this.setCMD(6, iSeatHeatRight == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_warn_of_speed_pre /* 2131429067 */:
-                        int iSpeedWarn = DataCanbus.DATA[48] - 1;
+                    case R.id.wc_gs4_warn_of_speed_pre /* 2131429032 */:
+                        int iSpeedWarn = DataCanbus.DATA[111] - 1;
                         if (iSpeedWarn < 1) {
                             iSpeedWarn = 0;
                         }
                         GS4SetAct_Bnr.this.setCMD(7, iSpeedWarn);
                         break;
-                    case R.id.wc_gs4_warn_of_speed_next /* 2131429069 */:
-                        int iSpeedWarn2 = DataCanbus.DATA[48] + 1;
+                    case R.id.wc_gs4_warn_of_speed_next /* 2131429034 */:
+                        int iSpeedWarn2 = DataCanbus.DATA[111] + 1;
                         if (iSpeedWarn2 > 20) {
                             iSpeedWarn2 = 20;
                         }
                         GS4SetAct_Bnr.this.setCMD(7, iSpeedWarn2);
                         break;
-                    case R.id.wc_gs4_driver_help_sound_pre /* 2131429070 */:
-                        int iMeterWarnVol = DataCanbus.DATA[49] - 1;
+                    case R.id.wc_gs4_driver_help_sound_pre /* 2131429035 */:
+                        int iMeterWarnVol = DataCanbus.DATA[112] - 1;
                         if (iMeterWarnVol < 1) {
                             iMeterWarnVol = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(8, iMeterWarnVol);
                         break;
-                    case R.id.wc_gs4_driver_help_sound_next /* 2131429072 */:
-                        int iMeterWarnVol2 = DataCanbus.DATA[49] + 1;
+                    case R.id.wc_gs4_driver_help_sound_next /* 2131429037 */:
+                        int iMeterWarnVol2 = DataCanbus.DATA[112] + 1;
                         if (iMeterWarnVol2 < 3) {
                             iMeterWarnVol2 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(8, iMeterWarnVol2);
                         break;
-                    case R.id.wc_gs4_driver_help_away_time_pre /* 2131429073 */:
-                        int iRemotePowerOn = DataCanbus.DATA[50] - 5;
+                    case R.id.wc_gs4_driver_help_away_time_pre /* 2131429038 */:
+                        int iRemotePowerOn = DataCanbus.DATA[113] - 5;
                         if (iRemotePowerOn < 0) {
                             iRemotePowerOn = 0;
                         }
                         GS4SetAct_Bnr.this.setCMD(9, iRemotePowerOn);
                         break;
-                    case R.id.wc_gs4_driver_help_away_time_next /* 2131429075 */:
-                        int iRemotePowerOn2 = DataCanbus.DATA[50] + 5;
+                    case R.id.wc_gs4_driver_help_away_time_next /* 2131429040 */:
+                        int iRemotePowerOn2 = DataCanbus.DATA[113] + 5;
                         if (iRemotePowerOn2 > 30) {
                             iRemotePowerOn2 = 30;
                         }
                         GS4SetAct_Bnr.this.setCMD(9, iRemotePowerOn2);
                         break;
-                    case R.id.wc_gs4_driver_help_start_time_pre /* 2131429076 */:
-                        int iRemoteStart = DataCanbus.DATA[51] - 5;
+                    case R.id.wc_gs4_driver_help_start_time_pre /* 2131429041 */:
+                        int iRemoteStart = DataCanbus.DATA[114] - 5;
                         if (iRemoteStart < 0) {
                             iRemoteStart = 0;
                         }
                         GS4SetAct_Bnr.this.setCMD(10, iRemoteStart);
                         break;
-                    case R.id.wc_gs4_driver_help_start_time_next /* 2131429078 */:
-                        int iRemoteStart2 = DataCanbus.DATA[51] + 5;
+                    case R.id.wc_gs4_driver_help_start_time_next /* 2131429043 */:
+                        int iRemoteStart2 = DataCanbus.DATA[114] + 5;
                         if (iRemoteStart2 > 30) {
                             iRemoteStart2 = 30;
                         }
                         GS4SetAct_Bnr.this.setCMD(10, iRemoteStart2);
                         break;
-                    case R.id.wc_gs4_driver_help_turn_mode_pre /* 2131429079 */:
-                        int iTurnMode = DataCanbus.DATA[52] - 1;
+                    case R.id.wc_gs4_driver_help_turn_mode_pre /* 2131429044 */:
+                        int iTurnMode = DataCanbus.DATA[115] - 1;
                         if (iTurnMode < 1) {
                             iTurnMode = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(11, iTurnMode);
                         break;
-                    case R.id.wc_gs4_driver_help_turn_mode_next /* 2131429081 */:
-                        int iTurnMode2 = DataCanbus.DATA[52] + 1;
+                    case R.id.wc_gs4_driver_help_turn_mode_next /* 2131429046 */:
+                        int iTurnMode2 = DataCanbus.DATA[115] + 1;
                         if (iTurnMode2 > 3) {
                             iTurnMode2 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(11, iTurnMode2);
                         break;
-                    case R.id.wc_gs4_romote_unlock_check /* 2131429082 */:
-                        int iRemoteUnlock = DataCanbus.DATA[53];
+                    case R.id.wc_gs4_romote_unlock_check /* 2131429047 */:
+                        int iRemoteUnlock = DataCanbus.DATA[116];
                         GS4SetAct_Bnr.this.setCMD(12, iRemoteUnlock == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_car_speed_lock_check /* 2131429084 */:
-                        int iSpeedlock = DataCanbus.DATA[54];
+                    case R.id.wc_gs4_car_speed_lock_check /* 2131429049 */:
+                        int iSpeedlock = DataCanbus.DATA[117];
                         GS4SetAct_Bnr.this.setCMD(13, iSpeedlock == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_auto_unlock_check /* 2131429085 */:
-                        int iAutoUnlock = DataCanbus.DATA[55];
+                    case R.id.wc_gs4_auto_unlock_check /* 2131429050 */:
+                        int iAutoUnlock = DataCanbus.DATA[118];
                         GS4SetAct_Bnr.this.setCMD(14, iAutoUnlock == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_romote_front_rear_window_check /* 2131429086 */:
-                        int iRemoteLeftTopWindow = DataCanbus.DATA[56];
+                    case R.id.wc_gs4_romote_front_rear_window_check /* 2131429051 */:
+                        int iRemoteLeftTopWindow = DataCanbus.DATA[119];
                         GS4SetAct_Bnr.this.setCMD(15, iRemoteLeftTopWindow == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_front_yugua_weihu_check /* 2131429087 */:
-                        int iRainBrush = DataCanbus.DATA[57];
+                    case R.id.wc_gs4_front_yugua_weihu_check /* 2131429052 */:
+                        int iRainBrush = DataCanbus.DATA[120];
                         GS4SetAct_Bnr.this.setCMD(16, iRainBrush == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_rear_yugua_check /* 2131429088 */:
-                        int iRearRainBrushAutoStart = DataCanbus.DATA[58];
+                    case R.id.wc_gs4_rear_yugua_check /* 2131429053 */:
+                        int iRearRainBrushAutoStart = DataCanbus.DATA[121];
                         GS4SetAct_Bnr.this.setCMD(17, iRearRainBrushAutoStart == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_rearmirror_fold /* 2131429089 */:
-                        int iRearMirrorFold = DataCanbus.DATA[67];
+                    case R.id.wc_gs4_rearmirror_fold /* 2131429054 */:
+                        int iRearMirrorFold = DataCanbus.DATA[130];
                         GS4SetAct_Bnr.this.setCMD(27, iRearMirrorFold == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_welcome /* 2131429090 */:
-                        int iWelcome = DataCanbus.DATA[65];
+                    case R.id.wc_gs4_welcome /* 2131429055 */:
+                        int iWelcome = DataCanbus.DATA[128];
                         GS4SetAct_Bnr.this.setCMD(25, iWelcome == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_smartkey /* 2131429091 */:
-                        int iSmartKeyIndentify = DataCanbus.DATA[66];
+                    case R.id.wc_gs4_smartkey /* 2131429056 */:
+                        int iSmartKeyIndentify = DataCanbus.DATA[129];
                         GS4SetAct_Bnr.this.setCMD(26, iSmartKeyIndentify == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_with_me_home_lighting_pre /* 2131429092 */:
-                        int iHome = DataCanbus.DATA[60] - 1;
+                    case R.id.wc_gs4_with_me_home_lighting_pre /* 2131429057 */:
+                        int iHome = DataCanbus.DATA[123] - 1;
                         if (iHome < 1) {
                             iHome = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(18, iHome);
                         break;
-                    case R.id.wc_gs4_with_me_home_lighting_next /* 2131429094 */:
-                        int iHome2 = DataCanbus.DATA[60] + 1;
+                    case R.id.wc_gs4_with_me_home_lighting_next /* 2131429059 */:
+                        int iHome2 = DataCanbus.DATA[123] + 1;
                         if (iHome2 > 3) {
                             iHome2 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(18, iHome2);
                         break;
-                    case R.id.wc_gs4_wudeng_turn_around_help_check /* 2131429095 */:
-                        int iFrogTurn = DataCanbus.DATA[61];
+                    case R.id.wc_gs4_wudeng_turn_around_help_check /* 2131429060 */:
+                        int iFrogTurn = DataCanbus.DATA[124];
                         GS4SetAct_Bnr.this.setCMD(19, iFrogTurn == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_day_light_check /* 2131429096 */:
-                        int iDayLight = DataCanbus.DATA[62];
+                    case R.id.wc_gs4_day_light_check /* 2131429061 */:
+                        int iDayLight = DataCanbus.DATA[125];
                         GS4SetAct_Bnr.this.setCMD(20, iDayLight == 1 ? 2 : 1);
                         break;
-                    case R.id.wc_gs4_light_sensitivity_pre /* 2131429097 */:
-                        int iLightSense = DataCanbus.DATA[63] - 1;
+                    case R.id.wc_gs4_light_sensitivity_pre /* 2131429062 */:
+                        int iLightSense = DataCanbus.DATA[126] - 1;
                         if (iLightSense < 1) {
                             iLightSense = 3;
                         }
                         GS4SetAct_Bnr.this.setCMD(21, iLightSense);
                         break;
-                    case R.id.wc_gs4_light_sensitivity_next /* 2131429099 */:
-                        int iLightSense2 = DataCanbus.DATA[63] + 1;
+                    case R.id.wc_gs4_light_sensitivity_next /* 2131429064 */:
+                        int iLightSense2 = DataCanbus.DATA[126] + 1;
                         if (iLightSense2 > 3) {
                             iLightSense2 = 1;
                         }
                         GS4SetAct_Bnr.this.setCMD(21, iLightSense2);
                         break;
-                    case R.id.wc_gs4_reset /* 2131429100 */:
+                    case R.id.wc_gs4_reset /* 2131429065 */:
                         GS4SetAct_Bnr.this.showResetDlg();
                         break;
                 }
@@ -710,11 +815,11 @@ public class GS4SetAct_Bnr extends BaseActivity {
         };
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(final int cmd) {
         setCMD(cmd, 2);
-        this.mHandler.postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.5
-            @Override // java.lang.Runnable
+        this.mHandler.postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(0, new int[]{cmd, 1}, null, null);
             }
@@ -725,11 +830,11 @@ public class GS4SetAct_Bnr extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.factory_data_reset)) + "?");
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.6
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.6.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         GS4SetAct_Bnr.this.setCMD(0, 255);
                     }
@@ -737,8 +842,8 @@ public class GS4SetAct_Bnr extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc.gs4.GS4SetAct_Bnr.7
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -746,7 +851,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         builder.create().show();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setCMD(int cmd, int val) {
         DataCanbus.PROXY.cmd(0, new int[]{cmd, val}, null, null);
     }
@@ -788,6 +893,11 @@ public class GS4SetAct_Bnr extends BaseActivity {
         bindViewClick(R.id.ctv_checkedtext14);
         bindViewClick(R.id.ctv_checkedtext15);
         bindViewClick(R.id.ctv_checkedtext16);
+        bindViewClick(R.id.ctv_checkedtext17);
+        bindViewClick(R.id.ctv_checkedtext18);
+        bindViewClick(R.id.ctv_checkedtext19);
+        bindViewClick(R.id.ctv_checkedtext20);
+        bindViewClick(R.id.ctv_checkedtext21);
         bindViewClick(R.id.btn_minus1);
         bindViewClick(R.id.btn_plus1);
         bindViewClick(R.id.btn_minus2);
@@ -806,6 +916,10 @@ public class GS4SetAct_Bnr extends BaseActivity {
         bindViewClick(R.id.btn_plus8);
         bindViewClick(R.id.btn_minus9);
         bindViewClick(R.id.btn_plus9);
+        bindViewClick(R.id.btn_minus10);
+        bindViewClick(R.id.btn_plus10);
+        bindViewClick(R.id.btn_minus11);
+        bindViewClick(R.id.btn_plus11);
         findViewById(R.id.layout_view1).setVisibility(8);
         findViewById(R.id.layout_text_view1).setVisibility(8);
         findViewById(R.id.layout_view2).setVisibility(8);
@@ -818,6 +932,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         findViewById(R.id.layout_view9).setVisibility(8);
         findViewById(R.id.layout_view10).setVisibility(8);
         findViewById(R.id.layout_view11).setVisibility(8);
+        findViewById(R.id.layout_view54).setVisibility(8);
         findViewById(R.id.layout_text_view2).setVisibility(8);
         findViewById(R.id.layout_view12).setVisibility(8);
         findViewById(R.id.layout_view13).setVisibility(8);
@@ -832,6 +947,12 @@ public class GS4SetAct_Bnr extends BaseActivity {
         findViewById(R.id.layout_view49).setVisibility(8);
         findViewById(R.id.layout_view50).setVisibility(8);
         findViewById(R.id.layout_view51).setVisibility(8);
+        findViewById(R.id.layout_view55).setVisibility(8);
+        findViewById(R.id.layout_view56).setVisibility(8);
+        findViewById(R.id.layout_view57).setVisibility(8);
+        findViewById(R.id.layout_view58).setVisibility(8);
+        findViewById(R.id.layout_view59).setVisibility(8);
+        findViewById(R.id.layout_view60).setVisibility(8);
         findViewById(R.id.layout_text_view3).setVisibility(8);
         findViewById(R.id.layout_view19).setVisibility(8);
         findViewById(R.id.layout_view20).setVisibility(8);
@@ -1044,6 +1165,36 @@ public class GS4SetAct_Bnr extends BaseActivity {
                 findViewById(R.id.layout_view39).setVisibility(0);
                 findViewById(R.id.layout_view43).setVisibility(0);
                 break;
+            case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
+                findViewById(R.id.layout_text_view1).setVisibility(0);
+                findViewById(R.id.layout_view2).setVisibility(0);
+                findViewById(R.id.layout_view3).setVisibility(0);
+                findViewById(R.id.layout_view7).setVisibility(0);
+                findViewById(R.id.layout_view11).setVisibility(0);
+                findViewById(R.id.layout_view54).setVisibility(0);
+                findViewById(R.id.layout_text_view2).setVisibility(0);
+                findViewById(R.id.layout_view12).setVisibility(0);
+                findViewById(R.id.layout_view55).setVisibility(0);
+                findViewById(R.id.layout_view56).setVisibility(0);
+                findViewById(R.id.layout_view57).setVisibility(0);
+                findViewById(R.id.layout_view58).setVisibility(0);
+                findViewById(R.id.layout_view59).setVisibility(0);
+                findViewById(R.id.layout_view60).setVisibility(0);
+                findViewById(R.id.layout_text_view3).setVisibility(0);
+                findViewById(R.id.layout_view19).setVisibility(0);
+                findViewById(R.id.layout_view20).setVisibility(0);
+                findViewById(R.id.layout_view21).setVisibility(0);
+                findViewById(R.id.layout_view23).setVisibility(0);
+                findViewById(R.id.layout_view26).setVisibility(0);
+                findViewById(R.id.layout_view27).setVisibility(0);
+                findViewById(R.id.layout_view28).setVisibility(0);
+                findViewById(R.id.layout_view32).setVisibility(0);
+                findViewById(R.id.layout_text_view5).setVisibility(0);
+                findViewById(R.id.layout_view39).setVisibility(0);
+                findViewById(R.id.layout_view40).setVisibility(0);
+                findViewById(R.id.layout_view41).setVisibility(0);
+                findViewById(R.id.layout_view42).setVisibility(0);
+                break;
             default:
                 findViewById(R.id.layout_view1).setVisibility(0);
                 findViewById(R.id.layout_text_view1).setVisibility(0);
@@ -1098,7 +1249,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public View bindViewClick(int id) {
         View v = findViewById(id);
         if (v != null) {
@@ -1107,21 +1258,21 @@ public class GS4SetAct_Bnr extends BaseActivity {
         return v;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet27(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_seathot_left_txt);
         if (v != null) {
@@ -1133,7 +1284,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet28(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_seathot_right_txt);
         if (v != null) {
@@ -1145,25 +1296,41 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet1(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_language_txt);
         if (v != null) {
-            v.setText(val == 1 ? R.string.jeep_language_set1 : R.string.jeep_language_set0);
+            switch (val) {
+                case 1:
+                    v.setText(R.string.jeep_language_set1);
+                    break;
+                case 2:
+                    v.setText(R.string.jeep_language_set0);
+                    break;
+                case 3:
+                    v.setText(R.string.wc_psa_all_lauguage_set_value_17);
+                    break;
+                case 4:
+                    v.setText(R.string.wc_psa_all_lauguage_set_value_15);
+                    break;
+                default:
+                    v.setText(R.string.jeep_language_set1);
+                    break;
+            }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet2(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_air_set_auto_compressor_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet3(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_air_set_auto_cycle_state_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet4(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_air_set_comfort_curve_TV);
         if (v != null) {
@@ -1178,17 +1345,17 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet5(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_seat_set_drive_seat_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet6(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_air_set_the_pilot_drive_seat_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet7(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_warn_of_speed_TV);
         if (v != null) {
@@ -1196,7 +1363,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet8(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_driver_help_sound_TV);
         if (v != null) {
@@ -1211,7 +1378,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet9(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_driver_help_away_time_TV);
         if (v != null) {
@@ -1219,7 +1386,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet10(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_driver_help_start_time_TV);
         if (v != null) {
@@ -1227,7 +1394,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet11(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_driver_help_turn_mode_TV);
         if (v != null) {
@@ -1242,7 +1409,7 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet12(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_romote_unlock_check), val == 1);
         TextView v = (TextView) findViewById(R.id.wc_gs4_romote_unlock_TV);
@@ -1255,32 +1422,32 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet13(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_car_speed_lock_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet14(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_auto_unlock_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet15(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_romote_front_rear_window_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet16(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_front_yugua_weihu_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet17(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_rear_yugua_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet19(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_with_me_home_lighting_TV);
         if (v != null) {
@@ -1295,17 +1462,17 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet20(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_wudeng_turn_around_help_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet21(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_day_light_check), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet22(int val) {
         TextView v = (TextView) findViewById(R.id.wc_gs4_light_sensitivity_TV);
         if (v != null) {
@@ -1320,22 +1487,22 @@ public class GS4SetAct_Bnr extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet23(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_air_set_auto_neg_ions), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet24(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_welcome), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet25(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_smartkey), val == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSet26(int val) {
         setCheck((CheckedTextView) bindViewClick(R.id.wc_gs4_rearmirror_fold), val == 1);
     }

@@ -16,16 +16,15 @@ import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordXMRadioAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 408:
-                case 413:
-                    int band = DataCanbus.DATA[408];
+                case 420:
+                case 425:
+                    int band = DataCanbus.DATA[420];
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
@@ -56,7 +55,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus26).setVisibility(8);
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus27).setVisibility(8);
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus28).setVisibility(0);
-                            if (DataCanbus.DATA[409] == 1) {
+                            if (DataCanbus.DATA[421] == 1) {
                                 PAFordXMRadioAct.this.findViewById(R.id.layout_view6).setVisibility(0);
                                 PAFordXMRadioAct.this.findViewById(R.id.layout_view5).setVisibility(0);
                                 PAFordXMRadioAct.this.findViewById(R.id.layout_view4).setVisibility(0);
@@ -86,8 +85,8 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.layout_view2).setVisibility(8);
                             break;
                     }
-                case 409:
-                    if (DataCanbus.DATA[408] == 3) {
+                case 421:
+                    if (DataCanbus.DATA[420] == 3) {
                         switch (value) {
                             case 1:
                                 PAFordXMRadioAct.this.findViewById(R.id.layout_view6).setVisibility(0);
@@ -112,7 +111,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                         }
                     }
                     break;
-                case 410:
+                case 422:
                     switch (value) {
                         case 1:
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus17).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_tune_pause_p);
@@ -121,7 +120,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus17).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_tune_play_n);
                             break;
                     }
-                case 411:
+                case 423:
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus5).setBackgroundResource(R.drawable.ic_pa_toyota_xmradio_frq_p);
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_toyota_xmradio_frq_p);
                     PAFordXMRadioAct.this.findViewById(R.id.btn_plus7).setBackgroundResource(R.drawable.ic_pa_toyota_xmradio_frq_p);
@@ -184,54 +183,54 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus14)).setTextColor(Color.parseColor("#666666"));
                             break;
                     }
-                case 412:
+                case 424:
                     int min = value / 60;
                     int sec = value % 60;
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text6)).setText("- " + (min / 10) + (min % 10) + ":" + (sec / 10) + (sec % 10));
                     break;
-                case 414:
+                case 426:
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text2)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_Freq);
                     break;
-                case 415:
+                case 427:
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text3)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_RDS1);
                     break;
-                case 416:
+                case 428:
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text4)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_RDS2);
                     break;
-                case 417:
+                case 429:
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text5)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_RDS3);
                     break;
-                case 418:
+                case 430:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus5)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName1);
                     break;
-                case 419:
+                case 431:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus6)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName2);
                     break;
-                case 420:
+                case 432:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus7)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName3);
                     break;
-                case 421:
+                case 433:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus8)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName4);
                     break;
-                case 422:
+                case 434:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus9)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName5);
                     break;
-                case 423:
+                case 435:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus10)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName6);
                     break;
-                case 424:
+                case 436:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus11)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName7);
                     break;
-                case 425:
+                case 437:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus12)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName8);
                     break;
-                case 426:
+                case 438:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus13)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName9);
                     break;
-                case 427:
+                case 439:
                     ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus14)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_FreqName10);
                     break;
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B3 /* 479 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B3 /* 491 */:
                     switch (value) {
                         case 1:
                             ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus24)).setTextColor(Color.parseColor("#666666"));
@@ -242,7 +241,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus24).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                             break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B4 /* 480 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B4 /* 492 */:
                     switch (value) {
                         case 1:
                             ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus25)).setTextColor(Color.parseColor("#666666"));
@@ -253,7 +252,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus25).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                             break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B5 /* 481 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B5 /* 493 */:
                     switch (value) {
                         case 1:
                             ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus26)).setTextColor(Color.parseColor("#666666"));
@@ -264,7 +263,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus26).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                             break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B6 /* 482 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B6 /* 494 */:
                     switch (value) {
                         case 1:
                             ((Button) PAFordXMRadioAct.this.findViewById(R.id.btn_plus27)).setTextColor(Color.parseColor("#666666"));
@@ -275,7 +274,7 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.btn_plus27).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                             break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B7 /* 483 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B7 /* 495 */:
                     switch (value) {
                         case 1:
                             PAFordXMRadioAct.this.findViewById(R.id.layout_view3).setVisibility(0);
@@ -284,13 +283,13 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
                             PAFordXMRadioAct.this.findViewById(R.id.layout_view3).setVisibility(8);
                             break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D1A_RDS4 /* 484 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D1A_RDS4 /* 496 */:
                     ((TextView) PAFordXMRadioAct.this.findViewById(R.id.tv_text7)).setText(Callback_0374_XP1_ZiYouGuang.XMRadio_RDS4);
                     break;
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D4_B70 /* 485 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D4_B70 /* 497 */:
                     PAFordXMRadioAct.this.RefreshImageView5(value);
                     break;
-                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D5_B70 /* 486 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D5_B70 /* 498 */:
                     PAFordXMRadioAct.this.RefreshImageView6(value);
                     break;
             }
@@ -298,14 +297,14 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
     };
     private PAFordDirectTuneWindow mPaFordDirctTuneWindow;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_ford_xmradio);
+        //setContentView(R.layout.layout_0374_pa_ford_xmradio);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPaFordDirctTuneWindow = new PAFordDirectTuneWindow(this);
         findViewById(R.id.btn_plus1).setOnTouchListener(this);
@@ -338,87 +337,87 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         findViewById(R.id.btn_plus28).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
         switch (id) {
-            case R.id.btn_plus13 /* 2131427470 */:
-                data0 = 19;
-                break;
-            case R.id.btn_plus14 /* 2131427473 */:
-                data0 = 20;
-                break;
-            case R.id.btn_plus15 /* 2131427476 */:
-            case R.id.btn_plus20 /* 2131427894 */:
-                data0 = 6;
-                break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 data0 = 32;
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 data0 = 33;
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 data0 = 34;
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 if (event.getAction() == 0) {
                     this.mPaFordDirctTuneWindow.showWindow(v);
                     break;
                 }
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 data0 = 11;
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 data0 = 12;
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 data0 = 13;
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 data0 = 14;
                 break;
-            case R.id.btn_plus9 /* 2131427515 */:
+            case R.id.btn_plus9 /* 2131427481 */:
                 data0 = 15;
                 break;
-            case R.id.btn_plus10 /* 2131427519 */:
+            case R.id.btn_plus10 /* 2131427484 */:
                 data0 = 16;
                 break;
-            case R.id.btn_plus11 /* 2131427523 */:
+            case R.id.btn_plus11 /* 2131427487 */:
                 data0 = 17;
                 break;
-            case R.id.btn_plus12 /* 2131427527 */:
+            case R.id.btn_plus12 /* 2131427490 */:
                 data0 = 18;
                 break;
-            case R.id.btn_plus18 /* 2131427879 */:
-            case R.id.btn_plus22 /* 2131427885 */:
-                data0 = 4;
+            case R.id.btn_plus13 /* 2131427493 */:
+                data0 = 19;
                 break;
-            case R.id.btn_plus19 /* 2131427881 */:
-            case R.id.btn_plus23 /* 2131427928 */:
-                data0 = 5;
+            case R.id.btn_plus14 /* 2131427496 */:
+                data0 = 20;
                 break;
-            case R.id.btn_plus21 /* 2131427883 */:
-            case R.id.btn_plus16 /* 2131427889 */:
+            case R.id.btn_plus15 /* 2131427517 */:
+            case R.id.btn_plus20 /* 2131427906 */:
+                data0 = 6;
+                break;
+            case R.id.btn_plus16 /* 2131427520 */:
+            case R.id.btn_plus21 /* 2131427899 */:
                 data0 = 3;
                 break;
-            case R.id.btn_plus17 /* 2131427891 */:
+            case R.id.btn_plus17 /* 2131427523 */:
                 data0 = 7;
                 break;
-            case R.id.btn_plus25 /* 2131427923 */:
+            case R.id.btn_plus18 /* 2131427895 */:
+            case R.id.btn_plus22 /* 2131427901 */:
+                data0 = 4;
+                break;
+            case R.id.btn_plus19 /* 2131427897 */:
+            case R.id.btn_plus23 /* 2131427931 */:
+                data0 = 5;
+                break;
+            case R.id.btn_plus25 /* 2131427926 */:
                 data0 = 38;
                 break;
-            case R.id.btn_plus24 /* 2131427924 */:
+            case R.id.btn_plus24 /* 2131427927 */:
                 data0 = 35;
                 break;
-            case R.id.btn_plus26 /* 2131427925 */:
+            case R.id.btn_plus26 /* 2131427928 */:
                 data0 = 36;
                 break;
-            case R.id.btn_plus27 /* 2131427926 */:
+            case R.id.btn_plus27 /* 2131427929 */:
                 data0 = 37;
                 break;
-            case R.id.btn_plus28 /* 2131427927 */:
+            case R.id.btn_plus28 /* 2131427930 */:
                 data0 = 9;
                 break;
         }
@@ -432,12 +431,12 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
-        if (DataCanbus.DATA[408] == 2) {
+        if (DataCanbus.DATA[420] == 2) {
             DataCanbus.PROXY.cmd(21, new int[]{2}, null, null);
-        } else if (DataCanbus.DATA[408] == 3) {
+        } else if (DataCanbus.DATA[420] == 3) {
             DataCanbus.PROXY.cmd(21, new int[]{3}, null, null);
         } else {
             DataCanbus.PROXY.cmd(21, new int[]{1}, null, null);
@@ -446,37 +445,37 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void RefreshImageView5_delay() {
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordXMRadioAct.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
-                PAFordXMRadioAct.this.RefreshImageView5(DataCanbus.DATA[485]);
+                PAFordXMRadioAct.this.RefreshImageView5(DataCanbus.DATA[497]);
             }
         }, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void RefreshImageView6_delay() {
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordXMRadioAct.3
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
-                PAFordXMRadioAct.this.RefreshImageView6(DataCanbus.DATA[486]);
+                PAFordXMRadioAct.this.RefreshImageView6(DataCanbus.DATA[498]);
             }
         }, 50L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void RefreshImageView5(int value) {
         ImageView mIvImageview5 = (ImageView) findViewById(R.id.layout_view5);
         if (LauncherApplication.getScreenWidth() == 768) {
-            mIvImageview5.layout(((value * 491) / 100) + 138, mIvImageview5.getTop(), 629, mIvImageview5.getBottom());
+            mIvImageview5.layout(((value * Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B3) / 100) + 138, mIvImageview5.getTop(), 629, mIvImageview5.getBottom());
         } else if (LauncherApplication.getScreenWidth() == 1080) {
             mIvImageview5.layout(((value * 768) / 100) + 156, mIvImageview5.getTop(), 924, mIvImageview5.getBottom());
         } else {
@@ -484,11 +483,11 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void RefreshImageView6(int value) {
         ImageView mIvImageview6 = (ImageView) findViewById(R.id.layout_view6);
         if (LauncherApplication.getScreenWidth() == 768) {
-            mIvImageview6.layout(((value * 491) / 100) + 113, mIvImageview6.getTop(), ((value * 491) / 100) + 164, mIvImageview6.getBottom());
+            mIvImageview6.layout(((value * Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B3) / 100) + 113, mIvImageview6.getTop(), ((value * Callback_0374_XP1_ZiYouGuang.U_CARRADIO_D12_D0_B3) / 100) + 164, mIvImageview6.getBottom());
         } else if (LauncherApplication.getScreenWidth() == 1080) {
             mIvImageview6.layout(((value * 768) / 100) + 116, mIvImageview6.getTop(), ((value * 768) / 100) + 196, mIvImageview6.getBottom());
         } else {
@@ -496,20 +495,8 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[408].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[409].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[410].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[411].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[412].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[413].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[414].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[415].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[416].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[417].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[418].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[419].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[420].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[421].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[422].addNotify(this.mNotifyCanbus, 1);
@@ -518,30 +505,30 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         DataCanbus.NOTIFY_EVENTS[425].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[426].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[427].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[479].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[480].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[481].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[482].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[483].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[484].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[485].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[486].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[428].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[429].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[430].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[431].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[432].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[433].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[434].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[435].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[436].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[437].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[438].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[439].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[491].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[492].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[493].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[494].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[495].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[496].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[497].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[498].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[408].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[409].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[410].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[411].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[412].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[413].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[414].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[415].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[416].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[417].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[418].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[419].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[420].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[421].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[422].removeNotify(this.mNotifyCanbus);
@@ -550,13 +537,25 @@ public class PAFordXMRadioAct extends BaseActivity implements View.OnTouchListen
         DataCanbus.NOTIFY_EVENTS[425].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[426].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[427].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[479].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[480].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[481].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[482].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[483].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[484].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[485].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[486].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[428].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[429].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[430].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[431].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[432].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[433].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[434].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[435].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[436].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[437].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[438].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[439].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[491].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[492].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[493].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[494].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[495].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[496].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[497].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[498].removeNotify(this.mNotifyCanbus);
     }
 }

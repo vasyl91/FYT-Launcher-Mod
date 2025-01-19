@@ -13,7 +13,6 @@ import com.syu.module.canbus.Callback_0112_RZC_XP1_Carmy;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouchListener {
     public static ToyotaLexusActivityCarRadio mInst;
     public static boolean mIsFront = false;
@@ -26,8 +25,8 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
     private final int[] FREQ_PRE = {0, 8750, 9010, 9810, 10610, 10800, 8750};
     int num = 0;
     int curnum = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.1
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             ToyotaLexusActivityCarRadio.this.num++;
             if (ToyotaLexusActivityCarRadio.this.num == 3 && ToyotaLexusActivityCarRadio.this.curnum != 0) {
@@ -38,8 +37,8 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         }
     };
     boolean flag = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 191:
@@ -61,10 +60,10 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_429_carradio);
+        //setContentView(R.layout.layout_429_carradio);
         mInst = this;
         createUI();
         setListener();
@@ -83,45 +82,45 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         HandlerUI.getInstance().removeCallbacks(this.mCalTime);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mSetCurFrq(int value) {
         this.flag = true;
         DataCanbus.PROXY.cmd(45, 3, value);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_am_radio0 /* 2131430083 */:
+                case R.id.btn_am_radio0 /* 2131430039 */:
                     this.curnum = 1;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio1 /* 2131430084 */:
+                case R.id.btn_am_radio1 /* 2131430040 */:
                     this.curnum = 2;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio2 /* 2131430085 */:
+                case R.id.btn_am_radio2 /* 2131430041 */:
                     this.curnum = 3;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio3 /* 2131430086 */:
+                case R.id.btn_am_radio3 /* 2131430042 */:
                     this.curnum = 4;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio4 /* 2131430087 */:
+                case R.id.btn_am_radio4 /* 2131430043 */:
                     this.curnum = 5;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio5 /* 2131430088 */:
+                case R.id.btn_am_radio5 /* 2131430044 */:
                     this.curnum = 6;
                     mUpdatermCalTime(true);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.btn_am_radio0 /* 2131430083 */:
+                case R.id.btn_am_radio0 /* 2131430039 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -135,7 +134,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                         }
                     }
                     break;
-                case R.id.btn_am_radio1 /* 2131430084 */:
+                case R.id.btn_am_radio1 /* 2131430040 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -149,7 +148,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                         }
                     }
                     break;
-                case R.id.btn_am_radio2 /* 2131430085 */:
+                case R.id.btn_am_radio2 /* 2131430041 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -163,7 +162,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                         }
                     }
                     break;
-                case R.id.btn_am_radio3 /* 2131430086 */:
+                case R.id.btn_am_radio3 /* 2131430042 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -177,7 +176,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                         }
                     }
                     break;
-                case R.id.btn_am_radio4 /* 2131430087 */:
+                case R.id.btn_am_radio4 /* 2131430043 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -191,7 +190,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                         }
                     }
                     break;
-                case R.id.btn_am_radio5 /* 2131430088 */:
+                case R.id.btn_am_radio5 /* 2131430044 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -226,22 +225,22 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         ((Button) findViewById(R.id.btn_am_radio3)).setOnTouchListener(this);
         ((Button) findViewById(R.id.btn_am_radio4)).setOnTouchListener(this);
         ((Button) findViewById(R.id.btn_am_radio5)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.freqm)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.freqm)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(46, 9, 1);
                 DataCanbus.PROXY.cmd(46, 9, 0);
             }
         });
-        ((Button) findViewById(R.id.freqp)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.freqp)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(46, 8, 1);
                 DataCanbus.PROXY.cmd(46, 8, 0);
             }
         });
-        ((Button) findViewById(R.id.btn_band)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_band)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ToyotaLexusActivityCarRadio.Current_Band == 1) {
                     DataCanbus.PROXY.cmd(46, 6, 1);
@@ -255,27 +254,27 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarRadio.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(45, 3, ToyotaLexusActivityCarRadio.Current_preset_station);
             }
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         FuncMain.setChannel(11);
-        if (DataCanbus.DATA[178] != 129) {
+        if (DataCanbus.DATA[181] != 129) {
             DataCanbus.PROXY.cmd(46, 5, 1);
             DataCanbus.PROXY.cmd(46, 5, 0);
         }
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -298,7 +297,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurChannel() {
         int value = DataCanbus.DATA[191];
         if (value == 1 || value == 2) {
@@ -311,7 +310,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         Current_Band = value;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRadioState() {
         if (((TextView) findViewById(R.id.tv_radio_state)) != null) {
             int i = DataCanbus.DATA[194];
@@ -319,7 +318,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurFreq() {
         int value = DataCanbus.DATA[192];
         if (value == 0) {
@@ -332,7 +331,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioChannelPreset() {
         if (Current_Band == 17 || Current_Band == 16) {
             for (int i = 0; i < 6; i++) {
@@ -345,7 +344,7 @@ public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurrentChannelPreset() {
         int value = DataCanbus.DATA[193];
         this.mFmRadio[Current_preset_station - 1].setBackgroundResource(R.drawable.bk_button);

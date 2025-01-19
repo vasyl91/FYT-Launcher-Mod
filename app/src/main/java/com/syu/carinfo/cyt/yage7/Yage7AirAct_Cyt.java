@@ -11,13 +11,12 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Yage7AirAct_Cyt extends BaseActivity {
     public static boolean mIsFront = false;
     int cmd = 0;
     private int[] ids = {15, 12, 19, 21, 13, 14, 20, 11, 22, 29};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.cyt.yage7.Yage7AirAct_Cyt.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Yage7AirAct_Cyt.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -58,14 +57,14 @@ public class Yage7AirAct_Cyt extends BaseActivity {
     String str = "";
     int val;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_417_cyt_yage7_air_control);
+        ////setContentView(R.layout.layout_417_cyt_yage7_air_control);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         initListener();
         setClick((Button) findViewById(R.id.air_xts_power));
@@ -85,8 +84,8 @@ public class Yage7AirAct_Cyt extends BaseActivity {
     }
 
     private void initListener() {
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.cyt.yage7.Yage7AirAct_Cyt.2
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int cmd = 0;
                 switch (v.getId()) {
@@ -146,7 +145,7 @@ public class Yage7AirAct_Cyt extends BaseActivity {
         return v;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -154,7 +153,7 @@ public class Yage7AirAct_Cyt extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -162,19 +161,19 @@ public class Yage7AirAct_Cyt extends BaseActivity {
         mIsFront = false;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmd) {
         DataCanbus.PROXY.cmd(22, cmd, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);

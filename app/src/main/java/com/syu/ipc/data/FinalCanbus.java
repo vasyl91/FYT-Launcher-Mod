@@ -1,6 +1,5 @@
 package com.syu.ipc.data;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FinalCanbus {
     public static final int CAR2_RZC_XP1_DaZhong_GaoErFu7_H = 131232;
     public static final int CAR_0353 = 353;

@@ -12,46 +12,45 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HcFordExplorerCd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static HcFordExplorerCd mInit;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hechi.fordexplorer.HcFordExplorerCd.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 54:
+                case 114:
                     HcFordExplorerCd.this.updateDiscState(value);
                     break;
-                case 55:
+                case 115:
                     HcFordExplorerCd.this.mUpdateCdRpt();
                     break;
-                case 56:
+                case 116:
                     HcFordExplorerCd.this.mUpdateCdRandom();
                     break;
-                case 57:
-                case 58:
+                case 117:
+                case 118:
                     HcFordExplorerCd.this.updatecdTime();
                     break;
-                case 59:
-                case 60:
+                case 119:
+                case 120:
                     HcFordExplorerCd.this.updatecdTrack();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_djtianlai_carcd);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_djtianlai_carcd);
         } else if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_djtianlai_carcd_7731);
+            //setContentView(R.layout.layout_djtianlai_carcd_7731);
         } else {
-            setContentView(R.layout.layout_djtianlai_carcd);
+            //setContentView(R.layout.layout_djtianlai_carcd);
         }
         mInit = this;
         init();
@@ -69,48 +68,48 @@ public class HcFordExplorerCd extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
     }
 
     public void updatecdTrack() {
-        int value = DataCanbus.DATA[59];
-        int value1 = DataCanbus.DATA[60];
+        int value = DataCanbus.DATA[119];
+        int value1 = DataCanbus.DATA[120];
         ((TextView) findViewById(R.id.dj_lexus_cd_track)).setText(String.format("Track:%d/%d", Integer.valueOf(value), Integer.valueOf(value1)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
-        int On = DataCanbus.DATA[55];
+        int On = DataCanbus.DATA[115];
         findViewById(R.id.lexus_cd_rpt).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_rpt_n : R.drawable.ic_lexus_cd_rpt_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRandom() {
-        int On = DataCanbus.DATA[56];
+        int On = DataCanbus.DATA[116];
         findViewById(R.id.lexus_cd_random).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_random_n : R.drawable.ic_lexus_cd_random_p);
     }
 
     public void updatecdTime() {
-        int value = DataCanbus.DATA[58];
-        int value1 = DataCanbus.DATA[57];
+        int value = DataCanbus.DATA[118];
+        int value1 = DataCanbus.DATA[117];
         ((TextView) findViewById(R.id.dj_lexus_cd_time)).setText(String.valueOf(value1 / 60) + ":" + (value1 % 60) + " / " + (value / 60) + ":" + (value % 60));
     }
 
@@ -149,18 +148,18 @@ public class HcFordExplorerCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
         FuncMain.setChannel(13);
         addNotify();
-        if (DataCanbus.DATA[61] != 2) {
+        if (DataCanbus.DATA[121] != 2) {
             DataCanbus.PROXY.cmd(3, new int[]{3}, null, null);
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
@@ -168,51 +167,51 @@ public class HcFordExplorerCd extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_cd_rpt /* 2131427666 */:
-                    if (DataCanbus.DATA[55] != 1) {
+                case R.id.lexus_cd_rpt /* 2131427678 */:
+                    if (DataCanbus.DATA[115] != 1) {
                         DataCanbus.PROXY.cmd(4, new int[]{6, 1}, null, null);
                         break;
                     } else {
                         DataCanbus.PROXY.cmd(4, new int[]{8, 1}, null, null);
                         break;
                     }
-                case R.id.lexus_cd_random /* 2131427667 */:
-                    if (DataCanbus.DATA[56] != 1) {
+                case R.id.lexus_cd_random /* 2131427679 */:
+                    if (DataCanbus.DATA[116] != 1) {
                         DataCanbus.PROXY.cmd(4, new int[]{5, 1}, null, null);
                         break;
                     } else {
                         DataCanbus.PROXY.cmd(4, new int[]{7, 1}, null, null);
                         break;
                     }
-                case R.id.lexus_cd_prev /* 2131427843 */:
+                case R.id.lexus_cd_prev /* 2131427859 */:
                     DataCanbus.PROXY.cmd(4, new int[]{1, 1}, null, null);
                     break;
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(4, new int[]{10, 1}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(4, new int[]{9, 1}, null, null);
                     break;
-                case R.id.lexus_cd_next /* 2131427848 */:
+                case R.id.lexus_cd_next /* 2131427864 */:
                     DataCanbus.PROXY.cmd(4, new int[]{2, 1}, null, null);
                     break;
-                case R.id.prado_cd_power /* 2131428261 */:
+                case R.id.prado_cd_power /* 2131428253 */:
                     DataCanbus.PROXY.cmd(4, new int[]{4, 1}, null, null);
                     break;
-                case R.id.prado_cd_disc /* 2131428262 */:
+                case R.id.prado_cd_disc /* 2131428254 */:
                     DataCanbus.PROXY.cmd(4, new int[]{3, 1}, null, null);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(4, new int[]{10}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(4, new int[]{9}, null, null);
                     break;
             }

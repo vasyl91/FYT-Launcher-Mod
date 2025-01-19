@@ -6,11 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIUAZPatriot {
     private static UIUAZPatriot mInstance;
     Context context;
@@ -38,8 +38,8 @@ public class UIUAZPatriot {
     private void initTip(int updateCode, int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0452_uaz_patriot_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0452_uaz_patriot_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
         }
         switch (updateCode) {
             case 0:

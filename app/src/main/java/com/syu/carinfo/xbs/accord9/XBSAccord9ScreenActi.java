@@ -11,7 +11,6 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XBSAccord9ScreenActi extends BaseActivity {
     int brightness;
     int contrast;
@@ -29,35 +28,35 @@ public class XBSAccord9ScreenActi extends BaseActivity {
     int mCameraLinkageLamp;
     private TextView mContrast;
     private CheckedTextView mCtvCameraLinkageLamp;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 29:
-                case 79:
+                case 127:
+                case 153:
                     XBSAccord9ScreenActi.this.screenDisplay = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.mUpdaterScreenDisplay(XBSAccord9ScreenActi.this.screenDisplay);
                     break;
-                case 30:
-                case 80:
+                case 128:
+                case 154:
                     XBSAccord9ScreenActi.this.brightness = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.mUpdaterBrightness(DataCanbus.DATA[updateCode]);
                     break;
-                case 31:
-                case 81:
+                case 129:
+                case 155:
                     XBSAccord9ScreenActi.this.contrast = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.mUpdaterContrast(DataCanbus.DATA[updateCode]);
                     break;
-                case 32:
-                case 82:
+                case 130:
+                case 156:
                     XBSAccord9ScreenActi.this.saturation = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.mUpdaterSaturation(DataCanbus.DATA[updateCode]);
                     break;
-                case 34:
+                case 132:
                     XBSAccord9ScreenActi.this.screenColor = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.mUpdaterScreenColor(DataCanbus.DATA[updateCode]);
                     break;
-                case 83:
+                case 157:
                     XBSAccord9ScreenActi.this.mCameraLinkageLamp = DataCanbus.DATA[updateCode];
                     XBSAccord9ScreenActi.this.updateCameraLinkageLamp(XBSAccord9ScreenActi.this.mCameraLinkageLamp);
                     break;
@@ -77,10 +76,10 @@ public class XBSAccord9ScreenActi extends BaseActivity {
     int screenColor;
     int screenDisplay;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_xbs_screen);
+        //setContentView(R.layout.layout_accord9_xbs_screen);
         this.mView1 = findViewById(R.id.xp_accord9_view_screen_1);
         this.mView2 = findViewById(R.id.xp_accord9_view_screen_2);
         this.mView3 = findViewById(R.id.xp_accord9_view_screen_3);
@@ -89,8 +88,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         this.mView6 = findViewById(R.id.xp_accord9_view_screen_6);
         this.mScreenDisplay = (TextView) findViewById(R.id.xp_accord9_tv_car_screen_display);
         this.mBtnScreenDisplayMinus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_display_minus);
-        this.mBtnScreenDisplayMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.2
-            @Override // android.view.View.OnClickListener
+        this.mBtnScreenDisplayMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.screenDisplay;
                 if (value == 2) {
@@ -103,8 +102,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mBtnScreenDisplayPlus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_display_plus);
-        this.mBtnScreenDisplayPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.3
-            @Override // android.view.View.OnClickListener
+        this.mBtnScreenDisplayPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.screenDisplay;
                 if (value == 0) {
@@ -118,8 +117,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         });
         this.mBrightness = (TextView) findViewById(R.id.xp_accord9_tv_car_screen_brightness);
         this.mBtnBrightnessMinus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_minus);
-        this.mBtnBrightnessMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.4
-            @Override // android.view.View.OnClickListener
+        this.mBtnBrightnessMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.brightness - 1;
                 if (value < 0) {
@@ -131,8 +130,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mBtnBrightnessPlus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_plus);
-        this.mBtnBrightnessPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.5
-            @Override // android.view.View.OnClickListener
+        this.mBtnBrightnessPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.brightness + 1;
                 if (value < 2) {
@@ -145,8 +144,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         });
         this.mContrast = (TextView) findViewById(R.id.xp_accord9_tv_car_screen_contrast);
         this.mBtnContrastMinus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_minus);
-        this.mBtnContrastMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.6
-            @Override // android.view.View.OnClickListener
+        this.mBtnContrastMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.contrast - 1;
                 if (value < 0) {
@@ -158,8 +157,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mBtnContrastPlus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_plus);
-        this.mBtnContrastPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.7
-            @Override // android.view.View.OnClickListener
+        this.mBtnContrastPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.contrast + 1;
                 if (value < 0) {
@@ -172,8 +171,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         });
         this.mSaturations = (TextView) findViewById(R.id.xp_accord9_tv_car_screen_saturation);
         this.mBtnSaturationsMinus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_minus);
-        this.mBtnSaturationsMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.8
-            @Override // android.view.View.OnClickListener
+        this.mBtnSaturationsMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.saturation - 1;
                 if (value < 0) {
@@ -185,8 +184,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mBtnSaturationsPlus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_plus);
-        this.mBtnSaturationsPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.9
-            @Override // android.view.View.OnClickListener
+        this.mBtnSaturationsPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.saturation + 1;
                 if (value < 0) {
@@ -199,8 +198,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         });
         this.mScreenColor = (TextView) findViewById(R.id.xp_accord9_tv_car_screen_color);
         this.mBtnScreenColorMinus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_color_minus);
-        this.mBtnScreenColorMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.10
-            @Override // android.view.View.OnClickListener
+        this.mBtnScreenColorMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.screenColor - 1;
                 if (value < 0) {
@@ -212,8 +211,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mBtnScreenColorPlus = (Button) findViewById(R.id.xp_accord9_btn_car_screen_color_plus);
-        this.mBtnScreenColorPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.11
-            @Override // android.view.View.OnClickListener
+        this.mBtnScreenColorPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = XBSAccord9ScreenActi.this.screenColor + 1;
                 if (value < 0) {
@@ -225,8 +224,8 @@ public class XBSAccord9ScreenActi extends BaseActivity {
             }
         });
         this.mCtvCameraLinkageLamp = (CheckedTextView) findViewById(R.id.xp_ctv_camera_linkage_lamp);
-        this.mCtvCameraLinkageLamp.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.accord9.XBSAccord9ScreenActi.12
-            @Override // android.view.View.OnClickListener
+        this.mCtvCameraLinkageLamp.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
@@ -236,7 +235,7 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 41 || DataCanbus.DATA[1000] == 65577 || DataCanbus.DATA[1000] == 410) {
@@ -256,48 +255,48 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         if (DataCanbus.DATA[1000] == 410) {
-            DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
             return;
         }
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         if (DataCanbus.DATA[1000] == 410) {
-            DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
             return;
         }
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCameraLinkageLamp(int value) {
         if (this.mCtvCameraLinkageLamp != null) {
             this.mCtvCameraLinkageLamp.setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterScreenDisplay(int value) {
         if (this.mScreenDisplay != null) {
             switch (value) {
@@ -315,7 +314,7 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBrightness(int value) {
         if (this.mBrightness != null) {
             int value2 = value - 5;
@@ -329,7 +328,7 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterContrast(int value) {
         if (this.mContrast != null) {
             int value2 = value - 5;
@@ -343,7 +342,7 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSaturation(int value) {
         if (this.mSaturations != null) {
             int value2 = value - 5;
@@ -357,7 +356,7 @@ public class XBSAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterScreenColor(int value) {
         if (this.mScreenColor != null) {
             switch (value) {

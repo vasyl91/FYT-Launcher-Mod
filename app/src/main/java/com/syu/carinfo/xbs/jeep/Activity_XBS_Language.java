@@ -13,24 +13,23 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_XBS_Language extends Activity {
     AdapterCarInfo adapter;
     ListView mListView;
     TextView mText;
     List<CarInfo> mList = new ArrayList();
     int[] mTypeList = {1};
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.jeep.Activity_XBS_Language.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Activity_XBS_Language.this.adapter.setValue(updateCode, DataCanbus.DATA[updateCode]);
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         this.mText = (TextView) findViewById(R.id.tv_car_title);
         this.mListView = (ListView) findViewById(R.id.list_carinfo);
         initValue();
@@ -47,7 +46,7 @@ public class Activity_XBS_Language extends Activity {
         this.mList.add(carInfo);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(57, new int[]{12}, null, null);
@@ -65,7 +64,7 @@ public class Activity_XBS_Language extends Activity {
         this.adapter.updateList(this.mList);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();

@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.view.View;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CheckLongPressHelper {
     private boolean mHasPerformedLongPress;
     private CheckForLongPress mPendingCheckForLongPress;
@@ -12,7 +11,7 @@ public class CheckLongPressHelper {
         CheckForLongPress() {
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             if (CheckLongPressHelper.this.mView.getParent() != null && CheckLongPressHelper.this.mView.hasWindowFocus() && !CheckLongPressHelper.this.mHasPerformedLongPress && CheckLongPressHelper.this.mView.performLongClick()) {
                 CheckLongPressHelper.this.mView.setPressed(false);

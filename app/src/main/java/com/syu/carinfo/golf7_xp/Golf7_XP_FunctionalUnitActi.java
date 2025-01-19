@@ -11,47 +11,46 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 66:
+                case 163:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterTemperature();
                     break;
-                case 67:
+                case 164:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterVolume();
                     break;
-                case 68:
+                case 165:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterConsumption();
                     break;
-                case 69:
+                case 166:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterPressure();
                     break;
-                case 83:
+                case 180:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterDistance();
                     break;
-                case 84:
+                case 181:
                     Golf7_XP_FunctionalUnitActi.this.mUpdaterSpeed();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_state_unit_xp);
+        //setContentView(R.layout.layout_golf7_functional_state_unit_xp);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_distance_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_distance_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[83] & 255;
+                int value = DataCanbus.DATA[180] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 144;
@@ -59,10 +58,10 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_distance_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_distance_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[83] & 255;
+                int value = DataCanbus.DATA[180] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 144;
@@ -70,10 +69,10 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_speed_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_speed_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[84] & 255;
+                int value = DataCanbus.DATA[181] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 145;
@@ -81,10 +80,10 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_speed_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_speed_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[84] & 255;
+                int value = DataCanbus.DATA[181] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 145;
@@ -92,10 +91,10 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_temperature_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_temperature_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[66] & 255;
+                int value = DataCanbus.DATA[163] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 146;
@@ -103,10 +102,10 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_temperature_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_temperature_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[66] & 255;
+                int value = DataCanbus.DATA[163] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 146;
@@ -114,60 +113,60 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_volume_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_volume_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[67] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[164] & 255) - 1;
                 if (switchOn < 0) {
                     switchOn = 2;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{147, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_volume_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_volume_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[67] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[164] & 255) + 1;
                 if (switchOn > 2) {
                     switchOn = 0;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{147, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_consumption_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_consumption_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[68] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[165] & 255) - 1;
                 if (switchOn < 0) {
                     switchOn = 3;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{148, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_consumption_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_consumption_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[68] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[165] & 255) + 1;
                 if (switchOn > 3) {
                     switchOn = 0;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{148, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_pressure_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_pressure_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[69] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[166] & 255) - 1;
                 if (switchOn < 0) {
                     switchOn = 2;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{149, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_pressure_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalUnitActi.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_unit_pressure_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[69] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[166] & 255) + 1;
                 if (switchOn > 2) {
                     switchOn = 0;
                 }
@@ -176,69 +175,69 @@ public class Golf7_XP_FunctionalUnitActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDistance() {
-        int value = DataCanbus.DATA[83];
+        int value = DataCanbus.DATA[180];
         if (value > -1 && value < 2) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_distance)).setText(Golf7Data.mDistanceUnitXp[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSpeed() {
-        int value = DataCanbus.DATA[84];
+        int value = DataCanbus.DATA[181];
         if (value > -1 && value < 2) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_speed)).setText(Golf7Data.mSpeedUnitXp[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTemperature() {
-        int value = DataCanbus.DATA[66];
+        int value = DataCanbus.DATA[163];
         if (value > -1 && value < 2) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_temperature)).setText(Golf7Data.mTempUnitXp[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterVolume() {
-        int value = DataCanbus.DATA[67];
+        int value = DataCanbus.DATA[164];
         if (value > -1 && value < 3) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_volume)).setText(Golf7Data.mVolumeUnitXp[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterConsumption() {
-        int value = DataCanbus.DATA[68];
+        int value = DataCanbus.DATA[165];
         if (value > -1 && value < 4) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_consumption)).setText(Golf7Data.mOilUnitXp[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPressure() {
-        int value = DataCanbus.DATA[69];
+        int value = DataCanbus.DATA[166];
         if (value > -1 && value < 3) {
             ((TextView) findViewById(R.id.glf7_tv_functional_unit_pressure)).setText(Golf7Data.mPressureUnitXp[value]);
         }

@@ -8,38 +8,37 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0416_WC2_RongWeiRX5;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_416_RongweiEi6EnergyStatistics extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rongwei.Wc_416_RongweiEi6EnergyStatistics.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 157:
+                case 169:
                     Wc_416_RongweiEi6EnergyStatistics.this.updateEnergyCurStatistics();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_273_rongwei_ei6_energy_statistics);
+        //setContentView(R.layout.layout_273_rongwei_ei6_energy_statistics);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
-        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
-        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEnergyCurStatistics() {
         if (((VerticalProgressbar) findViewById(R.id.camry_progressbar_0)) != null) {
             int vaule = (Callback_0416_WC2_RongWeiRX5.U_CARINFO_ENERGEY_LIST[0] * 30) / 125;

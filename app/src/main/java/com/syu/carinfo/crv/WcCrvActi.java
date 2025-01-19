@@ -12,12 +12,11 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcCrvActi extends BaseActivity {
     public static WcCrvActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.crv.WcCrvActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -45,43 +44,43 @@ public class WcCrvActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_12crv_wc);
+        //setContentView(R.layout.layout_12crv_wc);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.crv_btn_fb_wc)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.crv_btn_fb_wc)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, 3);
             }
         });
-        findViewById(R.id.crv_btn_ff_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActi.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_ff_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, 4);
             }
         });
-        findViewById(R.id.crv_btn_play_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActi.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_play_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, 1);
             }
         });
-        findViewById(R.id.crv_btn_stop_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.WcCrvActi.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.crv_btn_stop_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, 2);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -92,14 +91,14 @@ public class WcCrvActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
@@ -110,7 +109,7 @@ public class WcCrvActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
@@ -121,7 +120,7 @@ public class WcCrvActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrSource() {
         int value = DataCanbus.DATA[11];
         switch (value) {
@@ -137,13 +136,13 @@ public class WcCrvActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFolder() {
         int value = DataCanbus.DATA[15];
         ((TextView) findViewById(R.id.crv_tv_mdi_wc)).setText(value == 0 ? R.string.crv_mdi_unsupport : R.string.crv_mdi_support);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
         int track = DataCanbus.DATA[13];
         int tarckTotal = DataCanbus.DATA[14];
@@ -154,7 +153,7 @@ public class WcCrvActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
         int value = DataCanbus.DATA[12];
         int minute = (value >> 8) & 255;
@@ -166,7 +165,7 @@ public class WcCrvActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterProgress() {
         int progress = DataCanbus.DATA[16];
         if (progress < 0) {
@@ -177,7 +176,7 @@ public class WcCrvActi extends BaseActivity {
         ((ProgressBar) findViewById(R.id.crv_progress_wc)).setProgress(progress);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void playstatus() {
         int value = DataCanbus.DATA[17];
         switch (value) {
@@ -205,7 +204,7 @@ public class WcCrvActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);

@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.widget.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.CallbackCanbusBase;
@@ -13,22 +14,21 @@ import com.syu.module.canbus.Callback_0121_WC2_14Prado;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PardoTripAct extends BaseActivity {
     private VerticalProgressbar mProgressbarCur;
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[30];
     private TextView[] mOilTv = new TextView[4];
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.pardo2014.wc.PardoTripAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 98:
                     PardoTripAct.this.mUpdaterOilExpend();
                     break;
-                case 2:
+                case 100:
                     PardoTripAct.this.mUpdaterAveragVelocity();
                     break;
-                case 11:
+                case 109:
                     if (ints == null) {
                         for (int i = 0; i < 15; i++) {
                             int[] ints2 = Callback_0121_WC2_14Prado.mMinuteoilexpend[i];
@@ -42,21 +42,21 @@ public class PardoTripAct extends BaseActivity {
                         PardoTripAct.this.mUpdaterOilValue(ints);
                         break;
                     }
-                case 12:
+                case 110:
                     PardoTripAct.this.mUpdaterOptimalOilExpend();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_pardo_trip);
+        //setContentView(R.layout.layout_pardo_trip);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mProgressbar[0] = (VerticalProgressbar) findViewById(R.id.pardo_progressbar_0);
         this.mProgressbar[1] = (VerticalProgressbar) findViewById(R.id.pardo_progressbar_1);
@@ -78,15 +78,15 @@ public class PardoTripAct extends BaseActivity {
         this.mOilTv[1] = (TextView) findViewById(R.id.pardo_tv_oil_1);
         this.mOilTv[2] = (TextView) findViewById(R.id.pardo_tv_oil_2);
         this.mOilTv[3] = (TextView) findViewById(R.id.pardo_tv_oil_3);
-        ((Button) findViewById(R.id.pardo_btn_clear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoTripAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.pardo_btn_clear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(13, null, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         CallbackCanbusBase callback = ModuleCallbackCanbusProxy.getInstance().getCallbackCanbus();
@@ -97,25 +97,25 @@ public class PardoTripAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         int numMax = 30;
@@ -123,7 +123,7 @@ public class PardoTripAct extends BaseActivity {
             if (unit == 0) {
                 numMax = 60;
                 if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("MPG");
+                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_MPG);
                 }
                 for (int i = 0; i < 4; i++) {
                     if (this.mOilTv[i] != null) {
@@ -133,7 +133,7 @@ public class PardoTripAct extends BaseActivity {
             } else if (unit == 1) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("km/L");
+                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                 }
                 for (int i2 = 0; i2 < 4; i2++) {
                     if (this.mOilTv[i2] != null) {
@@ -143,7 +143,7 @@ public class PardoTripAct extends BaseActivity {
             } else if (unit == 2) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("L/100km");
+                    ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 }
                 for (int i3 = 0; i3 < 4; i3++) {
                     if (this.mOilTv[i3] != null) {
@@ -164,19 +164,19 @@ public class PardoTripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOptimalOilExpend() {
-        int value = DataCanbus.DATA[12];
+        int value = DataCanbus.DATA[110];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
         if (num != 65535) {
             if (unit == 0) {
-                str = String.valueOf(num) + " MPG";
+                str = String.valueOf(num) + " " + CamryData.OIL_EXPEND_UNIT_MPG;
             } else if (unit == 1) {
-                str = String.valueOf(num) + " km/L";
+                str = String.valueOf(num) + " " + CamryData.OIL_EXPEND_UNIT_KM_PER_L;
             } else if (unit == 2) {
-                str = String.valueOf(num) + " L/100km";
+                str = String.valueOf(num) + " " + CamryData.OIL_EXPEND_UNIT_L_PER_100KM;
             }
             if (((TextView) findViewById(R.id.pardo_tv_optimal_oil_expend)) != null) {
                 ((TextView) findViewById(R.id.pardo_tv_optimal_oil_expend)).setText(str);
@@ -189,9 +189,9 @@ public class PardoTripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAveragVelocity() {
-        int value = DataCanbus.DATA[2];
+        int value = DataCanbus.DATA[100];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
@@ -207,7 +207,7 @@ public class PardoTripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilValue(int[] ints) {
         if (ints != null && ints.length >= 2 && ints[0] >= 0 && ints[0] < 15) {
             int index = ints[0];
@@ -219,7 +219,7 @@ public class PardoTripAct extends BaseActivity {
                 if (unit == 0) {
                     numMax = 60;
                     if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("MPG");
+                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_MPG);
                     }
                     for (int i = 0; i < 4; i++) {
                         if (this.mOilTv[i] != null) {
@@ -229,7 +229,7 @@ public class PardoTripAct extends BaseActivity {
                 } else if (unit == 1) {
                     numMax = 30;
                     if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("km/L");
+                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                     }
                     for (int i2 = 0; i2 < 4; i2++) {
                         if (this.mOilTv[i2] != null) {
@@ -239,7 +239,7 @@ public class PardoTripAct extends BaseActivity {
                 } else if (unit == 2) {
                     numMax = 30;
                     if (((TextView) findViewById(R.id.pardo_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText("L/100km");
+                        ((TextView) findViewById(R.id.pardo_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                     }
                     for (int i3 = 0; i3 < 4; i3++) {
                         if (this.mOilTv[i3] != null) {

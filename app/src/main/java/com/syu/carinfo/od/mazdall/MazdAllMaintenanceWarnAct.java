@@ -3,16 +3,16 @@ package com.syu.carinfo.od.mazdall;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MazdAllMaintenanceWarnAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.mazdall.MazdAllMaintenanceWarnAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 52:
@@ -26,52 +26,52 @@ public class MazdAllMaintenanceWarnAct extends BaseActivity implements View.OnCl
     private TextView mTvChangeTire;
     private TextView mTvReservation;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_mzdall_maintenance_info);
+        //setContentView(R.layout.layout_0439_mzdall_maintenance_info);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.mTvChangeTire = (TextView) findViewById(R.id.tx_od_mazdall_changtire);
-        this.mTvReservation = (TextView) findViewById(R.id.tx_od_mazdall_reservation);
-        this.mTvChangeOil = (TextView) findViewById(R.id.tx_od_mazdall_changoil);
+        this.mTvChangeTire = findViewById(R.id.tx_od_mazdall_changtire);
+        this.mTvReservation = findViewById(R.id.tx_od_mazdall_reservation);
+        this.mTvChangeOil = findViewById(R.id.tx_od_mazdall_changoil);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         v.getId();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateReservation() {
         int value = DataCanbus.DATA[52];
         int value1 = DataCanbus.DATA[53];

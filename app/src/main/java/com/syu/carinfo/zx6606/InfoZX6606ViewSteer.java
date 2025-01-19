@@ -8,12 +8,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoZX6606ViewSteer extends View {
     private float angle;
     private int autoStep;
@@ -37,8 +37,8 @@ public class InfoZX6606ViewSteer extends View {
         this.step = 1;
         this.autoStep = 0;
         this.mPath = new Path();
-        this.speedH = new Handler() { // from class: com.syu.carinfo.zx6606.InfoZX6606ViewSteer.1
-            @Override // android.os.Handler
+        this.speedH = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message msg) {
                 if (msg.what != 1) {
                     if (InfoZX6606ViewSteer.this.currenSpeed != InfoZX6606ViewSteer.this.targetSpeed) {
@@ -86,7 +86,7 @@ public class InfoZX6606ViewSteer extends View {
         this.mPath.close();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.width = w;
@@ -113,7 +113,7 @@ public class InfoZX6606ViewSteer extends View {
         setSpeed(this.targetSpeed);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.bg_digit != null) {
@@ -131,7 +131,7 @@ public class InfoZX6606ViewSteer extends View {
         this.angle -= 140;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void speedanim() {
         if (this.currenSpeed >= 10) {
         }

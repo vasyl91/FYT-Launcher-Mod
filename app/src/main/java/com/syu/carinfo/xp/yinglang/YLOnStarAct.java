@@ -9,21 +9,20 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLOnStarAct extends Activity {
     StringBuffer buffer;
     int[] showints;
     public static boolean mIsFront = false;
     public static boolean isChannle = true;
     boolean IsIntentOn = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLOnStarAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 18:
+                case 115:
                     YLOnStarAct.this.updaterOnStarNum();
                     break;
-                case 19:
+                case 116:
                     YLOnStarAct.this.updaterOnStarState();
                     break;
             }
@@ -32,10 +31,10 @@ public class YLOnStarAct extends Activity {
     int OnStarState = -1;
     boolean IsChange = false;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_onstar);
+        //setContentView(R.layout.layout_xp_yl_onstar);
         init();
         setUI();
     }
@@ -55,13 +54,13 @@ public class YLOnStarAct extends Activity {
     public void onExtraClik(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.xp_yl_onStarDelete /* 2131433570 */:
+            case R.id.xp_yl_onStarDelete /* 2131433494 */:
                 if (this.buffer != null && this.buffer.length() > 0) {
                     this.buffer.deleteCharAt(this.buffer.length() - 1);
                     ((TextView) findViewById(R.id.xp_yl_showInputTv)).setText(this.buffer.toString());
                     break;
                 }
-            case R.id.xp_yl_btn1 /* 2131433571 */:
+            case R.id.xp_yl_btn1 /* 2131433495 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(1);
@@ -75,7 +74,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn2 /* 2131433572 */:
+            case R.id.xp_yl_btn2 /* 2131433496 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(2);
@@ -89,7 +88,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn3 /* 2131433573 */:
+            case R.id.xp_yl_btn3 /* 2131433497 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(3);
@@ -103,7 +102,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn11 /* 2131433574 */:
+            case R.id.xp_yl_btn11 /* 2131433498 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append('*');
@@ -117,7 +116,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn4 /* 2131433575 */:
+            case R.id.xp_yl_btn4 /* 2131433499 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(4);
@@ -131,7 +130,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn5 /* 2131433576 */:
+            case R.id.xp_yl_btn5 /* 2131433500 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(5);
@@ -145,7 +144,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn6 /* 2131433577 */:
+            case R.id.xp_yl_btn6 /* 2131433501 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(6);
@@ -159,7 +158,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn0 /* 2131433578 */:
+            case R.id.xp_yl_btn0 /* 2131433502 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(0);
@@ -173,7 +172,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn7 /* 2131433579 */:
+            case R.id.xp_yl_btn7 /* 2131433503 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(7);
@@ -187,7 +186,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn8 /* 2131433580 */:
+            case R.id.xp_yl_btn8 /* 2131433504 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(8);
@@ -201,7 +200,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn9 /* 2131433581 */:
+            case R.id.xp_yl_btn9 /* 2131433505 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(9);
@@ -215,7 +214,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_btn10 /* 2131433582 */:
+            case R.id.xp_yl_btn10 /* 2131433506 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append('#');
@@ -229,7 +228,7 @@ public class YLOnStarAct extends Activity {
                     }
                 }
                 break;
-            case R.id.xp_yl_callanswer /* 2131433583 */:
+            case R.id.xp_yl_callanswer /* 2131433507 */:
                 if (this.OnStarState == 2) {
                     YLFunc.CAR_ON_START_CTL(2);
                     break;
@@ -259,7 +258,7 @@ public class YLOnStarAct extends Activity {
                     YLFunc.CAR_ON_START_CALL(this.showints);
                     break;
                 }
-            case R.id.xp_yl_callhang /* 2131433584 */:
+            case R.id.xp_yl_callhang /* 2131433508 */:
                 if (this.OnStarState == 1) {
                     YLFunc.CAR_ON_START_CTL(3);
                     break;
@@ -276,7 +275,7 @@ public class YLOnStarAct extends Activity {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -286,14 +285,14 @@ public class YLOnStarAct extends Activity {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
         mIsFront = false;
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             YLFunc.SWITCH_MAIN_STATE(0);
@@ -303,18 +302,18 @@ public class YLOnStarAct extends Activity {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOnStarState() {
-        this.OnStarState = DataCanbus.DATA[19];
+        this.OnStarState = DataCanbus.DATA[116];
         if (this.OnStarState == 0 && this.IsChange && this.IsIntentOn) {
             YLFunc.SWITCH_MAIN_STATE(0);
             moveTaskToBack(true);
@@ -327,7 +326,7 @@ public class YLOnStarAct extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOnStarNum() {
         String str = GmConstData.anjixingNumber;
         if (str != null) {

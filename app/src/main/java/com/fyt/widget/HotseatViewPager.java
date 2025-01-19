@@ -1,7 +1,9 @@
 package com.fyt.widget;
 
 import android.content.Context;
+
 import androidx.viewpager.widget.ViewPager;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -18,19 +20,19 @@ public class HotseatViewPager extends ViewPager {
     private void init() {
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         getParent().requestDisallowInterceptTouchEvent(true);
         return super.dispatchTouchEvent(ev);
     }
 
-    @Override // android.support.v4.view.ViewPager, android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent arg0) {
         getParent().requestDisallowInterceptTouchEvent(true);
         return super.onInterceptTouchEvent(arg0);
     }
 
-    @Override // android.support.v4.view.ViewPager, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent arg0) {
         return super.onTouchEvent(arg0);
     }

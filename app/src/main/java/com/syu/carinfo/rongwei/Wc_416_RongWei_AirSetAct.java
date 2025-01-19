@@ -11,14 +11,13 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_416_RongWei_AirSetAct extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rongwei.Wc_416_RongWei_AirSetAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
+                case 99:
                     if (((TextView) Wc_416_RongWei_AirSetAct.this.findViewById(R.id.tv_text1)) != null) {
                         switch (value) {
                             case 0:
@@ -33,7 +32,7 @@ public class Wc_416_RongWei_AirSetAct extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 88:
+                case 100:
                     if (((TextView) Wc_416_RongWei_AirSetAct.this.findViewById(R.id.tv_text2)) != null) {
                         switch (value) {
                             case 0:
@@ -48,24 +47,24 @@ public class Wc_416_RongWei_AirSetAct extends BaseActivity implements View.OnCli
                         }
                     }
                     break;
-                case 89:
+                case 101:
                     Wc_416_RongWei_AirSetAct.this.setCheck((CheckedTextView) Wc_416_RongWei_AirSetAct.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 90:
+                case 102:
                     Wc_416_RongWei_AirSetAct.this.setCheck((CheckedTextView) Wc_416_RongWei_AirSetAct.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0416_wc_rongwei_airsettings);
+        //setContentView(R.layout.layout_0416_wc_rongwei_airsettings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -93,48 +92,48 @@ public class Wc_416_RongWei_AirSetAct extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[89];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
-                    value = 1;
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[99] - 1;
+                if (value < 0) {
+                    value = 2;
                 }
-                setCarInfo(10, value);
+                setCarInfo(1, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value2 = DataCanbus.DATA[87] - 1;
-                if (value2 < 0) {
-                    value2 = 2;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[99] + 1;
+                if (value2 > 2) {
+                    value2 = 0;
                 }
                 setCarInfo(1, value2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value3 = DataCanbus.DATA[87] + 1;
-                if (value3 > 2) {
-                    value3 = 0;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[100] - 1;
+                if (value3 < 0) {
+                    value3 = 2;
                 }
-                setCarInfo(1, value3);
+                setCarInfo(4, value3);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value4 = DataCanbus.DATA[88] - 1;
-                if (value4 < 0) {
-                    value4 = 2;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[100] + 1;
+                if (value4 > 2) {
+                    value4 = 0;
                 }
                 setCarInfo(4, value4);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value5 = DataCanbus.DATA[88] + 1;
-                if (value5 > 2) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[101];
+                if (value5 == 1) {
                     value5 = 0;
+                } else if (value5 == 0) {
+                    value5 = 1;
                 }
-                setCarInfo(4, value5);
+                setCarInfo(10, value5);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value6 = DataCanbus.DATA[90];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value6 = DataCanbus.DATA[102];
                 if (value6 == 1) {
                     value6 = 0;
                 } else if (value6 == 0) {
@@ -149,32 +148,32 @@ public class Wc_416_RongWei_AirSetAct extends BaseActivity implements View.OnCli
         DataCanbus.PROXY.cmd(3, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{53}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
     }
 }

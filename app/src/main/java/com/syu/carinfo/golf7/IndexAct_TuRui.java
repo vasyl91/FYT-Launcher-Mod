@@ -8,17 +8,16 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class IndexAct_TuRui extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_index);
+        //setContentView(R.layout.layout_golf7_index);
         init();
         DataCanbus.PROXY.cmd(98, new int[]{255}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (!ConstGolf.isRZCGolf() && findViewById(R.id.golf_view_tmps) != null) {
@@ -32,10 +31,10 @@ public class IndexAct_TuRui extends BaseActivity {
         DataCanbus.PROXY.cmd(98, new int[]{255}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_functional_state)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.1
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_functional_state)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -46,8 +45,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_air_control)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_air_control)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -60,8 +59,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_oil_mileage)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_oil_mileage)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -72,8 +71,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_convenience_consumers)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_convenience_consumers)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -84,8 +83,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_maintenance_information)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_maintenance_information)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -96,8 +95,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_alarm_record)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_alarm_record)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -108,8 +107,8 @@ public class IndexAct_TuRui extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_main_btn_start_stop)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_main_btn_start_stop)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -121,8 +120,8 @@ public class IndexAct_TuRui extends BaseActivity {
             }
         });
         if (ConstGolf.isRZCGolf()) {
-            ((CheckedTextView) findViewById(R.id.glf7_main_btn_tire_pressure)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.IndexAct_TuRui.8
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.glf7_main_btn_tire_pressure)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();

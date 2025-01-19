@@ -9,18 +9,17 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_21_EcosportSetAct extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             int iLanguage;
             int iTempUnitValue;
             int iDisUnitValue;
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
-                case R.id.btn_plus1 /* 2131427482 */:
-                    int iDisUnitValue2 = DataCanbus.DATA[29];
+                case R.id.btn_minus1 /* 2131427455 */:
+                case R.id.btn_plus1 /* 2131427457 */:
+                    int iDisUnitValue2 = DataCanbus.DATA[100];
                     if (iDisUnitValue2 == 1) {
                         iDisUnitValue = 0;
                     } else {
@@ -28,9 +27,9 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
                     }
                     Wc_21_EcosportSetAct.this.sendCMD(1, iDisUnitValue);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
-                case R.id.btn_plus2 /* 2131427486 */:
-                    int iTempUnitValue2 = DataCanbus.DATA[30];
+                case R.id.btn_minus2 /* 2131427458 */:
+                case R.id.btn_plus2 /* 2131427460 */:
+                    int iTempUnitValue2 = DataCanbus.DATA[101];
                     if (iTempUnitValue2 == 1) {
                         iTempUnitValue = 0;
                     } else {
@@ -38,9 +37,9 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
                     }
                     Wc_21_EcosportSetAct.this.sendCMD(4, iTempUnitValue);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
-                case R.id.btn_plus3 /* 2131427490 */:
-                    int iLanguage2 = DataCanbus.DATA[31];
+                case R.id.btn_minus3 /* 2131427461 */:
+                case R.id.btn_plus3 /* 2131427463 */:
+                    int iLanguage2 = DataCanbus.DATA[102];
                     if (iLanguage2 == 1) {
                         iLanguage = 0;
                     } else {
@@ -48,15 +47,15 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
                     }
                     Wc_21_EcosportSetAct.this.sendCMD(5, iLanguage);
                     break;
-                case R.id.btn_minus4 /* 2131427492 */:
-                    int value = DataCanbus.DATA[44] - 1;
+                case R.id.btn_minus4 /* 2131427464 */:
+                    int value = DataCanbus.DATA[111] - 1;
                     if (value < 0) {
                         value = 7;
                     }
                     DataCanbus.PROXY.cmd(17, new int[]{3, value}, null, null);
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
-                    int value2 = DataCanbus.DATA[44] + 1;
+                case R.id.btn_plus4 /* 2131427466 */:
+                    int value2 = DataCanbus.DATA[111] + 1;
                     if (value2 > 7) {
                         value2 = 0;
                     }
@@ -65,39 +64,39 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 24:
-                case 34:
+                case 98:
+                case 104:
                     Wc_21_EcosportSetAct.this.updateCurSpeed();
                     break;
-                case 25:
-                case 33:
+                case 99:
+                case 103:
                     Wc_21_EcosportSetAct.this.updateEngineSpeed();
                     break;
-                case 29:
+                case 100:
                     Wc_21_EcosportSetAct.this.updateDisUnit();
                     break;
-                case 30:
+                case 101:
                     Wc_21_EcosportSetAct.this.updateTempUnit();
                     break;
-                case 31:
+                case 102:
                     Wc_21_EcosportSetAct.this.updateLanguage();
                     break;
-                case 38:
+                case 105:
                     if (((TextView) Wc_21_EcosportSetAct.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) Wc_21_EcosportSetAct.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value) + " km");
                         break;
                     }
-                case 39:
+                case 106:
                     if (((TextView) Wc_21_EcosportSetAct.this.findViewById(R.id.tv_text8)) != null) {
                         ((TextView) Wc_21_EcosportSetAct.this.findViewById(R.id.tv_text8)).setText(String.valueOf(value * 0.1f) + " km");
                         break;
                     }
-                case 44:
+                case 111:
                     if (((TextView) Wc_21_EcosportSetAct.this.findViewById(R.id.tv_text6)) != null) {
                         switch (value) {
                             case 0:
@@ -131,13 +130,14 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_021_wc_ecosport18);
+        //setContentView(R.layout.layout_021_wc_ecosport18);
+        init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 524309) {
             findViewById(R.id.layout_view7).setVisibility(0);
@@ -161,7 +161,7 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         setonClick((Button) findViewById(R.id.btn_plus4));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCMD(int cmd, int val) {
         DataCanbus.PROXY.cmd(16, new int[]{cmd, val}, null, null);
     }
@@ -172,50 +172,50 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCurSpeed() {
-        int curspeedenable = DataCanbus.DATA[34];
-        int curspeed = DataCanbus.DATA[24];
+        int curspeedenable = DataCanbus.DATA[104];
+        int curspeed = DataCanbus.DATA[98];
         if (findViewById(R.id.layout_view5) != null) {
             if (curspeedenable == 0) {
                 findViewById(R.id.layout_view5).setVisibility(8);
@@ -232,10 +232,10 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEngineSpeed() {
-        int enginespeed = DataCanbus.DATA[25];
-        int enginespeedenable = DataCanbus.DATA[33];
+        int enginespeed = DataCanbus.DATA[99];
+        int enginespeedenable = DataCanbus.DATA[103];
         if (findViewById(R.id.layout_view4) != null) {
             if (enginespeedenable == 0) {
                 findViewById(R.id.layout_view4).setVisibility(8);
@@ -252,9 +252,9 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDisUnit() {
-        int disunit = DataCanbus.DATA[29];
+        int disunit = DataCanbus.DATA[100];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             if (disunit == 1) {
                 ((TextView) findViewById(R.id.tv_text1)).setText(R.string.wc_jianianhua_show__metric_unit_1);
@@ -264,9 +264,9 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempUnit() {
-        int tempunit = DataCanbus.DATA[30];
+        int tempunit = DataCanbus.DATA[101];
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             if (tempunit == 1) {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.wc_15ruijie_temp_unit_f_set);
@@ -276,9 +276,9 @@ public class Wc_21_EcosportSetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLanguage() {
-        int language = DataCanbus.DATA[31];
+        int language = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             if (language == 1) {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.jeep_language_set0);

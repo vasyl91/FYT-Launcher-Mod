@@ -1,10 +1,10 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0336_WC2_Escort extends CallbackCanbusBase {
     public static final int U_AIR_BEGIN = 0;
     public static final int U_AIR_END = 1;
@@ -18,7 +18,7 @@ public class Callback_0336_WC2_Escort extends CallbackCanbusBase {
     public static final int U_DOOR_RL = 4;
     public static final int U_DOOR_RR = 5;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 7; i++) {
@@ -36,7 +36,7 @@ public class Callback_0336_WC2_Escort extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 1; i < 7; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -44,7 +44,7 @@ public class Callback_0336_WC2_Escort extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 7) {
             HandlerCanbus.update(updateCode, ints);

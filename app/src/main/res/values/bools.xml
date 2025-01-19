@@ -47,4 +47,5 @@
     <bool name="isHotseatHeight">false</bool>
     <bool name="showFrontAndAux">true</bool>
     <bool name="supportFolder">false</bool>
+    <bool name="center_crop">true</bool>
 </resources>

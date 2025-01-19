@@ -7,36 +7,36 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.syu.adapter.AdapterCarInfo;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.entity.CarInfo;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_XBS_Unit extends Activity {
     AdapterCarInfo adapter;
     ListView mListView;
     TextView mText;
     List<CarInfo> mList = new ArrayList();
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.jeep.Activity_XBS_Unit.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 116) {
                 if (DataCanbus.DATA[updateCode] == 0) {
                     Activity_XBS_Unit.this.mList.get(Activity_XBS_Unit.this.getListID(115)).setDiplsys(new String[]{"L/100KM", "KM/L"});
                 } else {
-                    Activity_XBS_Unit.this.mList.get(Activity_XBS_Unit.this.getListID(115)).setDiplsys(new String[]{"MPG"});
+                    Activity_XBS_Unit.this.mList.get(Activity_XBS_Unit.this.getListID(115)).setDiplsys(new String[]{CamryData.OIL_EXPEND_UNIT_MPG});
                 }
             }
             Activity_XBS_Unit.this.adapter.setValue(updateCode, DataCanbus.DATA[updateCode]);
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         this.mText = (TextView) findViewById(R.id.tv_car_title);
         this.mListView = (ListView) findViewById(R.id.list_carinfo);
         initValue();
@@ -69,7 +69,7 @@ public class Activity_XBS_Unit extends Activity {
         this.mList.add(carInfo5);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(57, new int[]{12}, null, null);
@@ -87,7 +87,7 @@ public class Activity_XBS_Unit extends Activity {
         this.adapter.updateList(this.mList);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();

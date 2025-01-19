@@ -3,7 +3,6 @@ package com.syu.carinfo.xfl.chuangku;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XflCkFunc {
     public static int G_ONSTART_STATUS() {
         return 0;

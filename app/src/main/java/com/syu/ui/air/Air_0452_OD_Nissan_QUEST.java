@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_OD_Nissan_QUEST extends AirBase {
     public Air_0452_OD_Nissan_QUEST(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0040_xp1_golf7/air_rzc_gaoerfu7.webp";
         this.mPathHighlight = "0040_xp1_golf7/air_rzc_gaoerfu7_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -81,7 +81,7 @@ public class Air_0452_OD_Nissan_QUEST extends AirBase {
         } else if (temp == 64) {
             c.drawText("HI", 42.0f, 137.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp * 5) / 10.0f).toString(), 42.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf((temp * 5) / 10.0f), 42.0f, 137.0f, this.mPaint);
         }
         int temp2 = this.DATA[19];
         if (temp2 == 0) {
@@ -91,7 +91,7 @@ public class Air_0452_OD_Nissan_QUEST extends AirBase {
         } else if (temp2 == 64) {
             c.drawText("HI", 920.0f, 137.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp2 * 5) / 10.0f).toString(), 920.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf((temp2 * 5) / 10.0f), 920.0f, 137.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

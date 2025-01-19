@@ -11,357 +11,293 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CX5Index extends BaseActivity implements View.OnClickListener {
-    Button AutoDoorLockModeNext;
-    Button AutoDoorLockModePre;
-    TextView AutoDoorLockModeTV;
-    Button AutoHeadlingOnNext;
-    Button AutoHeadlingOnPre;
-    TextView AutoHeadlingOnTv;
-    int AutoHeadlingOnValue;
-    Button AutoRelockTimeNext;
-    Button AutoRelockTimePre;
-    TextView AutoRelockTimeTv;
-    Button DoorCloseNext;
-    Button DoorClosePre;
-    TextView DoorCloseTV;
-    int DoorCloseValue;
-    Button DoorOpenNext;
-    Button DoorOpenPre;
-    TextView DoorOpenTV;
-    int DoorOpenValue;
-    CheckedTextView FlashChecked;
-    Button HeadlightOffTimerNext;
-    Button HeadlightOffTimerPre;
-    TextView HeadlightOffTimerTV;
-    int HeadlightOffTimerValue;
-    Button LockBeepVolumeNext;
-    Button LockBeepVolumePre;
-    TextView LockBeepVolumeTV;
-    CheckedTextView UnlockModeChecked;
-    TextView UnlockModeTV;
-    CheckedTextView WarkAwayLockChecked;
-    CheckedTextView WipersChecked;
-    int WipersValue;
-    int autoDoorLockModeValue;
-    int autoRelocktimeValue;
-    int flashTurnSingnalValue;
-    int lockBeepVolumeValue;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.mzd.cx5.CX5Index.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 98:
                     CX5Index.this.updaterAutoDoorLockMode();
                     break;
-                case 2:
+                case 99:
                     CX5Index.this.updaterUnlockMode();
                     break;
-                case 3:
+                case 100:
                     CX5Index.this.updaterAutoreLockTime();
                     break;
-                case 4:
+                case 101:
                     CX5Index.this.updaterLockBeepVolum();
                     break;
-                case 5:
+                case 102:
                     CX5Index.this.updaterWalkAwayLock();
                     break;
-                case 6:
+                case 103:
                     CX5Index.this.updaterDoorOpen();
                     break;
-                case 7:
+                case 104:
                     CX5Index.this.updaterDoorClose();
                     break;
-                case 8:
+                case 105:
                     CX5Index.this.updaterHeadingOffTimer();
                     break;
-                case 9:
+                case 106:
                     CX5Index.this.updaterFlashTurnSingnal();
                     break;
-                case 10:
+                case 107:
                     CX5Index.this.updaterAutoHeadingOn();
                     break;
-                case 11:
+                case 108:
                     CX5Index.this.updaterWipers();
                     break;
             }
         }
     };
-    int unlockmodeValue;
-    int walkawayValue;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_175_xp1_mzd_cx5);
+        //setContentView(R.layout.layout_175_xp1_mzd_cx5);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.UnlockModeChecked = (CheckedTextView) findViewById(R.id.xp_mzd_cx5_unlock_mode_check);
-        this.WarkAwayLockChecked = (CheckedTextView) findViewById(R.id.xp_mzd_cx5_walk_away_lock_check);
-        this.FlashChecked = (CheckedTextView) findViewById(R.id.xp_mzd_cx5_flash_turn_singnal_check);
-        this.WipersChecked = (CheckedTextView) findViewById(R.id.xp_mzd_cx5_wipers_check);
-        this.AutoDoorLockModePre = (Button) findViewById(R.id.xp_mzd_cx5_auto_door_lock_mode_pre);
-        this.AutoDoorLockModeNext = (Button) findViewById(R.id.xp_mzd_cx5_auto_door_lock_mode_next);
-        this.AutoRelockTimePre = (Button) findViewById(R.id.xp_mzd_cx5_auto_relock_time_pre);
-        this.AutoRelockTimeNext = (Button) findViewById(R.id.xp_mzd_cx5_auto_relock_time_next);
-        this.LockBeepVolumePre = (Button) findViewById(R.id.xp_mzd_cx5_lock_beep_volume_pre);
-        this.LockBeepVolumeNext = (Button) findViewById(R.id.xp_mzd_cx5_lock_beep_volume_next);
-        this.DoorOpenPre = (Button) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_open_pre);
-        this.DoorOpenNext = (Button) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_open_next);
-        this.DoorClosePre = (Button) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_close_pre);
-        this.DoorCloseNext = (Button) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_close_next);
-        this.HeadlightOffTimerPre = (Button) findViewById(R.id.xp_mzd_cx5_headlight_off_timer_pre);
-        this.HeadlightOffTimerNext = (Button) findViewById(R.id.xp_mzd_cx5_headlight_off_timer_next);
-        this.AutoHeadlingOnPre = (Button) findViewById(R.id.xp_mzd_cx5_auto_headlight_on_pre);
-        this.AutoHeadlingOnNext = (Button) findViewById(R.id.xp_mzd_cx5_auto_headlight_on_next);
-        this.UnlockModeTV = (TextView) findViewById(R.id.xp_mzd_cx5_unlock_mode_tv);
-        this.AutoDoorLockModeTV = (TextView) findViewById(R.id.xp_mzd_cx5_auto_door_lock_mode_tv);
-        this.AutoRelockTimeTv = (TextView) findViewById(R.id.xp_mzd_cx5_auto_relock_time_tv);
-        this.LockBeepVolumeTV = (TextView) findViewById(R.id.xp_mzd_cx5_lock_beep_volume_tv);
-        this.DoorOpenTV = (TextView) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_open_tv);
-        this.DoorCloseTV = (TextView) findViewById(R.id.xp_mzd_cx5_int_light_timeout_door_close_tv);
-        this.HeadlightOffTimerTV = (TextView) findViewById(R.id.xp_mzd_cx5_headlight_off_timer_tv);
-        this.AutoHeadlingOnTv = (TextView) findViewById(R.id.xp_mzd_cx5_auto_headlight_on_tv);
     }
 
     public void setUI() {
-        this.UnlockModeChecked.setOnClickListener(this);
-        this.WarkAwayLockChecked.setOnClickListener(this);
-        this.FlashChecked.setOnClickListener(this);
-        this.WipersChecked.setOnClickListener(this);
-        this.AutoDoorLockModePre.setOnClickListener(this);
-        this.AutoDoorLockModeNext.setOnClickListener(this);
-        this.AutoRelockTimePre.setOnClickListener(this);
-        this.AutoRelockTimeNext.setOnClickListener(this);
-        this.LockBeepVolumePre.setOnClickListener(this);
-        this.LockBeepVolumeNext.setOnClickListener(this);
-        this.DoorOpenPre.setOnClickListener(this);
-        this.DoorOpenNext.setOnClickListener(this);
-        this.DoorClosePre.setOnClickListener(this);
-        this.DoorCloseNext.setOnClickListener(this);
-        this.HeadlightOffTimerPre.setOnClickListener(this);
-        this.HeadlightOffTimerNext.setOnClickListener(this);
-        this.AutoHeadlingOnPre.setOnClickListener(this);
-        this.AutoHeadlingOnNext.setOnClickListener(this);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(this);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(this);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(this);
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(this);
+        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoDoorLockMode() {
-        this.autoDoorLockModeValue = DataCanbus.DATA[1];
-        switch (this.autoDoorLockModeValue) {
+        int autoDoorLockModeValue = DataCanbus.DATA[98];
+        switch (autoDoorLockModeValue) {
             case 0:
-                this.AutoDoorLockModeTV.setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_0);
+                ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_0);
                 break;
             case 1:
-                this.AutoDoorLockModeTV.setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_1);
+                ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_1);
                 break;
             case 2:
-                this.AutoDoorLockModeTV.setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_2);
+                ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_2);
                 break;
             case 3:
-                this.AutoDoorLockModeTV.setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_3);
+                ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_3);
                 break;
             case 4:
-                this.AutoDoorLockModeTV.setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_4);
+                ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_4);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterUnlockMode() {
-        this.unlockmodeValue = DataCanbus.DATA[2];
-        this.UnlockModeChecked.setChecked(this.unlockmodeValue != 0);
-        if (this.unlockmodeValue == 0) {
-            this.UnlockModeTV.setText(R.string.str_xp_mzd_cx5_unlock_mode_0);
-        } else if (this.unlockmodeValue == 1) {
-            this.UnlockModeTV.setText(R.string.str_xp_mzd_cx5_unlock_mode_1);
+        int unlockmodeValue = DataCanbus.DATA[99];
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(unlockmodeValue != 0);
+        if (unlockmodeValue == 0) {
+            ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_xp_mzd_cx5_unlock_mode_0);
+        } else if (unlockmodeValue == 1) {
+            ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_xp_mzd_cx5_unlock_mode_1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoreLockTime() {
-        this.autoRelocktimeValue = DataCanbus.DATA[3];
-        switch (this.autoRelocktimeValue) {
+        int autoRelocktimeValue = DataCanbus.DATA[100];
+        switch (autoRelocktimeValue) {
             case 0:
-                this.AutoRelockTimeTv.setText(R.string.str_xp_mzd_cx5_auto_relock_time_0);
+                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_xp_mzd_cx5_auto_relock_time_0);
                 break;
             case 1:
-                this.AutoRelockTimeTv.setText(R.string.klc_light_Lasuo_headlight_delay_2);
+                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_light_Lasuo_headlight_delay_2);
                 break;
             case 2:
-                this.AutoRelockTimeTv.setText(R.string.klc_light_Lasuo_headlight_delay_1);
+                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_light_Lasuo_headlight_delay_1);
                 break;
             case 3:
-                this.AutoRelockTimeTv.setText(R.string.klc_Parking_with_trailer_Off);
+                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_Parking_with_trailer_Off);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterLockBeepVolum() {
-        this.lockBeepVolumeValue = DataCanbus.DATA[4];
-        switch (this.lockBeepVolumeValue) {
+        int lockBeepVolumeValue = DataCanbus.DATA[101];
+        switch (lockBeepVolumeValue) {
             case 0:
-                this.LockBeepVolumeTV.setText(R.string.xp_accord9_auto_light_3higher);
+                ((TextView) findViewById(R.id.tv_text4)).setText(R.string.xp_accord9_auto_light_3higher);
                 break;
             case 1:
-                this.LockBeepVolumeTV.setText(R.string.xp_accord9_auto_light_2middle);
+                ((TextView) findViewById(R.id.tv_text4)).setText(R.string.xp_accord9_auto_light_2middle);
                 break;
             case 2:
-                this.LockBeepVolumeTV.setText(R.string.xp_accord9_auto_light_1lower);
+                ((TextView) findViewById(R.id.tv_text4)).setText(R.string.xp_accord9_auto_light_1lower);
                 break;
             case 3:
-                this.LockBeepVolumeTV.setText(R.string.klc_Parking_with_trailer_Off);
+                ((TextView) findViewById(R.id.tv_text4)).setText(R.string.klc_Parking_with_trailer_Off);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWalkAwayLock() {
-        this.walkawayValue = DataCanbus.DATA[5];
-        this.WarkAwayLockChecked.setChecked(this.walkawayValue != 0);
+        int walkawayValue = DataCanbus.DATA[102];
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(walkawayValue != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDoorOpen() {
-        this.DoorOpenValue = DataCanbus.DATA[6];
-        switch (this.DoorOpenValue) {
+        int DoorOpenValue = DataCanbus.DATA[103];
+        switch (DoorOpenValue) {
             case 0:
-                this.DoorOpenTV.setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_0);
+                ((TextView) findViewById(R.id.tv_text5)).setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_0);
                 break;
             case 1:
-                this.DoorOpenTV.setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_1);
+                ((TextView) findViewById(R.id.tv_text5)).setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_1);
                 break;
             case 2:
-                this.DoorOpenTV.setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_2);
+                ((TextView) findViewById(R.id.tv_text5)).setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_open_2);
                 break;
             case 3:
-                this.DoorOpenTV.setText(R.string.klc_Parking_with_trailer_Off);
+                ((TextView) findViewById(R.id.tv_text5)).setText(R.string.klc_Parking_with_trailer_Off);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDoorClose() {
-        this.DoorCloseValue = DataCanbus.DATA[7];
-        switch (this.DoorCloseValue) {
+        int DoorCloseValue = DataCanbus.DATA[104];
+        switch (DoorCloseValue) {
             case 0:
-                this.DoorCloseTV.setText(R.string.klc_light_Lasuo_headlight_delay_2);
+                ((TextView) findViewById(R.id.tv_text6)).setText(R.string.klc_light_Lasuo_headlight_delay_2);
                 break;
             case 1:
-                this.DoorCloseTV.setText(R.string.klc_light_Lasuo_headlight_delay_1);
+                ((TextView) findViewById(R.id.tv_text6)).setText(R.string.klc_light_Lasuo_headlight_delay_1);
                 break;
             case 2:
-                this.DoorCloseTV.setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_close_2);
+                ((TextView) findViewById(R.id.tv_text6)).setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_close_2);
                 break;
             case 3:
-                this.DoorCloseTV.setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_close_3);
+                ((TextView) findViewById(R.id.tv_text6)).setText(R.string.str_xp_mzd_cx5_int_light_timeout_door_close_3);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterHeadingOffTimer() {
-        this.HeadlightOffTimerValue = DataCanbus.DATA[8];
-        switch (this.HeadlightOffTimerValue) {
+        int HeadlightOffTimerValue = DataCanbus.DATA[105];
+        switch (HeadlightOffTimerValue) {
             case 0:
-                this.HeadlightOffTimerTV.setText(R.string.klc_light_Lasuo_headlight_delay_3);
+                ((TextView) findViewById(R.id.tv_text7)).setText(R.string.klc_light_Lasuo_headlight_delay_3);
                 break;
             case 1:
-                this.HeadlightOffTimerTV.setText(R.string.str_xp_mzd_cx5_auto_relock_time_0);
+                ((TextView) findViewById(R.id.tv_text7)).setText(R.string.str_xp_mzd_cx5_auto_relock_time_0);
                 break;
             case 2:
-                this.HeadlightOffTimerTV.setText(R.string.klc_light_Lasuo_headlight_delay_2);
+                ((TextView) findViewById(R.id.tv_text7)).setText(R.string.klc_light_Lasuo_headlight_delay_2);
                 break;
             case 3:
-                this.HeadlightOffTimerTV.setText(R.string.klc_light_Lasuo_headlight_delay_1);
+                ((TextView) findViewById(R.id.tv_text7)).setText(R.string.klc_light_Lasuo_headlight_delay_1);
                 break;
             case 4:
-                this.HeadlightOffTimerTV.setText(R.string.klc_Parking_with_trailer_Off);
+                ((TextView) findViewById(R.id.tv_text7)).setText(R.string.klc_Parking_with_trailer_Off);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFlashTurnSingnal() {
-        this.flashTurnSingnalValue = DataCanbus.DATA[9];
-        this.FlashChecked.setChecked(this.flashTurnSingnalValue != 0);
+        int flashTurnSingnalValue = DataCanbus.DATA[106];
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(flashTurnSingnalValue != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoHeadingOn() {
-        this.AutoHeadlingOnValue = DataCanbus.DATA[10];
-        switch (this.AutoHeadlingOnValue) {
+        int AutoHeadlingOnValue = DataCanbus.DATA[107];
+        switch (AutoHeadlingOnValue) {
             case 0:
-                this.AutoHeadlingOnTv.setText(R.string.str_xp_mzd_cx5_auto_headlight_on_0);
+                ((TextView) findViewById(R.id.tv_text8)).setText(R.string.str_xp_mzd_cx5_auto_headlight_on_0);
                 break;
             case 1:
-                this.AutoHeadlingOnTv.setText(R.string.str_xp_mzd_cx5_auto_headlight_on_1);
+                ((TextView) findViewById(R.id.tv_text8)).setText(R.string.str_xp_mzd_cx5_auto_headlight_on_1);
                 break;
             case 2:
-                this.AutoHeadlingOnTv.setText(R.string.str_xp_mzd_cx5_auto_headlight_on_2);
+                ((TextView) findViewById(R.id.tv_text8)).setText(R.string.str_xp_mzd_cx5_auto_headlight_on_2);
                 break;
             case 3:
-                this.AutoHeadlingOnTv.setText(R.string.str_xp_mzd_cx5_auto_headlight_on_3);
+                ((TextView) findViewById(R.id.tv_text8)).setText(R.string.str_xp_mzd_cx5_auto_headlight_on_3);
                 break;
             case 4:
-                this.AutoHeadlingOnTv.setText(R.string.str_xp_mzd_cx5_auto_headlight_on_4);
+                ((TextView) findViewById(R.id.tv_text8)).setText(R.string.str_xp_mzd_cx5_auto_headlight_on_4);
                 break;
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWipers() {
-        this.WipersValue = DataCanbus.DATA[11];
-        this.WipersChecked.setChecked(this.WipersValue != 0);
+        int WipersValue = DataCanbus.DATA[108];
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(WipersValue != 0);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -370,222 +306,240 @@ public class CX5Index extends BaseActivity implements View.OnClickListener {
         return true;
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.xp_mzd_cx5_auto_door_lock_mode_pre /* 2131428803 */:
-                if (this.autoDoorLockModeValue == 0) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int autoDoorLockModeValue = DataCanbus.DATA[98];
+                if (autoDoorLockModeValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(0, 4);
                     break;
-                } else if (this.autoDoorLockModeValue == 1) {
+                } else if (autoDoorLockModeValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(0, 0);
                     break;
-                } else if (this.autoDoorLockModeValue == 2) {
+                } else if (autoDoorLockModeValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(0, 1);
                     break;
-                } else if (this.autoDoorLockModeValue == 3) {
+                } else if (autoDoorLockModeValue == 3) {
                     FucMZD.C_MZD_CX5_CMD(0, 2);
                     break;
-                } else if (this.autoDoorLockModeValue == 4) {
+                } else if (autoDoorLockModeValue == 4) {
                     FucMZD.C_MZD_CX5_CMD(0, 3);
                     break;
                 }
-            case R.id.xp_mzd_cx5_auto_door_lock_mode_next /* 2131428805 */:
-                if (this.autoDoorLockModeValue == 0) {
+            case R.id.btn_plus1 /* 2131427457 */:
+                int autoDoorLockModeValue2 = DataCanbus.DATA[98];
+                if (autoDoorLockModeValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(0, 1);
                     break;
-                } else if (this.autoDoorLockModeValue == 1) {
+                } else if (autoDoorLockModeValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(0, 2);
                     break;
-                } else if (this.autoDoorLockModeValue == 2) {
+                } else if (autoDoorLockModeValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(0, 3);
                     break;
-                } else if (this.autoDoorLockModeValue == 3) {
+                } else if (autoDoorLockModeValue2 == 3) {
                     FucMZD.C_MZD_CX5_CMD(0, 4);
                     break;
-                } else if (this.autoDoorLockModeValue == 4) {
+                } else if (autoDoorLockModeValue2 == 4) {
                     FucMZD.C_MZD_CX5_CMD(0, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_unlock_mode_check /* 2131428806 */:
-                FucMZD.C_MZD_CX5_CMD(1, this.unlockmodeValue == 0 ? 1 : 0);
-                break;
-            case R.id.xp_mzd_cx5_auto_relock_time_pre /* 2131428808 */:
-                if (this.autoRelocktimeValue == 0) {
+            case R.id.btn_minus2 /* 2131427458 */:
+                int autoRelocktimeValue = DataCanbus.DATA[100];
+                if (autoRelocktimeValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(2, 2);
                     break;
-                } else if (this.autoRelocktimeValue == 1) {
+                } else if (autoRelocktimeValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(2, 0);
                     break;
-                } else if (this.autoRelocktimeValue == 2) {
+                } else if (autoRelocktimeValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(2, 1);
                     break;
                 }
-            case R.id.xp_mzd_cx5_auto_relock_time_next /* 2131428810 */:
-                if (this.autoRelocktimeValue == 0) {
+            case R.id.btn_plus2 /* 2131427460 */:
+                int autoRelocktimeValue2 = DataCanbus.DATA[100];
+                if (autoRelocktimeValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(2, 1);
                     break;
-                } else if (this.autoRelocktimeValue == 1) {
+                } else if (autoRelocktimeValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(2, 2);
                     break;
-                } else if (this.autoRelocktimeValue == 2) {
+                } else if (autoRelocktimeValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(2, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_lock_beep_volume_pre /* 2131428811 */:
-                if (this.lockBeepVolumeValue == 0) {
+            case R.id.btn_minus3 /* 2131427461 */:
+                int lockBeepVolumeValue = DataCanbus.DATA[101];
+                if (lockBeepVolumeValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(3, 2);
                     break;
-                } else if (this.lockBeepVolumeValue == 1) {
+                } else if (lockBeepVolumeValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(3, 0);
                     break;
-                } else if (this.lockBeepVolumeValue == 2) {
+                } else if (lockBeepVolumeValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(3, 1);
                     break;
-                } else if (this.lockBeepVolumeValue == 3) {
+                } else if (lockBeepVolumeValue == 3) {
                     FucMZD.C_MZD_CX5_CMD(3, 2);
                     break;
                 }
-            case R.id.xp_mzd_cx5_lock_beep_volume_next /* 2131428813 */:
-                if (this.lockBeepVolumeValue == 0) {
+            case R.id.btn_plus3 /* 2131427463 */:
+                int lockBeepVolumeValue2 = DataCanbus.DATA[101];
+                if (lockBeepVolumeValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(3, 1);
                     break;
-                } else if (this.lockBeepVolumeValue == 1) {
+                } else if (lockBeepVolumeValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(3, 2);
                     break;
-                } else if (this.lockBeepVolumeValue == 2) {
+                } else if (lockBeepVolumeValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(3, 3);
                     break;
-                } else if (this.lockBeepVolumeValue == 3) {
+                } else if (lockBeepVolumeValue2 == 3) {
                     FucMZD.C_MZD_CX5_CMD(3, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_walk_away_lock_check /* 2131428815 */:
-                FucMZD.C_MZD_CX5_CMD(4, this.walkawayValue != 0 ? 0 : 1);
-                break;
-            case R.id.xp_mzd_cx5_int_light_timeout_door_open_pre /* 2131428816 */:
-                if (this.DoorOpenValue == 0) {
+            case R.id.btn_minus4 /* 2131427464 */:
+                int DoorOpenValue = DataCanbus.DATA[103];
+                if (DoorOpenValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(5, 2);
                     break;
-                } else if (this.DoorOpenValue == 1) {
+                } else if (DoorOpenValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(5, 0);
                     break;
-                } else if (this.DoorOpenValue == 2) {
+                } else if (DoorOpenValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(5, 1);
                     break;
                 }
-            case R.id.xp_mzd_cx5_int_light_timeout_door_open_next /* 2131428818 */:
-                if (this.DoorOpenValue == 0) {
+            case R.id.btn_plus4 /* 2131427466 */:
+                int DoorOpenValue2 = DataCanbus.DATA[103];
+                if (DoorOpenValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(5, 1);
                     break;
-                } else if (this.DoorOpenValue == 1) {
+                } else if (DoorOpenValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(5, 2);
                     break;
-                } else if (this.DoorOpenValue == 2) {
+                } else if (DoorOpenValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(5, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_int_light_timeout_door_close_pre /* 2131428819 */:
-                if (this.DoorCloseValue == 0) {
+            case R.id.btn_minus5 /* 2131427467 */:
+                int DoorCloseValue = DataCanbus.DATA[104];
+                if (DoorCloseValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(6, 3);
                     break;
-                } else if (this.DoorCloseValue == 1) {
+                } else if (DoorCloseValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(6, 0);
                     break;
-                } else if (this.DoorCloseValue == 2) {
+                } else if (DoorCloseValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(6, 1);
                     break;
-                } else if (this.DoorCloseValue == 3) {
+                } else if (DoorCloseValue == 3) {
                     FucMZD.C_MZD_CX5_CMD(6, 2);
                     break;
                 }
-            case R.id.xp_mzd_cx5_int_light_timeout_door_close_next /* 2131428821 */:
-                if (this.DoorCloseValue == 0) {
+            case R.id.btn_plus5 /* 2131427469 */:
+                int DoorCloseValue2 = DataCanbus.DATA[104];
+                if (DoorCloseValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(6, 1);
                     break;
-                } else if (this.DoorCloseValue == 1) {
+                } else if (DoorCloseValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(6, 2);
                     break;
-                } else if (this.DoorCloseValue == 2) {
+                } else if (DoorCloseValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(6, 3);
                     break;
-                } else if (this.DoorCloseValue == 3) {
+                } else if (DoorCloseValue2 == 3) {
                     FucMZD.C_MZD_CX5_CMD(6, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_headlight_off_timer_pre /* 2131428822 */:
-                if (this.HeadlightOffTimerValue == 0) {
+            case R.id.btn_minus6 /* 2131427470 */:
+                int HeadlightOffTimerValue = DataCanbus.DATA[105];
+                if (HeadlightOffTimerValue == 0) {
                     FucMZD.C_MZD_CX5_CMD(8, 4);
                     break;
-                } else if (this.HeadlightOffTimerValue == 1) {
+                } else if (HeadlightOffTimerValue == 1) {
                     FucMZD.C_MZD_CX5_CMD(8, 0);
                     break;
-                } else if (this.HeadlightOffTimerValue == 2) {
+                } else if (HeadlightOffTimerValue == 2) {
                     FucMZD.C_MZD_CX5_CMD(8, 1);
                     break;
-                } else if (this.HeadlightOffTimerValue == 3) {
+                } else if (HeadlightOffTimerValue == 3) {
                     FucMZD.C_MZD_CX5_CMD(8, 2);
                     break;
-                } else if (this.HeadlightOffTimerValue == 4) {
+                } else if (HeadlightOffTimerValue == 4) {
                     FucMZD.C_MZD_CX5_CMD(8, 3);
                     break;
                 }
-            case R.id.xp_mzd_cx5_headlight_off_timer_next /* 2131428824 */:
-                if (this.HeadlightOffTimerValue == 0) {
+            case R.id.btn_plus6 /* 2131427472 */:
+                int HeadlightOffTimerValue2 = DataCanbus.DATA[105];
+                if (HeadlightOffTimerValue2 == 0) {
                     FucMZD.C_MZD_CX5_CMD(8, 1);
                     break;
-                } else if (this.HeadlightOffTimerValue == 1) {
+                } else if (HeadlightOffTimerValue2 == 1) {
                     FucMZD.C_MZD_CX5_CMD(8, 2);
                     break;
-                } else if (this.HeadlightOffTimerValue == 2) {
+                } else if (HeadlightOffTimerValue2 == 2) {
                     FucMZD.C_MZD_CX5_CMD(8, 3);
                     break;
-                } else if (this.HeadlightOffTimerValue == 3) {
+                } else if (HeadlightOffTimerValue2 == 3) {
                     FucMZD.C_MZD_CX5_CMD(8, 4);
                     break;
-                } else if (this.HeadlightOffTimerValue == 4) {
+                } else if (HeadlightOffTimerValue2 == 4) {
                     FucMZD.C_MZD_CX5_CMD(8, 0);
                     break;
                 }
-            case R.id.xp_mzd_cx5_flash_turn_singnal_check /* 2131428825 */:
-                FucMZD.C_MZD_CX5_CMD(7, this.flashTurnSingnalValue != 0 ? 0 : 1);
+            case R.id.btn_minus7 /* 2131427473 */:
+                int AutoHeadlingOnValue = DataCanbus.DATA[107];
+                if (AutoHeadlingOnValue == 0) {
+                    FucMZD.C_MZD_CX5_CMD(9, 4);
+                    break;
+                } else if (AutoHeadlingOnValue == 1) {
+                    FucMZD.C_MZD_CX5_CMD(9, 0);
+                    break;
+                } else if (AutoHeadlingOnValue == 2) {
+                    FucMZD.C_MZD_CX5_CMD(9, 1);
+                    break;
+                } else if (AutoHeadlingOnValue == 3) {
+                    FucMZD.C_MZD_CX5_CMD(9, 2);
+                    break;
+                } else if (AutoHeadlingOnValue == 4) {
+                    FucMZD.C_MZD_CX5_CMD(9, 3);
+                    break;
+                }
+            case R.id.btn_plus7 /* 2131427475 */:
+                int AutoHeadlingOnValue2 = DataCanbus.DATA[107];
+                if (AutoHeadlingOnValue2 == 0) {
+                    FucMZD.C_MZD_CX5_CMD(9, 1);
+                    break;
+                } else if (AutoHeadlingOnValue2 == 1) {
+                    FucMZD.C_MZD_CX5_CMD(9, 2);
+                    break;
+                } else if (AutoHeadlingOnValue2 == 2) {
+                    FucMZD.C_MZD_CX5_CMD(9, 3);
+                    break;
+                } else if (AutoHeadlingOnValue2 == 3) {
+                    FucMZD.C_MZD_CX5_CMD(9, 4);
+                    break;
+                } else if (AutoHeadlingOnValue2 == 4) {
+                    FucMZD.C_MZD_CX5_CMD(9, 0);
+                    break;
+                }
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int unlockmodeValue = DataCanbus.DATA[99];
+                FucMZD.C_MZD_CX5_CMD(1, unlockmodeValue == 0 ? 1 : 0);
                 break;
-            case R.id.xp_mzd_cx5_auto_headlight_on_pre /* 2131428826 */:
-                if (this.AutoHeadlingOnValue == 0) {
-                    FucMZD.C_MZD_CX5_CMD(9, 4);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 1) {
-                    FucMZD.C_MZD_CX5_CMD(9, 0);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 2) {
-                    FucMZD.C_MZD_CX5_CMD(9, 1);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 3) {
-                    FucMZD.C_MZD_CX5_CMD(9, 2);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 4) {
-                    FucMZD.C_MZD_CX5_CMD(9, 3);
-                    break;
-                }
-            case R.id.xp_mzd_cx5_auto_headlight_on_next /* 2131428828 */:
-                if (this.AutoHeadlingOnValue == 0) {
-                    FucMZD.C_MZD_CX5_CMD(9, 1);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 1) {
-                    FucMZD.C_MZD_CX5_CMD(9, 2);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 2) {
-                    FucMZD.C_MZD_CX5_CMD(9, 3);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 3) {
-                    FucMZD.C_MZD_CX5_CMD(9, 4);
-                    break;
-                } else if (this.AutoHeadlingOnValue == 4) {
-                    FucMZD.C_MZD_CX5_CMD(9, 0);
-                    break;
-                }
-            case R.id.xp_mzd_cx5_wipers_check /* 2131428829 */:
-                FucMZD.C_MZD_CX5_CMD(10, this.WipersValue != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int walkawayValue = DataCanbus.DATA[102];
+                FucMZD.C_MZD_CX5_CMD(4, walkawayValue == 0 ? 1 : 0);
+                break;
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int flashTurnSingnalValue = DataCanbus.DATA[106];
+                FucMZD.C_MZD_CX5_CMD(7, flashTurnSingnalValue == 0 ? 1 : 0);
+                break;
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int WipersValue = DataCanbus.DATA[108];
+                FucMZD.C_MZD_CX5_CMD(10, WipersValue == 0 ? 1 : 0);
                 break;
         }
     }

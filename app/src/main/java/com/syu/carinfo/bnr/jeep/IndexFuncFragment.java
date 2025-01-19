@@ -11,7 +11,6 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class IndexFuncFragment extends BaseFragment {
     AdapterCarInfo adapter;
     ListView mListView;
@@ -20,7 +19,7 @@ public class IndexFuncFragment extends BaseFragment {
     int[] titles = {R.string.rzc_others_language_setting, R.string.wc_273_unit, R.string.lights_set, R.string.grdcherokee_door_and_lock, R.string.grdcherokee_engine_shotdown_option, R.string.wc_273_safety, R.string.str_guandao_amp, R.string.wc_273_other};
     List<Fragment> mFrags = new ArrayList();
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         this.mText = (TextView) findView(R.id.tv_car_title);
         this.mListView = (ListView) findView(R.id.list_carinfo);
@@ -59,16 +58,16 @@ public class IndexFuncFragment extends BaseFragment {
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_list;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
     }
 }

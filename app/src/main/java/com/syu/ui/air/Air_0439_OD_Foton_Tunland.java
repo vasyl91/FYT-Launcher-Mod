@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_OD_Foton_Tunland extends AirBase {
     public Air_0439_OD_Foton_Tunland(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_oudi_foton_tunland/air_od_foton_tunland_n.webp";
         this.mPathHighlight = "0439_oudi_foton_tunland/air_od_foton_tunland_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -64,7 +64,7 @@ public class Air_0439_OD_Foton_Tunland extends AirBase {
             c.drawText("HI", 60.0f, 60.0f, this.mPaint);
         } else {
             int temp2 = (temp * 5) + 170;
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 60.0f, 60.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 60.0f, 60.0f, this.mPaint);
         }
         int temp3 = this.DATA[16];
         if (temp3 == -1) {
@@ -75,7 +75,7 @@ public class Air_0439_OD_Foton_Tunland extends AirBase {
             c.drawText("HI", 920.0f, 60.0f, this.mPaint);
         } else {
             int temp4 = (temp3 * 5) + 170;
-            c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10), 920.0f, 60.0f, this.mPaint);
+            c.drawText(temp4 / 10 + "." + (temp4 % 10), 920.0f, 60.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

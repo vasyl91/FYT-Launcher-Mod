@@ -12,12 +12,11 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchListener {
     public static Air_Activity_RZC_KeLuZhi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.air.Air_Activity_RZC_KeLuZhi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode != ConstAllAirDara.U_AIR_AC) {
                 if (updateCode != ConstAllAirDara.U_AIR_CYCLE) {
@@ -66,14 +65,19 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         DataCanbus.PROXY.cmd(ConstAllAirDara.C_CONTRAL, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_air_sp_rzc_keluzhi);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform) || "823".equals(platform)) {
+            //setContentView(R.layout.layout_air_sp_rzc_keluzhi);
+            if ("6318".equals(platform) || "823".equals(platform)) {
+                findViewById(R.id.layout_view1).setBackgroundResource(R.drawable.sp_air_bg_7870);
+            } else {
+                findViewById(R.id.layout_view1).setBackgroundResource(R.drawable.sp_air_bg);
+            }
         } else {
-            setContentView(R.layout.layout_air_sp_rzc_keluzhi_7731);
+            //setContentView(R.layout.layout_air_sp_rzc_keluzhi_7731);
         }
         initCallbackId();
         init();
@@ -85,16 +89,16 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
             case FinalCanbus.CAR_RZC_ALL_GM_SP_6 /* 393277 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_7 /* 458813 */:
             case FinalCanbus.CAR_RZC_ALL_GM_SP_8 /* 524349 */:
-                ConstAllAirDara.U_AIR_AC = 34;
-                ConstAllAirDara.U_AIR_REAR = 33;
-                ConstAllAirDara.U_AIR_CYCLE = 32;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 37;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 42;
-                ConstAllAirDara.U_AIR_BLOW_MODE_LEFT = 61;
-                ConstAllAirDara.U_AIR_FRONT = 46;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 41;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 40;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 39;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_BLOW_MODE_LEFT = 77;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
                 ConstAllAirDara.C_AIR_AC = 23;
                 ConstAllAirDara.C_AIR_FRONT_DEFROST = 19;
                 ConstAllAirDara.C_AIR_REAR_DEFROST = 20;
@@ -127,7 +131,7 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         findViewById(R.id.air_sp_temp_left_munits).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -135,7 +139,7 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -143,46 +147,46 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
         switch (id) {
-            case R.id.air_sp_temp_left_munits /* 2131430318 */:
-                data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_SUB;
-                break;
-            case R.id.air_sp_temp_left_plus /* 2131430321 */:
+            case R.id.air_sp_temp_left_plus /* 2131430261 */:
                 data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_ADD;
                 break;
-            case R.id.air_sp_blow_body_foot /* 2131430323 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_BODYFOOT;
+            case R.id.air_sp_temp_left_munits /* 2131430265 */:
+                data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_SUB;
                 break;
-            case R.id.air_sp_blow_foot /* 2131430324 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_FOOT;
-                break;
-            case R.id.air_sp_blow_body /* 2131430325 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_BODY;
-                break;
-            case R.id.air_sp_blow_foot_win /* 2131430326 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_UPFOOT;
-                break;
-            case R.id.air_sp_wind_minuts /* 2131430327 */:
-                data0 = ConstAllAirDara.C_AIR_WIND_SUB;
-                break;
-            case R.id.air_sp_wind_plus /* 2131430329 */:
-                data0 = ConstAllAirDara.C_AIR_WIND_ADD;
-                break;
-            case R.id.air_sp_ac /* 2131430330 */:
+            case R.id.air_sp_ac /* 2131430275 */:
                 data0 = ConstAllAirDara.C_AIR_AC;
                 break;
-            case R.id.air_sp_front /* 2131430331 */:
+            case R.id.air_sp_front /* 2131430277 */:
                 data0 = ConstAllAirDara.C_AIR_FRONT_DEFROST;
                 break;
-            case R.id.air_sp_rear /* 2131430332 */:
+            case R.id.air_sp_rear /* 2131430278 */:
                 data0 = ConstAllAirDara.C_AIR_REAR_DEFROST;
                 break;
-            case R.id.air_sp_cycle /* 2131430333 */:
+            case R.id.air_sp_wind_minuts /* 2131430281 */:
+                data0 = ConstAllAirDara.C_AIR_WIND_SUB;
+                break;
+            case R.id.air_sp_wind_plus /* 2131430283 */:
+                data0 = ConstAllAirDara.C_AIR_WIND_ADD;
+                break;
+            case R.id.air_sp_cycle /* 2131430284 */:
                 data0 = ConstAllAirDara.C_AIR_CYCLE;
+                break;
+            case R.id.air_sp_blow_body_foot /* 2131430379 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_BODYFOOT;
+                break;
+            case R.id.air_sp_blow_foot /* 2131430381 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_FOOT;
+                break;
+            case R.id.air_sp_blow_body /* 2131430383 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_BODY;
+                break;
+            case R.id.air_sp_blow_foot_win /* 2131430385 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_UPFOOT;
                 break;
         }
         if (event.getAction() == 0) {
@@ -265,7 +269,7 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_LEFT];
         if (((TextView) findViewById(R.id.air_sp_temp_left)) != null) {
@@ -285,31 +289,31 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[ConstAllAirDara.U_AIR_AC];
         findViewById(R.id.air_sp_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_sp_ac_n : R.drawable.ic_sp_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[ConstAllAirDara.U_AIR_CYCLE];
         findViewById(R.id.air_sp_cycle).setBackgroundResource(cycle == 0 ? R.drawable.ic_sp_cylce_out_p : R.drawable.ic_sp_cylce_in_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR];
         findViewById(R.id.air_sp_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_rear_n : R.drawable.ic_sp_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_FRONT];
         findViewById(R.id.air_sp_front).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_front_n : R.drawable.ic_sp_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT];
         switch (leave) {
@@ -343,7 +347,7 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowMode() {
         int mode = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_MODE_LEFT];
         findViewById(R.id.air_sp_blow_body).setBackgroundResource(mode == 5 ? R.drawable.ic_sp_mode_body_p : R.drawable.ic_sp_mode_body_n);
@@ -352,19 +356,19 @@ public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchLi
         findViewById(R.id.air_sp_blow_foot_win).setBackgroundResource(mode == 8 ? R.drawable.ic_sp_mode_win_foot_p : R.drawable.ic_sp_mode_win_foot_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeUp() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_UP_LEFT];
         findViewById(R.id.air_sp_mode_up).setVisibility(data == 1 ? 0 : 8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeBody() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT];
         findViewById(R.id.air_sp_mode_body).setVisibility(data == 1 ? 0 : 8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeFoot() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT];
         findViewById(R.id.air_sp_mode_foot).setVisibility(data == 1 ? 0 : 8);

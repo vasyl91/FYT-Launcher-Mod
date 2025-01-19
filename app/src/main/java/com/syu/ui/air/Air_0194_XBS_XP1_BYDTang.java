@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0194_XBS_XP1_BYDTang extends AirBase {
     public Air_0194_XBS_XP1_BYDTang(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0194_xbs_xp1_bydtang/ic_xbs_xp1_byttang_n.webp";
         this.mPathHighlight = "0194_xbs_xp1_bydtang/ic_xbs_xp1_byttang_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -79,7 +79,7 @@ public class Air_0194_XBS_XP1_BYDTang extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 60.0f, 130.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 60.0f, 130.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 60.0f, 130.0f, this.mPaint);
         }
         int temp2 = this.DATA[24];
         if (temp2 == -1) {
@@ -89,7 +89,7 @@ public class Air_0194_XBS_XP1_BYDTang extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 940.0f, 130.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 940.0f, 130.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 940.0f, 130.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

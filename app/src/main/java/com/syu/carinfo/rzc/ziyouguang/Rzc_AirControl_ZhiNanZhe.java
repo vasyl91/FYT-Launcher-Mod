@@ -10,11 +10,10 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_AirControl_ZhiNanZhe.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 42:
@@ -82,10 +81,10 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0373_rzc_jeep_carairset);
+        //setContentView(R.layout.layout_0373_rzc_jeep_carairset);
         init();
     }
 
@@ -115,7 +114,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         findViewById(R.id.air_xts_maxac).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -123,7 +122,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -136,7 +135,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
     
         return false;
      */
-    @Override // android.view.View.OnTouchListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -197,7 +196,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[47];
         int unit = DataCanbus.DATA[57];
@@ -245,7 +244,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
         int temp = DataCanbus.DATA[55];
         int unit = DataCanbus.DATA[57];
@@ -293,7 +292,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatBlowRight() {
         int level = DataCanbus.DATA[112];
         switch (level) {
@@ -312,7 +311,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatBlowLeft() {
         int level = DataCanbus.DATA[111];
         switch (level) {
@@ -331,7 +330,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatLeft() {
         int level = DataCanbus.DATA[53];
         switch (level) {
@@ -350,7 +349,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatRight() {
         int level = DataCanbus.DATA[54];
         switch (level) {
@@ -369,7 +368,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[52];
         if (level >= 0 && level <= 7) {
@@ -377,31 +376,31 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirGoFog() {
         int value = DataCanbus.DATA[51];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(value == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirPower() {
         int value = DataCanbus.DATA[56];
         findViewById(R.id.air_xts_power).setBackgroundResource(value == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
         int value = DataCanbus.DATA[42];
         findViewById(R.id.air_xts_auto).setBackgroundResource(value == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirSYNC() {
         int value = DataCanbus.DATA[59];
         findViewById(R.id.air_xts_sync).setBackgroundResource(value == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[43];
         if (value == 0) {
@@ -413,25 +412,25 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[46];
         findViewById(R.id.air_xts_ac).setBackgroundResource(value == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost() {
         int value = DataCanbus.DATA[44];
         findViewById(R.id.air_xts_front).setBackgroundResource(value == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
         int value = DataCanbus.DATA[45];
         findViewById(R.id.air_xts_rear).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlow() {
         int up = DataCanbus.DATA[50];
         int body = DataCanbus.DATA[48];
@@ -455,7 +454,7 @@ public class Rzc_AirControl_ZhiNanZhe extends Activity implements View.OnTouchLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[113];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(value == 0 ? R.drawable.ic_xts_steer_hot_n : R.drawable.ic_xts_steer_hot_p);

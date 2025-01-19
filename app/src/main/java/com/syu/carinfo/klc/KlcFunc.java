@@ -3,7 +3,6 @@ package com.syu.carinfo.klc;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcFunc {
     public static void SWITCH_MAIN_STATE(int val) {
         int channel = DataMain.sAppIdRequest;

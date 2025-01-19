@@ -8,31 +8,30 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_Surui_CarSet4 extends BaseFragment implements View.OnClickListener {
-    int[] ids = {59, 60, 61, 62};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet4.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {120, 121, 122, 123};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 59:
+                case 120:
                     Fragment_Surui_CarSet4.this.uBlueWindDown(value);
                     break;
-                case 60:
+                case 121:
                     Fragment_Surui_CarSet4.this.uAutoCyclePark(value);
                     break;
-                case 61:
+                case 122:
                     Fragment_Surui_CarSet4.this.uAirAutoAc(value);
                     break;
-                case 62:
+                case 123:
                     Fragment_Surui_CarSet4.this.uAutoWindlev(value);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         bindViewOnClick(R.id.btn_minus1, this);
         bindViewOnClick(R.id.btn_plus1, this);
@@ -42,16 +41,16 @@ public class Fragment_Surui_CarSet4 extends BaseFragment implements View.OnClick
         bindViewOnClick(R.id.ctv_checkedtext2, this);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0439_xbs_byd_song_carset;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         if (DataCanbus.sCanbusId == 8782263) {
             DataCanbus.PROXY.cmd(5, 13);
@@ -61,33 +60,25 @@ public class Fragment_Surui_CarSet4 extends BaseFragment implements View.OnClick
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value = 0;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                if (DataCanbus.DATA[59] == 0) {
-                    value = 1;
-                    break;
-                } else {
-                    value = 2;
-                    break;
-                }
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 value = 5;
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 value = 6;
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int data = DataCanbus.DATA[62];
+            case R.id.btn_minus2 /* 2131427458 */:
+                int data = DataCanbus.DATA[123];
                 switch (data) {
                     case 0:
                         value = 7;
@@ -99,8 +90,8 @@ public class Fragment_Surui_CarSet4 extends BaseFragment implements View.OnClick
                         value = 8;
                         break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
-                int data2 = DataCanbus.DATA[62];
+            case R.id.btn_plus2 /* 2131427460 */:
+                int data2 = DataCanbus.DATA[123];
                 switch (data2) {
                     case 0:
                         value = 8;
@@ -112,8 +103,16 @@ public class Fragment_Surui_CarSet4 extends BaseFragment implements View.OnClick
                         value = 9;
                         break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                if (DataCanbus.DATA[60] == 0) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                if (DataCanbus.DATA[120] == 0) {
+                    value = 1;
+                    break;
+                } else {
+                    value = 2;
+                    break;
+                }
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                if (DataCanbus.DATA[121] == 0) {
                     value = 3;
                     break;
                 } else {

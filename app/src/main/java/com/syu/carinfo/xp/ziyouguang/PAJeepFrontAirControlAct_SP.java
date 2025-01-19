@@ -12,11 +12,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepFrontAirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 10:
@@ -81,14 +80,14 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         DataCanbus.PROXY.cmd(6, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_0374_pa_wrangler_air_control_9853);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_0374_pa_wrangler_air_control_9853);
         } else {
-            setContentView(R.layout.layout_0374_pa_wrangler_air_control_9853);
+            //setContentView(R.layout.layout_0374_pa_wrangler_air_control_9853);
         }
         init();
     }
@@ -121,7 +120,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         findViewById(R.id.air_xts_seatwin_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -129,7 +128,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -137,7 +136,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -209,14 +208,14 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data0 = 23;
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 data0 = 9;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 11;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 14;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 11;
                 break;
         }
         if (!flag && event.getAction() == 0) {
@@ -270,7 +269,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight() {
         int value = DataCanbus.DATA[32];
         switch (value) {
@@ -289,7 +288,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft() {
         int value = DataCanbus.DATA[31];
         switch (value) {
@@ -308,7 +307,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[30];
         switch (value) {
@@ -327,7 +326,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[29];
         switch (value) {
@@ -346,13 +345,13 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int power = DataCanbus.DATA[53];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(power == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[27];
@@ -386,7 +385,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[28];
@@ -420,31 +419,31 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
         int acOn = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
@@ -454,19 +453,19 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
         if (leave < 0) {
@@ -479,7 +478,7 @@ public class PAJeepFrontAirControlAct_SP extends Activity implements View.OnTouc
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[18];
         int foot = DataCanbus.DATA[20];

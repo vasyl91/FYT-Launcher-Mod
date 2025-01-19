@@ -6,12 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
-import com.syu.module.canbus.Callback_0077_XP1_ACCORD9_H;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIWCMzdWarn {
     private static UIWCMzdWarn mInstance;
     Context context;
@@ -30,9 +29,9 @@ public class UIWCMzdWarn {
         WarnUtils.getWindow();
         initTip(value, updateCode);
         if (this.sWarnContent != null) {
-            if (DataCanbus.DATA[102] != 0 || DataCanbus.DATA[103] != 0 || DataCanbus.DATA[104] != 0 || DataCanbus.DATA[105] != 0) {
+            if (DataCanbus.DATA[170] != 0 || DataCanbus.DATA[171] != 0 || DataCanbus.DATA[172] != 0 || DataCanbus.DATA[173] != 0) {
                 WarnUtils.showWindow();
-                WarnUtils.postDimiss(Callback_0077_XP1_ACCORD9_H.Band_Am);
+                WarnUtils.postDimiss(10000);
             } else {
                 WarnUtils.getWindow().dismiss();
             }
@@ -42,27 +41,27 @@ public class UIWCMzdWarn {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0439_mazd_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0439_mazd_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (updateCode) {
-            case 102:
+            case 170:
                 if (value == 1) {
                     this.mTextWarn.setText("The scheduled service mileage has arrived. Please go to service your car");
                     break;
                 }
-            case 103:
+            case 171:
                 if (value == 1) {
                     this.mTextWarn.setText("The scheduled service date has arrived. Please go and have your car serviced!");
                     break;
                 }
-            case 104:
+            case 172:
                 if (value == 1) {
                     this.mTextWarn.setText("The tire rotation mileage has reached, please go for tire rotation maintenance!");
                     break;
                 }
-            case 105:
+            case 173:
                 if (value == 1) {
                     this.mTextWarn.setText("The oil change mileage has reached, please go for oil change maintenance!");
                     break;

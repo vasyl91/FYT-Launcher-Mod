@@ -10,7 +10,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.ref.WeakReference;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class fragment_ford_seatset extends BaseFragment implements View.OnClickListener {
     private int cmd;
     int l0;
@@ -28,10 +27,10 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
     int r5;
     int r6;
     private int val;
-    int[] callids = {66, 67};
+    int[] callids = {131, 132};
     boolean isPress = false;
-    private View.OnTouchListener mTouch = new View.OnTouchListener() { // from class: com.syu.carinfo.bnr.ford.fragment_ford_seatset.1
-        @Override // android.view.View.OnTouchListener
+    private View.OnTouchListener mTouch = new View.OnTouchListener() { 
+        @Override
         @SuppressLint({"ClickableViewAccessibility"})
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
@@ -59,15 +58,15 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
         }
     };
     int[] warnSoundCtrl = {R.string.klc_onstar_close, R.string.xp_ylford_set_voice_mode1, R.string.xp_ylford_set_voice_mode2, R.string.xp_ylford_set_voice_mode3, R.string.klc_air_auto};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bnr.ford.fragment_ford_seatset.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             fragment_ford_seatset.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 66:
+                case 131:
                     fragment_ford_seatset.this.uLeft(fragment_ford_seatset.this.val);
                     break;
-                case 67:
+                case 132:
                     fragment_ford_seatset.this.uRight(fragment_ford_seatset.this.val);
                     break;
             }
@@ -75,7 +74,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
     };
     String[] strs = {"OFF", "LO", "HI"};
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         View btnL0M = this.mView.findViewById(R.id.str_403_leftseat_0_m);
         View btnL0P = this.mView.findViewById(R.id.str_403_leftseat_0_p);
@@ -141,35 +140,35 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0403_bnr_ford_seatset;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         for (int i : this.callids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.callids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCMD(int cmd, int val) {
         DataCanbus.PROXY.cmd(1, new int[]{cmd, val}, null, null);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         v.getId();
     }
@@ -182,62 +181,62 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
             this.mReference = new WeakReference<>(v);
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             View view = this.mReference.get();
             this.type = 0;
             switch (view.getId()) {
-                case R.id.str_403_leftseat_0_m /* 2131428050 */:
+                case R.id.str_403_leftseat_0_m /* 2131428051 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l0;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 178;
                     break;
-                case R.id.str_403_leftseat_0_p /* 2131428052 */:
+                case R.id.str_403_leftseat_0_p /* 2131428053 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l0;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 178;
                     break;
-                case R.id.str_403_leftseat_1_m /* 2131428053 */:
+                case R.id.str_403_leftseat_1_m /* 2131428054 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l1;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 179;
                     break;
-                case R.id.str_403_leftseat_1_p /* 2131428055 */:
+                case R.id.str_403_leftseat_1_p /* 2131428056 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l1;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 179;
                     break;
-                case R.id.str_403_leftseat_2_m /* 2131428056 */:
+                case R.id.str_403_leftseat_2_m /* 2131428057 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l2;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 180;
                     break;
-                case R.id.str_403_leftseat_2_p /* 2131428058 */:
+                case R.id.str_403_leftseat_2_p /* 2131428059 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l2;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 180;
                     break;
-                case R.id.str_403_leftseat_3_m /* 2131428059 */:
+                case R.id.str_403_leftseat_3_m /* 2131428060 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l3;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 181;
                     break;
-                case R.id.str_403_leftseat_3_p /* 2131428061 */:
+                case R.id.str_403_leftseat_3_p /* 2131428062 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l3;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 181;
                     break;
-                case R.id.str_403_leftseat_4_m /* 2131428062 */:
+                case R.id.str_403_leftseat_4_m /* 2131428063 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l4;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 182;
                     break;
-                case R.id.str_403_leftseat_4_p /* 2131428064 */:
+                case R.id.str_403_leftseat_4_p /* 2131428065 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l4;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 182;
                     break;
-                case R.id.str_403_leftseat_5_m /* 2131428065 */:
+                case R.id.str_403_leftseat_5_m /* 2131428066 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l5;
                     fragment_ford_seatset fragment_ford_seatsetVar = fragment_ford_seatset.this;
                     fragment_ford_seatsetVar.val--;
@@ -246,7 +245,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 188;
                     break;
-                case R.id.str_403_leftseat_5_p /* 2131428067 */:
+                case R.id.str_403_leftseat_5_p /* 2131428068 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l5;
                     fragment_ford_seatset.this.val++;
                     if (fragment_ford_seatset.this.val > 2) {
@@ -254,7 +253,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 188;
                     break;
-                case R.id.str_403_leftseat_6_m /* 2131428068 */:
+                case R.id.str_403_leftseat_6_m /* 2131428069 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l6;
                     fragment_ford_seatset fragment_ford_seatsetVar2 = fragment_ford_seatset.this;
                     fragment_ford_seatsetVar2.val--;
@@ -263,7 +262,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 189;
                     break;
-                case R.id.str_403_leftseat_6_p /* 2131428070 */:
+                case R.id.str_403_leftseat_6_p /* 2131428071 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.l6;
                     fragment_ford_seatset.this.val++;
                     if (fragment_ford_seatset.this.val > 2) {
@@ -271,57 +270,57 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 189;
                     break;
-                case R.id.str_403_rightseat_0_m /* 2131428071 */:
+                case R.id.str_403_rightseat_0_m /* 2131428072 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r0;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 183;
                     break;
-                case R.id.str_403_rightseat_0_p /* 2131428073 */:
+                case R.id.str_403_rightseat_0_p /* 2131428074 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r0;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 183;
                     break;
-                case R.id.str_403_rightseat_1_m /* 2131428074 */:
+                case R.id.str_403_rightseat_1_m /* 2131428075 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r1;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 184;
                     break;
-                case R.id.str_403_rightseat_1_p /* 2131428076 */:
+                case R.id.str_403_rightseat_1_p /* 2131428077 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r1;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 184;
                     break;
-                case R.id.str_403_rightseat_2_m /* 2131428077 */:
+                case R.id.str_403_rightseat_2_m /* 2131428078 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r2;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 185;
                     break;
-                case R.id.str_403_rightseat_2_p /* 2131428079 */:
+                case R.id.str_403_rightseat_2_p /* 2131428080 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r2;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 185;
                     break;
-                case R.id.str_403_rightseat_3_m /* 2131428080 */:
+                case R.id.str_403_rightseat_3_m /* 2131428081 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r3;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 186;
                     break;
-                case R.id.str_403_rightseat_3_p /* 2131428082 */:
+                case R.id.str_403_rightseat_3_p /* 2131428083 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r3;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 186;
                     break;
-                case R.id.str_403_rightseat_4_m /* 2131428083 */:
+                case R.id.str_403_rightseat_4_m /* 2131428084 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r4;
                     this.type = 10;
                     fragment_ford_seatset.this.cmd = 187;
                     break;
-                case R.id.str_403_rightseat_4_p /* 2131428085 */:
+                case R.id.str_403_rightseat_4_p /* 2131428086 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r4;
                     this.type = 11;
                     fragment_ford_seatset.this.cmd = 187;
                     break;
-                case R.id.str_403_rightseat_5_m /* 2131428086 */:
+                case R.id.str_403_rightseat_5_m /* 2131428087 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r5;
                     fragment_ford_seatset fragment_ford_seatsetVar3 = fragment_ford_seatset.this;
                     fragment_ford_seatsetVar3.val--;
@@ -330,7 +329,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 190;
                     break;
-                case R.id.str_403_rightseat_5_p /* 2131428088 */:
+                case R.id.str_403_rightseat_5_p /* 2131428089 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r5;
                     fragment_ford_seatset.this.val++;
                     if (fragment_ford_seatset.this.val > 2) {
@@ -338,7 +337,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 190;
                     break;
-                case R.id.str_403_rightseat_6_m /* 2131428089 */:
+                case R.id.str_403_rightseat_6_m /* 2131428090 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r6;
                     fragment_ford_seatset fragment_ford_seatsetVar4 = fragment_ford_seatset.this;
                     fragment_ford_seatsetVar4.val--;
@@ -347,7 +346,7 @@ public class fragment_ford_seatset extends BaseFragment implements View.OnClickL
                     }
                     fragment_ford_seatset.this.cmd = 191;
                     break;
-                case R.id.str_403_rightseat_6_p /* 2131428091 */:
+                case R.id.str_403_rightseat_6_p /* 2131428092 */:
                     fragment_ford_seatset.this.val = fragment_ford_seatset.this.r6;
                     fragment_ford_seatset.this.val++;
                     if (fragment_ford_seatset.this.val > 2) {

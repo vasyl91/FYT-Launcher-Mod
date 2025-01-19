@@ -11,22 +11,21 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcDx7Settings extends BaseActivity implements View.OnClickListener {
-    private IUiNotify notifyUI = new IUiNotify() { // from class: com.syu.carinfo.xfy.dx7.RzcDx7Settings.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyUI = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 28:
+                case 106:
                     RzcDx7Settings.this.UpdateUI(updateCode, (CheckedTextView) RzcDx7Settings.this.findViewById(R.id.rzc_dx7_assest_camera_check));
                     break;
-                case 29:
+                case 107:
                     RzcDx7Settings.this.UpdateUI(updateCode, (CheckedTextView) RzcDx7Settings.this.findViewById(R.id.rzc_dx7_assest_light_check));
                     break;
-                case 30:
+                case 108:
                     RzcDx7Settings.this.UpdateUI(updateCode, (CheckedTextView) RzcDx7Settings.this.findViewById(R.id.rzc_dx7_blind_warn_check));
                     break;
-                case 31:
+                case 109:
                     int value = DataCanbus.DATA[updateCode];
                     if (value == 0) {
                         ((TextView) RzcDx7Settings.this.findViewById(R.id.rzc_dx7_tv_show)).setText(R.string.str_pack_backcart);
@@ -35,17 +34,17 @@ public class RzcDx7Settings extends BaseActivity implements View.OnClickListener
                         ((TextView) RzcDx7Settings.this.findViewById(R.id.rzc_dx7_tv_show)).setText(R.string.str_boyue_str15);
                         break;
                     }
-                case 34:
+                case 112:
                     RzcDx7Settings.this.UpdateUI(updateCode, (CheckedTextView) RzcDx7Settings.this.findViewById(R.id.ctv_checkedtext1));
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_setting_trip_info);
+        //setContentView(R.layout.layout_rzc_setting_trip_info);
         initClick();
     }
 
@@ -64,24 +63,24 @@ public class RzcDx7Settings extends BaseActivity implements View.OnClickListener
         setOnClick((Button) findViewById(R.id.rzc_dx7_btn_show_right));
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                sendCommand(5, 34);
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                sendCommand(5, 112);
                 break;
-            case R.id.rzc_dx7_assest_camera_check /* 2131432827 */:
-                sendCommand(1, 28);
+            case R.id.rzc_dx7_assest_camera_check /* 2131432753 */:
+                sendCommand(1, 106);
                 break;
-            case R.id.rzc_dx7_assest_light_check /* 2131432829 */:
-                sendCommand(2, 29);
+            case R.id.rzc_dx7_assest_light_check /* 2131432755 */:
+                sendCommand(2, 107);
                 break;
-            case R.id.rzc_dx7_blind_warn_check /* 2131432831 */:
-                sendCommand(3, 30);
+            case R.id.rzc_dx7_blind_warn_check /* 2131432757 */:
+                sendCommand(3, 108);
                 break;
-            case R.id.rzc_dx7_btn_show_left /* 2131432832 */:
-            case R.id.rzc_dx7_btn_show_right /* 2131432834 */:
-                sendCommand(4, 31);
+            case R.id.rzc_dx7_btn_show_left /* 2131432758 */:
+            case R.id.rzc_dx7_btn_show_right /* 2131432760 */:
+                sendCommand(4, 109);
                 break;
         }
     }
@@ -94,25 +93,25 @@ public class RzcDx7Settings extends BaseActivity implements View.OnClickListener
         remoteModuleProxy.cmd(function, iArr, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.notifyUI, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.notifyUI, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.notifyUI, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.notifyUI, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.notifyUI, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyUI, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyUI, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyUI, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyUI, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyUI, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.notifyUI);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.notifyUI);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.notifyUI);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyUI);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.notifyUI);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyUI);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyUI);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyUI);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyUI);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyUI);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateUI(int function, CheckedTextView view) {
         int value = DataCanbus.DATA[function];
         if (view != null) {

@@ -9,51 +9,50 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FordTireAct extends BaseActivity {
     int unit = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ford.FordTireAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 78:
+                case 146:
                     FordTireAct.this.mUpdaterTireFL();
                     break;
-                case 79:
+                case 147:
                     FordTireAct.this.mUpdaterTireFR();
                     break;
-                case 80:
+                case 148:
                     FordTireAct.this.mUpdaterTireRL();
                     break;
-                case 81:
+                case 149:
                     FordTireAct.this.mUpdaterTireRR();
                     break;
-                case 82:
+                case 150:
                     FordTireAct.this.updaterFLWalm();
                     break;
-                case 83:
+                case 151:
                     FordTireAct.this.updaterFRWalm();
                     break;
-                case 84:
+                case 152:
                     FordTireAct.this.updaterRLWalm();
                     break;
-                case 85:
+                case 153:
                     FordTireAct.this.updaterRRWalm();
                     break;
-                case 86:
+                case 154:
                     FordTireAct.this.mUpdaterTempFL();
                     break;
-                case 87:
+                case 155:
                     FordTireAct.this.mUpdaterTempFR();
                     break;
-                case 88:
+                case 156:
                     FordTireAct.this.mUpdaterTempRL();
                     break;
-                case 89:
+                case 157:
                     FordTireAct.this.mUpdaterTempRR();
                     break;
-                case 180:
-                    FordTireAct.this.unit = DataCanbus.DATA[180];
+                case 247:
+                    FordTireAct.this.unit = DataCanbus.DATA[247];
                     FordTireAct.this.mUpdaterTireFL();
                     FordTireAct.this.mUpdaterTireFR();
                     FordTireAct.this.mUpdaterTireRL();
@@ -63,64 +62,64 @@ public class FordTireAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(0, new int[1], null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[247].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[247].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTempFL() {
-        int value = DataCanbus.DATA[86];
+        int value = DataCanbus.DATA[154];
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB /* 1376590 */:
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB_H /* 1442126 */:
@@ -143,9 +142,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTempFR() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[155];
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB /* 1376590 */:
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB_H /* 1442126 */:
@@ -168,9 +167,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTempRL() {
-        int value = DataCanbus.DATA[88];
+        int value = DataCanbus.DATA[156];
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB /* 1376590 */:
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB_H /* 1442126 */:
@@ -193,9 +192,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTempRR() {
-        int value = DataCanbus.DATA[89];
+        int value = DataCanbus.DATA[157];
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB /* 1376590 */:
             case FinalCanbus.CAR_RZC_Ford_18Everest_FLB_H /* 1442126 */:
@@ -218,9 +217,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[78];
+        int value = DataCanbus.DATA[146];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
             return;
@@ -238,9 +237,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[79];
+        int value = DataCanbus.DATA[147];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
             return;
@@ -258,9 +257,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[80];
+        int value = DataCanbus.DATA[148];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
             return;
@@ -278,9 +277,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[81];
+        int value = DataCanbus.DATA[149];
         if (value == 65535) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
             return;
@@ -298,9 +297,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm() {
-        int value = DataCanbus.DATA[82];
+        int value = DataCanbus.DATA[150];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.oudi_changan_tire1)).setTextColor(-1);
@@ -345,9 +344,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRWalm() {
-        int value = DataCanbus.DATA[83];
+        int value = DataCanbus.DATA[151];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.oudi_changan_tire2)).setTextColor(-1);
@@ -392,9 +391,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLWalm() {
-        int value = DataCanbus.DATA[84];
+        int value = DataCanbus.DATA[152];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.oudi_changan_tire3)).setTextColor(-1);
@@ -439,9 +438,9 @@ public class FordTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRWalm() {
-        int value = DataCanbus.DATA[85];
+        int value = DataCanbus.DATA[153];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.oudi_changan_tire4)).setTextColor(-1);

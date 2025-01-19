@@ -2,12 +2,12 @@ package com.fyt.skin.util;
 
 import android.content.Context;
 import android.util.Log;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FileUtil {
     public static void copyFileFromAssets(Context context, String assetsFilePath, String targetFileFullPath) {
         Log.d("Tag", "copyFileFromAssets ");

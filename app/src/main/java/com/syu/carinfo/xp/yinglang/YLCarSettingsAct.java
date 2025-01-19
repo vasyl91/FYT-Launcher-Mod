@@ -8,16 +8,15 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLCarSettingsAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_car_set);
+        //setContentView(R.layout.layout_xp_yl_car_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.xp_yl_car_set_first_check).setOnClickListener(this);
         findViewById(R.id.xp_yl_car_set_Second_check).setOnClickListener(this);
@@ -25,7 +24,7 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
         findViewById(R.id.xp_yl_car_set_tire_check).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 393241 || DataCanbus.DATA[1000] == 309 || DataCanbus.DATA[1000] == 2359321) {
@@ -43,11 +42,11 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.xp_yl_car_set_basic_info_check /* 2131431925 */:
+            case R.id.xp_yl_car_set_basic_info_check /* 2131431875 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) YLBasicInfoAct.class);
                     if (DataCanbus.DATA[1000] == 524551 || DataCanbus.DATA[1000] == 590087) {
@@ -59,7 +58,7 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
                     e.printStackTrace();
                     return;
                 }
-            case R.id.xp_yl_car_set_first_check /* 2131433491 */:
+            case R.id.xp_yl_car_set_first_check /* 2131433405 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) YLInfoSetFirstAct.class);
                     startActivity(intent2);
@@ -68,7 +67,7 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.xp_yl_car_set_Second_check /* 2131433492 */:
+            case R.id.xp_yl_car_set_Second_check /* 2131433406 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) YLInfoSetSecondAct.class);
                     startActivity(intent3);
@@ -77,7 +76,7 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.xp_yl_car_set_tire_check /* 2131433494 */:
+            case R.id.xp_yl_car_set_tire_check /* 2131433408 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) YLTireAct.class);
                     startActivity(intent4);
@@ -89,7 +88,7 @@ public class YLCarSettingsAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

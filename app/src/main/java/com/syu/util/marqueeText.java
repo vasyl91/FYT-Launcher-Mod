@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class marqueeText extends TextView {
     public marqueeText(Context context) {
         super(context);
@@ -18,7 +17,7 @@ public class marqueeText extends TextView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean isFocused() {
         return true;
     }

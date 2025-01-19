@@ -9,21 +9,20 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalCarDigitalcockpit extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarDigitalcockpit.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
-                    int data = DataCanbus.DATA[361] - 1;
+                case R.id.btn_minus1 /* 2131427455 */:
+                    int data = DataCanbus.DATA[353] - 1;
                     if (data < 2) {
                         data = 5;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{233, data}, null, null);
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
-                    int data2 = DataCanbus.DATA[361] + 1;
+                case R.id.btn_plus1 /* 2131427457 */:
+                    int data2 = DataCanbus.DATA[353] + 1;
                     if (data2 > 5) {
                         data2 = 2;
                     } else if (data2 < 2) {
@@ -31,29 +30,29 @@ public class Golf7FunctionalCarDigitalcockpit extends BaseActivity {
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{233, data2}, null, null);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
-                    int data3 = DataCanbus.DATA[362] - 1;
+                case R.id.btn_minus2 /* 2131427458 */:
+                    int data3 = DataCanbus.DATA[354] - 1;
                     if (data3 < 0) {
                         data3 = 8;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{234, data3}, null, null);
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
-                    int data4 = DataCanbus.DATA[362] + 1;
+                case R.id.btn_plus2 /* 2131427460 */:
+                    int data4 = DataCanbus.DATA[354] + 1;
                     if (data4 > 8) {
                         data4 = 0;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{234, data4}, null, null);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
-                    int data5 = DataCanbus.DATA[363] - 1;
+                case R.id.btn_minus3 /* 2131427461 */:
+                    int data5 = DataCanbus.DATA[355] - 1;
                     if (data5 < 0) {
                         data5 = 8;
                     }
                     DataCanbus.PROXY.cmd(160, new int[]{235, data5}, null, null);
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
-                    int data6 = DataCanbus.DATA[363] + 1;
+                case R.id.btn_plus3 /* 2131427463 */:
+                    int data6 = DataCanbus.DATA[355] + 1;
                     if (data6 > 8) {
                         data6 = 0;
                     }
@@ -62,32 +61,32 @@ public class Golf7FunctionalCarDigitalcockpit extends BaseActivity {
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarDigitalcockpit.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 361:
+                case 353:
                     Golf7FunctionalCarDigitalcockpit.this.uTangeSet1(val);
                     break;
-                case 362:
+                case 354:
                     Golf7FunctionalCarDigitalcockpit.this.uTangeSet2(val);
                     break;
-                case 363:
+                case 355:
                     Golf7FunctionalCarDigitalcockpit.this.uTangeSet3(val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_digitalcockpit_set);
+        //setContentView(R.layout.layout_golf7_functional_digitalcockpit_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setonClick((Button) findViewById(R.id.btn_minus1));
         setonClick((Button) findViewById(R.id.btn_plus1));
@@ -103,35 +102,35 @@ public class Golf7FunctionalCarDigitalcockpit extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[361].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[362].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[363].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[353].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[354].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[355].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[361].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[362].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[363].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[353].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[354].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[355].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uTangeSet3(int val) {

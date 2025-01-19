@@ -49,12 +49,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         return null;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int count = getChildCount();
         int widthSpecSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -125,7 +125,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
@@ -145,12 +145,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean shouldDelayChildPressedState() {
         return false;
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public void requestChildFocus(View child, View focused) {
         super.requestChildFocus(child, focused);
         if (child != null) {
@@ -160,7 +160,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         int count = getChildCount();
@@ -170,7 +170,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawingCacheEnabled(boolean enabled) {
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
@@ -182,7 +182,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawnWithCacheEnabled(boolean enabled) {
         super.setChildrenDrawnWithCacheEnabled(enabled);
     }

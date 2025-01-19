@@ -6,56 +6,56 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchListener {
     public static Dj_0439_HavalH8CarCDAct mInstance;
     public static boolean mIsFront = false;
     int cmdId = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.havalh8.Dj_0439_HavalH8CarCDAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 74:
+                case 134:
                     Dj_0439_HavalH8CarCDAct.this.mUpdaterCdTrack();
                     break;
-                case 75:
-                case 76:
+                case 135:
+                case 136:
                     Dj_0439_HavalH8CarCDAct.this.mUpdaterCdRepeatState();
                     break;
-                case 77:
+                case 137:
                     Dj_0439_HavalH8CarCDAct.this.mUpdaterCdState(value);
                     break;
-                case 78:
-                case 79:
+                case 138:
+                case 139:
                     Dj_0439_HavalH8CarCDAct.this.mUpdaterCdTime();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_dj_havalh8_carcd);
+        //setContentView(R.layout.layout_0439_dj_havalh8_carcd);
         mInstance = this;
         init();
     }
 
     private void init() {
-        ((Button) findViewById(R.id.cd_prev)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.cd_next)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.cd_play)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.cd_pause)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.cd_rpt_random)).setOnTouchListener(this);
+        findViewById(R.id.cd_prev).setOnTouchListener(this);
+        findViewById(R.id.cd_next).setOnTouchListener(this);
+        findViewById(R.id.cd_play).setOnTouchListener(this);
+        findViewById(R.id.cd_pause).setOnTouchListener(this);
+        findViewById(R.id.cd_rpt_random).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -65,7 +65,7 @@ public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchLis
         setCdControl(7, 0, 0);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -81,28 +81,28 @@ public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchLis
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int type = 0;
         switch (id) {
-            case R.id.cd_prev /* 2131427915 */:
+            case R.id.cd_prev /* 2131427918 */:
                 this.cmdId = 9;
                 break;
-            case R.id.cd_play /* 2131427917 */:
+            case R.id.cd_play /* 2131427920 */:
                 type = 1;
                 this.cmdId = 17;
                 break;
-            case R.id.cd_pause /* 2131427918 */:
+            case R.id.cd_pause /* 2131427921 */:
                 type = 1;
                 this.cmdId = 16;
                 break;
-            case R.id.cd_next /* 2131427920 */:
+            case R.id.cd_next /* 2131427923 */:
                 this.cmdId = 8;
                 break;
-            case R.id.cd_rpt_random /* 2131428201 */:
-                int value = DataCanbus.DATA[75];
-                int value1 = DataCanbus.DATA[76];
+            case R.id.cd_rpt_random /* 2131428193 */:
+                int value = DataCanbus.DATA[135];
+                int value1 = DataCanbus.DATA[136];
                 if (value == 0 && value1 == 0) {
                     this.cmdId = 1;
                 } else if (value == 1 && value1 == 0) {
@@ -127,26 +127,26 @@ public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchLis
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdState(int value) {
         switch (value) {
             case 0:
@@ -158,32 +158,32 @@ public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdRepeatState() {
-        int value = DataCanbus.DATA[75];
-        int value1 = DataCanbus.DATA[76];
+        int value = DataCanbus.DATA[135];
+        int value1 = DataCanbus.DATA[136];
         if (value == 0 && value1 == 0) {
             ((TextView) findViewById(R.id.huiteng_cd_repeat)).setText(R.string.xp_380_playmode1);
-            ((Button) findViewById(R.id.cd_rpt_random)).setBackgroundResource(R.drawable.ic_cd_repeat_n);
+            findViewById(R.id.cd_rpt_random).setBackgroundResource(R.drawable.ic_cd_repeat_n);
         } else if (value == 1 && value1 == 0) {
             ((TextView) findViewById(R.id.huiteng_cd_repeat)).setText(R.string.xp_380_playmode2);
-            ((Button) findViewById(R.id.cd_rpt_random)).setBackgroundResource(R.drawable.ic_cd_repeat_p);
+            findViewById(R.id.cd_rpt_random).setBackgroundResource(R.drawable.ic_cd_repeat_p);
         } else if (value == 0 && value1 == 1) {
             ((TextView) findViewById(R.id.huiteng_cd_repeat)).setText(R.string.xp_380_playmode4);
-            ((Button) findViewById(R.id.cd_rpt_random)).setBackgroundResource(R.drawable.ic_cd_random2_p);
+            findViewById(R.id.cd_rpt_random).setBackgroundResource(R.drawable.ic_cd_random2_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTrack() {
-        int value = DataCanbus.DATA[74];
+        int value = DataCanbus.DATA[134];
         ((TextView) findViewById(R.id.huiteng_cd_track)).setText("Track: " + value);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTime() {
-        int value1 = DataCanbus.DATA[78];
-        int value2 = DataCanbus.DATA[79];
+        int value1 = DataCanbus.DATA[138];
+        int value2 = DataCanbus.DATA[139];
         ((TextView) findViewById(R.id.huiteng_cd_time)).setText(String.valueOf(value1 / 16) + (value1 % 16) + ":" + (value2 / 16) + (value2 % 16));
     }
 }

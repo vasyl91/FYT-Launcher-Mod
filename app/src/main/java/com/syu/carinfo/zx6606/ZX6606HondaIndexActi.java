@@ -6,16 +6,18 @@ import android.view.View;
 import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.honda.CZHHondaNewCarinfoAct;
 import com.syu.carinfo.honda.HondaIndexActi;
+import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZX6606HondaIndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_zx6606_honda_index);
-        ((Button) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.zx6606.ZX6606HondaIndexActi.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_zx6606_honda_index);
+        ((Button) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -26,12 +28,22 @@ public class ZX6606HondaIndexActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.zx6606.ZX6606HondaIndexActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
-                    intent.setClass(ZX6606HondaIndexActi.this, ZX6606HondaNewCarinfoAct.class);
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_CZH_RZC_HONDA_Civic /* 5636394 */:
+                        case FinalCanbus.CAR_CZH_RZC_HONDA_10Yage /* 5701930 */:
+                        case FinalCanbus.CAR_CZH_RZC_HONDA_Haoying /* 5767466 */:
+                        case FinalCanbus.CAR_CZH_RZC_HONDA_CRV /* 5833002 */:
+                            intent.setClass(ZX6606HondaIndexActi.this, CZHHondaNewCarinfoAct.class);
+                            break;
+                        default:
+                            intent.setClass(ZX6606HondaIndexActi.this, ZX6606HondaNewCarinfoAct.class);
+                            break;
+                    }
                     ZX6606HondaIndexActi.this.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -40,7 +52,7 @@ public class ZX6606HondaIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

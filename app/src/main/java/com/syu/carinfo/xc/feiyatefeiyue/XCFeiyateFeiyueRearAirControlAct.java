@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 23:
@@ -45,10 +44,10 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         DataCanbus.PROXY.cmd(3, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_xc_feiyate_feiyue_air_rear_control);
+        //setContentView(R.layout.layout_0439_xc_feiyate_feiyue_air_rear_control);
         init();
     }
 
@@ -66,7 +65,7 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         findViewById(R.id.air_xts_rearlock).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -74,7 +73,7 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -82,7 +81,7 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -158,19 +157,19 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[25];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int power = DataCanbus.DATA[24];
         findViewById(R.id.air_xts_auto).setBackgroundResource(power == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[29];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -192,13 +191,13 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[23];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[26];
         if (leave < 0) {
@@ -211,7 +210,7 @@ public class XCFeiyateFeiyueRearAirControlAct extends Activity implements View.O
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[28];
         int body = DataCanbus.DATA[27];

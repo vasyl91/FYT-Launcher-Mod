@@ -28,7 +28,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -47,7 +46,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.settings.Helpers;
 import com.syu.log.LogPreview;
 import com.syu.util.JLog;
 import com.syu.util.WindowUtil;
@@ -91,6 +92,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     private static final String TAG = "JLog";
     static final float TOUCH_SLOP_DAMPING_FACTOR = 4.0f;
     private static final float WORKSPACE_OVERSCROLL_ROTATION = 24.0f;
+    public static final String OVERVIEW_MODE_OPEN = "overview.mode.open";
+    public static final String OVERVIEW_MODE_CLOSE = "overview.mode.close";
     private static boolean sAccessibilityEnabled;
     private boolean mAddToExistingFolderOnDrop;
     boolean mAnimatingViewIntoPlace;
@@ -288,7 +291,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         setImportantForAccessibility(1);
     }
 
-    @Override // com.android.launcher66.Insettable
+    @Override
     public void setInsets(Rect insets) {
         this.mInsets.set(insets);
     }
@@ -317,7 +320,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return r;
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         this.mIsDragOccuring = true;
         updateChildrenLayersEnabled(false);
@@ -333,7 +336,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         });
     }
 
-    @Override // com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragEnd() {
         this.mIsDragOccuring = false;
         updateChildrenLayersEnabled(false);
@@ -386,12 +389,12 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         setLayoutTransition(null);
     }
 
-    @Override // com.android.launcher66.SmoothPagedView
+    @Override
     protected int getScrollMode() {
         return 1;
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewAdded(View parent, View child) {
         if (!(child instanceof CellLayout)) {
             throw new IllegalArgumentException("A Workspace can only have CellLayout children.");
@@ -403,7 +406,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         super.onChildViewAdded(parent, child);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected boolean shouldDrawChild(View child) {
         CellLayout cl = (CellLayout) child;
         return super.shouldDrawChild(child) && (this.mIsSwitchingState || cl.getShortcutsAndWidgets().getAlpha() > 0.0f || cl.getBackgroundAlpha() > 0.0f);
@@ -465,6 +468,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public void createUserPage() {
+        Helpers.inAllApps = false;
+        Helpers.overviewMode = false;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean leftBar = prefs.getBoolean("left_bar", false);
@@ -863,7 +868,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return (isSmall() || !isFinishedSwitchingState())
                 || (!isSmall() && indexOfChild(v) != mCurrentPage);
@@ -877,12 +882,12 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return !this.mIsSwitchingState || this.mTransitionProgress > 0.5f;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onWindowVisibilityChanged(int visibility) {
         this.mLauncher.onWindowVisibilityChanged(visibility);
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     public boolean dispatchUnhandledMove(View focused, int direction) {
         if (isSmall() || !isFinishedSwitchingState()) {
             return false;
@@ -890,7 +895,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return super.dispatchUnhandledMove(focused, direction);
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         switch (ev.getAction() & 255) {
             case 0:
@@ -933,7 +938,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void determineScrollingStart(MotionEvent ev) {
         boolean swipeInIgnoreDirection;
         if (isFinishedSwitchingState()) {
@@ -964,7 +969,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         if (isHardwareAccelerated()) {
@@ -984,7 +989,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void onPageEndMoving() {
         super.onPageEndMoving();
         if (isHardwareAccelerated()) {
@@ -1013,7 +1018,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void notifyPageSwitchListener() {
         super.notifyPageSwitchListener();
         Launcher.setScreen(this.mCurrentPage);
@@ -1044,7 +1049,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     protected void setWallpaperDimension() {
         String spKey = WallpaperCropActivity.getSharedPreferencesKey();
         SharedPreferences sp = this.mLauncher.getSharedPreferences(spKey, 0);
-        WallpaperPickerActivity.suggestWallpaperDimension(this.mLauncher.getResources(), sp, this.mLauncher.getWindowManager(), this.mWallpaperManager);
+        WallpaperPickerActivity.suggestWallpaperDimension(this.mLauncher.getResources(), sp, this.mLauncher.getWindowManager(), this.mWallpaperManager, true);
     }
 
     protected void snapToPage(int whichPage, Runnable r) {
@@ -1076,7 +1081,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         public WallpaperOffsetInterpolator() {
         }
 
-        @Override // android.view.Choreographer.FrameCallback
+        @Override
         public void doFrame(long frameTimeNanos) {
             updateOffset(false);
         }
@@ -1195,7 +1200,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.SmoothPagedView, com.android.launcher66.PagedView, android.view.View
+    @Override
     public void computeScroll() {
         super.computeScroll();
         this.mWallpaperOffset.syncWithScroll();
@@ -1270,8 +1275,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             if (finalAlpha != startAlpha) {
                 if (animated) {
                     this.mBackgroundFadeOutAnimation = LauncherAnimUtils.ofFloat(this, startAlpha, finalAlpha);
-                    this.mBackgroundFadeOutAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.Workspace.3
-                        @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+                    this.mBackgroundFadeOutAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                        @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             Workspace.this.setBackgroundAlpha(((Float) animation.getAnimatedValue()).floatValue());
                         }
@@ -1387,21 +1392,21 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected View.OnClickListener getPageIndicatorClickListener() {
         AccessibilityManager am = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (!am.isTouchExplorationEnabled()) {
             return null;
         }
-        return new View.OnClickListener() { // from class: com.android.launcher66.Workspace.4
-            @Override // android.view.View.OnClickListener
+        return new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 Workspace.this.enterOverviewMode();
             }
         };
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void screenScrolled(int screenCenter) {
         boolean isRtl = isLayoutRtl();
         super.screenScrolled(screenCenter);
@@ -1436,12 +1441,12 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void overScroll(float amount) {
         acceleratedOverScroll(amount);
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         this.mWindowToken = getWindowToken();
@@ -1449,7 +1454,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         this.mDragController.setWindowToken(this.mWindowToken);
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.mWindowToken = null;
@@ -1464,7 +1469,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         sAccessibilityEnabled = am.isEnabled();
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         if (this.mFirstLayout && this.mCurrentPage >= 0 && this.mCurrentPage < getChildCount()) {
             this.mWallpaperOffset.syncWithScroll();
@@ -1473,7 +1478,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         if (this.mBackground != null && this.mBackgroundAlpha > 0.0f && this.mDrawBackground) {
             int alpha = (int) (this.mBackgroundAlpha * 255.0f);
@@ -1489,7 +1494,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return this.mBackground != null && this.mBackgroundAlpha > 0.0f && this.mDrawBackground;
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup
+    @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
         if (!this.mLauncher.isAllAppsVisible()) {
             Folder openFolder = getOpenFolder();
@@ -1501,7 +1506,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return false;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public int getDescendantFocusability() {
         if (isSmall()) {
             return 393216;
@@ -1509,7 +1514,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return super.getDescendantFocusability();
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
         if (!this.mLauncher.isAllAppsVisible()) {
             Folder openFolder = getOpenFolder();
@@ -1551,7 +1556,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateChildrenLayersEnabled(boolean force) {
         boolean enableChildrenLayers = true;
         boolean small = this.mState == State.SMALL || this.mState == State.OVERVIEW || this.mIsSwitchingState;
@@ -1623,7 +1628,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             this.focalLength = foc;
         }
 
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float input) {
             return (1.0f - (this.focalLength / (this.focalLength + input))) / (1.0f - (this.focalLength / (this.focalLength + 1.0f)));
         }
@@ -1636,7 +1641,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             this.zInterpolator = new ZInterpolator(foc);
         }
 
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float input) {
             return 1.0f - this.zInterpolator.getInterpolation(1.0f - input);
         }
@@ -1649,7 +1654,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         ZoomOutInterpolator() {
         }
 
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float input) {
             return this.decelerate.getInterpolation(this.zInterpolator.getInterpolation(input));
         }
@@ -1662,7 +1667,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         ZoomInInterpolator() {
         }
 
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float input) {
             return this.decelerate.getInterpolation(this.inverseZInterpolator.getInterpolation(input));
         }
@@ -1698,7 +1703,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return getChangeStateAnimation(state, animated, 0, -1);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void getOverviewModePages(int[] range) {
         int start = numCustomPages();
         int end = getChildCount() - 1;
@@ -1706,14 +1711,14 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         range[1] = Math.max(0, end);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void onStartReordering() {
         super.onStartReordering();
         showOutlines();
         disableLayoutTransitions();
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void onEndReordering() {
         super.onEndReordering();
         hideOutlines();
@@ -1732,6 +1737,18 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public boolean enterOverviewMode() {
+        Helpers.overviewMode = true;
+        Helpers.listOpen = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats)  { 
+            Helpers.foregroundAppOpened = false;
+            Helpers.inAllApps = false;
+            Helpers.isInRecent = false;
+            Intent intentOverviewMode = new Intent(OVERVIEW_MODE_OPEN);
+            LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
+        }
         if (this.mTouchState != 0) {
             return false;
         }
@@ -1744,6 +1761,18 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public void exitOverviewMode(boolean animated) {
+        Helpers.overviewMode = false;
+        Helpers.listOpen = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats)  {        
+            Helpers.foregroundAppOpened = false;
+            Helpers.inAllApps = false;
+            Helpers.isInRecent = false;
+            Intent intentOverviewMode = new Intent(OVERVIEW_MODE_CLOSE);
+            LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
+        }
         exitOverviewMode(-1, animated);
     }
 
@@ -1761,8 +1790,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         Animator workspaceAnim = getChangeStateAnimation(finalState, animated, 0, snapPage);
         if (workspaceAnim != null) {
             onTransitionPrepare();
-            workspaceAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Workspace.5
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            workspaceAnim.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator arg0) {
                     Workspace.this.onTransitionEnd();
                 }
@@ -1907,8 +1936,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                     if (this.mOldBackgroundAlphas[i2] != 0.0f || this.mNewBackgroundAlphas[i2] != 0.0f) {
                         ValueAnimator bgAnim = LauncherAnimUtils.ofFloat(cl2, 0.0f, 1.0f);
                         bgAnim.setInterpolator(this.mZoomInInterpolator);
-                        bgAnim.addUpdateListener(new LauncherAnimatorUpdateListener() { // from class: com.android.launcher66.Workspace.6
-                            @Override // com.android.launcher66.LauncherAnimatorUpdateListener
+                        bgAnim.addUpdateListener(new LauncherAnimatorUpdateListener() { 
+                            @Override
                             public void onAnimationUpdate(float a, float b) {
                                 cl2.setBackgroundAlpha((Workspace.this.mOldBackgroundAlphas[i2] * a) + (Workspace.this.mNewBackgroundAlphas[i2] * b));
                             }
@@ -2064,8 +2093,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                     if (this.mOldBackgroundAlphas[i2] != 0.0f || this.mNewBackgroundAlphas[i2] != 0.0f) {
                         ValueAnimator bgAnim = LauncherAnimUtils.ofFloat(cl2, 0.0f, 1.0f);
                         bgAnim.setInterpolator(this.mZoomInInterpolator);
-                        bgAnim.addUpdateListener(new LauncherAnimatorUpdateListener() { // from class: com.android.launcher66.Workspace.7
-                            @Override // com.android.launcher66.LauncherAnimatorUpdateListener
+                        bgAnim.addUpdateListener(new LauncherAnimatorUpdateListener() { 
+                            @Override
                             public void onAnimationUpdate(float a, float b) {
                                 cl2.setBackgroundAlpha((Workspace.this.mOldBackgroundAlphas[i2] * a) + (Workspace.this.mNewBackgroundAlphas[i2] * b));
                             }
@@ -2126,7 +2155,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             this.view = v;
         }
 
-        @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        @Override
         public void onAnimationUpdate(ValueAnimator arg0) {
             updateVisibility(this.view);
         }
@@ -2140,40 +2169,40 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             }
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationCancel(Animator arg0) {
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationEnd(Animator arg0) {
             updateVisibility(this.view);
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationRepeat(Animator arg0) {
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationStart(Animator arg0) {
             this.view.setVisibility(View.VISIBLE);
         }
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionPrepare(Launcher l, boolean animated, boolean toWorkspace) {
         onTransitionPrepare();
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStart(Launcher l, boolean animated, boolean toWorkspace) {
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStep(Launcher l, float t) {
         this.mTransitionProgress = t;
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionEnd(Launcher l, boolean animated, boolean toWorkspace) {
         onTransitionEnd();
     }
@@ -2206,7 +2235,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onTransitionEnd() {
         this.mIsSwitchingState = false;
         updateChildrenLayersEnabled(false);
@@ -2219,7 +2248,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         showCustomContentIfNecessary();
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public View getContent() {
         return this;
     }
@@ -2352,7 +2381,11 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         b.recycle();
     }
 
-    void addApplicationShortcut(ShortcutInfo info, CellLayout target, long container, long screenId, int cellX, int cellY, boolean insertAtFirst, int intersectX, int intersectY) {
+    void addApplicationShortcut(ShortcutInfo info, CellLayout target, long container, long screenId, int[] ints, boolean insertAtFirst) {
+        int cellX = ints[0]; 
+        int cellY = ints[1];
+        int intersectX = ints[2];  
+        int intersectY = ints[3]; 
         View view = this.mLauncher.createShortcut(R.layout.application, target, info);
         int[] cellXY = new int[2];
         target.findCellForSpanThatIntersects(cellXY, 1, 1, intersectX, intersectY);
@@ -2364,7 +2397,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return (!isSwitchingState() || this.mTransitionProgress > 0.5f) && this.mState != State.SMALL;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean acceptDrop(DropTarget.DragObject d) {
         int spanX;
         int spanY;
@@ -2525,7 +2558,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return true;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDrop(DropTarget.DragObject d) {
         final LauncherAppWidgetHostView hostView;
         AppWidgetProviderInfo pinfo;
@@ -2624,8 +2657,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             }
             CellLayout parent = (CellLayout) cell.getParent().getParent();
             final Runnable finalResizeRunnable = resizeRunnable;
-            Runnable onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.Workspace.10
-                @Override // java.lang.Runnable
+            Runnable onCompleteRunnable = new Runnable() { 
+                @Override
                 public void run() {
                     Workspace.this.mAnimatingViewIntoPlace = false;
                     Workspace.this.updateChildrenLayersEnabled(false);
@@ -2686,7 +2719,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         location[1] = vY - y;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragEnter(DropTarget.DragObject d) {
         this.mDragEnforcer.onDragEnter();
         this.mCreateUserFolderOnDrop = false;
@@ -2735,7 +2768,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return null;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragExit(DropTarget.DragObject d) {
         this.mDragEnforcer.onDragExit();
         if (this.mInScrollArea) {
@@ -2931,7 +2964,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return d.dragSource != this && isDragWidget(d);
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragOver(DropTarget.DragObject d) {
         if (!this.mInScrollArea && !this.mIsSwitchingState && this.mState != State.SMALL) {
             Rect r = new Rect();
@@ -3080,7 +3113,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             this.dragView = dragView;
         }
 
-        @Override // com.android.launcher66.OnAlarmListener
+        @Override
         public void onAlarm(Alarm alarm) {
             int[] resultSpan = new int[2];
             mTargetCell = findNearestArea((int) mDragViewVisualCenter[0],
@@ -3107,7 +3140,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getHitRectRelativeToDragLayer(Rect outRect) {
         this.mLauncher.getDragLayer().getDescendantRectRelativeToSelf(this, outRect);
     }
@@ -3128,8 +3161,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     private void onDropExternal(int[] touchXY, Object dragInfo, CellLayout cellLayout, boolean insertAtFirst, DropTarget.DragObject d) {
         View view;
         View finalView;
-        Runnable exitSpringLoadedRunnable = new Runnable() { // from class: com.android.launcher66.Workspace.11
-            @Override // java.lang.Runnable
+        Runnable exitSpringLoadedRunnable = new Runnable() { 
+            @Override
             public void run() {
                 Workspace.this.mLauncher.exitSpringLoadedDragModeDelayed(true, false, null);
             }
@@ -3368,7 +3401,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return getNextPage() - numCustomPages();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public int[] findNearestArea(int pixelX, int pixelY, int spanX, int spanY, CellLayout layout, int[] recycle) {
         return layout.findNearestArea(pixelX, pixelY, spanX, spanY, recycle);
     }
@@ -3380,11 +3413,11 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         setWallpaperDimension();
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onDropCompleted(final View target, final DropTarget.DragObject d, final boolean isFlingToDelete, final boolean success) {
         if (this.mDeferDropAfterUninstall) {
-            this.mDeferredAction = new Runnable() { // from class: com.android.launcher66.Workspace.14
-                @Override // java.lang.Runnable
+            this.mDeferredAction = new Runnable() { 
+                @Override
                 public void run() {
                     Workspace.this.onDropCompleted(target, d, isFlingToDelete, success);
                     Workspace.this.mDeferredAction = null;
@@ -3411,8 +3444,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         if ((d.cancelled || (beingCalledAfterUninstall && !this.mUninstallSuccessful)) && this.mDragInfo.cell != null) {
             this.mDragInfo.cell.setVisibility(android.view.View.VISIBLE);
         }
-        Runnable onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.Workspace.15
-            @Override // java.lang.Runnable
+        Runnable onCompleteRunnable = new Runnable() { 
+            @Override
             public void run() {
                 Workspace.this.mLauncher.exitSpringLoadedDragModeDelayed(true, true, null);
             }
@@ -3554,31 +3587,31 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public boolean supportsFlingToDelete() {
         return true;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onFlingToDelete(DropTarget.DragObject d, int x, int y, PointF vec) {
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onFlingToDeleteCompleted() {
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean isDropEnabled() {
         return true;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(state);
         Launcher.setScreen(this.mCurrentPage);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         this.mSavedStates = container;
     }
@@ -3602,7 +3635,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         this.mSavedStates = null;
     }
 
-    @Override // com.android.launcher66.PagedView, com.android.launcher66.DragScroller
+    @Override
     public void scrollLeft() {
         if (!isSmall() && !this.mIsSwitchingState) {
             super.scrollLeft();
@@ -3613,7 +3646,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView, com.android.launcher66.DragScroller
+    @Override
     public void scrollRight() {
         if (!isSmall() && !this.mIsSwitchingState) {
             super.scrollRight();
@@ -3624,7 +3657,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.DragScroller
+    @Override
     public boolean onEnterScrollArea(int x, int y, int direction) {
         boolean isPortrait = !LauncherAppState.isScreenLandscape(getContext());
         if (this.mLauncher.getHotseat() != null && isPortrait) {
@@ -3652,7 +3685,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return result;
     }
 
-    @Override // com.android.launcher66.DragScroller
+    @Override
     public boolean onExitScrollArea() {
         if (!this.mInScrollArea) {
             return false;
@@ -3771,8 +3804,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                 }
             }
         }
-        LauncherModel.ItemInfoFilter filter = new LauncherModel.ItemInfoFilter() { // from class: com.android.launcher66.Workspace.16
-            @Override // com.android.launcher66.LauncherModel.ItemInfoFilter
+        LauncherModel.ItemInfoFilter filter = new LauncherModel.ItemInfoFilter() { 
+            @Override
             public boolean filterItem(ItemInfo parent, ItemInfo info, ComponentName cn2) {
                 if (!packageNames.contains(cn2.getPackageName())) {
                     return false;
@@ -3812,15 +3845,15 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
             }
             final ArrayList<View> childrenToRemove = new ArrayList<>();
             final HashMap<FolderInfo, ArrayList<ShortcutInfo>> folderAppsToRemove = new HashMap<>();
-            LauncherModel.ItemInfoFilter filter = new LauncherModel.ItemInfoFilter() { // from class: com.android.launcher66.Workspace.17
-                @Override // com.android.launcher66.LauncherModel.ItemInfoFilter
+            LauncherModel.ItemInfoFilter filter = new LauncherModel.ItemInfoFilter() { 
+                @Override
                 public boolean filterItem(ItemInfo parent, ItemInfo info, ComponentName cn2) {
                     ArrayList<ShortcutInfo> appsToRemove;
                     if (parent instanceof FolderInfo) {
                         if (componentNames.contains(cn2)) {
                             FolderInfo folder = (FolderInfo) parent;
                             if (folderAppsToRemove.containsKey(folder)) {
-                                appsToRemove = (ArrayList) folderAppsToRemove.get(folder);
+                                appsToRemove = folderAppsToRemove.get(folder);
                             } else {
                                 appsToRemove = new ArrayList<>();
                                 folderAppsToRemove.put(folder, appsToRemove);
@@ -3938,7 +3971,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected PageIndicator.PageMarkerResources getPageIndicatorMarker(int pageIndex) {
         long screenId = getScreenIdForPageIndex(pageIndex);
         if (screenId == EXTRA_EMPTY_SCREEN_ID) {
@@ -3953,21 +3986,21 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
         return super.getPageIndicatorMarker(pageIndex);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     public void syncPages() {
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     public void syncPageItems(int page, boolean immediate) {
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected String getPageIndicatorDescription() {
         String settings = getResources().getString(R.string.settings_button_text);
         return getCurrentPageDescription() + ", " + settings;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected String getCurrentPageDescription() {
         int page = (mNextPage != INVALID_PAGE) ? mNextPage : mCurrentPage;
         int delta = numCustomPages();
@@ -3978,7 +4011,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                 page + 1 - delta, getChildCount() - delta);
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getLocationInDragLayer(int[] loc) {
         mLauncher.getDragLayer().getLocationInDragLayer(this, loc);
     }

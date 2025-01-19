@@ -7,12 +7,16 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.SparseArray;
+
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.remote.Callback;
+
 import java.util.Random;
+
 import org.apache.http.HttpStatus;
 
 public class RemoteTools implements ServiceConnection {
@@ -55,9 +59,9 @@ public class RemoteTools implements ServiceConnection {
         Intent intent = new Intent(this.action);
         intent.setPackage(this.pkgName);
         this.mContext.bindService(intent, this, 1);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() { // from class: com.syu.remote.RemoteTools.1
-            @Override // java.lang.Runnable
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 if (RemoteTools.this.autoConn && RemoteTools.this.mToolkit == null) {
                     RemoteTools.this.bind();
@@ -74,15 +78,15 @@ public class RemoteTools implements ServiceConnection {
         }
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         if (service != null) {
             this.mToolkit = IRemoteToolkit.Stub.asInterface(service);
             if (this.mToolkit != null && this.mModules.size() > 0) {
                 for (int i = 0; i < this.mModules.size(); i++) {
                     final int module = this.mModules.keyAt(i);
-                    this.mHandler.post(new Runnable() { // from class: com.syu.remote.RemoteTools.2
-                        @Override // java.lang.Runnable
+                    this.mHandler.post(new Runnable() { 
+                        @Override
                         public void run() {
                             Registrar registrar;
                             if (RemoteTools.this.mToolkit != null) {
@@ -102,15 +106,15 @@ public class RemoteTools implements ServiceConnection {
         }
     }
 
-    @Override // android.content.ServiceConnection
+    @Override
     public void onServiceDisconnected(ComponentName name) {
         if (this.autoConn) {
             this.mToolkit = null;
             bind();
         } else if (this.mToolkit != null) {
             if (this.mModules.size() > 0) {
-                this.mHandler.post(new Runnable() { // from class: com.syu.remote.RemoteTools.3
-                    @Override // java.lang.Runnable
+                this.mHandler.post(new Runnable() { 
+                    @Override
                     public void run() {
                         for (int i = 0; i < RemoteTools.this.mModules.size(); i++) {
                             int key = RemoteTools.this.mModules.keyAt(i);
@@ -133,8 +137,8 @@ public class RemoteTools implements ServiceConnection {
     public void notify(int module, final int... codes) {
         if (codes != null) {
             final Registrar registrar = this.mModules.get(module);
-            this.mHandler.post(new Runnable() { // from class: com.syu.remote.RemoteTools.4
-                @Override // java.lang.Runnable
+            this.mHandler.post(new Runnable() { 
+                @Override
                 public void run() {
                     if (registrar != null) {
                         for (int code : codes) {
@@ -147,8 +151,8 @@ public class RemoteTools implements ServiceConnection {
     }
 
     public void enableModule(int module, final int... codes) {
-        this.mModules.put(module, new Registrar() { // from class: com.syu.remote.RemoteTools.5
-            @Override // com.syu.remote.Registrar
+        this.mModules.put(module, new Registrar() { 
+            @Override
             public void registerCallback() {
                 if (codes != null) {
                     registerCode(codes);
@@ -235,7 +239,7 @@ public class RemoteTools implements ServiceConnection {
 
     public float[] getFlts(int module, int code, int params) {
         Registrar sModule = this.mModules.get(module);
-        return sModule != null ? sModule.getFlts(code, params, new int[0]) : new float[1];
+        return sModule != null ? sModule.getFlts(code, params) : new float[1];
     }
 
     public String[] getStrs(int module, int code, int params) {

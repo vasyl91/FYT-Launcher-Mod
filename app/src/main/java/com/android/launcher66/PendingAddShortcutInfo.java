@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo;
 import androidx.annotation.NonNull;
 
 /* compiled from: PendingAddItemInfo.java */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class PendingAddShortcutInfo extends PendingAddItemInfo {
     ActivityInfo shortcutActivityInfo;
 
@@ -14,7 +13,7 @@ class PendingAddShortcutInfo extends PendingAddItemInfo {
     }
 
     @NonNull
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "Shortcut: " + this.shortcutActivityInfo.packageName;
     }

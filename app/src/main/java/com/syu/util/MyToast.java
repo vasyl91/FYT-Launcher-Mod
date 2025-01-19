@@ -3,9 +3,9 @@ package com.syu.util;
 import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MyToast {
     public static final int LENGTH_LONG = 1;
     public static final int LENGTH_SHORT = 0;

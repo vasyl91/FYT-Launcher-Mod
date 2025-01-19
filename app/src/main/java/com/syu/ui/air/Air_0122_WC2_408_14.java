@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0122_WC2_408_14 extends AirBase {
     public Air_0122_WC2_408_14(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0122_wc2_408_14/air_wc2_408_14_n.webp";
         this.mPathHighlight = "0122_wc2_408_14/air_wc2_408_14_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         int temp;
         Canvas c = this.mContentCanvas;
@@ -91,7 +91,7 @@ public class Air_0122_WC2_408_14 extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 56.0f, 132.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 56.0f, 132.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 56.0f, 132.0f, this.mPaint);
         }
         if (DataCanbus.DATA[1000] == 122) {
             temp = this.DATA[75];
@@ -105,7 +105,7 @@ public class Air_0122_WC2_408_14 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 920.0f, 132.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 920.0f, 132.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 920.0f, 132.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

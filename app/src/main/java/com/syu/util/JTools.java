@@ -1,17 +1,16 @@
 package com.syu.util;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class JTools {
     public static boolean check(int[] vals, int len) {
-        return (vals == null || vals.length == 0 || vals.length < len) ? false : true;
+        return vals != null && vals.length != 0 && vals.length >= len;
     }
 
     public static boolean check(String[] vals, int len) {
-        return (vals == null || vals.length == 0 || vals.length < len) ? false : true;
+        return vals != null && vals.length != 0 && vals.length >= len;
     }
 
     public static boolean check(float[] vals, int len) {
-        return (vals == null || vals.length == 0 || vals.length < len) ? false : true;
+        return vals != null && vals.length != 0 && vals.length >= len;
     }
 
     public static boolean isNullOrEmpty(String str) {

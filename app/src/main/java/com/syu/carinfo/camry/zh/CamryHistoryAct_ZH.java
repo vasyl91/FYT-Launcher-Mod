@@ -5,22 +5,22 @@ import android.view.View;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryHistoryAct_ZH extends BaseActivity {
     public static CamryHistoryAct_ZH mInit;
     private TextView[] mTvHisOil = new TextView[4];
     private VerticalProgressbar_ZH[] mProgressbarHis = new VerticalProgressbar_ZH[5];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry.zh.CamryHistoryAct_ZH.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 93:
+                case 105:
                     CamryHistoryAct_ZH.this.mUpdaterCurTripOilExpend();
                     break;
-                case 94:
+                case 106:
                     if (ints == null) {
                         for (int i = 0; i < 5; i++) {
                         }
@@ -38,14 +38,14 @@ public class CamryHistoryAct_ZH extends BaseActivity {
     int avgtrip = 0;
     int besttrip = 0;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_history_zh);
+        //setContentView(R.layout.layout_camry_history_zh);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         mInit = this;
         this.mTvHisOil[0] = (TextView) findViewById(R.id.camry_tv_his_oil_0);
@@ -57,35 +57,35 @@ public class CamryHistoryAct_ZH extends BaseActivity {
         this.mProgressbarHis[2] = (VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_trip_2);
         this.mProgressbarHis[3] = (VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_trip_3);
         this.mProgressbarHis[4] = (VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_trip_4);
-        findViewById(R.id.camry_btn_update).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry.zh.CamryHistoryAct_ZH.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.camry_btn_update).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(8, null, null, null);
             }
         });
-        findViewById(R.id.camry_btn_delete).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry.zh.CamryHistoryAct_ZH.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.camry_btn_delete).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(9, null, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurTripOilExpend() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[105];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         int numMax = 30;
@@ -93,7 +93,7 @@ public class CamryHistoryAct_ZH extends BaseActivity {
             if (unit == 0) {
                 numMax = 60;
                 if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
-                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText("MPG");
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_MPG);
                 }
                 for (int i = 0; i < 4; i++) {
                     if (this.mTvHisOil != null) {
@@ -103,7 +103,7 @@ public class CamryHistoryAct_ZH extends BaseActivity {
             } else if (unit == 1) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
-                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText("km/L");
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                 }
                 for (int i2 = 0; i2 < 4; i2++) {
                     if (this.mTvHisOil[i2] != null) {
@@ -113,7 +113,7 @@ public class CamryHistoryAct_ZH extends BaseActivity {
             } else if (unit == 2) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
-                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText("L/100km");
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 }
                 for (int i3 = 0; i3 < 4; i3++) {
                     if (mInit.mTvHisOil[i3] != null) {
@@ -138,7 +138,7 @@ public class CamryHistoryAct_ZH extends BaseActivity {
         ((VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_trip_current)).invalidate();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripOilValue(int[] ints) {
         if (ints[0] > -1 && ints[0] < 5) {
             int value = ints[1];

@@ -1,6 +1,7 @@
 package com.syu.utils;
 
 import com.android.launcher66.R;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -23,6 +24,7 @@ import androidx.core.internal.view.SupportMenu;
 import androidx.core.view.ViewCompat;
 
 import com.syu.ipc.data.FinalCanbus;
+
 import org.apache.http.HttpStatus;
 
 public class W3DialogUtils {
@@ -44,8 +46,8 @@ public class W3DialogUtils {
             this.msg = null;
             this.positive = null;
             this.negative = null;
-            this.clickListener = new View.OnClickListener() { // from class: com.syu.utils.W3DialogUtils.CustomDialog.1
-                @Override // android.view.View.OnClickListener
+            this.clickListener = new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     switch (v.getId()) {
                         case W3DialogUtils.BTN_SURE /* 2131234560 */:
@@ -67,8 +69,8 @@ public class W3DialogUtils {
             this.msg = null;
             this.positive = null;
             this.negative = null;
-            this.clickListener = new View.OnClickListener() { // from class: com.syu.utils.W3DialogUtils.CustomDialog.1
-                @Override // android.view.View.OnClickListener
+            this.clickListener = new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     switch (v.getId()) {
                         case W3DialogUtils.BTN_SURE /* 2131234560 */:
@@ -102,7 +104,7 @@ public class W3DialogUtils {
         }
 
         @SuppressLint("RestrictedApi")
-        @Override 
+        @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Context context = getContext();
@@ -184,23 +186,23 @@ public class W3DialogUtils {
             setContentView(linearLayout);
         }
 
-        @Override // android.app.Dialog
+        @Override
         public void setTitle(CharSequence title) {
-            TextView tv = (TextView) findViewById(W3DialogUtils.TEXTVIEW_TITLE);
+            TextView tv = findViewById(W3DialogUtils.TEXTVIEW_TITLE);
             this.title = (String) title;
             if (tv != null) {
                 tv.setText(title);
             }
         }
 
-        @Override // android.app.Dialog
+        @Override
         public void setTitle(int titleId) {
             setTitle(getContext().getText(titleId));
         }
 
         public void setMsg(CharSequence msg) {
             this.msg = (String) msg;
-            TextView tv = (TextView) findViewById(W3DialogUtils.TEXTVIEW_MSG);
+            TextView tv = findViewById(W3DialogUtils.TEXTVIEW_MSG);
             if (tv != null) {
                 tv.setText(msg);
             }
@@ -213,11 +215,11 @@ public class W3DialogUtils {
         public void setButton(String positive, String negative) {
             this.positive = positive;
             this.negative = negative;
-            Button btn = (Button) findViewById(W3DialogUtils.BTN_SURE);
+            Button btn = findViewById(W3DialogUtils.BTN_SURE);
             if (btn != null) {
                 btn.setText(positive);
             }
-            Button btn2 = (Button) findViewById(W3DialogUtils.BTN_CANCEL);
+            Button btn2 = findViewById(W3DialogUtils.BTN_CANCEL);
             if (btn2 != null) {
                 btn2.setText(negative);
             }

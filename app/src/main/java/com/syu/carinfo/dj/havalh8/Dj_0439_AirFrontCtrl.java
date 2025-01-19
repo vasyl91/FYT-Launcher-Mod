@@ -6,27 +6,27 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListener {
     public static Dj_0439_AirFrontCtrl mInstance;
     public static boolean mIsFront = false;
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.dj.havalh8.Dj_0439_AirFrontCtrl.1
-        @Override // java.lang.Runnable
+    Runnable airControl = new Runnable() { 
+        @Override
         public void run() {
             Dj_0439_AirFrontCtrl.this.setAirControl(Dj_0439_AirFrontCtrl.this.cmdId, 0);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.havalh8.Dj_0439_AirFrontCtrl.2
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -39,16 +39,13 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                 case 12:
                     Dj_0439_AirFrontCtrl.this.mUpdateAirCycle();
                     break;
-                case 14:
+                case 13:
                     Dj_0439_AirFrontCtrl.this.mUpdateAirAuto();
                     break;
-                case 15:
+                case 14:
                     Dj_0439_AirFrontCtrl.this.mUpdateAirZone();
                     break;
                 case 16:
-                    Dj_0439_AirFrontCtrl.this.mUpdaterAirFront();
-                    break;
-                case 17:
                     Dj_0439_AirFrontCtrl.this.mUpdaterAirRear();
                     break;
                 case 18:
@@ -59,13 +56,13 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                 case 21:
                     Dj_0439_AirFrontCtrl.this.mUpdaterAirWindLevel();
                     break;
-                case 22:
+                case 27:
                     Dj_0439_AirFrontCtrl.this.mUpdaterAirTempLeft();
                     break;
-                case 23:
+                case 28:
                     Dj_0439_AirFrontCtrl.this.mUpdaterAirTempRight();
                     break;
-                case 30:
+                case 29:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
@@ -80,7 +77,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level3);
                             break;
                     }
-                case 31:
+                case 30:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);
@@ -95,7 +92,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level3);
                             break;
                     }
-                case 62:
+                case 31:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level0);
@@ -110,7 +107,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level3);
                             break;
                     }
-                case 63:
+                case 32:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level0);
@@ -125,7 +122,13 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level3);
                             break;
                     }
-                case 64:
+                case 54:
+                    Dj_0439_AirFrontCtrl.this.mUpdaterAirAqs();
+                    break;
+                case 65:
+                    Dj_0439_AirFrontCtrl.this.mUpdaterAirFront();
+                    break;
+                case 93:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level0);
@@ -140,7 +143,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level3);
                             break;
                     }
-                case 65:
+                case 94:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level0);
@@ -155,7 +158,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level3);
                             break;
                     }
-                case 66:
+                case 95:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level0);
@@ -170,7 +173,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level3);
                             break;
                     }
-                case 67:
+                case 96:
                     switch (value) {
                         case 0:
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level0);
@@ -185,70 +188,67 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                             Dj_0439_AirFrontCtrl.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level3);
                             break;
                     }
-                case 86:
-                    Dj_0439_AirFrontCtrl.this.mUpdaterAirAqs();
-                    break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_dj_haval_airfront_vv6_control);
+        //setContentView(R.layout.layout_0439_dj_haval_airfront_vv6_control);
         init();
         mInstance = this;
     }
 
     private void init() {
-        ((Button) findViewById(R.id.air_xts_power)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_ac)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_auto)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_zone)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_cycle)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_rear)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_front)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_aqs)).setOnTouchListener(this);
+        findViewById(R.id.air_xts_power).setOnTouchListener(this);
+        findViewById(R.id.air_xts_ac).setOnTouchListener(this);
+        findViewById(R.id.air_xts_auto).setOnTouchListener(this);
+        findViewById(R.id.air_xts_zone).setOnTouchListener(this);
+        findViewById(R.id.air_xts_cycle).setOnTouchListener(this);
+        findViewById(R.id.btn_air_temp_left_plus).setOnTouchListener(this);
+        findViewById(R.id.btn_air_temp_left_minus).setOnTouchListener(this);
+        findViewById(R.id.btn_air_temp_right_plus).setOnTouchListener(this);
+        findViewById(R.id.btn_air_temp_right_minus).setOnTouchListener(this);
+        findViewById(R.id.dj_xts_air_win_minuts_btn).setOnTouchListener(this);
+        findViewById(R.id.dj_xts_air_win_plus_btn).setOnTouchListener(this);
+        findViewById(R.id.air_xts_rear).setOnTouchListener(this);
+        findViewById(R.id.air_xts_front).setOnTouchListener(this);
+        findViewById(R.id.air_xts_aqs).setOnTouchListener(this);
         findViewById(R.id.air_xts_mode).setOnTouchListener(this);
         if (findViewById(R.id.air_xts_mode_plus) != null) {
-            ((Button) findViewById(R.id.air_xts_mode_plus)).setOnTouchListener(this);
+            findViewById(R.id.air_xts_mode_plus).setOnTouchListener(this);
         }
-        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatwin_left)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatmassage_left)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatmassage_right)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatwaist_left)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.air_xts_seatwaist_right)).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seathot_left).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seathot_right).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatwin_left).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatwin_right).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatmassage_left).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatmassage_right).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatwaist_left).setOnTouchListener(this);
+        findViewById(R.id.air_xts_seatwaist_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmdId, int touchState) {
         DataCanbus.PROXY.cmd(0, cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
@@ -271,7 +271,7 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
                 this.cmdId = 11;
                 break;
             case R.id.air_xts_mode /* 2131427434 */:
-            case R.id.air_xts_mode_plus /* 2131427456 */:
+            case R.id.air_xts_mode_plus /* 2131427498 */:
                 this.cmdId = 50;
                 break;
             case R.id.air_xts_seathot_right /* 2131427435 */:
@@ -307,31 +307,31 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 this.cmdId = 14;
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 this.cmdId = 6;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                this.cmdId = 26;
-                break;
-            case R.id.air_xts_aqs /* 2131427467 */:
-                this.cmdId = 24;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 this.cmdId = 49;
                 break;
-            case R.id.air_xts_zone /* 2131428027 */:
+            case R.id.air_xts_aqs /* 2131427592 */:
+                this.cmdId = 24;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                this.cmdId = 26;
+                break;
+            case R.id.air_xts_zone /* 2131428031 */:
                 this.cmdId = 16;
                 break;
-            case R.id.air_xts_seatmassage_left /* 2131428196 */:
+            case R.id.air_xts_seatmassage_left /* 2131428188 */:
                 this.cmdId = 17;
                 break;
-            case R.id.air_xts_seatwaist_left /* 2131428197 */:
+            case R.id.air_xts_seatwaist_left /* 2131428189 */:
                 this.cmdId = 18;
                 break;
-            case R.id.air_xts_seatwaist_right /* 2131428198 */:
+            case R.id.air_xts_seatwaist_right /* 2131428190 */:
                 this.cmdId = 20;
                 break;
-            case R.id.air_xts_seatmassage_right /* 2131428199 */:
+            case R.id.air_xts_seatmassage_right /* 2131428191 */:
                 this.cmdId = 19;
                 break;
         }
@@ -356,53 +356,53 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirBLowMode() {
         int win = DataCanbus.DATA[18];
         int body = DataCanbus.DATA[19];
@@ -485,106 +485,106 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAqs() {
-        int value = DataCanbus.DATA[86];
-        if (((Button) findViewById(R.id.air_xts_aqs)) != null) {
+        int value = DataCanbus.DATA[54];
+        if (findViewById(R.id.air_xts_aqs) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_aqs)).setSelected(false);
+                findViewById(R.id.air_xts_aqs).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_aqs)).setSelected(true);
+                findViewById(R.id.air_xts_aqs).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirRear() {
-        int value = DataCanbus.DATA[17];
-        if (((Button) findViewById(R.id.air_xts_rear)) != null) {
-            if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_rear)).setSelected(false);
-            } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_rear)).setSelected(true);
-            }
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public void mUpdaterAirFront() {
         int value = DataCanbus.DATA[16];
-        if (((Button) findViewById(R.id.air_xts_front)) != null) {
+        if (findViewById(R.id.air_xts_rear) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_front)).setSelected(false);
+                findViewById(R.id.air_xts_rear).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_front)).setSelected(true);
+                findViewById(R.id.air_xts_rear).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
+    public void mUpdaterAirFront() {
+        int value = DataCanbus.DATA[65];
+        if (findViewById(R.id.air_xts_front) != null) {
+            if (value == 0) {
+                findViewById(R.id.air_xts_front).setSelected(false);
+            } else if (value == 1) {
+                findViewById(R.id.air_xts_front).setSelected(true);
+            }
+        }
+    }
+
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[10];
-        if (((Button) findViewById(R.id.air_xts_power)) != null) {
+        if (findViewById(R.id.air_xts_power) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_power)).setSelected(false);
+                findViewById(R.id.air_xts_power).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_power)).setSelected(true);
+                findViewById(R.id.air_xts_power).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[11];
-        if (((Button) findViewById(R.id.air_xts_ac)) != null) {
+        if (findViewById(R.id.air_xts_ac) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_ac)).setSelected(false);
+                findViewById(R.id.air_xts_ac).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_ac)).setSelected(true);
+                findViewById(R.id.air_xts_ac).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
-        int value = DataCanbus.DATA[14];
-        if (((Button) findViewById(R.id.air_xts_auto)) != null) {
+        int value = DataCanbus.DATA[13];
+        if (findViewById(R.id.air_xts_auto) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_auto)).setSelected(false);
+                findViewById(R.id.air_xts_auto).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_auto)).setSelected(true);
+                findViewById(R.id.air_xts_auto).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirZone() {
-        int value = DataCanbus.DATA[15];
-        if (((Button) findViewById(R.id.air_xts_zone)) != null) {
+        int value = DataCanbus.DATA[14];
+        if (findViewById(R.id.air_xts_zone) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_zone)).setSelected(true);
+                findViewById(R.id.air_xts_zone).setSelected(true);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_zone)).setSelected(false);
+                findViewById(R.id.air_xts_zone).setSelected(false);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[12];
-        if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
+        if (findViewById(R.id.air_xts_cycle) != null) {
             if (value == 0) {
-                ((Button) findViewById(R.id.air_xts_cycle)).setSelected(false);
+                findViewById(R.id.air_xts_cycle).setSelected(false);
             } else if (value == 1) {
-                ((Button) findViewById(R.id.air_xts_cycle)).setSelected(true);
+                findViewById(R.id.air_xts_cycle).setSelected(true);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
-        int temp = DataCanbus.DATA[22];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int temp = DataCanbus.DATA[27];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
@@ -599,10 +599,10 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
-        int temp = DataCanbus.DATA[23];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int temp = DataCanbus.DATA[28];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             switch (temp) {
                 case -3:
                     ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
@@ -617,9 +617,9 @@ public class Dj_0439_AirFrontCtrl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[21];
-        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
+        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(String.valueOf(level));
     }
 }

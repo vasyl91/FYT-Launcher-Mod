@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_445_WC_RZC1_HaimaS7 extends AirBase {
     public Air_445_WC_RZC1_HaimaS7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0138_dj_ga3/air_dj_ga3_n.webp";
         this.mPathHighlight = "0138_dj_ga3/air_dj_ga3_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -69,7 +69,7 @@ public class Air_445_WC_RZC1_HaimaS7 extends AirBase {
         } else if (temp == 254) {
             c.drawText("No", 71.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp) + "." + floatdata + "℃", 71.0f, 142.0f, this.mPaint);
+            c.drawText(temp + "." + floatdata + "℃", 71.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

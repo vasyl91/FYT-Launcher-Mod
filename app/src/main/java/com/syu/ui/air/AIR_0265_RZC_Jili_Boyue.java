@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0265_RZC_Jili_Boyue extends AirBase {
     public AIR_0265_RZC_Jili_Boyue(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0265_RZC_ZhongTaiDaMaiX5/jili_boyue.webp";
         this.mPathHighlight = "0265_RZC_ZhongTaiDaMaiX5/jili_boyue_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -81,7 +81,7 @@ public class AIR_0265_RZC_Jili_Boyue extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("NO", 56.0f, 138.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(left_temp + 17)).toString(), 56.0f, 138.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp + 17), 56.0f, 138.0f, this.mPaint);
         }
         int right_temp = this.DATA[39];
         if (DataCanbus.DATA[1000] == 65801) {
@@ -94,7 +94,7 @@ public class AIR_0265_RZC_Jili_Boyue extends AirBase {
         } else if (right_temp == -1) {
             c.drawText("NO", 935.0f, 138.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(right_temp + 17)).toString(), 935.0f, 138.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp + 17), 935.0f, 138.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

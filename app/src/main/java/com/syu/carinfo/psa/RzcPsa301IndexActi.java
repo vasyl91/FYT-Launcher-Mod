@@ -9,19 +9,18 @@ import com.syu.canbus.R;
 import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcPsa301IndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_psa301_index);
+        //setContentView(R.layout.layout_rzc_psa301_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.rzc_psa301_btn_trip)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.RzcPsa301IndexActi.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_psa301_btn_trip)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -32,13 +31,13 @@ public class RzcPsa301IndexActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rzc_psa301_btn_setting)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.RzcPsa301IndexActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_psa301_btn_setting)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
             }
         });
-        ((Button) findViewById(R.id.rzc_psa301_btn_info)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa.RzcPsa301IndexActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_psa301_btn_info)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();

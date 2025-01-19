@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.dodge.RZCDodgeRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 134:
@@ -48,10 +48,10 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         DataCanbus.PROXY.cmd(10, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0373_rzc_dodge_jcuv_air_rear_control);
+        //setContentView(R.layout.layout_0373_rzc_dodge_jcuv_air_rear_control);
         init();
     }
 
@@ -70,7 +70,7 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         findViewById(R.id.air_xts_sync).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -78,7 +78,7 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -86,7 +86,7 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -110,7 +110,7 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
             case R.id.air_xts_frontpage /* 2131427432 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) RZCDodgeFrontAirControlAct.class));
+                    startActivity(new Intent(this, RZCDodgeFrontAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -167,28 +167,28 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
         int power = DataCanbus.DATA[136];
         findViewById(R.id.air_xts_sync).setBackgroundResource(power == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int power = DataCanbus.DATA[135];
         findViewById(R.id.air_xts_auto).setBackgroundResource(power == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[137];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[141];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -203,13 +203,13 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[134];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[140];
         if (leave < 0) {
@@ -222,7 +222,7 @@ public class RZCDodgeRearAirControlAct extends Activity implements View.OnTouchL
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[139];
         int body = DataCanbus.DATA[138];

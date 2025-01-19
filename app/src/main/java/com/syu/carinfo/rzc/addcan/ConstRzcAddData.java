@@ -1,6 +1,5 @@
 package com.syu.carinfo.rzc.addcan;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ConstRzcAddData {
     public static String CarFrameNum = "";
     public static final int U_CAR_ACCON = 516;

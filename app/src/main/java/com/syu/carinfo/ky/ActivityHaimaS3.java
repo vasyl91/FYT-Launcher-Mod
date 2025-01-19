@@ -4,20 +4,20 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHaimaS3 extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ky.ActivityHaimaS3.1
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 18:
+                case 100:
                     ActivityHaimaS3.this.uBigLight(this.value);
                     break;
             }
@@ -25,45 +25,45 @@ public class ActivityHaimaS3 extends Activity implements View.OnClickListener {
     };
     int value;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_258_haima_s3);
-        ((CheckedTextView) findViewById(R.id.ky_haimas3_biglightcomehome)).setOnClickListener(this);
+        //setContentView(R.layout.layout_258_haima_s3);
+        findViewById(R.id.ky_haimas3_biglightcomehome).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uBigLight(int value) {
-        if (((CheckedTextView) findViewById(R.id.ky_haimas3_biglightcomehome)) != null) {
+        if (findViewById(R.id.ky_haimas3_biglightcomehome) != null) {
             ((CheckedTextView) findViewById(R.id.ky_haimas3_biglightcomehome)).setChecked(value != 0);
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ky_haimas3_biglightcomehome /* 2131429005 */:
-                this.value = DataCanbus.DATA[18];
+            case R.id.ky_haimas3_biglightcomehome /* 2131428960 */:
+                this.value = DataCanbus.DATA[100];
                 DataCanbus.PROXY.cmd(3, 18, this.value == 0 ? 1 : 0);
                 break;
         }

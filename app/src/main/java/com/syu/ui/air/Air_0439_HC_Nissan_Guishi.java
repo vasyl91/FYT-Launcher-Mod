@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_HC_Nissan_Guishi extends AirBase {
     public Air_0439_HC_Nissan_Guishi(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0008_wc1_bentengx80/air_fyta_bentengx80.webp";
         this.mPathHighlight = "0008_wc1_bentengx80/air_fyta_bentengx80_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -78,7 +78,7 @@ public class Air_0439_HC_Nissan_Guishi extends AirBase {
             c.drawText("HI", 70.0f, 135.0f, this.mPaint);
         } else {
             int temp2 = (temp * 5) + 175;
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 70.0f, 135.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 70.0f, 135.0f, this.mPaint);
         }
         int temp3 = this.DATA[21];
         if (temp3 == -1) {
@@ -89,7 +89,7 @@ public class Air_0439_HC_Nissan_Guishi extends AirBase {
             c.drawText("HI", 915.0f, 135.0f, this.mPaint);
         } else {
             int temp4 = (temp3 * 5) + 175;
-            c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10), 915.0f, 135.0f, this.mPaint);
+            c.drawText(temp4 / 10 + "." + (temp4 % 10), 915.0f, 135.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

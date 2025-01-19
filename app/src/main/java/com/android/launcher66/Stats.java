@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Stats {
     private FileNotFoundException e;
     private Throwable th;
@@ -30,7 +29,7 @@ public class Stats {
     public static final String PERM_LAUNCH = "com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS";
     private static final String STATS_FILE_NAME = "stats.log";
     private static final int STATS_VERSION = 1;
-    private static final String TAG = "Launcher3/Stats";
+    private static final String TAG = "launcher66/Stats";
     ArrayList<Integer> mHistogram;
     ArrayList<String> mIntents;
     private final Launcher mLauncher;

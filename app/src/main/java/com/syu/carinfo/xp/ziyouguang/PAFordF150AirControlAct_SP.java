@@ -10,69 +10,68 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAFordF150AirControlAct_SP mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordF150AirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 7:
+                case 10:
                     PAFordF150AirControlAct_SP.this.mUpdatePowerOn();
                     break;
-                case 8:
+                case 11:
                     PAFordF150AirControlAct_SP.this.mUpdateAcOn();
                     break;
-                case 9:
+                case 12:
                     PAFordF150AirControlAct_SP.this.mUpdateCycle();
                     break;
-                case 10:
+                case 13:
                     PAFordF150AirControlAct_SP.this.mUpdateAutoOn();
                     break;
-                case 11:
-                    PAFordF150AirControlAct_SP.this.mUpdateSyncOn();
-                    break;
-                case 12:
-                case 13:
-                case 14:
-                    PAFordF150AirControlAct_SP.this.updateBtnSource();
-                    break;
-                case 15:
-                    PAFordF150AirControlAct_SP.this.mUpdaterAirWindLevelLeft();
-                    break;
                 case 16:
-                    PAFordF150AirControlAct_SP.this.mUpdateAirTempLeft();
-                    break;
-                case 17:
-                    PAFordF150AirControlAct_SP.this.mUpdateAirTempRight();
-                    break;
-                case 18:
-                    PAFordF150AirControlAct_SP.this.mUpdateFrontDefrost();
-                    break;
-                case 19:
                     PAFordF150AirControlAct_SP.this.mUpdateRearDefrost();
                     break;
+                case 18:
+                case 19:
                 case 20:
-                    PAFordF150AirControlAct_SP.this.mUpdateMaxAcOn();
+                    PAFordF150AirControlAct_SP.this.updateBtnSource();
                     break;
                 case 21:
+                    PAFordF150AirControlAct_SP.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 27:
+                    PAFordF150AirControlAct_SP.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    PAFordF150AirControlAct_SP.this.mUpdateAirTempRight();
+                    break;
+                case 29:
+                    PAFordF150AirControlAct_SP.this.mUpdaterSeatHeatLeft();
+                    break;
+                case 30:
+                    PAFordF150AirControlAct_SP.this.mUpdaterSeatHeatRight();
+                    break;
+                case 31:
+                    PAFordF150AirControlAct_SP.this.mUpdaterSeatBlowLeft();
+                    break;
+                case 32:
+                    PAFordF150AirControlAct_SP.this.mUpdaterSeatBlowRight();
+                    break;
+                case 37:
                     PAFordF150AirControlAct_SP.this.mUpdateAirTempLeft();
                     PAFordF150AirControlAct_SP.this.mUpdateAirTempRight();
                     break;
-                case 22:
-                    PAFordF150AirControlAct_SP.this.mUpdaterSeatHeatLeft();
+                case 53:
+                    PAFordF150AirControlAct_SP.this.mUpdateMaxAcOn();
                     break;
-                case 23:
-                    PAFordF150AirControlAct_SP.this.mUpdaterSeatHeatRight();
+                case 62:
+                    PAFordF150AirControlAct_SP.this.mUpdateSyncOn();
                     break;
-                case 24:
-                    PAFordF150AirControlAct_SP.this.mUpdaterSeatBlowLeft();
+                case 65:
+                    PAFordF150AirControlAct_SP.this.mUpdateFrontDefrost();
                     break;
-                case 25:
-                    PAFordF150AirControlAct_SP.this.mUpdaterSeatBlowRight();
-                    break;
-                case 26:
+                case 66:
                     PAFordF150AirControlAct_SP.this.mUpdateSteerHotOn();
                     break;
             }
@@ -83,10 +82,10 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_pa_ford_f150_air_sp);
+        //setContentView(R.layout.layout_0452_pa_ford_f150_air_sp);
         init();
         mInstance = this;
     }
@@ -117,7 +116,7 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         findViewById(R.id.dj_xts_air_win_plus_btn).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -125,7 +124,7 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -133,7 +132,7 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -195,17 +194,17 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data0 = 23;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data0 = 13;
-                break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 data0 = 9;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 11;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 14;
+                break;
+            case R.id.air_xts_dual /* 2131427566 */:
+                data0 = 13;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 11;
                 break;
         }
         if (event.getAction() == 0) {
@@ -216,66 +215,66 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[18];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_air_pa_jeep_front_n : R.drawable.ic_air_pa_jeep_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[19];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_air_pa_jeep_rear_n : R.drawable.ic_air_pa_jeep_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight() {
-        int value = DataCanbus.DATA[25];
+        int value = DataCanbus.DATA[32];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_air_pa_jeep_seatwin_right0);
@@ -292,9 +291,9 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
-        int value = DataCanbus.DATA[23];
+        int value = DataCanbus.DATA[30];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_air_pa_jeep_seathot_right0);
@@ -311,9 +310,9 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[29];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_air_pa_jeep_seathot_left0);
@@ -330,9 +329,9 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[31];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_air_pa_jeep_seatwin_left0);
@@ -349,21 +348,21 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
-        int power = DataCanbus.DATA[20];
+        int power = DataCanbus.DATA[53];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_maxac_n : R.drawable.ic_air_pa_jeep_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteerHotOn() {
-        int acOn = DataCanbus.DATA[26];
+        int acOn = DataCanbus.DATA[66];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_steer_n : R.drawable.ic_air_pa_jeep_steer_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[9];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_air_pa_jeep_cyclein_n);
         } else if (cycle == 1) {
@@ -371,34 +370,34 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
-        int acOn = DataCanbus.DATA[11];
+        int acOn = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_dual_n : R.drawable.ic_air_pa_jeep_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[10];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_auto_n : R.drawable.ic_air_pa_jeep_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[8];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_ac_n : R.drawable.ic_air_pa_jeep_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[7];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_power_n : R.drawable.ic_air_pa_jeep_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int unit = DataCanbus.DATA[21];
-        int temp = DataCanbus.DATA[16];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -429,10 +428,10 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int unit = DataCanbus.DATA[21];
-        int temp = DataCanbus.DATA[17];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -463,9 +462,9 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[15];
+        int leave = DataCanbus.DATA[21];
         switch (leave) {
             case 0:
                 findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
@@ -494,11 +493,11 @@ public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int body = DataCanbus.DATA[13];
-        int window = DataCanbus.DATA[12];
-        int foot = DataCanbus.DATA[14];
+        int body = DataCanbus.DATA[19];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

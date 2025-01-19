@@ -8,17 +8,15 @@ import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
-import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepDriveMode extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 315:
+                case 327:
                     PAJeepDriveMode.this.findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_track_n);
                     PAJeepDriveMode.this.findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_sport_n);
                     PAJeepDriveMode.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_auto_n);
@@ -66,7 +64,7 @@ public class PAJeepDriveMode extends BaseActivity {
                             ((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text7)).setText("Track Setup");
                             break;
                     }
-                case 316:
+                case 328:
                     PAJeepDriveMode.this.findViewById(R.id.btn_plus10).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_eco_n);
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text1)) != null) {
                         switch (value) {
@@ -133,7 +131,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 317:
+                case 329:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text2)) != null) {
                         switch (value) {
                             case 0:
@@ -154,7 +152,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D57_D1_B30 /* 318 */:
+                case 330:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text3)) != null) {
                         switch (value) {
                             case 1:
@@ -185,7 +183,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 319:
+                case 331:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text4)) != null) {
                         switch (value) {
                             case 1:
@@ -213,6 +211,11 @@ public class PAJeepDriveMode extends BaseActivity {
                                 PAJeepDriveMode.this.findViewById(R.id.layout_view4).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_bottom4);
                                 PAJeepDriveMode.this.findViewById(R.id.id_image6).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_stability5);
                                 break;
+                            case 6:
+                                ((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text4)).setText("Baja");
+                                PAJeepDriveMode.this.findViewById(R.id.layout_view4).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_bottom6);
+                                PAJeepDriveMode.this.findViewById(R.id.id_image6).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_stability0);
+                                break;
                             default:
                                 ((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text4)).setText("----");
                                 PAJeepDriveMode.this.findViewById(R.id.layout_view4).setBackgroundResource(R.drawable.ic_pa_jeep_drivemode_bottom6);
@@ -221,7 +224,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 320:
+                case 332:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text5)) != null) {
                         switch (value) {
                             case 1:
@@ -252,7 +255,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 321:
+                case 333:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text6)) != null) {
                         switch (value) {
                             case 1:
@@ -283,7 +286,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 322:
+                case 334:
                     if (((TextView) PAJeepDriveMode.this.findViewById(R.id.tv_text6)) != null) {
                         switch (value) {
                             case 1:
@@ -297,7 +300,7 @@ public class PAJeepDriveMode extends BaseActivity {
                         }
                     }
                     break;
-                case 371:
+                case 383:
                     switch (value) {
                         case 1:
                             PAJeepDriveMode.this.findViewById(R.id.btn_plus12).setBackgroundResource(R.drawable.ic_pa_jeep_tracksport_1);
@@ -313,73 +316,73 @@ public class PAJeepDriveMode extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_drive_mode);
+        //setContentView(R.layout.layout_0374_pa_jeep_drive_mode);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 9}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 6}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 7}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{1, 8}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[322];
+                int value = DataCanbus.DATA[334];
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(16, new int[]{8}, null, null);
                 } else {
@@ -387,8 +390,8 @@ public class PAJeepDriveMode extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -399,50 +402,50 @@ public class PAJeepDriveMode extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_plus12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepDriveMode.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus12)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(16, new int[]{9}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{87}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[315].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[316].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[317].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[318].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[319].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[320].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[321].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[322].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[371].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[327].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[328].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[329].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[330].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[331].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[332].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[333].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[334].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[383].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[315].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[316].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[317].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[318].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[319].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[320].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[321].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[322].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[371].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[327].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[328].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[329].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[330].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[331].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[332].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[333].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[334].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[383].removeNotify(this.mNotifyCanbus);
     }
 }

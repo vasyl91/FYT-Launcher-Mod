@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
@@ -13,7 +14,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_OD_MZD_ALL;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
     public static MazdAllCarCD mInstance;
     private Button mBtnFF;
@@ -24,8 +24,8 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
     private Button mBtnRandom;
     private Button mBtnbackward;
     private Button mBtnforward;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.mazdall.MazdAllCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 31:
@@ -61,57 +61,57 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     static int mCurrentTime = 0;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_od_mazdall_carcd);
+        //setContentView(R.layout.layout_0439_od_mazdall_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        this.mTvState = (TextView) findViewById(R.id.jeep_tv_state);
-        this.mTvTrack = (TextView) findViewById(R.id.jeep_tv_track);
-        this.mTvTrackTime = (TextView) findViewById(R.id.jeep_tv_time);
-        this.mPlayProgress = (ProgressBar) findViewById(R.id.jeep_progress);
-        this.mTvSong = (TextView) findViewById(R.id.m3_421_song);
-        this.mTvAlbum = (TextView) findViewById(R.id.m3_421_album);
-        this.mTvArtist = (TextView) findViewById(R.id.m3_421_artist);
-        this.mBtnPlay = (Button) findViewById(R.id.jeep_btn_play);
+        this.mTvState = findViewById(R.id.jeep_tv_state);
+        this.mTvTrack = findViewById(R.id.jeep_tv_track);
+        this.mTvTrackTime = findViewById(R.id.jeep_tv_time);
+        this.mPlayProgress = findViewById(R.id.jeep_progress);
+        this.mTvSong = findViewById(R.id.m3_421_song);
+        this.mTvAlbum = findViewById(R.id.m3_421_album);
+        this.mTvArtist = findViewById(R.id.m3_421_artist);
+        this.mBtnPlay = findViewById(R.id.jeep_btn_play);
         this.mBtnPlay.setOnClickListener(this);
-        this.mBtnFF = (Button) findViewById(R.id.jeep_btn_ff);
+        this.mBtnFF = findViewById(R.id.jeep_btn_ff);
         this.mBtnFF.setOnClickListener(this);
-        this.mBtnFR = (Button) findViewById(R.id.jeep_btn_fr);
+        this.mBtnFR = findViewById(R.id.jeep_btn_fr);
         this.mBtnFR.setOnClickListener(this);
-        this.mBtnPause = (Button) findViewById(R.id.jeep_btn_pause);
+        this.mBtnPause = findViewById(R.id.jeep_btn_pause);
         this.mBtnPause.setOnClickListener(this);
-        this.mBtnLoop = (Button) findViewById(R.id.jeep_btn_loop);
+        this.mBtnLoop = findViewById(R.id.jeep_btn_loop);
         this.mBtnLoop.setOnClickListener(this);
-        this.mBtnRandom = (Button) findViewById(R.id.jeep_btn_random);
+        this.mBtnRandom = findViewById(R.id.jeep_btn_random);
         this.mBtnRandom.setOnClickListener(this);
-        this.mBtnbackward = (Button) findViewById(R.id.jeep_btn_backward);
+        this.mBtnbackward = findViewById(R.id.jeep_btn_backward);
         this.mBtnbackward.setOnClickListener(this);
-        this.mBtnforward = (Button) findViewById(R.id.jeep_btn_forward);
+        this.mBtnforward = findViewById(R.id.jeep_btn_forward);
         this.mBtnforward.setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(1, new int[1], null, null);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(1, new int[]{1}, null, null);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(1, new int[]{4}, null, null);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(1, new int[]{5}, null, null);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
+            case R.id.jeep_btn_loop /* 2131427737 */:
                 int value = (DataCanbus.DATA[35] + 1) % 3;
                 if (value == 1) {
                     DataCanbus.PROXY.cmd(1, new int[]{6}, null, null);
@@ -123,13 +123,7 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
                     DataCanbus.PROXY.cmd(1, new int[]{8}, null, null);
                     break;
                 }
-            case R.id.jeep_btn_backward /* 2131428346 */:
-                DataCanbus.PROXY.cmd(1, new int[]{13}, null, null);
-                break;
-            case R.id.jeep_btn_forward /* 2131428347 */:
-                DataCanbus.PROXY.cmd(1, new int[]{12}, null, null);
-                break;
-            case R.id.jeep_btn_random /* 2131428348 */:
+            case R.id.jeep_btn_random /* 2131427740 */:
                 int value2 = (DataCanbus.DATA[36] + 1) % 3;
                 if (value2 == 1) {
                     DataCanbus.PROXY.cmd(1, new int[]{9}, null, null);
@@ -141,10 +135,16 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
                     DataCanbus.PROXY.cmd(1, new int[]{11}, null, null);
                     break;
                 }
+            case R.id.jeep_btn_backward /* 2131428334 */:
+                DataCanbus.PROXY.cmd(1, new int[]{13}, null, null);
+                break;
+            case R.id.jeep_btn_forward /* 2131428335 */:
+                DataCanbus.PROXY.cmd(1, new int[]{12}, null, null);
+                break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -153,20 +153,20 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         DataCanbus.PROXY.cmd(1, new int[]{15}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
@@ -182,7 +182,7 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
         DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
@@ -198,7 +198,7 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
         DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStatus() {
         int value = DataCanbus.DATA[34];
         int value1 = DataCanbus.DATA[36];
@@ -267,14 +267,14 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
         this.mTvState.setText(sb.toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCdTextInfo() {
-        this.mTvSong.setText(String.valueOf(getString(R.string.str_car_cd_title)) + Callback_0439_OD_MZD_ALL.mId3Name);
-        this.mTvArtist.setText(String.valueOf(getString(R.string.str_car_cd_artist)) + Callback_0439_OD_MZD_ALL.mIdArtist3Name);
-        this.mTvAlbum.setText(String.valueOf(getString(R.string.str_car_cd_album)) + Callback_0439_OD_MZD_ALL.mId3DiscName);
+        this.mTvSong.setText(getString(R.string.str_car_cd_title) + Callback_0439_OD_MZD_ALL.mId3Name);
+        this.mTvArtist.setText(getString(R.string.str_car_cd_artist) + Callback_0439_OD_MZD_ALL.mIdArtist3Name);
+        this.mTvAlbum.setText(getString(R.string.str_car_cd_album) + Callback_0439_OD_MZD_ALL.mId3DiscName);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
         int curTrack = DataCanbus.DATA[37];
         int totalTrack = DataCanbus.DATA[33];
@@ -285,7 +285,7 @@ public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
         int totalTime = DataCanbus.DATA[39];
         int curTime = DataCanbus.DATA[38];

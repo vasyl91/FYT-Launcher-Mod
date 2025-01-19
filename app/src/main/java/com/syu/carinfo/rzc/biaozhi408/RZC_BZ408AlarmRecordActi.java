@@ -7,18 +7,17 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_BZ408AlarmRecordActi extends BaseActivity {
     public static RZC_BZ408AlarmRecordActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 103:
+                case 114:
                     RZC_BZ408AlarmRecordActi.this.mUpdaterValue1();
                     break;
-                case 134:
+                case 145:
                     RZC_BZ408AlarmRecordActi.this.mUpdaterValue2();
                     break;
             }
@@ -26,41 +25,41 @@ public class RZC_BZ408AlarmRecordActi extends BaseActivity {
     };
     private TextView mTv;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_biaozhi408_alarm_record);
+        //setContentView(R.layout.layout_rzc_biaozhi408_alarm_record);
         this.mTv = (TextView) findViewById(R.id.rzc_bz408_tv_alarm);
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[103];
+        int value = DataCanbus.DATA[114];
         switch (value) {
             case 0:
                 this.mTv.setText(R.string.rzc_bz408_warning_0);
@@ -320,9 +319,9 @@ public class RZC_BZ408AlarmRecordActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[134];
+        int value = DataCanbus.DATA[145];
         if (this.mTv != null) {
             if (value == 0) {
                 this.mTv.setVisibility(8);

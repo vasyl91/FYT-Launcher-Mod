@@ -7,18 +7,17 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7ElectricMileagePage2Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7ElectricMileagePage2Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 177:
-                case 290:
+                case 231:
+                case 308:
                     Golf7ElectricMileagePage2Acti.this.mUpdaterDrivingMileage();
                     break;
-                case 276:
-                case 289:
+                case 304:
+                case 307:
                     Golf7ElectricMileagePage2Acti.this.mUpdaterAverageElectric();
                     break;
             }
@@ -27,51 +26,51 @@ public class Golf7ElectricMileagePage2Acti extends BaseActivity {
     private TextView mTvAverageElectric;
     private TextView mTvDrivingMileage;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_electric_mileage_page2);
+        //setContentView(R.layout.layout_golf7_electric_mileage_page2);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mTvAverageElectric = (TextView) findViewById(R.id.golf7_tv_electric_long_term_electric);
         this.mTvDrivingMileage = (TextView) findViewById(R.id.golf7_tv_electric_long_term_driving_mileage);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[289].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[290].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[276].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[307].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[308].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[304].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[289].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[290].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[276].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[307].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[308].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[304].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageElectric() {
-        int value = DataCanbus.DATA[289];
-        int unit_wc = DataCanbus.DATA[276] & 255;
+        int value = DataCanbus.DATA[307];
+        int unit_wc = DataCanbus.DATA[304] & 255;
         if (this.mTvAverageElectric != null) {
             if (ConstGolf.isWcGolf()) {
                 if (value != 65535) {
@@ -97,10 +96,10 @@ public class Golf7ElectricMileagePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[290];
-        int unit_wc = DataCanbus.DATA[177] & 255;
+        int value = DataCanbus.DATA[308];
+        int unit_wc = DataCanbus.DATA[231] & 255;
         if (this.mTvDrivingMileage != null) {
             if (ConstGolf.isWcGolf()) {
                 if (value != 65535) {

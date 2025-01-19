@@ -12,41 +12,40 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ToyotaLexusActivityCarUSB extends BaseActivity implements View.OnClickListener {
     public static ToyotaLexusActivityCarUSB mInst;
     public static boolean mIsFront = false;
     protected Handler mHandler;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarUSB.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 204:
+                case 200:
                     ToyotaLexusActivityCarUSB.this.updateDiscMode();
                     break;
-                case 205:
-                case 206:
+                case 201:
+                case 202:
                     ToyotaLexusActivityCarUSB.this.updatePlayMode();
                     break;
-                case 207:
+                case 203:
                     ToyotaLexusActivityCarUSB.this.updatePlayTrack();
                     break;
-                case 208:
+                case 204:
                     ToyotaLexusActivityCarUSB.this.updaterPlayTime();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_429_dj_crown_carusb);
+        //setContentView(R.layout.layout_429_dj_crown_carusb);
         this.mHandler = new Handler(Looper.getMainLooper());
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.jeep_btn_loop)).setOnClickListener(this);
         ((Button) findViewById(R.id.jeep_btn_random)).setOnClickListener(this);
@@ -56,71 +55,71 @@ public class ToyotaLexusActivityCarUSB extends BaseActivity implements View.OnCl
         setSelfClick((Button) findViewById(R.id.jeep_btn_play), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(42, 3, 0);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(42, 3, 0);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(42, 4, 0);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(42, 5, 0);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
+            case R.id.jeep_btn_loop /* 2131427737 */:
                 DataCanbus.PROXY.cmd(42, 2, 0);
                 break;
-            case R.id.jeep_btn_random /* 2131428348 */:
+            case R.id.jeep_btn_random /* 2131427740 */:
                 DataCanbus.PROXY.cmd(42, 1, 0);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DataCanbus.PROXY.cmd(43, 98, 0);
         FuncMain.setChannel(13);
-        if (DataCanbus.DATA[178] != 4) {
+        if (DataCanbus.DATA[181] != 4) {
             DataCanbus.PROXY.cmd(42, 32, 8);
         }
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[204].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[208].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[208].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePlayTrack() {
-        int track = DataCanbus.DATA[207];
+        int track = DataCanbus.DATA[203];
         if (((TextView) findViewById(R.id.track_num_tv)) != null) {
             ((TextView) findViewById(R.id.track_num_tv)).setText(new StringBuilder().append(track).toString());
         }
@@ -129,10 +128,10 @@ public class ToyotaLexusActivityCarUSB extends BaseActivity implements View.OnCl
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePlayMode() {
-        int rep = DataCanbus.DATA[205];
-        int random = DataCanbus.DATA[206];
+        int rep = DataCanbus.DATA[201];
+        int random = DataCanbus.DATA[202];
         if (((TextView) findViewById(R.id.mode_tv)) != null) {
             if (random == 2) {
                 ((TextView) findViewById(R.id.mode_tv)).setText(R.string.crv_playstate_3);
@@ -152,9 +151,9 @@ public class ToyotaLexusActivityCarUSB extends BaseActivity implements View.OnCl
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDiscMode() {
-        int rep_disc = DataCanbus.DATA[204];
+        int rep_disc = DataCanbus.DATA[200];
         if (((TextView) findViewById(R.id.file_num_tv)) != null) {
             if (rep_disc == 2) {
                 ((TextView) findViewById(R.id.file_num_tv)).setText(R.string.str_car_cd_pause);
@@ -166,16 +165,16 @@ public class ToyotaLexusActivityCarUSB extends BaseActivity implements View.OnCl
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = (DataCanbus.DATA[208] >> 8) & 255;
+        int playminute = (DataCanbus.DATA[204] >> 8) & 255;
         if (playminute > 59) {
             playminute = 59;
         }
         if (playminute < 0) {
             playminute = 0;
         }
-        int playsecond = DataCanbus.DATA[208] & 255;
+        int playsecond = DataCanbus.DATA[204] & 255;
         if (playsecond > 59) {
             playsecond = 59;
         }

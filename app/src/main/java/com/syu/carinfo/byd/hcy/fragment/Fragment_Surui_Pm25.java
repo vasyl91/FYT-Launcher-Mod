@@ -7,7 +7,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickListener {
     private int detectin;
     private int detectout;
@@ -17,34 +16,32 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
     private int opendoor;
     private int openwindow;
     private int poweron;
-    int[] ids = {49, 50, 48, 28, 29, 30, 31};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_Pm25.1
-        int value;
-
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {113, 114, 105, 101, 102, 103, 104};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
-            this.value = DataCanbus.DATA[updateCode];
+            int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 28:
-                    Fragment_Surui_Pm25.this.uCarIn(this.value);
+                case 101:
+                    Fragment_Surui_Pm25.this.uCarIn(value);
                     break;
-                case 29:
-                    Fragment_Surui_Pm25.this.uCarOut(this.value);
+                case 102:
+                    Fragment_Surui_Pm25.this.uCarOut(value);
                     break;
-                case 30:
-                    Fragment_Surui_Pm25.this.uLevelIn(this.value);
+                case 103:
+                    Fragment_Surui_Pm25.this.uLevelIn(value);
                     break;
-                case 31:
-                    Fragment_Surui_Pm25.this.uLevelOut(this.value);
+                case 104:
+                    Fragment_Surui_Pm25.this.uLevelOut(value);
                     break;
-                case 48:
-                    Fragment_Surui_Pm25.this.uState(this.value);
+                case 105:
+                    Fragment_Surui_Pm25.this.uState(value);
                     break;
-                case 49:
-                    Fragment_Surui_Pm25.this.uPMDectectIn(this.value);
+                case 113:
+                    Fragment_Surui_Pm25.this.uPMDectectIn(value);
                     break;
-                case 50:
-                    Fragment_Surui_Pm25.this.uPMDectectOut(this.value);
+                case 114:
+                    Fragment_Surui_Pm25.this.uPMDectectOut(value);
                     break;
             }
         }
@@ -52,18 +49,18 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
     int[] resid = {R.string.rzc_c4l_close, R.string.rzc_c4l_open};
     private int[] strIdPM = {R.string.str_265_2, R.string.str_265_3, R.string.str_265_4, R.string.str_265_5, R.string.str_265_6, R.string.str_265_7};
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0178_hcy_surui_pm25;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
-        if (DataCanbus.sCanbusId == 8782263) {
+        if (DataCanbus.DATA[1000] == 8782263) {
             DataCanbus.PROXY.cmd(5, 3);
             DataCanbus.PROXY.cmd(5, 14);
         }
@@ -72,7 +69,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
@@ -110,11 +107,11 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
     }
 
     protected void uState(int value) {
-        if (DataCanbus.sCanbusId == 8782263) {
+        if (DataCanbus.DATA[1000] == 8782263) {
             this.poweron = (value >> 0) & 1;
             this.opendoor = (value >> 1) & 1;
             this.intime = (value >> 2) & 1;
-        } else if (DataCanbus.sCanbusId == 9699767 || DataCanbus.sCanbusId == 9765303 || DataCanbus.sCanbusId == 9830839 || DataCanbus.sCanbusId == 9896375 || DataCanbus.sCanbusId == 9961911 || DataCanbus.sCanbusId == 10027447 || DataCanbus.sCanbusId == 10092983) {
+        } else if (DataCanbus.DATA[1000] == 9699767 || DataCanbus.DATA[1000] == 9765303 || DataCanbus.DATA[1000] == 9830839 || DataCanbus.DATA[1000] == 9896375 || DataCanbus.DATA[1000] == 9961911 || DataCanbus.DATA[1000] == 10027447 || DataCanbus.DATA[1000] == 10092983) {
             this.poweron = (value >> 7) & 1;
             this.opendoor = (value >> 5) & 1;
             this.intime = (value >> 4) & 1;
@@ -197,17 +194,17 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
         int value3;
         int value4;
         int value5;
-        if (DataCanbus.sCanbusId == 8782263) {
+        if (DataCanbus.DATA[1000] == 8782263) {
             int value6 = 0;
             switch (v.getId()) {
-                case R.id.id_poweron /* 2131427589 */:
+                case R.id.id_poweron /* 2131427601 */:
                     if (this.poweron == 0) {
                         value6 = 10;
                         break;
@@ -215,7 +212,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                         value6 = 11;
                         break;
                     }
-                case R.id.id_opendoor /* 2131427591 */:
+                case R.id.id_opendoor /* 2131427603 */:
                     if (this.opendoor == 0) {
                         value6 = 12;
                         break;
@@ -223,7 +220,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                         value6 = 13;
                         break;
                     }
-                case R.id.id_intime /* 2131427592 */:
+                case R.id.id_intime /* 2131427604 */:
                     if (this.intime == 0) {
                         value6 = 14;
                         break;
@@ -238,22 +235,22 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
             }
             return;
         }
-        if (DataCanbus.sCanbusId == 12976567) {
+        if (DataCanbus.DATA[1000] == 12976567 || DataCanbus.DATA[1000] == 15663558) {
             int value7 = 0;
             switch (v.getId()) {
-                case R.id.id_poweron /* 2131427589 */:
+                case R.id.id_poweron /* 2131427601 */:
                     value7 = 3;
                     break;
-                case R.id.id_opendoor /* 2131427591 */:
+                case R.id.id_opendoor /* 2131427603 */:
                     value7 = 4;
                     break;
-                case R.id.id_intime /* 2131427592 */:
+                case R.id.id_intime /* 2131427604 */:
                     value7 = 5;
                     break;
-                case R.id.id_detectin /* 2131427593 */:
+                case R.id.id_detectin /* 2131427605 */:
                     value7 = 1;
                     break;
-                case R.id.id_detectout /* 2131427594 */:
+                case R.id.id_detectout /* 2131427606 */:
                     value7 = 2;
                     break;
             }
@@ -263,9 +260,9 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
             }
             return;
         }
-        if (DataCanbus.sCanbusId == 9699767 || DataCanbus.sCanbusId == 9765303 || DataCanbus.sCanbusId == 9830839 || DataCanbus.sCanbusId == 9896375 || DataCanbus.sCanbusId == 9961911 || DataCanbus.sCanbusId == 10027447 || DataCanbus.sCanbusId == 10092983) {
+        if (DataCanbus.DATA[1000] == 9699767 || DataCanbus.DATA[1000] == 9765303 || DataCanbus.DATA[1000] == 9830839 || DataCanbus.DATA[1000] == 9896375 || DataCanbus.DATA[1000] == 9961911 || DataCanbus.DATA[1000] == 10027447 || DataCanbus.DATA[1000] == 10092983) {
             switch (v.getId()) {
-                case R.id.id_poweron /* 2131427589 */:
+                case R.id.id_poweron /* 2131427601 */:
                     if (this.poweron == 0) {
                         value5 = 1;
                     } else {
@@ -273,7 +270,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                     }
                     DataCanbus.PROXY.cmd(3, new int[]{3, value5}, null, null);
                     break;
-                case R.id.id_opendoor /* 2131427591 */:
+                case R.id.id_opendoor /* 2131427603 */:
                     if (this.opendoor == 0) {
                         value3 = 1;
                     } else {
@@ -281,7 +278,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                     }
                     DataCanbus.PROXY.cmd(3, new int[]{4, value3}, null, null);
                     break;
-                case R.id.id_intime /* 2131427592 */:
+                case R.id.id_intime /* 2131427604 */:
                     if (this.intime == 0) {
                         value4 = 1;
                     } else {
@@ -289,7 +286,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                     }
                     DataCanbus.PROXY.cmd(3, new int[]{5, value4}, null, null);
                     break;
-                case R.id.id_detectin /* 2131427593 */:
+                case R.id.id_detectin /* 2131427605 */:
                     if (this.detectin == 0) {
                         value2 = 1;
                     } else {
@@ -297,7 +294,7 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
                     }
                     DataCanbus.PROXY.cmd(3, new int[]{1, value2}, null, null);
                     break;
-                case R.id.id_detectout /* 2131427594 */:
+                case R.id.id_detectout /* 2131427606 */:
                     if (this.detectout == 0) {
                         value = 1;
                     } else {
@@ -314,19 +311,19 @@ public class Fragment_Surui_Pm25 extends BaseFragment implements View.OnClickLis
         int idetectin = 0;
         int idetectout = 0;
         switch (v.getId()) {
-            case R.id.id_poweron /* 2131427589 */:
+            case R.id.id_poweron /* 2131427601 */:
                 ipoweron = (this.poweron + 1) % 2;
                 break;
-            case R.id.id_opendoor /* 2131427591 */:
+            case R.id.id_opendoor /* 2131427603 */:
                 iopendoor = (this.opendoor + 1) % 2;
                 break;
-            case R.id.id_intime /* 2131427592 */:
+            case R.id.id_intime /* 2131427604 */:
                 iintime = (this.intime + 1) % 2;
                 break;
-            case R.id.id_detectin /* 2131427593 */:
+            case R.id.id_detectin /* 2131427605 */:
                 idetectin = (this.detectin + 1) % 2;
                 break;
-            case R.id.id_detectout /* 2131427594 */:
+            case R.id.id_detectout /* 2131427606 */:
                 idetectout = (this.detectout + 1) % 2;
                 break;
         }

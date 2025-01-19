@@ -6,12 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnZhtdAudiAir {
     private static WarnZhtdAudiAir mInstance;
     Context context;
@@ -20,8 +20,8 @@ public class WarnZhtdAudiAir {
     private TextView mTextTempLeft;
     private TextView mTextTempRight;
     private View sWarnContent;
-    private final Runnable LeftTempTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.1
-        @Override // java.lang.Runnable
+    private final Runnable LeftTempTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowLeftTempTime <= 0) {
                 return;
@@ -35,8 +35,8 @@ public class WarnZhtdAudiAir {
             }
         }
     };
-    private final Runnable LeftWinlevTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.2
-        @Override // java.lang.Runnable
+    private final Runnable LeftWinlevTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowLeftWinlevTime <= 0) {
                 return;
@@ -50,8 +50,8 @@ public class WarnZhtdAudiAir {
             }
         }
     };
-    private final Runnable LeftWinModeTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.3
-        @Override // java.lang.Runnable
+    private final Runnable LeftWinModeTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowLeftWinModeTime <= 0) {
                 return;
@@ -65,8 +65,8 @@ public class WarnZhtdAudiAir {
             }
         }
     };
-    private final Runnable RightTempTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.4
-        @Override // java.lang.Runnable
+    private final Runnable RightTempTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowRightTempTime <= 0) {
                 return;
@@ -80,8 +80,8 @@ public class WarnZhtdAudiAir {
             }
         }
     };
-    private final Runnable RightWinlevTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.5
-        @Override // java.lang.Runnable
+    private final Runnable RightWinlevTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowRightWinlevTime <= 0) {
                 return;
@@ -95,8 +95,8 @@ public class WarnZhtdAudiAir {
             }
         }
     };
-    private final Runnable RightWinModeTimeCnt = new Runnable() { // from class: com.syu.canbus.warn.WarnZhtdAudiAir.6
-        @Override // java.lang.Runnable
+    private final Runnable RightWinModeTimeCnt = new Runnable() { 
+        @Override
         public void run() {
             if (WarnZhtdAudiAir.this.ShowRightWinModeTime <= 0) {
                 return;
@@ -143,15 +143,15 @@ public class WarnZhtdAudiAir {
     private void initTip(int updateCode, int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_450_audi_air, (ViewGroup) null, false);
-            this.mImageAirLeft = (ImageView) this.sWarnContent.findViewById(R.id.iv_air_left);
-            this.mImageAirRight = (ImageView) this.sWarnContent.findViewById(R.id.iv_air_right);
-            this.mTextTempLeft = (TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left);
-            this.mTextTempRight = (TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_450_audi_air, null, false);
+            this.mImageAirLeft = this.sWarnContent.findViewById(R.id.iv_air_left);
+            this.mImageAirRight = this.sWarnContent.findViewById(R.id.iv_air_right);
+            this.mTextTempLeft = this.sWarnContent.findViewById(R.id.tv_airtemp_left);
+            this.mTextTempRight = this.sWarnContent.findViewById(R.id.tv_airtemp_right);
         }
         this.mTextTempLeft.setVisibility(0);
-        ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit)).setVisibility(0);
-        switch (DataCanbus.DATA[40]) {
+        this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit).setVisibility(0);
+        switch (DataCanbus.DATA[80]) {
             case 2:
                 this.ShowLeftTempTime = 1;
                 postDelayedShow(this.LeftTempTimeCnt, 4000);
@@ -299,7 +299,7 @@ public class WarnZhtdAudiAir {
     }
 
     private void ShowAirLeftTemp() {
-        switch (DataCanbus.DATA[23]) {
+        switch (DataCanbus.DATA[27]) {
             case -3:
                 this.mImageAirLeft.setBackgroundResource(R.drawable.audi_temp_left26);
                 ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_pic)).setText("HI");
@@ -434,19 +434,19 @@ public class WarnZhtdAudiAir {
                 ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit)).setText("℃");
                 break;
         }
-        if (DataCanbus.DATA[23] >= 0) {
+        if (DataCanbus.DATA[27] >= 0) {
             this.mTextTempLeft.setVisibility(0);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit)).setVisibility(0);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_pic)).setVisibility(8);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit).setVisibility(0);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_left_pic).setVisibility(8);
         } else {
             this.mTextTempLeft.setVisibility(8);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit)).setVisibility(8);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_left_pic)).setVisibility(0);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_left_unit).setVisibility(8);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_left_pic).setVisibility(0);
         }
     }
 
     private void ShowAirRightTemp() {
-        switch (DataCanbus.DATA[24]) {
+        switch (DataCanbus.DATA[28]) {
             case -3:
                 this.mImageAirRight.setBackgroundResource(R.drawable.audi_temp_right26);
                 ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_pic)).setText("HI");
@@ -581,19 +581,19 @@ public class WarnZhtdAudiAir {
                 ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_unit)).setText("℃");
                 break;
         }
-        if (DataCanbus.DATA[24] >= 0) {
+        if (DataCanbus.DATA[28] >= 0) {
             this.mTextTempRight.setVisibility(0);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_unit)).setVisibility(0);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_pic)).setVisibility(8);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_right_unit).setVisibility(0);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_right_pic).setVisibility(8);
         } else {
             this.mTextTempRight.setVisibility(8);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_unit)).setVisibility(8);
-            ((TextView) this.sWarnContent.findViewById(R.id.tv_airtemp_right_pic)).setVisibility(0);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_right_unit).setVisibility(8);
+            this.sWarnContent.findViewById(R.id.tv_airtemp_right_pic).setVisibility(0);
         }
     }
 
     private void ShowAirLeftWinlev() {
-        switch (DataCanbus.DATA[33]) {
+        switch (DataCanbus.DATA[21]) {
             case 1:
                 this.mImageAirLeft.setBackgroundResource(R.drawable.audi_winlev_left1);
                 break;
@@ -634,7 +634,7 @@ public class WarnZhtdAudiAir {
     }
 
     private void ShowAirRightWinlev() {
-        switch (DataCanbus.DATA[34]) {
+        switch (DataCanbus.DATA[25]) {
             case 1:
                 this.mImageAirRight.setBackgroundResource(R.drawable.audi_winlev_right1);
                 break;
@@ -675,7 +675,7 @@ public class WarnZhtdAudiAir {
     }
 
     private void ShowAirLeftWinMode() {
-        switch (DataCanbus.DATA[41]) {
+        switch (DataCanbus.DATA[77]) {
             case 0:
                 this.mImageAirLeft.setBackgroundResource(R.drawable.audi_winmode_left0);
                 break;
@@ -707,7 +707,7 @@ public class WarnZhtdAudiAir {
     }
 
     private void ShowAirRightWinMode() {
-        switch (DataCanbus.DATA[42]) {
+        switch (DataCanbus.DATA[87]) {
             case 0:
                 this.mImageAirRight.setBackgroundResource(R.drawable.audi_winmode_right0);
                 break;

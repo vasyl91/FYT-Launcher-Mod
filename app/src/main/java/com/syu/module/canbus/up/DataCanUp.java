@@ -3,7 +3,6 @@ package com.syu.module.canbus.up;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.UiNotifyEvent;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DataCanUp {
     public static final UiNotifyEvent NOTIFY_EVENTS_FILEPATH;
     public static String mFileUpdatePath;

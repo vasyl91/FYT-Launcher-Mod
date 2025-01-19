@@ -12,40 +12,39 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirRearCtrl.1
-        @Override // java.lang.Runnable
+    Runnable airControl = new Runnable() { 
+        @Override
         public void run() {
             Rzc_Oudi_0439_AirRearCtrl.this.setAirControl(Rzc_Oudi_0439_AirRearCtrl.this.cmdId, 0);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirRearCtrl.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 24:
-                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirPower(value);
-                    break;
-                case 25:
-                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdateAirAuto(value);
-                    break;
-                case 26:
-                case 27:
-                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirBLowMode();
-                    break;
-                case 28:
-                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirWindLevel(value);
-                    break;
-                case 29:
+                case 40:
                     Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirTempRear(value);
                     break;
-                case 68:
+                case 42:
+                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirPower(value);
+                    break;
+                case 43:
+                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdateAirAuto(value);
+                    break;
+                case 44:
+                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirWindLevel(value);
+                    break;
+                case 46:
+                case 47:
+                    Rzc_Oudi_0439_AirRearCtrl.this.mUpdaterAirBLowMode();
+                    break;
+                case 88:
                     switch (value) {
                         case 0:
                             Rzc_Oudi_0439_AirRearCtrl.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
@@ -64,10 +63,10 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_439_haval_airrear_h9_control);
+        //setContentView(R.layout.layout_439_haval_airrear_h9_control);
         init();
     }
 
@@ -84,7 +83,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         ((Button) findViewById(R.id.air_xts_seathot_left)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -92,7 +91,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -100,17 +99,17 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmdId, int touchState) {
         DataCanbus.PROXY.cmd(3, cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
             case R.id.btn_air_temp_left_plus /* 2131427425 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 133;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -121,7 +120,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.btn_air_temp_left_minus /* 2131427427 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 134;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -132,7 +131,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.air_xts_power /* 2131427428 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 129;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -143,7 +142,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.dj_xts_air_win_minuts_btn /* 2131427429 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 132;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -154,7 +153,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.dj_xts_air_win_plus_btn /* 2131427431 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 131;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -165,7 +164,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.air_xts_seathot_left /* 2131427433 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 138;
                     break;
                 } else {
@@ -173,7 +172,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.air_xts_auto /* 2131427436 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 130;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -184,7 +183,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.air_xts_mode_foot /* 2131427443 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 137;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -195,7 +194,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     break;
                 }
             case R.id.air_xts_mode_body /* 2131427444 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 135;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -205,8 +204,8 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     this.cmdId = 24;
                     break;
                 }
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
-                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
+                if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                     this.cmdId = 136;
                     break;
                 } else if (DataCanbus.DATA[1000] == 16384439) {
@@ -236,32 +235,32 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirBLowMode() {
-        int body = DataCanbus.DATA[26];
-        int foot = DataCanbus.DATA[27];
+        int body = DataCanbus.DATA[46];
+        int foot = DataCanbus.DATA[47];
         if (DataCanbus.DATA[1000] == 16384439) {
-            body = DataCanbus.DATA[71];
-            foot = DataCanbus.DATA[72];
+            body = DataCanbus.DATA[46];
+            foot = DataCanbus.DATA[47];
         }
         if (foot == 1 && body == 0) {
             ((Button) findViewById(R.id.air_xts_mode_body)).setSelected(false);
@@ -278,7 +277,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower(int value) {
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
             if (value == 0) {
@@ -289,7 +288,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto(int value) {
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
             if (value == 0) {
@@ -300,7 +299,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRear(int temp) {
         int temp2;
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -312,7 +311,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
                     ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                     break;
                 default:
-                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343) {
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
                         temp2 = ((temp - 116) * 5) + 180;
                     } else if (DataCanbus.DATA[1000] == 16384439) {
                         temp2 = (temp * 5) + 160;
@@ -325,7 +324,7 @@ public class Rzc_Oudi_0439_AirRearCtrl extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel(int level) {
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
     }

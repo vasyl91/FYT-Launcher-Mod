@@ -10,10 +10,9 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityM50FAirControl extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.shenbao.ActivityM50FAirControl.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -49,11 +48,11 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
     public static boolean mIsFront = false;
     public static ActivityM50FAirControl mInstance = null;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInstance = this;
-        setContentView(R.layout.layout_0396_m50f_air_control);
+        //setContentView(R.layout.layout_0396_m50f_air_control);
         initUi();
     }
 
@@ -75,7 +74,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_air_temp_left_plus /* 2131427425 */:
@@ -130,7 +129,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         DataCanbus.PROXY.cmd(0, cmd, 1);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -138,7 +137,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -174,7 +173,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRear(int value) {
         if (value == 0) {
             ((Button) findViewById(R.id.air_xts_rear)).setBackgroundResource(R.drawable.ic_xts_rear_n);
@@ -183,7 +182,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFront(int value) {
         if (value == 0) {
             ((Button) findViewById(R.id.air_xts_front)).setBackgroundResource(R.drawable.ic_xts_front_n);
@@ -192,7 +191,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCycle(int value) {
         if (value == 0) {
             ((Button) findViewById(R.id.air_xts_cycle)).setBackgroundResource(R.drawable.ic_xts_cycle_n);
@@ -201,12 +200,12 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateWindLevel(int value) {
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(value).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWindType() {
         int wind = DataCanbus.DATA[15];
         int body = DataCanbus.DATA[16];
@@ -232,7 +231,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAC(int value) {
         if (value == 0) {
             ((Button) findViewById(R.id.air_xts_ac)).setBackgroundResource(R.drawable.ic_xts_ac_n);
@@ -241,13 +240,13 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTemp(int value) {
         ((TextView) findViewById(R.id.tv_air_temp_left)).setText(new StringBuilder().append(value).toString());
         ((TextView) findViewById(R.id.tv_air_temp_right)).setText(new StringBuilder().append(value).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePower(int value) {
         if (value == 0) {
             ((Button) findViewById(R.id.air_xts_power)).setBackgroundResource(R.drawable.ic_xts_power_n);
@@ -256,7 +255,7 @@ public class ActivityM50FAirControl extends Activity implements View.OnClickList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mInstance = null;

@@ -9,48 +9,47 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AtsInfoSetSecondAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.daojun.ats.AtsInfoSetSecondAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 22:
+                case 120:
                     AtsInfoSetSecondAct.this.updaternearCarUnlock();
                     break;
-                case 23:
+                case 121:
                     AtsInfoSetSecondAct.this.updaterForgotKey();
                     break;
-                case 24:
+                case 122:
                     AtsInfoSetSecondAct.this.updaterDriverStyle();
                     break;
-                case 25:
+                case 123:
                     AtsInfoSetSecondAct.this.updaterRelockDoor();
                     break;
-                case 29:
+                case 127:
                     AtsInfoSetSecondAct.this.updaterhandTraffic();
                     break;
-                case 30:
+                case 128:
                     AtsInfoSetSecondAct.this.updateradaptiveForwardLight();
                     break;
-                case 31:
+                case 129:
                     AtsInfoSetSecondAct.this.updaterMirrorAutoFold();
                     break;
-                case 32:
+                case 130:
                     AtsInfoSetSecondAct.this.updaterReverTiltMirror();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_daojun_ats_info_second_set);
+        //setContentView(R.layout.layout_daojun_ats_info_second_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(this);
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(this);
@@ -62,83 +61,83 @@ public class AtsInfoSetSecondAct extends BaseActivity implements View.OnClickLis
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value1 = DataCanbus.DATA[22];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value1 = DataCanbus.DATA[120];
                 AtsFunc.CAR_COMM_CONTROL(12, value1 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value2 = DataCanbus.DATA[23];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value2 = DataCanbus.DATA[121];
                 AtsFunc.CAR_COMM_CONTROL(13, value2 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value3 = DataCanbus.DATA[24];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value3 = DataCanbus.DATA[122];
                 AtsFunc.CAR_COMM_CONTROL(14, value3 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                AtsFunc.CAR_COMM_CONTROL(15, DataCanbus.DATA[25] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                AtsFunc.CAR_COMM_CONTROL(15, DataCanbus.DATA[123] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value7 = DataCanbus.DATA[29];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value7 = DataCanbus.DATA[127];
                 AtsFunc.CAR_COMM_CONTROL(16, value7 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int value8 = DataCanbus.DATA[30];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int value8 = DataCanbus.DATA[128];
                 AtsFunc.CAR_COMM_CONTROL(17, value8 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int value9 = DataCanbus.DATA[31];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value9 = DataCanbus.DATA[129];
                 AtsFunc.CAR_COMM_CONTROL(18, value9 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int value10 = DataCanbus.DATA[32];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value10 = DataCanbus.DATA[130];
                 AtsFunc.CAR_COMM_CONTROL(19, value10 != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaternearCarUnlock() {
-        int switchOn = DataCanbus.DATA[22];
+        int switchOn = DataCanbus.DATA[120];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(false);
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.klc_remote_Smart_Near_car_unlocked_all_door);
@@ -148,27 +147,27 @@ public class AtsInfoSetSecondAct extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterForgotKey() {
-        int switchOn = DataCanbus.DATA[23];
+        int switchOn = DataCanbus.DATA[121];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDriverStyle() {
-        int switchOn = DataCanbus.DATA[24];
+        int switchOn = DataCanbus.DATA[122];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRelockDoor() {
-        int reLockOpenDoorvalue = DataCanbus.DATA[25];
+        int reLockOpenDoorvalue = DataCanbus.DATA[123];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(reLockOpenDoorvalue != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterhandTraffic() {
-        int switchOn = DataCanbus.DATA[29];
+        int switchOn = DataCanbus.DATA[127];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setChecked(false);
             ((TextView) findViewById(R.id.tv_text2)).setText(R.string.xp_yinglang_car_set_Second_str2);
@@ -178,9 +177,9 @@ public class AtsInfoSetSecondAct extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateradaptiveForwardLight() {
-        int switchOn = DataCanbus.DATA[30];
+        int switchOn = DataCanbus.DATA[128];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(false);
             ((TextView) findViewById(R.id.tv_text3)).setText(R.string.xp_yinglang_car_set_Second_str5);
@@ -190,15 +189,15 @@ public class AtsInfoSetSecondAct extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMirrorAutoFold() {
-        int switchOn = DataCanbus.DATA[31];
+        int switchOn = DataCanbus.DATA[129];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterReverTiltMirror() {
-        int switchOn = DataCanbus.DATA[32];
+        int switchOn = DataCanbus.DATA[130];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setChecked(switchOn != 0);
     }
 }

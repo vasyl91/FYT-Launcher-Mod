@@ -9,67 +9,66 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FYTOilMilePage2Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.feiyate.FYTOilMilePage2Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 90:
-                case 101:
+                case 102:
+                case 113:
                     FYTOilMilePage2Acti.this.mUpdaterValue1();
-                case 93:
+                case 105:
                     FYTOilMilePage2Acti.this.mUpdaterValue2();
-                case 92:
+                case 104:
                     FYTOilMilePage2Acti.this.mUpdaterValue3();
-                case 91:
+                case 103:
                     FYTOilMilePage2Acti.this.mUpdaterValue4();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_fyt_all_oil_page2);
+        //setContentView(R.layout.layout_fyt_all_oil_page2);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.psa_all_btn_oil_page2_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.FYTOilMilePage2Acti.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa_all_btn_oil_page2_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[90];
-        int value1 = DataCanbus.DATA[101] & 255;
+        int value = DataCanbus.DATA[102];
+        int value1 = DataCanbus.DATA[113] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv1)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv1)).setText("--.--");
@@ -91,9 +90,9 @@ public class FYTOilMilePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[105];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv2)) != null) {
             if (value == 16777215) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv2)).setText("----");
@@ -103,10 +102,10 @@ public class FYTOilMilePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value = DataCanbus.DATA[92];
-        int unit = DataCanbus.DATA[100] & 255;
+        int value = DataCanbus.DATA[104];
+        int unit = DataCanbus.DATA[112] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv3)) != null) {
             if (value == 16777215) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv3)).setText("----");
@@ -118,10 +117,10 @@ public class FYTOilMilePage2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
-        int value = DataCanbus.DATA[91];
-        int unit = DataCanbus.DATA[100] & 255;
+        int value = DataCanbus.DATA[103];
+        int unit = DataCanbus.DATA[112] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv4)) != null) {
             if (value == 255) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page2_tv4)).setText("----");

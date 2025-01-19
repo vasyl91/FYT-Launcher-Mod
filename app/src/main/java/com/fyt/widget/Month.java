@@ -8,11 +8,10 @@ import android.widget.TextView;
 import com.android.launcher66.R;
 import com.syu.widget.util.TimeUtil;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Month extends TextView {
     public static Month mDate;
     private IntentFilter filter;
-    private Context mContext;
+    private final Context mContext;
 
     public static Month getMonth() {
         return mDate;
@@ -40,13 +39,13 @@ public class Month extends TextView {
         mDate = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setDate();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

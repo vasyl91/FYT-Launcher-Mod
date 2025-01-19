@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
     static CrashHandler mInstance;
     final String CARSH_DIR_PATH = "/sdcard/crash";
@@ -39,7 +38,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
-    @Override // java.lang.Thread.UncaughtExceptionHandler
+    @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (!handleException(ex)) {
             if (this.mDefaultHandler == null) {

@@ -3,7 +3,6 @@ package com.syu.util;
 import android.os.SystemClock;
 import android.util.Log;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class JLog {
     static JLog instance;
     static long startime;
@@ -23,31 +22,31 @@ public class JLog {
 
     public void e(String msg) {
         if (Debug) {
-            Log.e(Tag, "=====" + msg);
+            Log.e(Tag, "=====> " + msg);
         }
     }
 
     public void w(String msg) {
         if (Debug) {
-            Log.w(Tag, "=====" + msg);
+            Log.w(Tag, "=====> " + msg);
         }
     }
 
     public void d(String msg) {
         if (Debug) {
-            Log.d(Tag, "=====" + msg);
+            Log.d(Tag, "=====> " + msg);
         }
     }
 
     public void i(String msg) {
         if (Debug) {
-            Log.i(Tag, "=====" + msg);
+            Log.i(Tag, "=====> " + msg);
         }
     }
 
     public void e(String msg, Throwable tr) {
         if (Debug) {
-            Log.e(Tag, "=====" + msg, tr);
+            Log.e(Tag, "=====> " + msg, tr);
         }
     }
 

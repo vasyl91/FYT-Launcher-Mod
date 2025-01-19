@@ -9,36 +9,35 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BZ408FuncOthersActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.BZ408FuncOthersActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 34:
+                case 131:
                     BZ408FuncOthersActi.this.mUpdaterValue1();
                     break;
-                case 55:
+                case 152:
                     BZ408FuncOthersActi.this.mUpdaterValue2();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_biaozhi408_func_others);
+        //setContentView(R.layout.layout_biaozhi408_func_others);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        findViewById(R.id.btn_minus1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408FuncOthersActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[34];
+                int value2 = DataCanbus.DATA[131];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value2 != 0 ? 0 : 1;
@@ -51,11 +50,11 @@ public class BZ408FuncOthersActi extends BaseActivity {
                 ((TextView) BZ408FuncOthersActi.this.findViewById(R.id.tv_text1)).setText(value == 0 ? "KM/L-KM" : "L/100KM-KM");
             }
         });
-        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408FuncOthersActi.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[34];
+                int value2 = DataCanbus.DATA[131];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value2 != 0 ? 0 : 1;
@@ -68,10 +67,10 @@ public class BZ408FuncOthersActi extends BaseActivity {
                 ((TextView) BZ408FuncOthersActi.this.findViewById(R.id.tv_text1)).setText(value == 0 ? "KM/L-KM" : "L/100KM-KM");
             }
         });
-        findViewById(R.id.btn_minus2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408FuncOthersActi.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_minus2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[55] - 1;
+                int value = DataCanbus.DATA[152] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -80,10 +79,10 @@ public class BZ408FuncOthersActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(52, new int[]{value}, null, null);
             }
         });
-        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408FuncOthersActi.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_plus2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[55] + 1;
+                int value = DataCanbus.DATA[152] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -94,21 +93,21 @@ public class BZ408FuncOthersActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[34];
+        int value = DataCanbus.DATA[131];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             if (value != 0) {
                 ((TextView) findViewById(R.id.tv_text1)).setText("L/100KM-KM");
@@ -118,9 +117,9 @@ public class BZ408FuncOthersActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[55];
+        int value = DataCanbus.DATA[152];
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.sound_settings_2_crystal_rhythm);

@@ -3,7 +3,6 @@ package com.syu.module.main;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.UiNotifyEvent;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DataMain {
     public static int sAppIdRequest;
     public static final RemoteModuleProxy PROXY = new RemoteModuleProxy();

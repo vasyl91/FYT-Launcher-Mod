@@ -10,38 +10,37 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements View.OnTouchListener {
     public static Xincheng_Nissan_Tule_AirControlActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 8:
+                case 11:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdateACOn();
                     break;
-                case 12:
+                case 14:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdateSyncOn();
                     break;
-                case 15:
-                case 16:
-                case 17:
+                case 18:
+                case 19:
+                case 20:
                     Xincheng_Nissan_Tule_AirControlActi.this.updateBtnSource();
                     break;
-                case 18:
+                case 21:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 19:
+                case 27:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdateAirTempLeft();
                     break;
-                case 20:
+                case 28:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdateAirTempRight();
                     break;
-                case 85:
+                case 29:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdaterSeatHeatLeft();
                     break;
-                case 86:
+                case 30:
                     Xincheng_Nissan_Tule_AirControlActi.this.mUpdaterSeatHeatRight();
                     break;
             }
@@ -52,12 +51,12 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         DataCanbus.PROXY.cmd(3, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_0452_xc_nissan_tule_air_control);
+        //setContentView(R.layout.layout_0452_xc_nissan_tule_air_control);
         init();
         mInstance = this;
     }
@@ -74,7 +73,7 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         findViewById(R.id.air_home).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -82,7 +81,7 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -90,7 +89,7 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -113,13 +112,13 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
             case R.id.air_xts_ac /* 2131427439 */:
                 data0 = 23;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
+            case R.id.air_xts_dual /* 2131427566 */:
                 data0 = 16;
                 break;
-            case R.id.air_set /* 2131428615 */:
+            case R.id.air_set /* 2131428609 */:
                 data0 = 255;
                 break;
-            case R.id.air_home /* 2131428616 */:
+            case R.id.air_home /* 2131428610 */:
                 data0 = 254;
                 break;
         }
@@ -132,40 +131,40 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateACOn() {
-        int power = DataCanbus.DATA[8];
+        int power = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(power == 0 ? R.drawable.ic_tule_ac_n : R.drawable.ic_tule_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[18];
+        int leave = DataCanbus.DATA[21];
         switch (leave) {
             case 1:
                 findViewById(R.id.dj_xts_air_winlevel).setBackgroundResource(R.drawable.ic_tule_win_lv1);
@@ -194,15 +193,15 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
-        int acOn = DataCanbus.DATA[12];
+        int acOn = DataCanbus.DATA[14];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_tule_dual_n : R.drawable.ic_tule_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
-        int heatlevel = DataCanbus.DATA[86];
+        int heatlevel = DataCanbus.DATA[30];
         switch (heatlevel) {
             case 0:
                 findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_tule_seathot_right_level0);
@@ -219,9 +218,9 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
-        int heatlevel = DataCanbus.DATA[85];
+        int heatlevel = DataCanbus.DATA[29];
         switch (heatlevel) {
             case 0:
                 findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_tule_seathot_left_level0);
@@ -238,9 +237,9 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[19];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -252,9 +251,9 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[20];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -266,11 +265,11 @@ public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[15];
-        int foot = DataCanbus.DATA[17];
-        int body = DataCanbus.DATA[16];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

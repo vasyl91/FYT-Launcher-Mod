@@ -4,68 +4,68 @@ import android.os.Bundle;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XfyDx7HistroyAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xfy.dx7.XfyDx7HistroyAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 5:
+                case 102:
                     XfyDx7HistroyAct.this.mUpdateCurOilExpend();
                     break;
-                case 6:
+                case 103:
                     XfyDx7HistroyAct.this.mUpdaterDrivingMileage();
                     break;
-                case 7:
+                case 104:
                     XfyDx7HistroyAct.this.mUpdateCurOptimalOilExpend();
                     break;
-                case 8:
+                case 105:
                     XfyDx7HistroyAct.this.mUpdaterLastOil();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xfydx7_oil_trip_info);
+        //setContentView(R.layout.layout_xfydx7_oil_trip_info);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCurOilExpend() {
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.xfydx7_average_oil)) != null) {
             if (value < 0) {
                 ((TextView) findViewById(R.id.xfydx7_average_oil)).setText("--.--");
             } else {
-                ((TextView) findViewById(R.id.xfydx7_average_oil)).setText(String.valueOf(value / 10) + "." + (value % 10) + " L/100km");
+                ((TextView) findViewById(R.id.xfydx7_average_oil)).setText(String.valueOf(value / 10) + "." + (value % 10) + " " + CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCurOptimalOilExpend() {
-        int value = DataCanbus.DATA[7];
+        int value = DataCanbus.DATA[104];
         if (((TextView) findViewById(R.id.xfydx7_current_consumption)) != null) {
             if (value < 0) {
                 ((TextView) findViewById(R.id.xfydx7_current_consumption)).setText("--.--");
@@ -75,9 +75,9 @@ public class XfyDx7HistroyAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLastOil() {
-        int value = DataCanbus.DATA[8];
+        int value = DataCanbus.DATA[105];
         if (((TextView) findViewById(R.id.xfydx7_trip_oil_value)) != null) {
             if (value < 0) {
                 ((TextView) findViewById(R.id.xfydx7_trip_oil_value)).setText("--.--");
@@ -89,9 +89,9 @@ public class XfyDx7HistroyAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[103];
         if (((TextView) findViewById(R.id.xfydx7_driving_mileage)) != null) {
             if (value < 0) {
                 ((TextView) findViewById(R.id.xfydx7_driving_mileage)).setText("--.--");

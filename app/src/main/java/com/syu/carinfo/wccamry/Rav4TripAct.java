@@ -9,32 +9,33 @@ import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.camry2012.xp.CamryicPetrolElectricActi;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rav4TripAct extends BaseActivity {
     private VerticalProgressbar mProgressbarCur;
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[30];
     private TextView[] mOilTv = new TextView[4];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            int value = DataCanbus.DATA[199];
             switch (updateCode) {
-                case 0:
+                case 98:
                     Rav4TripAct.this.mUpdaterOilExpend();
                     break;
-                case 1:
+                case 99:
                     Rav4TripAct.this.mUpdaterDrivingMileage();
                     break;
-                case 2:
+                case 100:
                     Rav4TripAct.this.mUpdaterAveragVelocity();
                     break;
-                case 3:
+                case 101:
                     Rav4TripAct.this.mUpdaterDrivingTime();
                     break;
-                case 19:
+                case 117:
                     if (ints == null) {
                         for (int i = 0; i < 30; i++) {
                             int[] ints2 = ConstWcToyota.mMinuteoilexpend[i];
@@ -48,21 +49,24 @@ public class Rav4TripAct extends BaseActivity {
                         Rav4TripAct.this.mUpdaterOilValue(ints);
                         break;
                     }
-                case 30:
+                case 128:
                     Rav4TripAct.this.mUpdaterPeenable();
+                    break;
+                case 199:
+                    ((TextView) Rav4TripAct.this.findViewById(R.id.btn_plus2)).setText(String.valueOf(Rav4TripAct.this.getResources().getString(R.string.water_temp)) + ": " + (value - 40) + "℃");
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rav4_trip);
+        //setContentView(R.layout.layout_rav4_trip);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 33) {
@@ -93,33 +97,35 @@ public class Rav4TripAct extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mProgressbar[0] = (VerticalProgressbar) findViewById(R.id.rav4_progressbar_0);
         this.mProgressbar[1] = (VerticalProgressbar) findViewById(R.id.rav4_progressbar_1);
@@ -141,8 +147,8 @@ public class Rav4TripAct extends BaseActivity {
         this.mOilTv[1] = (TextView) findViewById(R.id.rav4_tv_oil_1);
         this.mOilTv[2] = (TextView) findViewById(R.id.rav4_tv_oil_2);
         this.mOilTv[3] = (TextView) findViewById(R.id.rav4_tv_oil_3);
-        ((Button) findViewById(R.id.rav4_btn_car_pe)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rav4_btn_car_pe)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -153,8 +159,8 @@ public class Rav4TripAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.camry_btn_tire)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.camry_btn_tire)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -165,8 +171,8 @@ public class Rav4TripAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rav4_btn_iol_expend)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rav4_btn_iol_expend)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -177,14 +183,20 @@ public class Rav4TripAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rav4_btn_clear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                DataCanbus.PROXY.cmd(29, new int[]{4, 5, 1}, null, null);
+            }
+        });
+        ((Button) findViewById(R.id.rav4_btn_clear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(14, null, null, null);
             }
         });
-        ((Button) findViewById(R.id.rav4_btn_setting)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wccamry.Rav4TripAct.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rav4_btn_setting)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (DataCanbus.DATA[1000] == 33) {
                     try {
@@ -208,29 +220,18 @@ public class Rav4TripAct extends BaseActivity {
                         return;
                     }
                 }
-                if (DataCanbus.DATA[1000] == 1966374 || DataCanbus.DATA[1000] == 2097446 || DataCanbus.DATA[1000] == 2228518 || DataCanbus.DATA[1000] == 2162982) {
-                    try {
-                        Intent intent3 = new Intent();
-                        intent3.setClass(Rav4TripAct.this, PradoSettingsAct.class);
-                        Rav4TripAct.this.startActivity(intent3);
-                        return;
-                    } catch (Exception e3) {
-                        e3.printStackTrace();
-                        return;
-                    }
-                }
                 try {
-                    Intent intent4 = new Intent();
-                    intent4.setClass(Rav4TripAct.this, CorollaSettingsAct.class);
-                    Rav4TripAct.this.startActivity(intent4);
-                } catch (Exception e4) {
-                    e4.printStackTrace();
+                    Intent intent3 = new Intent();
+                    intent3.setClass(Rav4TripAct.this, CorollaSettingsAct.class);
+                    Rav4TripAct.this.startActivity(intent3);
+                } catch (Exception e3) {
+                    e3.printStackTrace();
                 }
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -239,18 +240,18 @@ public class Rav4TripAct extends BaseActivity {
         return true;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPeenable() {
         if (is_wc_canbus()) {
-            int value = DataCanbus.DATA[30];
+            int value = DataCanbus.DATA[128];
             if (((Button) findViewById(R.id.rav4_btn_car_pe)) != null) {
-                ((Button) findViewById(R.id.rav4_btn_car_pe)).setVisibility(value == 0 ? 4 : 0);
+                ((Button) findViewById(R.id.rav4_btn_car_pe)).setVisibility(value != 0 ? 0 : 8);
                 return;
             }
             return;
         }
         if (((Button) findViewById(R.id.rav4_btn_car_pe)) != null) {
-            ((Button) findViewById(R.id.rav4_btn_car_pe)).setVisibility(0 == 0 ? 8 : 0);
+            ((Button) findViewById(R.id.rav4_btn_car_pe)).setVisibility(0 != 0 ? 0 : 8);
         }
     }
 
@@ -259,9 +260,9 @@ public class Rav4TripAct extends BaseActivity {
         return (65535 & id) == 294;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         int numMax = 30;
@@ -269,7 +270,7 @@ public class Rav4TripAct extends BaseActivity {
             if (unit == 0) {
                 numMax = 60;
                 if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG");
+                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG-US");
                 }
                 for (int i = 0; i < 4; i++) {
                     if (this.mOilTv[i] != null) {
@@ -279,7 +280,7 @@ public class Rav4TripAct extends BaseActivity {
             } else if (unit == 1) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("km/L");
+                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                 }
                 for (int i2 = 0; i2 < 4; i2++) {
                     if (this.mOilTv[i2] != null) {
@@ -289,11 +290,21 @@ public class Rav4TripAct extends BaseActivity {
             } else if (unit == 2) {
                 numMax = 30;
                 if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("L/100km");
+                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 }
                 for (int i3 = 0; i3 < 4; i3++) {
                     if (this.mOilTv[i3] != null) {
                         this.mOilTv[i3].setText(new StringBuilder().append(Rav4Data.mOilNum0[i3]).toString());
+                    }
+                }
+            } else if (unit == 3) {
+                numMax = 60;
+                if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
+                    ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG-UK");
+                }
+                for (int i4 = 0; i4 < 4; i4++) {
+                    if (this.mOilTv[i4] != null) {
+                        this.mOilTv[i4].setText(new StringBuilder().append(Rav4Data.mOilNum1[i4]).toString());
                     }
                 }
             }
@@ -314,20 +325,20 @@ public class Rav4TripAct extends BaseActivity {
         this.mProgressbarCur.invalidate();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[99];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
         if (unit == 0) {
-            if (DataCanbus.DATA[1000] == 109 || DataCanbus.DATA[1000] == 33 || DataCanbus.DATA[1000] == 46 || DataCanbus.DATA[1000] == 110 || DataCanbus.DATA[1000] == 262438 || DataCanbus.DATA[1000] == 327974 || DataCanbus.DATA[1000] == 294 || DataCanbus.DATA[1000] == 196902 || DataCanbus.DATA[1000] == 2031910 || DataCanbus.DATA[1000] == 1704230 || DataCanbus.DATA[1000] == 2294054 || DataCanbus.DATA[1000] == 2359590 || DataCanbus.DATA[1000] == 2425126 || DataCanbus.DATA[1000] == 2490662 || DataCanbus.DATA[1000] == 2556198 || DataCanbus.DATA[1000] == 2621734 || DataCanbus.DATA[1000] == 2687270 || DataCanbus.DATA[1000] == 2752806 || DataCanbus.DATA[1000] == 2818342 || DataCanbus.DATA[1000] == 65830 || DataCanbus.DATA[1000] == 131366 || DataCanbus.DATA[1000] == 459046 || DataCanbus.DATA[1000] == 524582) {
+            if (DataCanbus.DATA[1000] == 109 || DataCanbus.DATA[1000] == 33 || DataCanbus.DATA[1000] == 46 || (DataCanbus.DATA[1000] & 65535) == 294) {
                 str = String.valueOf(num) + " km";
             } else {
                 str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " km";
             }
         } else if (unit == 1) {
-            if (DataCanbus.DATA[1000] == 109 || DataCanbus.DATA[1000] == 33 || DataCanbus.DATA[1000] == 46 || DataCanbus.DATA[1000] == 110 || DataCanbus.DATA[1000] == 262438 || DataCanbus.DATA[1000] == 327974 || DataCanbus.DATA[1000] == 294 || DataCanbus.DATA[1000] == 196902 || DataCanbus.DATA[1000] == 2031910 || DataCanbus.DATA[1000] == 1704230 || DataCanbus.DATA[1000] == 2294054 || DataCanbus.DATA[1000] == 2359590 || DataCanbus.DATA[1000] == 2425126 || DataCanbus.DATA[1000] == 2490662 || DataCanbus.DATA[1000] == 2556198 || DataCanbus.DATA[1000] == 2621734 || DataCanbus.DATA[1000] == 2687270 || DataCanbus.DATA[1000] == 2752806 || DataCanbus.DATA[1000] == 2818342 || DataCanbus.DATA[1000] == 65830 || DataCanbus.DATA[1000] == 131366) {
+            if (DataCanbus.DATA[1000] == 109 || DataCanbus.DATA[1000] == 33 || DataCanbus.DATA[1000] == 46 || (DataCanbus.DATA[1000] & 65535) == 294) {
                 str = String.valueOf(num) + " mile";
             } else {
                 str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " mile";
@@ -338,17 +349,17 @@ public class Rav4TripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAveragVelocity() {
         if (((TextView) findViewById(R.id.rav4_tv_average_velocity)) != null) {
-            int value = DataCanbus.DATA[2] & 16777215;
+            int value = DataCanbus.DATA[100] & 16777215;
             ((TextView) findViewById(R.id.rav4_tv_average_velocity)).setText(String.valueOf(value) + " km/h");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingTime() {
-        int time = DataCanbus.DATA[3];
+        int time = DataCanbus.DATA[101];
         if (time > -1) {
             int hour = time / 60;
             int minute = time % 60;
@@ -369,7 +380,7 @@ public class Rav4TripAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilValue(int[] ints) {
         if (ints != null && ints.length >= 2 && ints[0] >= 0 && ints[0] < 30) {
             int index = ints[0];
@@ -381,7 +392,7 @@ public class Rav4TripAct extends BaseActivity {
                 if (unit == 0) {
                     numMax = 60;
                     if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG");
+                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG-US");
                     }
                     for (int i = 0; i < 4; i++) {
                         if (this.mOilTv[i] != null) {
@@ -391,7 +402,7 @@ public class Rav4TripAct extends BaseActivity {
                 } else if (unit == 1) {
                     numMax = 30;
                     if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("km/L");
+                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
                     }
                     for (int i2 = 0; i2 < 4; i2++) {
                         if (this.mOilTv[i2] != null) {
@@ -401,11 +412,21 @@ public class Rav4TripAct extends BaseActivity {
                 } else if (unit == 2) {
                     numMax = 30;
                     if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
-                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("L/100km");
+                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                     }
                     for (int i3 = 0; i3 < 4; i3++) {
                         if (this.mOilTv[i3] != null) {
                             this.mOilTv[i3].setText(new StringBuilder().append(Rav4Data.mOilNum0[i3]).toString());
+                        }
+                    }
+                } else if (unit == 3) {
+                    numMax = 60;
+                    if (((TextView) findViewById(R.id.rav4_tv_oil_unit)) != null) {
+                        ((TextView) findViewById(R.id.rav4_tv_oil_unit)).setText("MPG-UK");
+                    }
+                    for (int i4 = 0; i4 < 4; i4++) {
+                        if (this.mOilTv[i4] != null) {
+                            this.mOilTv[i4].setText(new StringBuilder().append(Rav4Data.mOilNum1[i4]).toString());
                         }
                     }
                 }

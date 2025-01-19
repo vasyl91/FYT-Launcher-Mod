@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.PopupWindow;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
@@ -13,20 +14,19 @@ import com.syu.module.main.DataMain;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ParkingHelper implements IUiNotify, Runnable {
     private static final ParkingHelper INSTANCE = new ParkingHelper();
     private PopupWindow mWindow;
     private int mBackCar = 0;
     private int mShow = 0;
-    private Runnable mHideWindow = new Runnable() { // from class: com.syu.ui.parking.ParkingHelper.1
-        @Override // java.lang.Runnable
+    private final Runnable mHideWindow = new Runnable() { 
+        @Override
         public void run() {
-            ParkingHelper.this.mWindow.dismiss();
+            //ParkingHelper.this.mWindow.dismiss();
         }
     };
-    private final Runnable SHOW = new Runnable() { // from class: com.syu.ui.parking.ParkingHelper.2
-        @Override // java.lang.Runnable
+    private final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             Log.d("gandy", " ****PackingHelper  Runnable SHOW ****");
             if (!ParkingHelper.this.mWindow.isShowing()) {
@@ -37,9 +37,9 @@ public class ParkingHelper implements IUiNotify, Runnable {
                 }
                 Log.d("gandy", " ****PackingHelper  Width = " + LauncherApplication.getScreenWidth() + "  Height = " + LauncherApplication.getScreenHeight());
                 if (LauncherApplication.getScreenHeight() > LauncherApplication.getScreenWidth()) {
-                    LauncherApplication.showWindow(ParkingHelper.this.mWindow, 48, 0, LauncherApplication.getScreenHeight() - ((LauncherApplication.getScreenWidth() * 840) / 768));
+                    //LauncherApplication.showWindow(ParkingHelper.this.mWindow, 48, 0, LauncherApplication.getScreenHeight() - ((LauncherApplication.getScreenWidth() * 840) / 768));
                 } else {
-                    LauncherApplication.showWindow(ParkingHelper.this.mWindow, 48, 0, 0);
+                    //LauncherApplication.showWindow(ParkingHelper.this.mWindow, 48, 0, 0);
                 }
             }
             View view = ParkingHelper.this.mWindow.getContentView();
@@ -61,16 +61,16 @@ public class ParkingHelper implements IUiNotify, Runnable {
             this.mWindow.setHeight(-2);
             this.mWindow.setBackgroundDrawable(new ColorDrawable(0));
             this.mWindow.setOutsideTouchable(true);
-            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { // from class: com.syu.ui.parking.ParkingHelper.3
-                @Override // android.widget.PopupWindow.OnDismissListener
+            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { 
+                @Override
                 public void onDismiss() {
-                    LauncherApplication.removeRootView(ParkingHelper.this.mWindow);
+                    //LauncherApplication.removeRootView(ParkingHelper.this.mWindow);
                 }
             });
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         int uBackCar = DataMain.DATA[12];
         switch (DataCanbus.DATA[1000]) {
@@ -105,7 +105,7 @@ public class ParkingHelper implements IUiNotify, Runnable {
     }
 
     private void hideWindow() {
-        HandlerUI.getInstance().post(this.mHideWindow);
+        //HandlerUI.getInstance().post(this.mHideWindow);
     }
 
     public static ParkingHelper getInstance() {
@@ -115,26 +115,26 @@ public class ParkingHelper implements IUiNotify, Runnable {
     private ParkingHelper() {
     }
 
-    @Override // com.syu.module.IUiNotify
+    @Override
     public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         this.mBackCar = DataMain.DATA[12];
         if (this.mBackCar == 0) {
-            hideWindow();
+            //hideWindow();
         } else {
-            showAndRefresh();
+            //showAndRefresh();
         }
     }
 
     public void showAndRefresh() {
-        HandlerUI.getInstance().post(this.SHOW);
+        //HandlerUI.getInstance().post(this.SHOW);
     }
 
     public void buildUi(View view) {
-        this.mWindow.dismiss();
-        this.mWindow.setContentView(view);
+        //this.mWindow.dismiss();
+        //this.mWindow.setContentView(view);
     }
 
     public void destroyUi() {
-        this.mWindow.setContentView(null);
+        //this.mWindow.setContentView(null);
     }
 }

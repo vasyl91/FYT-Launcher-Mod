@@ -7,15 +7,14 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcFeiyateIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_jianghuai_indexact);
+        //setContentView(R.layout.layout_rzc_jianghuai_indexact);
         findViewById(R.id.rzc_jianghuai_car_tire_view).setVisibility(8);
-        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.feiyate.RzcFeiyateIndexAct.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -26,8 +25,8 @@ public class RzcFeiyateIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rzc_jianghuai_carinfo)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.feiyate.RzcFeiyateIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_jianghuai_carinfo)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

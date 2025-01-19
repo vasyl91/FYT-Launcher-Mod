@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TabWidget;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FocusOnlyTabWidget extends TabWidget {
     public FocusOnlyTabWidget(Context context) {
         super(context);
@@ -68,7 +67,7 @@ public class FocusOnlyTabWidget extends TabWidget {
         super.onFocusChange(v, hasFocus);
     }
 
-    @Override // android.widget.TabWidget, android.view.View.OnFocusChangeListener
+    @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (v == this && hasFocus && getTabCount() > 0) {
             getSelectedTab().requestFocus();

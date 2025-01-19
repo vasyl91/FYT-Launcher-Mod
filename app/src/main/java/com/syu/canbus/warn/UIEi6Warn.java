@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIEi6Warn {
     private static UIEi6Warn mInstance;
     Context context;
@@ -30,7 +30,7 @@ public class UIEi6Warn {
         if (this.sWarnContent != null) {
             boolean showflag = false;
             switch (updateCode) {
-                case 108:
+                case 176:
                     switch (value) {
                         case 1:
                         case 2:
@@ -39,7 +39,7 @@ public class UIEi6Warn {
                             showflag = true;
                             break;
                     }
-                case 110:
+                case 178:
                     switch (value) {
                         case 1:
                         case 2:
@@ -58,12 +58,12 @@ public class UIEi6Warn {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (updateCode) {
-            case 108:
+            case 176:
                 switch (value) {
                     case 1:
                         this.mTextWarn.setText(R.string.driver_system_economics);
@@ -78,7 +78,7 @@ public class UIEi6Warn {
                         this.mTextWarn.setText(R.string.str_252_sound_selection5);
                         break;
                 }
-            case 110:
+            case 178:
                 switch (value) {
                     case 1:
                         this.mTextWarn.setText("能力回收等级：轻");

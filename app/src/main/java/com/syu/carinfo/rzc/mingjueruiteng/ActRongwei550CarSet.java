@@ -9,44 +9,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActRongwei550CarSet extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mingjueruiteng.ActRongwei550CarSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 26:
+                case 98:
                     ActRongwei550CarSet.this.uSteerFeel(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_rzc_rongwei550_car_set);
+        //setContentView(R.layout.layout_rzc_rongwei550_car_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.mingjue_steerfeel_m)).setOnClickListener(this);
         ((Button) findViewById(R.id.mingjue_steerfeel_p)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.mingjue_steerfeel_m /* 2131432789 */:
-                int value = DataCanbus.DATA[26] - 1;
+            case R.id.mingjue_steerfeel_m /* 2131432716 */:
+                int value = DataCanbus.DATA[98] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 sendCmd(value);
                 break;
-            case R.id.mingjue_steerfeel_p /* 2131432791 */:
-                int value2 = DataCanbus.DATA[26] + 1;
+            case R.id.mingjue_steerfeel_p /* 2131432718 */:
+                int value2 = DataCanbus.DATA[98] + 1;
                 if (value2 > 3) {
                     value2 = 0;
                 }
@@ -59,26 +58,26 @@ public class ActRongwei550CarSet extends BaseActivity implements View.OnClickLis
         DataCanbus.PROXY.cmd(0, new int[]{value}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uSteerFeel(int value) {

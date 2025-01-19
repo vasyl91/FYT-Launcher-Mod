@@ -9,14 +9,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTouchListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_AirSeatSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 85:
+                case 29:
                     if (((TextView) Infiniti_XinCheng_AirSeatSet.this.findViewById(R.id.tv_text1)) != null) {
                         switch (val) {
                             case 0:
@@ -37,7 +36,7 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
                         }
                     }
                     break;
-                case 86:
+                case 30:
                     if (((TextView) Infiniti_XinCheng_AirSeatSet.this.findViewById(R.id.tv_text2)) != null) {
                         switch (val) {
                             case 0:
@@ -58,7 +57,7 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
                         }
                     }
                     break;
-                case 87:
+                case 31:
                     if (((TextView) Infiniti_XinCheng_AirSeatSet.this.findViewById(R.id.tv_text3)) != null) {
                         switch (val) {
                             case 0:
@@ -76,7 +75,7 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
                         }
                     }
                     break;
-                case 88:
+                case 32:
                     if (((TextView) Infiniti_XinCheng_AirSeatSet.this.findViewById(R.id.tv_text4)) != null) {
                         switch (val) {
                             case 0:
@@ -98,10 +97,10 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_xincheng_infiniti_airseat_settings);
+        //setContentView(R.layout.layout_0452_xincheng_infiniti_airseat_settings);
         init();
     }
 
@@ -112,21 +111,21 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
         findViewById(R.id.ctv_checkedtext4).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 data0 = 11;
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 data0 = 13;
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 data0 = 64;
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 data0 = 65;
                 break;
         }
@@ -142,29 +141,29 @@ public class Infiniti_XinCheng_AirSeatSet extends Activity implements View.OnTou
         DataCanbus.PROXY.cmd(3, new int[]{value1, value2}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
     }
 }

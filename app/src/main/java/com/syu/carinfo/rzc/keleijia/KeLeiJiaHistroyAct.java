@@ -4,51 +4,51 @@ import android.os.Bundle;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KeLeiJiaHistroyAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.keleijia.KeLeiJiaHistroyAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 42:
+                case 132:
                     KeLeiJiaHistroyAct.this.mUpdateCurOilExpend();
                     break;
-                case 43:
+                case 133:
                     KeLeiJiaHistroyAct.this.mUpdateCurOptimalOilExpend();
                     break;
-                case 44:
+                case 134:
                     KeLeiJiaHistroyAct.this.mUpdaterDrivingMileage();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_keleijiahistroy);
+        //setContentView(R.layout.layout_keleijiahistroy);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCurOilExpend() {
-        int value = DataCanbus.DATA[42];
+        int value = DataCanbus.DATA[132];
         if (((TextView) findViewById(R.id.xfydx7_average_oil)) != null) {
             if (value < 0 || value == 65535) {
                 ((TextView) findViewById(R.id.xfydx7_average_oil)).setText("--.--");
@@ -58,26 +58,26 @@ public class KeLeiJiaHistroyAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCurOptimalOilExpend() {
-        int value = DataCanbus.DATA[43];
+        int value = DataCanbus.DATA[133];
         if (((TextView) findViewById(R.id.xfydx7_current_consumption)) != null) {
             if (value < 0 || value == 65535) {
                 ((TextView) findViewById(R.id.xfydx7_current_consumption)).setText("--.--");
             } else {
-                ((TextView) findViewById(R.id.xfydx7_current_consumption)).setText(String.valueOf(value / 10) + "." + (value % 10) + " KM/H");
+                ((TextView) findViewById(R.id.xfydx7_current_consumption)).setText(String.valueOf(value / 10) + "." + (value % 10) + " " + CamryData.SPEED_UNIT_KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[44];
+        int value = DataCanbus.DATA[134];
         if (((TextView) findViewById(R.id.xfydx7_trip_oil_value)) != null) {
             if (value < 0 || value == 65535) {
                 ((TextView) findViewById(R.id.xfydx7_trip_oil_value)).setText("--.--");
             } else {
-                ((TextView) findViewById(R.id.xfydx7_trip_oil_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + " KM");
+                ((TextView) findViewById(R.id.xfydx7_trip_oil_value)).setText(String.valueOf(value / 10) + "." + (value % 10) + " " + CamryData.MILEAGE_UNIT_KM);
             }
         }
     }

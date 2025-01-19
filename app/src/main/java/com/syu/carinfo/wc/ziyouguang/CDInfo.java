@@ -1,6 +1,5 @@
 package com.syu.carinfo.wc.ziyouguang;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CDInfo {
     int index;
     String str;

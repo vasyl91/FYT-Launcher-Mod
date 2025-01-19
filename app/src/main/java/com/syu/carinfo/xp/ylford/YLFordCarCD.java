@@ -15,7 +15,6 @@ import com.syu.module.canbus.Callback_0380_XP1_FocusKeepDVD;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private FileAdapter adapter;
@@ -24,23 +23,23 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
     int cycleState = 7;
     int carcd_ff = 1;
     int carcd_fb = 1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ylford.YLFordCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 15:
+                case 113:
                     YLFordCarCD.this.updaterRandom();
                     break;
-                case 17:
+                case 115:
                     YLFordCarCD.this.updaterWorkState();
                     break;
-                case 18:
+                case 116:
                     YLFordCarCD.this.updaterTrack();
                     break;
-                case 19:
+                case 117:
                     YLFordCarCD.this.updaterCurTime();
                     break;
-                case 20:
+                case 118:
                     YLFordCarCD.this.updaterCdTextInfo();
                     break;
             }
@@ -49,21 +48,21 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
     Toast toast = null;
     TextView view = null;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_380_ylford_cd);
+        //setContentView(R.layout.layout_380_ylford_cd);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.cdInfos = new ArrayList<>();
         this.adapter = new FileAdapter(this, this.cdInfos);
         ((ListView) findViewById(R.id.xp_ylford_cd_list_view)).setAdapter((ListAdapter) this.adapter);
-        ((ListView) findViewById(R.id.xp_ylford_cd_list_view)).setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.xp.ylford.YLFordCarCD.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        ((ListView) findViewById(R.id.xp_ylford_cd_list_view)).setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 int trackIndex = ((CDInfo) YLFordCarCD.this.cdInfos.get(position)).getIndex() + 1;
                 YLFordCarCD.CD_CONRTROL_CMD(176, 1, (trackIndex >> 8) & 255, trackIndex);
@@ -82,7 +81,7 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.xp_ylford_cd_ff).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -91,7 +90,7 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -99,27 +98,27 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         finish();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRandom() {
-        int randomState = DataCanbus.DATA[15] & 255;
+        int randomState = DataCanbus.DATA[113] & 255;
         if (randomState == 0) {
             ((TextView) findViewById(R.id.xp_ylford_cd_randoms)).setText(R.string.xp_380_playmode0);
             return;
@@ -153,9 +152,9 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWorkState() {
-        int workStateValue = DataCanbus.DATA[17] & 255;
+        int workStateValue = DataCanbus.DATA[115] & 255;
         if (workStateValue == 1) {
             tips(getResources().getString(R.string.str_car_cd_work_state_1));
             return;
@@ -177,9 +176,9 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTrack() {
-        int value = DataCanbus.DATA[18] & (-1);
+        int value = DataCanbus.DATA[116] & (-1);
         int curTrack = (value >> 16) & 65535;
         int temp = value & 65535;
         ((TextView) findViewById(R.id.xp_ylford_cd_track)).setText(String.valueOf(curTrack) + "/" + temp);
@@ -197,13 +196,13 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCurTime() {
-        int playtime = DataCanbus.DATA[19] & 16777215;
+        int playtime = DataCanbus.DATA[117] & 16777215;
         ((TextView) findViewById(R.id.xp_ylford_cd_cur_time)).setText(String.valueOf(String.format("%02d", Integer.valueOf((playtime >> 16) & 255))) + ":" + String.format("%02d", Integer.valueOf((playtime >> 8) & 255)) + ":" + String.format("%02d", Integer.valueOf(playtime & 255)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCdTextInfo() {
         int infoType = Callback_0380_XP1_FocusKeepDVD.infoType & 65535;
         int infoIndex = Callback_0380_XP1_FocusKeepDVD.infoIndex & 65535;
@@ -235,13 +234,13 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.xp_ylford_cd_prev /* 2131429669 */:
+            case R.id.xp_ylford_cd_prev /* 2131429623 */:
                 CD_CONRTROL_CMD(176, 3, 0, 0);
                 break;
-            case R.id.xp_ylford_cd_fb /* 2131429670 */:
+            case R.id.xp_ylford_cd_fb /* 2131429624 */:
                 if (this.carcd_fb == 0) {
                     this.carcd_fb = 1;
                 } else {
@@ -249,7 +248,7 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
                 }
                 CD_CONRTROL_CMD(176, 6, this.carcd_fb, 0);
                 break;
-            case R.id.xp_ylford_cd_repeat /* 2131429671 */:
+            case R.id.xp_ylford_cd_repeat /* 2131429625 */:
                 if (this.cycleState == 7) {
                     this.cycleState = 8;
                 } else if (this.cycleState == 8) {
@@ -259,13 +258,13 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
                 }
                 CD_CONRTROL_CMD(176, this.cycleState, 0, 0);
                 break;
-            case R.id.xp_ylford_play /* 2131429672 */:
+            case R.id.xp_ylford_play /* 2131429626 */:
                 CD_CONRTROL_CMD(176, 13, 1, 0);
                 break;
-            case R.id.xp_ylford_cd_pause /* 2131429673 */:
+            case R.id.xp_ylford_cd_pause /* 2131429627 */:
                 CD_CONRTROL_CMD(176, 13, 0, 0);
                 break;
-            case R.id.xp_ylford_cd_repeat_random /* 2131429674 */:
+            case R.id.xp_ylford_cd_repeat_random /* 2131429628 */:
                 if (this.cycleState == 7) {
                     this.cycleState = 9;
                 } else if (this.cycleState == 9) {
@@ -275,7 +274,7 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
                 }
                 CD_CONRTROL_CMD(176, this.cycleState, 0, 0);
                 break;
-            case R.id.xp_ylford_cd_ff /* 2131429675 */:
+            case R.id.xp_ylford_cd_ff /* 2131429629 */:
                 if (this.carcd_ff == 0) {
                     this.carcd_ff = 1;
                 } else {
@@ -283,7 +282,7 @@ public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
                 }
                 CD_CONRTROL_CMD(176, 5, this.carcd_ff, 0);
                 break;
-            case R.id.xp_ylford_cd_next /* 2131429676 */:
+            case R.id.xp_ylford_cd_next /* 2131429630 */:
                 CD_CONRTROL_CMD(176, 4, 0, 0);
                 break;
         }

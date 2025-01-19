@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.StyleableRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class HolographicLinearLayout extends LinearLayout {
     private final HolographicViewHelper mHolographicHelper;
     private boolean mHotwordOn;
@@ -39,8 +38,8 @@ public class HolographicLinearLayout extends LinearLayout {
         a.recycle();
         setWillNotDraw(false);
         this.mHolographicHelper = new HolographicViewHelper(context);
-        setOnTouchListener(new View.OnTouchListener() { // from class: com.android.launcher66.HolographicLinearLayout.1
-            @Override // android.view.View.OnTouchListener
+        setOnTouchListener(new View.OnTouchListener() { 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (HolographicLinearLayout.this.isPressed() != HolographicLinearLayout.this.mIsPressed) {
                     HolographicLinearLayout.this.mIsPressed = HolographicLinearLayout.this.isPressed();
@@ -50,8 +49,8 @@ public class HolographicLinearLayout extends LinearLayout {
                 return false;
             }
         });
-        setOnFocusChangeListener(new View.OnFocusChangeListener() { // from class: com.android.launcher66.HolographicLinearLayout.2
-            @Override // android.view.View.OnFocusChangeListener
+        setOnFocusChangeListener(new View.OnFocusChangeListener() { 
+            @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (HolographicLinearLayout.this.isFocused() != HolographicLinearLayout.this.mIsFocused) {
                     HolographicLinearLayout.this.mIsFocused = HolographicLinearLayout.this.isFocused();
@@ -61,7 +60,7 @@ public class HolographicLinearLayout extends LinearLayout {
         });
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
         if (this.mImageView != null) {
@@ -80,7 +79,7 @@ public class HolographicLinearLayout extends LinearLayout {
         invalidate();
     }
 
-    @Override // android.widget.LinearLayout, android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.mImageView == null) {
@@ -100,7 +99,7 @@ public class HolographicLinearLayout extends LinearLayout {
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public int[] onCreateDrawableState(int extraSpace) {
         int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
         if (isHotwordOn()) {

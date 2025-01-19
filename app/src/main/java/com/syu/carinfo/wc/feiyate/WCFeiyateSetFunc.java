@@ -20,7 +20,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCFeiyateSetFunc extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -28,71 +27,71 @@ public class WCFeiyateSetFunc extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode] & 255;
             switch (updateCode) {
-                case 100:
+                case 112:
                     WCFeiyateSetFunc.this.updateMileUnit(value);
                     break;
-                case 101:
+                case 113:
                     WCFeiyateSetFunc.this.updateOilUnit(value);
                     break;
-                case 102:
+                case 114:
                     WCFeiyateSetFunc.this.updateTempUnit(value);
                     break;
-                case 103:
+                case 115:
                     WCFeiyateSetFunc.this.updateAutoLockOnoff(value);
                     break;
-                case 104:
+                case 116:
                     WCFeiyateSetFunc.this.updateDayLightOnoff(value);
                     break;
-                case 105:
+                case 117:
                     WCFeiyateSetFunc.this.updateTripBOnoff(value);
                     break;
-                case 106:
+                case 118:
                     WCFeiyateSetFunc.this.updateMeasureUnit(value);
                     break;
-                case 107:
+                case 119:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext1), value != 0);
                     break;
-                case 108:
+                case 120:
                     WCFeiyateSetFunc.this.updateParkVol(value);
                     break;
-                case 109:
+                case 121:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext4), value != 0);
                     break;
-                case 110:
+                case 122:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext3), value != 0);
                     break;
-                case 111:
+                case 123:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext2), value != 0);
                     break;
-                case 112:
+                case 124:
                     WCFeiyateSetFunc.this.updateParkSense(value);
                     break;
-                case 113:
+                case 125:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext5), value != 0);
                     break;
-                case 114:
+                case 126:
                     WCFeiyateSetFunc.this.updateHeadLightDelay(value);
                     break;
-                case 115:
+                case 127:
                     WCFeiyateSetFunc.this.updateCourtesyLightDelay(value);
                     break;
-                case 116:
+                case 128:
                     WCFeiyateSetFunc.this.updateLauguageSet();
                     break;
-                case 117:
+                case 129:
                     if (((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text9)) != null) {
                         ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text9)).setText(new StringBuilder().append(value + 1).toString());
                         break;
                     }
-                case 118:
+                case 130:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext9), value != 0);
                     break;
-                case 139:
+                case 151:
                     if (((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text10)) != null) {
                         switch (value) {
                             case 1:
@@ -107,10 +106,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
                         }
                     }
                     break;
-                case 140:
+                case 152:
                     WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext10), value != 0);
                     break;
-                case 141:
+                case 153:
                     if (((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text11)) != null) {
                         switch (value) {
                             case 0:
@@ -122,11 +121,59 @@ public class WCFeiyateSetFunc extends BaseActivity {
                         }
                     }
                     break;
+                case 154:
+                    if (((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text12)) != null) {
+                        switch (value) {
+                            case 0:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text12)).setText(R.string.off);
+                                break;
+                            case 1:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text12)).setText("Auto1");
+                                break;
+                            case 2:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text12)).setText("Auto2");
+                                break;
+                        }
+                    }
+                    break;
+                case 155:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext16), value != 0);
+                    break;
+                case 156:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext17), value != 0);
+                    break;
+                case 157:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext18), value != 0);
+                    break;
+                case 158:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext19), value != 0);
+                    break;
+                case 159:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext20), value != 0);
+                    break;
+                case 160:
+                    WCFeiyateSetFunc.this.setCheck((CheckedTextView) WCFeiyateSetFunc.this.findViewById(R.id.ctv_checkedtext21), value != 0);
+                    break;
+                case 161:
+                    if (((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text13)) != null) {
+                        switch (value) {
+                            case 0:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text13)).setText(R.string.klc_air_low);
+                                break;
+                            case 1:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text13)).setText(R.string.klc_air_middle);
+                                break;
+                            case 2:
+                                ((TextView) WCFeiyateSetFunc.this.findViewById(R.id.tv_text13)).setText(R.string.klc_air_high);
+                                break;
+                        }
+                    }
+                    break;
             }
         }
     };
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -140,8 +187,8 @@ public class WCFeiyateSetFunc extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 WCFeiyateSetFunc.this.language_set = position;
                 if (WCFeiyateSetFunc.this.language_set >= 0 && WCFeiyateSetFunc.this.language_set <= WCFeiyateSetFunc.this.mLauStylelist.size() && WCFeiyateSetFunc.this.send_lang != null) {
@@ -153,7 +200,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[116];
+        int value = DataCanbus.DATA[128];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -168,10 +215,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_feiyate_setfunc);
+        //setContentView(R.layout.layout_wc_feiyate_setfunc);
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
         this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_1));
@@ -189,8 +236,8 @@ public class WCFeiyateSetFunc extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (WCFeiyateSetFunc.this.mLauStyle == null) {
                     WCFeiyateSetFunc.this.initLauStyle();
@@ -201,100 +248,100 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[106] & 255) - 1;
+                int value = (DataCanbus.DATA[118] & 255) - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(0, new int[]{7, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[106] & 255) + 1;
+                int value = (DataCanbus.DATA[118] & 255) + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(0, new int[]{7, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[108] - 1;
+                int value = DataCanbus.DATA[120] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{18, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[108] + 1;
+                int value = DataCanbus.DATA[120] + 1;
                 if (value > 2) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{18, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[112] - 1;
+                int value = DataCanbus.DATA[124] - 1;
                 if (value < 0) {
                     value = 1;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[112] + 1;
+                int value = DataCanbus.DATA[124] + 1;
                 if (value > 1) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[114] - 1;
+                int value = DataCanbus.DATA[126] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{23, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[114] + 1;
+                int value = DataCanbus.DATA[126] + 1;
                 if (value > 3) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{23, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[115] - 1;
+                int value = DataCanbus.DATA[127] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{25, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[115] + 1;
+                int value = DataCanbus.DATA[127] + 1;
                 if (value > 3) {
                     value = 0;
                 }
@@ -302,11 +349,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
             }
         });
         if (((Button) findViewById(R.id.btn_minus6)) != null) {
-            ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.14
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     int value;
-                    int value2 = DataCanbus.DATA[100] & 255;
+                    int value2 = DataCanbus.DATA[112] & 255;
                     if (value2 == 1) {
                         value = 2;
                     } else {
@@ -317,11 +364,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus6)) != null) {
-            ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.15
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     int value;
-                    int value2 = DataCanbus.DATA[100] & 255;
+                    int value2 = DataCanbus.DATA[112] & 255;
                     if (value2 == 1) {
                         value = 2;
                     } else {
@@ -332,11 +379,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus7)) != null) {
-            ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.16
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     int value;
-                    int value2 = DataCanbus.DATA[102] & 255;
+                    int value2 = DataCanbus.DATA[114] & 255;
                     if (value2 == 1) {
                         value = 2;
                     } else {
@@ -347,11 +394,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus7)) != null) {
-            ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.17
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     int value;
-                    int value2 = DataCanbus.DATA[102] & 255;
+                    int value2 = DataCanbus.DATA[114] & 255;
                     if (value2 == 1) {
                         value = 2;
                     } else {
@@ -362,10 +409,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus8)) != null) {
-            ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.18
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = ((DataCanbus.DATA[101] + 1) & 255) - 1;
+                    int value = ((DataCanbus.DATA[113] + 1) & 255) - 1;
                     if (value < 1) {
                         value = 4;
                     }
@@ -374,10 +421,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus8)) != null) {
-            ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.19
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = ((DataCanbus.DATA[101] + 1) & 255) + 1;
+                    int value = ((DataCanbus.DATA[113] + 1) & 255) + 1;
                     if (value > 4) {
                         value = 1;
                     }
@@ -386,10 +433,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus9)) != null) {
-            ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.20
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[117] - 1;
+                    int value = DataCanbus.DATA[129] - 1;
                     if (value < 0) {
                         value = 2;
                     }
@@ -398,10 +445,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus9)) != null) {
-            ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.21
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[117] + 1;
+                    int value = DataCanbus.DATA[129] + 1;
                     if (value > 2) {
                         value = 0;
                     }
@@ -410,10 +457,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus10)) != null) {
-            ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.22
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[139] & 255) - 1;
+                    int value = (DataCanbus.DATA[151] & 255) - 1;
                     if (value < 0) {
                         value = 2;
                     }
@@ -422,10 +469,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus10)) != null) {
-            ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.23
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[139] & 255) + 1;
+                    int value = (DataCanbus.DATA[151] & 255) + 1;
                     if (value > 2) {
                         value = 0;
                     }
@@ -434,10 +481,10 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus11)) != null) {
-            ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.24
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[141];
+                    int value = DataCanbus.DATA[153];
                     if (value > 0) {
                         value--;
                     }
@@ -446,22 +493,70 @@ public class WCFeiyateSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus11)) != null) {
-            ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.25
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[141];
-                    if (value < 5) {
+                    int value = DataCanbus.DATA[153];
+                    if (value < 6) {
                         value++;
                     }
                     DataCanbus.PROXY.cmd(1, new int[]{10, value}, null, null);
                 }
             });
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.26
-            @Override // android.view.View.OnClickListener
+        if (((Button) findViewById(R.id.btn_minus12)) != null) {
+            ((Button) findViewById(R.id.btn_minus12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
+                public void onClick(View arg0) {
+                    int value = DataCanbus.DATA[154] - 1;
+                    if (value < 0) {
+                        value = 2;
+                    }
+                    DataCanbus.PROXY.cmd(1, new int[]{49, value}, null, null);
+                }
+            });
+        }
+        if (((Button) findViewById(R.id.btn_plus12)) != null) {
+            ((Button) findViewById(R.id.btn_plus12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
+                public void onClick(View arg0) {
+                    int value = DataCanbus.DATA[154] + 1;
+                    if (value > 2) {
+                        value = 0;
+                    }
+                    DataCanbus.PROXY.cmd(1, new int[]{49, value}, null, null);
+                }
+            });
+        }
+        if (((Button) findViewById(R.id.btn_minus13)) != null) {
+            ((Button) findViewById(R.id.btn_minus13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
+                public void onClick(View arg0) {
+                    int value = DataCanbus.DATA[161] - 1;
+                    if (value < 0) {
+                        value = 2;
+                    }
+                    DataCanbus.PROXY.cmd(1, new int[]{31, value}, null, null);
+                }
+            });
+        }
+        if (((Button) findViewById(R.id.btn_plus13)) != null) {
+            ((Button) findViewById(R.id.btn_plus13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
+                public void onClick(View arg0) {
+                    int value = DataCanbus.DATA[161] + 1;
+                    if (value > 2) {
+                        value = 0;
+                    }
+                    DataCanbus.PROXY.cmd(1, new int[]{31, value}, null, null);
+                }
+            });
+        }
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[107];
+                int value2 = DataCanbus.DATA[119];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -470,11 +565,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{22, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.27
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[111];
+                int value2 = DataCanbus.DATA[123];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -483,11 +578,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{19, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.28
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[110];
+                int value2 = DataCanbus.DATA[122];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -496,11 +591,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{20, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.29
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[109];
+                int value2 = DataCanbus.DATA[121];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -509,11 +604,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{21, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.30
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[113];
+                int value2 = DataCanbus.DATA[125];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -522,11 +617,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{24, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.31
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[103];
+                int value2 = DataCanbus.DATA[115];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -535,11 +630,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{12, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.32
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[104];
+                int value2 = DataCanbus.DATA[116];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -548,11 +643,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{5, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.33
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[105];
+                int value2 = DataCanbus.DATA[117];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -561,11 +656,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{16, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.34
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[118];
+                int value2 = DataCanbus.DATA[130];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -574,11 +669,11 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{27, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.35
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[140];
+                int value2 = DataCanbus.DATA[152];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -587,34 +682,112 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{8, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.36
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WCFeiyateSetFunc.this.dialog(R.string.lights_set, 32);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.37
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WCFeiyateSetFunc.this.dialog(R.string.driver_assistance_settings, 33);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.38
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WCFeiyateSetFunc.this.dialog(R.string.str_door_lock, 34);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.39
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WCFeiyateSetFunc.this.dialog(R.string.str_107_str1, 35);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.40
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WCFeiyateSetFunc.this.dialog(R.string.str_dongjian_wc2_ds5_car_computer_unit_set, 36);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[155];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{50, value}, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[156];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{51, value}, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext18)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[157];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{30, value}, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext19)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[158];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{29, value}, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext20)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[159];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{48, value}, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext21)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value;
+                int value2 = DataCanbus.DATA[160];
+                if (value2 == 0) {
+                    value = 1;
+                } else {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(1, new int[]{28, value}, null, null);
             }
         });
     }
@@ -623,12 +796,12 @@ public class WCFeiyateSetFunc extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.41
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.41.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(1, new int[]{i, 1}, null, null);
                     }
@@ -636,12 +809,12 @@ public class WCFeiyateSetFunc extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.42
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.wc.feiyate.WCFeiyateSetFunc.42.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(1, new int[]{i}, null, null);
                     }
@@ -652,80 +825,96 @@ public class WCFeiyateSetFunc extends BaseActivity {
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTripBOnoff(int value) {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext8)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDayLightOnoff(int value) {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext7)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoLockOnoff(int value) {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext6)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateOilUnit(int value) {
         if (((TextView) findViewById(R.id.tv_text8)) != null) {
             switch (value) {
@@ -745,7 +934,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCourtesyLightDelay(int value) {
         if (((TextView) findViewById(R.id.tv_text5)) != null) {
             switch (value) {
@@ -765,7 +954,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateHeadLightDelay(int value) {
         if (((TextView) findViewById(R.id.tv_text4)) != null) {
             switch (value) {
@@ -785,7 +974,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateParkSense(int value) {
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             switch (value) {
@@ -799,7 +988,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateParkVol(int value) {
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             switch (value) {
@@ -816,7 +1005,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateMeasureUnit(int value) {
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             switch (value) {
@@ -833,7 +1022,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempUnit(int value) {
         if (((TextView) findViewById(R.id.tv_text7)) != null) {
             switch (value) {
@@ -847,7 +1036,7 @@ public class WCFeiyateSetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateMileUnit(int value) {
         if (((TextView) findViewById(R.id.tv_text6)) != null) {
             switch (value) {

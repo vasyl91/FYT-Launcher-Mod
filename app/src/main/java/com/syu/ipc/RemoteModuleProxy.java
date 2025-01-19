@@ -1,6 +1,7 @@
 package com.syu.ipc;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IRemoteModule;
 
 public class RemoteModuleProxy extends IRemoteModule.Stub {
@@ -14,7 +15,7 @@ public class RemoteModuleProxy extends IRemoteModule.Stub {
         this.mRemoteModule = remoteModule;
     }
 
-    @Override // com.syu.ipc.IRemoteModule
+    @Override
     public void cmd(int cmdCode, int[] ints, float[] flts, String[] strs) {
         IRemoteModule remoteModule = this.mRemoteModule;
         if (remoteModule != null) {
@@ -59,7 +60,7 @@ public class RemoteModuleProxy extends IRemoteModule.Stub {
         }
     }
 
-    @Override // com.syu.ipc.IRemoteModule
+    @Override
     public ModuleObject get(int getCode, int[] ints, float[] flts, String[] strs) {
         IRemoteModule remoteModule = this.mRemoteModule;
         if (remoteModule != null) {
@@ -136,7 +137,7 @@ public class RemoteModuleProxy extends IRemoteModule.Stub {
         }
     }
 
-    @Override // com.syu.ipc.IRemoteModule
+    @Override
     public void register(IModuleCallback callback, int updateCode, int update) {
         IRemoteModule remoteModule = this.mRemoteModule;
         if (remoteModule != null) {
@@ -148,7 +149,7 @@ public class RemoteModuleProxy extends IRemoteModule.Stub {
         }
     }
 
-    @Override // com.syu.ipc.IRemoteModule
+    @Override
     public void unregister(IModuleCallback callback, int updateCode) {
         IRemoteModule remoteModule = this.mRemoteModule;
         if (remoteModule != null) {

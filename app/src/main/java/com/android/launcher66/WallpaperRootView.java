@@ -16,7 +16,6 @@ public class WallpaperRootView extends RelativeLayout {
         a = (WallpaperPickerActivity) context;
     }
 
-    @SuppressWarnings("deprecation")
     protected boolean fitSystemWindows(Rect insets) {
         a.setWallpaperStripYOffset(insets.bottom);
         return true;

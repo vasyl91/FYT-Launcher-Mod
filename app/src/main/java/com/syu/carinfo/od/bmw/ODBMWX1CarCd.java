@@ -7,17 +7,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static ODBMWX1CarCd mInit;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -62,97 +62,97 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_bmw_x1_carcd);
+        //setContentView(R.layout.layout_0452_od_bmw_x1_carcd);
         init();
     }
 
     public void init() {
-        ((Button) findViewById(R.id.lexus_cd_scan)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_scan).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_rpt)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_rpt).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_random).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{6}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_prev)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_prev).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{12}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_next)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_next).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{11, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_play)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.7
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_play).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_pause)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.8
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_pause).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{3, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_skipb)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_cd_skipf)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_cd1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.9
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_cd_skipb).setOnTouchListener(this);
+        findViewById(R.id.lexus_cd_skipf).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_cd1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.10
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.11
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd3).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.12
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd4).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 4}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.13
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd5).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 5}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_lexus_cd6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarCd.14
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_lexus_cd6).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{15, 6}, null, null);
             }
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -160,14 +160,14 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);
@@ -208,7 +208,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd1State() {
         int value = DataCanbus.DATA[28];
         switch (value) {
@@ -221,7 +221,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd2State() {
         int value = DataCanbus.DATA[29];
         switch (value) {
@@ -234,7 +234,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd3State() {
         int value = DataCanbus.DATA[30];
         switch (value) {
@@ -247,7 +247,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd4State() {
         int value = DataCanbus.DATA[31];
         switch (value) {
@@ -260,7 +260,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd5State() {
         int value = DataCanbus.DATA[32];
         switch (value) {
@@ -273,7 +273,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd6State() {
         int value = DataCanbus.DATA[33];
         switch (value) {
@@ -286,13 +286,13 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdScan() {
         int On = DataCanbus.DATA[27];
         findViewById(R.id.lexus_cd_scan).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_scan_n : R.drawable.ic_lexus_cd_scan_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
         int On = DataCanbus.DATA[25];
         switch (On) {
@@ -305,7 +305,7 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRandom() {
         int On = DataCanbus.DATA[26];
         findViewById(R.id.lexus_cd_random).setBackgroundResource(On == 0 ? R.drawable.ic_lexus_cd_random_n : R.drawable.ic_lexus_cd_random_p);
@@ -368,23 +368,23 @@ public class ODBMWX1CarCd extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(2, new int[]{9}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(2, new int[]{8}, null, null);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(2, new int[]{10}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(2, new int[]{10}, null, null);
                     break;
             }

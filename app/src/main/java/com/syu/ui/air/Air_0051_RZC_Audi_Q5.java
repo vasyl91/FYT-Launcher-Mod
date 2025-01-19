@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0051_RZC_Audi_Q5 extends AirBase {
     public Air_0051_RZC_Audi_Q5(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0002_xp_dazhong/air_rzc_audi_q5.webp";
         this.mPathHighlight = "0002_xp_dazhong/air_rzc_audi_q5_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.save(2);
@@ -98,7 +98,7 @@ public class Air_0051_RZC_Audi_Q5 extends AirBase {
         } else if (value3 == 254) {
             c.drawText("HIGH", 47.0f, 47.0f, this.mPaint);
         } else if (value3 >= 30 && value3 <= 64) {
-            c.drawText(new StringBuilder().append(value3 / 2.0f).toString(), 47.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(value3 / 2.0f), 47.0f, 47.0f, this.mPaint);
         } else {
             c.drawText("NONE", 47.0f, 47.0f, this.mPaint);
         }
@@ -108,14 +108,14 @@ public class Air_0051_RZC_Audi_Q5 extends AirBase {
         } else if (value4 == 254) {
             c.drawText("HIGH", 947.0f, 47.0f, this.mPaint);
         } else if (value4 >= 30 && value4 <= 64) {
-            c.drawText(new StringBuilder().append(value4 / 2.0f).toString(), 947.0f, 47.0f, this.mPaint);
+            c.drawText(String.valueOf(value4 / 2.0f), 947.0f, 47.0f, this.mPaint);
         } else {
             c.drawText("NONE", 947.0f, 47.0f, this.mPaint);
         }
         int value5 = this.DATA[26];
-        c.drawText(new StringBuilder().append(value5).toString(), 330.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(value5), 330.0f, 139.0f, this.mPaint);
         int value6 = this.DATA[51];
-        c.drawText(new StringBuilder().append(value6).toString(), 729.0f, 139.0f, this.mPaint);
+        c.drawText(String.valueOf(value6), 729.0f, 139.0f, this.mPaint);
         c.restore();
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -4,21 +4,21 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_RZC_23Yage extends Air_BenzBase {
     public Air_RZC_23Yage(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initDrawable() {
         this.mPathHighlight1 = "0450_benz_air/rzc_23yage_highlight1.png";
         this.mPathHighlight2 = "0450_benz_air/rzc_23yage_highlight2.png";
@@ -26,7 +26,7 @@ public class Air_RZC_23Yage extends Air_BenzBase {
         this.mDrawableHighlight2 = ToolkitRes.loadDrawable(this.mPathHighlight2);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);

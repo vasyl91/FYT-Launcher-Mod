@@ -4,22 +4,22 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0280_RZC_GS8 extends AirBase {
     public Air_0280_RZC_GS8(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         if (DataCanbus.DATA[1000] == 459032) {
             this.mPathNormal = "0280_rzc_xp1_chuangqigs4/rzc_gs3_air.webp";
@@ -30,7 +30,7 @@ public class Air_0280_RZC_GS8 extends AirBase {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -92,7 +92,7 @@ public class Air_0280_RZC_GS8 extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 60.0f, 66.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 100.0f).toString(), 60.0f, 66.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 100.0f), 60.0f, 66.0f, this.mPaint);
         }
         int right_temp = this.DATA[15];
         if (right_temp == -2) {
@@ -100,7 +100,7 @@ public class Air_0280_RZC_GS8 extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 936.0f, 66.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp / 100.0f).toString(), 936.0f, 66.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 100.0f), 936.0f, 66.0f, this.mPaint);
         }
         int rear_temp = this.DATA[37];
         if (rear_temp == -2) {
@@ -110,12 +110,12 @@ public class Air_0280_RZC_GS8 extends AirBase {
         } else if (rear_temp == -1) {
             c.drawText("NO", 291.0f, 256.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(rear_temp / 100.0f).toString(), 291.0f, 256.0f, this.mPaint);
+            c.drawText(String.valueOf(rear_temp / 100.0f), 291.0f, 256.0f, this.mPaint);
         }
         int wind = this.DATA[12];
-        c.drawText(new StringBuilder(String.valueOf(wind)).toString(), 608.0f, 156.0f, this.mPaint);
+        c.drawText(String.valueOf(wind), 608.0f, 156.0f, this.mPaint);
         int rearwind = this.DATA[36];
-        c.drawText(new StringBuilder(String.valueOf(rearwind)).toString(), 924.0f, 256.0f, this.mPaint);
+        c.drawText(String.valueOf(rearwind), 924.0f, 256.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

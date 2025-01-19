@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0263_RZC_GL8 extends AirBase {
     public Air_0263_RZC_GL8(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0263_rzc_plb_saiou3/air_rzc_gl8.webp";
         this.mPathHighlight = "0263_rzc_plb_saiou3/air_rzc_gl8_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -105,13 +105,13 @@ public class Air_0263_RZC_GL8 extends AirBase {
         this.mDrawableHighlight.draw(c);
         c.clipRect(this.mRectDrawable, Region.Op.XOR);
         this.mDrawableNormal.draw(c);
-        c.drawText(new StringBuilder().append(ToolkitMath.clamp(this.DATA[102], 0, 15)).toString(), 453.0f, 138.0f, this.mPaint);
+        c.drawText(String.valueOf(ToolkitMath.clamp(this.DATA[102], 0, 15)), 453.0f, 138.0f, this.mPaint);
         int value4 = ToolkitMath.clamp(this.DATA[97], 0, 310);
         if (value4 != 0) {
             if (value4 == 30) {
                 str = "HI";
             } else {
-                str = new StringBuilder(String.valueOf(value4 * 0.1f)).toString();
+                str = String.valueOf(value4 * 0.1f);
             }
         } else {
             str = "LOW";
@@ -122,7 +122,7 @@ public class Air_0263_RZC_GL8 extends AirBase {
             if (value5 == 30) {
                 str2 = "HI";
             } else {
-                str2 = new StringBuilder(String.valueOf(value5 * 0.1f)).toString();
+                str2 = String.valueOf(value5 * 0.1f);
             }
         } else {
             str2 = "LOW";
@@ -133,7 +133,7 @@ public class Air_0263_RZC_GL8 extends AirBase {
         if (value6 != 0) {
             if (value6 != 129) {
                 if (value6 >= 1 && value6 <= 128) {
-                    str3 = new StringBuilder().append(value6 * 0.5f).toString();
+                    str3 = String.valueOf(value6 * 0.5f);
                 }
             } else {
                 str3 = "HI";

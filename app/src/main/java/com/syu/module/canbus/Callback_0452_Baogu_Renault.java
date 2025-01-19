@@ -1,79 +1,59 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0452_Baogu_Renault extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 7;
-    public static final int U_AIR_AUTO = 9;
-    public static final int U_AIR_BEGIN = 6;
-    public static final int U_AIR_BLOW_BODY_LEFT = 13;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 14;
-    public static final int U_AIR_BLOW_UP_LEFT = 15;
-    public static final int U_AIR_CYCLE = 8;
-    public static final int U_AIR_CYCLE_AUTO = 19;
-    public static final int U_AIR_DUAL = 10;
-    public static final int U_AIR_END = 25;
-    public static final int U_AIR_FRONT_DEFROST = 12;
-    public static final int U_AIR_REAR_DEFROST = 11;
-    public static final int U_AIR_SEAT_BLOW_LEFT = 22;
-    public static final int U_AIR_SEAT_BLOW_RIGHT = 23;
-    public static final int U_AIR_SEAT_HEAT_LEFT = 20;
-    public static final int U_AIR_SEAT_HEAT_RIGHT = 21;
-    public static final int U_AIR_TEMP_LEFT = 17;
-    public static final int U_AIR_TEMP_MODE = 24;
-    public static final int U_AIR_TEMP_RIGHT = 18;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 16;
-    public static final int U_CARINFO_BEGIN = 26;
-    public static final int U_CARINFO_D71_D0_B0 = 31;
-    public static final int U_CARINFO_D71_D0_B1 = 30;
-    public static final int U_CARINFO_D71_D0_B2 = 29;
-    public static final int U_CARINFO_D71_D0_B3 = 28;
-    public static final int U_CARINFO_D71_D0_B54 = 27;
-    public static final int U_CARINFO_D71_D10_B30 = 55;
-    public static final int U_CARINFO_D71_D10_B65 = 54;
-    public static final int U_CARINFO_D71_D10_B7 = 53;
-    public static final int U_CARINFO_D71_D11_B4 = 59;
-    public static final int U_CARINFO_D71_D11_B5 = 58;
-    public static final int U_CARINFO_D71_D11_B6 = 57;
-    public static final int U_CARINFO_D71_D11_B7 = 56;
-    public static final int U_CARINFO_D71_D12_B0 = 60;
-    public static final int U_CARINFO_D71_D1_B10 = 34;
-    public static final int U_CARINFO_D71_D1_B2 = 33;
-    public static final int U_CARINFO_D71_D1_B3 = 32;
-    public static final int U_CARINFO_D71_D2_B10 = 41;
-    public static final int U_CARINFO_D71_D2_B2 = 40;
-    public static final int U_CARINFO_D71_D2_B3 = 39;
-    public static final int U_CARINFO_D71_D2_B4 = 38;
-    public static final int U_CARINFO_D71_D2_B5 = 37;
-    public static final int U_CARINFO_D71_D2_B6 = 36;
-    public static final int U_CARINFO_D71_D2_B7 = 35;
-    public static final int U_CARINFO_D71_D3_B70 = 42;
-    public static final int U_CARINFO_D71_D4_B70 = 43;
-    public static final int U_CARINFO_D71_D5_B70 = 44;
-    public static final int U_CARINFO_D71_D6_B70 = 45;
-    public static final int U_CARINFO_D71_D7_B6 = 47;
-    public static final int U_CARINFO_D71_D7_B7 = 46;
-    public static final int U_CARINFO_D71_D8_B20 = 51;
-    public static final int U_CARINFO_D71_D8_B5 = 50;
-    public static final int U_CARINFO_D71_D8_B6 = 49;
-    public static final int U_CARINFO_D71_D8_B7 = 48;
-    public static final int U_CARINFO_D71_D9_B70 = 52;
-    public static final int U_CARINFO_D81_AVG_FUEL = 61;
-    public static final int U_CARINFO_D81_AVG_SPEED = 62;
-    public static final int U_CARINFO_D81_DRIVED_MILE = 63;
-    public static final int U_CARINFO_END = 64;
-    public static final int U_CNT_MAX = 66;
-    public static final int U_JUMP_SOS_PAGE = 65;
+    public static final int U_CARINFO_BEGIN = 98;
+    public static final int U_CARINFO_D71_D0_B0 = 103;
+    public static final int U_CARINFO_D71_D0_B1 = 102;
+    public static final int U_CARINFO_D71_D0_B2 = 101;
+    public static final int U_CARINFO_D71_D0_B3 = 100;
+    public static final int U_CARINFO_D71_D0_B54 = 99;
+    public static final int U_CARINFO_D71_D10_B30 = 127;
+    public static final int U_CARINFO_D71_D10_B65 = 126;
+    public static final int U_CARINFO_D71_D10_B7 = 125;
+    public static final int U_CARINFO_D71_D11_B4 = 131;
+    public static final int U_CARINFO_D71_D11_B5 = 130;
+    public static final int U_CARINFO_D71_D11_B6 = 129;
+    public static final int U_CARINFO_D71_D11_B7 = 128;
+    public static final int U_CARINFO_D71_D12_B0 = 132;
+    public static final int U_CARINFO_D71_D1_B10 = 106;
+    public static final int U_CARINFO_D71_D1_B2 = 105;
+    public static final int U_CARINFO_D71_D1_B3 = 104;
+    public static final int U_CARINFO_D71_D2_B10 = 113;
+    public static final int U_CARINFO_D71_D2_B2 = 112;
+    public static final int U_CARINFO_D71_D2_B3 = 111;
+    public static final int U_CARINFO_D71_D2_B4 = 110;
+    public static final int U_CARINFO_D71_D2_B5 = 109;
+    public static final int U_CARINFO_D71_D2_B6 = 108;
+    public static final int U_CARINFO_D71_D2_B7 = 107;
+    public static final int U_CARINFO_D71_D3_B70 = 114;
+    public static final int U_CARINFO_D71_D4_B70 = 115;
+    public static final int U_CARINFO_D71_D5_B70 = 116;
+    public static final int U_CARINFO_D71_D6_B70 = 117;
+    public static final int U_CARINFO_D71_D7_B6 = 119;
+    public static final int U_CARINFO_D71_D7_B7 = 118;
+    public static final int U_CARINFO_D71_D8_B20 = 123;
+    public static final int U_CARINFO_D71_D8_B5 = 122;
+    public static final int U_CARINFO_D71_D8_B6 = 121;
+    public static final int U_CARINFO_D71_D8_B7 = 120;
+    public static final int U_CARINFO_D71_D9_B70 = 124;
+    public static final int U_CARINFO_D81_AVG_FUEL = 133;
+    public static final int U_CARINFO_D81_AVG_SPEED = 134;
+    public static final int U_CARINFO_D81_DRIVED_MILE = 135;
+    public static final int U_CARINFO_END = 136;
+    public static final int U_CNT_MAX = 138;
+    public static final int U_JUMP_SOS_PAGE = 137;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 66; i++) {
+        for (int i = 0; i < 138; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -88,7 +68,7 @@ public class Callback_0452_Baogu_Renault extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -97,7 +77,7 @@ public class Callback_0452_Baogu_Renault extends CallbackCanbusBase {
     }
 
     private void showSosPage(int updateCode, int[] ints) {
-        if (updateCode == 65) {
+        if (updateCode == 137) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value != 0 && !XiandaiSosPage.mIsFront) {
@@ -108,15 +88,15 @@ public class Callback_0452_Baogu_Renault extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             switch (updateCode) {
-                case 65:
+                case 137:
                     showSosPage(updateCode, ints);
                     break;
                 default:
-                    if (updateCode >= 0 && updateCode < 66) {
+                    if (updateCode >= 0 && updateCode < 138) {
                         HandlerCanbus.update(updateCode, ints);
                         break;
                     }

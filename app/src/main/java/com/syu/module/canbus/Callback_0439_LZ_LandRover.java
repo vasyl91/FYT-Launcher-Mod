@@ -1,18 +1,21 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_LZ_LandRover extends CallbackCanbusBase {
     public static final int CMD_CARSET_CTRL = 0;
     public static final int U_AIR_SUSPENSION_MODE = 23;
     public static final int U_AVG_SPEED = 12;
     public static final int U_CARINFO_D0A_D0_D1 = 29;
+    public static final int U_CARINFO_D38_D10_B4 = 32;
+    public static final int U_CARINFO_D38_D10_B65 = 31;
+    public static final int U_CARINFO_D38_D10_B7 = 30;
     public static final int U_CARINFO_D38_D5_B70 = 28;
     public static final int U_CAR_SET = 13;
-    public static final int U_CNT_MAX = 30;
+    public static final int U_CNT_MAX = 33;
     public static final int U_DISTANCE_UNIT = 18;
     public static final int U_DRIVE_MODE = 22;
     public static final int U_ENGINE_SPEED = 8;
@@ -32,10 +35,10 @@ public class Callback_0439_LZ_LandRover extends CallbackCanbusBase {
     public static final int U_TOTAL_MILEAGE = 9;
     public static final int U_TRAVELABLE_MILEAGE = 7;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 33; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -50,7 +53,7 @@ public class Callback_0439_LZ_LandRover extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -58,9 +61,9 @@ public class Callback_0439_LZ_LandRover extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 30) {
+        if (updateCode >= 0 && updateCode < 33) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

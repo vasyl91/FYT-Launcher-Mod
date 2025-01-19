@@ -8,12 +8,11 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GA6CarSetIndexAct extends Activity implements View.OnClickListener {
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_257_dongjian_ga6_index);
+        //setContentView(R.layout.layout_257_dongjian_ga6_index);
         init();
     }
 
@@ -32,11 +31,11 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
         findViewById(R.id.ctv_checkedtext7).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) GA6AirSetAct.class);
                     startActivity(intent);
@@ -45,7 +44,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) GA6SeatSetAct.class);
                     startActivity(intent2);
@@ -54,7 +53,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) GA6HelpSetAct.class);
                     startActivity(intent3);
@@ -63,7 +62,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) GA6CarAccessoryAct.class);
                     startActivity(intent4);
@@ -72,7 +71,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
                 try {
                     Intent intent5 = new Intent(this, (Class<?>) GA6LightSetAct.class);
                     startActivity(intent5);
@@ -81,7 +80,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
                 try {
                     Intent intent6 = new Intent(this, (Class<?>) GA6TimeFormatAct.class);
                     startActivity(intent6);
@@ -90,7 +89,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
                     e6.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
                 try {
                     Intent intent7 = new Intent(this, (Class<?>) GA6AirSeatControlAct.class);
                     startActivity(intent7);
@@ -102,7 +101,7 @@ public class GA6CarSetIndexAct extends Activity implements View.OnClickListener 
         }
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

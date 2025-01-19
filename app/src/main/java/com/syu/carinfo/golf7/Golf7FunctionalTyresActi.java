@@ -14,34 +14,33 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalTyresActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 27:
+                case 124:
                     Golf7FunctionalTyresActi.this.mUpdaterTyresSpeedWarnning();
                     break;
-                case 28:
+                case 125:
                     Golf7FunctionalTyresActi.this.mUpdaterTyresSpeedWarnningValue();
                     break;
-                case 203:
+                case 253:
                     Golf7FunctionalTyresActi.this.uDirectTireDetect(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
             requestWindowFeature(1);
             getWindow().setFlags(1024, 1024);
-            setContentView(R.layout.layout_golf7_functional_state_tyres_setting_od);
+            //setContentView(R.layout.layout_golf7_functional_state_tyres_setting_od);
         } else {
-            setContentView(R.layout.layout_golf7_functional_state_tyres_setting);
+            //setContentView(R.layout.layout_golf7_functional_state_tyres_setting);
         }
         init();
     }
@@ -50,11 +49,11 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.reset_tpms));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(45, null, null, null);
                     }
@@ -62,8 +61,8 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -71,32 +70,32 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[253].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[253].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uDirectTireDetect(int i) {
@@ -126,9 +125,9 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTyresSpeedWarnning() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[124];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -146,11 +145,11 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         setCheck((CheckedTextView) findViewById(R.id.glf7_btn_functional_tpres_setting_speed_warning), value != 0);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.4
-                @Override // android.view.View.OnClickListener
+            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();
@@ -162,27 +161,27 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                 }
             });
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_tpres_setting_tpms), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_tpres_setting_tpms), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Golf7FunctionalTyresActi.this.dialog();
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_tpres_setting_speed_warning), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_tpres_setting_speed_warning), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[27] & 255;
+                int value = DataCanbus.DATA[124] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(46, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_warnint_at_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_warnint_at_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ConstGolf.isWcGolf()) {
-                    int value = DataCanbus.DATA[28] & 255;
+                    int value = DataCanbus.DATA[125] & 255;
                     if (value < 30) {
                         value = 30;
                     } else if (value > 240) {
@@ -194,7 +193,7 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                     DataCanbus.PROXY.cmd(47, new int[]{value}, null, null);
                     return;
                 }
-                int value2 = DataCanbus.DATA[28] & 255;
+                int value2 = DataCanbus.DATA[125] & 255;
                 int unit = (65280 & value2) >> 8;
                 int mValue = value2 & 255;
                 if (unit == 0) {
@@ -219,11 +218,11 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(47, new int[]{mValue}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_warnint_at_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_warnint_at_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ConstGolf.isWcGolf()) {
-                    int value = DataCanbus.DATA[28] & 255;
+                    int value = DataCanbus.DATA[125] & 255;
                     if (value < 30) {
                         value = 30;
                     } else if (value > 240) {
@@ -235,7 +234,7 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                     DataCanbus.PROXY.cmd(47, new int[]{value}, null, null);
                     return;
                 }
-                int value2 = DataCanbus.DATA[28] & 255;
+                int value2 = DataCanbus.DATA[125] & 255;
                 int unit = (65280 & value2) >> 8;
                 int mValue = value2 & 255;
                 if (unit == 0) {
@@ -265,10 +264,10 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         } else {
             setViewVisible(findViewById(R.id.glf7_btn_functional_tpres_setting_direct_detect_view), false);
         }
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_direct_detect_m), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_direct_detect_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int i = (DataCanbus.DATA[203] & 255) - 1;
+                int i = (DataCanbus.DATA[253] & 255) - 1;
                 if (i < 0) {
                     i = 0;
                 }
@@ -279,10 +278,10 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
                 }
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_direct_detect_p), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTyresActi.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_tpres_setting_direct_detect_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int i = (DataCanbus.DATA[203] & 255) + 1;
+                int i = (DataCanbus.DATA[253] & 255) + 1;
                 if (i > 2) {
                     i = 2;
                 }
@@ -295,9 +294,9 @@ public class Golf7FunctionalTyresActi extends BaseActivity {
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTyresSpeedWarnningValue() {
-        int value = DataCanbus.DATA[28];
+        int value = DataCanbus.DATA[125];
         int unit = (65280 & value) >> 8;
         int mValue = value & 255;
         if (ConstGolf.isWcGolf()) {

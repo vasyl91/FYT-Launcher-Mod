@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.View;
 import android.widget.RemoteViews;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -27,13 +28,14 @@ import com.syu.util.Lrc;
 import com.syu.util.WeatherUtils;
 import com.syu.weather.WeatherDescription;
 import com.syu.widget.util.TimeUtil;
+
 import share.ResValue;
 
 public class DateRadioWidget extends Widget {
     private int count;
     private String music_path_pre;
     private boolean runAnimation;
-    private Runnable runnable;
+    private final Runnable runnable;
     private static final int[] mImageRes = {ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
     private static final int[] mImageId = {ResValue.getInstance().mtu_img_ht1, ResValue.getInstance().mtu_img_hu1, ResValue.getInstance().mtu_img_mt1, ResValue.getInstance().mtu_img_mu1};
 
@@ -42,8 +44,8 @@ public class DateRadioWidget extends Widget {
         this.music_path_pre = "";
         this.count = 0;
         this.runAnimation = false;
-        this.runnable = new Runnable() { // from class: com.syu.widget.DateRadioWidget.1
-            @Override // java.lang.Runnable
+        this.runnable = new Runnable() { 
+            @Override
             public void run() {
                 Widget.update(LauncherApplication.sApp);
                 LauncherApplication.handler.postDelayed(this, 500L);
@@ -51,7 +53,8 @@ public class DateRadioWidget extends Widget {
         };
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void updateViews(RemoteViews views) {
         int i;
         int index;
@@ -226,7 +229,7 @@ public class DateRadioWidget extends Widget {
         }
         for (int i9 = 0; i9 < len; i9++) {
             try {
-                if (times[i9] != ':' && (index = Math.max(0, Math.min(Integer.parseInt(new String(new char[]{times[i9]})), mImageRes.length - 1))) >= 0) {
+                if (times[i9] != ':' && (index = Math.max(0, Math.min(Integer.parseInt(String.valueOf(times[i9])), mImageRes.length - 1))) >= 0) {
                     int w = len > 3 ? i9 : i9 + 1;
                     views.setImageViewResource(mImageId[Math.max(0, Math.min(w, mImageId.length - 1))], mImageRes[index]);
                 }
@@ -248,8 +251,8 @@ public class DateRadioWidget extends Widget {
             views.setTextViewText(ResValue.getInstance().weather_city, weather.getCity());
             views.setTextViewText(ResValue.getInstance().weather_temp_range, weather.getTemDescription());
             views.setTextViewText(ResValue.getInstance().weather_temp, weather.getCurTem());
-            views.setTextViewText(ResValue.getInstance().weather_weather, String.valueOf(weather.getWeather()) + weather.getCurTem());
-            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(this.mContext, weather.getWeather()));
+            views.setTextViewText(ResValue.getInstance().weather_weather, weather.getWeather() + weather.getCurTem());
+            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(weather.getWeather()));
         }
     }
 
@@ -278,13 +281,13 @@ public class DateRadioWidget extends Widget {
         long seconds = duration % 60000;
         long second = Math.round(((float) seconds) / 1000.0f);
         if (minute < 10) {
-            time = String.valueOf("") + "0";
+            time = "" + "0";
         }
-        String time2 = String.valueOf(time) + minute + ":";
+        String time2 = time + minute + ":";
         if (second < 10) {
-            time2 = String.valueOf(time2) + "0";
+            time2 = time2 + "0";
         }
-        return String.valueOf(time2) + second;
+        return time2 + second;
     }
 
     public String timeChangeParse(long duration) {

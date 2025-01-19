@@ -12,35 +12,34 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalActiOD extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 65:
+                case 162:
                     Golf7FunctionalActiOD.this.mUpdaterEscSystem();
                     break;
-                case 86:
+                case 183:
                     Golf7FunctionalActiOD.this.mUpdaterCarLogo();
                     break;
-                case 266:
+                case 295:
                     Golf7FunctionalActiOD.this.mUpdaterOilBoxset();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_golf7_functional_state_od);
+        //setContentView(R.layout.layout_golf7_functional_state_od);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if ((DataCanbus.DATA[1000] == 65576 || DataCanbus.DATA[1000] == 131112 || DataCanbus.DATA[1000] == 196648 || DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) && findViewById(R.id.glf7_functional_air) != null) {
             findViewById(R.id.glf7_functional_air).setVisibility(8);
@@ -48,8 +47,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         if ((DataCanbus.DATA[1000] == 65576 || DataCanbus.DATA[1000] == 131112 || DataCanbus.DATA[1000] == 196648 || DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256) && findViewById(R.id.glf7_functional_btn_driving_mode_view) != null) {
             findViewById(R.id.glf7_functional_btn_driving_mode_view).setVisibility(8);
         }
-        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -60,8 +59,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_maintenance)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_maintenance)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -72,8 +71,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_factory_data_reset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_factory_data_reset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -84,8 +83,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_air_conditioner_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_air_conditioner_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -96,8 +95,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_parking_and_Manoeurvring_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_parking_and_Manoeurvring_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -108,8 +107,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_Tyres_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_Tyres_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -120,8 +119,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_driver_assistance_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_driver_assistance_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -132,8 +131,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_light_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_light_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -144,8 +143,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_mirrors_and_wipers_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_mirrors_and_wipers_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -156,8 +155,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_opening_and_closing_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_opening_and_closing_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -168,8 +167,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_multifunction_display_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.12
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_multifunction_display_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -180,11 +179,11 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int switchOn;
-                int switchOn2 = DataCanbus.DATA[65] & 255;
+                int switchOn2 = DataCanbus.DATA[162] & 255;
                 if (switchOn2 == 0) {
                     switchOn = 1;
                 } else if (switchOn2 == 1) {
@@ -199,11 +198,11 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 DataCanbus.PROXY.cmd(86, new int[]{switchOn}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_esc_system_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_esc_system_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int switchOn;
-                int switchOn2 = DataCanbus.DATA[65] & 255;
+                int switchOn2 = DataCanbus.DATA[162] & 255;
                 if (switchOn2 == 1) {
                     switchOn = 0;
                 } else if (switchOn2 == 0) {
@@ -218,8 +217,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 DataCanbus.PROXY.cmd(86, new int[]{switchOn}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_driving_mode_in1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_driving_mode_in1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -230,8 +229,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_unit_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.16
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_functional_btn_unit_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -245,8 +244,8 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         if (findViewById(R.id.glf7_functional_btn_carcamera_view) != null) {
             if (DataCanbus.DATA[1000] == 327697) {
                 findViewById(R.id.glf7_functional_btn_carcamera_view).setVisibility(0);
-                findViewById(R.id.glf7_functional_btn_carcamera_view).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.17
-                    @Override // android.view.View.OnClickListener
+                findViewById(R.id.glf7_functional_btn_carcamera_view).setOnClickListener(new View.OnClickListener() { 
+                    @Override
                     public void onClick(View v) {
                         try {
                             Intent intent = new Intent();
@@ -264,10 +263,10 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         if ((DataCanbus.DATA[1000] != 393233 || DataCanbus.DATA[1000] == 458769) && findViewById(R.id.vw_pictrue_set) != null) {
             findViewById(R.id.vw_pictrue_set).setVisibility(8);
         }
-        ((Button) findViewById(R.id.glf7_btn_pictrue_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_pictrue_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[86] + 1;
+                int switchOn = DataCanbus.DATA[183] + 1;
                 if (switchOn == 1) {
                     switchOn = 2;
                 }
@@ -277,10 +276,10 @@ public class Golf7FunctionalActiOD extends BaseActivity {
                 DataCanbus.PROXY.cmd(137, new int[]{switchOn}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_pictrue_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.19
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_pictrue_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[86] - 1;
+                int switchOn = DataCanbus.DATA[183] - 1;
                 if (switchOn == 1) {
                     switchOn = 0;
                 }
@@ -293,23 +292,23 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         if (findViewById(R.id.vw_dashboard_on_set) != null) {
             findViewById(R.id.vw_dashboard_on_set).setVisibility(8);
         }
-        if (DataCanbus.DATA[264] == 0 && findViewById(R.id.vw_dash_oilbox_set) != null) {
+        if (DataCanbus.DATA[293] == 0 && findViewById(R.id.vw_dash_oilbox_set) != null) {
             findViewById(R.id.vw_dash_oilbox_set).setVisibility(8);
         }
-        ((Button) findViewById(R.id.glf7_btn_oilbox_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.20
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_oilbox_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[266] + 1;
+                int switchOn = DataCanbus.DATA[295] + 1;
                 if (switchOn > 6) {
                     switchOn = 0;
                 }
                 DataCanbus.PROXY.cmd(139, new int[]{switchOn}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_oilbox_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalActiOD.21
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_oilbox_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[266] - 1;
+                int switchOn = DataCanbus.DATA[295] - 1;
                 if (switchOn < 0) {
                     switchOn = 6;
                 }
@@ -318,23 +317,23 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[264].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[266].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[183].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[293].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[295].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[264].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[266].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[183].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[293].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[295].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -351,9 +350,9 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         return true;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilBoxset() {
-        int value = DataCanbus.DATA[266];
+        int value = DataCanbus.DATA[295];
         int switchOn = value & 255;
         switch (switchOn) {
             case 0:
@@ -383,9 +382,9 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCarLogo() {
-        int value = DataCanbus.DATA[86];
+        int value = DataCanbus.DATA[183];
         int switchOn = value & 255;
         switch (switchOn) {
             case 1:
@@ -406,9 +405,9 @@ public class Golf7FunctionalActiOD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEscSystem() {
-        int value = DataCanbus.DATA[65];
+        int value = DataCanbus.DATA[162];
         int switchOn = value & 255;
         if (ConstGolf.isWcGolf()) {
             if (switchOn == 1) {

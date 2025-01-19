@@ -9,19 +9,18 @@ import com.syu.carinfo.oudi.hantengx5.Oudi_0453_JMC_EV3_CarSettingAct;
 import com.syu.carinfo.oudi.hantengx5.Oudi_0453_JMC_YZHI_EV3_TireAct;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BnrGuanzhiIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_bnrguanzhi_indexact);
-        if (DataCanbus.DATA[1000] != 8454596 && DataCanbus.DATA[1000] != 9241028 && DataCanbus.DATA[1000] != 8389061 && DataCanbus.DATA[1000] != 1769925 && DataCanbus.DATA[1000] != 1835461 && DataCanbus.DATA[1000] != 7930309 && DataCanbus.DATA[1000] != 12648901) {
+        //setContentView(R.layout.layout_bnrguanzhi_indexact);
+        if (DataCanbus.DATA[1000] != 8454596 && DataCanbus.DATA[1000] != 9241028 && DataCanbus.DATA[1000] != 8389061 && DataCanbus.DATA[1000] != 1769925 && DataCanbus.DATA[1000] != 1835461 && DataCanbus.DATA[1000] != 14483910 && DataCanbus.DATA[1000] != 7930309 && DataCanbus.DATA[1000] != 12648901) {
             findViewById(R.id.layout_view1).setVisibility(8);
         } else {
             findViewById(R.id.layout_view1).setVisibility(0);
         }
-        findViewById(R.id.ctv_checkedtext1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -38,12 +37,12 @@ public class BnrGuanzhiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.odchangan_car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.odchangan_car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[1000] == 8454596 || DataCanbus.DATA[1000] == 9241028 || DataCanbus.DATA[1000] == 8389061 || DataCanbus.DATA[1000] == 1769925 || DataCanbus.DATA[1000] == 1835461) {
+                    if (DataCanbus.DATA[1000] == 8454596 || DataCanbus.DATA[1000] == 9241028 || DataCanbus.DATA[1000] == 8389061 || DataCanbus.DATA[1000] == 1769925 || DataCanbus.DATA[1000] == 1835461 || DataCanbus.DATA[1000] == 14483910) {
                         intent.setClass(BnrGuanzhiIndexAct.this, ODFordProCarSet.class);
                     } else if (DataCanbus.DATA[1000] == 11272644) {
                         intent.setClass(BnrGuanzhiIndexAct.this, DJ_Guanzhi_CarSetAct.class);
@@ -60,12 +59,12 @@ public class BnrGuanzhiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.odchangan_car_tire).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.odchangan_car_tire).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[1000] == 8454596 || DataCanbus.DATA[1000] == 9241028 || DataCanbus.DATA[1000] == 8389061 || DataCanbus.DATA[1000] == 1769925 || DataCanbus.DATA[1000] == 1835461) {
+                    if (DataCanbus.DATA[1000] == 8454596 || DataCanbus.DATA[1000] == 9241028 || DataCanbus.DATA[1000] == 8389061 || DataCanbus.DATA[1000] == 1769925 || DataCanbus.DATA[1000] == 1835461 || DataCanbus.DATA[1000] == 14483910) {
                         intent.setClass(BnrGuanzhiIndexAct.this, ODFordProTireAct.class);
                     } else if (DataCanbus.DATA[1000] == 11272644) {
                         intent.setClass(BnrGuanzhiIndexAct.this, DJ_Guanzhi_TireAct.class);

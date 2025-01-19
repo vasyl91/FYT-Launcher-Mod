@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.syu.widget.util.TimeUtil;
 
 public class Day extends TextView {
     public static Day mDate;
     private IntentFilter filter;
-    private Context mContext;
+    private final Context mContext;
 
     public static Day getDay() {
         return mDate;
@@ -37,13 +38,13 @@ public class Day extends TextView {
         mDate = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setDate();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

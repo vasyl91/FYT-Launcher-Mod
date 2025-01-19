@@ -8,90 +8,89 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XflCkShowPip {
     static StringBuffer buffer;
     static WindowManager manager;
     static View v = null;
     public static boolean IsShowPip = false;
-    static View.OnClickListener PipClick = new View.OnClickListener() { // from class: com.syu.carinfo.xfl.chuangku.XflCkShowPip.1
-        @Override // android.view.View.OnClickListener
+    static View.OnClickListener PipClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v2) {
             int id = v2.getId();
             switch (id) {
-                case R.id.pipbtn1 /* 2131431963 */:
+                case R.id.pipbtn1 /* 2131431913 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(1);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn2 /* 2131431964 */:
+                case R.id.pipbtn2 /* 2131431914 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(2);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn3 /* 2131431965 */:
+                case R.id.pipbtn3 /* 2131431915 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(3);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn4 /* 2131431966 */:
+                case R.id.pipbtn4 /* 2131431916 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(4);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn5 /* 2131431967 */:
+                case R.id.pipbtn5 /* 2131431917 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(5);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn11 /* 2131431968 */:
+                case R.id.pipbtn11 /* 2131431918 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append('*');
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn6 /* 2131431969 */:
+                case R.id.pipbtn6 /* 2131431919 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(6);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn7 /* 2131431970 */:
+                case R.id.pipbtn7 /* 2131431920 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(7);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn8 /* 2131431971 */:
+                case R.id.pipbtn8 /* 2131431921 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(8);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn9 /* 2131431972 */:
+                case R.id.pipbtn9 /* 2131431922 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(9);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn0 /* 2131431973 */:
+                case R.id.pipbtn0 /* 2131431923 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append(0);
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn10 /* 2131431974 */:
+                case R.id.pipbtn10 /* 2131431924 */:
                     if (XflCkShowPip.buffer != null) {
                         XflCkShowPip.buffer.append('#');
                     }
                     ((TextView) v2.findViewById(R.id.showNumPip)).setText(XflCkShowPip.buffer.toString());
                     break;
-                case R.id.pipcallanswer /* 2131431975 */:
+                case R.id.pipcallanswer /* 2131431925 */:
                     XflCkFunc.CAR_ON_START_CTL(2);
                     break;
             }
@@ -103,8 +102,8 @@ public class XflCkShowPip {
         LayoutInflater inflater = (LayoutInflater) LauncherApplication.getInstance().getApplicationContext().getSystemService("layout_inflater");
         v = inflater.inflate(R.layout.layout_klc_onstar_pip, (ViewGroup) null);
         buffer = new StringBuffer();
-        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfl.chuangku.XflCkShowPip.2
-            @Override // android.view.View.OnClickListener
+        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 XflCkFunc.CAR_ON_START_CTL(3);
                 XflCkShowPip.CancelWindow();

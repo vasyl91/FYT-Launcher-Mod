@@ -1,81 +1,61 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xbs.tule.XBS_TuleDZSJ_AirControlActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0439_XBS_Nissan_Tule;
+//import com.syu.ui.air.Air_0439_XBS_Nissan_Tule;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_XBS_Nissan_Tul extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 16;
-    public static final int U_AIR_ACMAX = 19;
-    public static final int U_AIR_AUTO = 15;
-    public static final int U_AIR_BEGIN = 7;
-    public static final int U_AIR_BLOW_BODY = 12;
-    public static final int U_AIR_BLOW_FOOT = 13;
-    public static final int U_AIR_BLOW_MODE = 14;
-    public static final int U_AIR_BLOW_UP = 11;
-    public static final int U_AIR_CYCLE = 18;
-    public static final int U_AIR_DUAL = 17;
-    public static final int U_AIR_END = 26;
-    public static final int U_AIR_FRONT_DEFROST = 23;
-    public static final int U_AIR_MAXFRONT = 21;
-    public static final int U_AIR_REAR = 22;
-    public static final int U_AIR_REAR_DEFROST = 20;
-    public static final int U_AIR_SEATHEAT_LEFT = 24;
-    public static final int U_AIR_SEATHEAT_RIGHT = 25;
-    public static final int U_AIR_TEMP_LEFT = 8;
-    public static final int U_AIR_TEMP_RIGHT = 9;
-    public static final int U_AIR_WIND_LEVEL = 10;
-    public static final int U_CARINF2_BEGIN = 49;
-    public static final int U_CARINF2_BLIND_SPOT = 57;
-    public static final int U_CARINF2_BLIND_SPOT_WARN = 60;
-    public static final int U_CARINF2_COLLISION_WARN = 58;
-    public static final int U_CARINF2_DISTANCE_ASSIT = 55;
-    public static final int U_CARINF2_END = 63;
-    public static final int U_CARINF2_INTERRUPT_DISPLAY = 52;
-    public static final int U_CARINF2_REARVIEW_LEFT = 61;
-    public static final int U_CARINF2_REARVIEW_RIGHT = 62;
-    public static final int U_CARINF2_ROADAWAY = 56;
-    public static final int U_CARINF2_ROADAWAY_WARN = 59;
-    public static final int U_CARINF2_SENAR = 50;
-    public static final int U_CARINF2_SENAR_FR = 51;
-    public static final int U_CARINF2_SENAR_SENSITIVITY = 53;
-    public static final int U_CARINF2_SENAR_VOLUME = 54;
-    public static final int U_CARINF_AVGFUEL = 30;
-    public static final int U_CARINF_BEGIN = 27;
-    public static final int U_CARINF_CENTRE_SENSOR = 33;
-    public static final int U_CARINF_CORNER_SENSOR = 32;
-    public static final int U_CARINF_DOOR_UNLOCK = 36;
-    public static final int U_CARINF_END = 40;
-    public static final int U_CARINF_INTER_LIGHT = 34;
-    public static final int U_CARINF_KEY_UNLOCK = 37;
-    public static final int U_CARINF_LIGHTOFF_DELAY = 39;
-    public static final int U_CARINF_LIGHT_SENSOR = 38;
-    public static final int U_CARINF_MILEAGE = 28;
-    public static final int U_CARINF_PARK_SENSOR = 31;
-    public static final int U_CARINF_SPEED_WIPER = 35;
-    public static final int U_CARINF_TRAVELABLE = 29;
-    public static final int U_CAR_TIRE_BEGIN = 40;
-    public static final int U_CAR_TIRE_END = 49;
-    public static final int U_CAR_TIRE_VALUE_FL = 41;
-    public static final int U_CAR_TIRE_VALUE_FR = 42;
-    public static final int U_CAR_TIRE_VALUE_RL = 43;
-    public static final int U_CAR_TIRE_VALUE_RR = 44;
-    public static final int U_CAR_TIRE_WARN_FL = 45;
-    public static final int U_CAR_TIRE_WARN_FR = 46;
-    public static final int U_CAR_TIRE_WARN_RL = 47;
-    public static final int U_CAR_TIRE_WARN_RR = 48;
-    public static final int U_CNT_MAX = 66;
-    public static final int U_CUR_MOTOR_SPEED = 65;
-    public static final int U_CUR_SPEED = 64;
-    Runnable mDismissAir = new Runnable() { // from class: com.syu.module.canbus.Callback_0439_XBS_Nissan_Tul.1
-        @Override // java.lang.Runnable
+    public static final int U_CARINF2_BEGIN = 120;
+    public static final int U_CARINF2_BLIND_SPOT = 128;
+    public static final int U_CARINF2_BLIND_SPOT_WARN = 131;
+    public static final int U_CARINF2_COLLISION_WARN = 129;
+    public static final int U_CARINF2_DISTANCE_ASSIT = 126;
+    public static final int U_CARINF2_END = 134;
+    public static final int U_CARINF2_INTERRUPT_DISPLAY = 123;
+    public static final int U_CARINF2_REARVIEW_LEFT = 132;
+    public static final int U_CARINF2_REARVIEW_RIGHT = 133;
+    public static final int U_CARINF2_ROADAWAY = 127;
+    public static final int U_CARINF2_ROADAWAY_WARN = 130;
+    public static final int U_CARINF2_SENAR = 121;
+    public static final int U_CARINF2_SENAR_FR = 122;
+    public static final int U_CARINF2_SENAR_SENSITIVITY = 124;
+    public static final int U_CARINF2_SENAR_VOLUME = 125;
+    public static final int U_CARINF_AVGFUEL = 101;
+    public static final int U_CARINF_BEGIN = 98;
+    public static final int U_CARINF_CENTRE_SENSOR = 104;
+    public static final int U_CARINF_CORNER_SENSOR = 103;
+    public static final int U_CARINF_DOOR_UNLOCK = 107;
+    public static final int U_CARINF_END = 111;
+    public static final int U_CARINF_INTER_LIGHT = 105;
+    public static final int U_CARINF_KEY_UNLOCK = 108;
+    public static final int U_CARINF_LIGHTOFF_DELAY = 110;
+    public static final int U_CARINF_LIGHT_SENSOR = 109;
+    public static final int U_CARINF_MILEAGE = 99;
+    public static final int U_CARINF_PARK_SENSOR = 102;
+    public static final int U_CARINF_SPEED_WIPER = 106;
+    public static final int U_CARINF_TRAVELABLE = 100;
+    public static final int U_CAR_TIRE_BEGIN = 111;
+    public static final int U_CAR_TIRE_END = 120;
+    public static final int U_CAR_TIRE_VALUE_FL = 112;
+    public static final int U_CAR_TIRE_VALUE_FR = 113;
+    public static final int U_CAR_TIRE_VALUE_RL = 114;
+    public static final int U_CAR_TIRE_VALUE_RR = 115;
+    public static final int U_CAR_TIRE_WARN_FL = 116;
+    public static final int U_CAR_TIRE_WARN_FR = 117;
+    public static final int U_CAR_TIRE_WARN_RL = 118;
+    public static final int U_CAR_TIRE_WARN_RR = 119;
+    public static final int U_CNT_MAX = 137;
+    public static final int U_CUR_MOTOR_SPEED = 136;
+    public static final int U_CUR_SPEED = 135;
+    Runnable mDismissAir = new Runnable() { 
+        @Override
         public void run() {
             if (XBS_TuleDZSJ_AirControlActi.mIsFront && XBS_TuleDZSJ_AirControlActi.mInstance != null) {
                 XBS_TuleDZSJ_AirControlActi.mInstance.finish();
@@ -83,10 +63,10 @@ public class Callback_0439_XBS_Nissan_Tul extends CallbackCanbusBase {
         }
     };
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 66; i++) {
+        for (int i = 0; i < 137; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -100,19 +80,19 @@ public class Callback_0439_XBS_Nissan_Tul extends CallbackCanbusBase {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
         if (DataCanbus.DATA[1000] != 8716727) {
-            AirHelper.getInstance().buildUi(new Air_0439_XBS_Nissan_Tule(LauncherApplication.getInstance()));
-            for (int i3 = 7; i3 < 26; i3++) {
+            //AirHelper.getInstance().buildUi(new Air_0439_XBS_Nissan_Tule(LauncherApplication.getInstance()));
+            for (int i3 = 10; i3 < 97; i3++) {
                 DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
             }
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 7; i2 < 26; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
@@ -129,10 +109,10 @@ public class Callback_0439_XBS_Nissan_Tul extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 66) {
-            if (updateCode >= 7 && updateCode < 26) {
+        if (updateCode >= 0 && updateCode < 137) {
+            if (updateCode >= 10 && updateCode < 97) {
                 if (DataCanbus.DATA[1000] == 8716727) {
                     showCotrolAir(updateCode, ints);
                 }

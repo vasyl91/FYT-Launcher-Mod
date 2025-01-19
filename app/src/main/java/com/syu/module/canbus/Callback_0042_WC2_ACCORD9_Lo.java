@@ -1,89 +1,73 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.accord9.wc.Accord9HBackCamera;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0042_WC2_Accord9;
+//import com.syu.ui.air.Air_0042_WC2_Accord9;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0042_WC2_ACCORD9_Lo extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 45;
-    public static final int U_AIR_AUTO = 41;
-    public static final int U_AIR_BEGIN = 40;
-    public static final int U_AIR_BLOW_BODY_LEFT = 47;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 48;
-    public static final int U_AIR_BLOW_UP_LEFT = 49;
-    public static final int U_AIR_CYCLE = 42;
-    public static final int U_AIR_DUAL = 51;
-    public static final int U_AIR_END = 55;
-    public static final int U_AIR_FRONT_DEFROST = 43;
-    public static final int U_AIR_POWER = 53;
-    public static final int U_AIR_REAR_DEFROST = 44;
-    public static final int U_AIR_SYNC = 54;
-    public static final int U_AIR_TEMP_LEFT = 46;
-    public static final int U_AIR_TEMP_RIGHT = 52;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 50;
-    public static final int U_AUTOLOCK_BY_SHIFT_FROM_P = 20;
-    public static final int U_AUTOLOCK_BY_SHIFT_TO_P = 21;
-    public static final int U_AVERAGE_SPEED = 22;
-    public static final int U_BRIGHT_VALUE = 32;
-    public static final int U_CAR_CAMERA_MODE = 63;
-    public static final int U_CAR_RIGHT_CAMERA_STATUS = 62;
-    public static final int U_CLOSE_BIGLAMP_TIME = 26;
-    public static final int U_CLOSE_INSIDELAMP_TIME = 27;
-    public static final int U_CNT_MAX = 65;
-    public static final int U_CONTAST_VALUE = 34;
-    public static final int U_CURRENT_SPEED = 23;
-    public static final int U_DAYTIME_RUNING_LIGHTS_ON = 29;
-    public static final int U_LAST_MILEAGE_BY_TYPE = 31;
-    public static final int U_LOCK_UNLOCK_FEEDBACK_TONE = 25;
-    public static final int U_MISC_BEGIN = 0;
-    public static final int U_OPEN_BIGLAMP_BY_WIPER = 28;
-    public static final int U_SENSITIVITY_OPEN_BIGLAMP = 30;
-    public static final int U_SET_ENABLE_BACKVIDEO = 64;
-    public static final int U_SMARTLOCK_AND_ONE_KEY_BOOT = 24;
-    public static final int U_STATUR_VALUE = 33;
+    public static final int U_AUTOLOCK_BY_SHIFT_FROM_P = 118;
+    public static final int U_AUTOLOCK_BY_SHIFT_TO_P = 119;
+    public static final int U_AVERAGE_SPEED = 120;
+    public static final int U_BRIGHT_VALUE = 130;
+    public static final int U_CAR_CAMERA_MODE = 134;
+    public static final int U_CAR_RIGHT_CAMERA_STATUS = 133;
+    public static final int U_CLOSE_BIGLAMP_TIME = 124;
+    public static final int U_CLOSE_INSIDELAMP_TIME = 125;
+    public static final int U_CNT_MAX = 136;
+    public static final int U_CONTAST_VALUE = 132;
+    public static final int U_CURRENT_SPEED = 121;
+    public static final int U_DAYTIME_RUNING_LIGHTS_ON = 127;
+    public static final int U_LAST_MILEAGE_BY_TYPE = 129;
+    public static final int U_LOCK_UNLOCK_FEEDBACK_TONE = 123;
+    public static final int U_MISC_BEGIN = 98;
+    public static final int U_OPEN_BIGLAMP_BY_WIPER = 126;
+    public static final int U_SENSITIVITY_OPEN_BIGLAMP = 128;
+    public static final int U_SET_ENABLE_BACKVIDEO = 135;
+    public static final int U_SMARTLOCK_AND_ONE_KEY_BOOT = 122;
+    public static final int U_STATUR_VALUE = 131;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         DataCanbus.PROXY.register(callback, FinalCanbus.U_ORI_CARBACK, 1);
-        for (int i = 0; i < 65; i++) {
+        for (int i = 0; i < 136; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 55;
-        DoorHelper.sUcDoorFl = 56;
-        DoorHelper.sUcDoorFr = 57;
-        DoorHelper.sUcDoorRl = 58;
-        DoorHelper.sUcDoorRr = 59;
-        DoorHelper.sUcDoorBack = 60;
-        AirHelper.getInstance().buildUi(new Air_0042_WC2_Accord9(LauncherApplication.getInstance()));
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 55; i2 < 61; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        for (int i3 = 40; i3 < 55; i3++) {
+        //AirHelper.getInstance().buildUi(new Air_0042_WC2_Accord9(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 55; i < 61; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 40; i2 < 55; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode == 1021) {
             int value = ints[0];
@@ -98,7 +82,7 @@ public class Callback_0042_WC2_ACCORD9_Lo extends CallbackCanbusBase {
                 return;
             }
         }
-        if (updateCode >= 0 && updateCode < 65) {
+        if (updateCode >= 0 && updateCode < 136) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

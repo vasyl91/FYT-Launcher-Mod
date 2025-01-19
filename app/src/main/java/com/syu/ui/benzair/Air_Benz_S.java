@@ -4,22 +4,22 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_Benz_S extends Air_BenzBase {
     public Air_Benz_S(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1280;
         this.mContentHeight = 110;
     }
 
-    @Override // com.syu.ui.benzair.Air_BenzBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0450_benz_air/benz_s_air_null.png";
         this.mPathHighlight1 = "0450_benz_air/benz_s_air_highlight1.png";
@@ -31,7 +31,7 @@ public class Air_Benz_S extends Air_BenzBase {
         this.mDrawableHighlight3 = ToolkitRes.loadDrawable(this.mPathHighlight3);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -84,7 +84,7 @@ public class Air_Benz_S extends Air_BenzBase {
             int value = this.DATA[33];
             if (value > 0 && value <= 8) {
                 this.mPaint.setTextSize(25.0f);
-                c.drawText(new StringBuilder().append(value).toString(), 365.0f, 75.0f, this.mPaint);
+                c.drawText(String.valueOf(value), 365.0f, 75.0f, this.mPaint);
             } else if (value == 15) {
                 this.mPaint.setTextSize(20.0f);
                 c.drawText("AUTO", 385.0f, 75.0f, this.mPaint);
@@ -92,7 +92,7 @@ public class Air_Benz_S extends Air_BenzBase {
             int value2 = this.DATA[34];
             if (value2 > 0 && value2 <= 8) {
                 this.mPaint.setTextSize(25.0f);
-                c.drawText(new StringBuilder().append(value2).toString(), 930.0f, 75.0f, this.mPaint);
+                c.drawText(String.valueOf(value2), 930.0f, 75.0f, this.mPaint);
             } else if (value2 == 15) {
                 this.mPaint.setTextSize(20.0f);
                 c.drawText("AUTO", 950.0f, 75.0f, this.mPaint);

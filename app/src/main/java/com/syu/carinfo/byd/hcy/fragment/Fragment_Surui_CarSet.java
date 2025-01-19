@@ -8,33 +8,32 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickListener {
     int iPressDownvalue;
     int iPressUpvalue;
     int iRemoteDownvalue;
     int iRemoteUpvalue;
-    int[] ids = {34, 35, 36, 37};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet.1
+    int[] ids = {107, 108, 109, 110};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 34:
+                case 107:
                     Fragment_Surui_CarSet.this.uRemoteUp(this.value);
                     break;
-                case 35:
+                case 108:
                     Fragment_Surui_CarSet.this.uRemoteDown(this.value);
                     break;
-                case 36:
+                case 109:
                     Fragment_Surui_CarSet.this.uLongPressUp(this.value);
                     break;
-                case 37:
+                case 110:
                     Fragment_Surui_CarSet.this.uLongPressDown(this.value);
                     break;
-                case 52:
+                case 116:
                     Fragment_Surui_CarSet.this.recvalue = this.value;
                     break;
             }
@@ -43,7 +42,7 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
     int sendvalue = 0;
     int recvalue = 0;
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         bindViewOnClick(R.id.ctv_checkedtext1, this);
         bindViewOnClick(R.id.ctv_checkedtext2, this);
@@ -51,16 +50,16 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
         bindViewOnClick(R.id.ctv_checkedtext4, this);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0178_hcy_surui_carset;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         if (DataCanbus.sCanbusId == 8782263) {
             DataCanbus.PROXY.cmd(5, 16);
@@ -73,18 +72,18 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
         }
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
@@ -93,32 +92,32 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
         if (DataCanbus.sCanbusId == 8782263) {
             int value5 = 0;
             switch (v.getId()) {
-                case R.id.ctv_checkedtext1 /* 2131427478 */:
-                    if (DataCanbus.DATA[34] == 0) {
+                case R.id.ctv_checkedtext1 /* 2131427525 */:
+                    if (DataCanbus.DATA[107] == 0) {
                         value5 = 7;
                         break;
                     } else {
                         value5 = 8;
                         break;
                     }
-                case R.id.ctv_checkedtext2 /* 2131427531 */:
-                    if (DataCanbus.DATA[35] == 0) {
+                case R.id.ctv_checkedtext2 /* 2131427541 */:
+                    if (DataCanbus.DATA[108] == 0) {
                         value5 = 9;
                         break;
                     } else {
                         value5 = 10;
                         break;
                     }
-                case R.id.ctv_checkedtext3 /* 2131427532 */:
-                    if (DataCanbus.DATA[36] == 0) {
+                case R.id.ctv_checkedtext3 /* 2131427542 */:
+                    if (DataCanbus.DATA[109] == 0) {
                         value5 = 11;
                         break;
                     } else {
                         value5 = 12;
                         break;
                     }
-                case R.id.ctv_checkedtext4 /* 2131427533 */:
-                    if (DataCanbus.DATA[37] == 0) {
+                case R.id.ctv_checkedtext4 /* 2131427544 */:
+                    if (DataCanbus.DATA[110] == 0) {
                         value5 = 13;
                         break;
                     } else {
@@ -134,32 +133,32 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
         }
         if (DataCanbus.sCanbusId == 9699767 || DataCanbus.sCanbusId == 9765303 || DataCanbus.sCanbusId == 9830839 || DataCanbus.sCanbusId == 9896375 || DataCanbus.sCanbusId == 9961911 || DataCanbus.sCanbusId == 10027447 || DataCanbus.sCanbusId == 10092983) {
             switch (v.getId()) {
-                case R.id.ctv_checkedtext1 /* 2131427478 */:
-                    if (DataCanbus.DATA[34] == 0) {
+                case R.id.ctv_checkedtext1 /* 2131427525 */:
+                    if (DataCanbus.DATA[107] == 0) {
                         value4 = 1;
                     } else {
                         value4 = 0;
                     }
                     DataCanbus.PROXY.cmd(1, new int[]{3, value4}, null, null);
                     break;
-                case R.id.ctv_checkedtext2 /* 2131427531 */:
-                    if (DataCanbus.DATA[35] == 0) {
+                case R.id.ctv_checkedtext2 /* 2131427541 */:
+                    if (DataCanbus.DATA[108] == 0) {
                         value3 = 1;
                     } else {
                         value3 = 0;
                     }
                     DataCanbus.PROXY.cmd(1, new int[]{4, value3}, null, null);
                     break;
-                case R.id.ctv_checkedtext3 /* 2131427532 */:
-                    if (DataCanbus.DATA[36] == 0) {
+                case R.id.ctv_checkedtext3 /* 2131427542 */:
+                    if (DataCanbus.DATA[109] == 0) {
                         value2 = 1;
                     } else {
                         value2 = 0;
                     }
                     DataCanbus.PROXY.cmd(1, new int[]{5, value2}, null, null);
                     break;
-                case R.id.ctv_checkedtext4 /* 2131427533 */:
-                    if (DataCanbus.DATA[37] == 0) {
+                case R.id.ctv_checkedtext4 /* 2131427544 */:
+                    if (DataCanbus.DATA[110] == 0) {
                         value = 1;
                     } else {
                         value = 0;
@@ -170,7 +169,7 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
             return;
         }
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 if (((this.recvalue >> 7) & 1) == 1) {
                     this.sendvalue = this.recvalue & 127;
                     break;
@@ -178,7 +177,7 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
                     this.sendvalue = this.recvalue | 128;
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 if (((this.recvalue >> 6) & 1) == 1) {
                     this.sendvalue = this.recvalue & 191;
                     break;
@@ -186,7 +185,7 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
                     this.sendvalue = this.recvalue | 64;
                     break;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 if (((this.recvalue >> 3) & 1) == 1) {
                     this.sendvalue = this.recvalue & 247;
                     break;
@@ -194,7 +193,7 @@ public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickL
                     this.sendvalue = this.recvalue | 8;
                     break;
                 }
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 if (((this.recvalue >> 2) & 1) == 1) {
                     this.sendvalue = this.recvalue & 251;
                     break;

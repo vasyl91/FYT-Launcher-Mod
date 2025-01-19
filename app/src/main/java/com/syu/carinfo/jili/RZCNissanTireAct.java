@@ -8,82 +8,81 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCNissanTireAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.RZCNissanTireAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 90:
+                case 163:
                     RZCNissanTireAct.this.updaterTempFL();
                     break;
-                case 91:
+                case 164:
                     RZCNissanTireAct.this.updaterTempFR();
                     break;
-                case 92:
+                case 165:
                     RZCNissanTireAct.this.updaterTempRL();
                     break;
-                case 93:
+                case 166:
                     RZCNissanTireAct.this.updaterTempRR();
                     break;
-                case 94:
+                case 167:
                     RZCNissanTireAct.this.mUpdaterTireFL();
                     break;
-                case 95:
+                case 168:
                     RZCNissanTireAct.this.mUpdaterTireFR();
                     break;
-                case 96:
+                case 169:
                     RZCNissanTireAct.this.mUpdaterTireRL();
                     break;
-                case 97:
+                case 170:
                     RZCNissanTireAct.this.mUpdaterTireRR();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFL() {
-        int value = DataCanbus.DATA[90];
+        int value = DataCanbus.DATA[163];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1_temp)).setText("--");
         } else {
@@ -91,9 +90,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFR() {
-        int value = DataCanbus.DATA[91];
+        int value = DataCanbus.DATA[164];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2_temp)).setText("--");
         } else {
@@ -101,9 +100,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRL() {
-        int value = DataCanbus.DATA[92];
+        int value = DataCanbus.DATA[165];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3_temp)).setText("--");
         } else {
@@ -111,9 +110,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRR() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[166];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4_temp)).setText("--");
         } else {
@@ -121,9 +120,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[94];
+        int value = DataCanbus.DATA[167];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire1)) != null) {
@@ -131,9 +130,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[168];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire2)) != null) {
@@ -141,9 +140,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[96];
+        int value = DataCanbus.DATA[169];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire3)) != null) {
@@ -151,9 +150,9 @@ public class RZCNissanTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[97];
+        int value = DataCanbus.DATA[170];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire4)) != null) {

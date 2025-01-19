@@ -11,26 +11,25 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityKX7CameraSet extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.qiya.kx7.ActivityKX7CameraSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 32:
+                case 99:
                     ActivityKX7CameraSet.this.updateTrackDisplay(value);
                     break;
-                case 33:
+                case 100:
                     ActivityKX7CameraSet.this.updateRadarDisplay(value);
                     break;
-                case 34:
+                case 101:
                     ActivityKX7CameraSet.this.updateFrontViewInit(value);
                     break;
-                case 35:
+                case 102:
                     ActivityKX7CameraSet.this.updateRearViewInit(value);
                     break;
-                case 41:
+                case 105:
                     if (((CheckedTextView) ActivityKX7CameraSet.this.findViewById(R.id.ctv_checkedtext3)) != null) {
                         ((CheckedTextView) ActivityKX7CameraSet.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value != 0);
                         break;
@@ -39,10 +38,10 @@ public class ActivityKX7CameraSet extends Activity implements View.OnClickListen
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_394_qiya_kx7_camera_set);
+        //setContentView(R.layout.layout_394_qiya_kx7_camera_set);
         setListener();
     }
 
@@ -65,75 +64,75 @@ public class ActivityKX7CameraSet extends Activity implements View.OnClickListen
         ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[33];
-                setCmd(3, value != 0 ? 0 : 1);
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[101] - 1;
+                if (value < 0) {
+                    value = 0;
+                }
+                setCmd(4, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value2 = DataCanbus.DATA[34] - 1;
-                if (value2 < 0) {
-                    value2 = 0;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[101] + 1;
+                if (value2 > 3) {
+                    value2 = 3;
                 }
                 setCmd(4, value2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value3 = DataCanbus.DATA[34] + 1;
-                if (value3 > 3) {
-                    value3 = 3;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[102] - 1;
+                if (value3 < 0) {
+                    value3 = 0;
                 }
-                setCmd(4, value3);
+                setCmd(5, value3);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value4 = DataCanbus.DATA[35] - 1;
-                if (value4 < 0) {
-                    value4 = 0;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[102] + 1;
+                if (value4 > 3) {
+                    value4 = 3;
                 }
                 setCmd(5, value4);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value5 = DataCanbus.DATA[35] + 1;
-                if (value5 > 3) {
-                    value5 = 3;
-                }
-                setCmd(5, value5);
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[100];
+                setCmd(3, value5 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value6 = DataCanbus.DATA[32];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value6 = DataCanbus.DATA[99];
                 setCmd(2, value6 != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value7 = DataCanbus.DATA[41];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value7 = DataCanbus.DATA[105];
                 DataCanbus.PROXY.cmd(2, value7 != 0 ? 0 : 1);
                 break;
         }

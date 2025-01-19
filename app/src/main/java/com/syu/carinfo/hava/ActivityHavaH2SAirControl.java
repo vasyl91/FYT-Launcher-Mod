@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hava.ActivityHavaH2SAirControl.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 1:
@@ -51,10 +50,10 @@ public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchL
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_132_havah2s_air_control);
+        //setContentView(R.layout.layout_132_havah2s_air_control);
         init();
     }
 
@@ -76,7 +75,7 @@ public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchL
         findViewById(R.id.air_xts_auto).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -84,7 +83,7 @@ public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchL
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -92,7 +91,7 @@ public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchL
         mIsFront = false;
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int cmd = 0;
         switch (v.getId()) {
@@ -269,7 +268,7 @@ public class ActivityHavaH2SAirControl extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[9];
         int foot = DataCanbus.DATA[8];

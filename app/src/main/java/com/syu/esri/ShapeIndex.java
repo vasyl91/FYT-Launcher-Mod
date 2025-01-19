@@ -1,16 +1,15 @@
 package com.syu.esri;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ShapeIndex {
-    private int mFileCode;
-    private int mFileLength;
-    private int[] mIndices;
-    private double mMaxX;
-    private double mMaxY;
-    private double mMinX;
-    private double mMinY;
-    private int mShapeType;
-    private int mVersion;
+    private final int mFileCode;
+    private final int mFileLength;
+    private final int[] mIndices;
+    private final double mMaxX;
+    private final double mMaxY;
+    private final double mMinX;
+    private final double mMinY;
+    private final int mShapeType;
+    private final int mVersion;
 
     public ShapeIndex(int fileCode, int fileLength, int version, int shapeType, double minX, double minY, double maxX, double maxY, int[] indices) {
         this.mFileCode = fileCode;

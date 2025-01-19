@@ -5,16 +5,16 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LzInfinitAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.infinit.fx35.LzInfinitAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 8:
@@ -64,17 +64,17 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_lz_infinit_air_control);
+        ////setContentView(R.layout.layout_0439_lz_infinit_air_control);
         init();
     }
 
     private void init() {
         findViewById(R.id.air_xts_mode).setOnTouchListener(this);
         findViewById(R.id.air_xts_dual).setOnTouchListener(this);
-        findViewById(R.id.air_xts_em_unit).setOnTouchListener(this);
+        //findViewById(R.id.air_xts_em_unit).setOnTouchListener(this);
         findViewById(R.id.btn_air_temp_left_plus).setOnTouchListener(this);
         findViewById(R.id.btn_air_temp_left_minus).setOnTouchListener(this);
         findViewById(R.id.air_xts_front).setOnTouchListener(this);
@@ -89,7 +89,7 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         findViewById(R.id.air_xts_ac).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{39}, null, null);
@@ -98,7 +98,7 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -106,7 +106,7 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -153,9 +153,6 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
             case R.id.air_xts_rear /* 2131427534 */:
                 data0 = 8;
                 break;
-            case R.id.air_xts_em_unit /* 2131428295 */:
-                data0 = 15;
-                break;
         }
         if (event.getAction() == 0) {
             sendCmd(data0, 1);
@@ -197,11 +194,11 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[15];
         int unit = DataCanbus.DATA[20];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -218,11 +215,11 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[16];
         int unit = DataCanbus.DATA[20];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -239,37 +236,37 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDual() {
         int acOn = DataCanbus.DATA[12];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_dual_n : R.drawable.ic_xts_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTempUnit() {
         int acOn = DataCanbus.DATA[28];
-        findViewById(R.id.air_xts_em_unit).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_unit_n : R.drawable.ic_xts_unit_p);
+        //findViewById(R.id.air_xts_em_unit).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_unit_n : R.drawable.ic_xts_unit_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[9];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[8];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[10];
         if (cycle == 0) {
@@ -279,19 +276,19 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[17];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[18];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[19];
         if (leave < 0) {
@@ -304,7 +301,7 @@ public class LzInfinitAirControlAct extends Activity implements View.OnTouchList
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[13];
         int foot = DataCanbus.DATA[14];

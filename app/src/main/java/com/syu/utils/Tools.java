@@ -3,7 +3,6 @@ package com.syu.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Tools {
     public static final Method getMethod(String clazzName, String methodName, Class<?>... clsArr) {
         try {

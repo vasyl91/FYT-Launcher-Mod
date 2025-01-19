@@ -8,9 +8,11 @@ import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.DropTarget;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class InfoDropTarget extends ButtonDropTarget {
     private TransitionDrawable mDrawable;
     private ColorStateList mOriginalTextColor;
@@ -23,12 +25,12 @@ public class InfoDropTarget extends ButtonDropTarget {
         super(context, attrs, defStyle);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         this.mOriginalTextColor = getTextColors();
         Resources r = getResources();
-        this.mHoverColor = r.getColor(R.color.info_target_hover_tint);
+        this.mHoverColor = ContextCompat.getColor(getContext(), R.color.info_target_hover_tint);
         this.mDrawable = (TransitionDrawable) getCurrentDrawable();
         if (this.mDrawable != null) {
             this.mDrawable.setCrossFadeEnabled(true);
@@ -43,7 +45,7 @@ public class InfoDropTarget extends ButtonDropTarget {
         return source instanceof AppsCustomizePagedView;
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public boolean acceptDrop(DropTarget.DragObject d) {
         ComponentName componentName = null;
         if (d.dragInfo instanceof AppInfo) {
@@ -60,7 +62,7 @@ public class InfoDropTarget extends ButtonDropTarget {
         return false;
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         boolean isVisible = true;
         if (!isFromAllApps(source)) {
@@ -72,20 +74,20 @@ public class InfoDropTarget extends ButtonDropTarget {
         ((ViewGroup) getParent()).setVisibility(isVisible ? View.VISIBLE : android.view.View.GONE);
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragEnd() {
         super.onDragEnd();
         this.mActive = false;
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public void onDragEnter(DropTarget.DragObject d) {
         super.onDragEnter(d);
         this.mDrawable.startTransition(this.mTransitionDuration);
         setTextColor(this.mHoverColor);
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public void onDragExit(DropTarget.DragObject d) {
         super.onDragExit(d);
         if (!d.dragComplete) {

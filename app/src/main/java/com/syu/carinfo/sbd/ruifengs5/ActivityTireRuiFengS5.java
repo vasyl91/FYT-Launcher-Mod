@@ -8,52 +8,51 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityTireRuiFengS5 extends BaseActivity {
     String mWarnStrs;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.sbd.ruifengs5.ActivityTireRuiFengS5.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 51:
+                case 99:
                     ActivityTireRuiFengS5.this.updaterTempFL(value);
                     break;
-                case 52:
+                case 100:
                     ActivityTireRuiFengS5.this.updaterTempFR(value);
                     break;
-                case 53:
+                case 101:
                     ActivityTireRuiFengS5.this.updaterTempRL(value);
                     break;
-                case 54:
+                case 102:
                     ActivityTireRuiFengS5.this.updaterTempRR(value);
                     break;
-                case 55:
+                case 103:
                     ActivityTireRuiFengS5.this.mUpdaterTireFL(value);
                     break;
-                case 56:
+                case 104:
                     ActivityTireRuiFengS5.this.mUpdaterTireFR(value);
                     break;
-                case 57:
+                case 105:
                     ActivityTireRuiFengS5.this.mUpdaterTireRL(value);
                     break;
-                case 58:
+                case 106:
                     ActivityTireRuiFengS5.this.mUpdaterTireRR(value);
                     break;
-                case 59:
-                case 60:
+                case 107:
+                case 108:
                     ActivityTireRuiFengS5.this.updaterFlTipWalm();
                     break;
-                case 61:
-                case 62:
+                case 109:
+                case 110:
                     ActivityTireRuiFengS5.this.updaterFRTipWalm();
                     break;
-                case 63:
-                case 64:
+                case 111:
+                case 112:
                     ActivityTireRuiFengS5.this.updaterRLTipWalm();
                     break;
-                case 65:
-                case 66:
+                case 113:
+                case 114:
                     ActivityTireRuiFengS5.this.updaterRRTipWalm();
                     break;
             }
@@ -62,28 +61,28 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
     int tempWarnState;
     int tireState;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_376_ruifeng_s5_tire);
+        //setContentView(R.layout.layout_376_ruifeng_s5_tire);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        for (int i = 51; i <= 66; i++) {
+        for (int i = 99; i <= 114; i++) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        for (int i = 51; i <= 66; i++) {
+        for (int i = 99; i <= 114; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFL(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_temp_0)) != null) {
             if (value > 165) {
@@ -94,7 +93,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFR(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_temp_1)) != null) {
             if (value > 165) {
@@ -105,7 +104,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRL(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_temp_2)) != null) {
             if (value > 165) {
@@ -116,7 +115,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRR(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_temp_3)) != null) {
             if (value > 165) {
@@ -127,7 +126,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_press_0)) != null) {
             if (value > 163) {
@@ -139,7 +138,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_press_1)) != null) {
             if (value > 163) {
@@ -151,7 +150,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_press_2)) != null) {
             if (value > 163) {
@@ -163,7 +162,7 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR(int value) {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_press_3)) != null) {
             if (value > 163) {
@@ -175,38 +174,38 @@ public class ActivityTireRuiFengS5 extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFlTipWalm() {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_0_warn)) != null) {
-            this.tempWarnState = DataCanbus.DATA[59];
-            this.tireState = DataCanbus.DATA[60];
+            this.tempWarnState = DataCanbus.DATA[107];
+            this.tireState = DataCanbus.DATA[108];
             ((TextView) findViewById(R.id.zt_tv_car_tire_0_warn)).setText(setTempWalmState("fl", this.tempWarnState, this.tireState));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRTipWalm() {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_1_warn)) != null) {
-            this.tempWarnState = DataCanbus.DATA[61];
-            this.tireState = DataCanbus.DATA[62];
+            this.tempWarnState = DataCanbus.DATA[109];
+            this.tireState = DataCanbus.DATA[110];
             ((TextView) findViewById(R.id.zt_tv_car_tire_1_warn)).setText(setTempWalmState("fl", this.tempWarnState, this.tireState));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLTipWalm() {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_2_warn)) != null) {
-            this.tempWarnState = DataCanbus.DATA[63];
-            this.tireState = DataCanbus.DATA[64];
+            this.tempWarnState = DataCanbus.DATA[111];
+            this.tireState = DataCanbus.DATA[112];
             ((TextView) findViewById(R.id.zt_tv_car_tire_2_warn)).setText(setTempWalmState("fl", this.tempWarnState, this.tireState));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRTipWalm() {
         if (((TextView) findViewById(R.id.zt_tv_car_tire_3_warn)) != null) {
-            this.tempWarnState = DataCanbus.DATA[65];
-            this.tireState = DataCanbus.DATA[66];
+            this.tempWarnState = DataCanbus.DATA[113];
+            this.tireState = DataCanbus.DATA[114];
             ((TextView) findViewById(R.id.zt_tv_car_tire_3_warn)).setText(setTempWalmState("fl", this.tempWarnState, this.tireState));
         }
     }

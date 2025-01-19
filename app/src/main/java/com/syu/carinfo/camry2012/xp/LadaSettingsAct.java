@@ -9,41 +9,40 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LadaSettingsAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry2012.xp.LadaSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 32:
+                case 129:
                     LadaSettingsAct.this.mUpdaterElectric();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_lada_settings);
+        //setContentView(R.layout.layout_lada_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.camry_btn_electric_door_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.LadaSettingsAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.camry_btn_electric_door_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[32];
+                int value = DataCanbus.DATA[129];
                 if (value > 0) {
                     DataCanbus.PROXY.cmd(19, new int[]{value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.camry_btn_electric_door_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.LadaSettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.camry_btn_electric_door_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[32];
+                int value = DataCanbus.DATA[129];
                 if (value < 4) {
                     DataCanbus.PROXY.cmd(19, new int[]{value + 1}, null, null);
                 }
@@ -51,19 +50,19 @@ public class LadaSettingsAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterElectric() {
-        int value = DataCanbus.DATA[32];
+        int value = DataCanbus.DATA[129];
         if (((TextView) findViewById(R.id.camry_tv_electric_door)) != null) {
             switch (value) {
                 case 1:

@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.NetworkCapabilities;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class NetworkCheck extends BroadcastReceiver {
     public static final int DELAY = 30000;
     boolean hasNet;
@@ -25,7 +25,7 @@ public class NetworkCheck extends BroadcastReceiver {
         this.mContext = context.getApplicationContext();
     }
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         boolean hasNet = isConnectionAvailable(context);
         if (hasNet != this.hasNet) {
@@ -54,13 +54,23 @@ public class NetworkCheck extends BroadcastReceiver {
         }
     }
 
-    public boolean isConnectionAvailable(Context cotext) {
-        NetworkInfo activeNetworkInfo;
-        ConnectivityManager connectivityManager = (ConnectivityManager) cotext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null && (activeNetworkInfo = connectivityManager.getActiveNetworkInfo()) != null && activeNetworkInfo.isConnected()) {
-            return true;
+    private boolean isConnectionAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
         }
-        return false;
+        android.net.Network network = connectivityManager.getActiveNetwork();
+        if (network == null) {
+            return false;
+        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+        if (networkCapabilities == null) {
+            return false;
+        }
+        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH);
     }
 
     public void registerLisenter(OnNetworkStateChangeLisenter lisenter) {

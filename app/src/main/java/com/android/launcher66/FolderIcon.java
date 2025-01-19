@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -22,12 +21,13 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.DropTarget;
-import com.android.launcher66.FolderInfo;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.BlendModeColorFilterCompat;
+import androidx.core.graphics.BlendModeCompat;
+
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FolderIcon extends LinearLayout implements FolderInfo.FolderListener {
     private static final int CONSUMPTION_ANIMATION_DURATION = 100;
     private static final int DROP_IN_ANIMATION_DURATION = 400;
@@ -61,9 +61,11 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
     private int mTotalWidth;
     private static boolean sStaticValuesDirty = true;
     public static Drawable sSharedFolderLeaveBehind = null;
+    private Context mContext;
 
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mContext = context;
         this.mFolderRingAnimator = null;
         this.mTotalWidth = -1;
         this.mAnimating = false;
@@ -76,6 +78,7 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
 
     public FolderIcon(Context context) {
         super(context);
+        this.mContext = context;
         this.mFolderRingAnimator = null;
         this.mTotalWidth = -1;
         this.mAnimating = false;
@@ -124,7 +127,7 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
         return icon;
     }
 
-    @Override // android.view.View
+    @Override
     protected Parcelable onSaveInstanceState() {
         sStaticValuesDirty = true;
         return super.onSaveInstanceState();
@@ -156,9 +159,9 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
                 sPreviewSize = grid.folderIconSizePx;
                 sPreviewPadding = res.getDimensionPixelSize(R.dimen.folder_preview_padding);
-                sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
-                sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_nolip_holo);
-                FolderIcon.sSharedFolderLeaveBehind = res.getDrawable(R.drawable.portal_ring_rest);
+                sSharedOuterRingDrawable = ContextCompat.getDrawable(launcher, R.drawable.portal_ring_outer_holo);
+                sSharedInnerRingDrawable = ContextCompat.getDrawable(launcher, R.drawable.portal_ring_inner_nolip_holo);
+                FolderIcon.sSharedFolderLeaveBehind = ContextCompat.getDrawable(launcher, R.drawable.portal_ring_rest);
                 FolderIcon.sStaticValuesDirty = false;
             }
         }
@@ -170,8 +173,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
             this.mAcceptAnimator = LauncherAnimUtils.ofFloat(this.mCellLayout, 0.0f, 1.0f);
             this.mAcceptAnimator.setDuration(100L);
             final int previewSize = sPreviewSize;
-            this.mAcceptAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.FolderIcon.FolderRingAnimator.1
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            this.mAcceptAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float percent = ((Float) animation.getAnimatedValue()).floatValue();
                     FolderRingAnimator.this.mOuterRingSize = ((FolderIcon.OUTER_RING_GROWTH_FACTOR * percent) + 1.0f) * previewSize;
@@ -181,8 +184,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
                     }
                 }
             });
-            this.mAcceptAnimator.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.FolderIcon.FolderRingAnimator.2
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            this.mAcceptAnimator.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationStart(Animator animation) {
                     if (FolderRingAnimator.this.mFolderIcon != null) {
                         FolderRingAnimator.this.mFolderIcon.mPreviewBackground.setVisibility(View.INVISIBLE);
@@ -199,8 +202,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
             this.mNeutralAnimator = LauncherAnimUtils.ofFloat(this.mCellLayout, 0.0f, 1.0f);
             this.mNeutralAnimator.setDuration(100L);
             final int previewSize = sPreviewSize;
-            this.mNeutralAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.FolderIcon.FolderRingAnimator.3
-                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+            this.mNeutralAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+                @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float percent = ((Float) animation.getAnimatedValue()).floatValue();
                     FolderRingAnimator.this.mOuterRingSize = (((1.0f - percent) * FolderIcon.OUTER_RING_GROWTH_FACTOR) + 1.0f) * previewSize;
@@ -210,8 +213,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
                     }
                 }
             });
-            this.mNeutralAnimator.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.FolderIcon.FolderRingAnimator.4
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            this.mNeutralAnimator.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     if (FolderRingAnimator.this.mCellLayout != null) {
                         FolderRingAnimator.this.mCellLayout.hideFolderAccept(FolderRingAnimator.this);
@@ -338,8 +341,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
             addItem(item);
             this.mHiddenItems.add(item);
             this.mFolder.hideItem(item);
-            postDelayed(new Runnable() { // from class: com.android.launcher66.FolderIcon.1
-                @Override // java.lang.Runnable
+            postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     FolderIcon.this.mHiddenItems.remove(item);
                     FolderIcon.this.mFolder.showItem(item);
@@ -440,7 +443,7 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
             this.mOldBounds.set(d.getBounds());
             d.setBounds(0, 0, this.mIntrinsicIconSize, this.mIntrinsicIconSize);
             d.setFilterBitmap(true);
-            d.setColorFilter(Color.argb(params.overlayAlpha, 255, 255, 255), PorterDuff.Mode.SRC_ATOP);
+            d.setColorFilter(BlendModeColorFilterCompat.createBlendModeColorFilterCompat(Color.argb(params.overlayAlpha, 255, 255, 255), BlendModeCompat.SRC_ATOP));
             d.draw(canvas);
             d.clearColorFilter();
             d.setFilterBitmap(false);
@@ -449,7 +452,7 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
         canvas.restore();
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (this.mFolder != null) {
@@ -485,8 +488,8 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
         final float transY0 = ((this.mAvailableSpaceInPreview - d.getIntrinsicHeight()) / 2) + getPaddingTop();
         this.mAnimParams.drawable = d;
         ValueAnimator va = LauncherAnimUtils.ofFloat(this, 0.0f, 1.0f);
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.FolderIcon.2
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float progress = ((Float) animation.getAnimatedValue()).floatValue();
                 if (reverse) {
@@ -499,13 +502,13 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
                 FolderIcon.this.invalidate();
             }
         });
-        va.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.FolderIcon.3
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        va.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationStart(Animator animation) {
                 FolderIcon.this.mAnimating = true;
             }
 
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
             public void onAnimationEnd(Animator animation) {
                 FolderIcon.this.mAnimating = false;
                 if (onCompleteRunnable != null) {
@@ -529,25 +532,25 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
         return this.mFolderName.getVisibility() == View.VISIBLE;
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onItemsChanged() {
         invalidate();
         requestLayout();
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onAdd(ShortcutInfo item) {
         invalidate();
         requestLayout();
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onRemove(ShortcutInfo item) {
         invalidate();
         requestLayout();
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onTitleChanged(CharSequence title) {
         this.mFolderName.setText(title.toString());
         setContentDescription(String.format(getContext().getString(R.string.folder_name_format), title));
@@ -568,7 +571,7 @@ public class FolderIcon extends LinearLayout implements FolderInfo.FolderListene
         return result;
     }
 
-    @Override // android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         this.mLongPressHelper.cancelLongPress();

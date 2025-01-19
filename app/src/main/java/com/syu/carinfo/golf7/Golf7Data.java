@@ -2,8 +2,8 @@ package com.syu.carinfo.golf7;
 
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.camry2012.xp.CamryData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7Data {
     public static String[] mDistanceUnitXp = {"km", "mi"};
     public static String[] mDistanceUnitWc = {"mi", "km"};
@@ -11,13 +11,13 @@ public class Golf7Data {
     public static String[] mSpeedUnitWc = {"m/h", "km/h"};
     public static String[] mTempUnitXp = {"DegC", "F"};
     public static String[] mVolumeUnitXp = {"L", "gal(uk)", "gal(us)"};
-    public static String[] mOilUnitXp = {"mpg(uk)", "L/100km", "mpg(us)", "km/L"};
-    public static String[] mOilUnitXp1 = {"L/100km", "km/L", "mpg(uk)", "mpg(us)"};
+    public static String[] mOilUnitXp = {"mpg(uk)", CamryData.OIL_EXPEND_UNIT_L_PER_100KM, "mpg(us)", CamryData.OIL_EXPEND_UNIT_KM_PER_L};
+    public static String[] mOilUnitXp1 = {CamryData.OIL_EXPEND_UNIT_L_PER_100KM, CamryData.OIL_EXPEND_UNIT_KM_PER_L, "mpg(uk)", "mpg(us)"};
     public static String[] mPressureUnitXp = {"Bar", "Psi", "kPa"};
     public static String[] mMtOilUnitXp = {"gal/h", "l/h"};
     public static String[] mTempUnit = {"℉", "℃"};
     public static String[] mVolumeUnit = {"L", "gal(us)", "gal(uk)"};
-    public static String[] mOilUnit = {"L/100km", "km/L", "mpg(us)", "mpg(uk)"};
+    public static String[] mOilUnit = {CamryData.OIL_EXPEND_UNIT_L_PER_100KM, CamryData.OIL_EXPEND_UNIT_KM_PER_L, "mpg(us)", "mpg(uk)"};
     public static String[] mPressureUnit = {"kPa", "Bar", "Psi"};
     public static String[] mOilMarkMax = {"1/4", "3/8", "1/2", "1", "3/2", "2"};
     public static String[] mMtOilUnit = {"l/h", "gal/h"};

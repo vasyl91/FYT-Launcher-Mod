@@ -10,38 +10,37 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcLockAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcLockAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 27:
+                case 124:
                     KlcLockAct.this.updatePreventAutoLuoSuo();
                     break;
-                case 28:
+                case 125:
                     KlcLockAct.this.updateAutoLuosuo();
                     break;
-                case 29:
+                case 126:
                     KlcLockAct.this.updateAutoUnlockZidong();
                     break;
-                case 30:
+                case 127:
                     KlcLockAct.this.updataDelayLockSet();
                     break;
-                case 31:
+                case 128:
                     KlcLockAct.this.updataAutoUnlockShoudong();
                     break;
-                case 137:
+                case 189:
                     KlcLockAct.this.updataAnitLock();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_lock_set);
+        //setContentView(R.layout.layout_klc_lock_set);
         setUI();
     }
 
@@ -56,20 +55,20 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.klc_lock_manual_transmission_btn_next)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_btn_Prevent_automatic_door_latch_check /* 2131431935 */:
-                int valPre = DataCanbus.DATA[27] & 255;
+            case R.id.klc_btn_Prevent_automatic_door_latch_check /* 2131431885 */:
+                int valPre = DataCanbus.DATA[124] & 255;
                 KlcFunc.C_CAR_LOCK(1, valPre == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Automatic_latch_check /* 2131431937 */:
-                int valLatch = DataCanbus.DATA[28] & 255;
+            case R.id.klc_btn_Automatic_latch_check /* 2131431887 */:
+                int valLatch = DataCanbus.DATA[125] & 255;
                 KlcFunc.C_CAR_LOCK(2, valLatch == 0 ? 1 : 0);
                 break;
-            case R.id.klc_lock_automatic_transmission_btn_pre /* 2131431939 */:
-                int valAutoTranPre = DataCanbus.DATA[29] & 255;
+            case R.id.klc_lock_automatic_transmission_btn_pre /* 2131431889 */:
+                int valAutoTranPre = DataCanbus.DATA[126] & 255;
                 if (valAutoTranPre == 0) {
                     KlcFunc.C_CAR_LOCK(3, 2);
                     break;
@@ -80,8 +79,8 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LOCK(3, 1);
                     break;
                 }
-            case R.id.klc_lock_automatic_transmission_btn_next /* 2131431941 */:
-                int valAutoTranNext = DataCanbus.DATA[29] & 255;
+            case R.id.klc_lock_automatic_transmission_btn_next /* 2131431891 */:
+                int valAutoTranNext = DataCanbus.DATA[126] & 255;
                 if (valAutoTranNext == 0) {
                     KlcFunc.C_CAR_LOCK(3, 1);
                     break;
@@ -92,12 +91,12 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LOCK(3, 0);
                     break;
                 }
-            case R.id.klc_btn_Delay_latch_check /* 2131431943 */:
-                int valLatchDelay = DataCanbus.DATA[30] & 255;
+            case R.id.klc_btn_Delay_latch_check /* 2131431893 */:
+                int valLatchDelay = DataCanbus.DATA[127] & 255;
                 KlcFunc.C_CAR_LOCK(4, valLatchDelay == 0 ? 1 : 0);
                 break;
-            case R.id.klc_lock_manual_transmission_btn_pre /* 2131431945 */:
-                int valManTranPre = DataCanbus.DATA[31] & 255;
+            case R.id.klc_lock_manual_transmission_btn_pre /* 2131431895 */:
+                int valManTranPre = DataCanbus.DATA[128] & 255;
                 if (DataCanbus.DATA[1000] == 308) {
                     if (valManTranPre == 0) {
                         KlcFunc.C_CAR_LOCK(5, 2);
@@ -116,8 +115,8 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LOCK(5, 1);
                     break;
                 }
-            case R.id.klc_lock_manual_transmission_btn_next /* 2131431947 */:
-                int valManTranNext = DataCanbus.DATA[31] & 255;
+            case R.id.klc_lock_manual_transmission_btn_next /* 2131431897 */:
+                int valManTranNext = DataCanbus.DATA[128] & 255;
                 if (DataCanbus.DATA[1000] == 308) {
                     if (valManTranNext == 0) {
                         KlcFunc.C_CAR_LOCK(5, 2);
@@ -136,20 +135,20 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LOCK(5, 0);
                     break;
                 }
-            case R.id.klc_btn_prevent_anti_lock /* 2131431949 */:
-                int val_antilock = DataCanbus.DATA[137] & 255;
+            case R.id.klc_btn_prevent_anti_lock /* 2131431899 */:
+                int val_antilock = DataCanbus.DATA[189] & 255;
                 KlcFunc.C_CAR_LOCK(6, val_antilock == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -160,26 +159,26 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePreventAutoLuoSuo() {
-        int val = DataCanbus.DATA[27];
+        int val = DataCanbus.DATA[124];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {
@@ -190,9 +189,9 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoLuosuo() {
-        int val = DataCanbus.DATA[28];
+        int val = DataCanbus.DATA[125];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {
@@ -206,9 +205,9 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoUnlockZidong() {
-        int val = DataCanbus.DATA[29];
+        int val = DataCanbus.DATA[126];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {
@@ -230,9 +229,9 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updataDelayLockSet() {
-        int val = DataCanbus.DATA[30];
+        int val = DataCanbus.DATA[127];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {
@@ -243,9 +242,9 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updataAnitLock() {
-        int val = DataCanbus.DATA[137];
+        int val = DataCanbus.DATA[189];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {
@@ -256,9 +255,9 @@ public class KlcLockAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updataAutoUnlockShoudong() {
-        int val = DataCanbus.DATA[31];
+        int val = DataCanbus.DATA[128];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {

@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0265_RZC_ZhongTaiDaMaiX5 extends AirBase {
     public AIR_0265_RZC_ZhongTaiDaMaiX5(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0265_RZC_ZhongTaiDaMaiX5/air_rzc_zhongtai_damaix5.webp";
         this.mPathHighlight = "0265_RZC_ZhongTaiDaMaiX5/air_rzc_zhongtai_damaix5_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -67,9 +67,9 @@ public class AIR_0265_RZC_ZhongTaiDaMaiX5 extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 76.0f, 72.0f, this.mPaint);
         } else if (DataCanbus.DATA[38] == 0) {
-            c.drawText(new StringBuilder().append(left_temp).toString(), 76.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp), 76.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(left_temp + 17) + "   ℃", 76.0f, 72.0f, this.mPaint);
+            c.drawText(left_temp + 17 + "   ℃", 76.0f, 72.0f, this.mPaint);
         }
         int right_temp = this.DATA[39];
         if (DataCanbus.DATA[1000] == 65801) {
@@ -80,9 +80,9 @@ public class AIR_0265_RZC_ZhongTaiDaMaiX5 extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 940.0f, 72.0f, this.mPaint);
         } else if (DataCanbus.DATA[43] == 0) {
-            c.drawText(new StringBuilder().append(right_temp).toString(), 940.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp), 940.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(right_temp + 17) + "   ℃", 940.0f, 72.0f, this.mPaint);
+            c.drawText(right_temp + 17 + "   ℃", 940.0f, 72.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

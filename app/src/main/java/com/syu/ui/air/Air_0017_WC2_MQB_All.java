@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0017_WC2_MQB_All extends AirBase {
     public Air_0017_WC2_MQB_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0017_wc2_golf7/air_wc_all.webp";
         this.mPathHighlight = "0017_wc2_golf7/air_wc_all_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -155,7 +155,7 @@ public class Air_0017_WC2_MQB_All extends AirBase {
         } else if (temp == 255) {
             c.drawText("HI", 45.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp * 5) / 10.0f).toString(), 45.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf((temp * 5) / 10.0f), 45.0f, 64.0f, this.mPaint);
         }
         int temp2 = this.DATA[99];
         if (temp2 == 254) {
@@ -163,7 +163,7 @@ public class Air_0017_WC2_MQB_All extends AirBase {
         } else if (temp2 == 255) {
             c.drawText("HI", 960.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp2 * 5) / 10.0f).toString(), 960.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf((temp2 * 5) / 10.0f), 960.0f, 64.0f, this.mPaint);
         }
         int temp3 = this.DATA[154];
         if (temp3 == 254) {
@@ -171,13 +171,13 @@ public class Air_0017_WC2_MQB_All extends AirBase {
         } else if (temp3 == 255) {
             c.drawText("HI", 352.0f, 259.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp3 * 5) / 10.0f).toString(), 352.0f, 259.0f, this.mPaint);
+            c.drawText(String.valueOf((temp3 * 5) / 10.0f), 352.0f, 259.0f, this.mPaint);
         }
         int temp4 = this.DATA[226];
         if (temp4 == 15) {
             c.drawText("--", 460.0f, 236.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp4).toString(), 460.0f, 236.0f, this.mPaint);
+            c.drawText(String.valueOf(temp4), 460.0f, 236.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

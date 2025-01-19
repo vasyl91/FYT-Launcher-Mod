@@ -12,29 +12,28 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSAIndexActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 139:
+                case 151:
                     PSAIndexActi.this.mUpdaterValue61();
                     break;
-                case 153:
+                case 165:
                     PSAIndexActi.this.mUpdaterValue91();
                     break;
-                case 183:
+                case 195:
                     PSAIndexActi.this.mUpdaterBackCarVol();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa_all_index);
+        //setContentView(R.layout.layout_psa_all_index);
         if (LauncherApplication.getConfiguration() == 1) {
             findViewById(R.id.layout_view6).setVisibility(8);
         } else {
@@ -47,8 +46,8 @@ public class PSAIndexActi extends BaseActivity {
     }
 
     public void registerListener() {
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -59,8 +58,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -71,8 +70,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -83,8 +82,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -95,8 +94,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -107,8 +106,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -119,8 +118,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -131,8 +130,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -143,8 +142,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -155,8 +154,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.ctv_checkedtext11).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.11
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext11).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -167,8 +166,8 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.ctv_checkedtext14).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.12
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext14).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -179,10 +178,10 @@ public class PSAIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAIndexActi.13
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[183];
+                int value = DataCanbus.DATA[195];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
@@ -191,31 +190,31 @@ public class PSAIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[183].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[183].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue61() {
-        int value = DataCanbus.DATA[139];
+        int value = DataCanbus.DATA[151];
         if (value == 1) {
             findViewById(R.id.layout_view1).setVisibility(0);
         } else {
@@ -223,17 +222,17 @@ public class PSAIndexActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBackCarVol() {
-        int value = DataCanbus.DATA[183];
+        int value = DataCanbus.DATA[195];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext7)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue91() {
-        int value = DataCanbus.DATA[153];
+        int value = DataCanbus.DATA[165];
         if (value == 1) {
             findViewById(R.id.layout_view2).setVisibility(0);
         } else {

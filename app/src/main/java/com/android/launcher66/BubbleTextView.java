@@ -1,7 +1,6 @@
 package com.android.launcher66;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -12,7 +11,10 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+
 import com.fyt.skin.SkinUtils;
 import com.fyt.skin.view.SkinAttrParms;
 import com.fyt.skin.view.SkinView;
@@ -22,8 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
-public class BubbleTextView extends TextView {
+public class BubbleTextView extends AppCompatTextView {
     static final float PADDING_H = 8.0f;
     static final float PADDING_V = 3.0f;
     static final int SHADOW_LARGE_COLOUR = -587202560;
@@ -67,7 +68,7 @@ public class BubbleTextView extends TextView {
         init(attrs);
     }
 
-    @Override // android.view.View
+    @Override
     public void onFinishInflate() {
         super.onFinishInflate();
         LauncherAppState app = LauncherAppState.getInstance();
@@ -80,8 +81,7 @@ public class BubbleTextView extends TextView {
         this.mLongPressHelper = new CheckLongPressHelper(this);
         this.mBackground = getBackground();
         this.mOutlineHelper = HolographicOutlineHelper.obtain(getContext());
-        Resources res = getContext().getResources();
-        int color = res.getColor(R.color.outline_color);
+        int color = ContextCompat.getColor(getContext(), R.color.outline_color);
         this.mPressedGlowColor = color;
         this.mPressedOutlineColor = color;
         this.mFocusedGlowColor = color;
@@ -171,7 +171,7 @@ public class BubbleTextView extends TextView {
         return title2;
     }
 
-    @Override // android.widget.TextView
+    @Override
     protected boolean setFrame(int left, int top, int right, int bottom) {
         if (getLeft() != left || getRight() != right || getTop() != top || getBottom() != bottom) {
             this.mBackgroundSizeChanged = true;
@@ -179,12 +179,12 @@ public class BubbleTextView extends TextView {
         return super.setFrame(left, top, right, bottom);
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected boolean verifyDrawable(Drawable who) {
         return who == this.mBackground || super.verifyDrawable(who);
     }
 
-    @Override // android.view.View
+    @Override
     public void setTag(Object tag) {
         if (tag != null) {
             LauncherModel.checkItemInfo((ItemInfo) tag);
@@ -192,7 +192,7 @@ public class BubbleTextView extends TextView {
         super.setTag(tag);
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void drawableStateChanged() {
         if (isPressed()) {
             if (!this.mDidInvalidateForPressedState) {
@@ -232,7 +232,7 @@ public class BubbleTextView extends TextView {
         destCanvas.save();
         destCanvas.scale(getScaleX(), getScaleY(), (getWidth() + padding) / 2, (getHeight() + padding) / 2);
         destCanvas.translate((-getScrollX()) + (padding / 2), (-getScrollY()) + (padding / 2));
-        destCanvas.clipRect(clipRect, Region.Op.REPLACE);
+        destCanvas.clipRect(clipRect);
         draw(destCanvas);
         destCanvas.restore();
     }
@@ -305,7 +305,7 @@ public class BubbleTextView extends TextView {
         return this.mOutlineHelper.mMaxOuterBlurRadius / 2;
     }
 
-    @Override // android.view.View
+    @Override
     public void draw(Canvas canvas) {
         if (!this.mShadowsEnabled) {
             super.draw(canvas);
@@ -327,7 +327,7 @@ public class BubbleTextView extends TextView {
                 canvas.translate(-scrollX, -scrollY);
             }
         }
-        if (getCurrentTextColor() == getResources().getColor(android.R.color.transparent)) {
+        if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
             getPaint().clearShadowLayer();
             super.draw(canvas);
             return;
@@ -335,13 +335,13 @@ public class BubbleTextView extends TextView {
         getPaint().setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
         super.draw(canvas);
         canvas.save();
-        canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(), getScrollX() + getWidth(), getScrollY() + getHeight(), Region.Op.REVERSE_DIFFERENCE);
+        canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(), getScrollX() + getWidth(), getScrollY() + getHeight());
         getPaint().setShadowLayer(SHADOW_SMALL_RADIUS, 0.0f, 0.0f, SHADOW_SMALL_COLOUR);
         super.draw(canvas);
         canvas.restore();
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (this.mBackground != null) {
@@ -349,7 +349,7 @@ public class BubbleTextView extends TextView {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (this.mBackground != null) {
@@ -357,7 +357,7 @@ public class BubbleTextView extends TextView {
         }
     }
 
-    @Override // android.widget.TextView
+    @Override
     public void setTextColor(int color) {
         this.mTextColor = color;
     }
@@ -377,7 +377,7 @@ public class BubbleTextView extends TextView {
         return this.mIsTextVisible;
     }
 
-    @Override // android.view.View
+    @Override
     protected boolean onSetAlpha(int alpha) {
         if (this.mPrevAlpha != alpha) {
             this.mPrevAlpha = alpha;
@@ -387,7 +387,7 @@ public class BubbleTextView extends TextView {
         return true;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         this.mLongPressHelper.cancelLongPress();

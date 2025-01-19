@@ -9,15 +9,14 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HondaIndexActi extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jiede_index);
+        //setContentView(R.layout.layout_jiede_index);
         init();
         DataCanbus.PROXY.cmd(100, 0);
     }
@@ -29,12 +28,20 @@ public class HondaIndexActi extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTripInfo").setIndicator("tabTripInfo").setContent(new Intent(this, (Class<?>) HondaTripActi.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabHistory").setIndicator("tabHistory").setContent(new Intent(this, (Class<?>) HondaHistoryActi.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTripBInfo").setIndicator("tabTripBInfo").setContent(new Intent(this, (Class<?>) HondaHistoryBActi.class)));
+        if (showHondaEVSettings()) {
+            findViewById(R.id.jiede_btn_history_e_info).setVisibility(0);
+        } else {
+            findViewById(R.id.jiede_btn_history_e_info).setVisibility(8);
+        }
+        this.mTabHost.addTab(this.mTabHost.newTabSpec("tabEVSettings").setIndicator("tabEVSettings").setContent(new Intent(this, (Class<?>) RZC_Honda_ElectricActi.class)));
         if (showRZCSettings()) {
             findViewById(R.id.jiede_btn_historyb_info).setVisibility(0);
         } else {
             findViewById(R.id.jiede_btn_historyb_info).setVisibility(8);
         }
-        if (showWCCarInfo()) {
+        if (DataCanbus.DATA[1000] == 131149) {
+            findViewById(R.id.jiede_btn_settings).setVisibility(8);
+        } else if (showWCCarInfo()) {
             findViewById(R.id.jiede_btn_settings).setVisibility(0);
             this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) Wc_16Civic_FunctionalActi.class)));
         } else if (isBNRSiYuOrGuanDao()) {
@@ -47,25 +54,49 @@ public class HondaIndexActi extends TabActivity {
             findViewById(R.id.jiede_btn_settings).setVisibility(0);
             this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) CommpassActi.class)));
         }
-        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.honda.HondaIndexActi.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.jiede_btn_trip_info /* 2131431795 */:
+                    case R.id.jiede_btn_trip_info /* 2131431772 */:
                         HondaIndexActi.this.mTabHost.setCurrentTabByTag("tabTripInfo");
                         break;
-                    case R.id.jiede_btn_history_info /* 2131431796 */:
+                    case R.id.jiede_btn_history_info /* 2131431773 */:
                         HondaIndexActi.this.mTabHost.setCurrentTabByTag("tabHistory");
                         break;
-                    case R.id.jiede_btn_historyb_info /* 2131431797 */:
+                    case R.id.jiede_btn_historyb_info /* 2131431774 */:
                         HondaIndexActi.this.mTabHost.setCurrentTabByTag("tabTripBInfo");
                         break;
-                    case R.id.jiede_btn_settings /* 2131431798 */:
+                    case R.id.jiede_btn_history_e_info /* 2131431775 */:
+                        HondaIndexActi.this.mTabHost.setCurrentTabByTag("tabEVSettings");
+                        break;
+                    case R.id.jiede_btn_settings /* 2131431776 */:
                         HondaIndexActi.this.mTabHost.setCurrentTabByTag("tabSettings");
                         break;
                 }
             }
         });
+    }
+
+    private boolean showHondaEVSettings() {
+        int canbusId = DataCanbus.DATA[1000];
+        switch (canbusId) {
+            case FinalCanbus.CAR_CZH_RZC_HONDA_Civic /* 5636394 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_10Yage /* 5701930 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_Haoying /* 5767466 */:
+            case FinalCanbus.CAR_CZH_RZC_HONDA_CRV /* 5833002 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_EV /* 5898538 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_EV_H /* 5964074 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_EV /* 6029610 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_EV_H /* 6095146 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_CEV /* 6750506 */:
+            case FinalCanbus.CAR_RZC_HONDA_22CRV_CEV_H /* 6816042 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV /* 6881578 */:
+            case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV_H /* 6947114 */:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private boolean showRZCSettings() {
@@ -107,6 +138,7 @@ public class HondaIndexActi extends TabActivity {
     private boolean isBNRSiYuOrGuanDao() {
         int canbusId = DataCanbus.DATA[1000];
         switch (canbusId) {
+            case FinalCanbus.CAR_BNR_ACCORD9_H /* 131149 */:
             case FinalCanbus.CAR_BNR_HONDA_16Civic_Vsceen_L /* 393514 */:
             case FinalCanbus.CAR_BNR_HONDA_16Civic_Vsceen_H /* 459050 */:
             case FinalCanbus.CAR_BNR_HONDA_Avancier_NoAmp /* 524586 */:

@@ -1,45 +1,26 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0194_XBS_XP1_BYDTang;
+//import com.syu.ui.air.Air_0194_XBS_XP1_BYDTang;
 import com.syu.ui.carvol.CarVolHelper;
 import com.syu.ui.carvol.CarVolView;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0194_XBS_XP1_BenTengX80 extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 12;
-    public static final int U_AIR_AUTO = 16;
-    public static final int U_AIR_BEGIN = 10;
-    public static final int U_AIR_BLOW_BODY_LEFT = 20;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 21;
-    public static final int U_AIR_BLOW_MODE_LEFT = 22;
-    public static final int U_AIR_BLOW_WIN_LEFT = 19;
-    public static final int U_AIR_CYCLE = 13;
-    public static final int U_AIR_DUAL = 14;
-    public static final int U_AIR_END = 36;
-    public static final int U_AIR_FRONT_DEFROST = 18;
-    public static final int U_AIR_POWER = 11;
-    public static final int U_AIR_REAR_DEFROST = 15;
-    public static final int U_AIR_SHOW = 25;
-    public static final int U_AIR_TEMP_LEFT = 23;
-    public static final int U_AIR_TEMP_RIGHT = 24;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 17;
-    public static final int U_CAR_DTS = 39;
-    public static final int U_CAR_SOC = 40;
-    public static final int U_CAR_VOL = 38;
-    public static final int U_CAR_VOL_SHOW = 37;
-    public static final int U_CNT_MAX = 41;
-    public static final int U_CUR_SPEED = 7;
-    public static final int U_ENGINE_SPEED = 8;
+    public static final int U_CAR_DTS = 100;
+    public static final int U_CAR_SOC = 101;
+    public static final int U_CAR_VOL = 99;
+    public static final int U_CAR_VOL_SHOW = 98;
+    public static final int U_CNT_MAX = 102;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 41; i++) {
+        for (int i = 0; i < 102; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -52,36 +33,33 @@ public class Callback_0194_XBS_XP1_BenTengX80 extends CallbackCanbusBase {
         for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        AirHelper.getInstance().buildUi(new Air_0194_XBS_XP1_BYDTang(LauncherApplication.getInstance()));
-        for (int i3 = 10; i3 < 36; i3++) {
+        //AirHelper.getInstance().buildUi(new Air_0194_XBS_XP1_BYDTang(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
-        CarVolHelper.mCarVol_ID = 38;
+        CarVolHelper.mCarVol_ID = 99;
         CarVolHelper.getInstance().buildUi(new CarVolView(LauncherApplication.getInstance()));
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(CarVolHelper.SHOW_AND_REFRESH, 0);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(CarVolHelper.SHOW_AND_REFRESH, 0);
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 10; i2 < 36; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
         CarVolHelper.getInstance().destroyUi();
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(CarVolHelper.SHOW_AND_REFRESH);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(CarVolHelper.SHOW_AND_REFRESH);
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 41) {
+        if (updateCode >= 0 && updateCode < 102) {
             HandlerCanbus.update(updateCode, ints);
-        }
-        if (updateCode == 25) {
-            AirHelper.airWindowEnable(DataCanbus.DATA[updateCode]);
         }
     }
 }

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FileAdapter extends BaseAdapter {
     ArrayList<CDInfo> list;
     Context mContext;
@@ -19,22 +18,22 @@ public class FileAdapter extends BaseAdapter {
         this.list = list;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public int getCount() {
         return this.list.size();
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public Object getItem(int position) {
         return this.list.get(position);
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    @Override // android.widget.Adapter
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {

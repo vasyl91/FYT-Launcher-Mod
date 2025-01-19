@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.Print;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0206_WC1_Benz extends AirBase {
     public Air_0206_WC1_Benz(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0206_wc1_benz/air_wc1_benz_n.webp";
         this.mPathHighlight = "0206_wc1_benz/air_wc1_benz_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -83,7 +83,7 @@ public class Air_0206_WC1_Benz extends AirBase {
         if (this.DATA[24] == 1) {
             c.drawText(value + ".5", 240.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value).toString(), 240.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(value), 240.0f, 140.0f, this.mPaint);
         }
         Print.screenMsg("CanBus Callback_0206_WC1_Benz**********  U_AIR_WIND_LEVEL_LEFT= " + value);
         int value2 = this.DATA[29];
@@ -95,7 +95,7 @@ public class Air_0206_WC1_Benz extends AirBase {
         if (this.DATA[30] == 1) {
             c.drawText(value2 + ".5", 820.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value2).toString(), 820.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(value2), 820.0f, 140.0f, this.mPaint);
         }
         Print.screenMsg("CanBus Callback_0206_WC1_Benz**********  U_AIR_WIND_LEVEL_RIGHT= " + value2);
         int temp = this.DATA[15];
@@ -106,7 +106,7 @@ public class Air_0206_WC1_Benz extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 50.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp / 10) + "." + (temp % 10), 50.0f, 140.0f, this.mPaint);
+            c.drawText(temp / 10 + "." + (temp % 10), 50.0f, 140.0f, this.mPaint);
         }
         int temp2 = this.DATA[21];
         if (temp2 == -1) {
@@ -116,7 +116,7 @@ public class Air_0206_WC1_Benz extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 930.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 930.0f, 140.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 930.0f, 140.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

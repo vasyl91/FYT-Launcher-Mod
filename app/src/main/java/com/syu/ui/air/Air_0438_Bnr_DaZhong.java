@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0438_Bnr_DaZhong extends AirBase {
     public Air_0438_Bnr_DaZhong(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0002_xp_dazhong/air_xp1_dazhong.webp";
         this.mPathHighlight = "0002_xp_dazhong/air_xp1_dazhong_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.save(2);
@@ -84,9 +84,9 @@ public class Air_0438_Bnr_DaZhong extends AirBase {
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(25.0f);
         int value2 = this.DATA[30];
-        c.drawText(new StringBuilder().append(value2).toString(), 98.0f, 148.0f, this.mPaint);
+        c.drawText(String.valueOf(value2), 98.0f, 148.0f, this.mPaint);
         int value3 = this.DATA[33];
-        c.drawText(new StringBuilder().append(value3).toString(), 986.0f, 148.0f, this.mPaint);
+        c.drawText(String.valueOf(value3), 986.0f, 148.0f, this.mPaint);
         this.mPaint.setTextSize(30.0f);
         int value4 = this.DATA[27];
         if (value4 == -2) {

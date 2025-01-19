@@ -1,89 +1,105 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0022_XP1_Focus2012;
+//import com.syu.ui.air.Air_0022_XP1_Focus2012;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0403_BNR_XP1_ShuPingFord extends CallbackCanbusBase {
-    public static final int U_AIR_FRONT_DEFROG = 60;
-    public static final int U_AIR_MODE = 48;
-    public static final int U_AIR_REAR_DEFROG = 49;
-    public static final int U_AIR_REAR_LOCK = 61;
-    public static final int U_AIR_REAR_POWER = 63;
-    public static final int U_AIR_REAR_TEMP_LEVEL = 65;
-    public static final int U_AIR_REAR_TEMP_STATUS = 64;
-    public static final int U_AIR_REAR_WIND_LEVEL = 62;
-    public static final int U_AIR_SEAT_COLD_LEFT = 59;
-    public static final int U_AIR_SEAT_COLD_RIGHT = 58;
-    public static final int U_AIR_SEAT_HEAT_LEFT = 56;
-    public static final int U_AIR_SEAT_HEAT_RIGHT = 57;
-    public static final int U_CARSET_AMBIENT_LIGHT = 54;
-    public static final int U_CARSET_AMBIENT_LIGHT_COLOR = 55;
-    public static final int U_CARSET_ECOMODE_CARSPEED = 51;
-    public static final int U_CARSET_ECOMODE_DRIVE_PLAN = 50;
-    public static final int U_CARSET_ENGINE_NOT_HOT = 52;
-    public static final int U_CARSET_ENGINE_NOT_HOT_OPTION = 53;
-    public static final int U_CAR_EQ_ASL = 76;
-    public static final int U_CAR_EQ_BAL = 75;
-    public static final int U_CAR_EQ_BASS = 77;
-    public static final int U_CAR_EQ_BEGIN = 73;
-    public static final int U_CAR_EQ_FAD = 74;
-    public static final int U_CAR_EQ_MIDDLE = 78;
-    public static final int U_CAR_EQ_SUROUND = 81;
-    public static final int U_CAR_EQ_TREB = 79;
-    public static final int U_CAR_EQ_VOL = 80;
-    public static final int U_CAR_TIRE_BEGIN = 67;
-    public static final int U_CAR_TIRE_END = 72;
-    public static final int U_CAR_TIRE_VALUE_FL = 68;
-    public static final int U_CAR_TIRE_VALUE_FR = 69;
-    public static final int U_CAR_TIRE_VALUE_RL = 70;
-    public static final int U_CAR_TIRE_VALUE_RR = 71;
-    public static final int U_CNT_MAX = 82;
-    public static final int U_SEAT_ADJUST_LEFT = 66;
-    public static final int U_SEAT_ADJUST_RIGHT = 67;
+    public static final int U_AUTO_REQUEST = 110;
+    public static final int U_BT_STATE = 103;
+    public static final int U_CARINFO_BEGIN = 98;
+    public static final int U_CARINFO_END = 112;
+    public static final int U_CARSET_AMBIENT_LIGHT = 129;
+    public static final int U_CARSET_AMBIENT_LIGHT_COLOR = 130;
+    public static final int U_CARSET_BRIGHTNESS = 118;
+    public static final int U_CARSET_ECOMODE_CARSPEED = 126;
+    public static final int U_CARSET_ECOMODE_DRIVE_PLAN = 125;
+    public static final int U_CARSET_ENGINE_NOT_HOT = 127;
+    public static final int U_CARSET_ENGINE_NOT_HOT_OPTION = 128;
+    public static final int U_CARSET_INFORMATION = 116;
+    public static final int U_CARSET_INTERIORLIGHTING = 122;
+    public static final int U_CARSET_RAINSENSOR = 124;
+    public static final int U_CARSET_TOWSYSTEM = 115;
+    public static final int U_CARSET_TURNLIGHT = 121;
+    public static final int U_CARSET_TYREMONITOR = 123;
+    public static final int U_CARSET_UNIT = 119;
+    public static final int U_CARSET_VOICEMODE = 120;
+    public static final int U_CARSET_WARNING = 117;
+    public static final int U_CAR_ENGINE_SPEED = 114;
+    public static final int U_CAR_EQ_ASL = 141;
+    public static final int U_CAR_EQ_BAL = 140;
+    public static final int U_CAR_EQ_BASS = 142;
+    public static final int U_CAR_EQ_BEGIN = 138;
+    public static final int U_CAR_EQ_FAD = 139;
+    public static final int U_CAR_EQ_MIDDLE = 143;
+    public static final int U_CAR_EQ_SUROUND = 146;
+    public static final int U_CAR_EQ_TREB = 144;
+    public static final int U_CAR_EQ_VOL = 145;
+    public static final int U_CAR_SPEED = 113;
+    public static final int U_CAR_TIRE_BEGIN = 132;
+    public static final int U_CAR_TIRE_END = 137;
+    public static final int U_CAR_TIRE_VALUE_FL = 133;
+    public static final int U_CAR_TIRE_VALUE_FR = 134;
+    public static final int U_CAR_TIRE_VALUE_RL = 135;
+    public static final int U_CAR_TIRE_VALUE_RR = 136;
+    public static final int U_CAR_WARN = 111;
+    public static final int U_CNT_MAX = 147;
+    public static final int U_CUR_WORK_MODE = 107;
+    public static final int U_DISPLAY_MODE = 102;
+    public static final int U_LINE_GROUP = 100;
+    public static final int U_LIST_INFO = 105;
+    public static final int U_MODE_STATE = 108;
+    public static final int U_PARM_WARM = 104;
+    public static final int U_PHONE_STATE = 109;
+    public static final int U_PHONE_TIME = 106;
+    public static final int U_PLAY_TIME = 101;
+    public static final int U_SCREEN_ICON = 99;
+    public static final int U_SCREEN_ID = 98;
+    public static final int U_SEAT_ADJUST_LEFT = 131;
+    public static final int U_SEAT_ADJUST_RIGHT = 132;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 82; i++) {
+        for (int i = 0; i < 147; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorFl = 29;
-        DoorHelper.sUcDoorFr = 30;
-        DoorHelper.sUcDoorRl = 31;
-        DoorHelper.sUcDoorRr = 32;
-        DoorHelper.sUcDoorBack = 33;
-        AirHelper.getInstance().buildUi(new Air_0022_XP1_Focus2012(LauncherApplication.getInstance()));
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        //AirHelper.getInstance().buildUi(new Air_0022_XP1_Focus2012(LauncherApplication.getInstance()));
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 29; i2 < 35; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        for (int i3 = 14; i3 < 29; i3++) {
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 29; i < 35; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 14; i2 < 29; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode == 1 || updateCode == 2 || updateCode == 7 || updateCode == 13 || updateCode == 12) {
+        if (updateCode == 99 || updateCode == 100 || updateCode == 105 || updateCode == 111 || updateCode == 110) {
             HandlerCanbus.update(updateCode, ints, flts, strs);
-        } else if (updateCode >= 0 && updateCode < 82) {
+        } else if (updateCode >= 0 && updateCode < 147) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

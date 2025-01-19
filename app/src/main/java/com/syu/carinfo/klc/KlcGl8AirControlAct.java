@@ -10,49 +10,48 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcGl8AirControlAct extends Activity implements View.OnClickListener {
     public static KlcGl8AirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcGl8AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 72:
+                case 11:
                     KlcGl8AirControlAct.this.mUpdateAcOn();
                     break;
-                case 75:
+                case 12:
                     KlcGl8AirControlAct.this.mUpdateCycle();
                     break;
-                case 76:
-                    KlcGl8AirControlAct.this.mUpdateCycle();
-                    break;
-                case 81:
-                    KlcGl8AirControlAct.this.mUpdateAirAutoOn();
-                    break;
-                case 82:
+                case 21:
                     KlcGl8AirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 83:
+                case 27:
                     KlcGl8AirControlAct.this.mUpdateAirTempLeft();
                     break;
-                case 84:
+                case 28:
                     KlcGl8AirControlAct.this.mUpdateAirTempRight();
                     break;
-                case 110:
+                case 36:
+                    KlcGl8AirControlAct.this.mUpdateCycle();
+                    break;
+                case 49:
+                    KlcGl8AirControlAct.this.mUpdateAirAutoOn();
+                    break;
+                case 62:
                     KlcGl8AirControlAct.this.mUpdatesyncOn();
                     break;
-                case 113:
+                case 77:
                     KlcGl8AirControlAct.this.mUpdatefrontblow();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_036_wc_gm_gl8_front_airset);
+        //setContentView(R.layout.layout_036_wc_gm_gl8_front_airset);
         init();
         mInstance = this;
     }
@@ -76,7 +75,7 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         findViewById(R.id.air_xts_rearpage).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -84,7 +83,7 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -96,7 +95,7 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -113,12 +112,12 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
                 KlcFunc.C_AIR_CONTROL_CMD(11, 1);
                 break;
             case R.id.air_xts_auto /* 2131427436 */:
-                int auto = DataCanbus.DATA[81];
+                int auto = DataCanbus.DATA[49];
                 KlcFunc.C_AIR_CONTROL_CMD(4, auto != 0 ? 0 : 1);
                 break;
             case R.id.air_xts_cycle /* 2131427437 */:
-                int cycle = DataCanbus.DATA[75];
-                int cycleauto = DataCanbus.DATA[76];
+                int cycle = DataCanbus.DATA[12];
+                int cycleauto = DataCanbus.DATA[36];
                 if (cycleauto == 1) {
                     KlcFunc.C_AIR_CONTROL_CMD(7, 0);
                     break;
@@ -133,11 +132,11 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
                 KlcFunc.C_AIR_CONTROL_CMD(5, 255);
                 break;
             case R.id.air_xts_ac /* 2131427439 */:
-                int acOn = DataCanbus.DATA[72];
+                int acOn = DataCanbus.DATA[11];
                 KlcFunc.C_AIR_CONTROL_CMD(2, acOn != 0 ? 0 : 1);
                 break;
             case R.id.air_xts_sync /* 2131427441 */:
-                int sync = DataCanbus.DATA[110];
+                int sync = DataCanbus.DATA[62];
                 KlcFunc.C_AIR_CONTROL_CMD(15, sync != 0 ? 0 : 1);
                 break;
             case R.id.air_xts_mode_foot /* 2131427443 */:
@@ -160,42 +159,42 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 KlcFunc.C_AIR_CONTROL_CMD(13, 2);
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 KlcFunc.C_AIR_CONTROL_CMD(33, 255);
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
                 KlcFunc.C_AIR_CONTROL_CMD(34, 255);
                 break;
         }
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[83];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == 254) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -207,9 +206,9 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[84];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == 254) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -221,28 +220,28 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[72];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatesyncOn() {
-        int sync = DataCanbus.DATA[110];
+        int sync = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_sync).setBackgroundResource(sync == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAutoOn() {
-        int auto = DataCanbus.DATA[81];
+        int auto = DataCanbus.DATA[49];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 1 ? R.drawable.ic_xts_auto_p : R.drawable.ic_xts_auto_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[75];
-        int cycleauto = DataCanbus.DATA[76];
+        int cycle = DataCanbus.DATA[12];
+        int cycleauto = DataCanbus.DATA[36];
         if (cycleauto == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycleauto_2);
         } else if (cycle == 1) {
@@ -252,10 +251,10 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
-        int leave = DataCanbus.DATA[82];
+        int leave = DataCanbus.DATA[21];
         if (leave > 18) {
             str = "A";
         } else {
@@ -264,9 +263,9 @@ public class KlcGl8AirControlAct extends Activity implements View.OnClickListene
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatefrontblow() {
-        int mode = DataCanbus.DATA[113];
+        int mode = DataCanbus.DATA[77];
         if (mode != 1) {
             if (mode == 2) {
                 findViewById(R.id.air_xts_mode_body).setBackgroundResource(R.drawable.ic_xts_mode_body_n);

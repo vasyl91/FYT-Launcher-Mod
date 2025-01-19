@@ -19,6 +19,9 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.DropTarget;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.JLog;
@@ -48,14 +51,14 @@ public class DeleteDropTarget extends ButtonDropTarget {
         this.mWaitingForUninstall = false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         this.mOriginalTextColor = getTextColors();
         Resources r = getResources();
-        this.mHoverColor = r.getColor(R.color.delete_target_hover_tint);
-        this.mUninstallDrawable = (TransitionDrawable) r.getDrawable(R.drawable.uninstall_target_selector);
-        this.mRemoveDrawable = (TransitionDrawable) r.getDrawable(R.drawable.remove_target_selector);
+        this.mHoverColor = ContextCompat.getColor(getContext(), R.color.delete_target_hover_tint);
+        this.mUninstallDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.uninstall_target_selector);
+        this.mRemoveDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.remove_target_selector);
         this.mRemoveDrawable.setCrossFadeEnabled(true);
         this.mUninstallDrawable.setCrossFadeEnabled(true);
         this.mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
@@ -107,7 +110,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
         setTextColor(this.mOriginalTextColor);
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public boolean acceptDrop(DragObject d) {
         return willAcceptDrop(d.dragInfo);
     }
@@ -142,11 +145,11 @@ public class DeleteDropTarget extends ButtonDropTarget {
                 return (shortcutInfo.flags & 1) != 0;
             }
         }
-        JLog.getInstance().e("DeleteDropTarget willAcceptDrop false");
+        JLog.getInstance().i("DeleteDropTarget willAcceptDrop false");
         return false;
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         boolean isVisible = true;
         boolean useUninstallLabel = !AppsCustomizePagedView.DISABLE_ALL_APPS && isAllAppsApplication(source, info);
@@ -166,23 +169,23 @@ public class DeleteDropTarget extends ButtonDropTarget {
         if (getText().length() > 0) {
             setText(useUninstallLabel ? R.string.delete_target_uninstall_label : R.string.delete_target_label);
         }
-        JLog.getInstance().e("DeleteDropTarget onDragStart isVisible = " + isVisible + "width = " + getWidth() + " height = " + getHeight());
+        JLog.getInstance().i("DeleteDropTarget onDragStart isVisible = " + isVisible + "width = " + getWidth() + " height = " + getHeight());
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DragController.DragListener
+    @Override
     public void onDragEnd() {
         super.onDragEnd();
         this.mLauncher.appTextVisible(true);
         this.mActive = false;
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public void onDragEnter(DragObject d) {
         super.onDragEnter(d);
         setHoverColor();
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public void onDragExit(DragObject d) {
         super.onDragExit(d);
         if (!d.dragComplete) {
@@ -200,8 +203,8 @@ public class DeleteDropTarget extends ButtonDropTarget {
         float scale = to.width() / from.width();
         this.mSearchDropTargetBar.deferOnDragEnd();
         deferCompleteDropIfUninstalling(d);
-        Runnable onAnimationEndRunnable = new Runnable() { // from class: com.android.launcher66.DeleteDropTarget.1
-            @Override // java.lang.Runnable
+        Runnable onAnimationEndRunnable = new Runnable() { 
+            @Override
             public void run() {
                 DeleteDropTarget.this.completeDrop(d);
                 DeleteDropTarget.this.mSearchDropTargetBar.onDragEnd();
@@ -334,14 +337,14 @@ public class DeleteDropTarget extends ButtonDropTarget {
         final float y1 = from.top;
         final float x3 = to.left;
         final float y3 = to.top;
-        final TimeInterpolator scaleAlphaInterpolator = new TimeInterpolator() { // from class: com.android.launcher66.DeleteDropTarget.4
-            @Override // android.animation.TimeInterpolator
+        final TimeInterpolator scaleAlphaInterpolator = new TimeInterpolator() { 
+            @Override
             public float getInterpolation(float t) {
                 return t * t * t * t * t * t * t * t;
             }
         };
-        return new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.DeleteDropTarget.5
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        return new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 DragView dragView = (DragView) dragLayer.getAnimatedView();
                 float t = ((Float) animation.getAnimatedValue()).floatValue();
@@ -413,7 +416,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
         return new FlingAlongVectorAnimatorUpdateListener(dragLayer, vel, from, startTime, FLING_TO_DELETE_FRICTION);
     }
 
-    @Override // com.android.launcher66.ButtonDropTarget, com.android.launcher66.DropTarget
+    @Override
     public void onFlingToDelete(final DragObject d, int x, int y, PointF vel) {
         final boolean isAllApps = d.dragSource instanceof AppsCustomizePagedView;
         d.dragView.setColor(0);
@@ -429,11 +432,11 @@ public class DeleteDropTarget extends ButtonDropTarget {
         DragLayer dragLayer = this.mLauncher.getDragLayer();
         final int duration = FLING_DELETE_ANIMATION_DURATION;
         final long startTime = AnimationUtils.currentAnimationTimeMillis();
-        TimeInterpolator tInterpolator = new TimeInterpolator() { // from class: com.android.launcher66.DeleteDropTarget.6
+        TimeInterpolator tInterpolator = new TimeInterpolator() { 
             private int mCount = -1;
             private float mOffset = 0.0f;
 
-            @Override // android.animation.TimeInterpolator
+            @Override
             public float getInterpolation(float t) {
                 if (this.mCount < 0) {
                     this.mCount++;
@@ -451,8 +454,8 @@ public class DeleteDropTarget extends ButtonDropTarget {
             updateCb = createFlingAlongVectorAnimatorListener(dragLayer, d, vel, startTime, duration, config);
         }
         deferCompleteDropIfUninstalling(d);
-        Runnable onAnimationEndRunnable = new Runnable() { // from class: com.android.launcher66.DeleteDropTarget.7
-            @Override // java.lang.Runnable
+        Runnable onAnimationEndRunnable = new Runnable() { 
+            @Override
             public void run() {
                 if (!isAllApps) {
                     DeleteDropTarget.this.mLauncher.exitSpringLoadedDragMode();

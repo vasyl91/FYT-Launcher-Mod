@@ -7,21 +7,20 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PM25Act_Luz extends BaseActivity {
-    private int[] ids = {81, 82, 83};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ztt600.PM25Act_Luz.1
-        @Override // com.syu.module.IUiNotify
+    private int[] ids = {147, 148, 149};
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 81:
+                case 147:
                     PM25Act_Luz.this.uPmValue(val);
                     break;
-                case 82:
+                case 148:
                     PM25Act_Luz.this.uPmIn(val);
                     break;
-                case 83:
+                case 149:
                     PM25Act_Luz.this.uPmOut(val);
                     break;
             }
@@ -29,32 +28,32 @@ public class PM25Act_Luz extends BaseActivity {
     };
     private int[] strIdPM = {R.string.str_265_2, R.string.str_265_3, R.string.str_265_4, R.string.str_265_5, R.string.str_265_6, R.string.str_265_7};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_265_luz_t600_pm25);
+        //setContentView(R.layout.layout_265_luz_t600_pm25);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uPmOut(int val) {
         if (((TextView) findViewById(R.id.id_pm_inside)) != null) {
             if (val >= 0 && val <= 1022) {
@@ -65,7 +64,7 @@ public class PM25Act_Luz extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uPmIn(int val) {
         if (((TextView) findViewById(R.id.id_pm_outside)) != null) {
             if (val >= 0 && val <= 1022) {
@@ -76,7 +75,7 @@ public class PM25Act_Luz extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uPmValue(int val) {
         int strid = -1;
         switch (val) {

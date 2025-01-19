@@ -3,7 +3,6 @@ package com.syu.entity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CarInfo {
     private int VehicleIdentifyValue;
     private Class<?> cls;

@@ -3,7 +3,6 @@ package com.android.launcher66;
 import androidx.core.widget.AutoScrollHelper;
 import android.widget.ScrollView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FolderAutoScrollHelper extends AutoScrollHelper {
     private static final float MAX_SCROLL_VELOCITY = 1500.0f;
     private final ScrollView mTarget;
@@ -19,17 +18,17 @@ public class FolderAutoScrollHelper extends AutoScrollHelper {
         setRampUpDuration(0);
     }
 
-    @Override // android.support.v4.widget.AutoScrollHelper
+    @Override
     public void scrollTargetBy(int deltaX, int deltaY) {
         this.mTarget.scrollBy(deltaX, deltaY);
     }
 
-    @Override // android.support.v4.widget.AutoScrollHelper
+    @Override
     public boolean canTargetScrollHorizontally(int direction) {
         return false;
     }
 
-    @Override // android.support.v4.widget.AutoScrollHelper
+    @Override
     public boolean canTargetScrollVertically(int direction) {
         return this.mTarget.canScrollVertically(direction);
     }

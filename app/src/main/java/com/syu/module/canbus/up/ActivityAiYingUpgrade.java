@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityAiYingUpgrade extends Activity {
     private Button mBtnSearch;
     private Button mBtnStart;
@@ -20,16 +20,16 @@ public class ActivityAiYingUpgrade extends Activity {
     private TextView mTvProgress;
     private TextView mTvResult;
     Callback_0004_AY callback = null;
-    private IUiNotify notifyFilePath = new IUiNotify() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyFilePath = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (ActivityAiYingUpgrade.this.mTvFilePath != null) {
                 ActivityAiYingUpgrade.this.mTvFilePath.setText(DataCanUp.mFileUpdatePath);
             }
         }
     };
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.2
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (ActivityAiYingUpgrade.this.mTvResult != null && updateCode == 0) {
                 switch (DataCanUp.DATA[updateCode]) {
@@ -46,7 +46,7 @@ public class ActivityAiYingUpgrade extends Activity {
                         int curr = ActivityAiYingUpgrade.this.callback.mBlockIndex;
                         int total = ActivityAiYingUpgrade.this.callback.mBlockCnt;
                         if (ActivityAiYingUpgrade.this.mTvProgress != null) {
-                            ActivityAiYingUpgrade.this.mTvProgress.setText(String.valueOf(curr) + "/" + total);
+                            ActivityAiYingUpgrade.this.mTvProgress.setText(curr + "/" + total);
                             break;
                         }
                     case 4:
@@ -63,20 +63,20 @@ public class ActivityAiYingUpgrade extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_canbus_update_wc);
+        //setContentView(R.layout.layout_canbus_update_wc);
         init();
     }
 
     public void init() {
-        this.mTvFilePath = (TextView) findViewById(R.id.update_file_path_wc);
-        this.mTvProgress = (TextView) findViewById(R.id.update_progress_wc);
-        this.mTvResult = (TextView) findViewById(R.id.update_result_wc);
-        this.mBtnSearch = (Button) findViewById(R.id.update_file_path_search_wc);
-        this.mBtnSearch.setOnClickListener(new View.OnClickListener() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.3
-            @Override // android.view.View.OnClickListener
+        this.mTvFilePath = findViewById(R.id.update_file_path_wc);
+        this.mTvProgress = findViewById(R.id.update_progress_wc);
+        this.mTvResult = findViewById(R.id.update_result_wc);
+        this.mBtnSearch = findViewById(R.id.update_file_path_search_wc);
+        this.mBtnSearch.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent_FileManager = new Intent();
@@ -89,9 +89,9 @@ public class ActivityAiYingUpgrade extends Activity {
                 }
             }
         });
-        this.mBtnStart = (Button) findViewById(R.id.start_update_wc);
-        this.mBtnStart.setOnClickListener(new View.OnClickListener() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.4
-            @Override // android.view.View.OnClickListener
+        this.mBtnStart = findViewById(R.id.start_update_wc);
+        this.mBtnStart.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 if (DataCanUp.mFileUpdatePath != null && !DataCanUp.mFileUpdatePath.equals("")) {
                     ActivityAiYingUpgrade.this.dialog();
@@ -100,14 +100,14 @@ public class ActivityAiYingUpgrade extends Activity {
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         this.callback = (Callback_0004_AY) ModuleCallbackCanUpProxy.getInstance().getCallbackUpCanbus();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -126,11 +126,11 @@ public class ActivityAiYingUpgrade extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.canbus_update_warnning));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.5.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanUp.PROXY.cmd(0, null, null, new String[]{DataCanUp.mFileUpdatePath});
                     }
@@ -138,8 +138,8 @@ public class ActivityAiYingUpgrade extends Activity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.module.canbus.up.ActivityAiYingUpgrade.6
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }

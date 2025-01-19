@@ -15,11 +15,14 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.android.launcher66.R;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 import com.syu.utils.W3Utils;
+
 import java.util.ArrayList;
+
 import share.Config;
 import share.ResValue;
 
@@ -31,12 +34,12 @@ public class AppListView extends ListView {
     public static int hide_num = 0;
     public static ArrayList<String> Array_AppList = new ArrayList<>();
     public static int[] StringId_Action = {R.string.car_dvr, R.string.car_bt, R.string.car_settings, R.string.car_file, R.string.car_video, R.string.car_radio, R.string.car_music, R.string.car_setting, R.string.car_navi};
-    private static String[][] String_ActionPack = {new String[]{FytPackage.INNER_DVR, "com.syu.dvr.activity.MainActivity"}, new String[]{"com.syu.bt", "com.syu.bt.BtAct"}, new String[]{FytPackage.sysSetAction, "com.android.settings.Settings"}, new String[]{FytPackage.filemanagerAction, "com.syu.filemanager.FileManagerActivity"}, new String[]{"com.syu.video", "com.syu.video.main.VideoListActivity"}, new String[]{"com.syu.radio", "com.syu.radio.Launch"}, new String[]{"com.syu.music", "com.syu.music.MAct"}, new String[]{"com.syu.settings", "com.syu.settings.MainActivity"}, new String[]{FytPackage.naviAction, "com.syu.onekeynavi.MainActivity"}};
+    private static final String[][] String_ActionPack = {new String[]{FytPackage.INNER_DVR, "com.syu.dvr.activity.MainActivity"}, new String[]{"com.syu.bt", "com.syu.bt.BtAct"}, new String[]{FytPackage.sysSetAction, "com.android.settings.Settings"}, new String[]{FytPackage.filemanagerAction, "com.syu.filemanager.FileManagerActivity"}, new String[]{"com.syu.video", "com.syu.video.main.VideoListActivity"}, new String[]{"com.syu.radio", "com.syu.radio.Launch"}, new String[]{"com.syu.music", "com.syu.music.MAct"}, new String[]{"com.syu.settings", "com.syu.settings.MainActivity"}, new String[]{FytPackage.naviAction, "com.syu.onekeynavi.MainActivity"}};
 
     public AppListView(Context context2, AttributeSet arg1, int arg2) {
         super(context2, arg1, arg2);
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.AppListView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg12) {
                 AppListView.this.updateStr();
             }
@@ -47,8 +50,8 @@ public class AppListView extends ListView {
 
     public AppListView(Context context2, AttributeSet arg1) {
         super(context2, arg1);
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.AppListView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg12) {
                 AppListView.this.updateStr();
             }
@@ -59,8 +62,8 @@ public class AppListView extends ListView {
 
     public AppListView(Context context2) {
         super(context2);
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.AppListView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg12) {
                 AppListView.this.updateStr();
             }
@@ -70,29 +73,29 @@ public class AppListView extends ListView {
     }
 
     private void init(Context context2) {
-        View_AppList = (ListView) findViewById(ResValue.getInstance().Collect_AppList);
+        View_AppList = findViewById(ResValue.getInstance().Collect_AppList);
         Log.d("adapter", "  ***  init  *** ");
         for (int i = 0; i < StringId_Action.length; i++) {
             Log.d("adapter", " appname = " + StringId_Action[i] + " i = " + i);
             Array_AppList.add(getResources().getString(StringId_Action[i]));
         }
         Adapter_AppList = new LauncherList_Adapter(Array_AppList, context2);
-        View_AppList.setAdapter((ListAdapter) Adapter_AppList);
-        View_AppList.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.fyt.widget.AppListView.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        View_AppList.setAdapter(Adapter_AppList);
+        View_AppList.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 AppListView.ItemClick(arg2);
             }
         });
-        View_AppList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() { // from class: com.fyt.widget.AppListView.3
-            @Override // android.widget.AdapterView.OnItemLongClickListener
+        View_AppList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() { 
+            @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 Log.d("gandy", " ** LongClick  ");
                 return false;
             }
         });
-        View_AppList.setOnScrollListener(new AbsListView.OnScrollListener() { // from class: com.fyt.widget.AppListView.4
-            @Override // android.widget.AbsListView.OnScrollListener
+        View_AppList.setOnScrollListener(new AbsListView.OnScrollListener() { 
+            @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 switch (scrollState) {
                     case 0:
@@ -113,7 +116,7 @@ public class AppListView extends ListView {
                 }
             }
 
-            @Override // android.widget.AbsListView.OnScrollListener
+            @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             }
         });
@@ -157,14 +160,15 @@ public class AppListView extends ListView {
         }
     }
 
-    @Override // android.widget.AbsListView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter("android.intent.action.LOCALE_CHANGED");
         getContext().registerReceiver(this.receiver, filter);
     }
 
-    @Override // android.widget.ListView, android.widget.AbsListView, android.widget.AdapterView, android.view.ViewGroup, android.view.View
+    @Override
+    // android.widget.ListView, android.widget.AbsListView, android.widget.AdapterView, android.view.ViewGroup, android.view.View
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getContext().unregisterReceiver(this.receiver);

@@ -13,12 +13,11 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTouchListener {
     public static FordMustangAirControlAct_Rzc mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.FordMustangAirControlAct_Rzc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -88,8 +87,8 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
     private void sendCmd(int cmd) {
         Callback_0334_RZC_XP1_Focus2015.jump = false;
         DataCanbus.PROXY.cmd(1, new int[]{172, cmd}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.ruijie15.FordMustangAirControlAct_Rzc.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(1, new int[]{172}, null, null);
             }
@@ -97,15 +96,15 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         mInstance = this;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 3080526) {
-            setContentView(R.layout.layout_0334_rzc_12f150_cd_air_control);
+            //setContentView(R.layout.layout_0334_rzc_12f150_cd_air_control);
         } else if (DataCanbus.DATA[1000] == 2359630 || DataCanbus.DATA[1000] == 1048910) {
-            setContentView(R.layout.layout_0334_rzc_09mustang_air_control);
+            //setContentView(R.layout.layout_0334_rzc_09mustang_air_control);
         } else {
-            setContentView(R.layout.layout_0334_rzc_mustang_cd_air_control);
+            //setContentView(R.layout.layout_0334_rzc_mustang_cd_air_control);
         }
         init();
     }
@@ -176,7 +175,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -185,7 +184,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -193,7 +192,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -324,7 +323,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[54];
         if (findViewById(R.id.air_xts_seathot_left) != null) {
@@ -345,7 +344,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[55];
         if (findViewById(R.id.air_xts_seathot_right) != null) {
@@ -366,7 +365,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[20];
         int foot = DataCanbus.DATA[22];
@@ -439,7 +438,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int power = DataCanbus.DATA[27];
         if (findViewById(R.id.air_xts_maxac) != null) {
@@ -447,7 +446,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int value = DataCanbus.DATA[24];
         if (value == 1048576) {
@@ -467,7 +466,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int value = DataCanbus.DATA[25];
         if (value == 1048576) {
@@ -487,7 +486,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[26];
         if (findViewById(R.id.air_xts_dual) != null) {
@@ -495,7 +494,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[16];
         if (findViewById(R.id.air_xts_ac) != null) {
@@ -503,7 +502,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[15];
         if (findViewById(R.id.air_xts_power) != null) {
@@ -511,7 +510,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[18];
         if (findViewById(R.id.air_xts_cycle) != null) {
@@ -523,7 +522,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[17];
         if (DataCanbus.DATA[1000] == 2359630 || DataCanbus.DATA[1000] == 1048910) {
@@ -539,7 +538,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[48];
         if (findViewById(R.id.air_xts_rear) != null) {
@@ -547,7 +546,7 @@ public class FordMustangAirControlAct_Rzc extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[23];
         if (leave < 0) {

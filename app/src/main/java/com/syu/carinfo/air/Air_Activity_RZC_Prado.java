@@ -14,13 +14,12 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchListener {
     public static Air_Activity_RZC_Prado mInstance;
     public static boolean mIsFront = false;
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.air.Air_Activity_RZC_Prado.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == ConstAllAirDara.U_AIR_AC) {
                 Air_Activity_RZC_Prado.this.mUpdateAcOn();
@@ -224,19 +223,33 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_RZC_18PradoAuto /* 4718989 */:
             case FinalCanbus.CAR_RZC_18PradoAuto_AMP /* 4784525 */:
             case FinalCanbus.CAR_RZC_ALL_GM_Enclave_SP /* 4980797 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
             case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_11 /* 5177797 */:
             case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_18 /* 5243333 */:
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460 /* 5308868 */:
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100 /* 5439940 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100_H /* 5505476 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
             case FinalCanbus.CAR_452_ZH_PAJERO_SP /* 5964228 */:
             case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+            case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
             case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
             case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:
                 DataCanbus.PROXY.cmd(ConstAllAirDara.C_CONTRAL, new int[]{data0, data1}, null, null);
                 break;
             case FinalCanbus.CAR_RZC_15Ruijie /* 196942 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
             case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
             case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
             case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
@@ -305,14 +318,19 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_air_sp_rzc_prado);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform) || "823".equals(platform)) {
+            //setContentView(R.layout.layout_air_sp_rzc_prado);
+            if ("6318".equals(platform) || "823".equals(platform)) {
+                findViewById(R.id.layout_view1).setBackgroundResource(R.drawable.sp_air_bg_7870);
+            } else {
+                findViewById(R.id.layout_view1).setBackgroundResource(R.drawable.sp_air_bg);
+            }
         } else {
-            setContentView(R.layout.layout_air_sp_rzc_prado_7731);
+            //setContentView(R.layout.layout_air_sp_rzc_prado_7731);
         }
         initCallbackId();
         init();
@@ -331,24 +349,24 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDong /* 589945 */:
             case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDongRight /* 655481 */:
             case FinalCanbus.CAR_WC2_ShuPing_14Prado_H_NoAMP /* 721017 */:
-                ConstAllAirDara.U_AIR_POWER = 60;
-                ConstAllAirDara.U_AIR_AC = 59;
-                ConstAllAirDara.U_AIR_FRONT = 64;
-                ConstAllAirDara.U_AIR_REAR = 72;
-                ConstAllAirDara.U_AIR_CYCLE = 62;
-                ConstAllAirDara.U_AIR_AUTO = 63;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 65;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 66;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 67;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 69;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 70;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 71;
-                ConstAllAirDara.U_AIR_DUAL = 61;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 81;
-                ConstAllAirDara.U_AIR_BACK_POWER = 58;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 73;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 74;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 76;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
                 ConstAllAirDara.C_AIR_POWER = 1;
                 ConstAllAirDara.C_AIR_AC = 2;
                 ConstAllAirDara.C_AIR_AUTO = 4;
@@ -380,30 +398,30 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.TEMPERATURE_LOW = 1048576;
                 ConstAllAirDara.TEMPERATURE_HIGHT = FinalCanbus.CAR_WC1_VW_Polo_08_18;
                 ConstAllAirDara.TEMPERATURE_NONE = 1048578;
-                ConstAllAirDara.U_AIR_POWER = 15;
-                ConstAllAirDara.U_AIR_AC = 16;
-                ConstAllAirDara.U_AIR_FRONT = 56;
-                ConstAllAirDara.U_AIR_CYCLE = 18;
-                ConstAllAirDara.U_AIR_AUTO = 19;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 20;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 21;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 22;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 23;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 24;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 25;
-                ConstAllAirDara.U_AIR_TEMP_UNIT = 28;
-                ConstAllAirDara.U_AIR_DUAL = 26;
-                ConstAllAirDara.U_AIR_AC_MAX = 27;
-                ConstAllAirDara.U_AIR_REAR = 48;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 54;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 55;
-                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 54;
-                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 55;
-                ConstAllAirDara.U_AIR_STEER = 112;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 49;
-                ConstAllAirDara.U_AIR_BACK_POWER = 51;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 50;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 52;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_AC_MAX = 53;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 30;
+                ConstAllAirDara.U_AIR_STEER = 66;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
                 ConstAllAirDara.C_REAR_TEMP_DOWN = 19;
                 ConstAllAirDara.C_REAR_TEMP_UP = 20;
                 ConstAllAirDara.C_REAR_WIND_DOWN = 21;
@@ -450,27 +468,27 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_WeiChi2_ChangChengH8 /* 1573184 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_M /* 1638720 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_H /* 1704256 */:
-                ConstAllAirDara.U_AIR_DUAL = 12;
-                ConstAllAirDara.U_AIR_AC = 8;
-                ConstAllAirDara.U_AIR_CYCLE = 5;
-                ConstAllAirDara.U_AIR_AUTO = 4;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 14;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 10;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 9;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 11;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
                 ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
                 ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
-                ConstAllAirDara.U_AIR_FRONT_POWER = 13;
-                ConstAllAirDara.U_AIR_FRONT = 6;
-                ConstAllAirDara.U_AIR_REAR = 7;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 91;
-                ConstAllAirDara.U_AIR_BACK_POWER = 86;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 88;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 89;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 90;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 87;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 65;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 66;
+                ConstAllAirDara.U_AIR_FRONT_POWER = 10;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
                 ConstAllAirDara.C_AIR_POWER_FRONT = 1;
                 ConstAllAirDara.C_AIR_LEFT_HEAT = 17;
                 ConstAllAirDara.C_AIR_RIGHT_HEAT = 18;
@@ -529,28 +547,28 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_RZC_18PradoHand_AMP /* 4653453 */:
             case FinalCanbus.CAR_RZC_18PradoAuto /* 4718989 */:
             case FinalCanbus.CAR_RZC_18PradoAuto_AMP /* 4784525 */:
-                ConstAllAirDara.U_AIR_POWER = 60;
-                ConstAllAirDara.U_AIR_AC = 61;
-                ConstAllAirDara.U_AIR_FRONT = 66;
-                ConstAllAirDara.U_AIR_CYCLE = 62;
-                ConstAllAirDara.U_AIR_AUTO = 64;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 67;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 68;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 69;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 70;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 71;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 72;
-                ConstAllAirDara.U_AIR_TEMP_UNIT = 74;
-                ConstAllAirDara.U_AIR_DUAL = 65;
-                ConstAllAirDara.U_AIR_REAR = 73;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 110;
-                ConstAllAirDara.U_AIR_BACK_POWER = 111;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 113;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 114;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 115;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 116;
-                ConstAllAirDara.U_AIR_REAR_CTRL = 117;
-                ConstAllAirDara.U_AIR_CLEAN_AIR = 108;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_FRONT = 15;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_REAR_CTRL = 67;
+                ConstAllAirDara.U_AIR_CLEAN_AIR = 33;
                 ConstAllAirDara.C_AIR_POWER = 1;
                 ConstAllAirDara.C_AIR_AC = 23;
                 ConstAllAirDara.C_AIR_CYCLE = 25;
@@ -577,7 +595,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_REAR_OFF = 44;
                 ConstAllAirDara.C_REAR_AUTO = 45;
                 ConstAllAirDara.C_CLEAN_AIR = 32;
-                ConstAllAirDara.C_CONTRAL = 1;
+                ConstAllAirDara.C_CONTRAL = 22;
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_BNR_ShuPing_14PradoShouDong /* 852365 */:
                     case FinalCanbus.CAR_BNR_ShuPing_14PradoShouDong_AMP /* 1638797 */:
@@ -602,7 +620,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     case FinalCanbus.CAR_RZC_ShuPing_09HighLand_H /* 3342733 */:
                         ConstAllAirDara.U_AIR_DUAL = 255;
                         ConstAllAirDara.C_AIR_DUAL = 255;
-                        ConstAllAirDara.U_AIR_SYNC = 65;
+                        ConstAllAirDara.U_AIR_SYNC = 14;
                         ConstAllAirDara.C_AIR_SYNC = 16;
                         ConstAllAirDara.C_CLEAN_AIR = 255;
                         ConstAllAirDara.U_AIR_CLEAN_AIR = 255;
@@ -614,6 +632,75 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                         ConstAllAirDara.C_AIR_MODE_SUB = 7;
                         break;
                 }
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+            case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
+            case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
+            case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_FRONTMAX = 15;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_AC_MAX = 53;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_STEER = 66;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 31;
+                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 32;
+                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_TEMP_RIGHT = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 19;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 20;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.C_AIR_POWER = 1;
+                ConstAllAirDara.C_AIR_AC = 2;
+                ConstAllAirDara.C_AIR_CYCLE = 3;
+                ConstAllAirDara.C_AIR_MAX_FRONT_DEFROST = 25;
+                ConstAllAirDara.C_AIR_FRONT_DEFROST = 42;
+                ConstAllAirDara.C_AIR_REAR_DEFROST = 40;
+                ConstAllAirDara.C_AIR_AC_MAX = 4;
+                ConstAllAirDara.C_AIR_AUTO = 23;
+                ConstAllAirDara.C_AIR_DUAL = 24;
+                ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 26;
+                ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 27;
+                ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD = 28;
+                ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB = 29;
+                ConstAllAirDara.C_AIR_WIND_ADD = 30;
+                ConstAllAirDara.C_AIR_WIND_SUB = 31;
+                ConstAllAirDara.C_AIR_MODE_UP = 32;
+                ConstAllAirDara.C_AIR_MODE_BODY = 33;
+                ConstAllAirDara.C_AIR_MODE_FOOT = 34;
+                ConstAllAirDara.C_AIR_LEFT_HEAT = 35;
+                ConstAllAirDara.C_AIR_RIGHT_HEAT = 36;
+                ConstAllAirDara.C_AIR_LEFT_COLD = 37;
+                ConstAllAirDara.C_AIR_RIGHT_COLD = 38;
+                ConstAllAirDara.C_AIR_STEER = 41;
+                ConstAllAirDara.C_REAR_OFF = 17;
+                ConstAllAirDara.C_REAR_TEMP_DOWN = 19;
+                ConstAllAirDara.C_REAR_TEMP_UP = 20;
+                ConstAllAirDara.C_REAR_WIND_DOWN = 21;
+                ConstAllAirDara.C_REAR_WIND_UP = 22;
+                ConstAllAirDara.C_REAR_LOCK = 18;
+                ConstAllAirDara.C_CONTRAL = 1;
+                break;
             case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
             case FinalCanbus.CAR_RZC_Haval_H9 /* 2490807 */:
@@ -626,32 +713,32 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_452_OD_Haval_VV5_H /* 16318916 */:
             case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
             case FinalCanbus.CAR_452_OD_Haval_VV7_H /* 16449988 */:
-                ConstAllAirDara.U_AIR_ZONE = 13;
+                ConstAllAirDara.U_AIR_ZONE = 57;
                 ConstAllAirDara.U_AIR_AC = 11;
                 ConstAllAirDara.U_AIR_CYCLE = 12;
-                ConstAllAirDara.U_AIR_AUTO = 14;
+                ConstAllAirDara.U_AIR_AUTO = 13;
                 ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
                 ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
                 ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
                 ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 22;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 23;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
                 ConstAllAirDara.U_AIR_FRONT_POWER = 10;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 29;
-                ConstAllAirDara.U_AIR_BACK_POWER = 24;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 26;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 27;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 28;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 25;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 30;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 31;
-                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 62;
-                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 63;
-                ConstAllAirDara.U_AIR_SEATMASSAGE_LEFT = 64;
-                ConstAllAirDara.U_AIR_SEATMASSAGE_RIGHT = 65;
-                ConstAllAirDara.U_AIR_SEATWAIST_LEFT = 66;
-                ConstAllAirDara.U_AIR_SEATWAIST_RIGHT = 67;
-                ConstAllAirDara.U_AIR_REAR_SEAT_HEAT = 68;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 31;
+                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 32;
+                ConstAllAirDara.U_AIR_SEATMASSAGE_LEFT = 93;
+                ConstAllAirDara.U_AIR_SEATMASSAGE_RIGHT = 94;
+                ConstAllAirDara.U_AIR_SEATWAIST_LEFT = 95;
+                ConstAllAirDara.U_AIR_SEATWAIST_RIGHT = 96;
+                ConstAllAirDara.U_AIR_REAR_SEAT_HEAT = 88;
                 ConstAllAirDara.C_AIR_POWER_FRONT = 16;
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_RZC_Haval_H9 /* 2490807 */:
@@ -714,25 +801,25 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_CONTRAL = 1;
                 break;
             case FinalCanbus.CAR_452_XinCheng_Infiniti_15QX60 /* 1900996 */:
-                ConstAllAirDara.U_AIR_POWER = 7;
-                ConstAllAirDara.U_AIR_AC = 8;
-                ConstAllAirDara.U_AIR_CYCLE = 9;
-                ConstAllAirDara.U_AIR_AUTO = 11;
-                ConstAllAirDara.U_AIR_DUAL = 12;
-                ConstAllAirDara.U_AIR_REAR = 10;
-                ConstAllAirDara.U_AIR_FRONT = 13;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 15;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 16;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 17;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 18;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 19;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 20;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 29;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 28;
-                ConstAllAirDara.U_AIR_BACK_POWER = 24;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 25;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 26;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 27;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_FRONT = 15;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
                 ConstAllAirDara.C_AIR_POWER = 1;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 3;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 2;
@@ -758,27 +845,28 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_CONTRAL = 3;
                 break;
             case FinalCanbus.CAR_RZC_ALL_GM_Enclave_SP /* 4980797 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_Kopach_SP /* 5636157 */:
                 ConstAllAirDara.TEMPERATURE_LOW = 0;
                 ConstAllAirDara.TEMPERATURE_HIGHT = 30;
                 ConstAllAirDara.TEMPERATURE_NONE = -1;
-                ConstAllAirDara.U_AIR_AC = 34;
-                ConstAllAirDara.U_AIR_FRONT = 46;
-                ConstAllAirDara.U_AIR_REAR = 33;
-                ConstAllAirDara.U_AIR_CYCLE = 32;
-                ConstAllAirDara.U_AIR_AUTO = 58;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
                 ConstAllAirDara.U_AIR_SYNC = 57;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 37;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 38;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 42;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 41;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 40;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 39;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 64;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 65;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 68;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 66;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 67;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 69;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
                 ConstAllAirDara.C_AIR_POWER = 1;
                 ConstAllAirDara.C_AIR_AUTO = 21;
                 ConstAllAirDara.C_AIR_SYNC = 16;
@@ -792,10 +880,18 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 2;
                 ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD = 5;
                 ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB = 4;
-                ConstAllAirDara.C_AIR_MODE_BODY = 7;
-                ConstAllAirDara.C_AIR_MODE_BODYFOOT = 33;
-                ConstAllAirDara.C_AIR_MODE_FOOT = 8;
-                ConstAllAirDara.C_AIR_MODE_UPFOOT = 32;
+                switch (DataCanbus.DATA[1000]) {
+                    case FinalCanbus.CAR_RZC_ALL_GM_Enclave_SP /* 4980797 */:
+                        ConstAllAirDara.C_AIR_MODE_ADD = 37;
+                        ConstAllAirDara.C_AIR_MODE_SUB = 38;
+                        break;
+                    case FinalCanbus.CAR_RZC_ALL_GM_Kopach_SP /* 5636157 */:
+                        ConstAllAirDara.C_AIR_MODE_BODY = 7;
+                        ConstAllAirDara.C_AIR_MODE_BODYFOOT = 33;
+                        ConstAllAirDara.C_AIR_MODE_FOOT = 8;
+                        ConstAllAirDara.C_AIR_MODE_UPFOOT = 32;
+                        break;
+                }
                 ConstAllAirDara.C_REAR_MODE_FOOT = 55;
                 ConstAllAirDara.C_REAR_MODE_BODY = 53;
                 ConstAllAirDara.C_REAR_TEMP_DOWN = 50;
@@ -806,28 +902,114 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_REAR_LOCK = 56;
                 ConstAllAirDara.C_CONTRAL = 10;
                 break;
-            case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
-                ConstAllAirDara.U_AIR_FRONT_POWER = 8;
-                ConstAllAirDara.U_AIR_DUAL = 15;
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
+            case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
+            case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+            case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
+                ConstAllAirDara.TEMPERATURE_LOW = 254;
+                ConstAllAirDara.TEMPERATURE_HIGHT = 255;
+                ConstAllAirDara.TEMPERATURE_NONE = -1;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_DUAL = 14;
                 ConstAllAirDara.U_AIR_AC = 11;
-                ConstAllAirDara.U_AIR_CYCLE = 10;
-                ConstAllAirDara.U_AIR_AUTO = 20;
-                ConstAllAirDara.U_AIR_FRONT = 12;
-                ConstAllAirDara.U_AIR_REAR = 9;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 12;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 13;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 14;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 8;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 18;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 19;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 16;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 17;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 25;
-                ConstAllAirDara.U_AIR_BACK_POWER = 21;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 26;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 22;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 23;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 27;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 31;
+                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 32;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
+                ConstAllAirDara.U_AIR_STEER = 66;
+                ConstAllAirDara.U_AIR_AC_MAX = 53;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 18;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 19;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 20;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
+                ConstAllAirDara.C_AIR_POWER = 1;
+                ConstAllAirDara.C_AIR_AC = 2;
+                ConstAllAirDara.C_AIR_DUAL = 3;
+                ConstAllAirDara.C_AIR_AUTO = 4;
+                ConstAllAirDara.C_AIR_FRONT_DEFROST = 5;
+                ConstAllAirDara.C_AIR_REAR_DEFROST = 6;
+                ConstAllAirDara.C_AIR_CYCLE = 7;
+                ConstAllAirDara.C_AIR_WIND_ADD = 11;
+                ConstAllAirDara.C_AIR_WIND_SUB = 12;
+                ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 13;
+                ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 14;
+                ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD = 15;
+                ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB = 16;
+                ConstAllAirDara.C_AIR_LEFT_HEAT = 17;
+                ConstAllAirDara.C_AIR_RIGHT_HEAT = 18;
+                ConstAllAirDara.C_AIR_LEFT_COLD = 23;
+                ConstAllAirDara.C_AIR_RIGHT_COLD = 24;
+                ConstAllAirDara.C_AIR_AC_MAX = 26;
+                switch (DataCanbus.DATA[1000]) {
+                    case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+                    case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
+                        ConstAllAirDara.C_AIR_MODE_BODY = 31;
+                        ConstAllAirDara.C_AIR_MODE_BODYFOOT = 27;
+                        ConstAllAirDara.C_AIR_MODE_FOOT = 29;
+                        ConstAllAirDara.C_AIR_MODE_UPFOOT = 28;
+                        ConstAllAirDara.C_REAR_MODE_FOOT = 29;
+                        ConstAllAirDara.C_REAR_MODE_BODY = 31;
+                        ConstAllAirDara.C_REAR_MODE_BODY_FOOT = 27;
+                        break;
+                    default:
+                        ConstAllAirDara.C_AIR_MODE_UP = 8;
+                        ConstAllAirDara.C_AIR_MODE_BODY = 9;
+                        ConstAllAirDara.C_AIR_MODE_FOOT = 10;
+                        ConstAllAirDara.C_REAR_MODE_FOOT = 10;
+                        ConstAllAirDara.C_REAR_MODE_BODY = 9;
+                        break;
+                }
+                ConstAllAirDara.C_AIR_STEER = 45;
+                ConstAllAirDara.C_REAR_MODE_FOOT = 29;
+                ConstAllAirDara.C_REAR_MODE_BODY = 31;
+                ConstAllAirDara.C_REAR_MODE_BODY_FOOT = 27;
+                ConstAllAirDara.C_REAR_TEMP_DOWN = 33;
+                ConstAllAirDara.C_REAR_TEMP_UP = 32;
+                ConstAllAirDara.C_REAR_WIND_DOWN = 43;
+                ConstAllAirDara.C_REAR_WIND_UP = 42;
+                ConstAllAirDara.C_REAR_LOCK = 34;
+                ConstAllAirDara.C_REAR_OFF = 46;
+                ConstAllAirDara.C_CONTRAL = 1;
+                break;
+            case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
+                ConstAllAirDara.U_AIR_FRONT_POWER = 21;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_FRONT = 18;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
                 ConstAllAirDara.C_AIR_POWER_FRONT = 10;
                 ConstAllAirDara.C_AIR_AC = 8;
                 ConstAllAirDara.C_AIR_DUAL = 2;
@@ -862,65 +1044,51 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_453_LZ_Toyota_LAND_CRUISER_18 /* 5243333 */:
             case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
             case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:
-                ConstAllAirDara.U_AIR_DUAL = 65;
-                ConstAllAirDara.U_AIR_AC = 61;
-                ConstAllAirDara.U_AIR_CYCLE = 62;
-                ConstAllAirDara.U_AIR_AUTO = 64;
-                ConstAllAirDara.U_AIR_FRONT = 66;
-                ConstAllAirDara.U_AIR_REAR = 73;
-                ConstAllAirDara.U_AIR_CLEAN_AIR = 163;
-                ConstAllAirDara.U_AIR_ION = 164;
-                ConstAllAirDara.U_AIR_REAR_CTRL = 117;
-                ConstAllAirDara.U_AIR_SWING = 166;
-                ConstAllAirDara.U_AIR_FRONT_POWER = 60;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 67;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 68;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 69;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 70;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 71;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 72;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 110;
-                ConstAllAirDara.U_AIR_BACK_TEMP_RIGHT = 118;
-                ConstAllAirDara.U_AIR_BACK_POWER = 111;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 116;
-                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 113;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 113;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 114;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 115;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_FRONT = 15;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CLEAN_AIR = 33;
+                ConstAllAirDara.U_AIR_ION = 58;
+                ConstAllAirDara.U_AIR_REAR_CTRL = 67;
+                ConstAllAirDara.U_AIR_SWING = 35;
+                ConstAllAirDara.U_AIR_FRONT_POWER = 10;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_TEMP_RIGHT = 41;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_LUZ_Toyato_20All /* 8126903 */:
                     case FinalCanbus.CAR_LUZ_Toyato_30All /* 8192439 */:
-                        ConstAllAirDara.C_AIR_MODE_CHANGER = 36;
-                        ConstAllAirDara.C_AIR_ION = 28;
-                        ConstAllAirDara.C_CLEAN_AIR = 32;
-                        ConstAllAirDara.C_AIR_SWING = 29;
-                        ConstAllAirDara.C_REAR_CTRL = 42;
-                        ConstAllAirDara.C_REAR_MODE = 43;
-                        ConstAllAirDara.C_REAR_WIND_DOWN = 40;
-                        ConstAllAirDara.C_REAR_WIND_UP = 41;
-                        ConstAllAirDara.C_REAR_TEMP_DOWN = 38;
-                        ConstAllAirDara.C_REAR_TEMP_UP = 39;
-                        ConstAllAirDara.C_REAR_AUTO = 45;
-                        ConstAllAirDara.C_REAR_OFF = 44;
                         break;
                     default:
-                        ConstAllAirDara.C_AIR_MODE_CHANGER = 36;
                         ConstAllAirDara.C_AIR_MODE_CHANGER_RIGHT = 37;
-                        ConstAllAirDara.C_CLEAN_AIR = 40;
-                        ConstAllAirDara.C_AIR_SWING = 60;
-                        ConstAllAirDara.C_REAR_CTRL = 57;
-                        ConstAllAirDara.C_AIR_REARVIEW_HOT = 58;
-                        ConstAllAirDara.C_REAR_MODE = 36;
-                        ConstAllAirDara.C_REAR_WIND_DOWN = 48;
-                        ConstAllAirDara.C_REAR_WIND_UP = 49;
-                        ConstAllAirDara.C_REAR_TEMP_DOWN = 41;
-                        ConstAllAirDara.C_REAR_TEMP_UP = 42;
-                        ConstAllAirDara.C_REAR_AUTO = 52;
-                        ConstAllAirDara.C_REAR_OFF = 61;
-                        ConstAllAirDara.C_REAR_HEAT = 62;
-                        ConstAllAirDara.C_REAR_COOL = 63;
                         break;
                 }
+                ConstAllAirDara.C_AIR_MODE_CHANGER = 36;
+                ConstAllAirDara.C_AIR_ION = 28;
+                ConstAllAirDara.C_CLEAN_AIR = 32;
+                ConstAllAirDara.C_AIR_SWING = 29;
+                ConstAllAirDara.C_REAR_CTRL = 42;
+                ConstAllAirDara.C_REAR_MODE = 43;
+                ConstAllAirDara.C_REAR_WIND_DOWN = 40;
+                ConstAllAirDara.C_REAR_WIND_UP = 41;
+                ConstAllAirDara.C_REAR_TEMP_DOWN = 38;
+                ConstAllAirDara.C_REAR_TEMP_UP = 39;
+                ConstAllAirDara.C_REAR_AUTO = 45;
+                ConstAllAirDara.C_REAR_OFF = 44;
                 ConstAllAirDara.C_AIR_POWER_FRONT = 1;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 3;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 2;
@@ -940,35 +1108,35 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_LS460_H /* 5374404 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100 /* 5439940 */:
             case FinalCanbus.CAR_452_LZ_Toyota_LC100_H /* 5505476 */:
-                ConstAllAirDara.U_AIR_DUAL = 5;
-                ConstAllAirDara.U_AIR_AC = 2;
-                ConstAllAirDara.U_AIR_CYCLE = 3;
-                ConstAllAirDara.U_AIR_AUTO = 4;
-                ConstAllAirDara.U_AIR_REARVIEW_HOT = 74;
-                ConstAllAirDara.U_AIR_FRONT = 6;
-                ConstAllAirDara.U_AIR_REAR = 14;
-                ConstAllAirDara.U_AIR_CLEAN_AIR = 13;
-                ConstAllAirDara.U_AIR_REAR_CTRL = 75;
-                ConstAllAirDara.U_AIR_SWING = 81;
-                ConstAllAirDara.U_AIR_FRONT_POWER = 1;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 7;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 8;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 9;
-                ConstAllAirDara.U_AIR_BLOW_UP_RIGHT = 69;
-                ConstAllAirDara.U_AIR_BLOW_BODY_RIGHT = 69;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_RIGHT = 71;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 10;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 11;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 12;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 76;
-                ConstAllAirDara.U_AIR_BACK_POWER = 76;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 80;
-                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 7;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 8;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 9;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 79;
-                ConstAllAirDara.U_AIR_REAR_HEAT = 84;
-                ConstAllAirDara.U_AIR_REAR_COOL = 83;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_REARVIEW_HOT = 59;
+                ConstAllAirDara.U_AIR_FRONT = 15;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CLEAN_AIR = 33;
+                ConstAllAirDara.U_AIR_REAR_CTRL = 38;
+                ConstAllAirDara.U_AIR_SWING = 35;
+                ConstAllAirDara.U_AIR_FRONT_POWER = 10;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_BLOW_UP_RIGHT = 22;
+                ConstAllAirDara.U_AIR_BLOW_BODY_RIGHT = 22;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_RIGHT = 24;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 18;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 19;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 20;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
+                ConstAllAirDara.U_AIR_REAR_HEAT = 63;
+                ConstAllAirDara.U_AIR_REAR_COOL = 85;
                 ConstAllAirDara.C_AIR_POWER_FRONT = 1;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 3;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 2;
@@ -1000,22 +1168,22 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_CONTRAL = 0;
                 break;
             case FinalCanbus.CAR_452_ZH_PAJERO_SP /* 5964228 */:
-                ConstAllAirDara.U_AIR_AC = 2;
-                ConstAllAirDara.U_AIR_CYCLE = 3;
-                ConstAllAirDara.U_AIR_AUTO = 4;
-                ConstAllAirDara.U_AIR_REAR = 7;
-                ConstAllAirDara.U_AIR_FRONT = 6;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 8;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 9;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 10;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 11;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 12;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 13;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 18;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 17;
-                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 14;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 15;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 16;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 48;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
                 ConstAllAirDara.C_AIR_FRONT_DEFROST = 21;
                 ConstAllAirDara.C_AIR_REAR_DEFROST = 22;
                 ConstAllAirDara.C_AIR_POWER = 16;
@@ -1036,91 +1204,26 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_REAR_MODE = 40;
                 ConstAllAirDara.C_CONTRAL = 0;
                 break;
-            case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
-                ConstAllAirDara.TEMPERATURE_LOW = 254;
-                ConstAllAirDara.TEMPERATURE_HIGHT = 255;
-                ConstAllAirDara.TEMPERATURE_NONE = -1;
-                ConstAllAirDara.U_AIR_POWER = 0;
-                ConstAllAirDara.U_AIR_AUTO = 1;
-                ConstAllAirDara.U_AIR_DUAL = 5;
-                ConstAllAirDara.U_AIR_AC = 3;
-                ConstAllAirDara.U_AIR_CYCLE = 15;
-                ConstAllAirDara.U_AIR_FRONT = 17;
-                ConstAllAirDara.U_AIR_REAR = 16;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 18;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 19;
-                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 20;
-                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 21;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 24;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 25;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 9;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 14;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 13;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 12;
-                ConstAllAirDara.U_AIR_TEMP_UNIT = 11;
-                ConstAllAirDara.U_AIR_STEER = 27;
-                ConstAllAirDara.U_AIR_AC_MAX = 4;
-                ConstAllAirDara.U_AIR_BACK_POWER = 6;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 8;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 10;
-                ConstAllAirDara.U_AIR_BACK_BLOW_UP = 12;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 13;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 14;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 28;
-                ConstAllAirDara.C_AIR_POWER = 1;
-                ConstAllAirDara.C_AIR_AC = 2;
-                ConstAllAirDara.C_AIR_DUAL = 3;
-                ConstAllAirDara.C_AIR_AUTO = 4;
-                ConstAllAirDara.C_AIR_FRONT_DEFROST = 5;
-                ConstAllAirDara.C_AIR_REAR_DEFROST = 6;
-                ConstAllAirDara.C_AIR_CYCLE = 7;
-                ConstAllAirDara.C_AIR_WIND_ADD = 11;
-                ConstAllAirDara.C_AIR_WIND_SUB = 12;
-                ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 13;
-                ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 14;
-                ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD = 15;
-                ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB = 16;
-                ConstAllAirDara.C_AIR_LEFT_HEAT = 17;
-                ConstAllAirDara.C_AIR_RIGHT_HEAT = 18;
-                ConstAllAirDara.C_AIR_LEFT_COLD = 23;
-                ConstAllAirDara.C_AIR_RIGHT_COLD = 24;
-                ConstAllAirDara.C_AIR_AC_MAX = 26;
-                ConstAllAirDara.C_AIR_MODE_BODY = 31;
-                ConstAllAirDara.C_AIR_MODE_BODYFOOT = 27;
-                ConstAllAirDara.C_AIR_MODE_FOOT = 29;
-                ConstAllAirDara.C_AIR_MODE_UPFOOT = 28;
-                ConstAllAirDara.C_AIR_STEER = 45;
-                ConstAllAirDara.C_REAR_MODE_FOOT = 29;
-                ConstAllAirDara.C_REAR_MODE_BODY = 31;
-                ConstAllAirDara.C_REAR_MODE_BODY_FOOT = 27;
-                ConstAllAirDara.C_REAR_TEMP_DOWN = 33;
-                ConstAllAirDara.C_REAR_TEMP_UP = 32;
-                ConstAllAirDara.C_REAR_WIND_DOWN = 42;
-                ConstAllAirDara.C_REAR_WIND_UP = 43;
-                ConstAllAirDara.C_REAR_LOCK = 34;
-                ConstAllAirDara.C_REAR_OFF = 46;
-                ConstAllAirDara.C_CONTRAL = 1;
-                break;
             case FinalCanbus.CAR_439_HC_Nissan_Toread /* 7012791 */:
-                ConstAllAirDara.U_AIR_AC = 9;
-                ConstAllAirDara.U_AIR_FRONT = 12;
-                ConstAllAirDara.U_AIR_REAR = 13;
-                ConstAllAirDara.U_AIR_CYCLE = 14;
-                ConstAllAirDara.U_AIR_AUTO = 10;
-                ConstAllAirDara.U_AIR_DUAL = 11;
-                ConstAllAirDara.U_AIR_DUAL = 11;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 15;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 16;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 17;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 19;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 20;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 21;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 56;
-                ConstAllAirDara.U_AIR_BACK_POWER = 50;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 54;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 55;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 52;
-                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 57;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_FRONT = 65;
+                ConstAllAirDara.U_AIR_REAR = 16;
+                ConstAllAirDara.U_AIR_CYCLE = 12;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_BLOW_AUTO = 43;
                 ConstAllAirDara.C_REAR_MODE_FOOT = 255;
                 ConstAllAirDara.C_REAR_MODE_BODY = 255;
                 ConstAllAirDara.C_REAR_MODE_BODY_FOOT = 255;
@@ -1145,65 +1248,6 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_AIR_WIND_SUB = 9;
                 ConstAllAirDara.C_AIR_WIND_ADD = 10;
                 ConstAllAirDara.C_CONTRAL = 0;
-                break;
-            case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
-            case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
-                ConstAllAirDara.U_AIR_POWER = 10;
-                ConstAllAirDara.U_AIR_AC = 11;
-                ConstAllAirDara.U_AIR_CYCLE = 12;
-                ConstAllAirDara.U_AIR_FRONT = 15;
-                ConstAllAirDara.U_AIR_REAR = 16;
-                ConstAllAirDara.U_AIR_AUTO = 13;
-                ConstAllAirDara.U_AIR_AC_MAX = 53;
-                ConstAllAirDara.U_AIR_DUAL = 14;
-                ConstAllAirDara.U_AIR_STEER = 66;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
-                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 31;
-                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 32;
-                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
-                ConstAllAirDara.U_AIR_BACK_TEMP_RIGHT = 40;
-                ConstAllAirDara.U_AIR_BACK_POWER = 42;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 19;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 20;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
-                ConstAllAirDara.C_AIR_POWER = 1;
-                ConstAllAirDara.C_AIR_AC = 2;
-                ConstAllAirDara.C_AIR_CYCLE = 3;
-                ConstAllAirDara.C_AIR_FRONT_DEFROST = 25;
-                ConstAllAirDara.C_AIR_REAR_DEFROST = 40;
-                ConstAllAirDara.C_AIR_AC_MAX = 4;
-                ConstAllAirDara.C_AIR_AUTO = 23;
-                ConstAllAirDara.C_AIR_DUAL = 24;
-                ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 26;
-                ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 27;
-                ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD = 28;
-                ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB = 29;
-                ConstAllAirDara.C_AIR_WIND_ADD = 30;
-                ConstAllAirDara.C_AIR_WIND_SUB = 31;
-                ConstAllAirDara.C_AIR_MODE_UP = 32;
-                ConstAllAirDara.C_AIR_MODE_BODY = 33;
-                ConstAllAirDara.C_AIR_MODE_FOOT = 34;
-                ConstAllAirDara.C_AIR_LEFT_HEAT = 35;
-                ConstAllAirDara.C_AIR_RIGHT_HEAT = 36;
-                ConstAllAirDara.C_AIR_LEFT_COLD = 37;
-                ConstAllAirDara.C_AIR_RIGHT_COLD = 38;
-                ConstAllAirDara.C_AIR_STEER = 41;
-                ConstAllAirDara.C_REAR_OFF = 17;
-                ConstAllAirDara.C_REAR_TEMP_DOWN = 19;
-                ConstAllAirDara.C_REAR_TEMP_UP = 20;
-                ConstAllAirDara.C_REAR_WIND_DOWN = 21;
-                ConstAllAirDara.C_REAR_WIND_UP = 22;
-                ConstAllAirDara.C_REAR_LOCK = 18;
-                ConstAllAirDara.C_CONTRAL = 1;
                 break;
             case FinalCanbus.CAR_452_KYC_Toyota_Landekuluze /* 14221764 */:
             case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
@@ -1260,31 +1304,31 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 ConstAllAirDara.C_CONTRAL = 3;
                 break;
             case FinalCanbus.CAR_439_HC_Ford_Explorer /* 15335863 */:
-                ConstAllAirDara.U_AIR_POWER = 8;
-                ConstAllAirDara.U_AIR_AC = 9;
-                ConstAllAirDara.U_AIR_AC_MAX = 16;
+                ConstAllAirDara.U_AIR_POWER = 10;
+                ConstAllAirDara.U_AIR_AC = 11;
+                ConstAllAirDara.U_AIR_AC_MAX = 53;
                 ConstAllAirDara.U_AIR_CYCLE = 12;
-                ConstAllAirDara.U_AIR_AUTO = 11;
-                ConstAllAirDara.U_AIR_DUAL = 10;
-                ConstAllAirDara.U_AIR_REAR = 13;
+                ConstAllAirDara.U_AIR_AUTO = 13;
+                ConstAllAirDara.U_AIR_DUAL = 14;
+                ConstAllAirDara.U_AIR_REAR = 16;
                 ConstAllAirDara.U_AIR_FRONTMAX = 15;
-                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 27;
-                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 28;
-                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 29;
-                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 30;
-                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 20;
-                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 21;
-                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 22;
-                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 19;
-                ConstAllAirDara.U_AIR_TEMP_LEFT = 24;
-                ConstAllAirDara.U_AIR_TEMP_RIGHT = 25;
-                ConstAllAirDara.U_AIR_TEMP_UNIT = 26;
-                ConstAllAirDara.U_AIR_BACK_TEMP = 36;
-                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 33;
-                ConstAllAirDara.U_AIR_BACK_POWER = 31;
-                ConstAllAirDara.U_AIR_REAR_LOCK = 32;
-                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 34;
-                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 35;
+                ConstAllAirDara.U_AIR_SEATHEAT_LEFT = 29;
+                ConstAllAirDara.U_AIR_SEATHEAT_RIGHT = 30;
+                ConstAllAirDara.U_AIR_SEATWIND_LEFT = 31;
+                ConstAllAirDara.U_AIR_SEATWIND_RIGHT = 32;
+                ConstAllAirDara.U_AIR_BLOW_UP_LEFT = 18;
+                ConstAllAirDara.U_AIR_BLOW_BODY_LEFT = 19;
+                ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT = 20;
+                ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT = 21;
+                ConstAllAirDara.U_AIR_TEMP_LEFT = 27;
+                ConstAllAirDara.U_AIR_TEMP_RIGHT = 28;
+                ConstAllAirDara.U_AIR_TEMP_UNIT = 37;
+                ConstAllAirDara.U_AIR_BACK_TEMP = 40;
+                ConstAllAirDara.U_AIR_BACK_BLOW_WIND = 44;
+                ConstAllAirDara.U_AIR_BACK_POWER = 42;
+                ConstAllAirDara.U_AIR_REAR_LOCK = 67;
+                ConstAllAirDara.U_AIR_BACK_BLOW_BODY = 46;
+                ConstAllAirDara.U_AIR_BACK_BLOW_FOOT = 47;
                 ConstAllAirDara.C_AIR_POWER = 0;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_ADD = 19;
                 ConstAllAirDara.C_AIR_TEMP_LEFT_SUB = 18;
@@ -1641,7 +1685,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -1651,7 +1695,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -1659,12 +1703,12 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 255;
         switch (id) {
-            case R.id.tv_sp_front /* 2131427929 */:
+            case R.id.tv_sp_front /* 2131427932 */:
                 this.pagenum = 0;
                 findViewById(R.id.veiw_air_front).setVisibility(0);
                 findViewById(R.id.veiw_air_rear).setVisibility(8);
@@ -1675,7 +1719,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                         data0 = 128;
                         break;
                 }
-            case R.id.tv_sp_rear /* 2131427930 */:
+            case R.id.tv_sp_rear /* 2131427933 */:
                 this.pagenum = 1;
                 findViewById(R.id.veiw_air_front).setVisibility(8);
                 findViewById(R.id.veiw_air_rear).setVisibility(0);
@@ -1686,44 +1730,50 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                         data0 = 129;
                         break;
                 }
-            case R.id.air_sp_mode_change /* 2131428560 */:
-            case R.id.air_sp_blow_changer /* 2131430407 */:
+            case R.id.air_sp_mode_change /* 2131428557 */:
+            case R.id.air_sp_blow_changer /* 2131430395 */:
                 data0 = ConstAllAirDara.C_AIR_MODE_CHANGER;
                 break;
-            case R.id.air_sp_temp_left_munits /* 2131430318 */:
-                data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_SUB;
-                break;
-            case R.id.air_sp_temp_left_plus /* 2131430321 */:
+            case R.id.air_sp_temp_left_plus /* 2131430261 */:
                 data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_ADD;
                 break;
-            case R.id.air_sp_blow_body_foot /* 2131430323 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_BODYFOOT;
+            case R.id.air_sp_temp_left_munits /* 2131430265 */:
+                data0 = ConstAllAirDara.C_AIR_TEMP_LEFT_SUB;
                 break;
-            case R.id.air_sp_blow_foot /* 2131430324 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_FOOT;
+            case R.id.air_sp_temp_right_plus /* 2131430269 */:
+                data0 = ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD;
                 break;
-            case R.id.air_sp_blow_body /* 2131430325 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_BODY;
+            case R.id.air_sp_temp_right_munits /* 2131430273 */:
+                data0 = ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB;
                 break;
-            case R.id.air_sp_blow_foot_win /* 2131430326 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_UPFOOT;
+            case R.id.air_sp_acmax /* 2131430274 */:
+                data0 = ConstAllAirDara.C_AIR_AC_MAX;
                 break;
-            case R.id.air_sp_wind_minuts /* 2131430327 */:
-                data0 = ConstAllAirDara.C_AIR_WIND_SUB;
-                break;
-            case R.id.air_sp_wind_plus /* 2131430329 */:
-                data0 = ConstAllAirDara.C_AIR_WIND_ADD;
-                break;
-            case R.id.air_sp_ac /* 2131430330 */:
+            case R.id.air_sp_ac /* 2131430275 */:
                 data0 = ConstAllAirDara.C_AIR_AC;
                 break;
-            case R.id.air_sp_front /* 2131430331 */:
+            case R.id.air_sp_sync /* 2131430276 */:
+                data0 = ConstAllAirDara.C_AIR_SYNC;
+                break;
+            case R.id.air_sp_front /* 2131430277 */:
                 data0 = ConstAllAirDara.C_AIR_FRONT_DEFROST;
                 break;
-            case R.id.air_sp_rear /* 2131430332 */:
+            case R.id.air_sp_rear /* 2131430278 */:
                 data0 = ConstAllAirDara.C_AIR_REAR_DEFROST;
                 break;
-            case R.id.air_sp_cycle /* 2131430333 */:
+            case R.id.air_sp_auto /* 2131430279 */:
+                data0 = ConstAllAirDara.C_AIR_AUTO;
+                break;
+            case R.id.air_sp_power /* 2131430280 */:
+                data0 = ConstAllAirDara.C_AIR_POWER;
+                break;
+            case R.id.air_sp_wind_minuts /* 2131430281 */:
+                data0 = ConstAllAirDara.C_AIR_WIND_SUB;
+                break;
+            case R.id.air_sp_wind_plus /* 2131430283 */:
+                data0 = ConstAllAirDara.C_AIR_WIND_ADD;
+                break;
+            case R.id.air_sp_cycle /* 2131430284 */:
                 switch (DataCanbus.DATA[1000]) {
                     case FinalCanbus.CAR_439_HC_Nissan_Toread /* 7012791 */:
                         if (DataCanbus.DATA[ConstAllAirDara.U_AIR_CYCLE] == 1) {
@@ -1737,145 +1787,139 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                         data0 = ConstAllAirDara.C_AIR_CYCLE;
                         break;
                 }
-            case R.id.air_sp_power /* 2131430334 */:
-                data0 = ConstAllAirDara.C_AIR_POWER;
-                break;
-            case R.id.air_sp_seatwind_left /* 2131430336 */:
-                data0 = ConstAllAirDara.C_AIR_LEFT_COLD;
-                break;
-            case R.id.air_sp_seatheat_left /* 2131430338 */:
+            case R.id.air_sp_seatheat_left /* 2131430287 */:
                 data0 = ConstAllAirDara.C_AIR_LEFT_HEAT;
                 break;
-            case R.id.air_sp_auto /* 2131430340 */:
-                data0 = ConstAllAirDara.C_AIR_AUTO;
+            case R.id.air_sp_seatwind_left /* 2131430288 */:
+                data0 = ConstAllAirDara.C_AIR_LEFT_COLD;
                 break;
-            case R.id.air_sp_ptc /* 2131430342 */:
-                data0 = ConstAllAirDara.C_AIR_PTC;
-                break;
-            case R.id.air_sp_frontmax /* 2131430348 */:
-                data0 = ConstAllAirDara.C_AIR_MAX_FRONT_DEFROST;
-                break;
-            case R.id.air_sp_car_rear /* 2131430350 */:
-                data0 = ConstAllAirDara.C_REAR_CTRL;
-                break;
-            case R.id.air_sp_acmax /* 2131430352 */:
-                data0 = ConstAllAirDara.C_AIR_AC_MAX;
-                break;
-            case R.id.air_sp_ion /* 2131430354 */:
-                data0 = ConstAllAirDara.C_AIR_ION;
-                break;
-            case R.id.air_sp_blowtop /* 2131430360 */:
-                data0 = ConstAllAirDara.C_AIR_BLOWTOP;
-                break;
-            case R.id.air_sp_zone /* 2131430364 */:
-                data0 = ConstAllAirDara.C_AIR_ZONE;
-                break;
-            case R.id.air_sp_sync /* 2131430366 */:
-                data0 = ConstAllAirDara.C_AIR_SYNC;
-                break;
-            case R.id.air_sp_dual /* 2131430368 */:
-                data0 = ConstAllAirDara.C_AIR_DUAL;
-                break;
-            case R.id.air_sp_swing /* 2131430372 */:
-                data0 = ConstAllAirDara.C_AIR_SWING;
-                break;
-            case R.id.air_sp_steer /* 2131430376 */:
+            case R.id.air_sp_steer /* 2131430289 */:
                 data0 = ConstAllAirDara.C_AIR_STEER;
                 break;
-            case R.id.air_sp_seatheat_right /* 2131430382 */:
+            case R.id.air_sp_seatheat_right /* 2131430291 */:
                 data0 = ConstAllAirDara.C_AIR_RIGHT_HEAT;
                 break;
-            case R.id.air_sp_seatwind_right /* 2131430384 */:
+            case R.id.air_sp_seatwind_right /* 2131430292 */:
                 data0 = ConstAllAirDara.C_AIR_RIGHT_COLD;
                 break;
-            case R.id.air_sp_blow_win /* 2131430399 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_UP;
-                break;
-            case R.id.air_sp_blow_changer_right /* 2131430415 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_CHANGER_RIGHT;
-                break;
-            case R.id.air_sp_temp_right_plus /* 2131430416 */:
-                data0 = ConstAllAirDara.C_AIR_TEMP_RIGHT_ADD;
-                break;
-            case R.id.air_sp_temp_right_munits /* 2131430423 */:
-                data0 = ConstAllAirDara.C_AIR_TEMP_RIGHT_SUB;
-                break;
-            case R.id.air_sp_auto_rear /* 2131430426 */:
-                data0 = ConstAllAirDara.C_REAR_AUTO;
-                break;
-            case R.id.air_sp_rearlock_rear /* 2131430430 */:
+            case R.id.air_sp_rearlock_rear /* 2131430307 */:
                 data0 = ConstAllAirDara.C_REAR_LOCK;
                 break;
-            case R.id.air_sp_sync_rear /* 2131430432 */:
+            case R.id.air_sp_sync_rear /* 2131430309 */:
                 data0 = ConstAllAirDara.C_REAR_SYNC;
                 break;
-            case R.id.air_sp_rear_blow_changer /* 2131430455 */:
-                data0 = ConstAllAirDara.C_REAR_MODE;
-                break;
-            case R.id.air_sp_rear_wind_minuts /* 2131430471 */:
-                data0 = ConstAllAirDara.C_REAR_WIND_DOWN;
-                break;
-            case R.id.air_sp_rear_wind_plus /* 2131430474 */:
-                data0 = ConstAllAirDara.C_REAR_WIND_UP;
-                break;
-            case R.id.air_sp_clean_air /* 2131430480 */:
-                data0 = ConstAllAirDara.C_CLEAN_AIR;
-                break;
-            case R.id.air_sp_front_hot /* 2131430481 */:
-                data0 = ConstAllAirDara.C_AIR_FRONT_HOT;
-                break;
-            case R.id.air_sp_forest /* 2131430482 */:
-                data0 = ConstAllAirDara.C_AIR_FOREST;
-                break;
-            case R.id.air_sp_mode_sub /* 2131430487 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_SUB;
-                break;
-            case R.id.air_sp_mode_add /* 2131430488 */:
-                data0 = ConstAllAirDara.C_AIR_MODE_ADD;
-                break;
-            case R.id.air_sp_temp_rear_munits /* 2131430495 */:
-                data0 = ConstAllAirDara.C_REAR_TEMP_DOWN;
-                break;
-            case R.id.air_sp_temp_rear_plus /* 2131430498 */:
-                data0 = ConstAllAirDara.C_REAR_TEMP_UP;
-                break;
-            case R.id.air_sp_blow_body_foot_rear /* 2131430500 */:
-                data0 = ConstAllAirDara.C_REAR_MODE_BODY_FOOT;
-                break;
-            case R.id.air_sp_blow_foot_rear /* 2131430501 */:
-                data0 = ConstAllAirDara.C_REAR_MODE_FOOT;
-                break;
-            case R.id.air_sp_blow_body_rear /* 2131430502 */:
-                data0 = ConstAllAirDara.C_REAR_MODE_BODY;
-                break;
-            case R.id.air_sp_power_rear /* 2131430504 */:
+            case R.id.air_sp_power_rear /* 2131430310 */:
                 data0 = ConstAllAirDara.C_REAR_OFF;
                 break;
-            case R.id.air_sp_seatheat_rear /* 2131430506 */:
+            case R.id.air_sp_rear_wind_minuts /* 2131430311 */:
+                data0 = ConstAllAirDara.C_REAR_WIND_DOWN;
+                break;
+            case R.id.air_sp_rear_wind_plus /* 2131430313 */:
+                data0 = ConstAllAirDara.C_REAR_WIND_UP;
+                break;
+            case R.id.air_sp_auto_rear /* 2131430314 */:
+                data0 = ConstAllAirDara.C_REAR_AUTO;
+                break;
+            case R.id.air_sp_ptc /* 2131430319 */:
+                data0 = ConstAllAirDara.C_AIR_PTC;
+                break;
+            case R.id.air_sp_frontmax /* 2131430333 */:
+                data0 = ConstAllAirDara.C_AIR_MAX_FRONT_DEFROST;
+                break;
+            case R.id.air_sp_car_rear /* 2131430335 */:
+                data0 = ConstAllAirDara.C_REAR_CTRL;
+                break;
+            case R.id.air_sp_ion /* 2131430338 */:
+                data0 = ConstAllAirDara.C_AIR_ION;
+                break;
+            case R.id.air_sp_blowtop /* 2131430350 */:
+                data0 = ConstAllAirDara.C_AIR_BLOWTOP;
+                break;
+            case R.id.air_sp_zone /* 2131430354 */:
+                data0 = ConstAllAirDara.C_AIR_ZONE;
+                break;
+            case R.id.air_sp_dual /* 2131430357 */:
+                data0 = ConstAllAirDara.C_AIR_DUAL;
+                break;
+            case R.id.air_sp_swing /* 2131430361 */:
+                data0 = ConstAllAirDara.C_AIR_SWING;
+                break;
+            case R.id.air_sp_blow_body_foot /* 2131430379 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_BODYFOOT;
+                break;
+            case R.id.air_sp_blow_foot /* 2131430381 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_FOOT;
+                break;
+            case R.id.air_sp_blow_body /* 2131430383 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_BODY;
+                break;
+            case R.id.air_sp_blow_foot_win /* 2131430385 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_UPFOOT;
+                break;
+            case R.id.air_sp_blow_win /* 2131430387 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_UP;
+                break;
+            case R.id.air_sp_blow_changer_right /* 2131430403 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_CHANGER_RIGHT;
+                break;
+            case R.id.air_sp_rear_blow_changer /* 2131430446 */:
+                data0 = ConstAllAirDara.C_REAR_MODE;
+                break;
+            case R.id.air_sp_clean_air /* 2131430464 */:
+                data0 = ConstAllAirDara.C_CLEAN_AIR;
+                break;
+            case R.id.air_sp_front_hot /* 2131430465 */:
+                data0 = ConstAllAirDara.C_AIR_FRONT_HOT;
+                break;
+            case R.id.air_sp_forest /* 2131430466 */:
+                data0 = ConstAllAirDara.C_AIR_FOREST;
+                break;
+            case R.id.air_sp_mode_sub /* 2131430469 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_SUB;
+                break;
+            case R.id.air_sp_mode_add /* 2131430470 */:
+                data0 = ConstAllAirDara.C_AIR_MODE_ADD;
+                break;
+            case R.id.air_sp_temp_rear_munits /* 2131430475 */:
+                data0 = ConstAllAirDara.C_REAR_TEMP_DOWN;
+                break;
+            case R.id.air_sp_temp_rear_plus /* 2131430478 */:
+                data0 = ConstAllAirDara.C_REAR_TEMP_UP;
+                break;
+            case R.id.air_sp_blow_body_foot_rear /* 2131430480 */:
+                data0 = ConstAllAirDara.C_REAR_MODE_BODY_FOOT;
+                break;
+            case R.id.air_sp_blow_foot_rear /* 2131430481 */:
+                data0 = ConstAllAirDara.C_REAR_MODE_FOOT;
+                break;
+            case R.id.air_sp_blow_body_rear /* 2131430482 */:
+                data0 = ConstAllAirDara.C_REAR_MODE_BODY;
+                break;
+            case R.id.air_sp_seatheat_rear /* 2131430485 */:
                 data0 = ConstAllAirDara.C_REAR_SEAT_HEAT;
                 break;
-            case R.id.air_sp_cool_rear /* 2131430508 */:
+            case R.id.air_sp_cool_rear /* 2131430487 */:
                 data0 = ConstAllAirDara.C_REAR_COOL;
                 break;
-            case R.id.air_sp_heat_rear /* 2131430510 */:
+            case R.id.air_sp_heat_rear /* 2131430489 */:
                 data0 = ConstAllAirDara.C_REAR_HEAT;
                 break;
-            case R.id.air_sp_seatmassage_left /* 2131430511 */:
+            case R.id.air_sp_seatmassage_left /* 2131430490 */:
                 data0 = ConstAllAirDara.C_AIR_LEFT_MASSAGE;
                 break;
-            case R.id.air_sp_seatwaist_left /* 2131430512 */:
+            case R.id.air_sp_seatwaist_left /* 2131430491 */:
                 data0 = ConstAllAirDara.C_AIR_LEFT_WAIST;
                 break;
-            case R.id.air_sp_rearviewhot /* 2131430513 */:
+            case R.id.air_sp_rearviewhot /* 2131430492 */:
                 data0 = ConstAllAirDara.C_AIR_REARVIEW_HOT;
                 break;
-            case R.id.air_sp_seatwaist_right /* 2131430514 */:
+            case R.id.air_sp_seatwaist_right /* 2131430493 */:
                 data0 = ConstAllAirDara.C_AIR_RIGHT_WAIST;
                 break;
-            case R.id.air_sp_seatmassage_right /* 2131430515 */:
+            case R.id.air_sp_seatmassage_right /* 2131430494 */:
                 data0 = ConstAllAirDara.C_AIR_RIGHT_MASSAGE;
                 break;
-            case R.id.air_sp_power_front /* 2131430517 */:
+            case R.id.air_sp_power_front /* 2131430496 */:
                 data0 = ConstAllAirDara.C_AIR_POWER_FRONT;
                 break;
         }
@@ -2189,7 +2233,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackTemp() {
         int temp = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_TEMP];
         if (((TextView) findViewById(R.id.air_sp_temp_rear)) != null) {
@@ -2218,7 +2262,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 mUpdateTempBackUNIT();
                 return;
             }
-            if (DataCanbus.DATA[1000] == 6685115) {
+            if (DataCanbus.DATA[1000] == 6685115 || DataCanbus.DATA[1000] == 6750651 || DataCanbus.DATA[1000] == 4981179 || DataCanbus.DATA[1000] == 5046715 || DataCanbus.DATA[1000] == 5112251 || DataCanbus.DATA[1000] == 5177787 || DataCanbus.DATA[1000] == 5571003) {
                 if (temp == 1) {
                     ((TextView) findViewById(R.id.air_sp_temp_rear)).setText("LO");
                     ((TextView) findViewById(R.id.air_sp_temp_unit_rear)).setText("");
@@ -2271,6 +2315,14 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     mUpdateTempBackUNIT();
                     break;
                 case FinalCanbus.CAR_RZC_15Ruijie /* 196942 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
                 case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
@@ -2330,7 +2382,11 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     }
                 case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
                     if (temp >= 1 && temp <= 18) {
-                        ((TextView) findViewById(R.id.air_sp_temp_rear)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+                            ((TextView) findViewById(R.id.air_sp_temp_rear)).setText(new StringBuilder().append((((temp + 13) * 18) + 320) / 10).toString());
+                        } else {
+                            ((TextView) findViewById(R.id.air_sp_temp_rear)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        }
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_rear)).setText("None");
                     }
@@ -2359,13 +2415,13 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontPower() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_FRONT_POWER];
         findViewById(R.id.air_sp_power_front).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_power_rear_n : R.drawable.ic_sp_power_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackPower() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_POWER];
         switch (DataCanbus.DATA[1000]) {
@@ -2419,8 +2475,8 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
             findViewById(R.id.air_sp_rear_blow_changer).setBackgroundResource(R.drawable.ic_sp_mode_null);
         }
         if (ConstAllAirDara.C_REAR_MODE_BODY_FOOT == 255) {
-            findViewById(R.id.air_sp_blow_body_rear).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_BODY] == 1 ? 2130840935 : R.drawable.ic_sp_mode_body_n);
-            findViewById(R.id.air_sp_blow_foot_rear).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_FOOT] == 1 ? 2130840939 : R.drawable.ic_sp_mode_foot_n);
+            findViewById(R.id.air_sp_blow_body_rear).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_BODY] == 1 ? 2130841936 : R.drawable.ic_sp_mode_body_n);
+            findViewById(R.id.air_sp_blow_foot_rear).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_FOOT] == 1 ? 2130841940 : R.drawable.ic_sp_mode_foot_n);
             return;
         }
         findViewById(R.id.air_sp_blow_body_foot_rear).setBackgroundResource(b_body_foot ? R.drawable.ic_sp_mode_body_foot_p : R.drawable.ic_sp_mode_body_foot_n);
@@ -2436,7 +2492,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         findViewById2.setBackgroundResource(i);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackUp() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_UP];
         if (ConstAllAirDara.U_AIR_BACK_BLOW_UP == 255) {
@@ -2452,7 +2508,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         updateBlowBackMode();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackBody() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_BODY];
         if (ConstAllAirDara.U_AIR_BACK_BLOW_BODY == 255) {
@@ -2463,7 +2519,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         updateBlowBackMode();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackFoot() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_FOOT];
         if (ConstAllAirDara.U_AIR_BACK_BLOW_FOOT == 255) {
@@ -2474,25 +2530,25 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         updateBlowBackMode();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackAuto() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_AUTO];
         findViewById(R.id.air_sp_auto_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_auto_n : R.drawable.ic_sp_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackRearLock() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_LOCK];
         findViewById(R.id.air_sp_rearlock_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_rearlock_n : R.drawable.ic_sp_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackSync() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_SYNC];
         findViewById(R.id.air_sp_sync_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_sync_n : R.drawable.ic_sp_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackWind() {
         int leave = DataCanbus.DATA[ConstAllAirDara.U_AIR_BACK_BLOW_WIND] & 255;
         switch (DataCanbus.DATA[1000]) {
@@ -2574,34 +2630,34 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearCtrl() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_CTRL];
         findViewById(R.id.air_sp_car_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_carrear_n : R.drawable.ic_sp_carrear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCleanAir() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_CLEAN_AIR];
         findViewById(R.id.air_sp_clean_air).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_cleanair_n : R.drawable.ic_sp_cleanair_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearHeat() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_HEAT];
         findViewById(R.id.air_sp_heat_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_heat_n : R.drawable.ic_sp_heat_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearCool() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_COOL];
         findViewById(R.id.air_sp_cool_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_cool_n : R.drawable.ic_sp_cool_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateHeatLeft() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATHEAT_LEFT];
-        if (DataCanbus.DATA[1000] == 334 || DataCanbus.DATA[1000] == 262478 || DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942) {
+        if (DataCanbus.DATA[1000] == 334 || DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942) {
             if (vel <= 3) {
                 vel = 0;
             } else {
@@ -2612,7 +2668,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         ((TextView) findViewById(R.id.air_sp_seatheat_left)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateHeatRight() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATHEAT_RIGHT];
         if (DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942) {
@@ -2626,62 +2682,62 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         ((TextView) findViewById(R.id.air_sp_seatheat_right)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateWindLeft() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATWIND_LEFT];
-        if ((DataCanbus.DATA[1000] == 262478 || DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942 || DataCanbus.DATA[1000] == 1376695 || DataCanbus.DATA[1000] == 1769911 || DataCanbus.DATA[1000] == 15598007 || DataCanbus.DATA[1000] == 15663543 || DataCanbus.DATA[1000] == 16122308 || DataCanbus.DATA[1000] == 16187844 || DataCanbus.DATA[1000] == 16253380 || DataCanbus.DATA[1000] == 16318916 || DataCanbus.DATA[1000] == 16384452 || DataCanbus.DATA[1000] == 16449988) && vel > 3) {
+        if ((DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942 || DataCanbus.DATA[1000] == 1376695 || DataCanbus.DATA[1000] == 1769911 || DataCanbus.DATA[1000] == 15598007 || DataCanbus.DATA[1000] == 15663543 || DataCanbus.DATA[1000] == 16122308 || DataCanbus.DATA[1000] == 16187844 || DataCanbus.DATA[1000] == 16253380 || DataCanbus.DATA[1000] == 16318916 || DataCanbus.DATA[1000] == 16384452 || DataCanbus.DATA[1000] == 16449988) && vel > 3) {
             vel = 0;
         }
         findViewById(R.id.air_sp_seatwind_left).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatwind_left : R.drawable.ic_air_sp_seatwind_left_p);
         ((TextView) findViewById(R.id.air_sp_seatwind_left)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateWindRight() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATWIND_RIGHT];
-        if ((DataCanbus.DATA[1000] == 262478 || DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942 || DataCanbus.DATA[1000] == 1376695 || DataCanbus.DATA[1000] == 1769911 || DataCanbus.DATA[1000] == 15598007 || DataCanbus.DATA[1000] == 15663543 || DataCanbus.DATA[1000] == 16122308 || DataCanbus.DATA[1000] == 16187844 || DataCanbus.DATA[1000] == 16253380 || DataCanbus.DATA[1000] == 16318916 || DataCanbus.DATA[1000] == 16384452 || DataCanbus.DATA[1000] == 16449988) && vel > 3) {
+        if ((DataCanbus.DATA[1000] == 1900878 || DataCanbus.DATA[1000] == 196942 || DataCanbus.DATA[1000] == 1376695 || DataCanbus.DATA[1000] == 1769911 || DataCanbus.DATA[1000] == 15598007 || DataCanbus.DATA[1000] == 15663543 || DataCanbus.DATA[1000] == 16122308 || DataCanbus.DATA[1000] == 16187844 || DataCanbus.DATA[1000] == 16253380 || DataCanbus.DATA[1000] == 16318916 || DataCanbus.DATA[1000] == 16384452 || DataCanbus.DATA[1000] == 16449988) && vel > 3) {
             vel = 0;
         }
         findViewById(R.id.air_sp_seatwind_right).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatwind_right : R.drawable.ic_air_sp_seatwind_right_p);
         ((TextView) findViewById(R.id.air_sp_seatwind_right)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMassageLeft() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATMASSAGE_LEFT];
         findViewById(R.id.air_sp_seatmassage_left).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatmassage_left_n : R.drawable.ic_air_sp_seatmassage_left_p);
         ((TextView) findViewById(R.id.air_sp_seatmassage_left)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMassageRight() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATMASSAGE_RIGHT];
         findViewById(R.id.air_sp_seatmassage_right).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatmassage_right_n : R.drawable.ic_air_sp_seatmassage_right_p);
         ((TextView) findViewById(R.id.air_sp_seatmassage_right)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateWaistLeft() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATWAIST_LEFT];
         findViewById(R.id.air_sp_seatwaist_left).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatwaist_left_n : R.drawable.ic_air_sp_seatwaist_left_p);
         ((TextView) findViewById(R.id.air_sp_seatwaist_left)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateWaistRight() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SEATWAIST_RIGHT];
         findViewById(R.id.air_sp_seatwaist_right).setBackgroundResource(vel == 0 ? R.drawable.ic_air_sp_seatwaist_right_n : R.drawable.ic_air_sp_seatwaist_right_p);
         ((TextView) findViewById(R.id.air_sp_seatwaist_right)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearSeatHeat() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR_SEAT_HEAT];
         findViewById(R.id.air_sp_seatheat_rear).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_seatheat_rear_n : R.drawable.ic_sp_seatheat_rear_p);
         ((TextView) findViewById(R.id.air_sp_seatheat_rear)).setText(new StringBuilder().append(vel).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_LEFT];
         if (((TextView) findViewById(R.id.air_sp_temp_left)) != null) {
@@ -2709,6 +2765,14 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDong /* 589945 */:
                 case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDongRight /* 655481 */:
                 case FinalCanbus.CAR_WC2_ShuPing_14Prado_H_NoAMP /* 721017 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_15QX60 /* 1900996 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
@@ -2765,9 +2829,28 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     }
                     mUpdateTempLeftUNIT();
                     break;
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
+                    if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 1) {
+                        int temp5 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp5 / 10) + "." + (temp5 % 10));
+                    } else {
+                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append(temp).toString());
+                    }
+                    mUpdateTempLeftUNIT();
+                    break;
                 case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
                     if (temp >= 1 && temp <= 18) {
-                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+                            ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append((((temp + 13) * 18) + 320) / 10).toString());
+                        } else {
+                            ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        }
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_left)).setText("None");
                     }
@@ -2781,28 +2864,17 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
                         ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append(((temp * 9) + 635) / 10).toString());
                     } else {
-                        int temp5 = (temp * 5) + 175;
-                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp5 / 10) + "." + (temp5 % 10));
+                        int temp6 = (temp * 5) + 175;
+                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp6 / 10) + "." + (temp6 % 10));
                     }
-                    mUpdateTempLeftUNIT();
-                    break;
-                case FinalCanbus.CAR_439_RZC_14QiJun_Auto /* 5374391 */:
-                case FinalCanbus.CAR_439_RZC_14QiJun_Hand /* 5439927 */:
-                    int temp6 = temp * 5;
-                    ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp6 / 10) + "." + (temp6 % 10));
-                    mUpdateTempLeftUNIT();
-                    break;
-                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
-                    int temp7 = temp * 5;
-                    ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp7 / 10) + "." + (temp7 % 10));
                     mUpdateTempLeftUNIT();
                     break;
                 case FinalCanbus.CAR_452_KYC_Toyota_Landekuluze /* 14221764 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Alpha /* 14352836 */:
                     if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 0) {
-                        int temp8 = temp * 5;
-                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp8 / 10) + "." + (temp8 % 10));
+                        int temp7 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp7 / 10) + "." + (temp7 % 10));
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append(temp + 31).toString());
                     }
@@ -2810,8 +2882,8 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     break;
                 case FinalCanbus.CAR_439_HC_Ford_Explorer /* 15335863 */:
                     if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 0) {
-                        int temp9 = temp * 5;
-                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp9 / 10) + "." + (temp9 % 10));
+                        int temp8 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_left)).setText((temp8 / 10) + "." + (temp8 % 10));
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_left)).setText(new StringBuilder().append(temp).toString());
                     }
@@ -2829,7 +2901,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTempRight() {
         int temp = DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_RIGHT];
         if (((TextView) findViewById(R.id.air_sp_temp_right)) != null) {
@@ -2857,6 +2929,14 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                 case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDong /* 589945 */:
                 case FinalCanbus.CAR_WC2_ShuPing_Prado_Luxun_ZiDongRight /* 655481 */:
                 case FinalCanbus.CAR_WC2_ShuPing_14Prado_H_NoAMP /* 721017 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto /* 1376710 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand /* 1442246 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto /* 1507782 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand_S /* 1573318 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Auto_S /* 1638854 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Hand_S /* 1704390 */:
+                case FinalCanbus.CAR_454_LZ_Ford_Explorer_H_Auto_S /* 1769926 */:
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_15QX60 /* 1900996 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
                 case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
@@ -2913,9 +2993,28 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     }
                     mUpdateTempRightUNIT();
                     break;
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
+                    if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 1) {
+                        int temp5 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp5 / 10) + "." + (temp5 % 10));
+                    } else {
+                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append(temp).toString());
+                    }
+                    mUpdateTempRightUNIT();
+                    break;
                 case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
                     if (temp >= 1 && temp <= 18) {
-                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+                            ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append((((temp + 13) * 18) + 320) / 10).toString());
+                        } else {
+                            ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append((temp + 13) * 1.0f).toString());
+                        }
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_right)).setText("None");
                     }
@@ -2929,27 +3028,17 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
                         ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append(((temp * 9) + 635) / 10).toString());
                     } else {
-                        int temp5 = (temp * 5) + 175;
-                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp5 / 10) + "." + (temp5 % 10));
+                        int temp6 = (temp * 5) + 175;
+                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp6 / 10) + "." + (temp6 % 10));
                     }
-                    mUpdateTempRightUNIT();
-                    break;
-                case FinalCanbus.CAR_439_RZC_14QiJun_Auto /* 5374391 */:
-                case FinalCanbus.CAR_439_RZC_14QiJun_Hand /* 5439927 */:
-                    int temp6 = temp * 5;
-                    ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp6 / 10) + "." + (temp6 % 10));
-                    break;
-                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
-                    int temp7 = temp * 5;
-                    ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp7 / 10) + "." + (temp7 % 10));
                     mUpdateTempRightUNIT();
                     break;
                 case FinalCanbus.CAR_452_KYC_Toyota_Landekuluze /* 14221764 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Alpha /* 14352836 */:
                     if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 0) {
-                        int temp8 = temp * 5;
-                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp8 / 10) + "." + (temp8 % 10));
+                        int temp7 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp7 / 10) + "." + (temp7 % 10));
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append(temp + 31).toString());
                     }
@@ -2957,8 +3046,8 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
                     break;
                 case FinalCanbus.CAR_439_HC_Ford_Explorer /* 15335863 */:
                     if (DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT] == 0) {
-                        int temp9 = temp * 5;
-                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp9 / 10) + "." + (temp9 % 10));
+                        int temp8 = temp * 5;
+                        ((TextView) findViewById(R.id.air_sp_temp_right)).setText((temp8 / 10) + "." + (temp8 % 10));
                     } else {
                         ((TextView) findViewById(R.id.air_sp_temp_right)).setText(new StringBuilder().append(temp).toString());
                     }
@@ -2980,7 +3069,13 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT];
         if (ConstAllAirDara.U_AIR_TEMP_UNIT != 255) {
             switch (DataCanbus.DATA[1000]) {
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
                 case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
                     ((TextView) findViewById(R.id.air_sp_temp_unit_left)).setText(vel == 1 ? "℃" : "℉");
                     break;
                 default:
@@ -2996,7 +3091,13 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_TEMP_UNIT];
         if (ConstAllAirDara.U_AIR_TEMP_UNIT != 255) {
             switch (DataCanbus.DATA[1000]) {
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_H /* 5112251 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V /* 5177787 */:
+                case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ_V /* 5571003 */:
                 case FinalCanbus.CAR_443_WC2_Ford_EDGE_11 /* 6685115 */:
+                case FinalCanbus.CAR_443_WC2_Ford_EDGE_11_CD /* 6750651 */:
                     ((TextView) findViewById(R.id.air_sp_temp_unit_right)).setText(vel == 1 ? "℃" : "℉");
                     break;
                 default:
@@ -3018,13 +3119,13 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDual() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_DUAL];
         findViewById(R.id.air_sp_dual).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_dual_n : R.drawable.ic_sp_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSYNC() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_SYNC];
         switch (DataCanbus.DATA[1000]) {
@@ -3047,85 +3148,85 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         findViewById(R.id.air_sp_sync).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_sync_n : R.drawable.ic_sp_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateZONE() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_ZONE];
         findViewById(R.id.air_sp_zone).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_zone_n : R.drawable.ic_sp_zone_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteer() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_STEER];
         findViewById(R.id.air_sp_steer).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_steer_n : R.drawable.ic_sp_steer_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearViewHot() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_REARVIEW_HOT];
         findViewById(R.id.air_sp_rearviewhot).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_rearviewhot_n : R.drawable.ic_sp_rearviewhot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAuto() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_AUTO];
         findViewById(R.id.air_sp_auto).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_auto_n : R.drawable.ic_sp_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcMax() {
         int vel = DataCanbus.DATA[ConstAllAirDara.U_AIR_AC_MAX];
         findViewById(R.id.air_sp_acmax).setBackgroundResource(vel == 0 ? R.drawable.ic_sp_acmax_n : R.drawable.ic_sp_acmax_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[ConstAllAirDara.U_AIR_AC];
         findViewById(R.id.air_sp_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_sp_ac2_n : R.drawable.ic_sp_ac2_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[ConstAllAirDara.U_AIR_CYCLE];
         findViewById(R.id.air_sp_cycle).setBackgroundResource(cycle == 0 ? R.drawable.ic_sp_cylce_out2_p : R.drawable.ic_sp_cylce_in2_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSwing() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_SWING];
         findViewById(R.id.air_sp_swing).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_swing_n : R.drawable.ic_sp_swing_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateION() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_ION];
         findViewById(R.id.air_sp_ion).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_ion_n : R.drawable.ic_sp_ion_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_REAR];
         findViewById(R.id.air_sp_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_rear2_n : R.drawable.ic_sp_rear2_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_FRONT];
         findViewById(R.id.air_sp_front).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_front2_n : R.drawable.ic_sp_front2_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontmaxDefrost() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_FRONTMAX];
         findViewById(R.id.air_sp_frontmax).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_frontmax_n : R.drawable.ic_sp_frontmax_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePower() {
         int rear = DataCanbus.DATA[ConstAllAirDara.U_AIR_POWER];
         findViewById(R.id.air_sp_power).setBackgroundResource(rear == 0 ? R.drawable.ic_sp_power_n : R.drawable.ic_sp_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[ConstAllAirDara.U_AIR_WIND_LEVEL_LEFT];
         if (ConstAllAirDara.C_AIR_POWER != 255 && ConstAllAirDara.U_AIR_POWER == 255) {
@@ -3170,7 +3271,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowMode() {
         boolean b_body_foot = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_UP_LEFT] != 1 && DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT] == 1 && DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT] == 1;
         boolean b_up_foot = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_UP_LEFT] == 1 && DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT] != 1 && DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT] == 1;
@@ -3183,12 +3284,12 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         findViewById(R.id.air_sp_blow_body_foot).setBackgroundResource(b_body_foot ? R.drawable.ic_sp_mode_body_foot_p : R.drawable.ic_sp_mode_body_foot_n);
         findViewById(R.id.air_sp_blow_foot_win).setBackgroundResource(b_up_foot ? R.drawable.ic_sp_mode_win_foot_p : R.drawable.ic_sp_mode_win_foot_n);
         if (ConstAllAirDara.C_AIR_MODE_BODYFOOT == 255 && ConstAllAirDara.C_AIR_MODE_UPFOOT == 255) {
-            findViewById(R.id.air_sp_blow_body).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT] == 1 ? 2130840935 : R.drawable.ic_sp_mode_body_n);
+            findViewById(R.id.air_sp_blow_body).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT] == 1 ? 2130841936 : R.drawable.ic_sp_mode_body_n);
             findViewById(R.id.air_sp_blow_foot).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT] == 1 ? R.drawable.ic_sp_mode_foot_p : R.drawable.ic_sp_mode_foot_n);
             findViewById(R.id.air_sp_blow_win).setBackgroundResource(DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_UP_LEFT] == 1 ? R.drawable.ic_sp_mode_win_p : R.drawable.ic_sp_mode_win_n);
         } else {
             if (ConstAllAirDara.C_AIR_MODE_BODY != 255) {
-                findViewById(R.id.air_sp_blow_body).setBackgroundResource(b_body ? 2130840935 : R.drawable.ic_sp_mode_body_n);
+                findViewById(R.id.air_sp_blow_body).setBackgroundResource(b_body ? 2130841936 : R.drawable.ic_sp_mode_body_n);
             }
             if (ConstAllAirDara.C_AIR_MODE_FOOT != 255) {
                 findViewById(R.id.air_sp_blow_foot).setBackgroundResource(b_foot ? R.drawable.ic_sp_mode_foot_p : R.drawable.ic_sp_mode_foot_n);
@@ -3228,7 +3329,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeUp() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_UP_LEFT];
         if (ConstAllAirDara.U_AIR_BLOW_UP_LEFT == 255) {
@@ -3239,7 +3340,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         updateBlowMode();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeBody() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_BODY_LEFT];
         if (ConstAllAirDara.U_AIR_BLOW_BODY_LEFT == 255) {
@@ -3250,7 +3351,7 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         updateBlowMode();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeFoot() {
         int data = DataCanbus.DATA[ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT];
         if (ConstAllAirDara.U_AIR_BLOW_FOOT_LEFT == 255) {
@@ -3301,17 +3402,17 @@ public class Air_Activity_RZC_Prado extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeUpRight() {
         updateBlowModeRight();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeBodyRight() {
         updateBlowModeRight();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowModeFootRight() {
         updateBlowModeRight();
     }

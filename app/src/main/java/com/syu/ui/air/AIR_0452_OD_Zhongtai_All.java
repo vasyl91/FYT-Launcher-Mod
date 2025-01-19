@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0452_OD_Zhongtai_All extends AirBase {
     public AIR_0452_OD_Zhongtai_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0265_RZC_ZhongTaiDaMaiX5/jili_boyue.webp";
         this.mPathHighlight = "0265_RZC_ZhongTaiDaMaiX5/jili_boyue_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -82,7 +82,7 @@ public class AIR_0452_OD_Zhongtai_All extends AirBase {
             c.drawText("NO", 56.0f, 138.0f, this.mPaint);
         } else {
             int left_temp2 = (left_temp * 5) + 175;
-            c.drawText(String.valueOf(left_temp2 / 10) + "." + (left_temp2 % 10), 56.0f, 138.0f, this.mPaint);
+            c.drawText(left_temp2 / 10 + "." + (left_temp2 % 10), 56.0f, 138.0f, this.mPaint);
         }
         int right_temp = this.DATA[20];
         if (DataCanbus.DATA[1000] == 65801) {
@@ -96,7 +96,7 @@ public class AIR_0452_OD_Zhongtai_All extends AirBase {
             c.drawText("NO", 935.0f, 138.0f, this.mPaint);
         } else {
             int right_temp2 = (right_temp * 5) + 175;
-            c.drawText(String.valueOf(right_temp2 / 10) + "." + (right_temp2 % 10), 935.0f, 138.0f, this.mPaint);
+            c.drawText(right_temp2 / 10 + "." + (right_temp2 % 10), 935.0f, 138.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

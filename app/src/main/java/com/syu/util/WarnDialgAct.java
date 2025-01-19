@@ -5,15 +5,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnDialgAct extends BaseActivity {
     private ImageView close;
     private TextView info;
-    private Runnable r = new Runnable() { // from class: com.syu.util.WarnDialgAct.1
-        @Override // java.lang.Runnable
+    private final Runnable r = new Runnable() { 
+        @Override
         public void run() {
             WarnDialgAct.this.finish();
         }
@@ -22,15 +22,15 @@ public class WarnDialgAct extends BaseActivity {
     public static String TITLE = "TITLE";
     public static String INFO = "INFO";
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.warn_dlg);
-        this.title = (TextView) findViewById(R.id.tv_title);
-        this.info = (TextView) findViewById(R.id.tv_info1);
+        //setContentView(R.layout.warn_dlg);
+        this.title = findViewById(R.id.tv_title);
+        this.info = findViewById(R.id.tv_info1);
         handlerIntent(getIntent());
-        this.close = (ImageView) bindViewOnClick(R.id.btn_close, new View.OnClickListener() { // from class: com.syu.util.WarnDialgAct.2
-            @Override // android.view.View.OnClickListener
+        this.close = bindViewOnClick(R.id.btn_close, new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 WarnDialgAct.this.finish();
             }
@@ -38,7 +38,7 @@ public class WarnDialgAct extends BaseActivity {
         HandlerRemove.getInstance().postDelayed(this.r, 10000L);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);

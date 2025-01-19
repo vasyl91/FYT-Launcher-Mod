@@ -3,17 +3,17 @@ package com.syu.carinfo.od.bmw;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODBMWMiniIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_huiteng_indexact);
+        //setContentView(R.layout.layout_huiteng_indexact);
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_453_LZ_BMW_E39 /* 262597 */:
             case FinalCanbus.CAR_453_LZ_BMW_E53 /* 328133 */:
@@ -34,8 +34,8 @@ public class ODBMWMiniIndexAct extends BaseActivity {
                 findViewById(R.id.layout_view1).setVisibility(8);
                 break;
         }
-        findViewById(R.id.jeep_car_info).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWMiniIndexAct.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_info).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -68,8 +68,8 @@ public class ODBMWMiniIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWMiniIndexAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -102,8 +102,8 @@ public class ODBMWMiniIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.bmw.ODBMWMiniIndexAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

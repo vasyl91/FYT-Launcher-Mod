@@ -1,117 +1,130 @@
 package com.syu.carinfo.dasauto;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TuRui_SettingAct extends BaseActivity {
+    private PopupWindow mLauStyle;
+    public ArrayList<String> mLauStylelist;
+    public ListView mLauStylelv;
+    private View mPopShowView;
+    int[] send_lang;
     int iLanguageSet = 0;
-    private int[] eventIds = {27, 28, 164, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 41, 40, 78, 19, 20, 21, 22, 23, 177, 178, 179, 180, 181, 182, 232, 233, 231, 82};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.1
-        @Override // com.syu.module.IUiNotify
+    private int[] eventIds = {124, 125, 218, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 138, 137, 175, 116, 117, 118, 119, 120, 231, 232, 233, 234, 235, 236, 274, 275, 273, 179};
+    int language_set = 255;
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 19:
+                case 116:
                     TuRui_SettingAct.this.uAutoActive(DataCanbus.DATA[updateCode]);
                     break;
-                case 20:
+                case 117:
                     TuRui_SettingAct.this.uFVol(DataCanbus.DATA[updateCode]);
                     break;
-                case 21:
+                case 118:
                     TuRui_SettingAct.this.uFTone(DataCanbus.DATA[updateCode]);
                     break;
-                case 22:
+                case 119:
                     TuRui_SettingAct.this.uRVol(DataCanbus.DATA[updateCode]);
                     break;
-                case 23:
+                case 120:
                     TuRui_SettingAct.this.uRTone(DataCanbus.DATA[updateCode]);
                     break;
-                case 27:
+                case 124:
                     TuRui_SettingAct.this.uSpeedWarn(DataCanbus.DATA[updateCode]);
                     break;
-                case 28:
+                case 125:
                     TuRui_SettingAct.this.uSpeedWarnAt(DataCanbus.DATA[updateCode]);
                     break;
-                case 40:
+                case 137:
                     TuRui_SettingAct.this.uDoorUnlock(DataCanbus.DATA[updateCode]);
                     break;
-                case 41:
+                case 138:
                     TuRui_SettingAct.this.uAutoLock(DataCanbus.DATA[updateCode]);
                     break;
-                case 78:
+                case 175:
                     TuRui_SettingAct.this.uDaytimeLight(DataCanbus.DATA[updateCode]);
                     break;
-                case 82:
+                case 179:
                     TuRui_SettingAct.this.UpdateVehicleVin(ConstGolf.mCarId);
                     break;
-                case 164:
+                case 218:
                     TuRui_SettingAct.this.uRainSensor(DataCanbus.DATA[updateCode]);
                     break;
-                case 166:
+                case 220:
                     TuRui_SettingAct.this.uLeftDrive(DataCanbus.DATA[updateCode]);
                     break;
-                case 167:
+                case 221:
                     TuRui_SettingAct.this.uSmartBiglight(DataCanbus.DATA[updateCode]);
                     break;
-                case 168:
+                case 222:
                     TuRui_SettingAct.this.uHomelight(DataCanbus.DATA[updateCode]);
                     break;
-                case 169:
+                case 223:
                     TuRui_SettingAct.this.uLeaveHomelight(DataCanbus.DATA[updateCode]);
                     break;
-                case 170:
+                case 224:
                     TuRui_SettingAct.this.uFootlight(DataCanbus.DATA[updateCode]);
                     break;
-                case 171:
+                case 225:
                     TuRui_SettingAct.this.uInSidelight(DataCanbus.DATA[updateCode]);
                     break;
-                case 172:
+                case 226:
                     TuRui_SettingAct.this.uFWin(DataCanbus.DATA[updateCode]);
                     break;
-                case 173:
+                case 227:
                     TuRui_SettingAct.this.uRWin(DataCanbus.DATA[updateCode]);
                     break;
-                case 174:
+                case 228:
                     TuRui_SettingAct.this.uSkyWin(DataCanbus.DATA[updateCode]);
                     break;
-                case 175:
+                case 229:
                     TuRui_SettingAct.this.uFoldMirror(DataCanbus.DATA[updateCode]);
                     break;
-                case 176:
+                case 230:
                     TuRui_SettingAct.this.uOnlyUnlockTrunk(DataCanbus.DATA[updateCode]);
                     break;
-                case 177:
+                case 231:
                     TuRui_SettingAct.this.uUnitDistance(DataCanbus.DATA[updateCode]);
                     break;
-                case 178:
+                case 232:
                     TuRui_SettingAct.this.uUnitSpeed(DataCanbus.DATA[updateCode]);
                     break;
-                case 179:
+                case 233:
                     TuRui_SettingAct.this.uUnitTemp(DataCanbus.DATA[updateCode]);
                     break;
-                case 180:
+                case 234:
                     TuRui_SettingAct.this.uUnitCapacity(DataCanbus.DATA[updateCode]);
                     break;
-                case 181:
+                case 235:
                     TuRui_SettingAct.this.uUnitEnergy(DataCanbus.DATA[updateCode]);
                     break;
-                case 182:
+                case 236:
                     TuRui_SettingAct.this.uUnitTirePress(DataCanbus.DATA[updateCode]);
                     break;
-                case 231:
+                case 273:
                     TuRui_SettingAct.this.uMatchedKeys(DataCanbus.DATA[updateCode]);
                     break;
-                case 232:
+                case 274:
                     TuRui_SettingAct.this.uTireLoadStatus(DataCanbus.DATA[updateCode]);
                     break;
-                case 233:
+                case 275:
                     TuRui_SettingAct.this.uTireType(DataCanbus.DATA[updateCode]);
                     break;
             }
@@ -119,395 +132,468 @@ public class TuRui_SettingAct extends BaseActivity {
     };
     private int[] doorUnlockStr = {R.string.wc_ruiteng_string_unlock_mode_1, R.string.wc_ruiteng_string_unlock_mode_0};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_turui_settings);
+        //setContentView(R.layout.layout_turui_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCMD(int type, int cmd, int value) {
         DataCanbus.PROXY.cmd(23, new int[]{type, cmd, value}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    
+    public void initLauStyle() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
+        View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
+        this.mLauStyle = new PopupWindow(layout, 548, 408);
+        this.mLauStyle.setBackgroundDrawable(getResources().getDrawable(R.drawable.bk_models_pop));
+        this.mLauStyle.setFocusable(true);
+        this.mLauStyle.setTouchable(true);
+        this.mLauStyle.setOutsideTouchable(true);
+        this.mLauStylelv = (ListView) layout.findViewById(R.id.lauguageListview);
+        this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
+        this.mLauStylelv.setItemsCanFocus(false);
+        this.mLauStylelv.setChoiceMode(1);
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                TuRui_SettingAct.this.language_set = position;
+                if (TuRui_SettingAct.this.language_set >= 0 && TuRui_SettingAct.this.language_set <= TuRui_SettingAct.this.mLauStylelist.size() && TuRui_SettingAct.this.send_lang != null) {
+                    DataCanbus.PROXY.cmd(105, new int[]{1, TuRui_SettingAct.this.send_lang[TuRui_SettingAct.this.language_set]}, null, null);
+                }
+                TuRui_SettingAct.this.mLauStyle.dismiss();
+            }
+        });
+    }
+
+    public void updateLauguageSet() {
+        if (this.language_set >= 0 && this.language_set < this.mLauStylelist.size() && this.mLauStylelv != null) {
+            this.mLauStylelv.setItemChecked(this.language_set, true);
+        }
+    }
+
+    @Override
     public void init() {
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_winter_tyres), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.2
-            @Override // android.view.View.OnClickListener
+        this.mPopShowView = getWindow().getDecorView();
+        this.mLauStylelist = new ArrayList<>();
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_1));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_2));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_3));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_4));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_5));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_37));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_7));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_9));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_9));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_10));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_26));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_12));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_13));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_14));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_15));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_16));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_20));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_27));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_19));
+        this.mLauStylelist.add(getResources().getString(R.string.wc_psa_all_lauguage_set_value_21));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_31));
+        this.mLauStylelist.add(getResources().getString(R.string.rzc_others_language_setting_23));
+        this.mLauStylelist.add("Malaysian");
+        this.mLauStylelist.add("Thai");
+        this.send_lang = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25};
+        if (this.send_lang.length != this.mLauStylelist.size()) {
+            throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
+        }
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[27] & 255;
+                if (TuRui_SettingAct.this.mLauStyle == null) {
+                    TuRui_SettingAct.this.initLauStyle();
+                }
+                if (TuRui_SettingAct.this.mLauStyle != null && TuRui_SettingAct.this.mPopShowView != null) {
+                    TuRui_SettingAct.this.mLauStyle.showAtLocation(TuRui_SettingAct.this.mPopShowView, 17, 0, 0);
+                    TuRui_SettingAct.this.updateLauguageSet();
+                }
+            }
+        });
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_winter_tyres), new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int val = DataCanbus.DATA[124] & 255;
                 TuRui_SettingAct.this.sendCMD(75, 2, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_tpres_setting_warnint_at_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tpres_setting_warnint_at_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[28] & 255) + 10;
+                int val = (DataCanbus.DATA[125] & 255) + 10;
                 if (val > 240) {
                     val = 240;
                 }
                 TuRui_SettingAct.this.sendCMD(75, 3, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_tpres_setting_warnint_at_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tpres_setting_warnint_at_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[28] & 255) - 10;
+                int val = (DataCanbus.DATA[125] & 255) - 10;
                 if (val < 30) {
                     val = 30;
                 }
                 TuRui_SettingAct.this.sendCMD(75, 3, val);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_rainsensor), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_rainsensor), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[164] & 255;
+                int val = DataCanbus.DATA[218] & 255;
                 TuRui_SettingAct.this.sendCMD(77, 1, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_leftdriver), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_leftdriver), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[166] & 255;
+                int val = DataCanbus.DATA[220] & 255;
                 TuRui_SettingAct.this.sendCMD(109, 19, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_smartbiglight), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_smartbiglight), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[167] & 255;
+                int val = DataCanbus.DATA[221] & 255;
                 TuRui_SettingAct.this.sendCMD(109, 18, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_daytimelight), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_daytimelight), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[78] & 255;
+                int val = DataCanbus.DATA[175] & 255;
                 TuRui_SettingAct.this.sendCMD(109, 16, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_homelight_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_homelight_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[168] & 255) - 1;
+                int val = (DataCanbus.DATA[222] & 255) - 1;
                 if (val < 1) {
                     val = 1;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 13, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_homelight_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_homelight_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[168] & 255) + 1;
+                int val = (DataCanbus.DATA[222] & 255) + 1;
                 if (val > 3) {
                     val = 3;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 13, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_leavehomelight_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_leavehomelight_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[169] & 255) - 1;
+                int val = (DataCanbus.DATA[223] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 14, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_leavehomelight_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_leavehomelight_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[169] & 255) + 1;
+                int val = (DataCanbus.DATA[223] & 255) + 1;
                 if (val > 3) {
                     val = 3;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 14, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_footlight_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_footlight_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[170] & 255) - 10;
+                int val = (DataCanbus.DATA[224] & 255) - 10;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 15, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_footlight_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.14
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_footlight_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[170] & 255) + 10;
+                int val = (DataCanbus.DATA[224] & 255) + 10;
                 if (val > 100) {
                     val = 100;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 15, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_insidecarlight_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.15
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_insidecarlight_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[171] & 255) + 10;
+                int val = (DataCanbus.DATA[225] & 255) + 10;
                 if (val > 100) {
                     val = 100;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 17, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_insidecarlight_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.16
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_insidecarlight_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[171] & 255) - 10;
+                int val = (DataCanbus.DATA[225] & 255) - 10;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(109, 17, val);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_frontwindow), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.17
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_frontwindow), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[172] & 255;
+                int val = DataCanbus.DATA[226] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 1, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_rearwindow), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.18
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_rearwindow), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[173] & 255;
+                int val = DataCanbus.DATA[227] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 2, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_skywindow), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.19
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_skywindow), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[174] & 255;
+                int val = DataCanbus.DATA[228] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 3, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_autolock), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.20
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_autolock), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[41] & 255;
+                int val = DataCanbus.DATA[138] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 5, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_foldrearmirror), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.21
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_foldrearmirror), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[175] & 255;
+                int val = DataCanbus.DATA[229] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 6, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_cardoor_unlock), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.22
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_cardoor_unlock), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[40] & 255;
+                int val = DataCanbus.DATA[137] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 7, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_only_unlock_trunk), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.23
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_only_unlock_trunk), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[176] & 255;
+                int val = DataCanbus.DATA[230] & 255;
                 TuRui_SettingAct.this.sendCMD(111, 8, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.turui_activate_automaticlly), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.24
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.turui_activate_automaticlly), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[19] & 255;
+                int val = DataCanbus.DATA[116] & 255;
                 TuRui_SettingAct.this.sendCMD(122, 5, val == 1 ? 0 : 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_frontvol_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.25
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_frontvol_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[20] & 255) - 1;
+                int val = (DataCanbus.DATA[117] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 1, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_frontvol_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.26
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_frontvol_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[20] & 255) + 1;
+                int val = (DataCanbus.DATA[117] & 255) + 1;
                 if (val > 9) {
                     val = 9;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 1, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_fronttune_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.27
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_fronttune_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[21] & 255) - 1;
+                int val = (DataCanbus.DATA[118] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 2, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_fronttune_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.28
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_fronttune_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[21] & 255) + 1;
+                int val = (DataCanbus.DATA[118] & 255) + 1;
                 if (val > 9) {
                     val = 9;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 2, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_rearvol_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.29
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_rearvol_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[22] & 255) - 1;
+                int val = (DataCanbus.DATA[119] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 3, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_rearvol_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.30
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_rearvol_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[22] & 255) + 1;
+                int val = (DataCanbus.DATA[119] & 255) + 1;
                 if (val > 9) {
                     val = 9;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 3, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_reartone_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.31
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_reartone_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[23] & 255) - 1;
+                int val = (DataCanbus.DATA[120] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 4, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_reartone_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.32
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_reartone_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[23] & 255) + 1;
+                int val = (DataCanbus.DATA[120] & 255) + 1;
                 if (val > 9) {
                     val = 9;
                 }
                 TuRui_SettingAct.this.sendCMD(122, 4, val);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_distance_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.33
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_distance_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[177] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 1, val == 1 ? 1 : 2);
+                int val = DataCanbus.DATA[231] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 1, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_distance_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.34
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_distance_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[177] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 1, val == 1 ? 1 : 2);
+                int val = DataCanbus.DATA[231] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 1, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_speed_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.35
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_speed_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[178] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 2, val != 1 ? 2 : 1);
+                int val = DataCanbus.DATA[232] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 2, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_speed_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.36
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_speed_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[178] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 2, val != 1 ? 2 : 1);
+                int val = DataCanbus.DATA[232] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 2, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_temp_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.37
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_temp_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[179] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 3, val != 1 ? 2 : 1);
+                int val = DataCanbus.DATA[233] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 3, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_temp_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.38
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_temp_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = DataCanbus.DATA[179] & 255;
-                TuRui_SettingAct.this.sendCMD(202, 3, val != 1 ? 2 : 1);
+                int val = DataCanbus.DATA[233] & 255;
+                TuRui_SettingAct.this.sendCMD(202, 3, val == 0 ? 1 : 2);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_capacity_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.39
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_capacity_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[180] & 255) - 1;
+                int val = (DataCanbus.DATA[234] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 4, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_capacity_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.40
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_capacity_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[180] & 255) + 1;
+                int val = (DataCanbus.DATA[234] & 255) + 1;
                 if (val > 2) {
                     val = 2;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 4, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_energycost_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.41
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_energycost_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[181] & 255) - 1;
+                int val = (DataCanbus.DATA[235] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 5, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_energycost_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.42
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_energycost_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[181] & 255) + 1;
+                int val = (DataCanbus.DATA[235] & 255) + 1;
                 if (val > 3) {
                     val = 3;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 5, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_tirepress_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.43
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_tirepress_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[182] & 255) - 1;
+                int val = (DataCanbus.DATA[236] & 255) - 1;
                 if (val < 0) {
                     val = 0;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 6, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_unit_tirepress_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.44
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_unit_tirepress_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int val = (DataCanbus.DATA[182] & 255) + 1;
+                int val = (DataCanbus.DATA[236] & 255) + 1;
                 if (val > 2) {
                     val = 2;
                 }
                 TuRui_SettingAct.this.sendCMD(202, 6, val + 1);
             }
         });
-        setSelfClick(findViewById(R.id.turui_language_setting_minus), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.45
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_language_setting_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (TuRui_SettingAct.this.iLanguageSet <= 1) {
                     TuRui_SettingAct.this.iLanguageSet = 16;
@@ -520,8 +606,8 @@ public class TuRui_SettingAct extends BaseActivity {
                 TuRui_SettingAct.this.getSharedPreferences("turui", 0).edit().putInt("languageset", TuRui_SettingAct.this.iLanguageSet).commit();
             }
         });
-        setSelfClick(findViewById(R.id.turui_language_setting_plus), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.46
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_language_setting_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (TuRui_SettingAct.this.iLanguageSet >= 16) {
                     TuRui_SettingAct.this.iLanguageSet = 1;
@@ -533,11 +619,11 @@ public class TuRui_SettingAct extends BaseActivity {
                 TuRui_SettingAct.this.getSharedPreferences("turui", 0).edit().putInt("languageset", TuRui_SettingAct.this.iLanguageSet).commit();
             }
         });
-        setSelfClick(findViewById(R.id.turui_tire_load_status_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.47
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tire_load_status_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[232] & 255;
+                int value2 = DataCanbus.DATA[274] & 255;
                 if (value2 == 1) {
                     value = 2;
                 } else {
@@ -546,11 +632,11 @@ public class TuRui_SettingAct extends BaseActivity {
                 TuRui_SettingAct.this.sendCMD(205, 1, value);
             }
         });
-        setSelfClick(findViewById(R.id.turui_tire_load_status_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.48
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tire_load_status_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[232] & 255;
+                int value2 = DataCanbus.DATA[274] & 255;
                 if (value2 == 1) {
                     value = 2;
                 } else {
@@ -559,11 +645,11 @@ public class TuRui_SettingAct extends BaseActivity {
                 TuRui_SettingAct.this.sendCMD(205, 1, value);
             }
         });
-        setSelfClick(findViewById(R.id.turui_tire_type_m), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.49
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tire_type_m), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[233];
+                int value2 = DataCanbus.DATA[275];
                 if (value2 <= 0) {
                     value = 8;
                 } else {
@@ -572,11 +658,11 @@ public class TuRui_SettingAct extends BaseActivity {
                 TuRui_SettingAct.this.sendCMD(205, 2, value);
             }
         });
-        setSelfClick(findViewById(R.id.turui_tire_type_p), new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_SettingAct.50
-            @Override // android.view.View.OnClickListener
+        setSelfClick(findViewById(R.id.turui_tire_type_p), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[233] & 255;
+                int value2 = DataCanbus.DATA[275] & 255;
                 if (value2 >= 8) {
                     value = 0;
                 } else {
@@ -587,7 +673,7 @@ public class TuRui_SettingAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] != 196878) {
@@ -640,28 +726,28 @@ public class TuRui_SettingAct extends BaseActivity {
         UpdateLanguageSettings(this.iLanguageSet);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.notifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateVehicleVin(String str) {
         if (((TextView) findViewById(R.id.turui_vehiclevin_txt)) != null) {
             ((TextView) findViewById(R.id.turui_vehiclevin_txt)).setText(str);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateLanguageSettings(int val) {
         if (((TextView) findViewById(R.id.turui_language_setting_show)) != null) {
             String str = "";
@@ -719,12 +805,11 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireLoadStatus(int val) {
         if (((TextView) findViewById(R.id.turui_tire_load_status_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_tire_load_status_view) != null) {
-                findViewById(R.id.turui_tire_load_status_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_tire_load_status_view).setVisibility(1 == 1 ? 0 : 8);
             }
             int val2 = val & 255;
             String str = getResources().getString(R.string.str_270_tirepress2);
@@ -737,91 +822,83 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uTireType(int val) {
         if (((TextView) findViewById(R.id.turui_tire_type_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_tire_type_view) != null) {
-                findViewById(R.id.turui_tire_type_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_tire_type_view).setVisibility(1 == 1 ? 0 : 8);
             }
             String str = String.valueOf(val & 255);
             ((TextView) findViewById(R.id.turui_tire_type_txt)).setText(str);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uMatchedKeys(int val) {
         if (((TextView) findViewById(R.id.turui_matchedkeys_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_matchedkeys_view) != null) {
-                findViewById(R.id.turui_matchedkeys_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_matchedkeys_view).setVisibility(1 == 1 ? 0 : 8);
             }
             String str = String.valueOf(val & 255);
             ((TextView) findViewById(R.id.turui_matchedkeys_txt)).setText(str);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSpeedWarn(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_winter_tyres)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_winter_tyres_view) != null) {
-                findViewById(R.id.turui_winter_tyres_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_winter_tyres_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_winter_tyres)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSpeedWarnAt(int val) {
         if (((TextView) findViewById(R.id.turui_tpres_setting_warnint_at_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_tpres_setting_warnint_at_view) != null) {
-                findViewById(R.id.turui_tpres_setting_warnint_at_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_tpres_setting_warnint_at_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((TextView) findViewById(R.id.turui_tpres_setting_warnint_at_txt)).setText((val & 255) + " km/h");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uRainSensor(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_rainsensor)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_rainsensor_view) != null) {
-                findViewById(R.id.turui_rainsensor_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_rainsensor_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_rainsensor)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uLeftDrive(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_leftdriver)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_leftdriver_view) != null) {
-                findViewById(R.id.turui_leftdriver_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_leftdriver_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_leftdriver)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSmartBiglight(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_smartbiglight)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_smartbiglight_view) != null) {
-                findViewById(R.id.turui_smartbiglight_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_smartbiglight_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_smartbiglight)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uHomelight(int val) {
         if (((TextView) findViewById(R.id.turui_homelight_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_homelight_view) != null) {
-                findViewById(R.id.turui_homelight_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_homelight_view).setVisibility(1 == 1 ? 0 : 8);
             }
             int val2 = val & 255;
             int id = R.string.off;
@@ -836,12 +913,11 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uLeaveHomelight(int val) {
         if (((TextView) findViewById(R.id.turui_leavehomelight_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_leavehomelight_view) != null) {
-                findViewById(R.id.turui_leavehomelight_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_leavehomelight_view).setVisibility(1 == 1 ? 0 : 8);
             }
             int val2 = val & 255;
             int id = R.string.off;
@@ -856,95 +932,87 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uFootlight(int val) {
         if (((TextView) findViewById(R.id.turui_footlight_txt)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_footlight_view) != null) {
-                findViewById(R.id.turui_footlight_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_footlight_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((TextView) findViewById(R.id.turui_footlight_txt)).setText(String.valueOf(val & 255) + "%");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uInSidelight(int val) {
         if (((TextView) findViewById(R.id.turui_insidecarlight_txt)) != null) {
             ((TextView) findViewById(R.id.turui_insidecarlight_txt)).setText(String.valueOf(val & 255) + "%");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uFWin(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_frontwindow)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_frontwindow_view) != null) {
-                findViewById(R.id.turui_frontwindow_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_frontwindow_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_frontwindow)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uRWin(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_rearwindow)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_rearwindow_view) != null) {
-                findViewById(R.id.turui_rearwindow_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_rearwindow_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_rearwindow)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uSkyWin(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_skywindow)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_skywindow_view) != null) {
-                findViewById(R.id.turui_skywindow_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_skywindow_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_skywindow)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uFoldMirror(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_foldrearmirror)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_foldrearmirror_view) != null) {
-                findViewById(R.id.turui_foldrearmirror_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_foldrearmirror_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_foldrearmirror)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uOnlyUnlockTrunk(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_only_unlock_trunk)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_only_unlock_trunk_view) != null) {
-                findViewById(R.id.turui_only_unlock_trunk_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_only_unlock_trunk_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_only_unlock_trunk)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uAutoLock(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_autolock)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_autolock_view) != null) {
-                findViewById(R.id.turui_autolock_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_autolock_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_autolock)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uDoorUnlock(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_cardoor_unlock_view) != null) {
-            findViewById(R.id.turui_cardoor_unlock_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_cardoor_unlock_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((CheckedTextView) findViewById(R.id.turui_cardoor_unlock)) != null) {
@@ -955,22 +1023,20 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uDaytimeLight(int val) {
         if (((CheckedTextView) findViewById(R.id.turui_daytimelight)) != null) {
-            int enable = (val >> 8) & 1;
             if (findViewById(R.id.turui_daytimelight_view) != null) {
-                findViewById(R.id.turui_daytimelight_view).setVisibility(enable == 1 ? 0 : 8);
+                findViewById(R.id.turui_daytimelight_view).setVisibility(1 == 1 ? 0 : 8);
             }
             ((CheckedTextView) findViewById(R.id.turui_daytimelight)).setChecked((val & 255) == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uAutoActive(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_activate_automaticlly_view) != null) {
-            findViewById(R.id.turui_activate_automaticlly_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_activate_automaticlly_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((CheckedTextView) findViewById(R.id.turui_activate_automaticlly)) != null) {
@@ -978,7 +1044,7 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uFVol(int val) {
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_frontvol_txt)) != null) {
@@ -986,7 +1052,7 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uFTone(int val) {
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_fronttune_txt)) != null) {
@@ -994,7 +1060,7 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uRVol(int val) {
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_rearvol_txt)) != null) {
@@ -1002,7 +1068,7 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uRTone(int val) {
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_reartone_txt)) != null) {
@@ -1010,11 +1076,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitDistance(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_distance_view) != null) {
-            findViewById(R.id.turui_unit_distance_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_distance_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_distance_txt)) != null) {
@@ -1026,11 +1091,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitSpeed(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_speed_view) != null) {
-            findViewById(R.id.turui_unit_speed_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_speed_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_speed_txt)) != null) {
@@ -1042,11 +1106,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitTemp(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_temp_view) != null) {
-            findViewById(R.id.turui_unit_temp_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_temp_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_temp_txt)) != null) {
@@ -1058,11 +1121,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitCapacity(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_capacity_view) != null) {
-            findViewById(R.id.turui_unit_capacity_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_capacity_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_capacity_txt)) != null) {
@@ -1076,11 +1138,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitEnergy(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_energycost_view) != null) {
-            findViewById(R.id.turui_unit_energycost_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_energycost_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_energycost_txt)) != null) {
@@ -1096,11 +1157,10 @@ public class TuRui_SettingAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void uUnitTirePress(int val) {
-        int enable = (val >> 8) & 1;
         if (findViewById(R.id.turui_unit_tirepress_view) != null) {
-            findViewById(R.id.turui_unit_tirepress_view).setVisibility(enable == 1 ? 0 : 8);
+            findViewById(R.id.turui_unit_tirepress_view).setVisibility(1 == 1 ? 0 : 8);
         }
         int val2 = val & 255;
         if (((TextView) findViewById(R.id.turui_unit_tirepress_txt)) != null) {

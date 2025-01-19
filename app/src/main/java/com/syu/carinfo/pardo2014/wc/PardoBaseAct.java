@@ -12,39 +12,38 @@ import com.syu.module.canbus.Callback_0121_WC2_14Prado;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PardoBaseAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.pardo2014.wc.PardoBaseAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    PardoBaseAct.this.updaterDoor();
+                    break;
+                case 99:
                     PardoBaseAct.this.mUpdaterDrivingMileaged();
                     break;
-                case 3:
+                case 101:
                     PardoBaseAct.this.mUpdaterDrivingTimed();
                     break;
-                case 20:
+                case 118:
                     PardoBaseAct.this.mUpdaterCurrentSpeed();
-                    break;
-                case 53:
-                case 54:
-                case 55:
-                case 56:
-                case 57:
-                    PardoBaseAct.this.updaterDoor();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_pardo_base);
+        //setContentView(R.layout.layout_pardo_base);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         CallbackCanbusBase callback = ModuleCallbackCanbusProxy.getInstance().getCallbackCanbus();
@@ -56,49 +55,49 @@ public class PardoBaseAct extends BaseActivity {
         DataCanbus.PROXY.cmd(14, new int[]{1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         DataCanbus.PROXY.cmd(14, new int[1], null, null);
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrentSpeed() {
-        int value = DataCanbus.DATA[20];
+        int value = DataCanbus.DATA[118];
         int num = value & 16777215;
         if (((TextView) findViewById(R.id.pardo_tv_curr_velocity)) != null) {
             ((TextView) findViewById(R.id.pardo_tv_curr_velocity)).setText(String.valueOf(num) + " Km/h");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileaged() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[99];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
@@ -114,9 +113,9 @@ public class PardoBaseAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingTimed() {
-        int time = DataCanbus.DATA[3];
+        int time = DataCanbus.DATA[101];
         if (time > -1) {
             int hour = time / 60;
             int minute = time % 60;
@@ -137,7 +136,7 @@ public class PardoBaseAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDoor() {
         if (((DoorContentView) findViewById(R.id.pardo_door_wc)) != null) {
             ((DoorContentView) findViewById(R.id.pardo_door_wc)).invalidate();

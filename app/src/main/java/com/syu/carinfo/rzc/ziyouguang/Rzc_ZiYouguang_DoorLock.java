@@ -11,26 +11,25 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 5:
+                case 103:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
                     break;
-                case 6:
+                case 104:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext2)).setChecked(value == 1);
                     break;
-                case 7:
+                case 105:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value == 1);
                     break;
-                case 14:
+                case 112:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext8)).setChecked(value == 1);
                     break;
-                case 15:
+                case 113:
                     if (((TextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.tv_text1)) != null) {
                         if (value == 1) {
                             ((TextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.tv_text1)).setText(R.string.jeep_presskeyunlock_0);
@@ -41,19 +40,19 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                         }
                     }
                     break;
-                case 31:
+                case 129:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext4)).setChecked(value == 1);
                     break;
-                case 70:
+                case 143:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext6)).setChecked(value == 1);
                     break;
-                case 71:
+                case 144:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext7)).setChecked(value == 1);
                     break;
-                case 72:
+                case 145:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext12)).setChecked(value == 1);
                     break;
-                case 85:
+                case 158:
                     if (((TextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.tv_text2)) != null) {
                         if (value == 0) {
                             ((TextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.tv_text2)).setText(R.string.str_373_double_touch);
@@ -67,33 +66,33 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                         }
                     }
                     break;
-                case 100:
+                case 167:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext9)).setChecked(value == 1);
                     break;
-                case 123:
+                case 187:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext10)).setChecked(value == 1);
                     break;
-                case 124:
+                case 188:
                     ((CheckedTextView) Rzc_ZiYouguang_DoorLock.this.findViewById(R.id.ctv_checkedtext11)).setChecked(value == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jeep_rzc_doorlock);
+        //setContentView(R.layout.layout_jeep_rzc_doorlock);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[5];
+                int value2 = DataCanbus.DATA[103];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -102,11 +101,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{32, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[6];
+                int value2 = DataCanbus.DATA[104];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -115,11 +114,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{34, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[7];
+                int value2 = DataCanbus.DATA[105];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -128,11 +127,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{37, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[31];
+                int value2 = DataCanbus.DATA[129];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -141,11 +140,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{40, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[70];
+                int value2 = DataCanbus.DATA[143];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -154,11 +153,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{35, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[71];
+                int value2 = DataCanbus.DATA[144];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -167,11 +166,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{39, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[14];
+                int value2 = DataCanbus.DATA[112];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -180,10 +179,10 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{38, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[100];
+                int value = DataCanbus.DATA[167];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 41;
@@ -191,11 +190,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[123];
+                int value2 = DataCanbus.DATA[187];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -204,11 +203,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{137, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[124];
+                int value2 = DataCanbus.DATA[188];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -217,11 +216,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{136, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.12
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[72];
+                int value2 = DataCanbus.DATA[145];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -230,11 +229,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{49, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[15];
+                int value2 = DataCanbus.DATA[113];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -243,11 +242,11 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{36, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[15];
+                int value2 = DataCanbus.DATA[113];
                 if (value2 == 1) {
                     value = 1;
                 } else {
@@ -256,20 +255,20 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
                 DataCanbus.PROXY.cmd(2, new int[]{36, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.15
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[85] - 1;
+                int value = DataCanbus.DATA[158] - 1;
                 if (value < 0) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{160, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_DoorLock.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[85] + 1;
+                int value = DataCanbus.DATA[158] + 1;
                 if (value > 2) {
                     value = 0;
                 }
@@ -278,49 +277,49 @@ public class Rzc_ZiYouguang_DoorLock extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
     }
 }

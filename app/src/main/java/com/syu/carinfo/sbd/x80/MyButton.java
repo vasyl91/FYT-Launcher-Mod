@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MyButton extends LinearLayout {
     private TextView mFreq;
     private TextView mFreqTitle;
@@ -40,7 +39,7 @@ public class MyButton extends LinearLayout {
         addView(this.mFreq);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
     }
@@ -117,7 +116,7 @@ public class MyButton extends LinearLayout {
         return (String) this.mFreq.getText();
     }
 
-    @Override // android.widget.LinearLayout, android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
     }

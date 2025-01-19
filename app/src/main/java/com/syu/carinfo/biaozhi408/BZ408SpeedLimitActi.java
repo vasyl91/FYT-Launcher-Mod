@@ -12,40 +12,39 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BZ408SpeedLimitActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 35:
+                case 132:
                     BZ408SpeedLimitActi.this.mUpdaterValue1();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_biaozhi408_speed_limit);
+        //setContentView(R.layout.layout_biaozhi408_speed_limit);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[35];
+                int value = DataCanbus.DATA[132];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(16, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit_setting)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit_setting)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -56,8 +55,8 @@ public class BZ408SpeedLimitActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_factory_data_reset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_factory_data_reset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 BZ408SpeedLimitActi.this.dialog();
             }
@@ -68,11 +67,11 @@ public class BZ408SpeedLimitActi extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.factory_data_reset)) + "?");
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.5.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(50, new int[1], null, null);
                     }
@@ -80,8 +79,8 @@ public class BZ408SpeedLimitActi extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.biaozhi408.BZ408SpeedLimitActi.6
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -89,11 +88,11 @@ public class BZ408SpeedLimitActi extends BaseActivity {
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
-        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 281) {
+        if (DataCanbus.DATA[1000] == 118 || DataCanbus.DATA[1000] == 185 || DataCanbus.DATA[1000] == 65817 || DataCanbus.DATA[1000] == 262425 || DataCanbus.DATA[1000] == 281) {
             DataCanbus.PROXY.cmd(53, new int[]{61}, null, null);
             findViewById(R.id.bz408_speed_limit_view_speed_limit).setVisibility(8);
             findViewById(R.id.bz408_speed_limit_view_factory_data_reset).setVisibility(0);
@@ -103,19 +102,19 @@ public class BZ408SpeedLimitActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[35];
+        int value = DataCanbus.DATA[132];
         if (((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit)) != null) {
             ((CheckedTextView) findViewById(R.id.bz408_speed_limit_btn_speed_limit)).setChecked(value != 0);
         }

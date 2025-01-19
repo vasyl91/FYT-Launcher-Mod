@@ -10,18 +10,17 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PardoIndexAct extends TabActivity {
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_pardo_index);
+        //setContentView(R.layout.layout_pardo_index);
         init();
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (LauncherApplication.getScreenWidth() != 800) {
@@ -29,13 +28,13 @@ public class PardoIndexAct extends TabActivity {
         }
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         DoorHelper.disableDoorWindowLocal(false);
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         DoorHelper.disableDoorWindowLocal(false);
@@ -46,17 +45,17 @@ public class PardoIndexAct extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTripInfo").setIndicator("tabTripInfo").setContent(new Intent(this, (Class<?>) PardoBaseAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabHistory").setIndicator("tabHistory").setContent(new Intent(this, (Class<?>) PardoTripAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) PardoSettingsAct.class)));
-        ((RadioGroup) findViewById(R.id.pardo_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.pardo2014.wc.PardoIndexAct.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        ((RadioGroup) findViewById(R.id.pardo_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.pardo_btn_trip_info /* 2131432177 */:
+                    case R.id.pardo_btn_trip_info /* 2131432124 */:
                         PardoIndexAct.this.mTabHost.setCurrentTabByTag("tabTripInfo");
                         break;
-                    case R.id.pardo_btn_history_info /* 2131432178 */:
+                    case R.id.pardo_btn_history_info /* 2131432125 */:
                         PardoIndexAct.this.mTabHost.setCurrentTabByTag("tabHistory");
                         break;
-                    case R.id.pardo_btn_settings /* 2131432179 */:
+                    case R.id.pardo_btn_settings /* 2131432126 */:
                         PardoIndexAct.this.mTabHost.setCurrentTabByTag("tabSettings");
                         break;
                 }
@@ -64,7 +63,7 @@ public class PardoIndexAct extends TabActivity {
         });
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

@@ -2,9 +2,8 @@ package com.syu.widget;
 
 import android.content.Context;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DateRadioProvider extends WidgetProvider {
-    @Override // com.syu.widget.WidgetProvider
+    @Override
     public void update(Context context, int appwidgetId) {
         Widget widget = Widget.getWidget(appwidgetId);
         if (widget == null) {

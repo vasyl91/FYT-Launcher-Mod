@@ -11,58 +11,57 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcInfinitCarCD extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static WcInfinitCarCD mInit;
     byte unit = 0;
     int band = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.infeinidi.WcInfinitCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 106:
+                case 158:
                     int hour = value / 3600;
                     int min = (value % 3600) / 60;
                     int sec = value % 60;
                     ((TextView) WcInfinitCarCD.this.findViewById(R.id.dj_lexus_radio_freq11)).setText(String.valueOf(hour) + ":" + min + ":" + sec);
                     break;
-                case 107:
-                case 108:
-                    int track = DataCanbus.DATA[107];
-                    int Totaltrack = DataCanbus.DATA[108];
+                case 159:
+                case 160:
+                    int track = DataCanbus.DATA[159];
+                    int Totaltrack = DataCanbus.DATA[160];
                     ((TextView) WcInfinitCarCD.this.findViewById(R.id.dj_lexus_radio_freq12)).setText("Trcak: " + track + "/" + Totaltrack);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc2_infinit_q50l_carcd);
+        //setContentView(R.layout.layout_0443_wc2_infinit_q50l_carcd);
         mInit = this;
         ((Button) findViewById(R.id.lexus_radio_prev)).setOnTouchListener(this);
         ((Button) findViewById(R.id.lexus_radio_next)).setOnTouchListener(this);
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.notifyCanbus);
     }
 
     public void updateRadioBand() {
-        int value = DataCanbus.DATA[104];
+        int value = DataCanbus.DATA[156];
         switch (value) {
             case 1:
                 this.unit = (byte) 0;
@@ -78,23 +77,23 @@ public class WcInfinitCarCD extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_radio_prev /* 2131427850 */:
+                case R.id.lexus_radio_prev /* 2131427866 */:
                     DataCanbus.PROXY.cmd(4, new int[]{77, 1}, null, null);
                     break;
-                case R.id.lexus_radio_next /* 2131427851 */:
+                case R.id.lexus_radio_next /* 2131427867 */:
                     DataCanbus.PROXY.cmd(4, new int[]{78, 1}, null, null);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_radio_prev /* 2131427850 */:
+                case R.id.lexus_radio_prev /* 2131427866 */:
                     DataCanbus.PROXY.cmd(4, new int[]{77}, null, null);
                     break;
-                case R.id.lexus_radio_next /* 2131427851 */:
+                case R.id.lexus_radio_next /* 2131427867 */:
                     DataCanbus.PROXY.cmd(4, new int[]{78}, null, null);
                     break;
             }
@@ -102,7 +101,7 @@ public class WcInfinitCarCD extends Activity implements View.OnTouchListener {
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -110,7 +109,7 @@ public class WcInfinitCarCD extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;

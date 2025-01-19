@@ -11,35 +11,34 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS4LightSetAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.gs4.GS4LightSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 20:
+                case 118:
                     GS4LightSetAct.this.updaterWithMeHome();
                     break;
-                case 21:
+                case 119:
                     GS4LightSetAct.this.updaterWudengHelp();
                     break;
-                case 22:
+                case 120:
                     GS4LightSetAct.this.updaterDayLight();
                     break;
-                case 23:
+                case 121:
                     GS4LightSetAct.this.updaterlightAsitly();
                     break;
-                case 54:
+                case 127:
                     GS4LightSetAct.this.updaterAtmosphereLight();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_289_wc_gs4_light_set);
+        //setContentView(R.layout.layout_289_wc_gs4_light_set);
         setUI();
     }
 
@@ -53,12 +52,12 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
         ((CheckedTextView) findViewById(R.id.wc_gs4_atmosphere_light_check)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.wc_gs4_with_me_home_lighting_pre /* 2131429092 */:
-                int mWithMeHomeInt = DataCanbus.DATA[20];
+            case R.id.wc_gs4_with_me_home_lighting_pre /* 2131429057 */:
+                int mWithMeHomeInt = DataCanbus.DATA[118];
                 if (mWithMeHomeInt == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{18, 2}, null, null);
                     break;
@@ -69,8 +68,8 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
                     DataCanbus.PROXY.cmd(2, new int[]{18, 1}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_with_me_home_lighting_next /* 2131429094 */:
-                int mWithMeHomeInt2 = DataCanbus.DATA[20];
+            case R.id.wc_gs4_with_me_home_lighting_next /* 2131429059 */:
+                int mWithMeHomeInt2 = DataCanbus.DATA[118];
                 if (mWithMeHomeInt2 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{18, 1}, null, null);
                     break;
@@ -81,24 +80,24 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
                     DataCanbus.PROXY.cmd(2, new int[]{18}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_wudeng_turn_around_help_check /* 2131429095 */:
-                int mWuDengHelpInt = DataCanbus.DATA[21];
+            case R.id.wc_gs4_wudeng_turn_around_help_check /* 2131429060 */:
+                int mWuDengHelpInt = DataCanbus.DATA[119];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 19;
                 iArr[1] = mWuDengHelpInt == 0 ? 1 : 0;
                 remoteModuleProxy.cmd(2, iArr, null, null);
                 break;
-            case R.id.wc_gs4_day_light_check /* 2131429096 */:
-                int mDayLightInt = DataCanbus.DATA[22];
+            case R.id.wc_gs4_day_light_check /* 2131429061 */:
+                int mDayLightInt = DataCanbus.DATA[120];
                 RemoteModuleProxy remoteModuleProxy2 = DataCanbus.PROXY;
                 int[] iArr2 = new int[2];
                 iArr2[0] = 20;
                 iArr2[1] = mDayLightInt == 0 ? 1 : 0;
                 remoteModuleProxy2.cmd(2, iArr2, null, null);
                 break;
-            case R.id.wc_gs4_light_sensitivity_pre /* 2131429097 */:
-                int mLightAsistyInt = DataCanbus.DATA[23];
+            case R.id.wc_gs4_light_sensitivity_pre /* 2131429062 */:
+                int mLightAsistyInt = DataCanbus.DATA[121];
                 if (mLightAsistyInt == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{21, 2}, null, null);
                     break;
@@ -109,8 +108,8 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
                     DataCanbus.PROXY.cmd(2, new int[]{21, 1}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_light_sensitivity_next /* 2131429099 */:
-                int mLightAsistyInt2 = DataCanbus.DATA[23];
+            case R.id.wc_gs4_light_sensitivity_next /* 2131429064 */:
+                int mLightAsistyInt2 = DataCanbus.DATA[121];
                 if (mLightAsistyInt2 == 0) {
                     DataCanbus.PROXY.cmd(2, new int[]{21, 1}, null, null);
                     break;
@@ -121,8 +120,8 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
                     DataCanbus.PROXY.cmd(2, new int[]{21}, null, null);
                     break;
                 }
-            case R.id.wc_gs4_atmosphere_light_check /* 2131429156 */:
-                int value = DataCanbus.DATA[54];
+            case R.id.wc_gs4_atmosphere_light_check /* 2131429116 */:
+                int value = DataCanbus.DATA[127];
                 RemoteModuleProxy remoteModuleProxy3 = DataCanbus.PROXY;
                 int[] iArr3 = new int[2];
                 iArr3[0] = 27;
@@ -132,27 +131,27 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWithMeHome() {
-        int mWithMeHomeInt = DataCanbus.DATA[20];
+        int mWithMeHomeInt = DataCanbus.DATA[118];
         if (mWithMeHomeInt == 0) {
             ((TextView) findViewById(R.id.wc_gs4_with_me_home_lighting_TV)).setText(R.string.off);
         } else if (mWithMeHomeInt == 1) {
@@ -162,27 +161,27 @@ public class GS4LightSetAct extends BaseActivity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAtmosphereLight() {
-        int value = DataCanbus.DATA[54];
+        int value = DataCanbus.DATA[127];
         ((CheckedTextView) findViewById(R.id.wc_gs4_atmosphere_light_check)).setChecked(value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWudengHelp() {
-        int mWuDengHelpInt = DataCanbus.DATA[21];
+        int mWuDengHelpInt = DataCanbus.DATA[119];
         ((CheckedTextView) findViewById(R.id.wc_gs4_wudeng_turn_around_help_check)).setChecked(mWuDengHelpInt != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDayLight() {
-        int mDayLightInt = DataCanbus.DATA[22];
+        int mDayLightInt = DataCanbus.DATA[120];
         ((CheckedTextView) findViewById(R.id.wc_gs4_day_light_check)).setChecked(mDayLightInt != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterlightAsitly() {
-        int mLightAsistyInt = DataCanbus.DATA[23];
+        int mLightAsistyInt = DataCanbus.DATA[121];
         if (mLightAsistyInt == 0) {
             ((TextView) findViewById(R.id.wc_gs4_light_sensitivity_TV)).setText(R.string.klc_air_low);
         } else if (mLightAsistyInt == 1) {

@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class PagedViewWithDraggableItems extends PagedView implements View.OnLongClickListener, View.OnTouchListener {
     private float mDragSlopeThreshold;
     private boolean mIsDragEnabled;
@@ -54,26 +53,26 @@ public abstract class PagedViewWithDraggableItems extends PagedView implements V
         }
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         handleTouchEvent(ev);
         return super.onInterceptTouchEvent(ev);
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         handleTouchEvent(ev);
         return super.onTouchEvent(ev);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         this.mLastTouchedItem = v;
         this.mIsDragEnabled = true;
         return false;
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         if (v.isInTouchMode() && this.mNextPage == -1 && this.mLauncher.isAllAppsVisible() && !this.mLauncher.getWorkspace().isSwitchingState() && this.mLauncher.isDraggingEnabled()) {
             return beginDragging(v);
@@ -81,7 +80,7 @@ public abstract class PagedViewWithDraggableItems extends PagedView implements V
         return false;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void determineScrollingStart(MotionEvent ev) {
         if (!this.mIsDragging) {
             super.determineScrollingStart(ev);
@@ -113,7 +112,7 @@ public abstract class PagedViewWithDraggableItems extends PagedView implements V
         this.mDragSlopeThreshold = dragSlopeThreshold;
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         cancelDragging();
         super.onDetachedFromWindow();

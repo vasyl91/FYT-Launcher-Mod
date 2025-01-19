@@ -1,76 +1,61 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.carinfo.golf7.Golf7AirActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0040_XP_Golf7;
+//import com.syu.ui.air.Air_0040_XP_Golf7;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.ToolkitMisc;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0279_XP1_LingDu extends CallbackCanbusBase {
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 470; i++) {
+        for (int i = 0; i < 461; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 109;
-        DoorHelper.sUcDoorFl = 110;
-        DoorHelper.sUcDoorFr = 111;
-        DoorHelper.sUcDoorRl = 112;
-        DoorHelper.sUcDoorRr = 113;
-        DoorHelper.sUcDoorBack = 114;
-        AirHelper.getInstance().buildUi(new Air_0040_XP_Golf7(LauncherApplication.getInstance()));
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        //AirHelper.getInstance().buildUi(new Air_0040_XP_Golf7(LauncherApplication.getInstance()));
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 109; i2 < 115; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        for (int i3 = 87; i3 < 108; i3++) {
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 109; i < 115; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 87; i2 < 108; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             switch (updateCode) {
-                case 74:
-                    warningVehicle(updateCode, ints);
-                    break;
-                case 75:
-                    warningStartStop(updateCode, ints);
-                    break;
-                case 76:
-                    convConsumer(updateCode, ints);
-                    break;
-                case 82:
-                    if (strs != null && strs.length >= 1 && !ToolkitMisc.strEqual(ConstGolf.mCarId, strs[0])) {
-                        ConstGolf.mCarId = strs[0];
-                        DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
-                        break;
-                    }
-                case 104:
-                    if (updateCode >= 0 && updateCode < 470) {
+                case 80:
+                    if (updateCode >= 0 && updateCode < 461) {
                         HandlerCanbus.update(updateCode, ints);
                     }
-                    int value = DataCanbus.DATA[104];
+                    int value = DataCanbus.DATA[80];
                     if (value == 1 && !Golf7AirActi.mIsFront) {
                         AirHelper.disableAirWindowLocal(true);
                         JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7AirActi");
@@ -79,8 +64,23 @@ public class Callback_0279_XP1_LingDu extends CallbackCanbusBase {
                         Golf7AirActi.mInstance.finish();
                         break;
                     }
+                case 171:
+                    warningVehicle(updateCode, ints);
+                    break;
+                case 172:
+                    warningStartStop(updateCode, ints);
+                    break;
+                case 173:
+                    convConsumer(updateCode, ints);
+                    break;
+                case 179:
+                    if (strs != null && strs.length >= 1 && !ToolkitMisc.strEqual(ConstGolf.mCarId, strs[0])) {
+                        ConstGolf.mCarId = strs[0];
+                        DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                        break;
+                    }
                 default:
-                    if (updateCode >= 0 && updateCode < 470) {
+                    if (updateCode >= 0 && updateCode < 461) {
                         HandlerCanbus.update(updateCode, ints);
                         break;
                     }

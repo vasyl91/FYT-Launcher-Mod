@@ -7,66 +7,65 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_BZ408OilMilePage1Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
+                case 98:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterStartStopTime();
                     break;
-                case 91:
+                case 102:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterOilExpend();
                     break;
-                case 92:
+                case 103:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterDrivingMileage();
                     break;
-                case 93:
+                case 104:
                     RZC_BZ408OilMilePage1Acti.this.mUpdaterSpecialMileage();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_biaozhi408_oil_page1);
+        //setContentView(R.layout.layout_rzc_biaozhi408_oil_page1);
         init();
         DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(29, new int[1], null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[91];
+        int value = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv1)) != null) {
             if (value > -1 && value < 3001) {
                 ((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv1)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " L/100KM");
@@ -76,9 +75,9 @@ public class RZC_BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[92];
+        int value = DataCanbus.DATA[103];
         if (((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv2)) != null) {
             if (value > -1 && value < 2001) {
                 ((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv2)).setText(String.valueOf(value) + " KM");
@@ -88,9 +87,9 @@ public class RZC_BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSpecialMileage() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[104];
         if (((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv3)) != null) {
             if (value > -1 && value < 6001) {
                 ((TextView) findViewById(R.id.rzc_bz408_tv_oil_page1_tv3)).setText(String.valueOf(value) + " KM");
@@ -100,9 +99,9 @@ public class RZC_BZ408OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStartStopTime() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[98];
         int hour = (16711680 & value) >> 16;
         int min = (65280 & value) >> 8;
         int second = value & 255;

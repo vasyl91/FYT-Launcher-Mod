@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PagedViewIconCache {
     private final HashMap<Key, Bitmap> mIconOutlineCache = new HashMap<>();
 

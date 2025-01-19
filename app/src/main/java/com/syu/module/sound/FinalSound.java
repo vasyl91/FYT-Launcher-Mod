@@ -1,6 +1,5 @@
 package com.syu.module.sound;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FinalSound {
     public static final int C_AMP = 7;
     public static final int C_BACKCAR_MUTE = 13;

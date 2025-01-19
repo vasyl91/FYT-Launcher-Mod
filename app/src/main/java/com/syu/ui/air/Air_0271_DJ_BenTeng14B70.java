@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0271_DJ_BenTeng14B70 extends AirBase {
     public Air_0271_DJ_BenTeng14B70(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0271_dongjian_benteng14B70/dongjian14B70.webp";
         this.mPathHighlight = "0271_dongjian_benteng14B70/dongjian14B70_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -72,7 +72,7 @@ public class Air_0271_DJ_BenTeng14B70 extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("NONE", 46.0f, 152.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 2.0f).toString(), 46.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 2.0f), 46.0f, 152.0f, this.mPaint);
         }
         int right_temp = this.DATA[9];
         if (right_temp == -2) {
@@ -82,7 +82,7 @@ public class Air_0271_DJ_BenTeng14B70 extends AirBase {
         } else if (right_temp == -1) {
             c.drawText("NONE", 906.0f, 152.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp / 2.0f).toString(), 906.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 2.0f), 906.0f, 152.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

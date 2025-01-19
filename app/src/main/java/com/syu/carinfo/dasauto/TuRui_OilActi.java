@@ -11,34 +11,33 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TuRui_OilActi extends BaseActivity {
     public static TuRui_OilActi mInstance;
     public static boolean mIsFront = false;
-    private int[] eventIds = {183, 184, 185, 186, 187, 188, 189};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dasauto.TuRui_OilActi.1
-        @Override // com.syu.module.IUiNotify
+    private int[] eventIds = {237, 238, 239, 240, 241, 242, 243};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 183:
+                case 237:
                     TuRui_OilActi.this.uOilVolume(DataCanbus.DATA[updateCode]);
                     break;
-                case 184:
+                case 238:
                     TuRui_OilActi.this.uMilesUnit(DataCanbus.DATA[updateCode]);
                     break;
-                case 185:
+                case 239:
                     TuRui_OilActi.this.uCheckMiles(DataCanbus.DATA[updateCode]);
                     break;
-                case 186:
+                case 240:
                     TuRui_OilActi.this.uCheckDate(DataCanbus.DATA[updateCode]);
                     break;
-                case 187:
+                case 241:
                     TuRui_OilActi.this.uCheckPeriodMiles(DataCanbus.DATA[updateCode]);
                     break;
-                case 188:
+                case 242:
                     TuRui_OilActi.this.uCheckPeriodDate(DataCanbus.DATA[updateCode]);
                     break;
-                case 189:
+                case 243:
                     TuRui_OilActi.this.uRainBrush(DataCanbus.DATA[updateCode]);
                     break;
             }
@@ -46,21 +45,21 @@ public class TuRui_OilActi extends BaseActivity {
     };
     String mileUnit = "Km";
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_turui_miantenance);
+        //setContentView(R.layout.layout_turui_miantenance);
         init();
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (((CheckBox) findViewById(R.id.turui_rainbrush)) != null) {
-            ((CheckBox) findViewById(R.id.turui_rainbrush)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_OilActi.2
-                @Override // android.view.View.OnClickListener
+            ((CheckBox) findViewById(R.id.turui_rainbrush)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
-                    int i = DataCanbus.DATA[189];
+                    int i = DataCanbus.DATA[243];
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[3];
                     iArr[0] = 204;
@@ -71,8 +70,8 @@ public class TuRui_OilActi extends BaseActivity {
             });
         }
         if (findViewById(R.id.turui_reset) != null) {
-            findViewById(R.id.turui_reset).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.TuRui_OilActi.3
-                @Override // android.view.View.OnClickListener
+            findViewById(R.id.turui_reset).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     DataCanbus.PROXY.cmd(23, new int[]{204, 1, 1}, null, null);
                 }
@@ -80,26 +79,26 @@ public class TuRui_OilActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mNotifyCanbus);

@@ -11,17 +11,16 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirQiChenT90 extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     int touchState = -1;
     int cmd = 0;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.guochan.AirQiChenT90.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 23:
+                case 10:
                     if (value == 0) {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_power)).setBackgroundResource(R.drawable.ic_xts_power_n);
                         break;
@@ -29,7 +28,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_power)).setBackgroundResource(R.drawable.ic_xts_power_p);
                         break;
                     }
-                case 27:
+                case 11:
                     if (value == 0) {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_ac)).setBackgroundResource(R.drawable.ic_xts_ac_n);
                         break;
@@ -37,7 +36,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_ac)).setBackgroundResource(R.drawable.ic_xts_ac_p);
                         break;
                     }
-                case 28:
+                case 12:
                     if (value == 0) {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_cycle)).setBackgroundResource(R.drawable.ic_xts_cycle_n);
                         break;
@@ -45,12 +44,12 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
                         ((Button) AirQiChenT90.this.findViewById(R.id.air_xts_cycle)).setBackgroundResource(R.drawable.ic_xts_cycle_p);
                         break;
                     }
-                case 35:
-                case 36:
-                case 37:
-                    int foot = DataCanbus.DATA[35];
-                    int body = DataCanbus.DATA[36];
-                    int window = DataCanbus.DATA[37];
+                case 18:
+                case 19:
+                case 20:
+                    int foot = DataCanbus.DATA[20];
+                    int body = DataCanbus.DATA[19];
+                    int window = DataCanbus.DATA[18];
                     int mode = 0;
                     if (foot == 1) {
                         mode = 0 | 1;
@@ -96,10 +95,10 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
                             AirQiChenT90.this.findViewById(R.id.air_xts_mode).setBackgroundResource(R.drawable.ic_xts_mode_null);
                             break;
                     }
-                case 39:
+                case 21:
                     AirQiChenT90.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 40:
+                case 27:
                     if (1507723 == DataCanbus.DATA[1000]) {
                         if (value == -2) {
                             ((TextView) AirQiChenT90.this.findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -124,7 +123,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
                         ((TextView) AirQiChenT90.this.findViewById(R.id.tv_air_temp_left)).setText(String.valueOf(value / 10.0f) + "℃");
                         break;
                     }
-                case 68:
+                case 28:
                     if (1507723 != DataCanbus.DATA[1000]) {
                         if (value == -2) {
                             ((TextView) AirQiChenT90.this.findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -145,10 +144,10 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_395_qichen_t90);
+        //setContentView(R.layout.layout_395_qichen_t90);
         initListener();
     }
 
@@ -165,7 +164,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
         ((Button) findViewById(R.id.air_xts_mode)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -173,7 +172,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -181,7 +180,7 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
         mIsFront = false;
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         this.touchState = -1;
         if (event.getAction() == 0) {
@@ -274,37 +273,37 @@ public class AirQiChenT90 extends Activity implements View.OnTouchListener {
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
         DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
         DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mCanbusNotify);
     }
 
     void mUpdaterAirWindLevelLeft() {
-        int level = DataCanbus.DATA[39];
+        int level = DataCanbus.DATA[21];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null && level > -1 && level < 9) {
             ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder(String.valueOf(level)).toString());
         }

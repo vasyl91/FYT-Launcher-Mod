@@ -8,18 +8,17 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHavaRZCH2SCarInfo2 extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.ActivityHavaRZCH2SCarInfo2.1
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
         int b1;
         int b2;
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 51:
+                case 118:
                     if (((TextView) ActivityHavaRZCH2SCarInfo2.this.findViewById(R.id.tv_havah2s_coolant_temp)) != null) {
                         DecimalFormat df = new DecimalFormat("#.#");
                         this.b2 = this.value * 75;
@@ -33,12 +32,12 @@ public class ActivityHavaRZCH2SCarInfo2 extends Activity {
                         ((TextView) ActivityHavaRZCH2SCarInfo2.this.findViewById(R.id.tv_havah2s_coolant_temp)).setText(String.valueOf(df.format((this.b2 / 100.0f) - 48.0f)) + "℃");
                         break;
                     }
-                case 52:
+                case 119:
                     if (((TextView) ActivityHavaRZCH2SCarInfo2.this.findViewById(R.id.tv_havah2s_trans_oil_temp)) != null) {
                         ((TextView) ActivityHavaRZCH2SCarInfo2.this.findViewById(R.id.tv_havah2s_trans_oil_temp)).setText(String.valueOf(this.value - 40) + " ℃");
                         break;
                     }
-                case 53:
+                case 120:
                     if (((TextView) ActivityHavaRZCH2SCarInfo2.this.findViewById(R.id.tv_havah2s_battery_voltage)) != null) {
                         DecimalFormat df2 = new DecimalFormat("#.#");
                         this.b1 = this.value * 25;
@@ -52,33 +51,33 @@ public class ActivityHavaRZCH2SCarInfo2 extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_244_havah2s_info);
+        //setContentView(R.layout.layout_244_havah2s_info);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
     }
 }

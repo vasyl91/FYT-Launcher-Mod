@@ -13,105 +13,104 @@ import com.syu.carinfo.accord9.wc.AccordConfig;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GuandaoSettingsAct extends BaseActivity implements View.OnClickListener {
     private int[] mInt2 = {0, 1};
     private int[] mInt3 = {0, 1, 2};
     private int[] mInt4 = {0, 1, 2, 3};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 34:
+                case 102:
                     GuandaoSettingsAct.this.mUpdaterHeadLampsAutoOffTimer();
                     break;
-                case 35:
+                case 103:
                     GuandaoSettingsAct.this.mUpdaterInteriorLightOffTime();
                     break;
-                case 36:
+                case 104:
                     GuandaoSettingsAct.this.mUpdaterD2B07();
                     break;
-                case 37:
+                case 105:
                     GuandaoSettingsAct.this.mUpdaterD2B06();
                     break;
-                case 38:
+                case 106:
                     GuandaoSettingsAct.this.mUpdaterD2B04();
                     break;
-                case 39:
+                case 107:
                     GuandaoSettingsAct.this.mUpdaterD2B02();
                     break;
-                case 40:
+                case 108:
                     GuandaoSettingsAct.this.mUpdaterD2B00();
                     break;
-                case 41:
+                case 109:
                     GuandaoSettingsAct.this.mUpdaterD3B07();
                     break;
-                case 42:
+                case 110:
                     GuandaoSettingsAct.this.mUpdaterD3B06();
                     break;
-                case 43:
+                case 111:
                     GuandaoSettingsAct.this.mUpdaterD3B05();
                     break;
-                case 44:
+                case 112:
                     GuandaoSettingsAct.this.mUpdaterD3B04();
                     break;
-                case 45:
+                case 113:
                     GuandaoSettingsAct.this.mUpdaterD4B07();
                     break;
-                case 46:
+                case 114:
                     GuandaoSettingsAct.this.mUpdaterD4B06();
                     break;
-                case 47:
+                case 115:
                     GuandaoSettingsAct.this.mUpdaterLoud();
                     break;
-                case 48:
+                case 116:
                     GuandaoSettingsAct.this.mUpdaterSpeedvol();
                     break;
-                case 49:
+                case 117:
                     GuandaoSettingsAct.this.mUpdaterDts();
                     break;
-                case 50:
+                case 118:
                     GuandaoSettingsAct.this.mUpdaterD0B02();
                     break;
-                case 51:
+                case 119:
                     GuandaoSettingsAct.this.mUpdaterD0B00();
                     break;
-                case 52:
+                case 120:
                     GuandaoSettingsAct.this.mUpdaterD5B06();
                     break;
-                case 53:
+                case 121:
                     GuandaoSettingsAct.this.mUpdaterD5B05();
                     break;
-                case 54:
+                case 122:
                     GuandaoSettingsAct.this.mUpdaterD5B04();
                     break;
-                case 55:
+                case 123:
                     GuandaoSettingsAct.this.mUpdaterD5B03();
                     break;
-                case 56:
+                case 124:
                     GuandaoSettingsAct.this.mUpdaterD5B02();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xfy_guandao);
+        //setContentView(R.layout.layout_xfy_guandao);
         initView();
         setListener();
     }
 
     private void initView() {
-        ((CheckedTextView) findViewById(R.id.guandao_TPMS_Calibration)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.guandao_TPMS_Calibration)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 GuandaoSettingsAct.this.dialog(R.string.str_other_set_TPMS_Calibration, 19);
             }
         });
-        ((CheckedTextView) findViewById(R.id.guandao_Maintenance_Reset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.guandao_Maintenance_Reset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 GuandaoSettingsAct.this.dialog(R.string.str_other_set_Maintenance_Reset, 18);
             }
@@ -158,70 +157,70 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         ((Button) findViewById(R.id.guandao_speed_add)).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.notifyCanbus);
     }
 
     protected void dialog(int stringId, final int cmd) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(" " + getResources().getString(stringId));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.4
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.4.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(1, new int[]{i}, null, null);
                     }
@@ -229,8 +228,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.xfy.guandao.GuandaoSettingsAct.5
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -238,73 +237,73 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         builder.create().show();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD0B02() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD0B00() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD5B06() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD5B05() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD5B04() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD5B03() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD5B02() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLoud() {
-        int value = DataCanbus.DATA[47];
+        int value = DataCanbus.DATA[115];
         if (((TextView) findViewById(R.id.guandao_amp_loud)) != null && value >= 0 && value < 13) {
             ((TextView) findViewById(R.id.guandao_amp_loud)).setText(AccordConfig.mStrLoud[value]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSpeedvol() {
-        int value = DataCanbus.DATA[48];
+        int value = DataCanbus.DATA[116];
         if (((TextView) findViewById(R.id.guandao_speed)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_speed)).setText(R.string.klc_air_low);
@@ -320,17 +319,17 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDts() {
-        int value = DataCanbus.DATA[49];
+        int value = DataCanbus.DATA[117];
         if (((CheckedTextView) findViewById(R.id.guandao_dts)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_dts)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD4B07() {
-        int value = DataCanbus.DATA[45];
+        int value = DataCanbus.DATA[113];
         if (((TextView) findViewById(R.id.guandao_diandongshoub)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_diandongshoub)).setText(R.string.str_right_camera_open);
@@ -340,9 +339,9 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD4B06() {
-        int value = DataCanbus.DATA[46];
+        int value = DataCanbus.DATA[114];
         if (((TextView) findViewById(R.id.guandao_remote_open)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_remote_open)).setText(R.string.str_guandao_remote_open2);
@@ -352,9 +351,9 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD3B07() {
-        int value = DataCanbus.DATA[41];
+        int value = DataCanbus.DATA[109];
         if (((TextView) findViewById(R.id.guandao_keyless_access_beep_volume)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_keyless_access_beep_volume)).setText(R.string.distance_far);
@@ -364,58 +363,58 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD3B06() {
-        int value = DataCanbus.DATA[42];
+        int value = DataCanbus.DATA[110];
         if (((CheckedTextView) findViewById(R.id.guandao_keyless_access_beep)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_keyless_access_beep)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD3B05() {
-        int value = DataCanbus.DATA[43];
+        int value = DataCanbus.DATA[111];
         if (((CheckedTextView) findViewById(R.id.guandao_beep_lockLight)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_beep_lockLight)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD3B04() {
-        int value = DataCanbus.DATA[44];
+        int value = DataCanbus.DATA[112];
         if (((CheckedTextView) findViewById(R.id.guandao_beep_start)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_beep_start)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD2B07() {
-        int mReceiverRemoteLatchShow = DataCanbus.DATA[36];
+        int mReceiverRemoteLatchShow = DataCanbus.DATA[104];
         if (((CheckedTextView) findViewById(R.id.guandao_ctv_remote_latch_show)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_ctv_remote_latch_show)).setChecked(mReceiverRemoteLatchShow != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD2B06() {
-        int mGuanDaoLockShow = DataCanbus.DATA[37];
+        int mGuanDaoLockShow = DataCanbus.DATA[105];
         if (((CheckedTextView) findViewById(R.id.guandao_lock_remote_latch_show)) != null) {
             ((CheckedTextView) findViewById(R.id.guandao_lock_remote_latch_show)).setChecked(mGuanDaoLockShow != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD2B04() {
         String[] mStrLockSetAutoTime = {"30s", "60s", "90s"};
-        int mReceiverAutoRelockTime = DataCanbus.DATA[38];
+        int mReceiverAutoRelockTime = DataCanbus.DATA[106];
         if (((TextView) findViewById(R.id.guandao_tv_auto_relock_time)) != null && mReceiverAutoRelockTime > -1 && mReceiverAutoRelockTime < 3) {
             ((TextView) findViewById(R.id.guandao_tv_auto_relock_time)).setText(mStrLockSetAutoTime[mReceiverAutoRelockTime]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD2B00() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[108];
         if (((TextView) findViewById(R.id.guandao_tv_auto_lock)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_tv_auto_lock)).setText(R.string.guandao_lock1);
@@ -431,9 +430,9 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterD2B02() {
-        int value = DataCanbus.DATA[39];
+        int value = DataCanbus.DATA[107];
         if (((TextView) findViewById(R.id.guandao_tv_auto_unlock)) != null) {
             if (value == 1) {
                 ((TextView) findViewById(R.id.guandao_tv_auto_unlock)).setText(R.string.guandao_unlock1);
@@ -449,37 +448,37 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHeadLampsAutoOffTimer() {
         String[] mStrLightOffAutoTime = {"0", "15s", "30s", "60s"};
-        int mReceiverTurnOffTime = DataCanbus.DATA[34];
+        int mReceiverTurnOffTime = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.guandao_tv_turn_off_time)) != null && mReceiverTurnOffTime > -1 && mReceiverTurnOffTime < 4) {
             ((TextView) findViewById(R.id.guandao_tv_turn_off_time)).setText(mStrLightOffAutoTime[mReceiverTurnOffTime]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterInteriorLightOffTime() {
         String[] mStrLightOffAutoTime = {"15s", "30s", "60s"};
-        int mReceiverCytoreductiveTime = DataCanbus.DATA[35];
+        int mReceiverCytoreductiveTime = DataCanbus.DATA[103];
         if (((TextView) findViewById(R.id.guandao_tv_cytoreductive_time)) != null && mReceiverCytoreductiveTime > -1 && mReceiverCytoreductiveTime < 3) {
             ((TextView) findViewById(R.id.guandao_tv_cytoreductive_time)).setText(mStrLightOffAutoTime[mReceiverCytoreductiveTime]);
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.guandao_ctv_remote_latch_show /* 2131433284 */:
-                int mSendRemoteLatchShow = (DataCanbus.DATA[36] + 1) % 2;
+            case R.id.guandao_ctv_remote_latch_show /* 2131433206 */:
+                int mSendRemoteLatchShow = (DataCanbus.DATA[104] + 1) % 2;
                 DataCanbus.PROXY.cmd(1, new int[]{10, this.mInt2[mSendRemoteLatchShow]}, null, null);
                 break;
-            case R.id.guandao_lock_remote_latch_show /* 2131433285 */:
-                int mGuanDaoLockShow = (DataCanbus.DATA[37] + 1) % 2;
+            case R.id.guandao_lock_remote_latch_show /* 2131433207 */:
+                int mGuanDaoLockShow = (DataCanbus.DATA[105] + 1) % 2;
                 DataCanbus.PROXY.cmd(1, new int[]{9, this.mInt2[mGuanDaoLockShow]}, null, null);
                 break;
-            case R.id.guandao_btn_auto_relock_time_sub /* 2131433286 */:
-                int mReceiverAutoRelockTime = DataCanbus.DATA[38] - 1;
+            case R.id.guandao_btn_auto_relock_time_sub /* 2131433208 */:
+                int mReceiverAutoRelockTime = DataCanbus.DATA[106] - 1;
                 if (mReceiverAutoRelockTime < 0) {
                     mReceiverAutoRelockTime = 2;
                 } else if (mReceiverAutoRelockTime > 2) {
@@ -487,8 +486,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{11, this.mInt3[mReceiverAutoRelockTime]}, null, null);
                 break;
-            case R.id.guandao_btn_auto_relock_time_add /* 2131433288 */:
-                int mReceiverAutoRelockTime2 = DataCanbus.DATA[38] + 1;
+            case R.id.guandao_btn_auto_relock_time_add /* 2131433210 */:
+                int mReceiverAutoRelockTime2 = DataCanbus.DATA[106] + 1;
                 if (mReceiverAutoRelockTime2 < 0) {
                     mReceiverAutoRelockTime2 = 2;
                 } else if (mReceiverAutoRelockTime2 > 2) {
@@ -496,8 +495,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{11, this.mInt3[mReceiverAutoRelockTime2]}, null, null);
                 break;
-            case R.id.guandao_btn_auto_lock_sub /* 2131433289 */:
-                int value = DataCanbus.DATA[40] - 1;
+            case R.id.guandao_btn_auto_lock_sub /* 2131433211 */:
+                int value = DataCanbus.DATA[108] - 1;
                 if (value > 2) {
                     value = 0;
                 } else if (value < 0) {
@@ -505,8 +504,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{7, value}, null, null);
                 break;
-            case R.id.guandao_btn_auto_lock_add /* 2131433291 */:
-                int value2 = DataCanbus.DATA[40] + 1;
+            case R.id.guandao_btn_auto_lock_add /* 2131433213 */:
+                int value2 = DataCanbus.DATA[108] + 1;
                 if (value2 > 2) {
                     value2 = 0;
                 } else if (value2 < 0) {
@@ -514,8 +513,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{7, value2}, null, null);
                 break;
-            case R.id.guandao_btn_auto_unlock_sub /* 2131433292 */:
-                int value3 = DataCanbus.DATA[39] - 1;
+            case R.id.guandao_btn_auto_unlock_sub /* 2131433214 */:
+                int value3 = DataCanbus.DATA[107] - 1;
                 if (value3 > 2) {
                     value3 = 0;
                 }
@@ -524,8 +523,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{8, value3}, null, null);
                 break;
-            case R.id.guandao_btn_auto_unlock_add /* 2131433294 */:
-                int value4 = DataCanbus.DATA[39] + 1;
+            case R.id.guandao_btn_auto_unlock_add /* 2131433216 */:
+                int value4 = DataCanbus.DATA[107] + 1;
                 if (value4 > 2) {
                     value4 = 0;
                 } else if (value4 < 0) {
@@ -533,8 +532,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{8, value4}, null, null);
                 break;
-            case R.id.guandao_btn_turn_off_time_sub /* 2131433295 */:
-                int mSendTurnOffTime = DataCanbus.DATA[34] - 1;
+            case R.id.guandao_btn_turn_off_time_sub /* 2131433217 */:
+                int mSendTurnOffTime = DataCanbus.DATA[102] - 1;
                 if (mSendTurnOffTime < 0) {
                     mSendTurnOffTime = 3;
                 } else if (mSendTurnOffTime > 3) {
@@ -542,8 +541,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{5, this.mInt4[mSendTurnOffTime]}, null, null);
                 break;
-            case R.id.guandao_btn_turn_off_time_add /* 2131433297 */:
-                int mSendTurnOffTime2 = DataCanbus.DATA[34] + 1;
+            case R.id.guandao_btn_turn_off_time_add /* 2131433219 */:
+                int mSendTurnOffTime2 = DataCanbus.DATA[102] + 1;
                 if (mSendTurnOffTime2 < 0) {
                     mSendTurnOffTime2 = 3;
                 } else if (mSendTurnOffTime2 > 3) {
@@ -551,8 +550,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{5, this.mInt4[mSendTurnOffTime2]}, null, null);
                 break;
-            case R.id.guandao_btn_cytoreductive_time_sub /* 2131433298 */:
-                int mSendCytoreductiveTime = DataCanbus.DATA[35] - 1;
+            case R.id.guandao_btn_cytoreductive_time_sub /* 2131433220 */:
+                int mSendCytoreductiveTime = DataCanbus.DATA[103] - 1;
                 if (mSendCytoreductiveTime < 0) {
                     mSendCytoreductiveTime = 2;
                 } else if (mSendCytoreductiveTime > 2) {
@@ -560,8 +559,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{4, this.mInt3[mSendCytoreductiveTime]}, null, null);
                 break;
-            case R.id.guandao_btn_cytoreductive_time_add /* 2131433300 */:
-                int mSendCytoreductiveTime2 = DataCanbus.DATA[35] + 1;
+            case R.id.guandao_btn_cytoreductive_time_add /* 2131433222 */:
+                int mSendCytoreductiveTime2 = DataCanbus.DATA[103] + 1;
                 if (mSendCytoreductiveTime2 < 0) {
                     mSendCytoreductiveTime2 = 2;
                 } else if (mSendCytoreductiveTime2 > 2) {
@@ -569,8 +568,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{4, this.mInt3[mSendCytoreductiveTime2]}, null, null);
                 break;
-            case R.id.guandao_amp_loud_sub /* 2131433303 */:
-                int value5 = DataCanbus.DATA[47] - 1;
+            case R.id.guandao_amp_loud_sub /* 2131433225 */:
+                int value5 = DataCanbus.DATA[115] - 1;
                 if (value5 > 12) {
                     value5 = 0;
                 } else if (value5 < 0) {
@@ -578,8 +577,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{12, value5}, null, null);
                 break;
-            case R.id.guandao_amp_loud_add /* 2131433305 */:
-                int value6 = DataCanbus.DATA[47] + 1;
+            case R.id.guandao_amp_loud_add /* 2131433227 */:
+                int value6 = DataCanbus.DATA[115] + 1;
                 if (value6 > 12) {
                     value6 = 0;
                 } else if (value6 < 0) {
@@ -587,8 +586,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{12, value6}, null, null);
                 break;
-            case R.id.guandao_speed_sub /* 2131433307 */:
-                int value7 = DataCanbus.DATA[48] - 1;
+            case R.id.guandao_speed_sub /* 2131433229 */:
+                int value7 = DataCanbus.DATA[116] - 1;
                 if (value7 > 3) {
                     value7 = 0;
                 } else if (value7 < 0) {
@@ -596,8 +595,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{14, value7}, null, null);
                 break;
-            case R.id.guandao_speed_add /* 2131433309 */:
-                int value8 = DataCanbus.DATA[48] + 1;
+            case R.id.guandao_speed_add /* 2131433231 */:
+                int value8 = DataCanbus.DATA[116] + 1;
                 if (value8 > 3) {
                     value8 = 0;
                 } else if (value8 < 0) {
@@ -605,11 +604,11 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{14, value8}, null, null);
                 break;
-            case R.id.guandao_dts /* 2131433311 */:
-                DataCanbus.PROXY.cmd(2, new int[]{13, (DataCanbus.DATA[49] + 1) % 2}, null, null);
+            case R.id.guandao_dts /* 2131433233 */:
+                DataCanbus.PROXY.cmd(2, new int[]{13, (DataCanbus.DATA[117] + 1) % 2}, null, null);
                 break;
-            case R.id.guandao_keyless_access_beep_volume_sub /* 2131433312 */:
-                int value9 = DataCanbus.DATA[41];
+            case R.id.guandao_keyless_access_beep_volume_sub /* 2131433234 */:
+                int value9 = DataCanbus.DATA[109];
                 if (value9 == 1) {
                     value9 = 0;
                 } else if (value9 == 0) {
@@ -617,8 +616,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{12, value9}, null, null);
                 break;
-            case R.id.guandao_keyless_access_beep_volume_add /* 2131433314 */:
-                int value10 = DataCanbus.DATA[41];
+            case R.id.guandao_keyless_access_beep_volume_add /* 2131433236 */:
+                int value10 = DataCanbus.DATA[109];
                 if (value10 == 1) {
                     value10 = 0;
                 } else if (value10 == 0) {
@@ -626,17 +625,17 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{12, value10}, null, null);
                 break;
-            case R.id.guandao_keyless_access_beep /* 2131433315 */:
-                DataCanbus.PROXY.cmd(1, new int[]{13, (DataCanbus.DATA[42] + 1) % 2}, null, null);
+            case R.id.guandao_keyless_access_beep /* 2131433237 */:
+                DataCanbus.PROXY.cmd(1, new int[]{13, (DataCanbus.DATA[110] + 1) % 2}, null, null);
                 break;
-            case R.id.guandao_beep_lockLight /* 2131433316 */:
-                DataCanbus.PROXY.cmd(1, new int[]{14, (DataCanbus.DATA[43] + 1) % 2}, null, null);
+            case R.id.guandao_beep_lockLight /* 2131433238 */:
+                DataCanbus.PROXY.cmd(1, new int[]{14, (DataCanbus.DATA[111] + 1) % 2}, null, null);
                 break;
-            case R.id.guandao_beep_start /* 2131433317 */:
-                DataCanbus.PROXY.cmd(1, new int[]{15, (DataCanbus.DATA[44] + 1) % 2}, null, null);
+            case R.id.guandao_beep_start /* 2131433239 */:
+                DataCanbus.PROXY.cmd(1, new int[]{15, (DataCanbus.DATA[112] + 1) % 2}, null, null);
                 break;
-            case R.id.guandao_diandongshoub_sub /* 2131433319 */:
-                int value11 = DataCanbus.DATA[45];
+            case R.id.guandao_diandongshoub_sub /* 2131433241 */:
+                int value11 = DataCanbus.DATA[113];
                 if (value11 == 1) {
                     value11 = 0;
                 } else if (value11 == 0) {
@@ -644,8 +643,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{16, value11}, null, null);
                 break;
-            case R.id.guandao_diandongshoub_add /* 2131433321 */:
-                int value12 = DataCanbus.DATA[45];
+            case R.id.guandao_diandongshoub_add /* 2131433243 */:
+                int value12 = DataCanbus.DATA[113];
                 if (value12 == 1) {
                     value12 = 0;
                 } else if (value12 == 0) {
@@ -653,8 +652,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{16, value12}, null, null);
                 break;
-            case R.id.guandao_remote_open_sub /* 2131433323 */:
-                int value13 = DataCanbus.DATA[46];
+            case R.id.guandao_remote_open_sub /* 2131433245 */:
+                int value13 = DataCanbus.DATA[114];
                 if (value13 == 1) {
                     value13 = 0;
                 } else if (value13 == 0) {
@@ -662,8 +661,8 @@ public class GuandaoSettingsAct extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{17, value13}, null, null);
                 break;
-            case R.id.guandao_remote_open_add /* 2131433325 */:
-                int value14 = DataCanbus.DATA[46];
+            case R.id.guandao_remote_open_add /* 2131433247 */:
+                int value14 = DataCanbus.DATA[114];
                 if (value14 == 1) {
                     value14 = 0;
                 } else if (value14 == 0) {

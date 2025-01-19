@@ -10,20 +10,19 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LZPsaAllCarCD mInit;
     int carid = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.psa_all.LZPsaAllCarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 122:
-                case 132:
-                    LZPsaAllCarCD.this.carid = DataCanbus.DATA[122];
-                    if (3 == DataCanbus.DATA[122]) {
-                        ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text1)).setText("Disc Box: " + DataCanbus.DATA[132]);
+                case 188:
+                case 198:
+                    LZPsaAllCarCD.this.carid = DataCanbus.DATA[188];
+                    if (3 == DataCanbus.DATA[188]) {
+                        ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text1)).setText("Disc Box: " + DataCanbus.DATA[198]);
                         LZPsaAllCarCD.this.UpdataRepeat();
                         LZPsaAllCarCD.this.UpdataScan();
                         LZPsaAllCarCD.this.UpdataRandom();
@@ -35,49 +34,49 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
                         ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text6)).setText("");
                         break;
                     }
-                case 128:
-                case 129:
+                case 194:
+                case 195:
                     if (LZPsaAllCarCD.this.carid == 2) {
-                        int track = DataCanbus.DATA[128];
-                        int Totaltrack = DataCanbus.DATA[129];
+                        int track = DataCanbus.DATA[194];
+                        int Totaltrack = DataCanbus.DATA[195];
                         ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text2)).setText("Trcak: " + track + "/" + Totaltrack);
                         break;
                     }
-                case 130:
-                case 131:
+                case 196:
+                case 197:
                     if (LZPsaAllCarCD.this.carid == 2) {
-                        int min = DataCanbus.DATA[130];
-                        int sec = DataCanbus.DATA[131];
+                        int min = DataCanbus.DATA[196];
+                        int sec = DataCanbus.DATA[197];
                         ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text3)).setText(String.valueOf(min / 10) + (min % 10) + ":" + (sec / 10) + (sec % 10));
                         break;
                     }
-                case 133:
-                case 134:
+                case 199:
+                case 200:
                     if (LZPsaAllCarCD.this.carid == 3) {
-                        int track2 = DataCanbus.DATA[133];
-                        int Totaltrack2 = DataCanbus.DATA[134];
+                        int track2 = DataCanbus.DATA[199];
+                        int Totaltrack2 = DataCanbus.DATA[200];
                         ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text2)).setText("Trcak: " + track2 + "/" + Totaltrack2);
                         break;
                     }
-                case 135:
-                case 136:
+                case 201:
+                case 202:
                     if (LZPsaAllCarCD.this.carid == 3) {
-                        int min2 = DataCanbus.DATA[135];
-                        int sec2 = DataCanbus.DATA[136];
+                        int min2 = DataCanbus.DATA[201];
+                        int sec2 = DataCanbus.DATA[202];
                         ((TextView) LZPsaAllCarCD.this.findViewById(R.id.tv_text3)).setText(String.valueOf(min2 / 10) + (min2 % 10) + ":" + (sec2 / 10) + (sec2 % 10));
                         break;
                     }
-                case 137:
+                case 203:
                     if (LZPsaAllCarCD.this.carid == 3) {
                         LZPsaAllCarCD.this.UpdataRepeat();
                         break;
                     }
-                case 138:
+                case 204:
                     if (LZPsaAllCarCD.this.carid == 3) {
                         LZPsaAllCarCD.this.UpdataScan();
                         break;
                     }
-                case 139:
+                case 205:
                     if (LZPsaAllCarCD.this.carid == 3) {
                         LZPsaAllCarCD.this.UpdataRandom();
                         break;
@@ -86,47 +85,47 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0281_lz_psa_407_carcd);
+        //setContentView(R.layout.layout_0281_lz_psa_407_carcd);
         mInit = this;
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[204].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.notifyCanbus);
     }
 
     public void UpdataRandom() {
-        int value = DataCanbus.DATA[139];
+        int value = DataCanbus.DATA[205];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text6)).setText("Random: Off");
@@ -138,7 +137,7 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
     }
 
     public void UpdataScan() {
-        int value = DataCanbus.DATA[138];
+        int value = DataCanbus.DATA[204];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text5)).setText("Scan: Off");
@@ -150,7 +149,7 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
     }
 
     public void UpdataRepeat() {
-        int value = DataCanbus.DATA[137];
+        int value = DataCanbus.DATA[203];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.tv_text4)).setText("Repeat: Off");
@@ -161,12 +160,12 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -174,7 +173,7 @@ public class LZPsaAllCarCD extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;

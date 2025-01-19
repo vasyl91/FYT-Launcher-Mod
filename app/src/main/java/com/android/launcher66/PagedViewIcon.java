@@ -7,7 +7,9 @@ import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+
 import com.fyt.skin.SkinUtils;
 import com.fyt.skin.view.SkinAttrParms;
 import com.fyt.skin.view.SkinView;
@@ -16,8 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
-public class PagedViewIcon extends TextView {
+public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
     private static final float PRESS_ALPHA = 0.4f;
     private static final String TAG = "PagedViewIcon";
     private AttributeSet mAttributeSet;
@@ -47,7 +48,7 @@ public class PagedViewIcon extends TextView {
         this.mAttributeSet = attrs;
     }
 
-    @Override // android.view.View
+    @Override
     public void onFinishInflate() {
         super.onFinishInflate();
         LauncherAppState app = LauncherAppState.getInstance();
@@ -140,15 +141,15 @@ public class PagedViewIcon extends TextView {
 
     public void resetDrawableState() {
         this.mLockDrawableState = false;
-        post(new Runnable() { // from class: com.android.launcher66.PagedViewIcon.1
-            @Override // java.lang.Runnable
+        post(new Runnable() { 
+            @Override
             public void run() {
                 PagedViewIcon.this.refreshDrawableState();
             }
         });
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
         setFocusable(false);
@@ -165,9 +166,9 @@ public class PagedViewIcon extends TextView {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public void draw(Canvas canvas) {
-        if (getCurrentTextColor() == getResources().getColor(android.R.color.transparent)) {
+        if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
             getPaint().clearShadowLayer();
             super.draw(canvas);
             return;

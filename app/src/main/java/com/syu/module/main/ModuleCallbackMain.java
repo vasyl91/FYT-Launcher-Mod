@@ -2,11 +2,11 @@ package com.syu.module.main;
 
 import android.os.RemoteException;
 import android.util.Log;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.canbus.Callback_0453_LZ_BBA_All;
 import com.syu.module.canbus.Callback_0453_LZ_LandRover_KeepCD;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ModuleCallbackMain extends IModuleCallback.Stub {
     private static final ModuleCallbackMain INSTANCE = new ModuleCallbackMain();
 
@@ -21,7 +21,7 @@ public class ModuleCallbackMain extends IModuleCallback.Stub {
         return ints != null && ints.length >= min;
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode < 200) {
             switch (updateCode) {

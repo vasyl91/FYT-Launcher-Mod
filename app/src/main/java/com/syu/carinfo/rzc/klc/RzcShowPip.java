@@ -8,91 +8,90 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcShowPip {
     static StringBuffer buffer;
     static WindowManager manager;
     static TextView showNumTv;
     static View v = null;
     public static boolean IsShowPip = false;
-    static View.OnClickListener PipClick = new View.OnClickListener() { // from class: com.syu.carinfo.rzc.klc.RzcShowPip.1
-        @Override // android.view.View.OnClickListener
+    static View.OnClickListener PipClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v2) {
             int id = v2.getId();
             switch (id) {
-                case R.id.pipbtn1 /* 2131431963 */:
+                case R.id.pipbtn1 /* 2131431913 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(1);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn2 /* 2131431964 */:
+                case R.id.pipbtn2 /* 2131431914 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(2);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn3 /* 2131431965 */:
+                case R.id.pipbtn3 /* 2131431915 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(3);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn4 /* 2131431966 */:
+                case R.id.pipbtn4 /* 2131431916 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(4);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn5 /* 2131431967 */:
+                case R.id.pipbtn5 /* 2131431917 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(5);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn11 /* 2131431968 */:
+                case R.id.pipbtn11 /* 2131431918 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append('*');
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn6 /* 2131431969 */:
+                case R.id.pipbtn6 /* 2131431919 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(6);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn7 /* 2131431970 */:
+                case R.id.pipbtn7 /* 2131431920 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(7);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn8 /* 2131431971 */:
+                case R.id.pipbtn8 /* 2131431921 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(8);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn9 /* 2131431972 */:
+                case R.id.pipbtn9 /* 2131431922 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(9);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn0 /* 2131431973 */:
+                case R.id.pipbtn0 /* 2131431923 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append(0);
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipbtn10 /* 2131431974 */:
+                case R.id.pipbtn10 /* 2131431924 */:
                     if (RzcShowPip.buffer != null) {
                         RzcShowPip.buffer.append('#');
                     }
                     RzcShowPip.showNumTv.setText(RzcShowPip.buffer.toString());
                     break;
-                case R.id.pipcallanswer /* 2131431975 */:
+                case R.id.pipcallanswer /* 2131431925 */:
                     RzcKlcFunc.CAR_ON_START_CTL(2);
                     break;
             }
@@ -105,8 +104,8 @@ public class RzcShowPip {
         v = inflater.inflate(R.layout.layout_klc_onstar_pip, (ViewGroup) null);
         buffer = new StringBuffer();
         showNumTv = (TextView) v.findViewById(R.id.showNumPip);
-        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.klc.RzcShowPip.2
-            @Override // android.view.View.OnClickListener
+        v.findViewById(R.id.pipcallhang).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 RzcKlcFunc.CAR_ON_START_CTL(3);
                 RzcShowPip.CancelWindow();

@@ -6,12 +6,11 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_302_dongjian_wc2_ds5_index);
+        //setContentView(R.layout.layout_302_dongjian_wc2_ds5_index);
         init();
         setUI();
     }
@@ -26,10 +25,10 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.dongjian_wc2_ds5_time_set_index_check).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.dongjian_wc2_ds5_car_set_check /* 2131429259 */:
+            case R.id.dongjian_wc2_ds5_car_set_check /* 2131429219 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) DS5CarLogAct.class);
                     startActivity(intent);
@@ -38,7 +37,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_car_set_page1_check /* 2131429260 */:
+            case R.id.dongjian_wc2_ds5_car_set_page1_check /* 2131429220 */:
                 try {
                     Intent intent2 = new Intent(this, (Class<?>) DS5CarLog1Act.class);
                     startActivity(intent2);
@@ -47,7 +46,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_car_set_page2_check /* 2131429261 */:
+            case R.id.dongjian_wc2_ds5_car_set_page2_check /* 2131429221 */:
                 try {
                     Intent intent3 = new Intent(this, (Class<?>) DS5CarLog2Act.class);
                     startActivity(intent3);
@@ -56,7 +55,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_car_set_page3_check /* 2131429262 */:
+            case R.id.dongjian_wc2_ds5_car_set_page3_check /* 2131429222 */:
                 try {
                     Intent intent4 = new Intent(this, (Class<?>) DS5CarLog3Act.class);
                     startActivity(intent4);
@@ -65,7 +64,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_car_system_set_check /* 2131429263 */:
+            case R.id.dongjian_wc2_ds5_car_system_set_check /* 2131429223 */:
                 try {
                     Intent intent5 = new Intent(this, (Class<?>) DS5CarSetInfoAct.class);
                     startActivity(intent5);
@@ -74,7 +73,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_unit_set_index_check /* 2131429264 */:
+            case R.id.dongjian_wc2_ds5_unit_set_index_check /* 2131429224 */:
                 try {
                     Intent intent6 = new Intent(this, (Class<?>) DS5CarUnitSetAct.class);
                     startActivity(intent6);
@@ -83,7 +82,7 @@ public class DS5IndexAct extends BaseActivity implements View.OnClickListener {
                     e6.printStackTrace();
                     return;
                 }
-            case R.id.dongjian_wc2_ds5_time_set_index_check /* 2131429265 */:
+            case R.id.dongjian_wc2_ds5_time_set_index_check /* 2131429225 */:
                 try {
                     Intent intent7 = new Intent(this, (Class<?>) DS5CarTimeSetAct.class);
                     startActivity(intent7);

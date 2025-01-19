@@ -7,16 +7,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
 import share.ResValue;
 
 public class RadioRuler extends View {
     private static final int msg_rulerview_anim = 0;
-    private Handler handler;
+    private final Handler handler;
     public int mAction;
     private Bitmap mBitmapPointer;
     private ICallback mCallback;
@@ -29,9 +31,9 @@ public class RadioRuler extends View {
     private int mTargetMark;
     public int mX;
     public int mXBak;
-    private int radioMarkRange;
-    private int radiomarkL;
-    private int radiomarkR;
+    private final int radioMarkRange;
+    private final int radiomarkL;
+    private final int radiomarkR;
 
     public interface ICallback {
         void cmdChange(int i, int i2);
@@ -44,8 +46,8 @@ public class RadioRuler extends View {
         this.radioMarkRange = getResources().getInteger(ResValue.getInstance().getId("getwidth", "integer")) - 12;
         this.radiomarkR = this.radioMarkRange - 6;
         this.radiomarkL = 6;
-        this.handler = new Handler() { // from class: com.fyt.widget.RadioRuler.1
-            @Override // android.os.Handler
+        this.handler = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case 0:
@@ -70,8 +72,8 @@ public class RadioRuler extends View {
         this.radioMarkRange = getResources().getInteger(ResValue.getInstance().getId("getwidth", "integer")) - 12;
         this.radiomarkR = this.radioMarkRange - 6;
         this.radiomarkL = 6;
-        this.handler = new Handler() { // from class: com.fyt.widget.RadioRuler.1
-            @Override // android.os.Handler
+        this.handler = new Handler(Looper.getMainLooper()) { 
+            @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case 0:
@@ -96,8 +98,8 @@ public class RadioRuler extends View {
         this.radioMarkRange = getResources().getInteger(ResValue.getInstance().getId("getwidth", "integer")) - 12;
         this.radiomarkR = this.radioMarkRange - 6;
         this.radiomarkL = 6;
-        this.handler = new Handler() { // from class: com.fyt.widget.RadioRuler.1
-            @Override // android.os.Handler
+        this.handler = new Handler(Looper.getMainLooper()) { 
+            @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case 0:
@@ -178,7 +180,7 @@ public class RadioRuler extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mAction = event.getAction();
         if (this.mAction == 0) {
@@ -219,7 +221,7 @@ public class RadioRuler extends View {
         return false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         if (this.mBitmapPointer != null) {
             if (this.mCurMark < 80) {
@@ -227,7 +229,7 @@ public class RadioRuler extends View {
             } else if (this.mCurMark > this.radioMarkRange) {
                 this.mCurMark = this.radioMarkRange;
             }
-            canvas.drawBitmap(this.mBitmapPointer, this.mCurMark - this.mRPoint, 0.0f, (Paint) null);
+            canvas.drawBitmap(this.mBitmapPointer, this.mCurMark - this.mRPoint, 0.0f, null);
         }
     }
 }

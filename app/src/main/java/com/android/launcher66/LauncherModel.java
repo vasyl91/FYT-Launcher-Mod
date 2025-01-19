@@ -28,11 +28,9 @@ import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import androidx.core.content.IntentCompat;
 import android.util.Log;
 import android.util.Pair;
-import com.android.launcher66.InstallWidgetReceiver;
-import com.android.launcher66.LauncherSettings;
+
 import com.android.launcher66.config.ProviderConfig;
 import com.android.recycler.AppMultiple;
 import com.syu.car.CustomFilter;
@@ -57,7 +55,6 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.litepal.LitePal;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class LauncherModel extends BroadcastReceiver {
     public static final Comparator<AppInfo> APP_INSTALL_TIME_COMPARATOR;
     static final boolean DEBUG_LOADERS = false;
@@ -92,8 +89,8 @@ public class LauncherModel extends BroadcastReceiver {
     private boolean mWorkspaceLoaded;
     private final Object mLock = new Object();
     private DeferredHandler mHandler = new DeferredHandler();
-    Runnable reload = new Runnable() { // from class: com.android.launcher66.LauncherModel.1
-        @Override // java.lang.Runnable
+    Runnable reload = new Runnable() { 
+        @Override
         public void run() {
             LauncherModel.this.forceReload();
         }
@@ -152,8 +149,8 @@ public class LauncherModel extends BroadcastReceiver {
         sBgFolders = new HashMap<>();
         sBgDbIconCache = new HashMap<>();
         sBgWorkspaceScreens = new ArrayList<>();
-        APP_INSTALL_TIME_COMPARATOR = new Comparator<AppInfo>() { // from class: com.android.launcher66.LauncherModel.2
-            @Override // java.util.Comparator
+        APP_INSTALL_TIME_COMPARATOR = new Comparator<AppInfo>() { 
+            @Override
             public final int compare(AppInfo a, AppInfo b) {
                 if (a.firstInstallTime < b.firstInstallTime) {
                     return 1;
@@ -184,8 +181,8 @@ public class LauncherModel extends BroadcastReceiver {
         if (appFilter != null) {
             appFilter.register();
             if (appFilter instanceof CustomFilter) {
-                ((CustomFilter) appFilter).setCallback(new CustomFilter.RefreshCallback() { // from class: com.android.launcher66.LauncherModel.3
-                    @Override // com.syu.car.CustomFilter.RefreshCallback
+                ((CustomFilter) appFilter).setCallback(new CustomFilter.RefreshCallback() { 
+                    @Override
                     public void onRefresh() {
                         if ((LauncherModel.this.mLoaderTask == null || !LauncherModel.this.mLoaderTask.isLaunching()) && LauncherModel.sWorker != null) {
                             LauncherModel.sWorker.removeCallbacks(LauncherModel.this.reload);
@@ -197,12 +194,12 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void runOnMainThread(Runnable r) {
         runOnMainThread(r, 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void runOnMainThread(Runnable r, int type) {
         if (sWorkerThread.getThreadId() == Process.myTid()) {
             this.mHandler.post(r);
@@ -270,8 +267,8 @@ public class LauncherModel extends BroadcastReceiver {
     public void addAndBindAddedApps(final Context context, final ArrayList<ItemInfo> workspaceApps, final Callbacks callbacks, final ArrayList<AppInfo> allAppsApps) {
         LogPreview.show("addAndBindAddedApps");
         if (!workspaceApps.isEmpty() || !allAppsApps.isEmpty()) {
-            Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.4
-                @Override // java.lang.Runnable
+            Runnable r = new Runnable() { 
+                @Override
                 public void run() {
                     ShortcutInfo shortcutInfo;
                     final ArrayList<ItemInfo> addedShortcutsFinal = new ArrayList<>();
@@ -320,9 +317,9 @@ public class LauncherModel extends BroadcastReceiver {
                     if ((addedShortcutsFinal != null && !addedShortcutsFinal.isEmpty()) || (allAppsApps != null && !allAppsApps.isEmpty())) {
                         LauncherModel launcherModel = LauncherModel.this;
                         final Callbacks callbacks2 = callbacks;
-                        final ArrayList arrayList = allAppsApps;
-                        launcherModel.runOnMainThread(new Runnable() { // from class: com.android.launcher66.LauncherModel.4.1
-                            @Override // java.lang.Runnable
+                        final ArrayList<AppInfo> arrayList = allAppsApps;
+                        launcherModel.runOnMainThread(new Runnable() { 
+                            @Override
                             public void run() {
                                 Callbacks cb;
                                 if (LauncherModel.this.mCallbacks != null) {
@@ -377,8 +374,8 @@ public class LauncherModel extends BroadcastReceiver {
             tmpWorkspaceItems.addAll(sBgWorkspaceItems);
             tmpAppWidgets.addAll(sBgAppWidgets);
         }
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.5
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 Iterator it = tmpWorkspaceItems.iterator();
                 while (it.hasNext()) {
@@ -430,8 +427,8 @@ public class LauncherModel extends BroadcastReceiver {
     static void checkItemInfo(final ItemInfo item) {
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
         final long itemId = item.id;
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.6
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 synchronized (LauncherModel.sBgLock) {
                     LauncherModel.checkItemInfoLocked(itemId, item, stackTrace);
@@ -446,8 +443,8 @@ public class LauncherModel extends BroadcastReceiver {
         final Uri uri = LauncherSettings.Favorites.getContentUri(itemId, false);
         final ContentResolver cr = context.getContentResolver();
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.7
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 cr.update(uri, values, null, null);
                 LauncherModel.updateItemArrays(item, itemId, stackTrace);
@@ -459,8 +456,8 @@ public class LauncherModel extends BroadcastReceiver {
     static void updateItemsInDatabaseHelper(Context context, final ArrayList<ContentValues> valuesList, final ArrayList<ItemInfo> items, String callingFunction) {
         final ContentResolver cr = context.getContentResolver();
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.8
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                 int count = items.size();
@@ -509,8 +506,8 @@ public class LauncherModel extends BroadcastReceiver {
 
     public void flushWorkerThread() {
         this.mFlushingWorkerThread = true;
-        Runnable waiter = new Runnable() { // from class: com.android.launcher66.LauncherModel.9
-            @Override // java.lang.Runnable
+        Runnable waiter = new Runnable() { 
+            @Override
             public void run() {
                 synchronized (this) {
                     notifyAll();
@@ -683,8 +680,8 @@ public class LauncherModel extends BroadcastReceiver {
         item.id = LauncherAppState.getLauncherProvider().generateNewItemId();
         values.put("_id", Long.valueOf(item.id));
         item.updateValuesWithCoordinates(values, item.cellX, item.cellY);
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.10
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 cr.insert(notify ? LauncherSettings.Favorites.CONTENT_URI : LauncherSettings.Favorites.CONTENT_URI_NO_NOTIFICATION, values);
                 synchronized (LauncherModel.sBgLock) {
@@ -722,8 +719,8 @@ public class LauncherModel extends BroadcastReceiver {
         LogPreview.show("deleteItemFromDatabase");
         final ContentResolver cr = context.getContentResolver();
         final Uri uriToDelete = LauncherSettings.Favorites.getContentUri(item.id, false);
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.11
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 cr.delete(uriToDelete, null, null);
                 synchronized (LauncherModel.sBgLock) {
@@ -765,8 +762,8 @@ public class LauncherModel extends BroadcastReceiver {
                 iter.remove();
             }
         }
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.12
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 cr.delete(uri, null, null);
                 int count = screensCopy.size();
@@ -790,8 +787,8 @@ public class LauncherModel extends BroadcastReceiver {
 
     static void deleteFolderContentsFromDatabase(Context context, final FolderInfo info) {
         final ContentResolver cr = context.getContentResolver();
-        Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.13
-            @Override // java.lang.Runnable
+        Runnable r = new Runnable() { 
+            @Override
             public void run() {
                 cr.delete(LauncherSettings.Favorites.getContentUri(info.id, false), null, null);
                 synchronized (LauncherModel.sBgLock) {
@@ -820,7 +817,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent intent) {
         Callbacks callbacks;
         String action = intent.getAction();
@@ -904,7 +901,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void forceReload() {
         resetLoadedState(true, true);
         startLoaderFromBackground();
@@ -980,7 +977,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static TreeMap<Integer, Long> loadWorkspaceScreensDb(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri screensUri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
@@ -1057,8 +1054,8 @@ public class LauncherModel extends BroadcastReceiver {
 
         private void waitForIdle() {
             synchronized (this) {
-                LauncherModel.this.mHandler.postIdle(new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.1
-                    @Override // java.lang.Runnable
+                LauncherModel.this.mHandler.postIdle(new Runnable() { 
+                    @Override
                     public void run() {
                         synchronized (LoaderTask.this) {
                             LoaderTask.this.mLoadAndBindStepFinished = true;
@@ -1094,7 +1091,7 @@ public class LauncherModel extends BroadcastReceiver {
             throw new RuntimeException("Should not call runBindSynchronousPage() without valid page index");
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             synchronized (LauncherModel.this.mLock) {
                 LauncherModel.this.mIsLoaderTaskRunning = true;
@@ -1505,8 +1502,8 @@ public class LauncherModel extends BroadcastReceiver {
                 currentScreenItems.addAll(allWorkspaceItems);
             }
             Set<Long> itemsOnScreen = new HashSet<>();
-            Collections.sort(allWorkspaceItems, new Comparator<ItemInfo>() { // from class: com.android.launcher66.LauncherModel.LoaderTask.2
-                @Override // java.util.Comparator
+            Collections.sort(allWorkspaceItems, new Comparator<ItemInfo>() { 
+                @Override
                 public int compare(ItemInfo lhs, ItemInfo rhs) {
                     return (int) (lhs.container - rhs.container);
                 }
@@ -1572,8 +1569,8 @@ public class LauncherModel extends BroadcastReceiver {
         private void sortWorkspaceItemsSpatially(ArrayList<ItemInfo> workspaceItems) {
             LauncherAppState app = LauncherAppState.getInstance();
             final DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-            Collections.sort(workspaceItems, new Comparator<ItemInfo>() { // from class: com.android.launcher66.LauncherModel.LoaderTask.3
-                @Override // java.util.Comparator
+            Collections.sort(workspaceItems, new Comparator<ItemInfo>() { 
+                @Override
                 public int compare(ItemInfo lhs, ItemInfo rhs) {
                     int cellCountX = (int) grid.numColumns;
                     int cellCountY = (int) grid.numRows;
@@ -1587,8 +1584,8 @@ public class LauncherModel extends BroadcastReceiver {
         }
 
         private void bindWorkspaceScreens(final Callbacks oldCallbacks, final ArrayList<Long> orderedScreens) {
-            Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.4
-                @Override // java.lang.Runnable
+            Runnable r = new Runnable() { 
+                @Override
                 public void run() {
                     Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                     if (callbacks != null) {
@@ -1605,8 +1602,8 @@ public class LauncherModel extends BroadcastReceiver {
             for (int i = 0; i < N; i += 6) {
                 final int start = i;
                 final int chunkSize = i + 6 <= N ? 6 : N - i;
-                Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.5
-                    @Override // java.lang.Runnable
+                Runnable r = new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                         if (callbacks != null) {
@@ -1621,8 +1618,8 @@ public class LauncherModel extends BroadcastReceiver {
                 }
             }
             if (!folders.isEmpty()) {
-                Runnable r2 = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.6
-                    @Override // java.lang.Runnable
+                Runnable r2 = new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                         if (callbacks != null) {
@@ -1639,8 +1636,8 @@ public class LauncherModel extends BroadcastReceiver {
             int N2 = appWidgets.size();
             for (int i2 = 0; i2 < N2; i2++) {
                 final LauncherAppWidgetInfo widget = appWidgets.get(i2);
-                Runnable r3 = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.7
-                    @Override // java.lang.Runnable
+                Runnable r3 = new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                         if (callbacks != null) {
@@ -1690,8 +1687,8 @@ public class LauncherModel extends BroadcastReceiver {
             filterCurrentFolders(currentScreen, itemsIdMap, folders, currentFolders, otherFolders);
             sortWorkspaceItemsSpatially(currentWorkspaceItems);
             sortWorkspaceItemsSpatially(otherWorkspaceItems);
-            LauncherModel.this.runOnMainThread(new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.8
-                @Override // java.lang.Runnable
+            LauncherModel.this.runOnMainThread(new Runnable() { 
+                @Override
                 public void run() {
                     Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                     if (callbacks != null) {
@@ -1702,8 +1699,8 @@ public class LauncherModel extends BroadcastReceiver {
             bindWorkspaceScreens(oldCallbacks, orderedScreenIds);
             bindWorkspaceItems(oldCallbacks, currentWorkspaceItems, currentAppWidgets, currentFolders, null);
             if (isLoadingSynchronously) {
-                LauncherModel.this.runOnMainThread(new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.9
-                    @Override // java.lang.Runnable
+                LauncherModel.this.runOnMainThread(new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                         if (callbacks != null) {
@@ -1714,8 +1711,8 @@ public class LauncherModel extends BroadcastReceiver {
             }
             LauncherModel.mDeferredBindRunnables.clear();
             bindWorkspaceItems(oldCallbacks, otherWorkspaceItems, otherAppWidgets, otherFolders, isLoadingSynchronously ? LauncherModel.mDeferredBindRunnables : null);
-            Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.10
-                @Override // java.lang.Runnable
+            Runnable r = new Runnable() { 
+                @Override
                 public void run() {
                     Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
                     if (callbacks != null) {
@@ -1750,9 +1747,9 @@ public class LauncherModel extends BroadcastReceiver {
                 Log.w(LauncherModel.TAG, "LoaderTask running with no launcher (onlyBindAllApps)");
                 return;
             }
-            final ArrayList<AppInfo> list = (ArrayList) AllAppsList.data.clone();
-            Runnable r = new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.11
-                @Override // java.lang.Runnable
+            final ArrayList<AppInfo> list = (ArrayList<AppInfo>) AllAppsList.data.clone();
+            Runnable r = new Runnable() { 
+                @Override
                 public void run() {
                     SystemClock.uptimeMillis();
                     Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
@@ -1788,8 +1785,8 @@ public class LauncherModel extends BroadcastReceiver {
                 }
                 final ArrayList<AppInfo> added = LauncherModel.this.mBgAllAppsList.added;
                 LauncherModel.this.mBgAllAppsList.added = new ArrayList<>();
-                LauncherModel.this.mHandler.post(new Runnable() { // from class: com.android.launcher66.LauncherModel.LoaderTask.12
-                    @Override // java.lang.Runnable
+                LauncherModel.this.mHandler.post(new Runnable() { 
+                    @Override
                     public void run() {
                         SystemClock.uptimeMillis();
                         Callbacks callbacks = LoaderTask.this.tryGetCallbacks(oldCallbacks);
@@ -1832,7 +1829,7 @@ public class LauncherModel extends BroadcastReceiver {
             this.mPackages = packages;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             final Callbacks callbacks;
             Callbacks cb;
@@ -1912,8 +1909,8 @@ public class LauncherModel extends BroadcastReceiver {
                         }
                     }
                 }
-                LauncherModel.this.mHandler.post(new Runnable() { // from class: com.android.launcher66.LauncherModel.PackageUpdatedTask.1
-                    @Override // java.lang.Runnable
+                LauncherModel.this.mHandler.post(new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks cb2;
                         if (LauncherModel.this.mCallbacks != null) {
@@ -1955,8 +1952,8 @@ public class LauncherModel extends BroadcastReceiver {
                         }
                     }
                 }
-                LauncherModel.this.mHandler.post(new Runnable() { // from class: com.android.launcher66.LauncherModel.PackageUpdatedTask.2
-                    @Override // java.lang.Runnable
+                LauncherModel.this.mHandler.post(new Runnable() { 
+                    @Override
                     public void run() {
                         Callbacks cb2;
                         if (LauncherModel.this.mCallbacks != null) {
@@ -1971,8 +1968,8 @@ public class LauncherModel extends BroadcastReceiver {
                 });
             }
             final ArrayList<Object> widgetsAndShortcuts = LauncherModel.getSortedWidgetsAndShortcuts(context);
-            LauncherModel.this.mHandler.post(new Runnable() { // from class: com.android.launcher66.LauncherModel.PackageUpdatedTask.3
-                @Override // java.lang.Runnable
+            LauncherModel.this.mHandler.post(new Runnable() { 
+                @Override
                 public void run() {
                     Callbacks cb2;
                     if (LauncherModel.this.mCallbacks != null) {
@@ -1985,8 +1982,8 @@ public class LauncherModel extends BroadcastReceiver {
                     }
                 }
             });
-            LauncherModel.this.mHandler.post(new Runnable() { // from class: com.android.launcher66.LauncherModel.PackageUpdatedTask.4
-                @Override // java.lang.Runnable
+            LauncherModel.this.mHandler.post(new Runnable() { 
+                @Override
                 public void run() {
                     Callbacks cb2;
                     if (LauncherModel.this.mCallbacks != null) {
@@ -2012,7 +2009,7 @@ public class LauncherModel extends BroadcastReceiver {
         return widgetsAndShortcuts;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public boolean isValidPackageComponent(PackageManager pm, ComponentName cn2) {
         if (cn2 == null) {
             return false;
@@ -2122,10 +2119,10 @@ public class LauncherModel extends BroadcastReceiver {
         return new ArrayList<>(filtered);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public ArrayList<ItemInfo> getItemInfoForPackageName(final String pn) {
-        ItemInfoFilter filter = new ItemInfoFilter() { // from class: com.android.launcher66.LauncherModel.14
-            @Override // com.android.launcher66.LauncherModel.ItemInfoFilter
+        ItemInfoFilter filter = new ItemInfoFilter() { 
+            @Override
             public boolean filterItem(ItemInfo parent, ItemInfo info, ComponentName cn2) {
                 return cn2.getPackageName().equals(pn);
             }
@@ -2133,10 +2130,10 @@ public class LauncherModel extends BroadcastReceiver {
         return filterItemInfos(sBgItemsIdMap.values(), filter);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public ArrayList<ItemInfo> getItemInfoForComponentName(final ComponentName cname) {
-        ItemInfoFilter filter = new ItemInfoFilter() { // from class: com.android.launcher66.LauncherModel.15
-            @Override // com.android.launcher66.LauncherModel.ItemInfoFilter
+        ItemInfoFilter filter = new ItemInfoFilter() { 
+            @Override
             public boolean filterItem(ItemInfo parent, ItemInfo info, ComponentName cn2) {
                 return cn2.equals(cname);
             }
@@ -2156,7 +2153,7 @@ public class LauncherModel extends BroadcastReceiver {
         return false;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public ShortcutInfo getShortcutInfo(Cursor c, Context context, int iconTypeIndex, int iconPackageIndex, int iconResourceIndex, int iconIndex, int titleIndex) {
         Bitmap icon = null;
         ShortcutInfo info = new ShortcutInfo();
@@ -2328,7 +2325,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static FolderInfo findOrMakeFolder(HashMap<Long, FolderInfo> folders, long id) {
         FolderInfo folderInfo = folders.get(Long.valueOf(id));
         if (folderInfo == null) {
@@ -2341,8 +2338,8 @@ public class LauncherModel extends BroadcastReceiver {
 
     public static final Comparator<AppInfo> getAppNameComparator() {
         final Collator collator = Collator.getInstance();
-        return new Comparator<AppInfo>() { // from class: com.android.launcher66.LauncherModel.16
-            @Override // java.util.Comparator
+        return new Comparator<AppInfo>() { 
+            @Override
             public final int compare(AppInfo a, AppInfo b) {
                 int result = collator.compare(a.title.toString().trim(), b.title.toString().trim());
                 if (result == 0) {
@@ -2355,10 +2352,11 @@ public class LauncherModel extends BroadcastReceiver {
 
     public static final Comparator<AppWidgetProviderInfo> getWidgetNameComparator() {
         final Collator collator = Collator.getInstance();
-        return new Comparator<AppWidgetProviderInfo>() { // from class: com.android.launcher66.LauncherModel.17
-            @Override // java.util.Comparator
+        return new Comparator<AppWidgetProviderInfo>() { 
+            @Override
             public final int compare(AppWidgetProviderInfo a, AppWidgetProviderInfo b) {
-                return collator.compare(a.label.toString().trim(), b.label.toString().trim());
+                PackageManager manager = LauncherApplication.sApp.getPackageManager();
+                return collator.compare(a.loadLabel(manager).toString(), b.loadLabel(manager).toString());
             }
         };
     }
@@ -2384,7 +2382,7 @@ public class LauncherModel extends BroadcastReceiver {
             this.mCollator = Collator.getInstance();
         }
 
-        @Override // java.util.Comparator
+        @Override
         public final int compare(ResolveInfo a, ResolveInfo b) {
             CharSequence labelA;
             CharSequence labelB;
@@ -2415,7 +2413,7 @@ public class LauncherModel extends BroadcastReceiver {
             this.mPackageManager = pm;
         }
 
-        @Override // java.util.Comparator
+        @Override
         public final int compare(Object a, Object b) {
             String labelA;
             String labelB;

@@ -9,44 +9,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalCarCamera extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarCamera.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.golf_camera_bright_m /* 2131431094 */:
-                    int data = DataCanbus.DATA[224] - 1;
+                case R.id.golf_camera_bright_m /* 2131431070 */:
+                    int data = DataCanbus.DATA[267] - 1;
                     if (data >= 30) {
                         DataCanbus.PROXY.cmd(115, new int[]{data}, null, null);
                         break;
                     }
-                case R.id.golf_camera_bright_p /* 2131431096 */:
-                    int data2 = DataCanbus.DATA[224] + 1;
+                case R.id.golf_camera_bright_p /* 2131431072 */:
+                    int data2 = DataCanbus.DATA[267] + 1;
                     if (data2 <= 70) {
                         DataCanbus.PROXY.cmd(115, new int[]{data2}, null, null);
                         break;
                     }
-                case R.id.golf_camera_contrast_m /* 2131431097 */:
-                    int data3 = DataCanbus.DATA[225] - 1;
+                case R.id.golf_camera_contrast_m /* 2131431073 */:
+                    int data3 = DataCanbus.DATA[268] - 1;
                     if (data3 >= 30) {
                         DataCanbus.PROXY.cmd(116, new int[]{data3}, null, null);
                         break;
                     }
-                case R.id.golf_camera_contrast_p /* 2131431099 */:
-                    int data4 = DataCanbus.DATA[225] + 1;
+                case R.id.golf_camera_contrast_p /* 2131431075 */:
+                    int data4 = DataCanbus.DATA[268] + 1;
                     if (data4 <= 70) {
                         DataCanbus.PROXY.cmd(116, new int[]{data4}, null, null);
                         break;
                     }
-                case R.id.golf_camera_color_m /* 2131431100 */:
-                    int data5 = DataCanbus.DATA[223] - 1;
+                case R.id.golf_camera_color_m /* 2131431076 */:
+                    int data5 = DataCanbus.DATA[266] - 1;
                     if (data5 >= 30) {
                         DataCanbus.PROXY.cmd(117, new int[]{data5}, null, null);
                         break;
                     }
-                case R.id.golf_camera_color_p /* 2131431102 */:
-                    int data6 = DataCanbus.DATA[223] + 1;
+                case R.id.golf_camera_color_p /* 2131431078 */:
+                    int data6 = DataCanbus.DATA[266] + 1;
                     if (data6 <= 70) {
                         DataCanbus.PROXY.cmd(117, new int[]{data6}, null, null);
                         break;
@@ -54,32 +53,32 @@ public class Golf7FunctionalCarCamera extends BaseActivity {
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalCarCamera.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 223:
+                case 266:
                     Golf7FunctionalCarCamera.this.uColor(val);
                     break;
-                case 224:
+                case 267:
                     Golf7FunctionalCarCamera.this.uBright(val);
                     break;
-                case 225:
+                case 268:
                     Golf7FunctionalCarCamera.this.uContrast(val);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_carcamera_set);
+        //setContentView(R.layout.layout_golf7_functional_carcamera_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setonClick((Button) findViewById(R.id.golf_camera_bright_m));
         setonClick((Button) findViewById(R.id.golf_camera_bright_p));
@@ -95,35 +94,35 @@ public class Golf7FunctionalCarCamera extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[223].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[225].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[224].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[266].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[268].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[267].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[223].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[225].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[224].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[266].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[268].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[267].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uBright(int val) {

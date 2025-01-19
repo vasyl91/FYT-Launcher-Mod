@@ -10,22 +10,21 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcLandRoverCarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.zhongtai.RzcLandRoverCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 124:
+                case 189:
                     RzcLandRoverCarSet.this.setCheck((CheckedTextView) RzcLandRoverCarSet.this.findViewById(R.id.ctv_checkedtext1), val == 1);
                     break;
-                case 125:
+                case 190:
                     if (((TextView) RzcLandRoverCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) RzcLandRoverCarSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(val).toString());
                         break;
                     }
-                case 126:
+                case 191:
                     if (((TextView) RzcLandRoverCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         switch (val) {
                             case 1:
@@ -50,14 +49,14 @@ public class RzcLandRoverCarSet extends BaseActivity implements View.OnClickList
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_rzc_landerover_settings);
+        //setContentView(R.layout.layout_0452_rzc_landerover_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((Button) findViewById(R.id.btn_minus1), this);
@@ -66,45 +65,45 @@ public class RzcLandRoverCarSet extends BaseActivity implements View.OnClickList
         setSelfClick((Button) findViewById(R.id.btn_plus2), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[124];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
-                    value = 1;
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[190];
+                if (value > 1) {
+                    value--;
                 }
-                setCarInfo(153, value);
+                setCarInfo(154, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value2 = DataCanbus.DATA[125];
-                if (value2 > 1) {
-                    value2--;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[190];
+                if (value2 < 4) {
+                    value2++;
                 }
                 setCarInfo(154, value2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value3 = DataCanbus.DATA[125];
-                if (value3 < 4) {
-                    value3++;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[191] - 1;
+                if (value3 < 1) {
+                    value3 = 5;
                 }
-                setCarInfo(154, value3);
+                setCarInfo(155, value3);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value4 = DataCanbus.DATA[126] - 1;
-                if (value4 < 1) {
-                    value4 = 5;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[191] + 1;
+                if (value4 > 5) {
+                    value4 = 1;
                 }
                 setCarInfo(155, value4);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value5 = DataCanbus.DATA[126] + 1;
-                if (value5 > 5) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[189];
+                if (value5 == 1) {
+                    value5 = 0;
+                } else if (value5 == 0) {
                     value5 = 1;
                 }
-                setCarInfo(155, value5);
+                setCarInfo(153, value5);
                 break;
         }
     }
@@ -113,30 +112,30 @@ public class RzcLandRoverCarSet extends BaseActivity implements View.OnClickList
         DataCanbus.PROXY.cmd(1, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(3, new int[]{65}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mNotifyCanbus);
     }
 }

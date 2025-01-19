@@ -18,7 +18,7 @@ public class NonSeekBar extends SeekBar {
         super(context);
     }
 
-    @Override // android.widget.AbsSeekBar, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         return false;
     }

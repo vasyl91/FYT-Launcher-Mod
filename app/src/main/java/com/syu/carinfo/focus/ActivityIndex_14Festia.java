@@ -9,14 +9,13 @@ import com.syu.carinfo.ford.FordCarSet_XP;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityIndex_14Festia extends Activity {
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_319_festia_index);
-        findViewById(R.id.ctv_checkedtext2).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.ActivityIndex_14Festia.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_319_festia_index);
+        findViewById(R.id.ctv_checkedtext2).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 switch (DataCanbus.DATA[1000]) {
                     case 22:
@@ -36,8 +35,8 @@ public class ActivityIndex_14Festia extends Activity {
                 }
             }
         });
-        findViewById(R.id.ctv_checkedtext1).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.focus.ActivityIndex_14Festia.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.ctv_checkedtext1).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 ActivityIndex_14Festia.this.startActivity(new Intent(ActivityIndex_14Festia.this, (Class<?>) FocusSyncBtActi.class));
             }

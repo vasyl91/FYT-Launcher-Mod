@@ -20,7 +20,6 @@ import java.util.Iterator;
 import share.ResValue;
 
 /* compiled from: DynamicGrid.java */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class DeviceProfile {
     int allAppsNumCols;
     int allAppsNumRows;
@@ -183,7 +182,7 @@ class DeviceProfile {
         this.allAppsNumCols = resources.getInteger(R.integer.all_apps_customize_cols);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public float dist(PointF p0, PointF p1) {
         return (float) Math.sqrt(((p1.x - p0.x) * (p1.x - p0.x)) + ((p1.y - p0.y) * (p1.y - p0.y)));
     }
@@ -200,8 +199,8 @@ class DeviceProfile {
         float sum = 0.0f;
         float weights = 0.0f;
         final PointF xy = new PointF(width, height);
-        Collections.sort(points, new Comparator<DeviceProfileQuery>() { // from class: com.android.launcher66.DeviceProfile.1
-            @Override // java.util.Comparator
+        Collections.sort(points, new Comparator<DeviceProfileQuery>() { 
+            @Override
             public int compare(DeviceProfileQuery a, DeviceProfileQuery b) {
                 return (int) (DeviceProfile.this.dist(xy, a.dimens) - DeviceProfile.this.dist(xy, b.dimens));
             }

@@ -15,14 +15,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.dj.havalh8.Dj_0439_HavalH8AmpSetAct;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_0439_HavalH9SetAct extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -30,70 +28,70 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             int value;
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
-                    int value2 = DataCanbus.DATA[85] - 1;
+                case R.id.btn_minus1 /* 2131427455 */:
+                    int value2 = DataCanbus.DATA[153] - 1;
                     if (value2 < 1) {
                         value2 = 10;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(26, value2);
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
-                    int value3 = DataCanbus.DATA[85] + 1;
+                case R.id.btn_plus1 /* 2131427457 */:
+                    int value3 = DataCanbus.DATA[153] + 1;
                     if (value3 > 10) {
                         value3 = 1;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(26, value3);
                     break;
-                case R.id.rzc_havalh6_domedelay_m /* 2131427620 */:
-                    int value4 = DataCanbus.DATA[34] - 1;
+                case R.id.rzc_havalh6_domedelay_m /* 2131427633 */:
+                    int value4 = DataCanbus.DATA[101] - 1;
                     if (value4 < 1) {
                         value4 = 4;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(4, value4);
                     break;
-                case R.id.rzc_havalh6_domedelay_p /* 2131427622 */:
-                    int value5 = DataCanbus.DATA[34] + 1;
+                case R.id.rzc_havalh6_domedelay_p /* 2131427635 */:
+                    int value5 = DataCanbus.DATA[101] + 1;
                     if (value5 > 4) {
                         value5 = 1;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(4, value5);
                     break;
-                case R.id.rzc_havalh6_followhome_m /* 2131427623 */:
-                    int value6 = DataCanbus.DATA[35] - 1;
+                case R.id.rzc_havalh6_followhome_m /* 2131427636 */:
+                    int value6 = DataCanbus.DATA[102] - 1;
                     if (value6 < 1) {
                         value6 = 4;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(5, value6);
                     break;
-                case R.id.rzc_havalh6_followhome_p /* 2131427625 */:
-                    int value7 = DataCanbus.DATA[35] + 1;
+                case R.id.rzc_havalh6_followhome_p /* 2131427638 */:
+                    int value7 = DataCanbus.DATA[102] + 1;
                     if (value7 > 4) {
                         value7 = 1;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(5, value7);
                     break;
-                case R.id.rzc_havalh6_powersave_m /* 2131427626 */:
-                    int value8 = DataCanbus.DATA[36] - 1;
+                case R.id.rzc_havalh6_powersave_m /* 2131427639 */:
+                    int value8 = DataCanbus.DATA[103] - 1;
                     if (value8 < 1) {
                         value8 = 3;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(6, value8);
                     break;
-                case R.id.rzc_havalh6_powersave_p /* 2131427628 */:
-                    int value9 = DataCanbus.DATA[36] + 1;
+                case R.id.rzc_havalh6_powersave_p /* 2131427641 */:
+                    int value9 = DataCanbus.DATA[103] + 1;
                     if (value9 > 3) {
                         value9 = 1;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(6, value9);
                     break;
-                case R.id.rzc_havalh6_rainfall_m /* 2131427629 */:
-                case R.id.rzc_havalh6_rainfall_p /* 2131427631 */:
-                    int value10 = DataCanbus.DATA[37];
+                case R.id.rzc_havalh6_rainfall_m /* 2131427642 */:
+                case R.id.rzc_havalh6_rainfall_p /* 2131427644 */:
+                    int value10 = DataCanbus.DATA[104];
                     if (value10 == 1) {
                         value10 = 1;
                     } else if (value10 == 0) {
@@ -101,18 +99,18 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(7, value10);
                     break;
-                case R.id.rzc_oudi_havalh9_frontlight_m /* 2131428410 */:
-                case R.id.rzc_oudi_havalh9_frontlight_p /* 2131428412 */:
-                    if (DataCanbus.DATA[39] == 0) {
+                case R.id.rzc_oudi_havalh9_frontlight_m /* 2131428397 */:
+                case R.id.rzc_oudi_havalh9_frontlight_p /* 2131428399 */:
+                    if (DataCanbus.DATA[106] == 0) {
                         value = 1;
                     } else {
                         value = 0;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(12, value);
                     break;
-                case R.id.btn_od_havalh9_park_set_m /* 2131428413 */:
-                case R.id.btn_od_havalh9_park_set_p /* 2131428415 */:
-                    int value11 = DataCanbus.DATA[41];
+                case R.id.btn_od_havalh9_park_set_m /* 2131428400 */:
+                case R.id.btn_od_havalh9_park_set_p /* 2131428402 */:
+                    int value11 = DataCanbus.DATA[108];
                     if (value11 == 1) {
                         value11 = 0;
                     } else if (value11 == 0) {
@@ -120,23 +118,23 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(15, value11);
                     break;
-                case R.id.btn_od_havalh9_antitheft_set_m /* 2131428416 */:
-                    int value12 = DataCanbus.DATA[42] - 1;
+                case R.id.btn_od_havalh9_antitheft_set_m /* 2131428403 */:
+                    int value12 = DataCanbus.DATA[109] - 1;
                     if (value12 < 0) {
                         value12 = 3;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(14, value12);
                     break;
-                case R.id.btn_od_havalh9_antitheft_set_p /* 2131428418 */:
-                    int value13 = DataCanbus.DATA[42] + 1;
+                case R.id.btn_od_havalh9_antitheft_set_p /* 2131428405 */:
+                    int value13 = DataCanbus.DATA[109] + 1;
                     if (value13 > 3) {
                         value13 = 0;
                     }
                     Rzc_0439_HavalH9SetAct.this.sendCMD(14, value13);
                     break;
-                case R.id.btn_od_havalh9_doorlock_set_m /* 2131428419 */:
-                case R.id.btn_od_havalh9_doorlock_set_p /* 2131428421 */:
-                    int value14 = DataCanbus.DATA[43];
+                case R.id.btn_od_havalh9_doorlock_set_m /* 2131428406 */:
+                case R.id.btn_od_havalh9_doorlock_set_p /* 2131428408 */:
+                    int value14 = DataCanbus.DATA[110];
                     if (value14 == 1) {
                         value14 = 0;
                     } else if (value14 == 0) {
@@ -147,63 +145,63 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 34:
+                case 101:
                     Rzc_0439_HavalH9SetAct.this.updateDomeDelay();
                     break;
-                case 35:
+                case 102:
                     Rzc_0439_HavalH9SetAct.this.updateFollowHome();
                     break;
-                case 36:
+                case 103:
                     Rzc_0439_HavalH9SetAct.this.updatePowerSave();
                     break;
-                case 37:
+                case 104:
                     Rzc_0439_HavalH9SetAct.this.updateRainFall();
                     break;
-                case 38:
+                case 105:
                     Rzc_0439_HavalH9SetAct.this.updateRearViewAuto();
                     break;
-                case 39:
+                case 106:
                     Rzc_0439_HavalH9SetAct.this.updateFrontLight();
                     break;
-                case 40:
+                case 107:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterSeatmemory();
                     break;
-                case 41:
+                case 108:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterParkset();
                     break;
-                case 42:
+                case 109:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterAntisheftset();
                     break;
-                case 43:
+                case 110:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterDoorlockset();
                     break;
-                case 44:
+                case 111:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterCetaset();
                     break;
-                case 45:
+                case 112:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterCartopset();
                     break;
-                case 46:
+                case 113:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterAllterrainset();
                     break;
-                case 47:
+                case 114:
                     Rzc_0439_HavalH9SetAct.this.updateScreenBright();
                     break;
-                case 48:
+                case 115:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterValue8();
                     break;
-                case 69:
+                case 129:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterCollisionWarn();
                     break;
-                case 70:
+                case 130:
                     Rzc_0439_HavalH9SetAct.this.mUpdaterAutoBrake();
                     break;
-                case 85:
+                case 153:
                     if (((TextView) Rzc_0439_HavalH9SetAct.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) Rzc_0439_HavalH9SetAct.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                         break;
@@ -212,14 +210,14 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_rzc_havalh9set);
+        //setContentView(R.layout.layout_0439_rzc_havalh9set);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -232,8 +230,8 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.3
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Rzc_0439_HavalH9SetAct.this.language_set = position;
                 if (Rzc_0439_HavalH9SetAct.this.language_set >= 0 && Rzc_0439_HavalH9SetAct.this.language_set <= Rzc_0439_HavalH9SetAct.this.mLauStylelist.size() && Rzc_0439_HavalH9SetAct.this.send_lang != null) {
@@ -250,7 +248,7 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -261,8 +259,8 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Rzc_0439_HavalH9SetAct.this.mLauStyle == null) {
                     Rzc_0439_HavalH9SetAct.this.initLauStyle();
@@ -276,6 +274,7 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
             case FinalCanbus.CAR_RZC_Haval_H9_H /* 2556343 */:
+            case FinalCanbus.CAR_454_RZC_Haval_H8_15_H /* 11862470 */:
             case FinalCanbus.CAR_439_OuDi_Haval_H9_H_RS /* 15663543 */:
             case FinalCanbus.CAR_452_OD_Haval_VV5_H /* 16318916 */:
             case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
@@ -287,12 +286,12 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
                 break;
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.5
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     try {
                         Intent intent = new Intent();
-                        intent.setClass(Rzc_0439_HavalH9SetAct.this, Dj_0439_HavalH8AmpSetAct.class);
+                        intent.setClass(Rzc_0439_HavalH9SetAct.this, RZC_0439_HavalH9AmpSetAct.class);
                         Rzc_0439_HavalH9SetAct.this.startActivity(intent);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -319,10 +318,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         setonClick((Button) findViewById(R.id.btn_minus1));
         setonClick((Button) findViewById(R.id.btn_plus1));
         if (((CheckedTextView) findViewById(R.id.rzc_oushang_turn_right_enter_camera)) != null) {
-            ((CheckedTextView) findViewById(R.id.rzc_oushang_turn_right_enter_camera)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.6
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.rzc_oushang_turn_right_enter_camera)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[48] & 255;
+                    int value = DataCanbus.DATA[115] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[1];
                     iArr[0] = value != 0 ? 0 : 1;
@@ -331,10 +330,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_rearview_auto)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_rearview_auto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.7
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_rearview_auto)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[38] & 255;
+                    int value = DataCanbus.DATA[105] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 9;
@@ -344,10 +343,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_seat_memory)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_seat_memory)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.8
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_seat_memory)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[40] & 255;
+                    int value = DataCanbus.DATA[107] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 13;
@@ -357,10 +356,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_ceta_onoff)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_ceta_onoff)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.9
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_ceta_onoff)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[44] & 255;
+                    int value = DataCanbus.DATA[111] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 17;
@@ -370,10 +369,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_cartop_onoff)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_cartop_onoff)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.10
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_cartop_onoff)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[45] & 255;
+                    int value = DataCanbus.DATA[112] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 18;
@@ -383,10 +382,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_allterrain_onoff)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_allterrain_onoff)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.11
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_allterrain_onoff)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[46] & 255;
+                    int value = DataCanbus.DATA[113] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 19;
@@ -396,10 +395,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_collision_warn_onoff)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_collision_warn_onoff)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.12
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_collision_warn_onoff)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[69] & 255;
+                    int value = DataCanbus.DATA[129] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 23;
@@ -409,10 +408,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_autobrake_onoff)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_autobrake_onoff)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_0439_HavalH9SetAct.13
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_autobrake_onoff)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[70] & 255;
+                    int value = DataCanbus.DATA[130] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 24;
@@ -423,7 +422,7 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCMD(int cmd, int val) {
         DataCanbus.PROXY.cmd(1, new int[]{cmd, val}, null, null);
     }
@@ -434,107 +433,107 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAutoBrake() {
-        int value = DataCanbus.DATA[70];
+        int value = DataCanbus.DATA[130];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_autobrake_onoff)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_autobrake_onoff)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCollisionWarn() {
-        int value = DataCanbus.DATA[69];
+        int value = DataCanbus.DATA[129];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_collision_warn_onoff)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_collision_warn_onoff)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAllterrainset() {
-        int value = DataCanbus.DATA[46];
+        int value = DataCanbus.DATA[113];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_allterrain_onoff)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_allterrain_onoff)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCartopset() {
-        int value = DataCanbus.DATA[45];
+        int value = DataCanbus.DATA[112];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_cartop_onoff)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_cartop_onoff)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCetaset() {
-        int value = DataCanbus.DATA[44];
+        int value = DataCanbus.DATA[111];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_ceta_onoff)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_ceta_onoff)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDoorlockset() {
-        int value = DataCanbus.DATA[43];
+        int value = DataCanbus.DATA[110];
         if (((TextView) findViewById(R.id.tx_od_havalh9_doorlock_set)) != null) {
             switch (DataCanbus.DATA[1000]) {
                 case FinalCanbus.CAR_439_OuDi_Haval_H9_RS /* 15598007 */:
@@ -566,9 +565,9 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAntisheftset() {
-        int value = DataCanbus.DATA[42];
+        int value = DataCanbus.DATA[109];
         if (((TextView) findViewById(R.id.tx_od_havalh9_antitheft_set)) != null) {
             switch (value) {
                 case 0:
@@ -590,9 +589,9 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterParkset() {
-        int value = DataCanbus.DATA[41];
+        int value = DataCanbus.DATA[108];
         if (((TextView) findViewById(R.id.tx_od_havalh9_park_set)) != null) {
             switch (value) {
                 case 0:
@@ -608,26 +607,26 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatmemory() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[107];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_seat_memory)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_seat_memory)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue8() {
-        int value = DataCanbus.DATA[48] & 255;
+        int value = DataCanbus.DATA[115] & 255;
         if (((CheckedTextView) findViewById(R.id.rzc_oushang_turn_right_enter_camera)) != null) {
             ((CheckedTextView) findViewById(R.id.rzc_oushang_turn_right_enter_camera)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDomeDelay() {
         String str;
-        int domedelay = DataCanbus.DATA[34];
+        int domedelay = DataCanbus.DATA[101];
         if (((TextView) findViewById(R.id.rzc_havalh6_domedelay_text)) != null) {
             switch (DataCanbus.DATA[1000]) {
                 case FinalCanbus.CAR_439_OuDi_Haval_H9_RS /* 15598007 */:
@@ -672,10 +671,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFollowHome() {
         String str;
-        int followhome = DataCanbus.DATA[35];
+        int followhome = DataCanbus.DATA[102];
         if (((TextView) findViewById(R.id.rzc_havalh6_followhome_text)) != null) {
             switch (followhome) {
                 case 1:
@@ -698,10 +697,10 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePowerSave() {
         String str;
-        int powersave = DataCanbus.DATA[36];
+        int powersave = DataCanbus.DATA[103];
         if (((TextView) findViewById(R.id.rzc_havalh6_powersave_text)) != null) {
             switch (powersave) {
                 case 1:
@@ -721,9 +720,9 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRainFall() {
-        int rainfall = DataCanbus.DATA[37];
+        int rainfall = DataCanbus.DATA[104];
         if (((TextView) findViewById(R.id.rzc_havalh6_rainfall_text)) != null) {
             if (rainfall == 1) {
                 ((TextView) findViewById(R.id.rzc_havalh6_rainfall_text)).setText(R.string.str_244_rainfall2);
@@ -733,17 +732,17 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearViewAuto() {
-        int value = DataCanbus.DATA[38];
+        int value = DataCanbus.DATA[105];
         if (((CheckedTextView) findViewById(R.id.ctv_od_havalh9_rearview_auto)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_od_havalh9_rearview_auto)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateScreenBright() {
-        int bright = DataCanbus.DATA[47];
+        int bright = DataCanbus.DATA[114];
         if (((TextView) findViewById(R.id.rzc_havalh6_bright_adjust_text)) != null) {
             if (bright <= 26) {
                 ((TextView) findViewById(R.id.rzc_havalh6_bright_adjust_text)).setText(R.string.str_244_screenbright);
@@ -755,9 +754,9 @@ public class Rzc_0439_HavalH9SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFrontLight() {
-        int frontlight = DataCanbus.DATA[39];
+        int frontlight = DataCanbus.DATA[106];
         if (((TextView) findViewById(R.id.rzc_oudi_havalh9_frontlight_text)) != null) {
             if (frontlight == 1) {
                 ((TextView) findViewById(R.id.rzc_oudi_havalh9_frontlight_text)).setText(R.string.str_244_frontlight1);

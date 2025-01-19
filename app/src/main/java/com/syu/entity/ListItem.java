@@ -1,6 +1,5 @@
 package com.syu.entity;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ListItem {
     public static final int TYPE_ACTIVITY = 4;
     public static final int TYPE_BUTTON = 1;

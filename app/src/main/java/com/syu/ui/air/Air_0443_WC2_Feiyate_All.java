@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0443_WC2_Feiyate_All extends AirBase {
     public Air_0443_WC2_Feiyate_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0001_wc1_dazhong/air_wc_feiyate.webp";
         this.mPathHighlight = "0001_wc1_dazhong/air_wc_feiyate_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -135,7 +135,7 @@ public class Air_0443_WC2_Feiyate_All extends AirBase {
                 break;
             default:
                 int value5 = value4 * 5;
-                c.drawText(String.valueOf(value5 / 10) + "." + (value5 % 10), 45.0f, 50.0f, this.mPaint);
+                c.drawText(value5 / 10 + "." + (value5 % 10), 45.0f, 50.0f, this.mPaint);
                 break;
         }
         int value6 = this.DATA[28];
@@ -151,7 +151,7 @@ public class Air_0443_WC2_Feiyate_All extends AirBase {
                 break;
             default:
                 int value7 = value6 * 5;
-                c.drawText(String.valueOf(value7 / 10) + "." + (value7 % 10), 936.0f, 50.0f, this.mPaint);
+                c.drawText(value7 / 10 + "." + (value7 % 10), 936.0f, 50.0f, this.mPaint);
                 break;
         }
         canvas.save();

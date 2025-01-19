@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0396_RZC_ShengBaoM50F extends AirBase {
     public Air_0396_RZC_ShengBaoM50F(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0396_rzc_shenbao/air_shenbao_m50f.webp";
         this.mPathHighlight = "0396_rzc_shenbao/air_shenbao_m50f_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -116,9 +116,9 @@ public class Air_0396_RZC_ShengBaoM50F extends AirBase {
         } else if (temp == 31) {
             c.drawText("HI", 930.0f, 152.0f, this.mPaint);
         } else if (this.DATA[28] == 1) {
-            c.drawText(new StringBuilder().append(temp + 59).toString(), 930.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(temp + 59), 930.0f, 152.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp * 5) + 155) / 10.0f).toString(), 930.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp * 5) + 155) / 10.0f), 930.0f, 152.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

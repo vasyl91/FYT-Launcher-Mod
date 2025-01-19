@@ -22,7 +22,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcBaojunSetFunc extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -30,30 +29,30 @@ public class RzcBaojunSetFunc extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 7:
+                case 98:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
                     break;
-                case 9:
+                case 100:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value == 2);
                     break;
-                case 10:
+                case 101:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext4)).setChecked(value == 2);
                     break;
-                case 11:
+                case 102:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext5)).setChecked(value == 2);
                     break;
-                case 12:
+                case 103:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext6)).setChecked(value == 2);
                     break;
-                case 13:
+                case 104:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext7)).setChecked(value == 2);
                     break;
-                case 14:
+                case 105:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text1)).setText(R.string.wc_ruiteng_string_unlock_mode_1);
@@ -62,7 +61,7 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text1)).setText(R.string.wc_ruiteng_string_unlock_mode_0);
                             break;
                     }
-                case 15:
+                case 106:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text2)).setText(R.string.off);
@@ -74,7 +73,7 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text2)).setText(R.string.wc_ruiteng_string_unlock_mode_0);
                             break;
                     }
-                case 16:
+                case 107:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text3)).setText(R.string.klc_remote_Remote_control_latch_only_light);
@@ -83,13 +82,13 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text3)).setText(R.string.klc_remote_Remote_control_latch_light_Speaker);
                             break;
                     }
-                case 17:
+                case 108:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext8)).setChecked(value == 2);
                     break;
-                case 18:
+                case 109:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext9)).setChecked(value == 2);
                     break;
-                case 19:
+                case 110:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text4)).setText("10min");
@@ -101,10 +100,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text4)).setText("30min");
                             break;
                     }
-                case 20:
+                case 111:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext10)).setChecked(value == 2);
                     break;
-                case 21:
+                case 112:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text5)).setText("30S");
@@ -116,7 +115,7 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text5)).setText("75S");
                             break;
                     }
-                case 22:
+                case 113:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text6)).setText(R.string.str_baojun_str0);
@@ -125,10 +124,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text6)).setText(R.string.str_baojun_str1);
                             break;
                     }
-                case 23:
+                case 114:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext11)).setChecked(value == 2);
                     break;
-                case 24:
+                case 115:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text7)).setText("30km/h");
@@ -164,10 +163,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text7)).setText("80km/h");
                             break;
                     }
-                case 25:
+                case 116:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext12)).setChecked(value == 2);
                     break;
-                case 26:
+                case 117:
                     switch (value) {
                         case 1:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text8)).setText(R.string.klc_air_high);
@@ -179,16 +178,16 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text8)).setText(R.string.klc_air_low);
                             break;
                     }
-                case 27:
+                case 118:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext13)).setChecked(value == 2);
                     break;
-                case 29:
+                case 119:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext14)).setChecked(value == 2);
                     break;
-                case 30:
+                case 120:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext15)).setChecked(value == 2);
                     break;
-                case 31:
+                case 121:
                     switch (value) {
                         case 2:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text9)).setText(R.string.wc_golf_normal);
@@ -200,10 +199,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text9)).setText(R.string.str_driving_comfort);
                             break;
                     }
-                case 32:
+                case 122:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext16)).setChecked(value == 2);
                     break;
-                case 33:
+                case 123:
                     switch (value) {
                         case 2:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text10)).setText(R.string.klc_Parking_with_trailer_ON);
@@ -215,7 +214,7 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text10)).setText(R.string.off);
                             break;
                     }
-                case 34:
+                case 124:
                     if (DataCanbus.DATA[1000] == 721206 || DataCanbus.DATA[1000] == 983350) {
                         switch (value) {
                             case 2:
@@ -242,16 +241,16 @@ public class RzcBaojunSetFunc extends BaseActivity {
                         }
                     }
                     break;
-                case 35:
+                case 125:
                     ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text12)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 36:
+                case 126:
                     ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text13)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 37:
+                case 127:
                     ((CheckedTextView) RzcBaojunSetFunc.this.findViewById(R.id.ctv_checkedtext17)).setChecked(value == 2);
                     break;
-                case 38:
+                case 128:
                     switch (value) {
                         case 2:
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text14)).setText("动感缤纷");
@@ -266,24 +265,24 @@ public class RzcBaojunSetFunc extends BaseActivity {
                             ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text14)).setText("柔和微光");
                             break;
                     }
-                case 39:
+                case 129:
                     ((TextView) RzcBaojunSetFunc.this.findViewById(R.id.tv_text15)).setText(String.valueOf(value) + "s");
                     break;
-                case 40:
+                case 130:
                     RzcBaojunSetFunc.this.updateLauguageSet();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_0310_rzc_baojun);
+        //setContentView(R.layout.layout_0310_rzc_baojun);
         setupView();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -296,8 +295,8 @@ public class RzcBaojunSetFunc extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 RzcBaojunSetFunc.this.language_set = position;
                 if (RzcBaojunSetFunc.this.language_set >= 0 && RzcBaojunSetFunc.this.language_set <= RzcBaojunSetFunc.this.mLauStylelist.size() && RzcBaojunSetFunc.this.send_lang != null) {
@@ -309,7 +308,7 @@ public class RzcBaojunSetFunc extends BaseActivity {
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[130];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -551,8 +550,8 @@ public class RzcBaojunSetFunc extends BaseActivity {
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcBaojunSetFunc.this.mLauStyle == null) {
                     RzcBaojunSetFunc.this.initLauStyle();
@@ -564,10 +563,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             }
         });
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.4
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[7] & 255;
+                    int value = DataCanbus.DATA[98] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 1;
@@ -576,17 +575,17 @@ public class RzcBaojunSetFunc extends BaseActivity {
                 }
             });
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 RzcBaojunSetFunc.this.dialog(R.string.xp_accord9_deflation_warning_system, 0, 2);
             }
         });
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext3)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.6
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[9] & 255;
+                    int value = DataCanbus.DATA[100] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 3;
@@ -596,10 +595,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext4)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.7
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[10] & 255;
+                    int value = DataCanbus.DATA[101] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 4;
@@ -609,10 +608,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext5)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.8
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[11] & 255;
+                    int value = DataCanbus.DATA[102] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 5;
@@ -622,10 +621,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext6)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.9
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[12] & 255;
+                    int value = DataCanbus.DATA[103] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 6;
@@ -635,10 +634,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext7)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.10
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[13] & 255;
+                    int value = DataCanbus.DATA[104] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 7;
@@ -648,10 +647,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext8)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.11
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[17] & 255;
+                    int value = DataCanbus.DATA[108] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 11;
@@ -661,10 +660,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext9)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.12
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[18] & 255;
+                    int value = DataCanbus.DATA[109] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 12;
@@ -674,10 +673,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext10)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.13
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[20] & 255;
+                    int value = DataCanbus.DATA[111] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 14;
@@ -687,10 +686,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext11)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.14
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[23] & 255;
+                    int value = DataCanbus.DATA[114] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 17;
@@ -700,10 +699,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext12)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.15
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[25] & 255;
+                    int value = DataCanbus.DATA[116] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 19;
@@ -713,10 +712,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext13)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.16
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[27] & 255;
+                    int value = DataCanbus.DATA[118] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 21;
@@ -726,10 +725,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext14)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.17
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[29] & 255;
+                    int value = DataCanbus.DATA[119] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 22;
@@ -739,10 +738,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext15)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.18
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[30] & 255;
+                    int value = DataCanbus.DATA[120] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 23;
@@ -752,10 +751,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext16)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.19
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[30] & 255;
+                    int value = DataCanbus.DATA[120] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 25;
@@ -765,10 +764,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext17)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.20
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[37] & 255;
+                    int value = DataCanbus.DATA[127] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 30;
@@ -778,10 +777,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus1)) != null) {
-            ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.21
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[14] & 255;
+                    int value = DataCanbus.DATA[105] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 8;
@@ -791,10 +790,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus1)) != null) {
-            ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.22
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[14] & 255;
+                    int value = DataCanbus.DATA[105] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 8;
@@ -804,10 +803,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus2)) != null) {
-            ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.23
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[15] & 255) - 1;
+                    int value = (DataCanbus.DATA[106] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -816,10 +815,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus2)) != null) {
-            ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.24
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[15] & 255) + 1;
+                    int value = (DataCanbus.DATA[106] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -828,10 +827,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus3)) != null) {
-            ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.25
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[16] & 255) - 1;
+                    int value = (DataCanbus.DATA[107] & 255) - 1;
                     if (value < 1) {
                         value = 2;
                     }
@@ -840,10 +839,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus3)) != null) {
-            ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.26
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[16] & 255) + 1;
+                    int value = (DataCanbus.DATA[107] & 255) + 1;
                     if (value > 2) {
                         value = 1;
                     }
@@ -852,10 +851,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus4)) != null) {
-            ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.27
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[19] & 255) - 1;
+                    int value = (DataCanbus.DATA[110] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -864,10 +863,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus4)) != null) {
-            ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.28
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[19] & 255) + 1;
+                    int value = (DataCanbus.DATA[110] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -876,10 +875,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus5)) != null) {
-            ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.29
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[21] & 255) - 1;
+                    int value = (DataCanbus.DATA[112] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -888,10 +887,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus5)) != null) {
-            ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.30
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[21] & 255) + 1;
+                    int value = (DataCanbus.DATA[112] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -900,10 +899,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus6)) != null) {
-            ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.31
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[22] & 255) - 1;
+                    int value = (DataCanbus.DATA[113] & 255) - 1;
                     if (value < 1) {
                         value = 2;
                     }
@@ -912,10 +911,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus6)) != null) {
-            ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.32
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[22] & 255) + 1;
+                    int value = (DataCanbus.DATA[113] & 255) + 1;
                     if (value > 2) {
                         value = 1;
                     }
@@ -924,10 +923,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus7)) != null) {
-            ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.33
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[24] & 255) - 1;
+                    int value = (DataCanbus.DATA[115] & 255) - 1;
                     if (value < 1) {
                         value = 11;
                     }
@@ -936,10 +935,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus7)) != null) {
-            ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.34
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[24] & 255) + 1;
+                    int value = (DataCanbus.DATA[115] & 255) + 1;
                     if (value > 11) {
                         value = 1;
                     }
@@ -948,10 +947,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus8)) != null) {
-            ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.35
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[26] & 255) - 1;
+                    int value = (DataCanbus.DATA[117] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -960,10 +959,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus8)) != null) {
-            ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.36
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[26] & 255) + 1;
+                    int value = (DataCanbus.DATA[117] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -972,10 +971,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus9)) != null) {
-            ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.37
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[31] & 255) - 1;
+                    int value = (DataCanbus.DATA[121] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -984,10 +983,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus9)) != null) {
-            ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.38
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[31] & 255) + 1;
+                    int value = (DataCanbus.DATA[121] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -996,10 +995,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus10)) != null) {
-            ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.39
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[33] & 255) - 1;
+                    int value = (DataCanbus.DATA[123] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -1008,10 +1007,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus10)) != null) {
-            ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.40
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[33] & 255) + 1;
+                    int value = (DataCanbus.DATA[123] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -1020,10 +1019,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus11)) != null) {
-            ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.41
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[34] & 255) - 1;
+                    int value = (DataCanbus.DATA[124] & 255) - 1;
                     if (value < 1) {
                         value = 3;
                     }
@@ -1032,10 +1031,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus11)) != null) {
-            ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.42
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[34] & 255) + 1;
+                    int value = (DataCanbus.DATA[124] & 255) + 1;
                     if (value > 3) {
                         value = 1;
                     }
@@ -1044,10 +1043,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus12)) != null) {
-            ((Button) findViewById(R.id.btn_minus12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.43
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[35] & 255;
+                    int value = DataCanbus.DATA[125] & 255;
                     if (value > 1) {
                         value--;
                     }
@@ -1056,10 +1055,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus12)) != null) {
-            ((Button) findViewById(R.id.btn_plus12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.44
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[35] & 255;
+                    int value = DataCanbus.DATA[125] & 255;
                     if (value < 253) {
                         value++;
                     }
@@ -1068,10 +1067,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus13)) != null) {
-            ((Button) findViewById(R.id.btn_minus13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.45
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[36] & 255;
+                    int value = DataCanbus.DATA[126] & 255;
                     if (value > 1) {
                         value--;
                     }
@@ -1080,10 +1079,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus13)) != null) {
-            ((Button) findViewById(R.id.btn_plus13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.46
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[36] & 255;
+                    int value = DataCanbus.DATA[126] & 255;
                     if (value < 100) {
                         value++;
                     }
@@ -1092,10 +1091,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus14)) != null) {
-            ((Button) findViewById(R.id.btn_minus14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.47
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus14)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[38] & 255) - 1;
+                    int value = (DataCanbus.DATA[128] & 255) - 1;
                     if (value < 1) {
                         value = 4;
                     }
@@ -1104,10 +1103,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus14)) != null) {
-            ((Button) findViewById(R.id.btn_plus14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.48
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus14)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = (DataCanbus.DATA[38] & 255) + 1;
+                    int value = (DataCanbus.DATA[128] & 255) + 1;
                     if (value > 4) {
                         value = 1;
                     }
@@ -1116,10 +1115,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_minus15)) != null) {
-            ((Button) findViewById(R.id.btn_minus15)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.49
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_minus15)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[39] & 255;
+                    int value = DataCanbus.DATA[129] & 255;
                     if (value > 5) {
                         value--;
                     }
@@ -1128,10 +1127,10 @@ public class RzcBaojunSetFunc extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.btn_plus15)) != null) {
-            ((Button) findViewById(R.id.btn_plus15)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.50
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.btn_plus15)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[39] & 255;
+                    int value = DataCanbus.DATA[129] & 255;
                     if (value < 20) {
                         value++;
                     }
@@ -1141,89 +1140,89 @@ public class RzcBaojunSetFunc extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
     }
 
     protected void dialog(int stringId, final int cmd, final int value) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.51
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
                 final int i2 = value;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.51.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(i, new int[]{i2, 1}, null, null);
                     }
@@ -1231,8 +1230,8 @@ public class RzcBaojunSetFunc extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc.52
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }

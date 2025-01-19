@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -16,7 +17,7 @@ import com.syu.util.Utils;
 public class SetWallpaperReceiver extends BroadcastReceiver {
     String name;
     String pak;
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -38,7 +39,7 @@ public class SetWallpaperReceiver extends BroadcastReceiver {
                 SharedPreferences.Editor editor = Utils.getSp().edit();
                 editor.putBoolean("mAppWallPaper", LauncherApplication.mAppWallPaper);
                 editor.putBoolean("mWallPaperUpdate", LauncherApplication.mWallPaperUpdate);
-                editor.commit();
+                editor.apply();
                 return;
             }
             LauncherApplication.mWallPaperUpdate = false;

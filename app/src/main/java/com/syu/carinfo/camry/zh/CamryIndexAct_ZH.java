@@ -9,14 +9,13 @@ import android.widget.TabHost;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryIndexAct_ZH extends TabActivity {
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_index_zh);
+        //setContentView(R.layout.layout_camry_index_zh);
         init();
     }
 
@@ -26,20 +25,20 @@ public class CamryIndexAct_ZH extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabHistory").setIndicator("tabHistory").setContent(new Intent(this, (Class<?>) CamryHistoryAct_ZH.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTireInfo").setIndicator("tabTireInfo").setContent(new Intent(this, (Class<?>) CamryTireAct_ZH.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) CamrySettingsAct_ZH.class)));
-        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.camry.zh.CamryIndexAct_ZH.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.camry_btn_trip_info /* 2131428119 */:
+                    case R.id.camry_btn_trip_info /* 2131428108 */:
                         CamryIndexAct_ZH.this.mTabHost.setCurrentTabByTag("tabTripInfo");
                         break;
-                    case R.id.camry_btn_history_info /* 2131428120 */:
+                    case R.id.camry_btn_history_info /* 2131428109 */:
                         CamryIndexAct_ZH.this.mTabHost.setCurrentTabByTag("tabHistory");
                         break;
-                    case R.id.camry_btn_settings /* 2131428121 */:
+                    case R.id.camry_btn_settings /* 2131428110 */:
                         CamryIndexAct_ZH.this.mTabHost.setCurrentTabByTag("tabSettings");
                         break;
-                    case R.id.camry_btn_trie_info /* 2131430675 */:
+                    case R.id.camry_btn_trie_info /* 2131430651 */:
                         CamryIndexAct_ZH.this.mTabHost.setCurrentTabByTag("tabTireInfo");
                         break;
                 }
@@ -47,13 +46,13 @@ public class CamryIndexAct_ZH extends TabActivity {
         });
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(20, new int[]{31}, null, null);
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

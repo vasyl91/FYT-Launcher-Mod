@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0398_SBD_FORD_LIEYING extends AirBase {
     public Air_0398_SBD_FORD_LIEYING(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0398_sbd_ford_lieying/air.webp";
         this.mPathHighlight = "0398_sbd_ford_lieying/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -85,7 +85,7 @@ public class Air_0398_SBD_FORD_LIEYING extends AirBase {
             str = "NONE";
         } else {
             float temp = value * 0.1f;
-            str = new StringBuilder(String.valueOf(temp)).toString();
+            str = String.valueOf(temp);
         }
         c.drawText(str, 46.0f, 125.0f, this.mPaint);
         int value2 = this.DATA[36];
@@ -97,7 +97,7 @@ public class Air_0398_SBD_FORD_LIEYING extends AirBase {
             str2 = "NONE";
         } else {
             float temp2 = value2 * 0.1f;
-            str2 = new StringBuilder(String.valueOf(temp2)).toString();
+            str2 = String.valueOf(temp2);
         }
         c.drawText(str2, 930.0f, 125.0f, this.mPaint);
         canvas.save();

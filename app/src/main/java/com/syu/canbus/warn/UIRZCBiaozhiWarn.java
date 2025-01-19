@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIRZCBiaozhiWarn {
     private static UIRZCBiaozhiWarn mInstance;
     Context context;
@@ -36,12 +36,12 @@ public class UIRZCBiaozhiWarn {
     private void initTip(int value, int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_273_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
         switch (updateCode) {
-            case 194:
+            case 205:
                 if (((value >> 0) & 3) == 1) {
                     this.mTextWarn.setText(R.string.bz408_warning_61);
                 } else if (((value >> 0) & 3) == 2) {
@@ -64,7 +64,7 @@ public class UIRZCBiaozhiWarn {
                     this.mTextWarn.setText("车门自锁停用");
                     break;
                 }
-            case 195:
+            case 206:
                 if (((value >> 0) & 3) == 1) {
                     this.mTextWarn.setText("儿童安全装置启用");
                 } else if (((value >> 0) & 3) == 2) {
@@ -88,7 +88,7 @@ public class UIRZCBiaozhiWarn {
                     this.mTextWarn.setText("驱动防滑系统：沙地模式");
                     break;
                 }
-            case 196:
+            case 207:
                 if (((value >> 0) & 3) == 1) {
                     this.mTextWarn.setText("发动机启停功能启用");
                 } else if (((value >> 0) & 3) == 2) {

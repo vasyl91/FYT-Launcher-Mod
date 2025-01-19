@@ -10,13 +10,12 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HaiMaV70AirControl extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.mzd.cx5.HaiMaV70AirControl.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
@@ -95,10 +94,10 @@ public class HaiMaV70AirControl extends Activity implements View.OnClickListener
     };
     int value;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_237_air_control);
+        ////setContentView(R.layout.layout_237_air_control);
         initListener();
     }
 
@@ -120,7 +119,7 @@ public class HaiMaV70AirControl extends Activity implements View.OnClickListener
         ((Button) findViewById(R.id.air_xts_real)).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -128,7 +127,7 @@ public class HaiMaV70AirControl extends Activity implements View.OnClickListener
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -136,7 +135,7 @@ public class HaiMaV70AirControl extends Activity implements View.OnClickListener
         mIsFront = false;
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_air_temp_left_plus /* 2131427425 */:
@@ -232,7 +231,7 @@ public class HaiMaV70AirControl extends Activity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateBlowMode() {
         int body = DataCanbus.DATA[5];
         int win = DataCanbus.DATA[4];

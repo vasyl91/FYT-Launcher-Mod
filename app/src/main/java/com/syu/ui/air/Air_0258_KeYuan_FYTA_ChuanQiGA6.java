@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0258_KeYuan_FYTA_ChuanQiGA6 extends AirBase {
     public Air_0258_KeYuan_FYTA_ChuanQiGA6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0258_fyt_keyuan/air_fyt_keyuan_ga6_n.webp";
         this.mPathHighlight = "0258_fyt_keyuan/air_fyt_keyuan_ga6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -72,13 +72,13 @@ public class Air_0258_KeYuan_FYTA_ChuanQiGA6 extends AirBase {
         if (left_temp == 0) {
             c.drawText("----", 76.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 2.0f).toString(), 76.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 2.0f), 76.0f, 72.0f, this.mPaint);
         }
         int right_temp = this.DATA[12];
         if (right_temp == 0) {
             c.drawText("----", 940.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp / 2.0f).toString(), 940.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 2.0f), 940.0f, 72.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

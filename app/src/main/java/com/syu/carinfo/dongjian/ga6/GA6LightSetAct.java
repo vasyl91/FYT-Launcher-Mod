@@ -10,26 +10,25 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GA6LightSetAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dongjian.ga6.GA6LightSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 16:
+                case 114:
                     GA6LightSetAct.this.updaterWithMeHome();
                     break;
-                case 17:
+                case 115:
                     GA6LightSetAct.this.updaterDayLight();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_257_dongjian_ga6_light_set);
+        //setContentView(R.layout.layout_257_dongjian_ga6_light_set);
         setUI();
     }
 
@@ -39,53 +38,53 @@ public class GA6LightSetAct extends BaseActivity implements View.OnClickListener
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                GA6Func.C_CAR_CARINFO_CMD(5, 2, DataCanbus.DATA[17] != 0 ? 0 : 1);
+            case R.id.btn_minus1 /* 2131427455 */:
+                if (DataCanbus.DATA[114] == 0) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 2);
+                    break;
+                } else if (DataCanbus.DATA[114] == 1) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 0);
+                    break;
+                } else if (DataCanbus.DATA[114] == 2) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 1);
+                    break;
+                }
+            case R.id.btn_plus1 /* 2131427457 */:
+                if (DataCanbus.DATA[114] == 0) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 1);
+                    break;
+                } else if (DataCanbus.DATA[114] == 1) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 2);
+                    break;
+                } else if (DataCanbus.DATA[114] == 2) {
+                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 0);
+                    break;
+                }
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                GA6Func.C_CAR_CARINFO_CMD(5, 2, DataCanbus.DATA[115] != 0 ? 0 : 1);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                if (DataCanbus.DATA[16] == 0) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 2);
-                    break;
-                } else if (DataCanbus.DATA[16] == 1) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 0);
-                    break;
-                } else if (DataCanbus.DATA[16] == 2) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 1);
-                    break;
-                }
-            case R.id.btn_plus1 /* 2131427482 */:
-                if (DataCanbus.DATA[16] == 0) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 1);
-                    break;
-                } else if (DataCanbus.DATA[16] == 1) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 2);
-                    break;
-                } else if (DataCanbus.DATA[16] == 2) {
-                    GA6Func.C_CAR_CARINFO_CMD(5, 1, 0);
-                    break;
-                }
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWithMeHome() {
-        int mWithMeHomeInt = DataCanbus.DATA[16];
+        int mWithMeHomeInt = DataCanbus.DATA[114];
         if (mWithMeHomeInt == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.off);
         } else if (mWithMeHomeInt == 2) {
@@ -95,9 +94,9 @@ public class GA6LightSetAct extends BaseActivity implements View.OnClickListener
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDayLight() {
-        int mDayLightInt = DataCanbus.DATA[17];
+        int mDayLightInt = DataCanbus.DATA[115];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(mDayLightInt != 0);
     }
 }

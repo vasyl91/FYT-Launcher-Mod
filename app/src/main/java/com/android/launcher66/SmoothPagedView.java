@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class SmoothPagedView extends PagedView {
     static final int DEFAULT_MODE = 0;
     private static final float SMOOTHING_CONSTANT = (float) (0.016d / Math.log(0.75d));
@@ -32,7 +31,7 @@ public abstract class SmoothPagedView extends PagedView {
             this.mTension = 0.0f;
         }
 
-        @Override // android.animation.TimeInterpolator
+        @Override
         public float getInterpolation(float t) {
             float t2 = t - 1.0f;
             return (t2 * t2 * (((this.mTension + 1.0f) * t2) + this.mTension)) + 1.0f;
@@ -53,7 +52,7 @@ public abstract class SmoothPagedView extends PagedView {
         return 1;
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void init() {
         super.init();
         this.mScrollMode = getScrollMode();
@@ -65,7 +64,7 @@ public abstract class SmoothPagedView extends PagedView {
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void snapToDestination() {
         if (this.mScrollMode == 1) {
             super.snapToDestination();
@@ -74,7 +73,7 @@ public abstract class SmoothPagedView extends PagedView {
         }
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void snapToPageWithVelocity(int whichPage, int velocity) {
         if (this.mScrollMode == 1) {
             super.snapToPageWithVelocity(whichPage, velocity);
@@ -107,7 +106,7 @@ public abstract class SmoothPagedView extends PagedView {
         snapToPage(whichPage2, delta, duration);
     }
 
-    @Override // com.android.launcher66.PagedView
+    @Override
     protected void snapToPage(int whichPage) {
         if (this.mScrollMode == 1) {
             super.snapToPage(whichPage);
@@ -116,7 +115,7 @@ public abstract class SmoothPagedView extends PagedView {
         }
     }
 
-    @Override // com.android.launcher66.PagedView, android.view.View
+    @Override
     public void computeScroll() {
         if (this.mScrollMode == 1) {
             super.computeScroll();

@@ -18,7 +18,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -26,26 +25,26 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 19:
+                case 98:
                     ((TextView) ODLeTinMangguoCarSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(val)).toString());
                     break;
-                case 20:
+                case 99:
                     ODLeTinMangguoCarSet.this.setCheck((CheckedTextView) ODLeTinMangguoCarSet.this.findViewById(R.id.ctv_checkedtext1), val == 1);
                     break;
-                case 21:
+                case 100:
                     ODLeTinMangguoCarSet.this.updateLauguageSet();
                     break;
-                case 22:
+                case 101:
                     if (((TextView) ODLeTinMangguoCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         ((TextView) ODLeTinMangguoCarSet.this.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(val)).toString());
                         break;
                     }
-                case 23:
+                case 102:
                     if (((TextView) ODLeTinMangguoCarSet.this.findViewById(R.id.tv_text3)) != null) {
                         switch (val) {
                             case 0:
@@ -57,21 +56,21 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
                         }
                     }
                     break;
-                case 24:
+                case 103:
                     ODLeTinMangguoCarSet.this.setCheck((CheckedTextView) ODLeTinMangguoCarSet.this.findViewById(R.id.ctv_checkedtext2), val == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_letin_mangguo_settings);
+        //setContentView(R.layout.layout_0452_od_letin_mangguo_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -84,8 +83,8 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 ODLeTinMangguoCarSet.this.language_set = position;
                 if (ODLeTinMangguoCarSet.this.language_set >= 0 && ODLeTinMangguoCarSet.this.language_set <= ODLeTinMangguoCarSet.this.mLauStylelist.size() && ODLeTinMangguoCarSet.this.send_lang != null) {
@@ -97,7 +96,7 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[100];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -112,7 +111,7 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -126,8 +125,8 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ODLeTinMangguoCarSet.this.mLauStyle == null) {
                     ODLeTinMangguoCarSet.this.initLauStyle();
@@ -148,56 +147,56 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
         setSelfClick((Button) findViewById(R.id.btn_plus3), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[20];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
-                    value = 1;
-                }
-                setCarInfo(1, value);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 setAirInfo(49, 1);
                 setAirInfo(49, 0);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 setAirInfo(48, 1);
                 setAirInfo(48, 0);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value2 = DataCanbus.DATA[22];
-                if (value2 > 0) {
-                    value2--;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value = DataCanbus.DATA[101];
+                if (value > 0) {
+                    value--;
+                }
+                setCarInfo(3, value);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value2 = DataCanbus.DATA[101];
+                if (value2 < 100) {
+                    value2++;
                 }
                 setCarInfo(3, value2);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value3 = DataCanbus.DATA[22];
-                if (value3 < 100) {
-                    value3++;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value3 = DataCanbus.DATA[102] - 1;
+                if (value3 < 0) {
+                    value3 = 1;
                 }
-                setCarInfo(3, value3);
+                setCarInfo(4, value3);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value4 = DataCanbus.DATA[23] - 1;
-                if (value4 < 0) {
-                    value4 = 1;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value4 = DataCanbus.DATA[102] + 1;
+                if (value4 > 1) {
+                    value4 = 0;
                 }
                 setCarInfo(4, value4);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value5 = DataCanbus.DATA[23] + 1;
-                if (value5 > 1) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[99];
+                if (value5 == 1) {
                     value5 = 0;
+                } else if (value5 == 0) {
+                    value5 = 1;
                 }
-                setCarInfo(4, value5);
+                setCarInfo(1, value5);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value6 = DataCanbus.DATA[24];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value6 = DataCanbus.DATA[103];
                 if (value6 == 1) {
                     value6 = 0;
                 } else if (value6 == 0) {
@@ -216,36 +215,36 @@ public class ODLeTinMangguoCarSet extends BaseActivity implements View.OnClickLi
         DataCanbus.PROXY.cmd(0, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         setCarInfo(0, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 }

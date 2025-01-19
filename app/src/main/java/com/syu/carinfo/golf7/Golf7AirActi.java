@@ -10,46 +10,14 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7AirActi extends BaseActivity {
     public static Golf7AirActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7AirActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 89:
-                    Golf7AirActi.this.mUpdaterAirAutoOn();
-                    break;
-                case 94:
-                    Golf7AirActi.this.mUpdaterBlowUpLeftOn();
-                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
-                    break;
-                case 95:
-                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
-                    Golf7AirActi.this.mUpdaterBlowBodyRightOn();
-                    break;
-                case 96:
-                    Golf7AirActi.this.mUpdaterBlowUpFootLeftOn();
-                    Golf7AirActi.this.mUpdaterBlowFootRightOn();
-                    break;
-                case 98:
-                    Golf7AirActi.this.mUpdaterAirTempLeft();
-                    Golf7AirActi.this.mUpdaterBlowUpLeftOn();
-                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
-                    Golf7AirActi.this.mUpdaterBlowUpFootLeftOn();
-                    break;
-                case 99:
-                    Golf7AirActi.this.mUpdaterAirTempRight();
-                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
-                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
-                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
-                    break;
-                case 103:
-                    Golf7AirActi.this.mUpdaterAirTempRight();
-                    Golf7AirActi.this.mUpdaterAirTempLeft();
-                    break;
-                case 105:
+                case 10:
                     Golf7AirActi.this.mUpdaterAirPowerOn();
                     Golf7AirActi.this.mUpdaterAirTempLeft();
                     Golf7AirActi.this.mUpdaterBlowUpLeftOn();
@@ -60,25 +28,56 @@ public class Golf7AirActi extends BaseActivity {
                     Golf7AirActi.this.mUpdaterBlowUpRightOn();
                     Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
                     break;
+                case 13:
+                    Golf7AirActi.this.mUpdaterAirAutoOn();
+                    break;
+                case 18:
+                    Golf7AirActi.this.mUpdaterBlowUpLeftOn();
+                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
+                    break;
+                case 19:
+                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
+                    Golf7AirActi.this.mUpdaterBlowBodyRightOn();
+                    break;
+                case 20:
+                    Golf7AirActi.this.mUpdaterBlowUpFootLeftOn();
+                    Golf7AirActi.this.mUpdaterBlowFootRightOn();
+                    break;
+                case 27:
+                    Golf7AirActi.this.mUpdaterAirTempLeft();
+                    Golf7AirActi.this.mUpdaterBlowUpLeftOn();
+                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
+                    Golf7AirActi.this.mUpdaterBlowUpFootLeftOn();
+                    break;
+                case 28:
+                    Golf7AirActi.this.mUpdaterAirTempRight();
+                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
+                    Golf7AirActi.this.mUpdaterBlowUpRightOn();
+                    Golf7AirActi.this.mUpdaterBlowBodyLeftOn();
+                    break;
+                case 37:
+                    Golf7AirActi.this.mUpdaterAirTempRight();
+                    Golf7AirActi.this.mUpdaterAirTempLeft();
+                    break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_air);
+        //setContentView(R.layout.layout_golf7_air);
         init();
         AirHelper.disableAirWindowLocal(true);
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.golf7_air_btn_power)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7AirActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.golf7_air_btn_power)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[105] != 0) {
+                if (DataCanbus.DATA[10] != 0) {
                     DataCanbus.PROXY.cmd(38, new int[1], null, null);
                 } else {
                     DataCanbus.PROXY.cmd(38, new int[]{1}, null, null);
@@ -87,7 +86,7 @@ public class Golf7AirActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -95,7 +94,7 @@ public class Golf7AirActi extends BaseActivity {
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -103,34 +102,34 @@ public class Golf7AirActi extends BaseActivity {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPowerOn() {
         if (((Button) findViewById(R.id.golf7_air_btn_power)) != null) {
-            ((Button) findViewById(R.id.golf7_air_btn_power)).setText(DataCanbus.DATA[105] == 0 ? "OFF" : "ON");
+            ((Button) findViewById(R.id.golf7_air_btn_power)).setText(DataCanbus.DATA[10] == 0 ? "OFF" : "ON");
             ((TextView) findViewById(R.id.golf7_air_temp_left)).setText("");
             ((TextView) findViewById(R.id.golf7_air_auto)).setText("");
             ((TextView) findViewById(R.id.golf7_air_temp_right)).setText("");
@@ -145,10 +144,10 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAutoOn() {
         if (((TextView) findViewById(R.id.golf7_air_auto)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[89] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[13] != 0) {
                 ((TextView) findViewById(R.id.golf7_air_auto)).setText("AUTO");
             } else {
                 ((TextView) findViewById(R.id.golf7_air_auto)).setText("");
@@ -156,23 +155,23 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[98];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.golf7_air_temp_left)) != null) {
-            if (DataCanbus.DATA[105] != 0) {
+            if (DataCanbus.DATA[10] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setText("LOW");
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-1);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_l);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1l);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2l);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_l);
                         return;
                     }
@@ -181,14 +180,14 @@ public class Golf7AirActi extends BaseActivity {
                 if (temp == 31) {
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setText("HI");
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-65536);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_h);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1h);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2h);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_h);
                         return;
                     }
@@ -199,28 +198,28 @@ public class Golf7AirActi extends BaseActivity {
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setText(temp2 + "F");
                     if (temp2 > 72) {
                         ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-65536);
-                        if (DataCanbus.DATA[94] != 0) {
+                        if (DataCanbus.DATA[18] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_h);
                         }
-                        if (DataCanbus.DATA[95] != 0) {
+                        if (DataCanbus.DATA[19] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1h);
                             ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2h);
                         }
-                        if (DataCanbus.DATA[96] != 0) {
+                        if (DataCanbus.DATA[20] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_h);
                             return;
                         }
                         return;
                     }
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-1);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_l);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1l);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2l);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_l);
                         return;
                     }
@@ -230,28 +229,28 @@ public class Golf7AirActi extends BaseActivity {
                 ((TextView) findViewById(R.id.golf7_air_temp_left)).setText((temp3 / 10.0f) + "°C");
                 if (temp3 > 224) {
                     ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-65536);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_h);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1h);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2h);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_h);
                         return;
                     }
                     return;
                 }
                 ((TextView) findViewById(R.id.golf7_air_temp_left)).setTextColor(-1);
-                if (DataCanbus.DATA[94] != 0) {
+                if (DataCanbus.DATA[18] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_l);
                 }
-                if (DataCanbus.DATA[95] != 0) {
+                if (DataCanbus.DATA[19] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1l);
                     ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2l);
                 }
-                if (DataCanbus.DATA[96] != 0) {
+                if (DataCanbus.DATA[20] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_l);
                     return;
                 }
@@ -261,23 +260,23 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[99];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.golf7_air_temp_right)) != null) {
-            if (DataCanbus.DATA[105] != 0) {
+            if (DataCanbus.DATA[10] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setText("LOW");
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-1);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_l);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1l);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2l);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_l);
                         return;
                     }
@@ -286,14 +285,14 @@ public class Golf7AirActi extends BaseActivity {
                 if (temp == 31) {
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setText("HI");
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-65536);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_h);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1h);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2h);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_h);
                         return;
                     }
@@ -304,28 +303,28 @@ public class Golf7AirActi extends BaseActivity {
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setText(temp2 + "F");
                     if (temp2 > 72) {
                         ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-65536);
-                        if (DataCanbus.DATA[94] != 0) {
+                        if (DataCanbus.DATA[18] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_h);
                         }
-                        if (DataCanbus.DATA[95] != 0) {
+                        if (DataCanbus.DATA[19] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1h);
                             ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2h);
                         }
-                        if (DataCanbus.DATA[96] != 0) {
+                        if (DataCanbus.DATA[20] != 0) {
                             ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_h);
                             return;
                         }
                         return;
                     }
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-1);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_l);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1l);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2l);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_l);
                         return;
                     }
@@ -335,28 +334,28 @@ public class Golf7AirActi extends BaseActivity {
                 ((TextView) findViewById(R.id.golf7_air_temp_right)).setText((temp3 / 10.0f) + "°C");
                 if (temp3 > 224) {
                     ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-65536);
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_h);
                     }
-                    if (DataCanbus.DATA[95] != 0) {
+                    if (DataCanbus.DATA[19] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1h);
                         ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2h);
                     }
-                    if (DataCanbus.DATA[96] != 0) {
+                    if (DataCanbus.DATA[20] != 0) {
                         ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_h);
                         return;
                     }
                     return;
                 }
                 ((TextView) findViewById(R.id.golf7_air_temp_right)).setTextColor(-1);
-                if (DataCanbus.DATA[94] != 0) {
+                if (DataCanbus.DATA[18] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_l);
                 }
-                if (DataCanbus.DATA[95] != 0) {
+                if (DataCanbus.DATA[19] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1l);
                     ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2l);
                 }
-                if (DataCanbus.DATA[96] != 0) {
+                if (DataCanbus.DATA[20] != 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_l);
                     return;
                 }
@@ -366,12 +365,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowUpLeftOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[98];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.golf7_air_blow_up_left)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[94] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[18] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_up_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_up_l);
                     return;
@@ -401,12 +400,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[98];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.golf7_air_blow_body_left1)) != null && ((TextView) findViewById(R.id.golf7_air_blow_body_left2)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[95] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[19] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_body_left1)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_1l);
                     ((TextView) findViewById(R.id.golf7_air_blow_body_left2)).setBackgroundResource(R.drawable.ic_golf7_blow_left_body_2l);
@@ -443,12 +442,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowUpFootLeftOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[98];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.golf7_air_blow_foot_left)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[96] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[20] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_foot_left)).setBackgroundResource(R.drawable.ic_golf7_blow_left_foot_l);
                     return;
@@ -478,12 +477,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowUpRightOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[99];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.golf7_air_blow_up_right)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[94] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[18] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_up_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_up_l);
                     return;
@@ -513,12 +512,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyRightOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[99];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.golf7_air_blow_body_right1)) != null && ((TextView) findViewById(R.id.golf7_air_blow_body_right2)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[95] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[19] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_body_right1)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_1l);
                     ((TextView) findViewById(R.id.golf7_air_blow_body_right2)).setBackgroundResource(R.drawable.ic_golf7_blow_right_body_2l);
@@ -555,12 +554,12 @@ public class Golf7AirActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootRightOn() {
-        int unit = DataCanbus.DATA[103];
-        int temp = DataCanbus.DATA[99];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.golf7_air_blow_foot_right)) != null) {
-            if (DataCanbus.DATA[105] != 0 && DataCanbus.DATA[96] != 0) {
+            if (DataCanbus.DATA[10] != 0 && DataCanbus.DATA[20] != 0) {
                 if (temp == 0) {
                     ((TextView) findViewById(R.id.golf7_air_blow_foot_right)).setBackgroundResource(R.drawable.ic_golf7_blow_right_foot_l);
                     return;

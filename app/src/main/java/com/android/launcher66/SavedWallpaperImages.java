@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,183 +17,191 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
-import com.android.launcher66.WallpaperPickerActivity;
-import com.android.photos.BitmapRegionTileSource;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
+
 public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
     private static String TAG = "Launcher3.SavedWallpaperImages";
-    Context mContext;
     private ImageDb mDb;
     ArrayList<SavedWallpaperTile> mImages;
+    Context mContext;
     LayoutInflater mLayoutInflater;
 
-    public static class SavedWallpaperTile extends WallpaperPickerActivity.WallpaperTileInfo {
+    public static class SavedWallpaperTile extends WallpaperPickerActivity.FileWallpaperInfo {
         private int mDbId;
-        private Drawable mThumb;
-
-        public SavedWallpaperTile(int dbId, Drawable thumb) {
-            this.mDbId = dbId;
-            this.mThumb = thumb;
+        public SavedWallpaperTile(int dbId, File target, Drawable thumb) {
+            super(target, thumb);
+            mDbId = dbId;
         }
 
-        @Override // com.android.launcher66.WallpaperPickerActivity.WallpaperTileInfo
-        public void onClick(WallpaperPickerActivity a) {
-            String imageFilename = a.getSavedImages().getImageFilename(this.mDbId);
-            File file = new File(a.getFilesDir(), imageFilename);
-            CropView v = a.getCropView();
-            int rotation = WallpaperCropActivity.getRotationFromExif(file.getAbsolutePath());
-            Uri myUri = Uri.parse(file.getAbsolutePath());
-            v.setTileSource(new BitmapRegionTileSource(a, myUri, 1024, rotation), null);
-            v.moveToLeft();
-            v.setTouchEnabled(false);
-        }
-
-        @Override // com.android.launcher66.WallpaperPickerActivity.WallpaperTileInfo
-        public void onSave(WallpaperPickerActivity a) {
-            String imageFilename = a.getSavedImages().getImageFilename(this.mDbId);
-            a.setWallpaper(imageFilename, true);
-        }
-
-        @Override // com.android.launcher66.WallpaperPickerActivity.WallpaperTileInfo
+        @Override
         public void onDelete(WallpaperPickerActivity a) {
-            a.getSavedImages().deleteImage(this.mDbId);
-        }
-
-        @Override // com.android.launcher66.WallpaperPickerActivity.WallpaperTileInfo
-        public boolean isSelectable() {
-            return true;
-        }
-
-        @Override // com.android.launcher66.WallpaperPickerActivity.WallpaperTileInfo
-        public boolean isNamelessWallpaper() {
-            return true;
+            a.getSavedImages().deleteImage(mDbId);
         }
     }
 
     public SavedWallpaperImages(Activity context) {
-        this.mDb = new ImageDb(context);
-        this.mContext = context;
-        this.mLayoutInflater = context.getLayoutInflater();
+        // We used to store the saved images in the cache directory, but that meant they'd get
+        // deleted sometimes-- move them to the data directory
+        ImageDb.moveFromCacheDirectoryIfNecessary(context);
+        mDb = new ImageDb(context);
+        mContext = context;
+        mLayoutInflater = context.getLayoutInflater();
     }
 
     public void loadThumbnailsAndImageIdList() {
-        this.mImages = new ArrayList<>();
-        SQLiteDatabase db = this.mDb.getReadableDatabase();
-        Cursor result = db.query("saved_wallpaper_images", new String[]{"id", "image_thumbnail"}, null, null, null, null, "id DESC", null);
+        mImages = new ArrayList<SavedWallpaperTile>();
+        SQLiteDatabase db = mDb.getReadableDatabase();
+        Cursor result = db.query(ImageDb.TABLE_NAME,
+                new String[] { ImageDb.COLUMN_ID,
+                    ImageDb.COLUMN_IMAGE_THUMBNAIL_FILENAME,
+                    ImageDb.COLUMN_IMAGE_FILENAME}, // cols to return
+                null, // select query
+                null, // args to select query
+                null,
+                null,
+                ImageDb.COLUMN_ID + " DESC",
+                null);
+
         while (result.moveToNext()) {
             String filename = result.getString(1);
-            File file = new File(this.mContext.getFilesDir(), filename);
+            File file = new File(mContext.getFilesDir(), filename);
+
             Bitmap thumb = BitmapFactory.decodeFile(file.getAbsolutePath());
             if (thumb != null) {
-                this.mImages.add(new SavedWallpaperTile(result.getInt(0), new BitmapDrawable(thumb)));
+                mImages.add(new SavedWallpaperTile(result.getInt(0),
+                        new File(mContext.getFilesDir(), result.getString(2)),
+                        new BitmapDrawable(LauncherApplication.sApp.getResources(), thumb)));
             }
         }
         result.close();
     }
 
-    @Override // android.widget.Adapter
     public int getCount() {
-        return this.mImages.size();
+        return mImages.size();
     }
 
-    @Override // android.widget.Adapter
     public SavedWallpaperTile getItem(int position) {
-        return this.mImages.get(position);
+        return mImages.get(position);
     }
 
-    @Override // android.widget.Adapter
     public long getItemId(int position) {
         return position;
     }
 
-    @Override // android.widget.Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        Drawable thumbDrawable = this.mImages.get(position).mThumb;
+        Drawable thumbDrawable = mImages.get(position).mThumb;
         if (thumbDrawable == null) {
             Log.e(TAG, "Error decoding thumbnail for wallpaper #" + position);
         }
-        return WallpaperPickerActivity.createImageTileView(this.mLayoutInflater, position, convertView, parent, thumbDrawable);
-    }
-
-    public String getImageFilename(int id) {
-        Pair<String, String> filenames = getImageFilenames(id);
-        if (filenames != null) {
-            return (String) filenames.second;
-        }
-        return null;
+        return WallpaperPickerActivity.createImageTileView(
+                mLayoutInflater, convertView, parent, thumbDrawable);
     }
 
     private Pair<String, String> getImageFilenames(int id) {
-        SQLiteDatabase db = this.mDb.getReadableDatabase();
-        Cursor result = db.query("saved_wallpaper_images", new String[]{"image_thumbnail", "image"}, "id = ?", new String[]{Integer.toString(id)}, null, null, null, null);
-        if (result.getCount() <= 0) {
+        SQLiteDatabase db = mDb.getReadableDatabase();
+        Cursor result = db.query(ImageDb.TABLE_NAME,
+                new String[] { ImageDb.COLUMN_IMAGE_THUMBNAIL_FILENAME,
+                    ImageDb.COLUMN_IMAGE_FILENAME }, // cols to return
+                ImageDb.COLUMN_ID + " = ?", // select query
+                new String[] { Integer.toString(id) }, // args to select query
+                null,
+                null,
+                null,
+                null);
+        if (result.getCount() > 0) {
+            result.moveToFirst();
+            String thumbFilename = result.getString(0);
+            String imageFilename = result.getString(1);
+            result.close();
+            return new Pair<>(thumbFilename, imageFilename);
+        } else {
             return null;
         }
-        result.moveToFirst();
-        String thumbFilename = result.getString(0);
-        String imageFilename = result.getString(1);
-        result.close();
-        return new Pair<>(thumbFilename, imageFilename);
     }
 
     public void deleteImage(int id) {
         Pair<String, String> filenames = getImageFilenames(id);
-        File imageFile = new File(this.mContext.getFilesDir(), (String) filenames.first);
+        File imageFile = new File(mContext.getFilesDir(), filenames.first);
         imageFile.delete();
-        File thumbFile = new File(this.mContext.getFilesDir(), (String) filenames.second);
+        File thumbFile = new File(mContext.getFilesDir(), filenames.second);
         thumbFile.delete();
-        SQLiteDatabase db = this.mDb.getWritableDatabase();
-        db.delete("saved_wallpaper_images", "id = ?", new String[]{Integer.toString(id)});
+        SQLiteDatabase db = mDb.getWritableDatabase();
+        db.delete(ImageDb.TABLE_NAME,
+                ImageDb.COLUMN_ID + " = ?", // SELECT query
+                new String[] {
+                    Integer.toString(id) // args to SELECT query
+                });
     }
 
     public void writeImage(Bitmap thumbnail, byte[] imageBytes) {
         try {
-            File imageFile = File.createTempFile("wallpaper", "", this.mContext.getFilesDir());
-            FileOutputStream imageFileStream = this.mContext.openFileOutput(imageFile.getName(), 0);
+            File imageFile = File.createTempFile("wallpaper", "", mContext.getFilesDir());
+            FileOutputStream imageFileStream =
+                    mContext.openFileOutput(imageFile.getName(), Context.MODE_PRIVATE);
             imageFileStream.write(imageBytes);
             imageFileStream.close();
-            File thumbFile = File.createTempFile("wallpaperthumb", "", this.mContext.getFilesDir());
-            FileOutputStream thumbFileStream = this.mContext.openFileOutput(thumbFile.getName(), 0);
+
+            File thumbFile = File.createTempFile("wallpaperthumb", "", mContext.getFilesDir());
+            FileOutputStream thumbFileStream =
+                    mContext.openFileOutput(thumbFile.getName(), Context.MODE_PRIVATE);
             thumbnail.compress(Bitmap.CompressFormat.JPEG, 95, thumbFileStream);
             thumbFileStream.close();
-            SQLiteDatabase db = this.mDb.getWritableDatabase();
+
+            SQLiteDatabase db = mDb.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("image_thumbnail", thumbFile.getName());
-            values.put("image", imageFile.getName());
-            db.insert("saved_wallpaper_images", null, values);
+            values.put(ImageDb.COLUMN_IMAGE_THUMBNAIL_FILENAME, thumbFile.getName());
+            values.put(ImageDb.COLUMN_IMAGE_FILENAME, imageFile.getName());
+            db.insert(ImageDb.TABLE_NAME, null, values);
         } catch (IOException e) {
             Log.e(TAG, "Failed writing images to storage " + e);
         }
     }
 
     static class ImageDb extends SQLiteOpenHelper {
-        static final String COLUMN_ID = "id";
-        static final String COLUMN_IMAGE_FILENAME = "image";
-        static final String COLUMN_IMAGE_THUMBNAIL_FILENAME = "image_thumbnail";
-        static final String DB_NAME = "saved_wallpaper_images.db";
-        static final int DB_VERSION = 1;
-        static final String TABLE_NAME = "saved_wallpaper_images";
+        final static int DB_VERSION = 1;
+        final static String DB_NAME = "saved_wallpaper_images.db";
+        final static String TABLE_NAME = "saved_wallpaper_images";
+        final static String COLUMN_ID = "id";
+        final static String COLUMN_IMAGE_THUMBNAIL_FILENAME = "image_thumbnail";
+        final static String COLUMN_IMAGE_FILENAME = "image";
+
         Context mContext;
 
         public ImageDb(Context context) {
-            super(context, new File(context.getCacheDir(), DB_NAME).getPath(), (SQLiteDatabase.CursorFactory) null, 1);
-            this.mContext = context;
+            super(context, context.getDatabasePath(DB_NAME).getPath(), null, DB_VERSION);
+            // Store the context for later use
+            mContext = context;
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        public static void moveFromCacheDirectoryIfNecessary(Context context) {
+            // We used to store the saved images in the cache directory, but that meant they'd get
+            // deleted sometimes-- move them to the data directory
+            File oldSavedImagesFile = new File(context.getCacheDir(), ImageDb.DB_NAME);
+            File savedImagesFile = context.getDatabasePath(ImageDb.DB_NAME);
+            if (oldSavedImagesFile.exists()) {
+                oldSavedImagesFile.renameTo(savedImagesFile);
+            }
+        }
+        @Override
         public void onCreate(SQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS saved_wallpaper_images (id INTEGER NOT NULL, image_thumbnail TEXT NOT NULL, image TEXT NOT NULL, PRIMARY KEY (id ASC) );");
+            database.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+                    COLUMN_ID + " INTEGER NOT NULL, " +
+                    COLUMN_IMAGE_THUMBNAIL_FILENAME + " TEXT NOT NULL, " +
+                    COLUMN_IMAGE_FILENAME + " TEXT NOT NULL, " +
+                    "PRIMARY KEY (" + COLUMN_ID + " ASC) " +
+                    ");");
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             if (oldVersion != newVersion) {
-                db.execSQL("DELETE FROM saved_wallpaper_images");
+                // Delete all the records; they'll be repopulated as this is a cache
+                db.execSQL("DELETE FROM " + TABLE_NAME);
             }
         }
     }

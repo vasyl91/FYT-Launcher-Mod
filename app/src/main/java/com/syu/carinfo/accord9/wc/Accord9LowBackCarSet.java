@@ -10,33 +10,32 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Accord9LowBackCarSet extends BaseActivity implements View.OnClickListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.accord9.wc.Accord9LowBackCarSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 32:
+                case 130:
                     Accord9LowBackCarSet.this.mUpdateCarBright();
                     break;
-                case 33:
+                case 131:
                     Accord9LowBackCarSet.this.mUpdateCarColor();
                     break;
-                case 34:
+                case 132:
                     Accord9LowBackCarSet.this.mUpdateCarContrast();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_low_backcar);
+        //setContentView(R.layout.layout_accord9_low_backcar);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.accord9_low_backcar_brightness_add)).setOnClickListener(this);
         ((Button) findViewById(R.id.accord9_low_backcar_brightness_sub)).setOnClickListener(this);
@@ -56,25 +55,25 @@ public class Accord9LowBackCarSet extends BaseActivity implements View.OnClickLi
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.accord9_low_backcar_brightness_add /* 2131430168 */:
+            case R.id.accord9_low_backcar_brightness_add /* 2131430110 */:
                 setBright(-1);
                 break;
-            case R.id.accord9_low_backcar_brightness_sub /* 2131430170 */:
+            case R.id.accord9_low_backcar_brightness_sub /* 2131430112 */:
                 setBright(-2);
                 break;
-            case R.id.accord9_low_backcar_contrast_add /* 2131430171 */:
+            case R.id.accord9_low_backcar_contrast_add /* 2131430113 */:
                 setConstrast(-1);
                 break;
-            case R.id.accord9_low_backcar_contrast_sub /* 2131430173 */:
+            case R.id.accord9_low_backcar_contrast_sub /* 2131430115 */:
                 setConstrast(-2);
                 break;
-            case R.id.accord9_low_backcar_color_add /* 2131430174 */:
+            case R.id.accord9_low_backcar_color_add /* 2131430116 */:
                 setColor(-1);
                 break;
-            case R.id.accord9_low_backcar_color_sub /* 2131430176 */:
+            case R.id.accord9_low_backcar_color_sub /* 2131430118 */:
                 setColor(-2);
                 break;
         }
@@ -91,47 +90,47 @@ public class Accord9LowBackCarSet extends BaseActivity implements View.OnClickLi
         DataCanbus.PROXY.cmd(13, value);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCarBright() {
-        int value = DataCanbus.DATA[32];
+        int value = DataCanbus.DATA[130];
         ((TextView) findViewById(R.id.accord9_low_backcar_tv_bright)).setText(new StringBuilder().append(value).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCarColor() {
-        int value = DataCanbus.DATA[33];
+        int value = DataCanbus.DATA[131];
         ((TextView) findViewById(R.id.accord9_low_backcar_tv_color)).setText(new StringBuilder().append(value - 5).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCarContrast() {
-        int value = DataCanbus.DATA[34];
+        int value = DataCanbus.DATA[132];
         ((TextView) findViewById(R.id.accord9_low_backcar_tv_contrast)).setText(new StringBuilder().append(value - 5).toString());
     }
 }

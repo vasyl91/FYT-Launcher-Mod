@@ -8,15 +8,14 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dongnanv5CarinfoActi extends BaseActivity {
     private ProgressBar mProgressBarAvgOilUsed;
     private ProgressBar mProgressBarRemOil;
     private TextView mTvAvgOilUsed;
     private TextView mTvDrivedMileage;
     private TextView mTvDrivingMileage;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5CarinfoActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 13:
@@ -36,14 +35,14 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_oudi_17dongnanv5_carinfo);
+        //setContentView(R.layout.layout_oudi_17dongnanv5_carinfo);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mProgressBarAvgOilUsed = (ProgressBar) findViewById(R.id.dongnanv5_avg_oil);
         this.mProgressBarRemOil = (ProgressBar) findViewById(R.id.dongnanv5_progress_rem_oil);
@@ -52,19 +51,19 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         this.mTvDrivingMileage = (TextView) findViewById(R.id.dongnanv5_driving_mileage);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[13].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.notifyCanbus, 1);
@@ -73,7 +72,7 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[17].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.notifyCanbus);
@@ -82,7 +81,7 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void trip1() {
         int value = DataCanbus.DATA[13];
         int temp = value / 10;
@@ -97,7 +96,7 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         this.mTvAvgOilUsed.setText(String.format("%d.%dL", Integer.valueOf(value / 10), Integer.valueOf(value % 10)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void trip2() {
         int value = DataCanbus.DATA[14];
         if (this.mProgressBarRemOil != null) {
@@ -110,13 +109,13 @@ public class Dongnanv5CarinfoActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void trip3() {
         int value = DataCanbus.DATA[15];
         this.mTvDrivingMileage.setText(String.format("%dkm", Integer.valueOf(value)));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void trip4() {
         int value = DataCanbus.DATA[16];
         int value1 = DataCanbus.DATA[17];

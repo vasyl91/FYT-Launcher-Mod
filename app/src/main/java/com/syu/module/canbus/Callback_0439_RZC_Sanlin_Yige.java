@@ -1,92 +1,104 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
+import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_RZC_Sanlin_Yige extends CallbackCanbusBase {
-    public static final int U_CARINFO_AVG_FUEL_AUTO = 4;
-    public static final int U_CARINFO_AVG_FUEL_HAND = 5;
-    public static final int U_CARINFO_BEGIN = 0;
-    public static final int U_CARINFO_CUR_FUEL = 3;
-    public static final int U_CARINFO_MILE_DRIVENABLE = 2;
-    public static final int U_CARINFO_UNIT = 1;
-    public static final int U_CARSAT_AIR_CONDITIONER_1 = 26;
-    public static final int U_CARSAT_AIR_CONDITIONER_2 = 27;
-    public static final int U_CARSAT_AIR_CONDITIONER_3 = 28;
-    public static final int U_CARSAT_AIR_CONDITIONER_4 = 29;
-    public static final int U_CARSAT_AIR_CONDITIONER_5 = 30;
-    public static final int U_CARSAT_AIR_CONDITIONER_6 = 31;
-    public static final int U_CARSAT_DOOR_LOCK_1 = 23;
-    public static final int U_CARSAT_DOOR_LOCK_2 = 24;
-    public static final int U_CARSAT_DOOR_LOCK_3 = 25;
-    public static final int U_CARSAT_KEYLESS_1 = 7;
-    public static final int U_CARSAT_KEYLESS_2 = 8;
-    public static final int U_CARSAT_KEYLESS_3 = 9;
-    public static final int U_CARSAT_LIGHTS_1 = 15;
-    public static final int U_CARSAT_LIGHTS_2 = 16;
-    public static final int U_CARSAT_LIGHTS_3 = 17;
-    public static final int U_CARSAT_LIGHTS_4 = 18;
-    public static final int U_CARSAT_LIGHTS_5 = 19;
-    public static final int U_CARSAT_OTHER_1 = 32;
-    public static final int U_CARSAT_OTHER_2 = 33;
-    public static final int U_CARSAT_OTHER_3 = 34;
-    public static final int U_CARSAT_TOUCH_SENSE = 6;
-    public static final int U_CARSAT_TUM_SIGNAL_1 = 20;
-    public static final int U_CARSAT_TUM_SIGNAL_2 = 21;
-    public static final int U_CARSAT_TUM_SIGNAL_3 = 22;
-    public static final int U_CARSAT_WIPERS_1 = 10;
-    public static final int U_CARSAT_WIPERS_2 = 11;
-    public static final int U_CARSAT_WIPERS_3 = 12;
-    public static final int U_CARSAT_WIPERS_4 = 13;
-    public static final int U_CARSAT_WIPERS_5 = 14;
-    public static final int U_CNT_MAX = 35;
+    public static final int U_CAREQ_D17_D0_B70 = 133;
+    public static final int U_CAREQ_D17_D10_B70 = 143;
+    public static final int U_CAREQ_D17_D11_B70 = 144;
+    public static final int U_CAREQ_D17_D12_B70 = 145;
+    public static final int U_CAREQ_D17_D13_B70 = 146;
+    public static final int U_CAREQ_D17_D1_B70 = 134;
+    public static final int U_CAREQ_D17_D2_B70 = 135;
+    public static final int U_CAREQ_D17_D3_B70 = 136;
+    public static final int U_CAREQ_D17_D4_B70 = 137;
+    public static final int U_CAREQ_D17_D5_B70 = 138;
+    public static final int U_CAREQ_D17_D6_B70 = 139;
+    public static final int U_CAREQ_D17_D7_B70 = 140;
+    public static final int U_CAREQ_D17_D8_B70 = 141;
+    public static final int U_CAREQ_D17_D9_B70 = 142;
+    public static final int U_CARINFO_AVG_FUEL_AUTO = 102;
+    public static final int U_CARINFO_AVG_FUEL_HAND = 103;
+    public static final int U_CARINFO_BEGIN = 98;
+    public static final int U_CARINFO_CUR_FUEL = 101;
+    public static final int U_CARINFO_MILE_DRIVENABLE = 100;
+    public static final int U_CARINFO_UNIT = 99;
+    public static final int U_CARINF_D41_D0_D3 = 147;
+    public static final int U_CARINF_D41_D4_D5 = 148;
+    public static final int U_CARINF_D41_D6_D7 = 149;
+    public static final int U_CARSAT_AIR_CONDITIONER_1 = 124;
+    public static final int U_CARSAT_AIR_CONDITIONER_2 = 125;
+    public static final int U_CARSAT_AIR_CONDITIONER_3 = 126;
+    public static final int U_CARSAT_AIR_CONDITIONER_4 = 127;
+    public static final int U_CARSAT_AIR_CONDITIONER_5 = 128;
+    public static final int U_CARSAT_AIR_CONDITIONER_6 = 129;
+    public static final int U_CARSAT_DOOR_LOCK_1 = 121;
+    public static final int U_CARSAT_DOOR_LOCK_2 = 122;
+    public static final int U_CARSAT_DOOR_LOCK_3 = 123;
+    public static final int U_CARSAT_KEYLESS_1 = 105;
+    public static final int U_CARSAT_KEYLESS_2 = 106;
+    public static final int U_CARSAT_KEYLESS_3 = 107;
+    public static final int U_CARSAT_LIGHTS_1 = 113;
+    public static final int U_CARSAT_LIGHTS_2 = 114;
+    public static final int U_CARSAT_LIGHTS_3 = 115;
+    public static final int U_CARSAT_LIGHTS_4 = 116;
+    public static final int U_CARSAT_LIGHTS_5 = 117;
+    public static final int U_CARSAT_OTHER_1 = 130;
+    public static final int U_CARSAT_OTHER_2 = 131;
+    public static final int U_CARSAT_OTHER_3 = 132;
+    public static final int U_CARSAT_TOUCH_SENSE = 104;
+    public static final int U_CARSAT_TUM_SIGNAL_1 = 118;
+    public static final int U_CARSAT_TUM_SIGNAL_2 = 119;
+    public static final int U_CARSAT_TUM_SIGNAL_3 = 120;
+    public static final int U_CARSAT_WIPERS_1 = 108;
+    public static final int U_CARSAT_WIPERS_2 = 109;
+    public static final int U_CARSAT_WIPERS_3 = 110;
+    public static final int U_CARSAT_WIPERS_4 = 111;
+    public static final int U_CARSAT_WIPERS_5 = 112;
+    public static final int U_CNT_MAX = 150;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 35; i++) {
+        for (int i = 0; i < 150; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        for (int i2 = ConstRzcAddData.U_CAR_ADD_START; i2 < 560; i2++) {
-            DataCanbus.PROXY.register(callback, i2, 1);
-        }
-        DoorHelper.sUcDoorEngine = ConstRzcAddData.U_DOOR_ENGINE_ADD;
-        DoorHelper.sUcDoorFl = ConstRzcAddData.U_DOOR_FL_ADD;
-        DoorHelper.sUcDoorFr = ConstRzcAddData.U_DOOR_FR_ADD;
-        DoorHelper.sUcDoorRl = ConstRzcAddData.U_DOOR_RL_ADD;
-        DoorHelper.sUcDoorRr = ConstRzcAddData.U_DOOR_RR_ADD;
-        DoorHelper.sUcDoorBack = ConstRzcAddData.U_DOOR_BACK_ADD;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i3 = ConstRzcAddData.U_DOOR_ENGINE_ADD; i3 <= 558; i3++) {
-            DataCanbus.NOTIFY_EVENTS[i3].addNotify(DoorHelper.getInstance(), 0);
+        for (int i2 = 0; i2 <= 5; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
+        }
+        //AirHelper.getInstance().buildUi(new Air_0439_RZC_Sanlin_All(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
+            DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
+        for (int i = 0; i <= 5; i++) {
+            DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
+        }
+        DoorHelper.getInstance().destroyUi();
+        for (int i2 = 10; i2 < 97; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
+        }
+        AirHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 500 && updateCode < 560) {
-            switch (updateCode) {
-                case ConstRzcAddData.U_CAR_FRAME_NUM /* 501 */:
-                    if (strs != null && strs.length > 0) {
-                        ConstRzcAddData.CarFrameNum = strs[0];
-                    } else {
-                        ConstRzcAddData.CarFrameNum = "";
-                    }
-                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
-                    break;
-                default:
-                    HandlerCanbus.update(updateCode, ints);
-                    break;
-            }
-        }
-        if (updateCode >= 0 && updateCode < 35) {
+        if (updateCode >= 0 && updateCode < 150) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

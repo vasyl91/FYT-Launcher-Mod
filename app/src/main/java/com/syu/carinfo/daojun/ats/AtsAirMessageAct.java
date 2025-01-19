@@ -10,46 +10,45 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AtsAirMessageAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.daojun.ats.AtsAirMessageAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 2:
+                case 100:
                     AtsAirMessageAct.this.updaterAutoAirVo();
                     break;
-                case 3:
+                case 101:
                     AtsAirMessageAct.this.updaterAirQualitySensor1();
                     break;
-                case 4:
+                case 102:
                     AtsAirMessageAct.this.updaterAutoZoneCon();
                     break;
-                case 5:
+                case 103:
                     AtsAirMessageAct.this.updaterAutoRearWindowDefogg();
                     break;
-                case 6:
+                case 104:
                     AtsAirMessageAct.this.updaterAutoFrontWindowDefogg();
                     break;
-                case 7:
+                case 105:
                     AtsAirMessageAct.this.updaterRemoteSeatAutoHeat();
                     break;
-                case 8:
+                case 106:
                     AtsAirMessageAct.this.updaterAirConditioning();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_daojun_ats_air_message_set);
+        //setContentView(R.layout.layout_daojun_ats_air_message_set);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
@@ -67,12 +66,12 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
         ((Button) findViewById(R.id.daojun_ats_btn_Auto_zone_climate_control_next)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.daojun_ats_btn_Autoc_air_volume_pre /* 2131430803 */:
-                int valAutoVolPre = DataCanbus.DATA[2] & 255;
+            case R.id.daojun_ats_btn_Autoc_air_volume_pre /* 2131430780 */:
+                int valAutoVolPre = DataCanbus.DATA[100] & 255;
                 if (valAutoVolPre == 0) {
                     AtsFunc.CAR_AIR_CONTROL(0, 2);
                     break;
@@ -83,8 +82,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(0, 1);
                     break;
                 }
-            case R.id.daojun_ats_btn_Auto_air_volume_next /* 2131430805 */:
-                int valAutoVolNext = DataCanbus.DATA[2] & 255;
+            case R.id.daojun_ats_btn_Auto_air_volume_next /* 2131430782 */:
+                int valAutoVolNext = DataCanbus.DATA[100] & 255;
                 if (valAutoVolNext == 0) {
                     AtsFunc.CAR_AIR_CONTROL(0, 1);
                     break;
@@ -95,8 +94,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(0, 0);
                     break;
                 }
-            case R.id.daojun_ats_btn_Air_conditioning_pre /* 2131430807 */:
-                int valAirConPre = DataCanbus.DATA[8] & 255;
+            case R.id.daojun_ats_btn_Air_conditioning_pre /* 2131430784 */:
+                int valAirConPre = DataCanbus.DATA[106] & 255;
                 if (valAirConPre == 0) {
                     AtsFunc.CAR_AIR_CONTROL(6, 2);
                     break;
@@ -107,8 +106,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(6, 1);
                     break;
                 }
-            case R.id.daojun_ats_btn_Air_conditioning_next /* 2131430809 */:
-                int valAirConNext = DataCanbus.DATA[8] & 255;
+            case R.id.daojun_ats_btn_Air_conditioning_next /* 2131430786 */:
+                int valAirConNext = DataCanbus.DATA[106] & 255;
                 if (valAirConNext == 0) {
                     AtsFunc.CAR_AIR_CONTROL(6, 1);
                     break;
@@ -119,8 +118,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(6, 0);
                     break;
                 }
-            case R.id.daojun_ats_air_Air_quality_sensor_pre /* 2131430811 */:
-                int value = DataCanbus.DATA[3];
+            case R.id.daojun_ats_air_Air_quality_sensor_pre /* 2131430788 */:
+                int value = DataCanbus.DATA[101];
                 if (value == 0) {
                     AtsFunc.CAR_AIR_CONTROL(1, 2);
                     break;
@@ -131,8 +130,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(1, 1);
                     break;
                 }
-            case R.id.daojun_ats_air_Air_quality_sensor_next /* 2131430813 */:
-                int valueQualityNext = DataCanbus.DATA[3];
+            case R.id.daojun_ats_air_Air_quality_sensor_next /* 2131430790 */:
+                int valueQualityNext = DataCanbus.DATA[101];
                 if (valueQualityNext == 0) {
                     AtsFunc.CAR_AIR_CONTROL(1, 1);
                     break;
@@ -143,8 +142,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(1, 0);
                     break;
                 }
-            case R.id.daojun_ats_btn_Auto_zone_climate_control_pre /* 2131430815 */:
-                int valAutoZonePre = DataCanbus.DATA[4] & 255;
+            case R.id.daojun_ats_btn_Auto_zone_climate_control_pre /* 2131430792 */:
+                int valAutoZonePre = DataCanbus.DATA[102] & 255;
                 if (valAutoZonePre == 0) {
                     AtsFunc.CAR_AIR_CONTROL(2, 2);
                     break;
@@ -155,8 +154,8 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(2, 1);
                     break;
                 }
-            case R.id.daojun_ats_btn_Auto_zone_climate_control_next /* 2131430817 */:
-                int valAutoZoneNext = DataCanbus.DATA[4] & 255;
+            case R.id.daojun_ats_btn_Auto_zone_climate_control_next /* 2131430794 */:
+                int valAutoZoneNext = DataCanbus.DATA[102] & 255;
                 if (valAutoZoneNext == 0) {
                     AtsFunc.CAR_AIR_CONTROL(2, 1);
                     break;
@@ -167,58 +166,58 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
                     AtsFunc.CAR_AIR_CONTROL(2, 0);
                     break;
                 }
-            case R.id.daojun_ats_btn_remote_Seat_auto_heating_check /* 2131430819 */:
-                int valRemoteSeatHeat = DataCanbus.DATA[7] & 255;
+            case R.id.daojun_ats_btn_remote_Seat_auto_heating_check /* 2131430796 */:
+                int valRemoteSeatHeat = DataCanbus.DATA[105] & 255;
                 AtsFunc.CAR_AIR_CONTROL(5, valRemoteSeatHeat == 0 ? 1 : 0);
                 break;
-            case R.id.daojun_ats_btn_Auto_front_window_defogging_check /* 2131430821 */:
-                int valAutFrontDefog = DataCanbus.DATA[6] & 255;
+            case R.id.daojun_ats_btn_Auto_front_window_defogging_check /* 2131430798 */:
+                int valAutFrontDefog = DataCanbus.DATA[104] & 255;
                 AtsFunc.CAR_AIR_CONTROL(4, valAutFrontDefog == 0 ? 1 : 0);
                 break;
-            case R.id.daojun_ats_air_Auto_rear_window_defogging_check /* 2131430823 */:
-                int valRearWindowDefog = DataCanbus.DATA[5] & 255;
+            case R.id.daojun_ats_air_Auto_rear_window_defogging_check /* 2131430800 */:
+                int valRearWindowDefog = DataCanbus.DATA[103] & 255;
                 AtsFunc.CAR_AIR_CONTROL(3, valRearWindowDefog == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoAirVo() {
-        int switchOn = DataCanbus.DATA[2];
+        int switchOn = DataCanbus.DATA[100];
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.daojun_ats_air_Automatic_air_volume_Tv)).setText(R.string.klc_air_low);
         } else if (switchOn == 1) {
@@ -228,9 +227,9 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirConditioning() {
-        int switchOn = DataCanbus.DATA[8];
+        int switchOn = DataCanbus.DATA[106];
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.daojun_ats_air_Air_conditioning_Tv)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (switchOn == 1) {
@@ -240,9 +239,9 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirQualitySensor1() {
-        int switchOn = DataCanbus.DATA[3];
+        int switchOn = DataCanbus.DATA[101];
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.daojun_ats_air_Air_quality_sensor_tv)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (switchOn == 1) {
@@ -252,9 +251,9 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoZoneCon() {
-        int switchOn = DataCanbus.DATA[4];
+        int switchOn = DataCanbus.DATA[102];
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.daojun_ats_air_Auto_zone_climate_control_Tv)).setText(R.string.klc_air_Auto_zone_climate_controlUni_form_Set);
         } else if (switchOn == 1) {
@@ -264,21 +263,21 @@ public class AtsAirMessageAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRemoteSeatAutoHeat() {
-        int switchOn = DataCanbus.DATA[7] & 255;
+        int switchOn = DataCanbus.DATA[105] & 255;
         ((CheckedTextView) findViewById(R.id.daojun_ats_btn_remote_Seat_auto_heating_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoFrontWindowDefogg() {
-        int switchOn = DataCanbus.DATA[6];
+        int switchOn = DataCanbus.DATA[104];
         ((CheckedTextView) findViewById(R.id.daojun_ats_btn_Auto_front_window_defogging_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoRearWindowDefogg() {
-        int switchOn = DataCanbus.DATA[5];
+        int switchOn = DataCanbus.DATA[103];
         ((CheckedTextView) findViewById(R.id.daojun_ats_air_Auto_rear_window_defogging_check)).setChecked(switchOn != 0);
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.daojun_ats_air_Auto_rear_window_defogging_Tv)).setText(R.string.klc_air_Manual);

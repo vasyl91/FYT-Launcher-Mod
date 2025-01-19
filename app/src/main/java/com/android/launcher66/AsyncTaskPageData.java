@@ -3,8 +3,6 @@ package com.android.launcher66;
 import android.graphics.Bitmap;
 import java.util.ArrayList;
 
-/* compiled from: AppsCustomizePagedView.java */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class AsyncTaskPageData {
     AsyncTaskCallback doInBackgroundCallback;
     ArrayList<Bitmap> generatedImages = new ArrayList<>();
@@ -16,7 +14,6 @@ class AsyncTaskPageData {
     ArrayList<Bitmap> sourceImages;
     WidgetPreviewLoader widgetPreviewLoader;
 
-    /* compiled from: AppsCustomizePagedView.java */
     enum Type {
         LoadWidgetPreviewData;
 

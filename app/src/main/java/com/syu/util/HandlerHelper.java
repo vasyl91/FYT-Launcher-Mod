@@ -2,7 +2,6 @@ package com.syu.util;
 
 import android.os.Handler;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public final class HandlerHelper implements Runnable {
     private static final int MAX_POOL_SIZE = 50;
     private static HandlerHelper sPool;
@@ -64,7 +63,7 @@ public final class HandlerHelper implements Runnable {
     private HandlerHelper() {
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (this.delayMillis < 0) {
             this.target.removeCallbacks(this.callback);

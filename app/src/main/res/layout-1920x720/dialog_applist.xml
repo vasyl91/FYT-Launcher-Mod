@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_horizontal" android:layout_gravity="center" android:orientation="vertical" android:layout_width="730.0px" android:layout_height="500.0px">
+        <LinearLayout android:gravity="center_vertical" android:layout_gravity="center_horizontal" android:orientation="horizontal" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="60.0px" android:layout_marginTop="10.0px">
+            <TextView android:textSize="22.0px" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="当前默认打开：" />
+            <ImageView android:id="@id/current_app_icon" android:layout_width="60.0px" android:layout_height="60.0px" android:layout_marginLeft="20.0px" />
+            <TextView android:textSize="20.0px" android:textColor="@android:color/white" android:id="@id/current_app_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="20.0px" />
+        </LinearLayout>
+        <TextView android:textSize="22.0px" android:textColor="@android:color/white" android:gravity="center_horizontal" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/app_list_dialog" />
+        <GridView android:gravity="center" android:id="@id/gridview" android:scrollbars="none" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="25.0px" android:horizontalSpacing="10.0px" android:verticalSpacing="20.0px" android:numColumns="3" />
+    </LinearLayout>
+</LinearLayout>

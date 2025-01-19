@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0139_RZC_DIHAOYUANJING extends AirBase {
     public Air_0139_RZC_DIHAOYUANJING(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0139_jl_dihaoyuanjing/air_dihaoyuanjing.webp";
         this.mPathHighlight = "0139_jl_dihaoyuanjing/air_dihaoyuanjing_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -70,7 +70,7 @@ public class Air_0139_RZC_DIHAOYUANJING extends AirBase {
         } else if (left_temp > 17) {
             c.drawText("HI", 50.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(left_temp + 15)).toString(), 50.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp + 15), 50.0f, 140.0f, this.mPaint);
         }
         int i = this.DATA[27];
         if (DataCanbus.DATA[1000] == 65801) {

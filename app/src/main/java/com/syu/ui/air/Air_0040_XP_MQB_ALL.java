@@ -5,29 +5,29 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0040_XP_MQB_ALL extends AirBase {
     public Air_0040_XP_MQB_ALL(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0040_xp1_golf7/air_xp_mqb_all.webp";
         this.mPathHighlight = "0040_xp1_golf7/air_xp_mqb_all_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -137,9 +137,9 @@ public class Air_0040_XP_MQB_ALL extends AirBase {
         } else if (temp == 31) {
             c.drawText("HI", 31.0f, 64.0f, this.mPaint);
         } else if (this.DATA[105] == 1) {
-            c.drawText(new StringBuilder().append(temp + 59).toString(), 31.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(temp + 59), 31.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp * 5) + 155) / 10.0f).toString(), 31.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp * 5) + 155) / 10.0f), 31.0f, 64.0f, this.mPaint);
         }
         int temp2 = this.DATA[100];
         if (temp2 == 0) {
@@ -147,9 +147,9 @@ public class Air_0040_XP_MQB_ALL extends AirBase {
         } else if (temp2 == 31) {
             c.drawText("HI", 717.0f, 64.0f, this.mPaint);
         } else if (this.DATA[105] == 1) {
-            c.drawText(new StringBuilder().append(temp2 + 59).toString(), 717.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 + 59), 717.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp2 * 5) + 155) / 10.0f).toString(), 717.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp2 * 5) + 155) / 10.0f), 717.0f, 64.0f, this.mPaint);
         }
         int temp3 = this.DATA[110];
         if (temp3 == 0) {
@@ -157,12 +157,12 @@ public class Air_0040_XP_MQB_ALL extends AirBase {
         } else if (temp3 == 31) {
             c.drawText("HI", 979.0f, 64.0f, this.mPaint);
         } else if (this.DATA[105] == 1) {
-            c.drawText(new StringBuilder().append(temp3 + 59).toString(), 979.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3 + 59), 979.0f, 64.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp3 * 5) + 155) / 10.0f).toString(), 979.0f, 64.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp3 * 5) + 155) / 10.0f), 979.0f, 64.0f, this.mPaint);
         }
-        c.drawText(new StringBuilder().append(this.DATA[98]).toString(), 649.0f, 142.0f, this.mPaint);
-        c.drawText(new StringBuilder().append(this.DATA[117]).toString(), 1005.0f, 154.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[98]), 649.0f, 142.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[117]), 1005.0f, 154.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

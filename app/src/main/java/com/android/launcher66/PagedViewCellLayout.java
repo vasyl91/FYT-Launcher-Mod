@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PagedViewCellLayout extends ViewGroup implements Page {
     static final String TAG = "PagedViewCellLayout";
     private int mCellCountX;
@@ -61,7 +60,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return this.mCellHeight;
     }
 
-    @Override // android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         int count = getChildCount();
@@ -86,13 +85,13 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return true;
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeAllViewsOnPage() {
         this.mChildren.removeAllViews();
         setLayerType(View.LAYER_TYPE_NONE, null);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeViewOnPageAt(int index) {
         this.mChildren.removeViewAt(index);
     }
@@ -104,7 +103,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         }
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int getPageChildCount() {
         return this.mChildren.getChildCount();
     }
@@ -113,12 +112,12 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return this.mChildren;
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public View getChildOnPageAt(int i) {
         return this.mChildren.getChildAt(i);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int indexOfChildOnPage(View v) {
         return this.mChildren.indexOfChild(v);
     }
@@ -131,7 +130,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return this.mCellCountY;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSpecMode = View.MeasureSpec.getMode(widthMeasureSpec);
         int widthSpecSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -189,7 +188,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return (Math.max(0, this.mWidthGap) * (this.mCellCountX - 1)) + (this.mCellCountX * this.mCellWidth);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
@@ -198,7 +197,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = super.onTouchEvent(event);
         int count = getPageChildCount();
@@ -218,7 +217,7 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         this.mChildren.enableCenteredContent(enabled);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawingCacheEnabled(boolean enabled) {
         this.mChildren.setChildrenDrawingCacheEnabled(enabled);
     }
@@ -279,17 +278,17 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return this.mCellHeight * vSpan;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new LayoutParams(getContext(), attrs);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
         return p instanceof LayoutParams;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
         return new LayoutParams(p);
     }

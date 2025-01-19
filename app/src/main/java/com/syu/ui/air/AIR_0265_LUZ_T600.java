@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AIR_0265_LUZ_T600 extends AirBase {
     public AIR_0265_LUZ_T600(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0265_RZC_ZhongTaiDaMaiX5/zt600_n.webp";
         this.mPathHighlight = "0265_RZC_ZhongTaiDaMaiX5/zt600_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -86,10 +86,10 @@ public class AIR_0265_LUZ_T600 extends AirBase {
         } else if (val == -3) {
             str = "HIGH";
         } else if (this.DATA[67] == 0) {
-            str = String.valueOf(val / 10) + "." + (val % 10) + " ℃";
+            str = val / 10 + "." + (val % 10) + " ℃";
         } else {
             int val_f = ((val * 18) / 10) + 320;
-            str = String.valueOf(val_f / 10) + "." + (val_f % 10) + " ℉";
+            str = val_f / 10 + "." + (val_f % 10) + " ℉";
         }
         c.drawText(str, 68.0f, 65.0f, this.mPaint);
         int val2 = this.DATA[39];
@@ -100,10 +100,10 @@ public class AIR_0265_LUZ_T600 extends AirBase {
         } else if (val2 == -3) {
             str2 = "HIGH";
         } else if (this.DATA[67] == 0) {
-            str2 = String.valueOf(val2 / 10) + "." + (val2 % 10) + " ℃";
+            str2 = val2 / 10 + "." + (val2 % 10) + " ℃";
         } else {
             int val_f2 = ((val2 * 18) / 10) + 320;
-            str2 = String.valueOf(val_f2 / 10) + "." + (val_f2 % 10) + " ℉";
+            str2 = val_f2 / 10 + "." + (val_f2 % 10) + " ℉";
         }
         c.drawText(str2, 962.0f, 65.0f, this.mPaint);
         canvas.save();

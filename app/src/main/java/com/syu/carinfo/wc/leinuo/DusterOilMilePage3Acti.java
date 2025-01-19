@@ -9,61 +9,60 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DusterOilMilePage3Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.leinuo.DusterOilMilePage3Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 92:
-                case 93:
+                case 104:
+                case 105:
                     DusterOilMilePage3Acti.this.mUpdaterValue1();
-                case 94:
+                case 106:
                     DusterOilMilePage3Acti.this.mUpdaterValue2();
-                case 95:
+                case 107:
                     DusterOilMilePage3Acti.this.mUpdaterValue3();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_duster_all_oil_page3);
+        //setContentView(R.layout.layout_duster_all_oil_page3);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.psa_all_btn_oil_page3_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.leinuo.DusterOilMilePage3Acti.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa_all_btn_oil_page3_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, new int[]{1}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[92];
-        int value1 = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[104];
+        int value1 = DataCanbus.DATA[105];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv1)) != null) {
             if (value == 255 || value1 == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv1)).setText("--.--");
@@ -73,9 +72,9 @@ public class DusterOilMilePage3Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[94];
+        int value = DataCanbus.DATA[106];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv2)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv2)).setText("--.--");
@@ -85,9 +84,9 @@ public class DusterOilMilePage3Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[107];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv3)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv3)).setText("--.--");

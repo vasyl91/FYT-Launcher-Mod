@@ -18,7 +18,6 @@ import androidx.annotation.StyleableRes;
 import com.android.launcher66.R;
 import com.syu.ipc.data.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CircleProgressView extends View {
     private int locationStart;
     private ValueAnimator mAnimator;
@@ -81,7 +80,7 @@ public class CircleProgressView extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = View.MeasureSpec.getSize(widthMeasureSpec);
         int height = View.MeasureSpec.getSize(heightMeasureSpec);
@@ -89,7 +88,7 @@ public class CircleProgressView extends View {
         setMeasuredDimension(size, size);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Log.d("LZP", "onDraw");
         RectF rectF = new RectF(this.mProgressWidth / 2.0f, this.mProgressWidth / 2.0f, getWidth() - (this.mProgressWidth / 2.0f), getHeight() - (this.mProgressWidth / 2.0f));
@@ -111,8 +110,8 @@ public class CircleProgressView extends View {
         this.mAnimator = ValueAnimator.ofInt(0, current);
         this.mAnimator.setDuration(duration);
         this.mAnimator.setInterpolator(new LinearInterpolator());
-        this.mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.fyt.widget.CircleProgressView.1
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        this.mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int current2 = ((Integer) animation.getAnimatedValue()).intValue();
                 if (CircleProgressView.this.tCurrent != current2) {

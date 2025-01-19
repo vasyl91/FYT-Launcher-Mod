@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0422_RZC_FuMeiLai extends AirBase {
     public Air_0422_RZC_FuMeiLai(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0422_rzc_fumeilai/air_rzc_fumeilai.webp";
         this.mPathHighlight = "0422_rzc_fumeilai/air_rzc_fumeilai_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -64,7 +64,7 @@ public class Air_0422_RZC_FuMeiLai extends AirBase {
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(30.0f);
         int temp = this.DATA[21];
-        c.drawText(new StringBuilder().append(temp + 17).toString(), 70.0f, 137.0f, this.mPaint);
+        c.drawText(String.valueOf(temp + 17), 70.0f, 137.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

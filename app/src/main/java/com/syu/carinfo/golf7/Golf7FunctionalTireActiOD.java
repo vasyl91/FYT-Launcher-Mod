@@ -9,25 +9,24 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalTireActiOD extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalTireActiOD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 116:
+                case 184:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_fl)).setText(Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]));
                     break;
-                case 117:
+                case 185:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_fr)).setText(Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]));
                     break;
-                case 118:
+                case 186:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_rl)).setText(Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]));
                     break;
-                case 119:
+                case 187:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_rr)).setText(Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]));
                     break;
-                case 250:
+                case 279:
                     int alarm0 = (DataCanbus.DATA[updateCode] >> 8) & 255;
                     int alarm1 = DataCanbus.DATA[updateCode] & 255;
                     String str = null;
@@ -66,7 +65,7 @@ public class Golf7FunctionalTireActiOD extends BaseActivity {
                         ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_rr)).setTextColor(-1);
                         break;
                     }
-                case 251:
+                case 280:
                     if (DataCanbus.DATA[updateCode] == 2) {
                         ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_unit)).setText("kPa");
                         break;
@@ -77,69 +76,69 @@ public class Golf7FunctionalTireActiOD extends BaseActivity {
                         ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_unit)).setText("bar");
                         break;
                     }
-                case 252:
+                case 281:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_ck_fl)).setText("(" + Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]) + ")");
                     break;
-                case 253:
+                case 282:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_ck_fr)).setText("(" + Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]) + ")");
                     break;
-                case 254:
+                case 283:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_ck_rl)).setText("(" + Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]) + ")");
                     break;
-                case 255:
+                case 284:
                     ((TextView) Golf7FunctionalTireActiOD.this.findViewById(R.id.tv_tire_ck_rr)).setText("(" + Golf7FunctionalTireActiOD.this.getPressureStr(DataCanbus.DATA[updateCode]) + ")");
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_state_tire_od);
+        //setContentView(R.layout.layout_golf7_functional_state_tire_od);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[250].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[252].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[253].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[254].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[255].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[251].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[184].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[186].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[279].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[281].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[282].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[283].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[284].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[280].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[250].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[252].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[253].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[254].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[255].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[251].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[184].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[186].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[279].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[281].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[282].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[283].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[284].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[280].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public String getPressureStr(int value) {
         if (value % 10 == 0) {
             String str = new StringBuilder().append(value / 10).toString();
@@ -152,11 +151,11 @@ public class Golf7FunctionalTireActiOD extends BaseActivity {
     private void mUpdaterEscSystem() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             Intent intent = new Intent("android.intent.action.MAIN");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(268435456);
             intent.addCategory("android.intent.category.HOME");
             startActivity(intent);
         }

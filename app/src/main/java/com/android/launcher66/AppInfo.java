@@ -15,7 +15,7 @@ import java.util.Iterator;
 
 public class AppInfo extends ItemInfo {
     static final int DOWNLOADED_FLAG = 1;
-    private static final String TAG = "Launcher3.AppInfo";
+    private static final String TAG = "launcher66.AppInfo";
     static final int UPDATED_SYSTEM_APP_FLAG = 2;
     ComponentName componentName;
     long firstInstallTime;
@@ -37,7 +37,7 @@ public class AppInfo extends ItemInfo {
         this.itemType = 1;
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     protected Intent getIntent() {
         return this.intent;
     }
@@ -93,7 +93,7 @@ public class AppInfo extends ItemInfo {
         this.itemType = 0;
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "ApplicationInfo(title=" + this.title.toString() + " id=" + this.id + " type=" + this.itemType + " container=" + this.container + " screen=" + this.screenId + " cellX=" + this.cellX + " cellY=" + this.cellY + " spanX=" + this.spanX + " spanY=" + this.spanY + " dropPos=" + this.dropPos + ")";
     }

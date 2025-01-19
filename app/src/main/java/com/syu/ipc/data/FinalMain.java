@@ -1,6 +1,5 @@
 package com.syu.ipc.data;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FinalMain {
     public static final int APP_ID_3GPHONE = 15;
     public static final int APP_ID_AUDIO_PLAYER = 8;

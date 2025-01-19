@@ -12,12 +12,11 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MDOAirControlActi extends BaseActivity {
     public static MDOAirControlActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 1:
@@ -116,16 +115,16 @@ public class MDOAirControlActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_WC2_MengDiOuZS2018 /* 458773 */:
             case FinalCanbus.CAR_WC2_MengDiOuZS2021 /* 524309 */:
-                setContentView(R.layout.layout_021_wc_18mengdo_air);
+                ////setContentView(R.layout.layout_021_wc_18mengdo_air);
                 break;
             default:
-                setContentView(R.layout.layout_021_wc_mengdo_air);
+                ////setContentView(R.layout.layout_021_wc_mengdo_air);
                 break;
         }
         initView();
@@ -134,43 +133,43 @@ public class MDOAirControlActi extends BaseActivity {
 
     private void initView() {
         if (findViewById(R.id.air_xts_steer_hot) != null) {
-            ((Button) findViewById(R.id.air_xts_steer_hot)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.2
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.air_xts_steer_hot)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     DataCanbus.PROXY.cmd(0, new int[]{45}, null, null);
                 }
             });
         }
         if (findViewById(R.id.air_xts_seatwin_left) != null) {
-            ((Button) findViewById(R.id.air_xts_seatwin_left)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.3
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.air_xts_seatwin_left)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     DataCanbus.PROXY.cmd(0, new int[]{23}, null, null);
                 }
             });
         }
         if (findViewById(R.id.air_xts_seatwin_right) != null) {
-            ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.4
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
                     DataCanbus.PROXY.cmd(0, new int[]{24}, null, null);
                 }
             });
         }
-        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{12}, null, null);
             }
         });
-        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{11}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[2];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -179,8 +178,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(7, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[14];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -189,8 +188,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View view) {
                 int value = DataCanbus.DATA[1];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -199,8 +198,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(4, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[5];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -209,20 +208,20 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_maxac)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_maxac)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{26}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_dual)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_dual)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[3];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -231,8 +230,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(5, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[4];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -241,32 +240,32 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(6, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.15
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{13}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.16
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{14}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.17
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{15}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.18
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(0, new int[]{16}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_mode_win)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.19
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_mode_win)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[9];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -275,8 +274,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(8, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_mode_foot)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.20
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_mode_foot)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[8];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -285,8 +284,8 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(10, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_mode_body)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.21
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_mode_body)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[7];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -295,21 +294,21 @@ public class MDOAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(9, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.22
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, new int[]{17}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.mengdiou.MDOAirControlActi.23
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, new int[]{18}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -317,7 +316,7 @@ public class MDOAirControlActi extends BaseActivity {
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -325,7 +324,7 @@ public class MDOAirControlActi extends BaseActivity {
         AirHelper.disableAirWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
@@ -348,7 +347,7 @@ public class MDOAirControlActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
@@ -371,7 +370,7 @@ public class MDOAirControlActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSeatLeft() {
         int value = DataCanbus.DATA[27];
         if (((Button) findViewById(R.id.air_xts_seathot_left)) != null) {
@@ -392,7 +391,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSeatRight() {
         int value = DataCanbus.DATA[26];
         if (((Button) findViewById(R.id.air_xts_seathot_right)) != null) {
@@ -413,7 +412,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataAirAuto() {
         int value = DataCanbus.DATA[1];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -421,7 +420,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterPower() {
         int value = DataCanbus.DATA[14];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -429,7 +428,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWindLevel() {
         int value = DataCanbus.DATA[11];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
@@ -437,7 +436,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataDual() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_dual)) != null) {
@@ -445,7 +444,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataAcMax() {
         int value = DataCanbus.DATA[10];
         if (((Button) findViewById(R.id.air_xts_maxac)) != null) {
@@ -453,7 +452,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataAc() {
         int value = DataCanbus.DATA[5];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -461,7 +460,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataFrontDeforst() {
         int value = DataCanbus.DATA[3];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -469,7 +468,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataRearDeforst() {
         int value = DataCanbus.DATA[4];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -477,7 +476,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataFoot() {
         int value = DataCanbus.DATA[8];
         if (((Button) findViewById(R.id.air_xts_mode_foot)) != null) {
@@ -485,7 +484,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWinBody() {
         int value = DataCanbus.DATA[7];
         if (((Button) findViewById(R.id.air_xts_mode_body)) != null) {
@@ -493,7 +492,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataWinUp() {
         int value = DataCanbus.DATA[9];
         if (((Button) findViewById(R.id.air_xts_mode_win)) != null) {
@@ -501,7 +500,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpataTempLeft() {
         int temp = DataCanbus.DATA[6];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -530,7 +529,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdataRecycle() {
         int value = DataCanbus.DATA[2];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -538,7 +537,7 @@ public class MDOAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpataTempRight() {
         int temp = DataCanbus.DATA[13];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {

@@ -7,23 +7,22 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BaguBmwCarInfo extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bagu.bmw.BaguBmwCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 8:
                     BaguBmwCarInfo.this.mUpdateTx1();
                     break;
-                case 2:
+                case 9:
                     BaguBmwCarInfo.this.mUpdateTx2();
                     break;
-                case 3:
-                case 6:
+                case 10:
+                case 13:
                     BaguBmwCarInfo.this.mUpdateTx3();
                     break;
-                case 4:
+                case 11:
                     BaguBmwCarInfo.this.mUpdateTx1();
                     BaguBmwCarInfo.this.mUpdateTx2();
                     break;
@@ -31,44 +30,44 @@ public class BaguBmwCarInfo extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0386_bagu_bmw_carinfo);
+        //setContentView(R.layout.layout_0386_bagu_bmw_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTx1() {
-        int value = DataCanbus.DATA[1];
-        int unit = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[8];
+        int unit = DataCanbus.DATA[11];
         if (value > 4000) {
             ((TextView) findViewById(R.id.tv_text1)).setText("----");
         } else if (unit == 1) {
@@ -78,10 +77,10 @@ public class BaguBmwCarInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTx2() {
-        int value = DataCanbus.DATA[2];
-        int unit = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[9];
+        int unit = DataCanbus.DATA[13];
         if (value > 4000) {
             ((TextView) findViewById(R.id.tv_text2)).setText("--.--");
         } else if (unit == 1) {
@@ -91,10 +90,10 @@ public class BaguBmwCarInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateTx3() {
-        int value = DataCanbus.DATA[3];
-        int unit = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[10];
+        int unit = DataCanbus.DATA[11];
         if (value > 4000) {
             ((TextView) findViewById(R.id.tv_text3)).setText("--.--");
         }

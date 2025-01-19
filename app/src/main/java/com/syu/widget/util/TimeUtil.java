@@ -9,10 +9,10 @@ import com.android.launcher66.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import share.ResValue;
 
 @SuppressLint({"SimpleDateFormat"})
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class TimeUtil {
     public static String getDateOfToday(Context context, String format) {
         return new SimpleDateFormat(format).format(Calendar.getInstance().getTime());
@@ -65,10 +65,10 @@ public class TimeUtil {
     }
 
     public static String getMonth() {
-        return new StringBuilder().append(Calendar.getInstance().get(2) + 1).toString();
+        return String.valueOf(Calendar.getInstance().get(2) + 1);
     }
 
     public static String getDay() {
-        return new StringBuilder().append(Calendar.getInstance().get(5)).toString();
+        return String.valueOf(Calendar.getInstance().get(5));
     }
 }

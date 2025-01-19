@@ -6,15 +6,13 @@ import android.view.View;
 import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
-import com.syu.module.canbus.Callback_0077_XP1_ACCORD9_H;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListener {
     int num = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPitchAndRollAct.1
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             PAJeepPitchAndRollAct.this.num++;
             if (PAJeepPitchAndRollAct.this.num == 5) {
@@ -25,12 +23,12 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
             HandlerUI.getInstance().postDelayed(PAJeepPitchAndRollAct.this.mCalTime, 1000L);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPitchAndRollAct.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 269:
+                case 281:
                     if ((value & 32768) != 0) {
                         int value2 = value - 65536;
                         ((PaJeepPitchView) PAJeepPitchAndRollAct.this.findViewById(R.id.infoView_pitch)).setSpeed(value2);
@@ -41,7 +39,7 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
                         ((TextView) PAJeepPitchAndRollAct.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value) + "°");
                         break;
                     }
-                case 270:
+                case 282:
                     if ((value & 32768) != 0) {
                         int value3 = value - 65536;
                         ((PaJeepRollView) PAJeepPitchAndRollAct.this.findViewById(R.id.infoView_roll)).setSpeed(value3);
@@ -52,32 +50,32 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
                         ((TextView) PAJeepPitchAndRollAct.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value) + "°");
                         break;
                     }
-                case 273:
+                case 285:
                     ((TextView) PAJeepPitchAndRollAct.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value) + "m");
                     break;
-                case 274:
-                    int a = value / Callback_0077_XP1_ACCORD9_H.Band_Am;
-                    int b = ((value % Callback_0077_XP1_ACCORD9_H.Band_Am) * 60) / Callback_0077_XP1_ACCORD9_H.Band_Am;
-                    int c = (((value % Callback_0077_XP1_ACCORD9_H.Band_Am) * 3600) / Callback_0077_XP1_ACCORD9_H.Band_Am) % 60;
+                case 286:
+                    int a = value / 10000;
+                    int b = ((value % 10000) * 60) / 10000;
+                    int c = (((value % 10000) * 3600) / 10000) % 60;
                     ((TextView) PAJeepPitchAndRollAct.this.findViewById(R.id.tv_text1)).setText(String.valueOf(a) + "°" + b + "'" + c);
                     break;
-                case 275:
-                    int a2 = value / Callback_0077_XP1_ACCORD9_H.Band_Am;
-                    int b2 = ((value % Callback_0077_XP1_ACCORD9_H.Band_Am) * 60) / Callback_0077_XP1_ACCORD9_H.Band_Am;
-                    int c2 = (((value % Callback_0077_XP1_ACCORD9_H.Band_Am) * 3600) / Callback_0077_XP1_ACCORD9_H.Band_Am) % 60;
+                case 287:
+                    int a2 = value / 10000;
+                    int b2 = ((value % 10000) * 60) / 10000;
+                    int c2 = (((value % 10000) * 3600) / 10000) % 60;
                     ((TextView) PAJeepPitchAndRollAct.this.findViewById(R.id.tv_text2)).setText(String.valueOf(a2) + "°" + b2 + "'" + c2);
                     break;
-                case 276:
+                case 288:
                     ((PaJeepAngleView) PAJeepPitchAndRollAct.this.findViewById(R.id.infoView_angle)).setSpeed(-value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_pitch_roll);
+        //setContentView(R.layout.layout_0374_pa_jeep_pitch_roll);
         init();
     }
 
@@ -86,14 +84,14 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
         findViewById(R.id.btn_plus2).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{82}, null, null);
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -109,7 +107,7 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
     }
 
     /* JADX WARN: Removed duplicated region for block: B:5:0x000f A[FALL_THROUGH, RETURN] */
-    @Override // android.view.View.OnTouchListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -123,8 +121,10 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
             if (r0 != 0) goto L16
             int r0 = r4.getId()
             switch(r0) {
-                case 2131427482: goto L10;
-                case 2131427486: goto L10;
+                case 2131427457: goto L10;
+                case 2131427458: goto Lf;
+                case 2131427459: goto Lf;
+                case 2131427460: goto L10;
                 default: goto Lf;
             }
         Lf:
@@ -138,15 +138,17 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
             if (r0 != r1) goto Lf
             int r0 = r4.getId()
             switch(r0) {
-                case 2131427482: goto L24;
-                case 2131427486: goto L24;
+                case 2131427457: goto L24;
+                case 2131427458: goto L23;
+                case 2131427459: goto L23;
+                case 2131427460: goto L24;
                 default: goto L23;
             }
         L23:
             goto Lf
         L24:
             r3.mUpdatermCalTime(r2)
-            r0 = 2131427502(0x7f0b00ae, float:1.8476622E38)
+            r0 = 2131427471(0x7f0b008f, float:1.847656E38)
             android.view.View r0 = r3.findViewById(r0)
             android.widget.TextView r0 = (android.widget.TextView) r0
             java.lang.String r1 = ""
@@ -158,22 +160,22 @@ public class PAJeepPitchAndRollAct extends Activity implements View.OnTouchListe
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[273].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[274].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[275].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[276].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[269].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[270].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[277].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[285].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[286].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[287].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[288].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[281].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[282].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[289].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[273].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[274].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[275].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[276].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[269].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[270].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[277].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[285].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[286].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[287].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[288].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[281].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[282].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[289].removeNotify(this.mNotifyCanbus);
     }
 }

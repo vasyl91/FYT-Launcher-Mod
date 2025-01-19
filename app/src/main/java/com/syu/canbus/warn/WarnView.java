@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnView {
     private View view;
     int mWidth = 300;
@@ -13,7 +12,7 @@ public class WarnView {
 
     public WarnView(Context context, int resId) {
         if (resId > 0) {
-            this.view = LayoutInflater.from(context).inflate(resId, (ViewGroup) null);
+            this.view = LayoutInflater.from(context).inflate(resId, null);
         }
     }
 

@@ -1,0 +1,93 @@
+package com.syu.module.canbus;
+
+import android.os.RemoteException;
+
+import com.android.launcher66.LauncherApplication;
+import com.syu.ipc.IModuleCallback;
+import com.syu.ui.air.AirHelper;
+import com.syu.ui.door.DoorHelper;
+
+public class Callback_0454_LZ_Nissan_370z extends CallbackCanbusBase {
+    public static final int U_CARCDC_D39_D2_B74 = 133;
+    public static final int U_CARCDC_D39_D3_B70 = 134;
+    public static final int U_CARCDC_D39_D4_B70 = 135;
+    public static final int U_CARCDC_D39_D5_B70 = 136;
+    public static final int U_CARCDC_D39_D6_B70 = 137;
+    public static final int U_CARINF_D35_D10_B6 = 104;
+    public static final int U_CARINF_D35_D2_D3 = 102;
+    public static final int U_CARINF_D35_D7_D9 = 103;
+    public static final int U_CARINF_D36_D0_B70 = 105;
+    public static final int U_CARINF_D36_D1_B70 = 106;
+    public static final int U_CARINF_D36_D2_B70 = 107;
+    public static final int U_CARINF_D36_D3_B70 = 108;
+    public static final int U_CARINF_D37_D0_D1 = 98;
+    public static final int U_CARINF_D37_D2_D3 = 99;
+    public static final int U_CARINF_D37_D4_D6 = 100;
+    public static final int U_CARINF_D37_D7_D8 = 101;
+    public static final int U_CARINF_D3B_D0_B70 = 109;
+    public static final int U_CARINF_D3B_D1_B70 = 110;
+    public static final int U_CARINF_D3B_D2_B70 = 111;
+    public static final int U_CARINF_D3B_D3_B70 = 112;
+    public static final int U_CARINF_D3B_D4_B70 = 113;
+    public static final int U_CARINF_D3B_D5_B30 = 116;
+    public static final int U_CARINF_D3B_D5_B4 = 115;
+    public static final int U_CARINF_D3B_D5_B5 = 114;
+    public static final int U_CARINF_D3B_D6_B70 = 117;
+    public static final int U_CARSET_AIRTYPE = 118;
+    public static final int U_CARSET_D38_D0_B70 = 119;
+    public static final int U_CARSET_D38_D10_B70 = 129;
+    public static final int U_CARSET_D38_D11_B1 = 132;
+    public static final int U_CARSET_D38_D11_B6 = 131;
+    public static final int U_CARSET_D38_D11_B7 = 130;
+    public static final int U_CARSET_D38_D1_B70 = 120;
+    public static final int U_CARSET_D38_D2_B70 = 121;
+    public static final int U_CARSET_D38_D3_B70 = 122;
+    public static final int U_CARSET_D38_D4_B70 = 123;
+    public static final int U_CARSET_D38_D5_B70 = 124;
+    public static final int U_CARSET_D38_D6_B70 = 125;
+    public static final int U_CARSET_D38_D7_B70 = 126;
+    public static final int U_CARSET_D38_D8_B70 = 127;
+    public static final int U_CARSET_D38_D9_B70 = 128;
+    public static final int U_CNT_MAX = 138;
+
+    @Override
+    public void in() {
+        IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
+        for (int i = 0; i < 138; i++) {
+            DataCanbus.PROXY.register(callback, i, 1);
+        }
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        DoorHelper.getInstance().buildUi();
+        for (int i2 = 0; i2 < 6; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
+        }
+        //AirHelper.getInstance().buildUi(new Air_0454_LZ_Nissan_370Z(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
+            DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 1);
+        }
+    }
+
+    @Override
+    public void out() {
+        for (int i = 0; i < 6; i++) {
+            DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
+        }
+        DoorHelper.getInstance().destroyUi();
+        for (int i2 = 10; i2 < 97; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
+        }
+        AirHelper.getInstance().destroyUi();
+    }
+
+    @Override
+    public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        if (updateCode >= 0 && updateCode < 138) {
+            HandlerCanbus.update(updateCode, ints);
+        }
+    }
+}

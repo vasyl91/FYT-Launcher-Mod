@@ -10,59 +10,58 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZTAirAct_Luz extends BaseActivity {
     public static boolean mIsFront = false;
     int val;
     int touchState = -1;
     int cmd = 0;
-    private int[] ids = {31, 32, 33, 37, 39, 40, 41, 42, 44, 45, 46, 47, 65, 66, 67};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ztt600.ZTAirAct_Luz.1
-        @Override // com.syu.module.IUiNotify
+    private int[] ids = {10, 11, 12, 21, 28, 65, 16, 27, 13, 14, 77, 53, 33, 37};
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             ZTAirAct_Luz.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 31:
+                case 10:
                     ZTAirAct_Luz.this.uPower(ZTAirAct_Luz.this.val);
                     break;
-                case 32:
+                case 11:
                     ZTAirAct_Luz.this.uAc(ZTAirAct_Luz.this.val);
                     break;
-                case 33:
+                case 12:
                     ZTAirAct_Luz.this.uCycle(ZTAirAct_Luz.this.val);
                     break;
-                case 37:
-                    ZTAirAct_Luz.this.uWindLevel(ZTAirAct_Luz.this.val);
-                    break;
-                case 39:
-                    ZTAirAct_Luz.this.uTempRight(ZTAirAct_Luz.this.val);
-                    break;
-                case 40:
-                    ZTAirAct_Luz.this.uFrontFrog(ZTAirAct_Luz.this.val);
-                    break;
-                case 41:
-                    ZTAirAct_Luz.this.uRearFrog(ZTAirAct_Luz.this.val);
-                    break;
-                case 42:
-                    ZTAirAct_Luz.this.uTempLeft(ZTAirAct_Luz.this.val);
-                    break;
-                case 44:
+                case 13:
                     ZTAirAct_Luz.this.uAuto(ZTAirAct_Luz.this.val);
                     break;
-                case 45:
+                case 14:
                     ZTAirAct_Luz.this.uDual(ZTAirAct_Luz.this.val);
                     break;
-                case 46:
-                    ZTAirAct_Luz.this.uMode(ZTAirAct_Luz.this.val);
+                case 16:
+                    ZTAirAct_Luz.this.uRearFrog(ZTAirAct_Luz.this.val);
                     break;
-                case 47:
-                    ZTAirAct_Luz.this.uAcMax(ZTAirAct_Luz.this.val);
+                case 21:
+                    ZTAirAct_Luz.this.uWindLevel(ZTAirAct_Luz.this.val);
                     break;
-                case 66:
+                case 27:
+                    ZTAirAct_Luz.this.uTempLeft(ZTAirAct_Luz.this.val);
+                    break;
+                case 28:
+                    ZTAirAct_Luz.this.uTempRight(ZTAirAct_Luz.this.val);
+                    break;
+                case 33:
                     ZTAirAct_Luz.this.uBlowFace(ZTAirAct_Luz.this.val);
                     break;
-                case 67:
+                case 37:
                     ZTAirAct_Luz.this.uTempUnit(ZTAirAct_Luz.this.val);
+                    break;
+                case 53:
+                    ZTAirAct_Luz.this.uAcMax(ZTAirAct_Luz.this.val);
+                    break;
+                case 65:
+                    ZTAirAct_Luz.this.uFrontFrog(ZTAirAct_Luz.this.val);
+                    break;
+                case 77:
+                    ZTAirAct_Luz.this.uMode(ZTAirAct_Luz.this.val);
                     break;
             }
         }
@@ -70,14 +69,14 @@ public class ZTAirAct_Luz extends BaseActivity {
     String str = "";
     private int unit = 0;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_265_luz_t600_air_control);
+        //setContentView(R.layout.layout_265_luz_t600_air_control);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         initListener();
         bindView(R.id.btn_air_temp_left_plus);
@@ -89,8 +88,8 @@ public class ZTAirAct_Luz extends BaseActivity {
     }
 
     private void initListener() {
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.ztt600.ZTAirAct_Luz.2
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int cmd = 0;
                 int val = 0;
@@ -140,14 +139,14 @@ public class ZTAirAct_Luz extends BaseActivity {
                         cmd = 13;
                         val = 0;
                         break;
-                    case R.id.air_xts_dual /* 2131427460 */:
+                    case R.id.air_xts_rear /* 2131427560 */:
+                        cmd = 6;
+                        break;
+                    case R.id.air_xts_dual /* 2131427566 */:
                         cmd = 8;
                         break;
-                    case R.id.air_xts_clear /* 2131427465 */:
+                    case R.id.air_xts_clear /* 2131427569 */:
                         cmd = 9;
-                        break;
-                    case R.id.air_xts_rear /* 2131427534 */:
-                        cmd = 6;
                         break;
                 }
                 ZTAirAct_Luz.this.setAirControl(cmd, val);
@@ -163,7 +162,7 @@ public class ZTAirAct_Luz extends BaseActivity {
         return v;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -171,7 +170,7 @@ public class ZTAirAct_Luz extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -179,19 +178,19 @@ public class ZTAirAct_Luz extends BaseActivity {
         mIsFront = false;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmd, int value) {
         DataCanbus.PROXY.cmd(0, cmd, value);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);

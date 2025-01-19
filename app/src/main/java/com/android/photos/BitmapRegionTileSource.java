@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -31,7 +30,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
 import com.android.gallery3d.common.BitmapUtils;
@@ -61,7 +59,12 @@ class SimpleBitmapRegionDecoderWrapper implements SimpleBitmapRegionDecoder {
 
     public static SimpleBitmapRegionDecoderWrapper newInstance(String pathName, boolean isShareable) {
         try {
-            BitmapRegionDecoder d = BitmapRegionDecoder.newInstance(pathName, isShareable);
+            BitmapRegionDecoder d;
+            if (Build.VERSION.SDK_INT >= 31) {
+                d = BitmapRegionDecoder.newInstance(pathName);
+            } else {
+                d = BitmapRegionDecoder.newInstance(pathName, isShareable);
+            }
             if (d != null) {
                 return new SimpleBitmapRegionDecoderWrapper(d);
             }
@@ -74,7 +77,12 @@ class SimpleBitmapRegionDecoderWrapper implements SimpleBitmapRegionDecoder {
 
     public static SimpleBitmapRegionDecoderWrapper newInstance(InputStream is, boolean isShareable) {
         try {
-            BitmapRegionDecoder d = BitmapRegionDecoder.newInstance(is, isShareable);
+            BitmapRegionDecoder d;
+            if (Build.VERSION.SDK_INT >= 31) {
+                d = BitmapRegionDecoder.newInstance(is);
+            } else {
+                d = BitmapRegionDecoder.newInstance(is, isShareable);
+            }
             if (d != null) {
                 return new SimpleBitmapRegionDecoderWrapper(d);
             }
@@ -157,12 +165,10 @@ class DumbBitmapRegionDecoder implements SimpleBitmapRegionDecoder {
  * A {@link TiledImageRenderer.TileSource} using
  * {@link BitmapRegionDecoder} to wrap a local file
  */
-@TargetApi(VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
 public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
 
     private static final String TAG = "BitmapRegionTileSource";
 
-    private static final boolean REUSE_BITMAP = Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN;
     private static final int GL_SIZE_LIMIT = 2048;
     // This must be no larger than half the size of the GL_SIZE_LIMIT
     // due to decodePreview being allowed to be up to 2x the size of the target
@@ -472,9 +478,6 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
     @Override
     public Bitmap getTile(int level, int x, int y, Bitmap bitmap) {
         int tileSize = getTileSize();
-        if (!REUSE_BITMAP) {
-            return getTileWithoutReusingBitmap(level, x, y, tileSize);
-        }
 
         int t = tileSize << level;
         mWantRegion.set(x, y, x + t, y + t);

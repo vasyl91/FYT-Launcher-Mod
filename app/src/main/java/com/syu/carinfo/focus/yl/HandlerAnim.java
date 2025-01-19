@@ -3,7 +3,6 @@ package com.syu.carinfo.focus.yl;
 import android.os.Handler;
 import android.os.Message;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HandlerAnim extends Handler {
     public static final HandlerAnim mInst = new HandlerAnim();
     private static final int msg_rulerview_anim = 0;
@@ -15,7 +14,7 @@ public class HandlerAnim extends Handler {
         sendEmptyMessage(0);
     }
 
-    @Override // android.os.Handler
+    @Override
     public void handleMessage(Message msg) {
         switch (msg.what) {
             case 0:

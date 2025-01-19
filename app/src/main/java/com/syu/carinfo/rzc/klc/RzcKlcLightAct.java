@@ -10,26 +10,25 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcLightAct extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcLightAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 7:
+                case 105:
                     RzcKlcLightAct.this.updaterLookLight();
                     break;
-                case 8:
+                case 106:
                     RzcKlcLightAct.this.updaterDelaySet();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_light_set);
+        //setContentView(R.layout.layout_rzc_klc_light_set);
         setUI();
     }
 
@@ -39,15 +38,11 @@ public class RzcKlcLightAct extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int lightState = DataCanbus.DATA[7];
-                RzcKlcFunc.CAR_COMM_CONTROL(0, lightState != 0 ? 0 : 1);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int lasuoState = DataCanbus.DATA[8];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int lasuoState = DataCanbus.DATA[106];
                 if (lasuoState == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(1, 3);
                     break;
@@ -61,8 +56,8 @@ public class RzcKlcLightAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(1, 2);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                int lasuoState2 = DataCanbus.DATA[8];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int lasuoState2 = DataCanbus.DATA[106];
                 if (lasuoState2 == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(1, 1);
                     break;
@@ -76,16 +71,20 @@ public class RzcKlcLightAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(1, 0);
                     break;
                 }
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int lightState = DataCanbus.DATA[105];
+                RzcKlcFunc.CAR_COMM_CONTROL(0, lightState != 0 ? 0 : 1);
+                break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -96,24 +95,24 @@ public class RzcKlcLightAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterLookLight() {
-        int lightState = DataCanbus.DATA[7];
+        int lightState = DataCanbus.DATA[105];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(lightState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDelaySet() {
-        int lasuoState = DataCanbus.DATA[8];
+        int lasuoState = DataCanbus.DATA[106];
         if (lasuoState == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.klc_Parking_with_trailer_Off);
             return;

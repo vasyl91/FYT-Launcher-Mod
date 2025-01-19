@@ -1,10 +1,10 @@
 package com.syu.util;
 
-import android.content.Context;
-import android.content.res.Resources;
+import com.android.launcher66.R;
+
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class WeatherUtils {
     private static final String weatherBgPrefix = "ic_weather_bg_";
     private static final String weatherImgprefix = "fyt_ic_";
@@ -18,7 +18,7 @@ public class WeatherUtils {
         }
     }
 
-    public static int getWeatherImagId(Context context, String name) {
+    public static int getWeatherImagId(String name) {
         String str = null;
         String[] strArr = WEATHER_ZH;
         int length = strArr.length;
@@ -39,11 +39,11 @@ public class WeatherUtils {
         if (str != null && !str.equals("")) {
             str = mWeatherMap.get(str);
         }
-        int imgId = getResid(context, weatherImgprefix + str, "drawable");
+        int imgId = getResId(weatherImgprefix + str);
         return imgId;
     }
 
-    public static int getWeatherBgId(Context context, String name) {
+    public static int getWeatherBgId(String name) {
         String str = null;
         String[] strArr = WEATHER_ZH;
         int length = strArr.length;
@@ -64,15 +64,16 @@ public class WeatherUtils {
         if (str == null || str.equals("")) {
             return -1;
         }
-        int imgId = getResid(context, weatherBgPrefix + mWeatherMap.get(str), "drawable");
+        int imgId = getResId(weatherBgPrefix + mWeatherMap.get(str));
         return imgId;
     }
 
-    public static int getResid(Context context, String name, String type) {
-        Resources res = context.getResources();
-        if (res == null) {
-            return 0;
+    public static int getResId(String resName) {
+        try {
+            Field idField = R.drawable.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
         }
-        return res.getIdentifier(name, type, context.getPackageName());
     }
 }

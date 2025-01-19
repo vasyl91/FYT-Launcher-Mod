@@ -10,88 +10,87 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class MingjueZS_Wc extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.MingjueZS_Wc.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.mingjue_steerfeel_m /* 2131432789 */:
-                    int val = DataCanbus.DATA[94] & 15;
+                case R.id.mingjue_steerfeel_m /* 2131432716 */:
+                    int val = DataCanbus.DATA[167] & 15;
                     MingjueZS_Wc.this.sendCmd(3, val == 0 ? 2 : val - 1);
                     break;
-                case R.id.mingjue_steerfeel_p /* 2131432791 */:
-                    MingjueZS_Wc.this.sendCmd(3, ((DataCanbus.DATA[94] & 15) + 1) % 3);
+                case R.id.mingjue_steerfeel_p /* 2131432718 */:
+                    MingjueZS_Wc.this.sendCmd(3, ((DataCanbus.DATA[167] & 15) + 1) % 3);
                     break;
-                case R.id.mingjue_searchcar_indicator /* 2131432793 */:
-                    MingjueZS_Wc.this.sendCmd(2, (DataCanbus.DATA[95] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_searchcar_indicator /* 2131432720 */:
+                    MingjueZS_Wc.this.sendCmd(2, (DataCanbus.DATA[168] & 15) != 1 ? 1 : 0);
                     break;
-                case R.id.mingjue_comehomewithme /* 2131432796 */:
-                    MingjueZS_Wc.this.sendCmd(1, (DataCanbus.DATA[96] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_comehomewithme /* 2131432723 */:
+                    MingjueZS_Wc.this.sendCmd(1, (DataCanbus.DATA[169] & 15) != 1 ? 1 : 0);
                     break;
-                case R.id.mingjue_home_light_time_m /* 2131433106 */:
-                    int val2 = (DataCanbus.DATA[110] & 15) - 1;
+                case R.id.mingjue_home_light_time_m /* 2131433005 */:
+                    int val2 = (DataCanbus.DATA[182] & 15) - 1;
                     if (val2 < 0) {
                         val2 = 2;
                     }
                     MingjueZS_Wc.this.sendCmd(7, val2);
                     break;
-                case R.id.mingjue_home_light_time_p /* 2131433108 */:
-                    int val3 = (DataCanbus.DATA[110] & 15) + 1;
+                case R.id.mingjue_home_light_time_p /* 2131433007 */:
+                    int val3 = (DataCanbus.DATA[182] & 15) + 1;
                     if (val3 > 2) {
                         val3 = 0;
                     }
                     MingjueZS_Wc.this.sendCmd(7, val3);
                     break;
-                case R.id.mingjue_stop_auto_unlock /* 2131433110 */:
-                    MingjueZS_Wc.this.sendCmd(6, (DataCanbus.DATA[111] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_stop_auto_unlock /* 2131433009 */:
+                    MingjueZS_Wc.this.sendCmd(6, (DataCanbus.DATA[183] & 15) != 1 ? 1 : 0);
                     break;
-                case R.id.mingjue_start_auto_lock /* 2131433112 */:
-                    MingjueZS_Wc.this.sendCmd(5, (DataCanbus.DATA[112] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_start_auto_lock /* 2131433011 */:
+                    MingjueZS_Wc.this.sendCmd(5, (DataCanbus.DATA[184] & 15) != 1 ? 1 : 0);
                     break;
-                case R.id.mingjue_beep_onoff /* 2131433113 */:
-                    MingjueZS_Wc.this.sendCmd(4, (DataCanbus.DATA[113] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_beep_onoff /* 2131433012 */:
+                    MingjueZS_Wc.this.sendCmd(4, (DataCanbus.DATA[185] & 15) != 1 ? 1 : 0);
                     break;
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruiteng.MingjueZS_Wc.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 94:
+                case 167:
                     MingjueZS_Wc.this.uSteerFeel(DataCanbus.DATA[updateCode]);
                     break;
-                case 95:
+                case 168:
                     MingjueZS_Wc.this.uSearchCar(DataCanbus.DATA[updateCode]);
                     break;
-                case 96:
+                case 169:
                     MingjueZS_Wc.this.uComeHome(DataCanbus.DATA[updateCode]);
                     break;
-                case 110:
+                case 182:
                     MingjueZS_Wc.this.uHomeLightTime(DataCanbus.DATA[updateCode]);
                     break;
-                case 111:
+                case 183:
                     MingjueZS_Wc.this.uStopAutoUnlock(DataCanbus.DATA[updateCode]);
                     break;
-                case 112:
+                case 184:
                     MingjueZS_Wc.this.uStartAutoLock(DataCanbus.DATA[updateCode]);
                     break;
-                case 113:
+                case 185:
                     MingjueZS_Wc.this.uBeepOnoff(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_mingjuezs_set);
+        //setContentView(R.layout.layout_wc_mingjuezs_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setClick((CheckedTextView) findViewById(R.id.mingjue_searchcar_indicator));
         setClick((CheckedTextView) findViewById(R.id.mingjue_comehomewithme));
@@ -104,38 +103,38 @@ public class MingjueZS_Wc extends BaseActivity {
         setClick((CheckedTextView) findViewById(R.id.mingjue_beep_onoff));
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void setClick(View v) {
         if (v != null) {
             v.setOnClickListener(this.mClick);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int cmd, int para) {
         DataCanbus.PROXY.cmd(22, new int[]{126, cmd, para}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[182].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[183].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[184].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[182].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[183].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[184].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uBeepOnoff(int i) {

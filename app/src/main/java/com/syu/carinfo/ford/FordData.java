@@ -1,6 +1,5 @@
 package com.syu.carinfo.ford;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class FordData {
     public static final int U_AIR_AC = 16;
     public static final int U_AIR_AC_MAX = 27;

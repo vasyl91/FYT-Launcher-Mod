@@ -7,16 +7,18 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class JsonUtil {
     public static String getRequestStr(String urlServer) {
         String str = "";
@@ -39,7 +41,7 @@ public class JsonUtil {
                 return "";
             }
             StringBuffer sb = new StringBuffer();
-            BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), HTTP.UTF_8));
+            BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), StandardCharsets.UTF_8));
             while (true) {
                 String readLine = responseReader.readLine();
                 if (readLine != null) {
@@ -63,7 +65,8 @@ public class JsonUtil {
         HttpPost httpPost = new HttpPost(str_http);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-            HttpResponse httpResponse = new DefaultHttpClient().execute(httpPost);
+            HttpClient httpclient = HttpClientBuilder.create().build();
+            HttpResponse httpResponse = httpclient.execute(httpPost);
             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 return "";
             }

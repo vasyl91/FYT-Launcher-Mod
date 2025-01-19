@@ -10,14 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jili.ODJiliDihaoEVCarSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 122:
+                case 134:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text1)).setText("纯电EV");
@@ -26,7 +25,7 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text1)).setText("混动HEV");
                             break;
                     }
-                case 123:
+                case 135:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text2)).setText("ECO");
@@ -38,16 +37,16 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text2)).setText("COMFORT");
                             break;
                     }
-                case 124:
+                case 136:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 125:
+                case 137:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 126:
+                case 138:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 127:
+                case 139:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text3)).setText("关闭");
@@ -62,10 +61,10 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text3)).setText("高");
                             break;
                     }
-                case 128:
+                case 140:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 129:
+                case 141:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text4)).setText("柔和");
@@ -77,28 +76,28 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text4)).setText("强劲");
                             break;
                     }
-                case 130:
+                case 142:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 131:
+                case 143:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext6), value == 1);
                     break;
-                case 132:
+                case 144:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 133:
+                case 145:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 134:
+                case 146:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 135:
+                case 147:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 136:
+                case 148:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 137:
+                case 149:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text5)).setText("关");
@@ -110,7 +109,7 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text5)).setText("20km/h");
                             break;
                     }
-                case 138:
+                case 150:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text6)).setText("仅灯光");
@@ -119,19 +118,19 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text6)).setText("灯光和声音");
                             break;
                     }
-                case 139:
+                case 151:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 140:
+                case 152:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     break;
-                case 141:
+                case 153:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 142:
+                case 154:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext15), value == 1);
                     break;
-                case 143:
+                case 155:
                     switch (value) {
                         case 0:
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text7)).setText("立即充电");
@@ -143,27 +142,27 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                             ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text7)).setText("优惠充电");
                             break;
                     }
-                case 144:
+                case 156:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext16), value == 1);
                     break;
-                case 145:
+                case 157:
                     ODJiliDihaoEVCarSettingsAct.this.setCheck((CheckedTextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.ctv_checkedtext17), value == 1);
                     break;
-                case 146:
+                case 158:
                     ((TextView) ODJiliDihaoEVCarSettingsAct.this.findViewById(R.id.tv_text8)).setText(String.valueOf(value) + "%");
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_od_jili_dihao_ev_settings);
+        //setContentView(R.layout.layout_0453_od_jili_dihao_ev_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -198,118 +197,118 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
         setSelfClick((Button) findViewById(R.id.btn_plus7), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[124];
-                if (value == 0) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[134] - 1;
+                if (value < 0) {
                     value = 1;
-                } else if (value == 1) {
-                    value = 0;
                 }
-                setCarInfo(3, value);
+                setCarInfo(1, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value2 = DataCanbus.DATA[122] - 1;
-                if (value2 < 0) {
-                    value2 = 1;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[134] + 1;
+                if (value2 > 1) {
+                    value2 = 0;
                 }
                 setCarInfo(1, value2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value3 = DataCanbus.DATA[122] + 1;
-                if (value3 > 1) {
-                    value3 = 0;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[135] - 1;
+                if (value3 < 0) {
+                    value3 = 2;
                 }
-                setCarInfo(1, value3);
+                setCarInfo(2, value3);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value4 = DataCanbus.DATA[123] - 1;
-                if (value4 < 0) {
-                    value4 = 2;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[135] + 1;
+                if (value4 > 2) {
+                    value4 = 0;
                 }
                 setCarInfo(2, value4);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value5 = DataCanbus.DATA[123] + 1;
-                if (value5 > 2) {
-                    value5 = 0;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value5 = DataCanbus.DATA[139] - 1;
+                if (value5 < 0) {
+                    value5 = 3;
                 }
-                setCarInfo(2, value5);
+                setCarInfo(6, value5);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value6 = DataCanbus.DATA[127] - 1;
-                if (value6 < 0) {
-                    value6 = 3;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value6 = DataCanbus.DATA[139] + 1;
+                if (value6 > 3) {
+                    value6 = 0;
                 }
                 setCarInfo(6, value6);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value7 = DataCanbus.DATA[127] + 1;
-                if (value7 > 3) {
-                    value7 = 0;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value7 = DataCanbus.DATA[141] - 1;
+                if (value7 < 0) {
+                    value7 = 2;
                 }
-                setCarInfo(6, value7);
+                setCarInfo(11, value7);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value8 = DataCanbus.DATA[129] - 1;
-                if (value8 < 0) {
-                    value8 = 2;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value8 = DataCanbus.DATA[141] + 1;
+                if (value8 > 2) {
+                    value8 = 0;
                 }
                 setCarInfo(11, value8);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value9 = DataCanbus.DATA[129] + 1;
-                if (value9 > 2) {
-                    value9 = 0;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value9 = DataCanbus.DATA[149] - 1;
+                if (value9 < 0) {
+                    value9 = 2;
                 }
-                setCarInfo(11, value9);
+                setCarInfo(17, value9);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value10 = DataCanbus.DATA[137] - 1;
-                if (value10 < 0) {
-                    value10 = 2;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value10 = DataCanbus.DATA[149] + 1;
+                if (value10 > 2) {
+                    value10 = 0;
                 }
                 setCarInfo(17, value10);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value11 = DataCanbus.DATA[137] + 1;
-                if (value11 > 2) {
-                    value11 = 0;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value11 = DataCanbus.DATA[150] - 1;
+                if (value11 < 0) {
+                    value11 = 1;
                 }
-                setCarInfo(17, value11);
+                setCarInfo(7, value11);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value12 = DataCanbus.DATA[138] - 1;
-                if (value12 < 0) {
-                    value12 = 1;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value12 = DataCanbus.DATA[150] + 1;
+                if (value12 > 1) {
+                    value12 = 0;
                 }
                 setCarInfo(7, value12);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value13 = DataCanbus.DATA[138] + 1;
-                if (value13 > 1) {
-                    value13 = 0;
+            case R.id.btn_minus7 /* 2131427473 */:
+                int value13 = DataCanbus.DATA[155] - 1;
+                if (value13 < 0) {
+                    value13 = 2;
                 }
-                setCarInfo(7, value13);
+                setCarInfo(22, value13);
                 break;
-            case R.id.btn_minus7 /* 2131427505 */:
-                int value14 = DataCanbus.DATA[143] - 1;
-                if (value14 < 0) {
-                    value14 = 2;
+            case R.id.btn_plus7 /* 2131427475 */:
+                int value14 = DataCanbus.DATA[155] + 1;
+                if (value14 > 2) {
+                    value14 = 0;
                 }
                 setCarInfo(22, value14);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
-                int value15 = DataCanbus.DATA[143] + 1;
-                if (value15 > 2) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value15 = DataCanbus.DATA[136];
+                if (value15 == 0) {
+                    value15 = 1;
+                } else if (value15 == 1) {
                     value15 = 0;
                 }
-                setCarInfo(22, value15);
+                setCarInfo(3, value15);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value16 = DataCanbus.DATA[125];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value16 = DataCanbus.DATA[137];
                 if (value16 == 0) {
                     value16 = 1;
                 } else if (value16 == 1) {
@@ -317,8 +316,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(4, value16);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value17 = DataCanbus.DATA[126];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value17 = DataCanbus.DATA[138];
                 if (value17 == 0) {
                     value17 = 1;
                 } else if (value17 == 1) {
@@ -326,8 +325,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(5, value17);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int value18 = DataCanbus.DATA[128];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value18 = DataCanbus.DATA[140];
                 if (value18 == 0) {
                     value18 = 1;
                 } else if (value18 == 1) {
@@ -335,8 +334,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(8, value18);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value19 = DataCanbus.DATA[130];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value19 = DataCanbus.DATA[142];
                 if (value19 == 0) {
                     value19 = 1;
                 } else if (value19 == 1) {
@@ -344,8 +343,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(12, value19);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int value20 = DataCanbus.DATA[131];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int value20 = DataCanbus.DATA[143];
                 if (value20 == 0) {
                     value20 = 1;
                 } else if (value20 == 1) {
@@ -353,8 +352,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(9, value20);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int value21 = DataCanbus.DATA[132];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value21 = DataCanbus.DATA[144];
                 if (value21 == 0) {
                     value21 = 1;
                 } else if (value21 == 1) {
@@ -362,8 +361,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(10, value21);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int value22 = DataCanbus.DATA[133];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value22 = DataCanbus.DATA[145];
                 if (value22 == 0) {
                     value22 = 1;
                 } else if (value22 == 1) {
@@ -371,8 +370,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(13, value22);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                int value23 = DataCanbus.DATA[134];
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int value23 = DataCanbus.DATA[146];
                 if (value23 == 0) {
                     value23 = 1;
                 } else if (value23 == 1) {
@@ -380,8 +379,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(14, value23);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                int value24 = DataCanbus.DATA[135];
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                int value24 = DataCanbus.DATA[147];
                 if (value24 == 0) {
                     value24 = 1;
                 } else if (value24 == 1) {
@@ -389,8 +388,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(15, value24);
                 break;
-            case R.id.ctv_checkedtext11 /* 2131427543 */:
-                int value25 = DataCanbus.DATA[136];
+            case R.id.ctv_checkedtext11 /* 2131427553 */:
+                int value25 = DataCanbus.DATA[148];
                 if (value25 == 0) {
                     value25 = 1;
                 } else if (value25 == 1) {
@@ -398,8 +397,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(16, value25);
                 break;
-            case R.id.ctv_checkedtext12 /* 2131427544 */:
-                int value26 = DataCanbus.DATA[139];
+            case R.id.ctv_checkedtext12 /* 2131427554 */:
+                int value26 = DataCanbus.DATA[151];
                 if (value26 == 0) {
                     value26 = 1;
                 } else if (value26 == 1) {
@@ -407,8 +406,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(18, value26);
                 break;
-            case R.id.ctv_checkedtext13 /* 2131427545 */:
-                int value27 = DataCanbus.DATA[140];
+            case R.id.ctv_checkedtext13 /* 2131427555 */:
+                int value27 = DataCanbus.DATA[152];
                 if (value27 == 0) {
                     value27 = 1;
                 } else if (value27 == 1) {
@@ -416,8 +415,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(19, value27);
                 break;
-            case R.id.ctv_checkedtext14 /* 2131427546 */:
-                int value28 = DataCanbus.DATA[141];
+            case R.id.ctv_checkedtext14 /* 2131427556 */:
+                int value28 = DataCanbus.DATA[153];
                 if (value28 == 0) {
                     value28 = 1;
                 } else if (value28 == 1) {
@@ -425,8 +424,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(20, value28);
                 break;
-            case R.id.ctv_checkedtext15 /* 2131427547 */:
-                int value29 = DataCanbus.DATA[142];
+            case R.id.ctv_checkedtext15 /* 2131427557 */:
+                int value29 = DataCanbus.DATA[154];
                 if (value29 == 0) {
                     value29 = 1;
                 } else if (value29 == 1) {
@@ -434,8 +433,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(21, value29);
                 break;
-            case R.id.ctv_checkedtext16 /* 2131427548 */:
-                int value30 = DataCanbus.DATA[144];
+            case R.id.ctv_checkedtext16 /* 2131427558 */:
+                int value30 = DataCanbus.DATA[156];
                 if (value30 == 0) {
                     value30 = 1;
                 } else if (value30 == 1) {
@@ -443,8 +442,8 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
                 }
                 setCarInfo(23, value30);
                 break;
-            case R.id.ctv_checkedtext17 /* 2131427647 */:
-                int value31 = DataCanbus.DATA[145];
+            case R.id.ctv_checkedtext17 /* 2131427559 */:
+                int value31 = DataCanbus.DATA[157];
                 if (value31 == 0) {
                     value31 = 1;
                 } else if (value31 == 1) {
@@ -459,33 +458,21 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
         DataCanbus.PROXY.cmd(3, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(2, new int[]{79}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
@@ -499,22 +486,22 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
         DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
@@ -528,5 +515,17 @@ public class ODJiliDihaoEVCarSettingsAct extends BaseActivity implements View.On
         DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
     }
 }

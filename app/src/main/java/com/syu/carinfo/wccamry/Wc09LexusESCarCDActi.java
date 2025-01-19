@@ -14,98 +14,97 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0294_WC2_TOYOTA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickListener {
     public static Wc09LexusESCarCDActi mInst;
     public static boolean mIsFront = false;
     protected Handler mHandler;
     ImageView[] image = new ImageView[6];
     TextView[] textView = new TextView[6];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wccamry.Wc09LexusESCarCDActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = R.drawable.ic_sbd_play1;
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 96:
-                case 109:
+                case 138:
+                case 151:
                     Wc09LexusESCarCDActi.this.updateDiscId();
                     break;
-                case 97:
+                case 139:
                     ImageView imageView = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd1_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView.setImageResource(i);
                     break;
-                case 98:
+                case 140:
                     ImageView imageView2 = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd2_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView2.setImageResource(i);
                     break;
-                case 99:
+                case 141:
                     ImageView imageView3 = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd3_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView3.setImageResource(i);
                     break;
-                case 100:
+                case 142:
                     ImageView imageView4 = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd4_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView4.setImageResource(i);
                     break;
-                case 101:
+                case 143:
                     ImageView imageView5 = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd5_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView5.setImageResource(i);
                     break;
-                case 102:
+                case 144:
                     ImageView imageView6 = (ImageView) Wc09LexusESCarCDActi.this.findViewById(R.id.xuni_cd6_img);
                     if (value != 1) {
-                        i = 2130840836;
+                        i = 2130841821;
                     }
                     imageView6.setImageResource(i);
                     break;
-                case 103:
-                case 105:
-                case 107:
+                case 145:
+                case 147:
+                case 149:
                     Wc09LexusESCarCDActi.this.updatePlayMode();
                     break;
-                case 104:
-                case 106:
-                case 108:
+                case 146:
+                case 148:
+                case 150:
                     Wc09LexusESCarCDActi.this.updateDiscMode();
                     break;
-                case 110:
+                case 152:
                     Wc09LexusESCarCDActi.this.updatePlayTrack();
                     break;
-                case 111:
-                case 112:
+                case 153:
+                case 154:
                     Wc09LexusESCarCDActi.this.updaterPlayTime();
                     break;
-                case 113:
+                case 155:
                     Wc09LexusESCarCDActi.this.updateCDTitle();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_429_dj_crown_carcd);
+        //setContentView(R.layout.layout_0294_wc_toyota_carcd);
         this.mHandler = new Handler(Looper.getMainLooper());
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.image[0] = (ImageView) findViewById(R.id.xuni_cd1_img);
         this.image[1] = (ImageView) findViewById(R.id.xuni_cd2_img);
@@ -134,74 +133,82 @@ public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickLi
         setSelfClick((Button) findViewById(R.id.jeep_btn_fr), this);
         setSelfClick((Button) findViewById(R.id.jeep_btn_pause), this);
         setSelfClick((Button) findViewById(R.id.jeep_btn_play), this);
+        setSelfClick((Button) findViewById(R.id.jeep_btn_trackprev), this);
+        setSelfClick((Button) findViewById(R.id.jeep_btn_tracknext), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.jeep_btn_prev /* 2131427574 */:
+            case R.id.jeep_btn_prev /* 2131427584 */:
                 DataCanbus.PROXY.cmd(30, 6, 1);
                 break;
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(30, 1, 0);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(30, 2, 0);
                 break;
-            case R.id.jeep_btn_next /* 2131427577 */:
+            case R.id.jeep_btn_next /* 2131427587 */:
                 DataCanbus.PROXY.cmd(30, 6, 0);
                 break;
-            case R.id.xuni_cd1_img /* 2131427598 */:
+            case R.id.xuni_cd1_img /* 2131427610 */:
                 DataCanbus.PROXY.cmd(30, 9, 1);
                 break;
-            case R.id.xuni_cd2_img /* 2131427599 */:
+            case R.id.xuni_cd2_img /* 2131427611 */:
                 DataCanbus.PROXY.cmd(30, 9, 2);
                 break;
-            case R.id.xuni_cd3_img /* 2131427600 */:
+            case R.id.xuni_cd3_img /* 2131427612 */:
                 DataCanbus.PROXY.cmd(30, 9, 3);
                 break;
-            case R.id.xuni_cd4_img /* 2131427601 */:
+            case R.id.xuni_cd4_img /* 2131427613 */:
                 DataCanbus.PROXY.cmd(30, 9, 4);
                 break;
-            case R.id.xuni_cd5_img /* 2131427602 */:
+            case R.id.xuni_cd5_img /* 2131427614 */:
                 DataCanbus.PROXY.cmd(30, 9, 5);
                 break;
-            case R.id.xuni_cd6_img /* 2131427603 */:
+            case R.id.xuni_cd6_img /* 2131427615 */:
                 DataCanbus.PROXY.cmd(30, 9, 6);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
-                DataCanbus.PROXY.cmd(30, 7, 1);
-                break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(30, 7, 0);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
-                if (DataCanbus.DATA[105] == 0) {
+            case R.id.jeep_btn_ff /* 2131427623 */:
+                DataCanbus.PROXY.cmd(30, 7, 1);
+                break;
+            case R.id.jeep_btn_loop /* 2131427737 */:
+                if (DataCanbus.DATA[147] == 0) {
                     DataCanbus.PROXY.cmd(30, 3, 1);
                     break;
-                } else if (DataCanbus.DATA[105] == 1) {
+                } else if (DataCanbus.DATA[147] == 1) {
                     DataCanbus.PROXY.cmd(30, 3, 2);
                     break;
-                } else if (DataCanbus.DATA[106] == 1) {
+                } else if (DataCanbus.DATA[148] == 1) {
                     DataCanbus.PROXY.cmd(30, 3, 0);
                     break;
                 }
-            case R.id.jeep_btn_random /* 2131428348 */:
-                if (DataCanbus.DATA[107] == 0) {
+            case R.id.jeep_btn_trackprev /* 2131427738 */:
+                DataCanbus.PROXY.cmd(30, 8, 1);
+                break;
+            case R.id.jeep_btn_tracknext /* 2131427739 */:
+                DataCanbus.PROXY.cmd(30, 8, 0);
+                break;
+            case R.id.jeep_btn_random /* 2131427740 */:
+                if (DataCanbus.DATA[149] == 0) {
                     DataCanbus.PROXY.cmd(30, 5, 1);
                     break;
-                } else if (DataCanbus.DATA[107] == 1) {
+                } else if (DataCanbus.DATA[149] == 1) {
                     DataCanbus.PROXY.cmd(30, 5, 2);
                     break;
-                } else if (DataCanbus.DATA[108] == 1) {
+                } else if (DataCanbus.DATA[150] == 1) {
                     DataCanbus.PROXY.cmd(30, 5, 0);
                     break;
                 }
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -209,61 +216,61 @@ public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickLi
         mIsFront = true;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDiscId() {
-        int disc = DataCanbus.DATA[96];
-        int workstate = DataCanbus.DATA[109];
+        int disc = DataCanbus.DATA[138];
+        int workstate = DataCanbus.DATA[151];
         ((TextView) findViewById(R.id.xuni_cd1_text)).setText("CD1");
         ((TextView) findViewById(R.id.xuni_cd2_text)).setText("CD2");
         ((TextView) findViewById(R.id.xuni_cd3_text)).setText("CD3");
@@ -356,26 +363,26 @@ public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCDTitle() {
         if (((TextView) findViewById(R.id.cd_title_show)) != null) {
             ((TextView) findViewById(R.id.cd_title_show)).setText(Callback_0294_WC2_TOYOTA_ALL.CarCdTitle);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePlayTrack() {
-        int track = DataCanbus.DATA[110] & 255;
+        int track = DataCanbus.DATA[152] & 255;
         if (((TextView) findViewById(R.id.track_num_tv)) != null) {
             ((TextView) findViewById(R.id.track_num_tv)).setText(new StringBuilder().append(track).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePlayMode() {
-        int scan = DataCanbus.DATA[103];
-        int repeat = DataCanbus.DATA[105];
-        int random = DataCanbus.DATA[107];
+        int scan = DataCanbus.DATA[145];
+        int repeat = DataCanbus.DATA[147];
+        int random = DataCanbus.DATA[149];
         if (((TextView) findViewById(R.id.mode_tv)) != null) {
             if (scan != 0) {
                 ((TextView) findViewById(R.id.mode_tv)).setText("Scan");
@@ -391,11 +398,11 @@ public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDiscMode() {
-        int scan = DataCanbus.DATA[104];
-        int repeat = DataCanbus.DATA[106];
-        int random = DataCanbus.DATA[108];
+        int scan = DataCanbus.DATA[146];
+        int repeat = DataCanbus.DATA[148];
+        int random = DataCanbus.DATA[150];
         if (((TextView) findViewById(R.id.file_num_tv)) != null) {
             if (scan != 0) {
                 ((TextView) findViewById(R.id.file_num_tv)).setText("Scan");
@@ -411,10 +418,10 @@ public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = DataCanbus.DATA[111] & 255;
-        int playsecond = DataCanbus.DATA[112] & 255;
+        int playminute = DataCanbus.DATA[153] & 255;
+        int playsecond = DataCanbus.DATA[154] & 255;
         if (((TextView) findViewById(R.id.time_tv)) != null) {
             ((TextView) findViewById(R.id.time_tv)).setText(String.format("%02d:%02d", Integer.valueOf(playminute), Integer.valueOf(playsecond)));
         }

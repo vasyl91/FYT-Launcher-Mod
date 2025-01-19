@@ -8,49 +8,102 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Fragment_Surui_CarSet5 extends BaseFragment implements View.OnClickListener {
-    int[] ids = {60, 61, 62, 63, 64, 65, 66, 67, 68, 69};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet5.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 169, 170, 171, 172, 173, 174};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 60:
+                case 124:
                     Fragment_Surui_CarSet5.this.uBhomeLightDelay(value);
                     break;
-                case 61:
+                case 125:
                     Fragment_Surui_CarSet5.this.uAhomeLightDelay(value);
                     break;
-                case 62:
+                case 126:
                     Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext1), value != 0);
                     break;
-                case 63:
+                case 127:
                     Fragment_Surui_CarSet5.this.uUnlockSys(value);
                     break;
-                case 64:
+                case 128:
                     Fragment_Surui_CarSet5.this.uAirMode(value);
                     break;
-                case 65:
+                case 129:
                     Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext2), value != 0);
                     break;
-                case 66:
+                case 130:
                     Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext3), value != 0);
                     break;
-                case 67:
+                case 131:
                     Fragment_Surui_CarSet5.this.uAirWinlev(value);
                     break;
-                case 68:
+                case 132:
                     Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext4), value != 0);
                     break;
-                case 69:
+                case 133:
                     Fragment_Surui_CarSet5.this.uAudiomode(value);
                     break;
+                case 169:
+                    switch (value) {
+                        case 0:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text7)).setText(R.string.off);
+                            break;
+                        default:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text7)).setText(new StringBuilder().append(value).toString());
+                            break;
+                    }
+                case 170:
+                    Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext5), value != 0);
+                    break;
+                case 171:
+                    Fragment_Surui_CarSet5.this.setCheck((CheckedTextView) Fragment_Surui_CarSet5.this.findView(R.id.ctv_checkedtext6), value != 0);
+                    break;
+                case 172:
+                    switch (value) {
+                        case 0:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text8)).setText(R.string.off);
+                            break;
+                        default:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text8)).setText(new StringBuilder().append(value).toString());
+                            break;
+                    }
+                case 173:
+                    switch (value) {
+                        case 0:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text9)).setText(R.string.off);
+                            break;
+                        default:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text9)).setText(new StringBuilder().append(value).toString());
+                            break;
+                    }
+                case 174:
+                    switch (value) {
+                        case 0:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText(R.string.off);
+                            break;
+                        case 1:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText("10min");
+                            break;
+                        case 2:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText("15min");
+                            break;
+                        case 3:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText("20min");
+                            break;
+                        case 4:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText("25min");
+                            break;
+                        case 5:
+                            ((TextView) Fragment_Surui_CarSet5.this.findView(R.id.tv_text10)).setText("30min");
+                            break;
+                    }
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         bindViewOnClick(R.id.btn_minus1, this);
         bindViewOnClick(R.id.btn_plus1, this);
@@ -64,155 +117,243 @@ public class Fragment_Surui_CarSet5 extends BaseFragment implements View.OnClick
         bindViewOnClick(R.id.btn_plus5, this);
         bindViewOnClick(R.id.btn_minus6, this);
         bindViewOnClick(R.id.btn_plus6, this);
+        bindViewOnClick(R.id.btn_minus7, this);
+        bindViewOnClick(R.id.btn_plus7, this);
+        bindViewOnClick(R.id.btn_minus8, this);
+        bindViewOnClick(R.id.btn_plus8, this);
+        bindViewOnClick(R.id.btn_minus9, this);
+        bindViewOnClick(R.id.btn_plus9, this);
+        bindViewOnClick(R.id.btn_minus10, this);
+        bindViewOnClick(R.id.btn_plus10, this);
         bindViewOnClick(R.id.ctv_checkedtext1, this);
         bindViewOnClick(R.id.ctv_checkedtext2, this);
         bindViewOnClick(R.id.ctv_checkedtext3, this);
         bindViewOnClick(R.id.ctv_checkedtext4, this);
+        bindViewOnClick(R.id.ctv_checkedtext5, this);
+        bindViewOnClick(R.id.ctv_checkedtext6, this);
+        bindViewOnClick(R.id.ctv_checkedtext7, this);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0439_od_byd_all_carset;
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
         int value3;
         int value4;
+        int value5;
+        int value6;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                if (DataCanbus.DATA[62] == 0) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value7 = DataCanbus.DATA[124] - 1;
+                if (value7 < 0) {
+                    value7 = 6;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{12, value7}, null, null);
+                break;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value8 = DataCanbus.DATA[124] + 1;
+                if (value8 > 6) {
+                    value8 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{1, value8}, null, null);
+                break;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value9 = DataCanbus.DATA[125] - 1;
+                if (value9 < 0) {
+                    value9 = 6;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{2, value9}, null, null);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value10 = DataCanbus.DATA[125] + 1;
+                if (value10 > 6) {
+                    value10 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{2, value10}, null, null);
+                break;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value11 = DataCanbus.DATA[127] - 1;
+                if (value11 < 0) {
+                    value11 = 1;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{4, value11}, null, null);
+                break;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value12 = DataCanbus.DATA[127] + 1;
+                if (value12 > 1) {
+                    value12 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{4, value12}, null, null);
+                break;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value13 = DataCanbus.DATA[128] - 1;
+                if (value13 < 0) {
+                    value13 = 2;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{5, value13}, null, null);
+                break;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value14 = DataCanbus.DATA[128] + 1;
+                if (value14 > 2) {
+                    value14 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{5, value14}, null, null);
+                break;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value15 = DataCanbus.DATA[131] - 1;
+                if (value15 < 0) {
+                    value15 = 2;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{8, value15}, null, null);
+                break;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value16 = DataCanbus.DATA[131] + 1;
+                if (value16 > 2) {
+                    value16 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{8, value16}, null, null);
+                break;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value17 = DataCanbus.DATA[133] - 1;
+                if (value17 < 0) {
+                    value17 = 1;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{10, value17}, null, null);
+                break;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value18 = DataCanbus.DATA[133] + 1;
+                if (value18 > 1) {
+                    value18 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{10, value18}, null, null);
+                break;
+            case R.id.btn_minus7 /* 2131427473 */:
+                int value19 = DataCanbus.DATA[169];
+                if (value19 > 0) {
+                    value19--;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{11, value19}, null, null);
+                break;
+            case R.id.btn_plus7 /* 2131427475 */:
+                int value20 = DataCanbus.DATA[169];
+                if (value20 < 32) {
+                    value20++;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{11, value20}, null, null);
+                break;
+            case R.id.btn_minus8 /* 2131427476 */:
+                int value21 = DataCanbus.DATA[172];
+                if (value21 > 0) {
+                    value21--;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{14, value21}, null, null);
+                break;
+            case R.id.btn_plus8 /* 2131427478 */:
+                int value22 = DataCanbus.DATA[172];
+                if (value22 < 8) {
+                    value22++;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{14, value22}, null, null);
+                break;
+            case R.id.btn_minus9 /* 2131427479 */:
+                int value23 = DataCanbus.DATA[173];
+                if (value23 > 0) {
+                    value23--;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{15, value23}, null, null);
+                break;
+            case R.id.btn_plus9 /* 2131427481 */:
+                int value24 = DataCanbus.DATA[173];
+                if (value24 < 8) {
+                    value24++;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{15, value24}, null, null);
+                break;
+            case R.id.btn_minus10 /* 2131427482 */:
+                int value25 = DataCanbus.DATA[174];
+                if (value25 > 0) {
+                    value25--;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{17, value25}, null, null);
+                break;
+            case R.id.btn_plus10 /* 2131427484 */:
+                int value26 = DataCanbus.DATA[174];
+                if (value26 < 5) {
+                    value26++;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{17, value26}, null, null);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                if (DataCanbus.DATA[126] == 0) {
+                    value6 = 1;
+                } else {
+                    value6 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{3, value6}, null, null);
+                break;
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                if (DataCanbus.DATA[129] == 0) {
+                    value5 = 1;
+                } else {
+                    value5 = 0;
+                }
+                DataCanbus.PROXY.cmd(5, new int[]{6, value5}, null, null);
+                break;
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                if (DataCanbus.DATA[130] == 0) {
                     value4 = 1;
                 } else {
                     value4 = 0;
                 }
-                DataCanbus.PROXY.cmd(5, new int[]{3, value4}, null, null);
+                DataCanbus.PROXY.cmd(5, new int[]{7, value4}, null, null);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value5 = DataCanbus.DATA[60] - 1;
-                if (value5 < 0) {
-                    value5 = 6;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{1, value5}, null, null);
-                break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value6 = DataCanbus.DATA[60] + 1;
-                if (value6 > 6) {
-                    value6 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{1, value6}, null, null);
-                break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value7 = DataCanbus.DATA[61] - 1;
-                if (value7 < 0) {
-                    value7 = 6;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{2, value7}, null, null);
-                break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value8 = DataCanbus.DATA[61] + 1;
-                if (value8 > 6) {
-                    value8 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{2, value8}, null, null);
-                break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value9 = DataCanbus.DATA[63] - 1;
-                if (value9 < 0) {
-                    value9 = 1;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{4, value9}, null, null);
-                break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value10 = DataCanbus.DATA[63] + 1;
-                if (value10 > 1) {
-                    value10 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{4, value10}, null, null);
-                break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value11 = DataCanbus.DATA[64] - 1;
-                if (value11 < 0) {
-                    value11 = 2;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{5, value11}, null, null);
-                break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value12 = DataCanbus.DATA[64] + 1;
-                if (value12 > 2) {
-                    value12 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{5, value12}, null, null);
-                break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value13 = DataCanbus.DATA[67] - 1;
-                if (value13 < 0) {
-                    value13 = 2;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{8, value13}, null, null);
-                break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value14 = DataCanbus.DATA[67] + 1;
-                if (value14 > 2) {
-                    value14 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{8, value14}, null, null);
-                break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value15 = DataCanbus.DATA[69] - 1;
-                if (value15 < 0) {
-                    value15 = 1;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{10, value15}, null, null);
-                break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value16 = DataCanbus.DATA[69] + 1;
-                if (value16 > 1) {
-                    value16 = 0;
-                }
-                DataCanbus.PROXY.cmd(5, new int[]{10, value16}, null, null);
-                break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                if (DataCanbus.DATA[65] == 0) {
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                if (DataCanbus.DATA[132] == 0) {
                     value3 = 1;
                 } else {
                     value3 = 0;
                 }
-                DataCanbus.PROXY.cmd(5, new int[]{6, value3}, null, null);
+                DataCanbus.PROXY.cmd(5, new int[]{9, value3}, null, null);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                if (DataCanbus.DATA[66] == 0) {
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                if (DataCanbus.DATA[170] == 0) {
                     value2 = 1;
                 } else {
                     value2 = 0;
                 }
-                DataCanbus.PROXY.cmd(5, new int[]{7, value2}, null, null);
+                DataCanbus.PROXY.cmd(5, new int[]{12, value2}, null, null);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                if (DataCanbus.DATA[68] == 0) {
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                if (DataCanbus.DATA[171] == 0) {
                     value = 1;
                 } else {
                     value = 0;
                 }
-                DataCanbus.PROXY.cmd(5, new int[]{9, value}, null, null);
+                DataCanbus.PROXY.cmd(5, new int[]{13, value}, null, null);
+                break;
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                DataCanbus.PROXY.cmd(5, new int[]{16, 1}, null, null);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);

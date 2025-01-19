@@ -11,78 +11,77 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XPAccord9BackCarActi extends BaseActivity {
     public static XPAccord9BackCarActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.accord9.xp.XPAccord9BackCarActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 37:
+                case 135:
                     XPAccord9BackCarActi.this.mUpdaterCameraType();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_xp_backcar);
+        //setContentView(R.layout.layout_accord9_xp_backcar);
         init();
         mInstance = this;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.xp_accord9_camera_standard)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9BackCarActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_camera_standard)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(FinalCanbus.C_CAMERA_MODE, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_camera_wideangle)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9BackCarActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_camera_wideangle)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(FinalCanbus.C_CAMERA_MODE, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_camera_depression)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9BackCarActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_camera_depression)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(FinalCanbus.C_CAMERA_MODE, new int[]{2}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCameraType() {
-        int value = DataCanbus.DATA[37];
+        int value = DataCanbus.DATA[135];
         if (((Button) findViewById(R.id.xp_accord9_camera_standard)) != null && ((Button) findViewById(R.id.xp_accord9_camera_wideangle)) != null && ((Button) findViewById(R.id.xp_accord9_camera_depression)) != null) {
             switch (value) {
                 case 0:
@@ -111,7 +110,7 @@ public class XPAccord9BackCarActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4 || keyCode == 3) {
             return true;

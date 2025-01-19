@@ -13,22 +13,22 @@ import java.util.Iterator;
 public class LauncherAnimUtils {
     private static ViewTreeObserver.OnDrawListener onDrawListener;
     static HashSet<Animator> sAnimators = new HashSet<>();
-    static Animator.AnimatorListener sEndAnimListener = new Animator.AnimatorListener() { // from class: com.android.launcher66.LauncherAnimUtils.1
-        @Override // android.animation.Animator.AnimatorListener
+    static Animator.AnimatorListener sEndAnimListener = new Animator.AnimatorListener() { 
+        @Override
         public void onAnimationStart(Animator animation) {
             LauncherAnimUtils.sAnimators.add(animation);
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationRepeat(Animator animation) {
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationEnd(Animator animation) {
             LauncherAnimUtils.sAnimators.remove(animation);
         }
 
-        @Override // android.animation.Animator.AnimatorListener
+        @Override
         public void onAnimationCancel(Animator animation) {
             LauncherAnimUtils.sAnimators.remove(animation);
         }
@@ -39,10 +39,10 @@ public class LauncherAnimUtils {
     }
 
     public static void startAnimationAfterNextDraw(final Animator animator, final View view) {
-        onDrawListener = new ViewTreeObserver.OnDrawListener() { // from class: com.android.launcher66.LauncherAnimUtils.2
+        onDrawListener = new ViewTreeObserver.OnDrawListener() { 
             private boolean mStarted = false;
 
-            @Override // android.view.ViewTreeObserver.OnDrawListener
+            @Override
             public void onDraw() {
                 if (!this.mStarted) {
                     this.mStarted = true;
@@ -50,8 +50,8 @@ public class LauncherAnimUtils {
                         animator.start();
                         View view2 = view;
                         final View view3 = view;
-                        view2.post(new Runnable() { // from class: com.android.launcher66.LauncherAnimUtils.2.1
-                            @Override // java.lang.Runnable
+                        view2.post(new Runnable() { 
+                            @Override
                             public void run() {
                                 view3.getViewTreeObserver().removeOnDrawListener(onDrawListener);
                             }

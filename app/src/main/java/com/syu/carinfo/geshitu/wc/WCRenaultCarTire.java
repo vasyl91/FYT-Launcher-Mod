@@ -7,58 +7,57 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCRenaultCarTire extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.geshitu.wc.WCRenaultCarTire.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 173:
+                case 185:
                     WCRenaultCarTire.this.mUpdaterTireFL();
                     break;
-                case 174:
+                case 186:
                     WCRenaultCarTire.this.mUpdaterTireFR();
                     break;
-                case 175:
+                case 187:
                     WCRenaultCarTire.this.mUpdaterTireRL();
                     break;
-                case 176:
+                case 188:
                     WCRenaultCarTire.this.mUpdaterTireRR();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_oudi_zt_t600_tire);
+        //setContentView(R.layout.layout_oudi_zt_t600_tire);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[175].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[186].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[175].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[186].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[173];
+        int value = DataCanbus.DATA[185];
         if (value == 65535) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire1)) != null) {
@@ -66,9 +65,9 @@ public class WCRenaultCarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[174];
+        int value = DataCanbus.DATA[186];
         if (value == 65535) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire2)) != null) {
@@ -76,9 +75,9 @@ public class WCRenaultCarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[175];
+        int value = DataCanbus.DATA[187];
         if (value == 65535) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire3)) != null) {
@@ -86,9 +85,9 @@ public class WCRenaultCarTire extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[176];
+        int value = DataCanbus.DATA[188];
         if (value == 65535) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
         } else if (((TextView) findViewById(R.id.oudi_changan_tire4)) != null) {

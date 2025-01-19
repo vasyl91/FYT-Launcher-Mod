@@ -5,67 +5,67 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JaguarAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.jaguar.JaguarAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 7:
+                case 10:
                     JaguarAirControlAct.this.mUpdatePowerOn();
                     break;
-                case 8:
+                case 11:
                     JaguarAirControlAct.this.mUpdateAcOn();
                     break;
-                case 9:
+                case 12:
                     JaguarAirControlAct.this.mUpdateCycle();
                     break;
-                case 10:
+                case 13:
                     JaguarAirControlAct.this.mUpdateAutoOn();
                     break;
-                case 11:
-                    JaguarAirControlAct.this.mUpdateEconOn();
-                    break;
-                case 12:
-                    JaguarAirControlAct.this.mUpdateFrontDefrost();
-                    break;
-                case 13:
+                case 16:
                     JaguarAirControlAct.this.mUpdateRearDefrost();
                     break;
-                case 14:
+                case 18:
                     JaguarAirControlAct.this.mUpdateFrontDefrost();
                     JaguarAirControlAct.this.updateBtnSource();
                     break;
-                case 15:
-                case 16:
+                case 19:
+                case 20:
                     JaguarAirControlAct.this.updateBtnSource();
                     break;
-                case 18:
+                case 21:
                     JaguarAirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 19:
+                case 27:
                     JaguarAirControlAct.this.mUpdateAirTempLeft();
                     break;
-                case 20:
+                case 28:
                     JaguarAirControlAct.this.mUpdateAirTempRight();
                     break;
-                case 21:
-                    JaguarAirControlAct.this.mUpdateAutoLev();
-                    break;
-                case 23:
-                    JaguarAirControlAct.this.mUpdateSteerHotOn();
-                    break;
-                case 24:
+                case 29:
                     JaguarAirControlAct.this.mUpdaterSeatHeatOrWinLeft();
                     break;
-                case 25:
+                case 30:
                     JaguarAirControlAct.this.mUpdaterSeatHeatOrWinRight();
+                    break;
+                case 52:
+                    JaguarAirControlAct.this.mUpdateEconOn();
+                    break;
+                case 65:
+                    JaguarAirControlAct.this.mUpdateFrontDefrost();
+                    break;
+                case 66:
+                    JaguarAirControlAct.this.mUpdateSteerHotOn();
+                    break;
+                case 73:
+                    JaguarAirControlAct.this.mUpdateAutoLev();
                     break;
             }
         }
@@ -75,10 +75,10 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_lz_jaguar_air_control);
+        //setContentView(R.layout.layout_0452_lz_jaguar_air_control);
         init();
     }
 
@@ -108,7 +108,7 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         findViewById(R.id.air_xts_seatwin_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -116,7 +116,7 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -124,7 +124,7 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -180,22 +180,22 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data0 = 31;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 17;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 13;
                 break;
-            case R.id.air_xts_econ /* 2131427561 */:
+            case R.id.air_xts_econ /* 2131427567 */:
                 data0 = 22;
                 break;
-            case R.id.air_xts_autolev /* 2131428576 */:
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 17;
+                break;
+            case R.id.air_xts_autolev /* 2131428573 */:
                 data0 = 23;
                 break;
-            case R.id.air_xts_mode_bodywin /* 2131428577 */:
+            case R.id.air_xts_mode_bodywin /* 2131428574 */:
                 data0 = 15;
                 break;
-            case R.id.air_xts_mode_footbodywin /* 2131428578 */:
+            case R.id.air_xts_mode_footbodywin /* 2131428575 */:
                 data0 = 16;
                 break;
         }
@@ -208,48 +208,48 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatOrWinRight() {
-        int value = DataCanbus.DATA[25];
+        int value = DataCanbus.DATA[30];
         int flag = 0;
         if (((value >> 3) & 1) == 1) {
             flag = 1;
@@ -291,9 +291,9 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatOrWinLeft() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[29];
         int flag = 0;
         if (((value >> 3) & 1) == 1) {
             flag = 1;
@@ -335,10 +335,10 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[19];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        int temp = DataCanbus.DATA[27];
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
             } else if (temp == -3) {
@@ -349,10 +349,10 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[20];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        int temp = DataCanbus.DATA[28];
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
             } else if (temp == -3) {
@@ -363,27 +363,27 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[10];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[8];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateEconOn() {
-        int power = DataCanbus.DATA[11];
+        int power = DataCanbus.DATA[52];
         findViewById(R.id.air_xts_econ).setBackgroundResource(power == 0 ? R.drawable.ic_xts_econ_n : R.drawable.ic_xts_econ_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoLev() {
-        int lev = DataCanbus.DATA[21];
+        int lev = DataCanbus.DATA[73];
         switch (lev) {
             case 0:
                 findViewById(R.id.air_xts_autolev).setBackgroundResource(R.drawable.ic_xts_auto_level0);
@@ -406,21 +406,21 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteerHotOn() {
-        int power = DataCanbus.DATA[23];
+        int power = DataCanbus.DATA[66];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(power == 0 ? R.drawable.ic_xts_steer_hot_n : R.drawable.ic_xts_steer_hot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[7];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[9];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_n);
         } else if (cycle == 1) {
@@ -428,21 +428,21 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[12];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[13];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[18];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -453,11 +453,11 @@ public class JaguarAirControlAct extends Activity implements View.OnTouchListene
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[14];
-        int foot = DataCanbus.DATA[16];
-        int body = DataCanbus.DATA[15];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

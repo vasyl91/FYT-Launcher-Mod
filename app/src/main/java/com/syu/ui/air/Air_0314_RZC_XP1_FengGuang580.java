@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0314_RZC_XP1_FengGuang580 extends AirBase {
     public Air_0314_RZC_XP1_FengGuang580(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0314_rzc_xp1_fengguang580/air_rzc_fengguang580.webp";
         this.mPathHighlight = "0314_rzc_xp1_fengguang580/air_rzc_fengguang580_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -92,9 +92,9 @@ public class Air_0314_RZC_XP1_FengGuang580 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 65.0f, 58.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 524602 || DataCanbus.DATA[1000] == 852282 || DataCanbus.DATA[1000] == 1114426 || DataCanbus.DATA[1000] == 1179962 || DataCanbus.DATA[1000] == 1245498 || DataCanbus.DATA[1000] == 1311034 || DataCanbus.DATA[1000] == 1704250 || DataCanbus.DATA[1000] == 1769786 || DataCanbus.DATA[1000] == 1835322 || DataCanbus.DATA[1000] == 1900858 || DataCanbus.DATA[1000] == 393530 || DataCanbus.DATA[1000] == 459066 || DataCanbus.DATA[1000] == 2031930) {
-            c.drawText(new StringBuilder().append((((temp - 124) * 5) + 160) / 10.0f).toString(), 65.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf((((temp - 124) * 5) + 160) / 10.0f), 65.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp).toString(), 65.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 65.0f, 58.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -11,65 +11,64 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_372_OtherSettingsActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode] & 65535;
             switch (updateCode) {
-                case 138:
+                case 196:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view1).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext1)).setChecked((value & 255) == 1);
                     break;
-                case 139:
+                case 197:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view2).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext2)).setChecked((value & 255) == 1);
                     break;
-                case 140:
+                case 198:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view3).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext3)).setChecked((value & 255) == 1);
                     break;
-                case 141:
+                case 199:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view4).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext4)).setChecked((value & 255) == 1);
                     break;
-                case 142:
+                case 200:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view5).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext5)).setChecked((value & 255) == 1);
                     break;
-                case 143:
+                case 201:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view6).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext6)).setChecked((value & 255) == 1);
                     break;
-                case 144:
+                case 202:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view7).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext7)).setChecked((value & 255) == 1);
                     break;
-                case 145:
+                case 203:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view8).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext8)).setChecked((value & 255) == 1);
                     break;
-                case 146:
+                case 204:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view9).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext9)).setChecked((value & 255) == 1);
                     break;
-                case 147:
+                case 205:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view10).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext10)).setChecked((value & 255) == 1);
                     break;
-                case 148:
+                case 206:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view11).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext11)).setChecked((value & 255) == 1);
                     break;
-                case 149:
+                case 207:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view12).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     if (((TextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.tv_text1)) != null) {
                         int num = (value & 255) + 1;
                         ((TextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(num).toString());
                         break;
                     }
-                case 150:
+                case 208:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view13).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     if (((TextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.tv_text2)) != null) {
                         switch (value & 255) {
@@ -88,15 +87,15 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                         }
                     }
                     break;
-                case 151:
+                case 209:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view14).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext12)).setChecked((value & 255) == 1);
                     break;
-                case 152:
+                case 210:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view15).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext13)).setChecked((value & 255) == 1);
                     break;
-                case 153:
+                case 211:
                     Wc_372_OtherSettingsActi.this.findViewById(R.id.layout_view16).setVisibility(((value & 65280) >> 8) != 0 ? 0 : 8);
                     ((CheckedTextView) Wc_372_OtherSettingsActi.this.findViewById(R.id.ctv_checkedtext14)).setChecked((value & 255) == 1);
                     break;
@@ -104,59 +103,59 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_372_zyg_othersettings);
+        //setContentView(R.layout.layout_372_zyg_othersettings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[149] & 255) - 1;
+                int value = (DataCanbus.DATA[207] & 255) - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{80, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[149] & 255) + 1;
+                int value = (DataCanbus.DATA[207] & 255) + 1;
                 if (value > 3) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{80, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[150] & 255) - 1;
+                int value = (DataCanbus.DATA[208] & 255) - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{81, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = (DataCanbus.DATA[150] & 255) + 1;
+                int value = (DataCanbus.DATA[208] & 255) + 1;
                 if (value > 3) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(2, new int[]{81, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[138] & 255;
+                int value = DataCanbus.DATA[196] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 16;
@@ -164,10 +163,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[139] & 255;
+                int value = DataCanbus.DATA[197] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 48;
@@ -175,10 +174,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[140] & 255;
+                int value = DataCanbus.DATA[198] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 32;
@@ -186,10 +185,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[141] & 255;
+                int value = DataCanbus.DATA[199] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 33;
@@ -197,10 +196,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[142] & 255;
+                int value = DataCanbus.DATA[200] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 64;
@@ -208,10 +207,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.11
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[143] & 255;
+                int value = DataCanbus.DATA[201] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 65;
@@ -219,10 +218,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.12
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[144] & 255;
+                int value = DataCanbus.DATA[202] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 66;
@@ -230,10 +229,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.13
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[145] & 255;
+                int value = DataCanbus.DATA[203] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 67;
@@ -241,10 +240,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.14
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[146] & 255;
+                int value = DataCanbus.DATA[204] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 68;
@@ -252,10 +251,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[147] & 255;
+                int value = DataCanbus.DATA[205] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 69;
@@ -263,10 +262,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.16
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[148] & 255;
+                int value = DataCanbus.DATA[206] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 70;
@@ -274,10 +273,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.17
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[151] & 255;
+                int value = DataCanbus.DATA[209] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 96;
@@ -285,10 +284,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.18
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[152] & 255;
+                int value = DataCanbus.DATA[210] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 97;
@@ -296,10 +295,10 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
                 remoteModuleProxy.cmd(2, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_OtherSettingsActi.19
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[153] & 255;
+                int value = DataCanbus.DATA[211] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 98;
@@ -309,56 +308,56 @@ public class Wc_372_OtherSettingsActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(10, new int[]{100}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[204].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[208].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[209].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[210].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[211].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[208].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[209].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[210].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[211].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0160_RZC_DaZhong extends AirBase {
     public Air_0160_RZC_DaZhong(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0040_xp1_golf7/air_rzc_gaoerfu7.webp";
         this.mPathHighlight = "0040_xp1_golf7/air_rzc_gaoerfu7_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -99,16 +99,16 @@ public class Air_0160_RZC_DaZhong extends AirBase {
             } else if (temp <= 63 && temp >= 49) {
                 c.drawText("HIGH", 42.0f, 137.0f, this.mPaint);
             } else if (temp >= 16 && temp <= 48) {
-                c.drawText(new StringBuilder().append((((temp - 16) * 5) + 160) / 10.0f).toString(), 42.0f, 137.0f, this.mPaint);
+                c.drawText(String.valueOf((((temp - 16) * 5) + 160) / 10.0f), 42.0f, 137.0f, this.mPaint);
             }
         } else if (temp == 0) {
             c.drawText("LOW", 42.0f, 137.0f, this.mPaint);
         } else if (temp == 31) {
             c.drawText("HI", 42.0f, 137.0f, this.mPaint);
         } else if (this.DATA[103] == 1) {
-            c.drawText(new StringBuilder().append(temp + 59).toString(), 42.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf(temp + 59), 42.0f, 137.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp * 5) + 155) / 10.0f).toString(), 42.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp * 5) + 155) / 10.0f), 42.0f, 137.0f, this.mPaint);
         }
         int temp2 = this.DATA[99];
         if (DataCanbus.DATA[1000] == 458912 || DataCanbus.DATA[1000] == 524448) {
@@ -119,16 +119,16 @@ public class Air_0160_RZC_DaZhong extends AirBase {
             } else if (temp2 <= 63 && temp2 >= 49) {
                 c.drawText("HIGH", 920.0f, 137.0f, this.mPaint);
             } else if (temp2 >= 16 && temp2 <= 48) {
-                c.drawText(new StringBuilder().append((((temp2 - 16) * 5) + 160) / 10.0f).toString(), 920.0f, 137.0f, this.mPaint);
+                c.drawText(String.valueOf((((temp2 - 16) * 5) + 160) / 10.0f), 920.0f, 137.0f, this.mPaint);
             }
         } else if (temp2 == 0) {
             c.drawText("LOW", 920.0f, 137.0f, this.mPaint);
         } else if (temp2 == 31) {
             c.drawText("HI", 920.0f, 137.0f, this.mPaint);
         } else if (this.DATA[103] == 1) {
-            c.drawText(new StringBuilder().append(temp2 + 59).toString(), 920.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 + 59), 920.0f, 137.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp2 * 5) + 155) / 10.0f).toString(), 920.0f, 137.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp2 * 5) + 155) / 10.0f), 920.0f, 137.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

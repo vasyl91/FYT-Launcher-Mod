@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Button;
+
 import com.syu.car.CarStates;
 
 public class CloseScreenBtn extends Button {
@@ -19,7 +20,7 @@ public class CloseScreenBtn extends Button {
         super(context);
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent arg0) {
         switch (arg0.getAction()) {
             case 0:

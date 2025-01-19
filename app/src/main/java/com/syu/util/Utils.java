@@ -4,14 +4,16 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.R;
+
+import java.lang.reflect.Field;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Utils {
     public static LauncherApplication getCtx() {
         return LauncherApplication.sApp;
@@ -28,7 +30,7 @@ public class Utils {
     public static boolean getNameToBool(String name) {
         try {
             Resources res = getCtx().getResources();
-            return res.getBoolean(res.getIdentifier(name, "bool", getCtx().getPackageName()));
+            return res.getBoolean(getId(name, "bool"));
         } catch (Exception e) {
             return false;
         }
@@ -37,7 +39,7 @@ public class Utils {
     public static String getNameToStr(String name) {
         try {
             Resources res = getCtx().getResources();
-            return res.getString(res.getIdentifier(name, "string", getCtx().getPackageName()));
+            return res.getString(getId(name, "string"));
         } catch (Exception e) {
             return "";
         }
@@ -46,7 +48,7 @@ public class Utils {
     public static int getNameToInteger(String name) {
         try {
             Resources res = getCtx().getResources();
-            return res.getInteger(res.getIdentifier(name, "integer", getCtx().getPackageName()));
+            return res.getInteger(getId(name, "integer"));
         } catch (Exception e) {
             return 0;
         }
@@ -54,11 +56,12 @@ public class Utils {
 
     public static boolean topApp() {
         try {
-            ActivityManager manager = (ActivityManager) getCtx().getSystemService(Context.ACTIVITY_SERVICE);
-            List<ActivityManager.RunningTaskInfo> info = manager.getRunningTasks(1);
-            for (ActivityManager.RunningTaskInfo runningTaskInfo : info) {
-                Log.d("LZP", "topActivity:" + runningTaskInfo.topActivity.getPackageName() + "baseActivity:" + runningTaskInfo.baseActivity.getPackageName());
-                if (runningTaskInfo.topActivity.getPackageName().equals(getCtx().getPackageName()) || runningTaskInfo.baseActivity.getPackageName().equals(getCtx().getPackageName())) {
+            ActivityManager activityManager = (ActivityManager) getCtx().getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND 
+                && appProcess.importanceReasonCode == ActivityManager.RunningAppProcessInfo.REASON_UNKNOWN
+                && appProcess.processName.equals(getCtx().getPackageName())) { 
                     return true;
                 }
             }
@@ -89,6 +92,28 @@ public class Utils {
     public static void setVisible(View v) {
         if (v != null) {
             v.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public static int getResId(String resName, Class<?> c) {
+        try {
+            Field idField = c.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public static int getId(String name, String type) {
+        switch (type) {
+            case "string":
+                return getResId(name, R.string.class);
+            case "bool":
+                return getResId(name, R.bool.class);
+            case "integer":
+                return getResId(name, R.integer.class);
+            default:
+                return -1;
         }
     }
 }

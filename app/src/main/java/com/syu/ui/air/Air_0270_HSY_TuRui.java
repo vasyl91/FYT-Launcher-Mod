@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0270_HSY_TuRui extends AirBase {
     public Air_0270_HSY_TuRui(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0270_wc_turui/hsy_turui.webp";
         this.mPathHighlight = "0270_wc_turui/hsy_turui_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -86,7 +86,7 @@ public class Air_0270_HSY_TuRui extends AirBase {
             int temp2 = temp * 5;
             c.drawText(String.format("%d.%d    ℃", Integer.valueOf(temp2 / 10), Integer.valueOf(temp2 % 10)), 64.0f, 45.0f, this.mPaint);
         } else {
-            String tempStr = String.valueOf(temp - 60) + "  ℉";
+            String tempStr = temp - 60 + "  ℉";
             c.drawText(tempStr, 64.0f, 45.0f, this.mPaint);
         }
         int temp3 = this.DATA[99] & 255;
@@ -98,7 +98,7 @@ public class Air_0270_HSY_TuRui extends AirBase {
             int temp4 = temp3 * 5;
             c.drawText(String.format("%d.%d    ℃", Integer.valueOf(temp4 / 10), Integer.valueOf(temp4 % 10)), 927.0f, 45.0f, this.mPaint);
         } else {
-            String tempStr2 = String.valueOf(temp3 - 60) + "  ℉";
+            String tempStr2 = temp3 - 60 + "  ℉";
             c.drawText(tempStr2, 927.0f, 45.0f, this.mPaint);
         }
         canvas.save();

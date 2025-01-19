@@ -10,18 +10,17 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_Keleijia_set extends BaseActivity implements View.OnClickListener {
-    private int[] eventIds = {141, 183, 184, 185, 336};
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.leinuo.Act_Keleijia_set.1
-        @Override // com.syu.module.IUiNotify
+    private int[] eventIds = {153, 195, 196, 197, 348};
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 141:
+                case 153:
                     Act_Keleijia_set.this.uTempMode(value);
                     break;
-                case 183:
+                case 195:
                     if (value == 65535) {
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text1)).setText("----");
                         break;
@@ -29,7 +28,7 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10) + "." + (value % 10) + " L/100Km");
                         break;
                     }
-                case 184:
+                case 196:
                     if (value == 65535) {
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text2)).setText("----");
                         break;
@@ -37,7 +36,7 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "." + (value % 10) + " Km/h");
                         break;
                     }
-                case 185:
+                case 197:
                     if (value == 16777215) {
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text3)).setText("----");
                         break;
@@ -45,17 +44,17 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
                         ((TextView) Act_Keleijia_set.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10) + "." + (value % 10) + " Km");
                         break;
                     }
-                case 336:
+                case 348:
                     Act_Keleijia_set.this.setCheck((CheckedTextView) Act_Keleijia_set.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_keleiao_set);
+        //setContentView(R.layout.layout_keleiao_set);
         initUI();
     }
 
@@ -69,21 +68,12 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
         DataCanbus.PROXY.cmd(1, cmd);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int iTempMode;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[336];
-                if (value == 0) {
-                    value = 1;
-                } else if (value == 1) {
-                    value = 0;
-                }
-                setCarInfo(50, value);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int iTempMode2 = DataCanbus.DATA[141];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int iTempMode2 = DataCanbus.DATA[153];
                 if (iTempMode2 == 0) {
                     iTempMode = 2;
                 } else {
@@ -92,9 +82,18 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
                 int c = iTempMode + 64;
                 cmd(c);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int c2 = ((DataCanbus.DATA[141] + 1) % 3) + 64;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int c2 = ((DataCanbus.DATA[153] + 1) % 3) + 64;
                 cmd(c2);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value = DataCanbus.DATA[348];
+                if (value == 0) {
+                    value = 1;
+                } else if (value == 1) {
+                    value = 0;
+                }
+                setCarInfo(50, value);
                 break;
         }
     }
@@ -103,7 +102,7 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
         DataCanbus.PROXY.cmd(17, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -116,20 +115,20 @@ public class Act_Keleijia_set extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].addNotify(this.mCanbusNotify, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i = 0; i < this.eventIds.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.eventIds[i]].removeNotify(this.mCanbusNotify);

@@ -11,63 +11,62 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSA407CarCDC extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static PSA407CarCDC mInit;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PSA407CarCDC.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 206:
+                case 218:
                     PSA407CarCDC.this.updateDiscNum(value);
                     break;
-                case 207:
-                case 213:
+                case 219:
+                case 225:
                     PSA407CarCDC.this.mUpdateCd6State();
                     break;
-                case 208:
-                case 214:
+                case 220:
+                case 226:
                     PSA407CarCDC.this.mUpdateCd5State();
                     break;
-                case 209:
-                case 215:
+                case 221:
+                case 227:
                     PSA407CarCDC.this.mUpdateCd4State();
                     break;
-                case 210:
-                case 216:
+                case 222:
+                case 228:
                     PSA407CarCDC.this.mUpdateCd3State();
                     break;
-                case 211:
-                case 217:
+                case 223:
+                case 229:
                     PSA407CarCDC.this.mUpdateCd2State();
                     break;
-                case 212:
-                case 218:
+                case 224:
+                case 230:
                     PSA407CarCDC.this.mUpdateCd1State();
                     break;
-                case 219:
-                case 229:
+                case 231:
+                case 241:
                     PSA407CarCDC.this.updatecdTrack();
                     break;
-                case 220:
-                case 221:
+                case 232:
+                case 233:
                     PSA407CarCDC.this.updatecdTime();
                     break;
-                case 222:
-                case 223:
+                case 234:
+                case 235:
                     PSA407CarCDC.this.mUpdateCdScan();
                     break;
-                case 224:
-                case 225:
+                case 236:
+                case 237:
                     PSA407CarCDC.this.mUpdateCdRpt();
                     break;
-                case 226:
-                case 227:
+                case 238:
+                case 239:
                     PSA407CarCDC.this.mUpdateCdRandom();
                     break;
-                case 228:
+                case 240:
                     switch (value) {
                         case 0:
                             ((TextView) PSA407CarCDC.this.findViewById(R.id.tv_text1)).setText("Readng TOC");
@@ -119,28 +118,28 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0252_wc_psa_407_carcd);
+        //setContentView(R.layout.layout_0252_wc_psa_407_carcd);
         init();
     }
 
     public void init() {
-        ((Button) findViewById(R.id.lexus_cd_scan)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSA407CarCDC.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_scan)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[222] == 1) {
+                if (DataCanbus.DATA[234] == 1) {
                     DataCanbus.PROXY.cmd(105, new int[]{14}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(105, new int[]{14, 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSA407CarCDC.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[226] == 1) {
+                if (DataCanbus.DATA[238] == 1) {
                     DataCanbus.PROXY.cmd(105, new int[]{15}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(105, new int[]{15, 1}, null, null);
@@ -150,20 +149,7 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[208].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[209].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[210].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[211].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[212].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[213].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[214].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[215].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[217].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[218].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[229].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[219].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[220].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[221].addNotify(this.notifyCanbus, 1);
@@ -174,23 +160,23 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         DataCanbus.NOTIFY_EVENTS[226].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[227].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[228].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[229].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[230].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[241].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[232].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[233].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[235].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[237].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[238].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[239].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[240].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[208].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[209].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[210].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[211].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[212].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[213].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[214].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[215].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[217].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[229].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[221].removeNotify(this.notifyCanbus);
@@ -201,12 +187,25 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[227].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[228].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[229].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[230].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[241].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[232].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[233].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[235].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[237].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[238].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[239].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[240].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd1State() {
-        int value = DataCanbus.DATA[212];
-        int value1 = DataCanbus.DATA[218];
+        int value = DataCanbus.DATA[224];
+        int value1 = DataCanbus.DATA[230];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd1)).setText(R.string.jeep_playstate1);
@@ -222,10 +221,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd2State() {
-        int value = DataCanbus.DATA[211];
-        int value1 = DataCanbus.DATA[217];
+        int value = DataCanbus.DATA[223];
+        int value1 = DataCanbus.DATA[229];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd2)).setText(R.string.jeep_playstate1);
@@ -241,10 +240,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd3State() {
-        int value = DataCanbus.DATA[210];
-        int value1 = DataCanbus.DATA[216];
+        int value = DataCanbus.DATA[222];
+        int value1 = DataCanbus.DATA[228];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd3)).setText(R.string.jeep_playstate1);
@@ -260,10 +259,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd4State() {
-        int value = DataCanbus.DATA[209];
-        int value1 = DataCanbus.DATA[215];
+        int value = DataCanbus.DATA[221];
+        int value1 = DataCanbus.DATA[227];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd4)).setText(R.string.jeep_playstate1);
@@ -279,10 +278,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd5State() {
-        int value = DataCanbus.DATA[208];
-        int value1 = DataCanbus.DATA[214];
+        int value = DataCanbus.DATA[220];
+        int value1 = DataCanbus.DATA[226];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd5)).setText(R.string.jeep_playstate1);
@@ -298,10 +297,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd6State() {
-        int value = DataCanbus.DATA[207];
-        int value1 = DataCanbus.DATA[213];
+        int value = DataCanbus.DATA[219];
+        int value1 = DataCanbus.DATA[225];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd6)).setText(R.string.jeep_playstate1);
@@ -317,10 +316,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdScan() {
-        int On = DataCanbus.DATA[222];
-        int DiscOn = DataCanbus.DATA[223];
+        int On = DataCanbus.DATA[234];
+        int DiscOn = DataCanbus.DATA[235];
         if (On == 1 || DiscOn == 1) {
             findViewById(R.id.lexus_cd_scan).setBackgroundResource(R.drawable.ic_lexus_cd_scan_p);
         } else {
@@ -328,10 +327,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
-        int On = DataCanbus.DATA[224];
-        int DiscOn = DataCanbus.DATA[225];
+        int On = DataCanbus.DATA[236];
+        int DiscOn = DataCanbus.DATA[237];
         if (On == 1 || DiscOn == 1) {
             findViewById(R.id.lexus_cd_rpt).setBackgroundResource(R.drawable.ic_lexus_cd_rpt_p);
         } else {
@@ -339,10 +338,10 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRandom() {
-        int On = DataCanbus.DATA[226];
-        int DiscOn = DataCanbus.DATA[227];
+        int On = DataCanbus.DATA[238];
+        int DiscOn = DataCanbus.DATA[239];
         if (On == 1 || DiscOn == 1) {
             findViewById(R.id.lexus_cd_random).setBackgroundResource(R.drawable.ic_lexus_cd_random_p);
         } else {
@@ -351,14 +350,14 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
     }
 
     public void updatecdTrack() {
-        int value = DataCanbus.DATA[229];
-        int value1 = DataCanbus.DATA[219];
+        int value = DataCanbus.DATA[241];
+        int value1 = DataCanbus.DATA[231];
         ((TextView) findViewById(R.id.dj_lexus_cd_track)).setText(String.format("TRACK: %d / %d", Integer.valueOf(value1), Integer.valueOf(value)));
     }
 
     public void updatecdTime() {
-        int value3 = DataCanbus.DATA[221];
-        int value4 = DataCanbus.DATA[220];
+        int value3 = DataCanbus.DATA[233];
+        int value4 = DataCanbus.DATA[232];
         ((TextView) findViewById(R.id.dj_lexus_cd_time)).setText(String.format("%d%d:%d%d", Integer.valueOf(value4 / 10), Integer.valueOf(value4 % 10), Integer.valueOf(value3 / 10), Integer.valueOf(value3 % 10)));
     }
 
@@ -391,7 +390,7 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -399,14 +398,14 @@ public class PSA407CarCDC extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         return false;
     }

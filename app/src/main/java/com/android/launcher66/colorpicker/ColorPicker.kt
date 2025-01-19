@@ -92,10 +92,6 @@ class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarC
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            requestWindowFeature(Window.FEATURE_NO_TITLE)
-        }*/
-
         setContentView(R.layout.materialcolorpicker__layout_color_picker)
 
         colorView = findViewById(R.id.colorView)

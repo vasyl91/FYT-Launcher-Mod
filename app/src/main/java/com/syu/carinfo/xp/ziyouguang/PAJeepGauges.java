@@ -5,18 +5,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepGauges extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepGauges.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 222:
+                case 234:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text1)) != null) {
                         int temp = (value & 32767) - 40;
                         if (((value >> 15) & 1) == 1) {
@@ -36,7 +34,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 223:
+                case 235:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text2)) != null) {
                         int temp2 = (value & 32767) - 40;
                         if (((value >> 15) & 1) == 1) {
@@ -56,7 +54,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 224:
+                case 236:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text3)) != null) {
                         int temp3 = (value & 32767) - 40;
                         if (((value >> 15) & 1) == 1) {
@@ -76,7 +74,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 225:
+                case 237:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text4)) != null) {
                         int unit = (value >> 14) & 3;
                         int temp4 = value & 16383;
@@ -107,7 +105,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 226:
+                case 238:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text5)) != null) {
                         ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value / 10.0f) + "V");
                         ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text14)).setText("0V");
@@ -117,7 +115,7 @@ public class PAJeepGauges extends BaseActivity {
                         ((ProgressBar) PAJeepGauges.this.findViewById(R.id.pa_jeep_seekbar5)).invalidate();
                         break;
                     }
-                case 289:
+                case 301:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text16)) != null) {
                         int temp5 = (value & 32767) - 40;
                         if (((value >> 15) & 1) == 1) {
@@ -137,7 +135,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 360:
+                case 372:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text19)) != null) {
                         int unit2 = (value >> 14) & 3;
                         int temp6 = (value & 16383) - 2000;
@@ -169,7 +167,7 @@ public class PAJeepGauges extends BaseActivity {
                             ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text19)).setText(String.valueOf(temp6 / 10.0f) + "inhg");
                             ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text20)).setText("-20");
                             ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text21)).setText("30");
-                            ((ProgressBar) PAJeepGauges.this.findViewById(R.id.pa_jeep_seekbar7)).setMax(ConstRzcAddData.U_CAR_ADD_START);
+                            ((ProgressBar) PAJeepGauges.this.findViewById(R.id.pa_jeep_seekbar7)).setMax(500);
                             if (temp6 > -200) {
                                 ((ProgressBar) PAJeepGauges.this.findViewById(R.id.pa_jeep_seekbar7)).setProgress(temp6 + 200);
                             } else {
@@ -180,7 +178,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 361:
+                case 373:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text22)) != null) {
                         int temp7 = (value & 32767) - 40;
                         if (((value >> 15) & 1) == 1) {
@@ -200,7 +198,7 @@ public class PAJeepGauges extends BaseActivity {
                         }
                     }
                     break;
-                case 362:
+                case 374:
                     if (((TextView) PAJeepGauges.this.findViewById(R.id.tv_text25)) != null) {
                         ((TextView) PAJeepGauges.this.findViewById(R.id.tv_text25)).setText(new StringBuilder(String.valueOf(value * 0.1f)).toString());
                         ((ProgressBar) PAJeepGauges.this.findViewById(R.id.pa_jeep_seekbar9)).setProgress(value);
@@ -211,55 +209,55 @@ public class PAJeepGauges extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_gauges);
+        //setContentView(R.layout.layout_0374_pa_jeep_gauges);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(4, new int[]{82}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[222].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[223].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[224].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[225].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[226].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[289].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[360].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[361].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[362].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[383].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[235].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[237].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[238].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[301].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[372].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[373].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[374].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[395].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[222].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[223].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[224].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[225].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[289].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[360].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[361].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[362].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[383].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[235].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[237].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[238].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[301].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[372].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[373].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[374].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[395].removeNotify(this.mNotifyCanbus);
     }
 }

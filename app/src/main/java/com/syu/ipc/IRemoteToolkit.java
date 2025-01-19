@@ -5,12 +5,13 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
+
 import com.syu.ipc.IRemoteModule;
 
 public interface IRemoteToolkit extends IInterface {
     IRemoteModule getRemoteModule(int i) throws RemoteException;
 
-    public static abstract class Stub extends Binder implements IRemoteToolkit {
+    abstract class Stub extends Binder implements IRemoteToolkit {
         private static final String DESCRIPTOR = "com.syu.ipc.IRemoteToolkit";
         static final int TRANSACTION_getRemoteModule = 1;
 
@@ -29,12 +30,12 @@ public interface IRemoteToolkit extends IInterface {
             return new Proxy(obj);
         }
 
-        @Override // android.os.IInterface
+        @Override
         public IBinder asBinder() {
             return this;
         }
 
-        @Override // android.os.Binder
+        @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
             switch (code) {
                 case 1:
@@ -53,18 +54,18 @@ public interface IRemoteToolkit extends IInterface {
         }
 
         private static class Proxy implements IRemoteToolkit {
-            private IBinder mRemote;
+            private final IBinder mRemote;
 
             Proxy(IBinder remote) {
                 this.mRemote = remote;
             }
 
-            @Override // android.os.IInterface
+            @Override
             public IBinder asBinder() {
                 return this.mRemote;
             }
 
-            @Override // com.syu.ipc.IRemoteToolkit
+            @Override
             public IRemoteModule getRemoteModule(int moduleCode) throws RemoteException {
                 Parcel data = Parcel.obtain();
                 Parcel reply = Parcel.obtain();

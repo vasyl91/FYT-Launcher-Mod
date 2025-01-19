@@ -12,21 +12,20 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouchListener {
     public static Rzc_H6_0439_AirFrontCtrl_HP mInstance;
     public static boolean mIsFront = false;
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_H6_0439_AirFrontCtrl_HP.1
-        @Override // java.lang.Runnable
+    Runnable airControl = new Runnable() { 
+        @Override
         public void run() {
             Rzc_H6_0439_AirFrontCtrl_HP.this.setAirControl(Rzc_H6_0439_AirFrontCtrl_HP.this.cmdId, 0);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_H6_0439_AirFrontCtrl_HP.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -75,10 +74,10 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_439_haval_airfront_h6_control_hp);
+        //setContentView(R.layout.layout_439_haval_airfront_h6_control_hp);
         init();
         mInstance = this;
     }
@@ -106,7 +105,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -114,7 +113,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -122,12 +121,12 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmdId, int touchState) {
         DataCanbus.PROXY.cmd(0, cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int flag = 0;
         int id = v.getId();
@@ -282,7 +281,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight(int value) {
         switch (value) {
             case 0:
@@ -300,7 +299,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight(int value) {
         switch (value) {
             case 0:
@@ -318,7 +317,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft(int value) {
         switch (value) {
             case 0:
@@ -336,7 +335,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft(int value) {
         switch (value) {
             case 0:
@@ -354,7 +353,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirBLowMode() {
         int win = DataCanbus.DATA[18];
         int body = DataCanbus.DATA[19];
@@ -400,7 +399,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[10];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -412,7 +411,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[11];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -424,7 +423,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
         int value = DataCanbus.DATA[14];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -436,7 +435,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirZone() {
         int value = DataCanbus.DATA[15];
         if (((Button) findViewById(R.id.air_xts_zone)) != null) {
@@ -448,7 +447,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -460,7 +459,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[22];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -478,7 +477,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
         int temp = DataCanbus.DATA[23];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -496,7 +495,7 @@ public class Rzc_H6_0439_AirFrontCtrl_HP extends Activity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[21];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());

@@ -7,9 +7,9 @@ import android.os.Looper;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import java.io.File;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class LogPreview {
     static LogPreview instance;
     String debugSwith;
@@ -38,12 +38,12 @@ public class LogPreview {
         this.debugSwith = swith;
         this.checkWork.start();
         final Handler handler = new Handler(this.checkWork.getLooper());
-        Runnable check = new Runnable() { // from class: com.syu.log.LogPreview.1
-            @Override // java.lang.Runnable
+        Runnable check = new Runnable() { 
+            @Override
             public void run() {
                 LogPreview.this.checkDebug();
-                LogPreview.this.mHandler.post(new Runnable() { // from class: com.syu.log.LogPreview.1.1
-                    @Override // java.lang.Runnable
+                LogPreview.this.mHandler.post(new Runnable() { 
+                    @Override
                     public void run() {
                         if (LogPreview.this.mDebug) {
                             if (LogPreview.this.rootView.getParent() == null) {
@@ -86,9 +86,9 @@ public class LogPreview {
             if (this.logs.length() >= 20480) {
                 this.logs.replace(0, 4096, "");
             }
-            this.logs.append(String.valueOf(log) + "\n");
-            this.mHandler.post(new Runnable() { // from class: com.syu.log.LogPreview.2
-                @Override // java.lang.Runnable
+            this.logs.append(log + "\n");
+            this.mHandler.post(new Runnable() { 
+                @Override
                 public void run() {
                     LogPreview.this.logPreview.setText(LogPreview.this.logs.toString());
                 }

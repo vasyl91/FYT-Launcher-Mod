@@ -8,11 +8,15 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+
 import java.util.Calendar;
+
 import share.ResValue;
 
 public class MyAnalogView extends View {
@@ -44,7 +48,7 @@ public class MyAnalogView extends View {
     int pointerX;
     int pointerY;
     Handler tickHandler;
-    private Runnable tickRunnable;
+    private final Runnable tickRunnable;
     String timeZoneStr;
 
     public MyAnalogView(Context context) {
@@ -53,8 +57,8 @@ public class MyAnalogView extends View {
         this.availableHeight = LauncherApplication.sApp.getResources().getInteger(R.integer.analogheight);
         this.pointerCenterX = LauncherApplication.sApp.getResources().getDimension(R.dimen.analogCenterX);
         this.pointerCenterY = LauncherApplication.sApp.getResources().getDimension(R.dimen.analogCenterY);
-        this.tickRunnable = new Runnable() { 
-            @Override 
+        this.tickRunnable = new Runnable() {
+            @Override
             public void run() {
                 MyAnalogView.this.postInvalidate();
                 MyAnalogView.this.tickHandler.postDelayed(MyAnalogView.this.tickRunnable, 1000L);
@@ -76,7 +80,7 @@ public class MyAnalogView extends View {
         this.availableHeight = LauncherApplication.sApp.getResources().getInteger(R.integer.analogheight);
         this.pointerCenterX = LauncherApplication.sApp.getResources().getDimension(R.dimen.analogCenterX);
         this.pointerCenterY = LauncherApplication.sApp.getResources().getDimension(R.dimen.analogCenterY);
-        this.tickRunnable = new Runnable() { 
+        this.tickRunnable = new Runnable() {
             @Override
             public void run() {
                 MyAnalogView.this.postInvalidate();
@@ -110,11 +114,11 @@ public class MyAnalogView extends View {
     }
 
     public void run() {
-        this.tickHandler = new Handler();
+        this.tickHandler = new Handler(Looper.getMainLooper());
         this.tickHandler.post(this.tickRunnable);
     }
 
-    @Override 
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Calendar cal = Calendar.getInstance();

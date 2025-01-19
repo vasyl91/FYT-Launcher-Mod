@@ -9,10 +9,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Accord9HSettingsAct extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.accord9.wc.Accord9HSettingsAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 1:
@@ -28,15 +27,15 @@ public class Accord9HSettingsAct extends BaseActivity implements View.OnClickLis
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_h_settings);
+        //setContentView(R.layout.layout_accord9_h_settings);
         init();
         initData();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.accord9h_btn_bright_left)).setOnClickListener(this);
         ((Button) findViewById(R.id.accord9h_btn_bright_right)).setOnClickListener(this);
@@ -51,63 +50,63 @@ public class Accord9HSettingsAct extends BaseActivity implements View.OnClickLis
     private void initData() {
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.accord9h_btn_bright_left /* 2131430159 */:
+            case R.id.accord9h_btn_bright_left /* 2131430101 */:
                 setScreenBright(-1);
                 break;
-            case R.id.accord9h_btn_bright_right /* 2131430161 */:
+            case R.id.accord9h_btn_bright_right /* 2131430103 */:
                 setScreenBright(1);
                 break;
-            case R.id.accord9h_btn_bk_left /* 2131430162 */:
+            case R.id.accord9h_btn_bk_left /* 2131430104 */:
                 setBackgroundColor(-1);
                 break;
-            case R.id.accord9h_tv_bk /* 2131430163 */:
+            case R.id.accord9h_tv_bk /* 2131430105 */:
                 setBackgroundColor(1);
                 break;
-            case R.id.accord9h_btn_bk_right /* 2131430164 */:
+            case R.id.accord9h_btn_bk_right /* 2131430106 */:
                 setBackgroundColor(1);
                 break;
-            case R.id.accord9h_btn_depression /* 2131430165 */:
+            case R.id.accord9h_btn_depression /* 2131430107 */:
                 setBackCameraMode(2);
                 break;
-            case R.id.accord9h_btn_standard /* 2131430166 */:
+            case R.id.accord9h_btn_standard /* 2131430108 */:
                 setBackCameraMode(1);
                 break;
-            case R.id.accord9h_btn_wideangle /* 2131430167 */:
+            case R.id.accord9h_btn_wideangle /* 2131430109 */:
                 setBackCameraMode(0);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBright() {
         int mBrightMode = DataCanbus.DATA[1];
         ((TextView) findViewById(R.id.accord9h_tv_bright)).setText(getScreenBrightMode(mBrightMode));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCameraMode() {
         int mBackCameraMode = DataCanbus.DATA[4];
         setBtnCameraFocuse(mBackCameraMode);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackgroundColor() {
         int mBkColor = DataCanbus.DATA[3];
         ((TextView) findViewById(R.id.accord9h_tv_bk)).setText(getBackgroundColor(mBkColor));

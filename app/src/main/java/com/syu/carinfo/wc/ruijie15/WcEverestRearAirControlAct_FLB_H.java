@@ -11,23 +11,22 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.WcEverestRearAirControlAct_FLB_H.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 20:
-                    WcEverestRearAirControlAct_FLB_H.this.mUpdatePowerOn();
-                    break;
-                case 21:
-                    WcEverestRearAirControlAct_FLB_H.this.mUpdaterAirWindLevelLeft();
-                    break;
-                case 22:
+                case 40:
                     WcEverestRearAirControlAct_FLB_H.this.mUpdateAirTempLeft();
                     break;
-                case 23:
+                case 42:
+                    WcEverestRearAirControlAct_FLB_H.this.mUpdatePowerOn();
+                    break;
+                case 44:
+                    WcEverestRearAirControlAct_FLB_H.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 67:
                     WcEverestRearAirControlAct_FLB_H.this.mUpdateRearLockOn();
                     break;
             }
@@ -38,10 +37,10 @@ public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.O
         DataCanbus.PROXY.cmd(17, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc_everest_flb_h_air_rear_control);
+        //setContentView(R.layout.layout_0443_wc_everest_flb_h_air_rear_control);
         init();
     }
 
@@ -55,7 +54,7 @@ public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.O
         findViewById(R.id.air_xts_rearlock).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -63,7 +62,7 @@ public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -71,7 +70,7 @@ public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -116,42 +115,42 @@ public class WcEverestRearAirControlAct_FLB_H extends Activity implements View.O
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
-        int power = DataCanbus.DATA[23];
+        int power = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[22];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             ((TextView) findViewById(R.id.tv_air_temp_left)).setText(new StringBuilder().append(temp).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[20];
+        int power = DataCanbus.DATA[42];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[21];
+        int leave = DataCanbus.DATA[44];
         if (leave < 0) {
             leave = 0;
         }

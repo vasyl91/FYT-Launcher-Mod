@@ -5,6 +5,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 
 public interface IRemoteModule extends IInterface {
@@ -16,7 +17,7 @@ public interface IRemoteModule extends IInterface {
 
     void unregister(IModuleCallback iModuleCallback, int i) throws RemoteException;
 
-    public static abstract class Stub extends Binder implements IRemoteModule {
+    abstract class Stub extends Binder implements IRemoteModule {
         private static final String DESCRIPTOR = "com.syu.ipc.IRemoteModule";
         static final int TRANSACTION_cmd = 1;
         static final int TRANSACTION_get = 2;
@@ -38,12 +39,12 @@ public interface IRemoteModule extends IInterface {
             return new Proxy(obj);
         }
 
-        @Override // android.os.IInterface
+        @Override
         public IBinder asBinder() {
             return this;
         }
 
-        @Override // android.os.Binder
+        @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
             switch (code) {
                 case 1:
@@ -93,18 +94,18 @@ public interface IRemoteModule extends IInterface {
         }
 
         private static class Proxy implements IRemoteModule {
-            private IBinder mRemote;
+            private final IBinder mRemote;
 
             Proxy(IBinder remote) {
                 this.mRemote = remote;
             }
 
-            @Override // android.os.IInterface
+            @Override
             public IBinder asBinder() {
                 return this.mRemote;
             }
 
-            @Override // com.syu.ipc.IRemoteModule
+            @Override
             public void cmd(int cmdCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
                 Parcel data = Parcel.obtain();
                 Parcel reply = Parcel.obtain();
@@ -122,7 +123,7 @@ public interface IRemoteModule extends IInterface {
                 }
             }
 
-            @Override // com.syu.ipc.IRemoteModule
+            @Override
             public ModuleObject get(int getCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
                 ModuleObject result;
                 Parcel data = Parcel.obtain();
@@ -150,7 +151,7 @@ public interface IRemoteModule extends IInterface {
                 }
             }
 
-            @Override // com.syu.ipc.IRemoteModule
+            @Override
             public void register(IModuleCallback callback, int updateCode, int update) throws RemoteException {
                 Parcel data = Parcel.obtain();
                 Parcel reply = Parcel.obtain();
@@ -167,7 +168,7 @@ public interface IRemoteModule extends IInterface {
                 }
             }
 
-            @Override // com.syu.ipc.IRemoteModule
+            @Override
             public void unregister(IModuleCallback callback, int updateCode) throws RemoteException {
                 Parcel data = Parcel.obtain();
                 Parcel reply = Parcel.obtain();

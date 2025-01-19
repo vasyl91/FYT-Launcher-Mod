@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.Print;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnZhongTaiX5 {
     private static WarnZhongTaiX5 mInstance;
     Context context;
@@ -56,8 +56,8 @@ public class WarnZhongTaiX5 {
     private void initTip(int updateCode) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_395_warn, (ViewGroup) null, false);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_395_warn, null, false);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
             this.mTextWarn.setTextColor(-65536);
         }
         this.mTextWarn.setText("");

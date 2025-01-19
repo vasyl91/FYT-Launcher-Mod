@@ -11,16 +11,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ObjApp;
 import com.syu.util.SecondTickThread;
 import com.syu.util.ToolkitApp;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnT600 implements Runnable {
     static int mTick = 0;
     private static WarnT600 mWarn;
@@ -30,12 +29,12 @@ public class WarnT600 implements Runnable {
     private Ringtone mRingTone;
     private TextView mText;
     private final int TEXT_SIZE = 13;
-    private final int VIEW_WITH = ConstRzcAddData.U_CAR_ADD_START;
+    private final int VIEW_WITH = 500;
     private final int VIEW_HEIGHT = 300;
-    private WindowManager.LayoutParams mLp = ToolkitApp.buildOverlayLayoutParams(ConstRzcAddData.U_CAR_ADD_START, 300);
+    private final WindowManager.LayoutParams mLp = ToolkitApp.buildOverlayLayoutParams(500, 300);
     boolean isShow = false;
-    private Runnable SHOW = new Runnable() { // from class: com.syu.canbus.warn.WarnT600.1
-        @Override // java.lang.Runnable
+    private final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             WarnT600.mTick = 15;
             if (WarnT600.this.mLayout != null && !WarnT600.this.isShow) {
@@ -44,8 +43,8 @@ public class WarnT600 implements Runnable {
             }
         }
     };
-    private Runnable HIDE = new Runnable() { // from class: com.syu.canbus.warn.WarnT600.2
-        @Override // java.lang.Runnable
+    private final Runnable HIDE = new Runnable() { 
+        @Override
         public void run() {
             if (WarnT600.this.mLayout != null && WarnT600.this.isShow) {
                 WarnT600.this.isShow = false;
@@ -57,8 +56,8 @@ public class WarnT600 implements Runnable {
     };
     int[] resWarnId = {R.string.str_265_8, R.string.str_265_9, R.string.str_265_10, R.string.str_265_11, R.string.str_265_12, R.string.str_265_13, R.string.str_265_14, R.string.str_265_15, R.string.str_265_16, R.string.str_265_17, R.string.str_265_18};
     int ilastLevel = 0;
-    private WarnRing mWarnRing = new WarnRing(this, null);
-    private Thread mRingThread = new Thread(this.mWarnRing);
+    private final WarnRing mWarnRing = new WarnRing(this, null);
+    private final Thread mRingThread = new Thread(this.mWarnRing);
 
     public WarnT600() {
         init();
@@ -101,7 +100,7 @@ public class WarnT600 implements Runnable {
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (mTick > 0) {
             mTick--;
@@ -231,7 +230,7 @@ public class WarnT600 implements Runnable {
             this.times = times;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             while (this.times > 0) {
                 if (!WarnT600.this.mRingTone.isPlaying()) {

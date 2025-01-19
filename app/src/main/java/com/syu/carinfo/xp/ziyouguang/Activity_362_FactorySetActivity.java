@@ -12,16 +12,15 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_362_FactorySetActivity extends BaseActivity {
     public static Activity_362_FactorySetActivity mist;
     private StringBuffer mTvCurrPasswordBuffer = new StringBuffer();
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_362_FactorySetActivity.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 30:
+                case 105:
                     Activity_362_FactorySetActivity.this.setCheck((CheckedTextView) Activity_362_FactorySetActivity.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
             }
@@ -29,27 +28,15 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
     };
 
     /* JADX WARN: Multi-variable type inference failed */
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.layout_xiandai_fista_factory);
+        //setContentView(R.layout.layout_xiandai_fista_factory);
         mist = this;
-        //((Button) findViewById(R.id.clear_card_password_num0)).setOnClickListener(new mNum0Listener(this, null));
-        //((Button) findViewById(R.id.clear_card_password_num1)).setOnClickListener(new mNum1Listener(this, mist == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num2)).setOnClickListener(new mNum2Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num3)).setOnClickListener(new mNum3Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num4)).setOnClickListener(new mNum4Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num5)).setOnClickListener(new mNum5Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num6)).setOnClickListener(new mNum6Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num7)).setOnClickListener(new mNum7Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num8)).setOnClickListener(new mNum8Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_num9)).setOnClickListener(new mNum9Listener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_confirm)).setOnClickListener(new mConfirmListener(this, 0 == true ? 1 : 0));
-        //((Button) findViewById(R.id.clear_card_password_del)).setOnClickListener(new mDeleteListener(this, 0 == true ? 1 : 0));
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_362_FactorySetActivity.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[30];
+                int value = DataCanbus.DATA[105];
                 if (value == 1) {
                     value = 0;
                 } else if (value == 0) {
@@ -58,30 +45,30 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{value}, null, null);
             }
         });
-        findViewById(R.id.factory_passview).setVisibility(View.VISIBLE);
-        findViewById(R.id.scrollview_setting).setVisibility(View.GONE);
+        findViewById(R.id.factory_passview).setVisibility(0);
+        findViewById(R.id.scrollview_setting).setVisibility(8);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
     }
 
     private class mNum0Listener implements View.OnClickListener {
@@ -92,7 +79,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('0');
@@ -109,7 +96,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('1');
@@ -126,7 +113,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('2');
@@ -143,7 +130,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('3');
@@ -160,7 +147,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('4');
@@ -177,7 +164,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('5');
@@ -194,7 +181,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('6');
@@ -211,7 +198,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('7');
@@ -228,7 +215,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('8');
@@ -245,7 +232,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() < 8) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.append('9');
@@ -262,7 +249,7 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             if (((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)) != null && Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() > 0) {
                 Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.deleteCharAt(Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length() - 1);
@@ -279,16 +266,16 @@ public class Activity_362_FactorySetActivity extends BaseActivity {
             this();
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
             String mCurrPassword = ((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)).getText().toString();
             if ("12040310".equals(mCurrPassword)) {
-                Activity_362_FactorySetActivity.this.findViewById(R.id.factory_passview).setVisibility(View.GONE);
-                Activity_362_FactorySetActivity.this.findViewById(R.id.scrollview_setting).setVisibility(View.VISIBLE);
+                Activity_362_FactorySetActivity.this.findViewById(R.id.factory_passview).setVisibility(8);
+                Activity_362_FactorySetActivity.this.findViewById(R.id.scrollview_setting).setVisibility(0);
             } else if (mCurrPassword.equals("")) {
-                Toast.makeText(LauncherApplication.getInstance(), R.string.wc_psa_all_factory_settings_password_null, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LauncherApplication.getInstance(), R.string.wc_psa_all_factory_settings_password_null, 0).show();
             } else {
-                Toast.makeText(LauncherApplication.getInstance(), R.string.wc_psa_all_factory_settings_password_wrong, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LauncherApplication.getInstance(), R.string.wc_psa_all_factory_settings_password_wrong, 0).show();
             }
             Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.delete(0, Activity_362_FactorySetActivity.this.mTvCurrPasswordBuffer.length());
             ((TextView) Activity_362_FactorySetActivity.this.findViewById(R.id.clear_card_currpassword)).setText("");

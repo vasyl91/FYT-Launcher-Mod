@@ -2,7 +2,6 @@ package com.syu.util;
 
 import android.os.SystemClock;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class TimeLock {
     private long cur;
     private long last;

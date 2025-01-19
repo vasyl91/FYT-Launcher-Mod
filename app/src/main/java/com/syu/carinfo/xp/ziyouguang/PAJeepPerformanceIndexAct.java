@@ -10,19 +10,18 @@ import android.widget.TabHost;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepPerformanceIndexAct extends TabActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPerformanceIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         }
     };
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_jeep_performance_index);
+        //setContentView(R.layout.layout_0374_pa_jeep_performance_index);
         init();
     }
 
@@ -31,8 +30,8 @@ public class PAJeepPerformanceIndexAct extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabGauges").setIndicator("tabGauges").setContent(new Intent(this, (Class<?>) PAJeepGauges.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabDynoEngine").setIndicator("tabDynoEngine").setContent(new Intent(this, (Class<?>) PAJeepDynoEngineAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabGForce").setIndicator("tabGForce").setContent(new Intent(this, (Class<?>) PAJeepGForceAct.class)));
-        ((RadioButton) findViewById(R.id.pa_jeep_btn1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPerformanceIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepPerformanceIndexAct.this.mTabHost.setCurrentTabByTag("tabGauges");
@@ -44,8 +43,8 @@ public class PAJeepPerformanceIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPerformanceIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepPerformanceIndexAct.this.mTabHost.setCurrentTabByTag("tabDynoEngine");
@@ -57,8 +56,8 @@ public class PAJeepPerformanceIndexAct extends TabActivity {
                 }
             }
         });
-        ((RadioButton) findViewById(R.id.pa_jeep_btn3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepPerformanceIndexAct.4
-            @Override // android.view.View.OnClickListener
+        ((RadioButton) findViewById(R.id.pa_jeep_btn3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     PAJeepPerformanceIndexAct.this.mTabHost.setCurrentTabByTag("tabGForce");
@@ -81,7 +80,7 @@ public class PAJeepPerformanceIndexAct extends TabActivity {
         ((RadioButton) findViewById(R.id.pa_jeep_btn3)).setTextColor(Color.parseColor("#FFFFFF"));
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();

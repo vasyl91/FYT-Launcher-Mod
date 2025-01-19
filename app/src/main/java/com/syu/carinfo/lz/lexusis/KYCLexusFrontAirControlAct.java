@@ -6,17 +6,18 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
+import com.syu.carinfo.air.ConstAllAirDara;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouchListener {
     public static KYCLexusFrontAirControlAct mInstance;
     public static boolean mIsFront = false;
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -65,13 +66,13 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         DataCanbus.PROXY.cmd(3, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInstance = this;
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_0452_kyc_lexus_air_control);
+        //setContentView(R.layout.layout_0452_kyc_lexus_air_control);
         init();
     }
 
@@ -95,21 +96,22 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         findViewById(R.id.air_xts_frontrear).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeUpdater();
+        ConstAllAirDara.JumpNewAir = false;
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -142,26 +144,26 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 12;
                 break;
-            case R.id.air_xts_front_hot /* 2131427466 */:
-                data0 = 50;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 4;
                 break;
-            case R.id.air_xts_flower /* 2131428017 */:
+            case R.id.air_xts_front_hot /* 2131427571 */:
+                data0 = 50;
+                break;
+            case R.id.air_xts_flower /* 2131428020 */:
                 data0 = 15;
                 break;
-            case R.id.air_xts_zone /* 2131428027 */:
+            case R.id.air_xts_zone /* 2131428031 */:
                 data0 = 8;
                 break;
-            case R.id.air_xts_back /* 2131428559 */:
+            case R.id.air_xts_back /* 2131428556 */:
                 finish();
                 flag = true;
                 break;
-            case R.id.air_sp_mode_change /* 2131428560 */:
+            case R.id.air_sp_mode_change /* 2131428557 */:
                 data0 = 17;
                 break;
-            case R.id.air_xts_list /* 2131428569 */:
+            case R.id.air_xts_list /* 2131428566 */:
                 if (event.getAction() == 0) {
                     if (this.pagenum == 0) {
                         this.pagenum = 1;
@@ -173,13 +175,13 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
                 }
                 flag = true;
                 break;
-            case R.id.air_sp_mode_change_right /* 2131428570 */:
+            case R.id.air_sp_mode_change_right /* 2131428567 */:
                 data0 = 42;
                 break;
-            case R.id.air_xts_frontrear /* 2131428575 */:
+            case R.id.air_xts_frontrear /* 2131428572 */:
                 flag = true;
                 try {
-                    startActivity(new Intent(this, (Class<?>) KYCLexusRearAirControlAct.class));
+                    startActivity(new Intent(this, KYCLexusRearAirControlAct.class));
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -228,11 +230,11 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[27];
-        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+        if (findViewById(R.id.tv_air_temp_left) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
                 return;
@@ -249,11 +251,11 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[28];
-        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+        if (findViewById(R.id.tv_air_temp_right) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
                 return;
@@ -270,7 +272,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         if (findViewById(R.id.air_xts_auto) != null) {
@@ -278,7 +280,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[62];
         if (findViewById(R.id.air_xts_zone) != null) {
@@ -286,7 +288,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         if (findViewById(R.id.air_xts_ac) != null) {
@@ -294,7 +296,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateClearOn() {
         if (findViewById(R.id.air_xts_flower) != null) {
             int power = DataCanbus.DATA[33];
@@ -302,7 +304,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontHotOn() {
         int power = DataCanbus.DATA[17];
         if (findViewById(R.id.air_xts_front_hot) != null) {
@@ -310,7 +312,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
         switch (leave) {
@@ -353,7 +355,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[18];
         int foot = DataCanbus.DATA[20];
@@ -398,7 +400,7 @@ public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRight() {
         int window = DataCanbus.DATA[22];
         int foot = DataCanbus.DATA[24];

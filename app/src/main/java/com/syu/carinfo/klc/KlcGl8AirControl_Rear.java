@@ -10,30 +10,29 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcGl8AirControl_Rear.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 88:
+                case 40:
                     KlcGl8AirControl_Rear.this.mUpdateAirTempLeft();
                     break;
-                case 89:
+                case 44:
                     KlcGl8AirControl_Rear.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 114:
+                case 86:
                     KlcGl8AirControl_Rear.this.updateBlowMode();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0036_wc_gl8_air_rear_control);
+        //setContentView(R.layout.layout_0036_wc_gl8_air_rear_control);
         init();
     }
 
@@ -50,7 +49,7 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
         findViewById(R.id.air_xts_auto).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -58,7 +57,7 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -66,7 +65,7 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -99,27 +98,27 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
             case R.id.air_xts_mode_body /* 2131427444 */:
                 KlcFunc.C_AIR_CONTROL_CMD(20, 255);
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 KlcFunc.C_AIR_CONTROL_CMD(19, 255);
                 break;
         }
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowMode() {
-        int mode = DataCanbus.DATA[114];
+        int mode = DataCanbus.DATA[86];
         if (mode == 1) {
             findViewById(R.id.air_xts_auto).setBackgroundResource(R.drawable.ic_xts_auto_p);
             findViewById(R.id.air_xts_mode_body).setBackgroundResource(R.drawable.ic_xts_mode_body_n);
@@ -149,9 +148,9 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[88];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == 254) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -163,10 +162,10 @@ public class KlcGl8AirControl_Rear extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
-        int leave = DataCanbus.DATA[89];
+        int leave = DataCanbus.DATA[44];
         if (leave > 12) {
             str = " A ";
         } else {

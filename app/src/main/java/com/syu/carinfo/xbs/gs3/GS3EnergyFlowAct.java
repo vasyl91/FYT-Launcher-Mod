@@ -11,31 +11,30 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     TextView mBatteryShow;
     Button mEnergySetBtn;
     TextView mEnergyShow;
     int EnergyShowInt = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.gs3.GS3EnergyFlowAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 28:
+                case 126:
                     GS3EnergyFlowAct.this.updaterbattery();
                     break;
-                case 29:
+                case 127:
                     GS3EnergyFlowAct.this.updaterEnergyShow();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_165_xbs_gs3_energy);
+        //setContentView(R.layout.layout_165_xbs_gs3_energy);
         setUI();
     }
 
@@ -46,11 +45,11 @@ public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListen
         this.mEnergySetBtn.setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.energy_set_btn /* 2131428696 */:
+            case R.id.energy_set_btn /* 2131428732 */:
                 try {
                     Intent intent = new Intent(this, (Class<?>) GS3EnergySetAct.class);
                     startActivity(intent);
@@ -62,7 +61,7 @@ public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -70,7 +69,7 @@ public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListen
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -78,22 +77,22 @@ public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListen
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(3, new int[]{12}, null, null);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterEnergyShow() {
-        this.EnergyShowInt = DataCanbus.DATA[29];
+        this.EnergyShowInt = DataCanbus.DATA[127];
         switch (this.EnergyShowInt) {
             case 0:
                 this.mEnergyShow.setBackgroundResource(R.drawable.ge3_energy_n);
@@ -104,9 +103,9 @@ public class GS3EnergyFlowAct extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterbattery() {
-        int val = DataCanbus.DATA[28];
+        int val = DataCanbus.DATA[126];
         switch (val) {
             case 0:
                 this.mBatteryShow.setBackgroundResource(R.drawable.ge3_electricity_0);

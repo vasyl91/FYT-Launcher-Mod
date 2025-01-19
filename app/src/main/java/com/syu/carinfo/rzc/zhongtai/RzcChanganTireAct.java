@@ -8,9 +8,8 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcChanganTireAct extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.zhongtai.RzcChanganTireAct.1
+    private IUiNotify notifyCanbus = new IUiNotify() { 
         /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
         /* JADX WARN: Removed duplicated region for block: B:102:0x01fb  */
         /* JADX WARN: Removed duplicated region for block: B:103:0x02b2  */
@@ -26,7 +25,7 @@ public class RzcChanganTireAct extends BaseActivity {
         /* JADX WARN: Removed duplicated region for block: B:92:0x0276  */
         /* JADX WARN: Removed duplicated region for block: B:95:0x01e2  */
         /* JADX WARN: Removed duplicated region for block: B:96:0x0288  */
-        @Override // com.syu.module.IUiNotify
+        @Override
         /*
             Code decompiled incorrectly, please refer to instructions dump.
             To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -40,170 +39,170 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LauncherApplication.getConfiguration() == 1) {
-            setContentView(R.layout.layout_xbs_tule_tire);
+            //setContentView(R.layout.layout_xbs_tule_tire);
         } else {
-            setContentView(R.layout.layout_oudi_zt_t600_tire);
+            //setContentView(R.layout.layout_oudi_zt_t600_tire);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.notifyCanbus, 1);
         if (DataCanbus.sCanbusId == 2163127 || DataCanbus.sCanbusId == 2228663 || DataCanbus.sCanbusId == 2294199 || DataCanbus.sCanbusId == 2359735) {
-            DataCanbus.NOTIFY_EVENTS[82].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[83].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[84].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[85].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[86].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[87].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[88].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[89].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[90].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[91].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[92].addNotify(this.notifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[93].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[150].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[151].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[152].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[153].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[154].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[155].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[156].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[157].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[158].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[159].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[160].addNotify(this.notifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[161].addNotify(this.notifyCanbus, 1);
             return;
         }
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.notifyCanbus);
         if (DataCanbus.sCanbusId == 2163127 || DataCanbus.sCanbusId == 2228663 || DataCanbus.sCanbusId == 14614967 || DataCanbus.sCanbusId == 2294199 || DataCanbus.sCanbusId == 2359735) {
-            DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.notifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.notifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.notifyCanbus);
             return;
         }
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.notifyCanbus);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm2() {
-        int system = DataCanbus.DATA[32];
-        int system1 = DataCanbus.DATA[33];
-        int system2 = DataCanbus.DATA[34];
-        int value = DataCanbus.DATA[39];
-        int value1 = DataCanbus.DATA[40];
+        int system = DataCanbus.DATA[100];
+        int system1 = DataCanbus.DATA[101];
+        int system2 = DataCanbus.DATA[102];
+        int value = DataCanbus.DATA[107];
+        int value1 = DataCanbus.DATA[108];
         if (system == 1 || system1 == 1 || system2 == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire1_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -217,13 +216,13 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRWalm2() {
-        int system = DataCanbus.DATA[45];
-        int system1 = DataCanbus.DATA[46];
-        int system2 = DataCanbus.DATA[47];
-        int value = DataCanbus.DATA[52];
-        int value1 = DataCanbus.DATA[53];
+        int system = DataCanbus.DATA[113];
+        int system1 = DataCanbus.DATA[114];
+        int system2 = DataCanbus.DATA[115];
+        int value = DataCanbus.DATA[120];
+        int value1 = DataCanbus.DATA[121];
         if (system == 1 || system1 == 1 || system2 == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire2_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -237,13 +236,13 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLWalm2() {
-        int system = DataCanbus.DATA[58];
-        int system1 = DataCanbus.DATA[59];
-        int system2 = DataCanbus.DATA[60];
-        int value = DataCanbus.DATA[65];
-        int value1 = DataCanbus.DATA[66];
+        int system = DataCanbus.DATA[126];
+        int system1 = DataCanbus.DATA[127];
+        int system2 = DataCanbus.DATA[128];
+        int value = DataCanbus.DATA[133];
+        int value1 = DataCanbus.DATA[134];
         if (system == 1 || system1 == 1 || system2 == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire3_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -257,13 +256,13 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRWalm2() {
-        int system = DataCanbus.DATA[71];
-        int system1 = DataCanbus.DATA[72];
-        int system2 = DataCanbus.DATA[73];
-        int value = DataCanbus.DATA[78];
-        int value1 = DataCanbus.DATA[79];
+        int system = DataCanbus.DATA[139];
+        int system1 = DataCanbus.DATA[140];
+        int system2 = DataCanbus.DATA[141];
+        int value = DataCanbus.DATA[146];
+        int value1 = DataCanbus.DATA[147];
         if (system == 1 || system1 == 1 || system2 == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire4_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -277,9 +276,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFL() {
-        int value = DataCanbus.DATA[31];
+        int value = DataCanbus.DATA[99];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1_temp)).setText("--");
         } else {
@@ -287,9 +286,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempFR() {
-        int value = DataCanbus.DATA[44];
+        int value = DataCanbus.DATA[112];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2_temp)).setText("--");
         } else {
@@ -297,9 +296,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRL() {
-        int value = DataCanbus.DATA[57];
+        int value = DataCanbus.DATA[125];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3_temp)).setText("--");
         } else {
@@ -307,9 +306,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTempRR() {
-        int value = DataCanbus.DATA[70];
+        int value = DataCanbus.DATA[138];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4_temp)).setText("--");
         } else {
@@ -317,9 +316,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFL() {
-        int value = DataCanbus.DATA[30];
+        int value = DataCanbus.DATA[98];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire1)).setText("--.--");
             return;
@@ -336,9 +335,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireFR() {
-        int value = DataCanbus.DATA[43];
+        int value = DataCanbus.DATA[111];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire2)).setText("--.--");
             return;
@@ -355,9 +354,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRL() {
-        int value = DataCanbus.DATA[56];
+        int value = DataCanbus.DATA[124];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire3)).setText("--.--");
             return;
@@ -374,9 +373,9 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTireRR() {
-        int value = DataCanbus.DATA[69];
+        int value = DataCanbus.DATA[137];
         if (value == 255) {
             ((TextView) findViewById(R.id.oudi_changan_tire4)).setText("--.--");
             return;
@@ -393,11 +392,11 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFLWalm() {
-        int system = DataCanbus.DATA[82];
-        int value = DataCanbus.DATA[83];
-        int value1 = DataCanbus.DATA[84];
+        int system = DataCanbus.DATA[150];
+        int value = DataCanbus.DATA[151];
+        int value1 = DataCanbus.DATA[152];
         if (system == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire1_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -411,11 +410,11 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFRWalm() {
-        int system = DataCanbus.DATA[85];
-        int value = DataCanbus.DATA[86];
-        int value1 = DataCanbus.DATA[87];
+        int system = DataCanbus.DATA[153];
+        int value = DataCanbus.DATA[154];
+        int value1 = DataCanbus.DATA[155];
         if (system == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire2_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -429,11 +428,11 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRLWalm() {
-        int system = DataCanbus.DATA[88];
-        int value = DataCanbus.DATA[89];
-        int value1 = DataCanbus.DATA[90];
+        int system = DataCanbus.DATA[156];
+        int value = DataCanbus.DATA[157];
+        int value1 = DataCanbus.DATA[158];
         if (system == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire3_warn)).setText(R.string.zt_t600_car_system_band);
             return;
@@ -447,11 +446,11 @@ public class RzcChanganTireAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRRWalm() {
-        int system = DataCanbus.DATA[91];
-        int value = DataCanbus.DATA[92];
-        int value1 = DataCanbus.DATA[93];
+        int system = DataCanbus.DATA[159];
+        int value = DataCanbus.DATA[160];
+        int value1 = DataCanbus.DATA[161];
         if (system == 1) {
             ((TextView) findViewById(R.id.oudi_changan_tire4_warn)).setText(R.string.zt_t600_car_system_band);
             return;

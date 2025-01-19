@@ -6,125 +6,125 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCSuzukiHisRefuelCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 103:
+                case 115:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text1)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value) + " km");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text1)).setText(value + " km");
                         break;
                     }
-                case 104:
+                case 116:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text3)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value) + " km");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text3)).setText(value + " km");
                         break;
                     }
-                case 105:
+                case 117:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text5)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value) + " km");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text5)).setText(value + " km");
                         break;
                     }
-                case 106:
+                case 118:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text7)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value) + " km");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text7)).setText(value + " km");
                         break;
                     }
-                case 107:
+                case 119:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text9)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text9)).setText(String.valueOf(value) + " km");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text9)).setText(value + " km");
                         break;
                     }
-                case 108:
+                case 120:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text2)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/L");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text2)).setText(value / 10 + "." + (value % 10) + " km/L");
                         break;
                     }
-                case 109:
+                case 121:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text4)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/L");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text4)).setText(value / 10 + "." + (value % 10) + " km/L");
                         break;
                     }
-                case 110:
+                case 122:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text6)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/L");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text6)).setText(value / 10 + "." + (value % 10) + " km/L");
                         break;
                     }
-                case 111:
+                case 123:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text8)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text8)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/L");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text8)).setText(value / 10 + "." + (value % 10) + " km/L");
                         break;
                     }
-                case 112:
+                case 124:
                     if (value == 65535) {
                         ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text10)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text10)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/L");
+                        ((TextView) WCSuzukiHisRefuelCarInfo.this.findViewById(R.id.tv_text10)).setText(value / 10 + "." + (value % 10) + " km/L");
                         break;
                     }
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc_suzuki_hisrefuel_carinfo);
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
+        //setContentView(R.layout.layout_0443_wc_suzuki_hisrefuel_carinfo);
+        setSelfClick(findViewById(R.id.ctv_checkedtext1), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 dialog(R.string.str_historical_mileage_refuel, 83);
                 break;
         }
@@ -132,14 +132,14 @@ public class WCSuzukiHisRefuelCarInfo extends BaseActivity implements View.OnCli
 
     protected void dialog(int stringId, final int cmd) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(String.valueOf(getResources().getString(R.string.clear)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
+        builder.setMessage(getResources().getString(R.string.clear) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         WCSuzukiHisRefuelCarInfo.this.setCarInfo(i, 1, 0, 0);
                     }
@@ -147,12 +147,12 @@ public class WCSuzukiHisRefuelCarInfo extends BaseActivity implements View.OnCli
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiHisRefuelCarInfo.3.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         WCSuzukiHisRefuelCarInfo.this.setCarInfo(i, 0, 0, 0);
                     }
@@ -167,31 +167,31 @@ public class WCSuzukiHisRefuelCarInfo extends BaseActivity implements View.OnCli
         DataCanbus.PROXY.cmd(1, new int[]{value1, value2, value3, value4}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
     }
 }

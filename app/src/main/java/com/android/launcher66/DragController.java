@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -71,7 +72,7 @@ public class DragController {
     public DragController(Launcher launcher) {
         Resources r = launcher.getResources();
         this.mLauncher = launcher;
-        this.mHandler = new Handler();
+        this.mHandler = new Handler(Looper.getMainLooper());
         this.mScrollZone = r.getDimensionPixelSize(R.dimen.scroll_zone);
         this.mVelocityTracker = VelocityTracker.obtain();
         float density = r.getDisplayMetrics().density;
@@ -339,7 +340,7 @@ public class DragController {
         this.mLastDropTarget = dropTarget;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void checkScrollState(int x, int y) {
         int slop = ViewConfiguration.get(this.mLauncher).getScaledWindowTouchSlop();
         int delay = this.mDistanceSinceScroll < slop ? RESCROLL_DELAY : 500;
@@ -559,7 +560,7 @@ public class DragController {
         ScrollRunnable() {
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             if (DragController.this.mDragScroller != null) {
                 if (this.mDirection == 0) {

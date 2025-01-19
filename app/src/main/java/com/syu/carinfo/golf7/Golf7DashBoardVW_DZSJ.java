@@ -9,11 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7DashBoardVW_DZSJ extends Activity {
     public static Golf7DashBoardVW_DZSJ mInstance;
     public static boolean mIsFront = false;
@@ -22,29 +22,13 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
     int infonum2 = 0;
     int curnum = 0;
     int curnum1 = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = R.drawable.ic_dashboard_car_null;
             switch (updateCode) {
                 case 0:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 7:
-                case 8:
-                case 9:
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo1(Golf7DashBoardVW_DZSJ.this.infonum1);
-                    break;
-                case 10:
-                case 12:
-                case 13:
-                case 14:
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo2(Golf7DashBoardVW_DZSJ.this.infonum2);
-                    break;
-                case 109:
-                    int value = DataCanbus.DATA[109];
+                    int value = DataCanbus.DATA[0];
                     ImageView imageView = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_engine);
                     Resources resources = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value == 1) {
@@ -52,8 +36,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView.setImageDrawable(resources.getDrawable(i));
                     break;
-                case 110:
-                    int value2 = DataCanbus.DATA[110];
+                case 1:
+                    int value2 = DataCanbus.DATA[1];
                     ImageView imageView2 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_fl);
                     Resources resources2 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value2 == 1) {
@@ -61,8 +45,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView2.setImageDrawable(resources2.getDrawable(i));
                     break;
-                case 111:
-                    int value3 = DataCanbus.DATA[111];
+                case 2:
+                    int value3 = DataCanbus.DATA[2];
                     ImageView imageView3 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_fr);
                     Resources resources3 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value3 == 1) {
@@ -70,8 +54,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView3.setImageDrawable(resources3.getDrawable(i));
                     break;
-                case 112:
-                    int value4 = DataCanbus.DATA[112];
+                case 3:
+                    int value4 = DataCanbus.DATA[3];
                     ImageView imageView4 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_rl);
                     Resources resources4 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value4 == 1) {
@@ -79,8 +63,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView4.setImageDrawable(resources4.getDrawable(i));
                     break;
-                case 113:
-                    int value5 = DataCanbus.DATA[113];
+                case 4:
+                    int value5 = DataCanbus.DATA[4];
                     ImageView imageView5 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_rr);
                     Resources resources5 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value5 == 1) {
@@ -88,8 +72,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView5.setImageDrawable(resources5.getDrawable(i));
                     break;
-                case 114:
-                    int value6 = DataCanbus.DATA[114];
+                case 5:
+                    int value6 = DataCanbus.DATA[5];
                     ImageView imageView6 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_door_rear);
                     Resources resources6 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value6 == 1) {
@@ -97,16 +81,32 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView6.setImageDrawable(resources6.getDrawable(i));
                     break;
-                case 125:
-                    ((InfoView2) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj2)).setSpeed(DataCanbus.DATA[125]);
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo2(Golf7DashBoardVW_DZSJ.this.infonum2);
-                    break;
-                case 126:
-                    ((InfoView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj1)).setSpeed(DataCanbus.DATA[126]);
+                case 97:
+                case 99:
+                case 100:
+                case 101:
+                case 102:
+                case 104:
+                case 105:
+                case 106:
                     Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo1(Golf7DashBoardVW_DZSJ.this.infonum1);
                     break;
-                case 219:
-                    int value7 = DataCanbus.DATA[219] - 40;
+                case 107:
+                case 109:
+                case 110:
+                case 111:
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo2(Golf7DashBoardVW_DZSJ.this.infonum2);
+                    break;
+                case 188:
+                    ((InfoView2) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj2)).setSpeed(DataCanbus.DATA[188]);
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo2(Golf7DashBoardVW_DZSJ.this.infonum2);
+                    break;
+                case 189:
+                    ((InfoView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj1)).setSpeed(DataCanbus.DATA[189]);
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo1(Golf7DashBoardVW_DZSJ.this.infonum1);
+                    break;
+                case 265:
+                    int value7 = DataCanbus.DATA[265] - 40;
                     if (value7 <= 90) {
                         ((InfoView_Small1) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj3)).setSpeed(90 - value7);
                         break;
@@ -114,11 +114,11 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                         ((InfoView_Small1) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj3)).setSpeed(1800 - (value7 - 90));
                         break;
                     }
-                case 236:
-                    int value8 = DataCanbus.DATA[236];
+                case 278:
+                    int value8 = DataCanbus.DATA[278];
                     int maxoil = 25;
                     int type = 0;
-                    switch (DataCanbus.DATA[266]) {
+                    switch (DataCanbus.DATA[295]) {
                         case 0:
                             maxoil = 25;
                             type = 0;
@@ -155,9 +155,9 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                         ((InfoView_Small2) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.infoView_dzsj4)).setSpeed(((maxoil * 360) / 26) - (value8 - maxoil), type);
                         break;
                     }
-                case 259:
-                    int value9 = DataCanbus.DATA[259];
-                    ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(value9 == 1 ? R.drawable.ic_dashboard_car_light : 2130839521));
+                case 288:
+                    int value9 = DataCanbus.DATA[288];
+                    ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(value9 == 1 ? R.drawable.ic_dashboard_car_light : 2130840179));
                     ImageView imageView7 = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_light);
                     Resources resources7 = Golf7DashBoardVW_DZSJ.this.getResources();
                     if (value9 == 1) {
@@ -165,21 +165,21 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                     }
                     imageView7.setImageDrawable(resources7.getDrawable(i));
                     break;
-                case 261:
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterLifeBelt(DataCanbus.DATA[261]);
+                case 290:
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterLifeBelt(DataCanbus.DATA[290]);
                     break;
-                case 262:
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterTurnleftLight(DataCanbus.DATA[262]);
+                case 291:
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterTurnleftLight(DataCanbus.DATA[291]);
                     break;
-                case 263:
-                    Golf7DashBoardVW_DZSJ.this.mUpdaterTurnrightLight(DataCanbus.DATA[263]);
+                case 292:
+                    Golf7DashBoardVW_DZSJ.this.mUpdaterTurnrightLight(DataCanbus.DATA[292]);
                     break;
             }
         }
     };
     int num2 = 0;
-    Runnable mShowLifeBelt = new Runnable() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.2
-        @Override // java.lang.Runnable
+    Runnable mShowLifeBelt = new Runnable() { 
+        @Override
         public void run() {
             Golf7DashBoardVW_DZSJ.this.num2++;
             if (Golf7DashBoardVW_DZSJ.this.num2 > 1) {
@@ -191,15 +191,15 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     };
     int num = 0;
-    Runnable mShowTurnLeftLight = new Runnable() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.3
-        @Override // java.lang.Runnable
+    Runnable mShowTurnLeftLight = new Runnable() { 
+        @Override
         public void run() {
             int i = R.drawable.ic_dashboard_car_null;
             Golf7DashBoardVW_DZSJ.this.num++;
             if (Golf7DashBoardVW_DZSJ.this.num > 1) {
                 Golf7DashBoardVW_DZSJ.this.num = 0;
             }
-            ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnl_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(Golf7DashBoardVW_DZSJ.this.num == 1 ? R.drawable.ic_dashboard_car_turnl_light : 2130839521));
+            ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnl_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(Golf7DashBoardVW_DZSJ.this.num == 1 ? R.drawable.ic_dashboard_car_turnl_light : 2130840179));
             ImageView imageView = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnl_top);
             Resources resources = Golf7DashBoardVW_DZSJ.this.getResources();
             if (Golf7DashBoardVW_DZSJ.this.num == 1) {
@@ -211,15 +211,15 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     };
     int num1 = 0;
-    Runnable mShowTurnRightLight = new Runnable() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.4
-        @Override // java.lang.Runnable
+    Runnable mShowTurnRightLight = new Runnable() { 
+        @Override
         public void run() {
             int i = R.drawable.ic_dashboard_car_null;
             Golf7DashBoardVW_DZSJ.this.num1++;
             if (Golf7DashBoardVW_DZSJ.this.num1 > 1) {
                 Golf7DashBoardVW_DZSJ.this.num1 = 0;
             }
-            ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnr_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(Golf7DashBoardVW_DZSJ.this.num1 == 1 ? R.drawable.ic_dashboard_car_turnr_light : 2130839521));
+            ((ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnr_light)).setImageDrawable(Golf7DashBoardVW_DZSJ.this.getResources().getDrawable(Golf7DashBoardVW_DZSJ.this.num1 == 1 ? R.drawable.ic_dashboard_car_turnr_light : 2130840179));
             ImageView imageView = (ImageView) Golf7DashBoardVW_DZSJ.this.findViewById(R.id.image_car_turnr_top);
             Resources resources = Golf7DashBoardVW_DZSJ.this.getResources();
             if (Golf7DashBoardVW_DZSJ.this.num1 == 1) {
@@ -231,25 +231,25 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_golf_dashboard_dzsj);
+        //setContentView(R.layout.layout_golf_dashboard_dzsj);
         init();
         mInstance = this;
     }
 
     public void init() {
-        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Golf7DashBoardVW_DZSJ.this.finish();
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_car_infochange_dzsj1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_car_infochange_dzsj1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Golf7DashBoardVW_DZSJ.this.infonum1++;
                 if (Golf7DashBoardVW_DZSJ.this.infonum1 > 8) {
@@ -258,8 +258,8 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
                 Golf7DashBoardVW_DZSJ.this.mUpdaterDashBoardinfo1(Golf7DashBoardVW_DZSJ.this.infonum1);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_car_infochange_dzsj2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_car_infochange_dzsj2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Golf7DashBoardVW_DZSJ.this.infonum2++;
                 if (Golf7DashBoardVW_DZSJ.this.infonum2 > 4) {
@@ -270,14 +270,14 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -285,132 +285,132 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[219].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[259].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[262].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[263].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[278].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[265].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[260].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[261].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[266].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[288].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[291].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[292].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[289].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[290].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[295].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[259].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[262].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[263].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[278].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[265].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[260].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[261].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[266].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[288].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[291].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[292].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[289].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[290].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[295].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDashBoardinfo1(int data) {
         switch (data) {
             case 0:
-                int value = DataCanbus.DATA[0];
+                int value = DataCanbus.DATA[97];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_since_start1);
                 if (value != 65535) {
                     ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10)));
                 } else {
                     ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText("--.--");
                 }
-                ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("L/100km");
+                ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 break;
             case 1:
-                int value2 = DataCanbus.DATA[4];
+                int value2 = DataCanbus.DATA[101];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_since_start1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d", Integer.valueOf(value2)));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("km/H");
                 break;
             case 2:
-                int value3 = DataCanbus.DATA[2];
+                int value3 = DataCanbus.DATA[99];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_since_start1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + String.format("%d.%d", Integer.valueOf(value3 / 10), Integer.valueOf(value3 % 10)));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("km");
                 break;
             case 3:
-                int value4 = DataCanbus.DATA[3];
+                int value4 = DataCanbus.DATA[100];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_since_start1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + (value4 / 60) + ":" + (value4 % 60));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("h");
                 break;
             case 4:
-                int value5 = DataCanbus.DATA[5];
+                int value5 = DataCanbus.DATA[102];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_long_term1);
                 if (value5 != 65535) {
                     ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d.%d", Integer.valueOf(value5 / 10), Integer.valueOf(value5 % 10)));
                 } else {
                     ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText("--.--");
                 }
-                ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("L/100km");
+                ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 break;
             case 5:
-                int value6 = DataCanbus.DATA[9];
+                int value6 = DataCanbus.DATA[106];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_long_term1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d", Integer.valueOf(value6)));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("km/h");
                 break;
             case 6:
-                int value7 = DataCanbus.DATA[7];
+                int value7 = DataCanbus.DATA[104];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_long_term1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + String.format("%d.%d", Integer.valueOf(value7 / 10), Integer.valueOf(value7 % 10)));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("km");
                 break;
             case 7:
-                int value8 = DataCanbus.DATA[8];
+                int value8 = DataCanbus.DATA[105];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText(R.string.vehicle_detail_status_long_term1);
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + (value8 / 60) + ":" + (value8 % 60));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("h");
                 break;
             case 8:
-                int value9 = DataCanbus.DATA[126];
+                int value9 = DataCanbus.DATA[189];
                 ((TextView) findViewById(R.id.golf_dashboard1_info)).setText("");
                 ((TextView) findViewById(R.id.golf_dashboard1_info2)).setText(String.format("%d", Integer.valueOf(value9)));
                 ((TextView) findViewById(R.id.golf_dashboard1_info3)).setText("rpm");
@@ -418,39 +418,39 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDashBoardinfo2(int data) {
         switch (data) {
             case 0:
-                int value = DataCanbus.DATA[125];
+                int value = DataCanbus.DATA[188];
                 ((TextView) findViewById(R.id.golf_dashboard2_info)).setText("");
                 ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText(String.format("%d", Integer.valueOf(value)));
                 ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText("km/h");
                 break;
             case 1:
-                int value2 = DataCanbus.DATA[10];
+                int value2 = DataCanbus.DATA[107];
                 ((TextView) findViewById(R.id.golf_dashboard2_info)).setText(R.string.vehicle_detail_status_since_refuelling1);
                 if (value2 != 65535) {
                     ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d.%d", Integer.valueOf(value2 / 10), Integer.valueOf(value2 % 10)));
                 } else {
                     ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText("--.--");
                 }
-                ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText("L/100km");
+                ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
                 break;
             case 2:
-                int value3 = DataCanbus.DATA[14];
+                int value3 = DataCanbus.DATA[111];
                 ((TextView) findViewById(R.id.golf_dashboard2_info)).setText(R.string.vehicle_detail_status_since_refuelling1);
                 ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.average1)) + " " + String.format("%d", Integer.valueOf(value3)));
                 ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText("km/h");
                 break;
             case 3:
-                int value4 = DataCanbus.DATA[12];
+                int value4 = DataCanbus.DATA[109];
                 ((TextView) findViewById(R.id.golf_dashboard2_info)).setText(R.string.vehicle_detail_status_since_refuelling1);
                 ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + String.format("%d.%d", Integer.valueOf(value4 / 10), Integer.valueOf(value4 % 10)));
                 ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText("km");
                 break;
             case 4:
-                int value5 = DataCanbus.DATA[13];
+                int value5 = DataCanbus.DATA[110];
                 ((TextView) findViewById(R.id.golf_dashboard2_info)).setText(R.string.vehicle_detail_status_since_refuelling1);
                 ((TextView) findViewById(R.id.golf_dashboard2_info2)).setText(String.valueOf(LauncherApplication.getInstance().getResources().getString(R.string.str_227_drivered1)) + " " + (value5 / 60) + ":" + (value5 % 60));
                 ((TextView) findViewById(R.id.golf_dashboard2_info3)).setText("h");
@@ -458,7 +458,7 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLifeBelt(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowLifeBelt);
@@ -469,7 +469,7 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTurnleftLight(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowTurnLeftLight);
@@ -481,7 +481,7 @@ public class Golf7DashBoardVW_DZSJ extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTurnrightLight(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowTurnRightLight);

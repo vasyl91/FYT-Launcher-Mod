@@ -1,9 +1,13 @@
 package com.android.recycler;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +15,12 @@ import android.view.ViewGroup;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
-import com.syu.util.FytPackage;
+import com.android.launcher66.settings.Helpers;
 import com.syu.util.WindowUtil;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> {
     private int lastClickIndex;
@@ -24,6 +30,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private Launcher mLauncher;
     private int mMaxCount = 4;
     private boolean showAddAppView;
+    private static final String RECYCLER_APP = "recycler.app";
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mData = data;
@@ -61,7 +68,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 }
             }
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getFragmentManager(), "");
+                LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
                 LeftAppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             }
             else if (appListBean.packageName.equals("com.android.launcher66")) {
@@ -71,12 +78,23 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                 LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                Helpers.overviewMode = false;
+                Helpers.listOpen = false;
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+                boolean userLayout = prefs.getBoolean("user_layout", false);
+                boolean userStats = prefs.getBoolean("user_stats", false);
+                if (userLayout && userStats)  {  
+                    SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                    Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+                    if (apps.contains(appListBean.packageName)) {
+                        Helpers.foregroundAppOpened = true;
+                        Helpers.inAllApps = false;
+                        Helpers.isInRecent = false;
+                        Intent intentLeftApps = new Intent(RECYCLER_APP);
+                        LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApps);
+                    }  
+                }              
             }
-        });
-        appListHolder.itemView.setOnLongClickListener(view -> {
-            LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getFragmentManager(), "");
-            LeftAppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
-            return true;
         });
     }
 

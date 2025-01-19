@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0372_WC1_Jeep_ZhiNanZhe extends AirBase {
     public Air_0372_WC1_Jeep_ZhiNanZhe(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0372_wc1_jeep_ziyouguang/372_wc_zhinanzhe.webp";
         this.mPathHighlight = "0372_wc1_jeep_ziyouguang/372_wc_zhinanzhe_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String strVal;
         String strVal2;
@@ -84,9 +84,9 @@ public class Air_0372_WC1_Jeep_ZhiNanZhe extends AirBase {
             c.drawText("HI", 70.0f, 140.0f, this.mPaint);
         } else if (temp / 10 >= 16 && temp / 10 <= 28) {
             if (this.DATA[92] == 2) {
-                strVal = new StringBuilder().append(((temp * 9) / 50.0f) + 32.0f).toString();
+                strVal = String.valueOf(((temp * 9) / 50.0f) + 32.0f);
             } else {
-                strVal = new StringBuilder().append(temp / 10.0f).toString();
+                strVal = String.valueOf(temp / 10.0f);
             }
             c.drawText(strVal, 70.0f, 140.0f, this.mPaint);
         } else {
@@ -99,9 +99,9 @@ public class Air_0372_WC1_Jeep_ZhiNanZhe extends AirBase {
             c.drawText("HI", 931.0f, 140.0f, this.mPaint);
         } else if (temp2 / 10 >= 16 && temp2 / 10 <= 28) {
             if (this.DATA[92] == 2) {
-                strVal2 = new StringBuilder().append(((temp2 * 9) / 50.0f) + 32.0f).toString();
+                strVal2 = String.valueOf(((temp2 * 9) / 50.0f) + 32.0f);
             } else {
-                strVal2 = new StringBuilder().append(temp2 / 10.0f).toString();
+                strVal2 = String.valueOf(temp2 / 10.0f);
             }
             c.drawText(strVal2, 931.0f, 140.0f, this.mPaint);
         } else {

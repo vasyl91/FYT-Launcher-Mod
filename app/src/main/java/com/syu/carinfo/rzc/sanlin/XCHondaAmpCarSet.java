@@ -9,49 +9,48 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCHondaAmpCarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.XCHondaAmpCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 86:
+                case 98:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 87:
+                case 99:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text2)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 88:
+                case 100:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text3)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text3)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 89:
+                case 101:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text4)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text4)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 90:
+                case 102:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text5)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text5)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 92:
+                case 104:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text6)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text6)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 93:
+                case 105:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text7)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 94:
+                case 106:
                     if (((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text8)) != null) {
                         ((TextView) XCHondaAmpCarSet.this.findViewById(R.id.tv_text8)).setText(new StringBuilder().append(value).toString());
                         break;
@@ -60,14 +59,14 @@ public class XCHondaAmpCarSet extends BaseActivity implements View.OnClickListen
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_xc_honda_amp_settings);
+        //setContentView(R.layout.layout_0452_xc_honda_amp_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((Button) findViewById(R.id.btn_minus1), this);
         setSelfClick((Button) findViewById(R.id.btn_plus1), this);
@@ -87,55 +86,55 @@ public class XCHondaAmpCarSet extends BaseActivity implements View.OnClickListen
         setSelfClick((Button) findViewById(R.id.btn_plus8), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 setCarInfo(33, 49);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 setCarInfo(33, 33);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
+            case R.id.btn_minus2 /* 2131427458 */:
                 setCarInfo(34, 49);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 setCarInfo(34, 33);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
+            case R.id.btn_minus3 /* 2131427461 */:
                 setCarInfo(35, 49);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 setCarInfo(35, 33);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
+            case R.id.btn_minus4 /* 2131427464 */:
                 setCarInfo(36, 49);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 setCarInfo(36, 33);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
+            case R.id.btn_minus5 /* 2131427467 */:
                 setCarInfo(37, 49);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 setCarInfo(37, 33);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
+            case R.id.btn_minus6 /* 2131427470 */:
                 setCarInfo(38, 49);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 setCarInfo(38, 33);
                 break;
-            case R.id.btn_minus7 /* 2131427505 */:
+            case R.id.btn_minus7 /* 2131427473 */:
                 setCarInfo(48, 49);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 setCarInfo(48, 33);
                 break;
-            case R.id.btn_minus8 /* 2131427509 */:
+            case R.id.btn_minus8 /* 2131427476 */:
                 setCarInfo(49, 49);
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 setCarInfo(49, 33);
                 break;
         }
@@ -145,40 +144,40 @@ public class XCHondaAmpCarSet extends BaseActivity implements View.OnClickListen
         DataCanbus.PROXY.cmd(0, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, new int[]{115}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
     }
 }

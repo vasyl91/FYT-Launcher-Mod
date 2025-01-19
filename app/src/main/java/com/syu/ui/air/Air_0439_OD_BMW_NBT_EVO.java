@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_OD_BMW_NBT_EVO extends AirBase {
     public Air_0439_OD_BMW_NBT_EVO(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_oudi_audia6/air_od_bmw_nbt_n.webp";
         this.mPathHighlight = "0439_oudi_audia6/air_od_bmw_nbt_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -72,7 +72,7 @@ public class Air_0439_OD_BMW_NBT_EVO extends AirBase {
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(30.0f);
         int value3 = this.DATA[18];
-        c.drawText(new StringBuilder(String.valueOf(value3)).toString(), 74.0f, 135.0f, this.mPaint);
+        c.drawText(String.valueOf(value3), 74.0f, 135.0f, this.mPaint);
         int temp = this.DATA[19];
         if (temp == -1) {
             c.drawText("NO", 43.0f, 61.0f, this.mPaint);
@@ -82,7 +82,7 @@ public class Air_0439_OD_BMW_NBT_EVO extends AirBase {
             c.drawText("HI", 43.0f, 61.0f, this.mPaint);
         } else {
             int temp2 = (temp * 5) + 155;
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 43.0f, 61.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 43.0f, 61.0f, this.mPaint);
         }
         int temp3 = this.DATA[20];
         if (temp3 == -1) {
@@ -93,7 +93,7 @@ public class Air_0439_OD_BMW_NBT_EVO extends AirBase {
             c.drawText("HI", 945.0f, 61.0f, this.mPaint);
         } else {
             int temp4 = (temp3 * 5) + 155;
-            c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10), 945.0f, 61.0f, this.mPaint);
+            c.drawText(temp4 / 10 + "." + (temp4 % 10), 945.0f, 61.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -11,51 +11,50 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 39:
+                case 136:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.mUpdaterConvenience();
                     break;
-                case 40:
+                case 137:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.mUpdaterDoorUnlock();
                     break;
-                case 41:
+                case 138:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.mUpdaterAutoLock();
                     break;
-                case 144:
+                case 198:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.mUpdaterRemindpair();
                     break;
-                case 145:
+                case 199:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.mUpdaterSenselan();
                     break;
-                case 170:
+                case 224:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.setCheck((CheckedTextView) Golf7_XP_FunctionalOpeningAndClosingActi.this.findViewById(R.id.ctv_checkedtext1), value != 0);
                     break;
-                case 178:
+                case 232:
                     Golf7_XP_FunctionalOpeningAndClosingActi.this.setCheck((CheckedTextView) Golf7_XP_FunctionalOpeningAndClosingActi.this.findViewById(R.id.ctv_checkedtext2), value != 0);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_state_opening_and_closing_xp);
+        //setContentView(R.layout.layout_golf7_functional_state_opening_and_closing_xp);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_automatic_locking), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.2
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_automatic_locking), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[41] & 255;
+                int switchOn = DataCanbus.DATA[138] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 114;
@@ -63,10 +62,10 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_remindpair), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_remindpair), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[144] & 255;
+                int switchOn = DataCanbus.DATA[198] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 202;
@@ -74,10 +73,10 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_senselan), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_senselan), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[145] & 255;
+                int switchOn = DataCanbus.DATA[199] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 115;
@@ -85,10 +84,10 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[170] & 255;
+                int switchOn = DataCanbus.DATA[224] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 201;
@@ -96,10 +95,10 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = DataCanbus.DATA[178] & 255;
+                int switchOn = DataCanbus.DATA[232] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 116;
@@ -107,40 +106,40 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_door_unlocking_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_door_unlocking_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[40] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[137] & 255) - 1;
                 if (switchOn == 0) {
                     switchOn = 2;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{113, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_door_unlocking_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_door_unlocking_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[40] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[137] & 255) + 1;
                 if (switchOn > 2) {
                     switchOn = 0;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{113, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_convenience_opening_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_convenience_opening_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[39] & 255) - 1;
+                int switchOn = (DataCanbus.DATA[136] & 255) - 1;
                 if (switchOn == 0) {
                     switchOn = 2;
                 }
                 DataCanbus.PROXY.cmd(107, new int[]{112, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_convenience_opening_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalOpeningAndClosingActi.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_opening_and_closing_convenience_opening_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int switchOn = (DataCanbus.DATA[39] & 255) + 1;
+                int switchOn = (DataCanbus.DATA[136] & 255) + 1;
                 if (switchOn > 2) {
                     switchOn = 0;
                 }
@@ -149,61 +148,61 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[224].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[232].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[224].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[232].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRemindpair() {
-        int value = DataCanbus.DATA[144];
+        int value = DataCanbus.DATA[198];
         setCheck((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_remindpair), value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSenselan() {
-        int value = DataCanbus.DATA[145];
+        int value = DataCanbus.DATA[199];
         setCheck((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_senselan), value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAutoLock() {
-        int value = DataCanbus.DATA[41];
+        int value = DataCanbus.DATA[138];
         setCheck((CheckedTextView) findViewById(R.id.glf7_btn_functional_opening_and_closing_automatic_locking), value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDoorUnlock() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[137];
         if (value == 0) {
             ((TextView) findViewById(R.id.glf7_tv_functional_opening_and_closing_door_unlocking)).setText(R.string.door_unlocking_vehicle_side);
         } else if (value == 1) {
@@ -213,9 +212,9 @@ public class Golf7_XP_FunctionalOpeningAndClosingActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterConvenience() {
-        int value = DataCanbus.DATA[39];
+        int value = DataCanbus.DATA[136];
         if (value == 0) {
             ((TextView) findViewById(R.id.glf7_tv_functional_opening_and_closing_convenience_opening)).setText(R.string.convenience_opening_off);
         } else if (value == 1) {

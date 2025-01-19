@@ -6,25 +6,22 @@ import android.view.View;
 import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.hava.ActivityHava18H6SetAct;
 import com.syu.carinfo.od.tusheng.OD_19Tusheng_CarSettingAct;
 import com.syu.carinfo.od.tusheng.RZC_NaZHijieU6_CarSettingAct;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard_HP;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_0255_FengShenAx7_IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_jianghuai_indexact);
+        //setContentView(R.layout.layout_rzc_jianghuai_indexact);
         findViewById(R.id.rzc_jianghuai_car_tire_view).setVisibility(8);
-        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.rzc_jianghuai_carinfo_view).setVisibility(8);
+        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -43,6 +40,9 @@ public class RZC_0255_FengShenAx7_IndexAct extends BaseActivity {
                         case FinalCanbus.CAR_RZC4_PSA_14_2008 /* 917843 */:
                         case FinalCanbus.CAR_RZC4_PSA_14_2008_M /* 983379 */:
                         case FinalCanbus.CAR_RZC4_PSA_14_2008_H /* 1048915 */:
+                        case FinalCanbus.CAR_RZC4_PSA_C4_OE_L /* 2228563 */:
+                        case FinalCanbus.CAR_RZC4_PSA_C4_OE_M /* 2294099 */:
+                        case FinalCanbus.CAR_RZC4_PSA_C4_OE_H /* 2359635 */:
                             intent.setClass(RZC_0255_FengShenAx7_IndexAct.this, RZC_BZ408IndexActi.class);
                             break;
                         case FinalCanbus.CAR_447_RZC_19IX45 /* 262591 */:
@@ -67,22 +67,6 @@ public class RZC_0255_FengShenAx7_IndexAct extends BaseActivity {
                         default:
                             intent.setClass(RZC_0255_FengShenAx7_IndexAct.this, RZC_0255_FengShenAx7_CarSettingAct.class);
                             break;
-                    }
-                    RZC_0255_FengShenAx7_IndexAct.this.startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        ((Button) findViewById(R.id.rzc_jianghuai_carinfo)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct.2
-            @Override // android.view.View.OnClickListener
-            public void onClick(View arg0) {
-                try {
-                    Intent intent = new Intent();
-                    if (LauncherApplication.getConfiguration() == 1) {
-                        intent.setClass(RZC_0255_FengShenAx7_IndexAct.this, RZCAddCanDashBoard.class);
-                    } else {
-                        intent.setClass(RZC_0255_FengShenAx7_IndexAct.this, RZCAddCanDashBoard_HP.class);
                     }
                     RZC_0255_FengShenAx7_IndexAct.this.startActivity(intent);
                 } catch (Exception e) {

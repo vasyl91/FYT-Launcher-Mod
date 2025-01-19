@@ -5,7 +5,6 @@ import com.syu.module.UiNotifyEvent;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DataCanbus {
     public static final boolean DEBUG_AIR = true;
     public static final boolean DEBUG_DOOR = true;

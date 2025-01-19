@@ -1,10 +1,10 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.module.ConnectionObserver;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ConnectionCanbus implements ConnectionObserver {
     private static final ConnectionCanbus INSTANCE = new ConnectionCanbus();
 
@@ -15,7 +15,7 @@ public class ConnectionCanbus implements ConnectionObserver {
     private ConnectionCanbus() {
     }
 
-    @Override // com.syu.module.ConnectionObserver
+    @Override
     public void onConnected(IRemoteToolkit toolkit) {
         try {
             DataCanbus.PROXY.setRemoteModule(toolkit.getRemoteModule(7));
@@ -30,7 +30,7 @@ public class ConnectionCanbus implements ConnectionObserver {
         }
     }
 
-    @Override // com.syu.module.ConnectionObserver
+    @Override
     public void onDisconnected() {
         DataCanbus.PROXY.setRemoteModule(null);
         DataCanbus.DATA[1000] = 0;

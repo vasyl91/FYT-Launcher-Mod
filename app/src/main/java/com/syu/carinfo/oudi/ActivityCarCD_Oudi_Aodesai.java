@@ -11,44 +11,43 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
     int value;
     ImageView[] image = new ImageView[6];
     TextView[] textView = new TextView[6];
-    private int[] eventIDs = {44, 45, 46, 47, 48};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai.1
-        @Override // com.syu.module.IUiNotify
+    private int[] eventIDs = {118, 119, 120, 121, 122};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             ActivityCarCD_Oudi_Aodesai.this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 44:
+                case 118:
                     ActivityCarCD_Oudi_Aodesai.this.uStateView(ActivityCarCD_Oudi_Aodesai.this.value);
                     break;
-                case 45:
+                case 119:
                     ActivityCarCD_Oudi_Aodesai.this.uRadioInfo(ActivityCarCD_Oudi_Aodesai.this.value);
                     break;
-                case 46:
+                case 120:
                     ActivityCarCD_Oudi_Aodesai.this.uCDInfo1(ActivityCarCD_Oudi_Aodesai.this.value);
                     break;
-                case 47:
+                case 121:
                     ActivityCarCD_Oudi_Aodesai.this.uCDInfo2(ActivityCarCD_Oudi_Aodesai.this.value);
                     break;
-                case 48:
+                case 122:
                     ActivityCarCD_Oudi_Aodesai.this.uCDVol(ActivityCarCD_Oudi_Aodesai.this.value);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0203_oudi_08aodesai);
+        //setContentView(R.layout.layout_0203_oudi_08aodesai);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.image[0] = (ImageView) findViewById(R.id.xuni_cd1_img);
         this.image[1] = (ImageView) findViewById(R.id.xuni_cd2_img);
@@ -63,13 +62,13 @@ public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
         this.textView[4] = (TextView) findViewById(R.id.xuni_cd5_text);
         this.textView[5] = (TextView) findViewById(R.id.xuni_cd6_text);
         if (((Button) findViewById(R.id.jeep_btn_ff)) != null) {
-            ((Button) findViewById(R.id.jeep_btn_ff)).setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai.2
+            ((Button) findViewById(R.id.jeep_btn_ff)).setOnTouchListener(new View.OnTouchListener() { 
                 /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
                 /* JADX WARN: Code restructure failed: missing block: B:3:0x000a, code lost:
                 
                     return false;
                  */
-                @Override // android.view.View.OnTouchListener
+                @Override
                 /*
                     Code decompiled incorrectly, please refer to instructions dump.
                     To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -102,13 +101,13 @@ public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.jeep_btn_fr)) != null) {
-            ((Button) findViewById(R.id.jeep_btn_fr)).setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai.3
+            ((Button) findViewById(R.id.jeep_btn_fr)).setOnTouchListener(new View.OnTouchListener() { 
                 /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
                 /* JADX WARN: Code restructure failed: missing block: B:3:0x0009, code lost:
                 
                     return false;
                  */
-                @Override // android.view.View.OnTouchListener
+                @Override
                 /*
                     Code decompiled incorrectly, please refer to instructions dump.
                     To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -140,13 +139,13 @@ public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.jeep_btn_prev)) != null) {
-            ((Button) findViewById(R.id.jeep_btn_prev)).setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai.4
+            ((Button) findViewById(R.id.jeep_btn_prev)).setOnTouchListener(new View.OnTouchListener() { 
                 /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
                 /* JADX WARN: Code restructure failed: missing block: B:3:0x000a, code lost:
                 
                     return false;
                  */
-                @Override // android.view.View.OnTouchListener
+                @Override
                 /*
                     Code decompiled incorrectly, please refer to instructions dump.
                     To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -179,13 +178,13 @@ public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
             });
         }
         if (((Button) findViewById(R.id.jeep_btn_next)) != null) {
-            ((Button) findViewById(R.id.jeep_btn_next)).setOnTouchListener(new View.OnTouchListener() { // from class: com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai.5
+            ((Button) findViewById(R.id.jeep_btn_next)).setOnTouchListener(new View.OnTouchListener() { 
                 /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
                 /* JADX WARN: Code restructure failed: missing block: B:3:0x000a, code lost:
                 
                     return false;
                  */
-                @Override // android.view.View.OnTouchListener
+                @Override
                 /*
                     Code decompiled incorrectly, please refer to instructions dump.
                     To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -219,27 +218,27 @@ public class ActivityCarCD_Oudi_Aodesai extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         FuncMain.setChannel(11);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.eventIDs) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.eventIDs) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);

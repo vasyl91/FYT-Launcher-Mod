@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.rzc.benteng.ActivityRzcBenteng19B50.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -46,13 +45,13 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 655773) {
-            setContentView(R.layout.layout_413_air_19b50_hand);
+            //setContentView(R.layout.layout_413_air_19b50_hand);
         } else {
-            setContentView(R.layout.layout_413_air_19b50_auto);
+            //setContentView(R.layout.layout_413_air_19b50_auto);
         }
         setListener();
     }
@@ -80,7 +79,7 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -88,7 +87,7 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -96,7 +95,7 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         mIsFront = false;
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int cmd = 0;
         int touchState = -1;
@@ -220,42 +219,42 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mCanbusNotify);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirPower(int value) {
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
             ((Button) findViewById(R.id.air_xts_power)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirAC(int value) {
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
             ((Button) findViewById(R.id.air_xts_ac)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirAuto(int value) {
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
             ((Button) findViewById(R.id.air_xts_auto)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirFront(int value) {
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
             ((Button) findViewById(R.id.air_xts_front)).setBackgroundResource(value == 5 ? R.drawable.ic_xts_front_p : R.drawable.ic_xts_front_n);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirRear(int value) {
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
             ((Button) findViewById(R.id.air_xts_rear)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirBlowMode(int value) {
         if (DataCanbus.DATA[1000] == 655773) {
             ((Button) findViewById(R.id.air_xts_mode_body)).setBackgroundResource(R.drawable.ic_xts_mode_body_n);
@@ -299,7 +298,7 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirTempLeft(int value) {
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (value == -2) {
@@ -318,14 +317,14 @@ public class ActivityRzcBenteng19B50 extends Activity implements View.OnTouchLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirWind(int value) {
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null) {
             ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(value).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirCycle(int value) {
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
             if (value == 0) {

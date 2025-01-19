@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODChangChengFengjun5AirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.ODChangChengFengjun5AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 9:
@@ -47,10 +46,10 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_changcheng_fengjun5_air_control);
+        //setContentView(R.layout.layout_0452_od_changcheng_fengjun5_air_control);
         init();
     }
 
@@ -72,7 +71,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         findViewById(R.id.air_xts_front).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -80,7 +79,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -92,7 +91,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -184,7 +183,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[21];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -202,7 +201,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[20];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -220,25 +219,25 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_zone).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_zone_n : R.drawable.ic_xts_zone_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[9];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBlowAutoOn() {
         int auto = DataCanbus.DATA[12];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[10];
         if (cycle == 0) {
@@ -248,7 +247,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
         int leave = DataCanbus.DATA[19];
@@ -265,7 +264,7 @@ public class ODChangChengFengjun5AirControlAct extends Activity implements View.
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[16];
         int foot = DataCanbus.DATA[18];

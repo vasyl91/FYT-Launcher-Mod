@@ -10,59 +10,58 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcRemoteAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 13:
+                case 111:
                     RzcKlcRemoteAct.this.updateUnlockLight();
                     break;
-                case 14:
+                case 112:
                     RzcKlcRemoteAct.this.updateLockDoorFeed();
                     break;
-                case 15:
+                case 113:
                     RzcKlcRemoteAct.this.updateRemoteOpen();
                     break;
-                case 17:
+                case 115:
                     RzcKlcRemoteAct.this.updateRemoteReLock();
                     break;
-                case 18:
+                case 116:
                     RzcKlcRemoteAct.this.updateRemoteSatrtCar();
                     break;
-                case 22:
+                case 120:
                     RzcKlcRemoteAct.this.updateRemoteNearOpen();
                     break;
-                case 23:
+                case 121:
                     RzcKlcRemoteAct.this.updateKeyFogget();
                     break;
-                case 24:
+                case 122:
                     RzcKlcRemoteAct.this.updatePersonalization();
                     break;
-                case 25:
+                case 123:
                     RzcKlcRemoteAct.this.updateAutoRelockDoor();
                     break;
-                case 27:
+                case 125:
                     RzcKlcRemoteAct.this.updateSideBlidWarn();
                     break;
-                case 28:
+                case 126:
                     RzcKlcRemoteAct.this.updateLeaveAutoLatch();
                     break;
-                case 29:
+                case 127:
                     RzcKlcRemoteAct.this.updateAutoCollision();
                     break;
-                case 30:
+                case 128:
                     RzcKlcRemoteAct.this.updateCarStatusNote();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_remote_set);
+        //setContentView(R.layout.layout_rzc_klc_remote_set);
         setUI();
     }
 
@@ -85,15 +84,11 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int UnlockLightState = DataCanbus.DATA[13];
-                RzcKlcFunc.CAR_COMM_CONTROL(6, UnlockLightState == 0 ? 1 : 0);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int LockFeedState = DataCanbus.DATA[14];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int LockFeedState = DataCanbus.DATA[112];
                 if (LockFeedState == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(7, 3);
                     break;
@@ -107,8 +102,8 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(7, 2);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                int LockFeedState2 = DataCanbus.DATA[14];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int LockFeedState2 = DataCanbus.DATA[112];
                 if (LockFeedState2 == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(7, 1);
                     break;
@@ -122,8 +117,8 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(7, 0);
                     break;
                 }
-            case R.id.btn_minus2 /* 2131427484 */:
-                int LeaverDoorState = DataCanbus.DATA[28];
+            case R.id.btn_minus2 /* 2131427458 */:
+                int LeaverDoorState = DataCanbus.DATA[126];
                 if (LeaverDoorState == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(23, 2);
                     break;
@@ -134,8 +129,8 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(23, 1);
                     break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
-                int LeaverDoorState2 = DataCanbus.DATA[28];
+            case R.id.btn_plus2 /* 2131427460 */:
+                int LeaverDoorState2 = DataCanbus.DATA[126];
                 if (LeaverDoorState2 == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(23, 1);
                     break;
@@ -146,8 +141,8 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(23, 0);
                     break;
                 }
-            case R.id.btn_minus3 /* 2131427488 */:
-                int AutoCollisionSate = DataCanbus.DATA[29];
+            case R.id.btn_minus3 /* 2131427461 */:
+                int AutoCollisionSate = DataCanbus.DATA[127];
                 if (AutoCollisionSate == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(24, 2);
                     break;
@@ -158,8 +153,8 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(24, 1);
                     break;
                 }
-            case R.id.btn_plus3 /* 2131427490 */:
-                int AutoCollisionSate2 = DataCanbus.DATA[29];
+            case R.id.btn_plus3 /* 2131427463 */:
+                int AutoCollisionSate2 = DataCanbus.DATA[127];
                 if (AutoCollisionSate2 == 0) {
                     RzcKlcFunc.CAR_COMM_CONTROL(24, 1);
                     break;
@@ -170,52 +165,56 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
                     RzcKlcFunc.CAR_COMM_CONTROL(24, 0);
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int RemoteUnlockState = DataCanbus.DATA[15];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int UnlockLightState = DataCanbus.DATA[111];
+                RzcKlcFunc.CAR_COMM_CONTROL(6, UnlockLightState == 0 ? 1 : 0);
+                break;
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int RemoteUnlockState = DataCanbus.DATA[113];
                 RzcKlcFunc.CAR_COMM_CONTROL(8, RemoteUnlockState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int RemoteReLockState = DataCanbus.DATA[17];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int RemoteReLockState = DataCanbus.DATA[115];
                 RzcKlcFunc.CAR_COMM_CONTROL(10, RemoteReLockState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int RemoteStartCarState = DataCanbus.DATA[18];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int RemoteStartCarState = DataCanbus.DATA[116];
                 RzcKlcFunc.CAR_COMM_CONTROL(11, RemoteStartCarState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int NearOpenSetState = DataCanbus.DATA[22];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int NearOpenSetState = DataCanbus.DATA[120];
                 RzcKlcFunc.CAR_COMM_CONTROL(12, NearOpenSetState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int KeyFoggetState = DataCanbus.DATA[23];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int KeyFoggetState = DataCanbus.DATA[121];
                 RzcKlcFunc.CAR_COMM_CONTROL(13, KeyFoggetState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int PersonalizationSate = DataCanbus.DATA[24];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int PersonalizationSate = DataCanbus.DATA[122];
                 RzcKlcFunc.CAR_COMM_CONTROL(14, PersonalizationSate == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int AutoRelockDoorState = DataCanbus.DATA[25];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int AutoRelockDoorState = DataCanbus.DATA[123];
                 RzcKlcFunc.CAR_COMM_CONTROL(15, AutoRelockDoorState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                int SideBlindState = DataCanbus.DATA[27];
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int SideBlindState = DataCanbus.DATA[125];
                 RzcKlcFunc.CAR_COMM_CONTROL(22, SideBlindState == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                int CarStatusNote = DataCanbus.DATA[30];
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                int CarStatusNote = DataCanbus.DATA[128];
                 RzcKlcFunc.CAR_COMM_CONTROL(25, CarStatusNote == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -226,46 +225,46 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateUnlockLight() {
-        int UnlockLightState = DataCanbus.DATA[13];
+        int UnlockLightState = DataCanbus.DATA[111];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(UnlockLightState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLockDoorFeed() {
-        int LockFeedState = DataCanbus.DATA[14];
+        int LockFeedState = DataCanbus.DATA[112];
         if (LockFeedState == 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.klc_remote_Remote_control_latch_only_light);
             return;
@@ -279,9 +278,9 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRemoteOpen() {
-        int RemoteUnlockState = DataCanbus.DATA[15];
+        int RemoteUnlockState = DataCanbus.DATA[113];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(RemoteUnlockState != 0);
         if (RemoteUnlockState == 0) {
             ((TextView) findViewById(R.id.tv_text2)).setText(R.string.klc_remote_Smart_Near_car_unlocked_only_driver);
@@ -290,21 +289,21 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRemoteReLock() {
-        int RemoteReLockState = DataCanbus.DATA[17];
+        int RemoteReLockState = DataCanbus.DATA[115];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(RemoteReLockState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRemoteSatrtCar() {
-        int RemoteStartCarState = DataCanbus.DATA[18];
+        int RemoteStartCarState = DataCanbus.DATA[116];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(RemoteStartCarState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRemoteNearOpen() {
-        int NearOpenSetState = DataCanbus.DATA[22];
+        int NearOpenSetState = DataCanbus.DATA[120];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setChecked(NearOpenSetState != 0);
         if (NearOpenSetState == 0) {
             ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_remote_Smart_Near_car_unlocked_all_door);
@@ -313,33 +312,33 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateKeyFogget() {
-        int KeyFoggetState = DataCanbus.DATA[23];
+        int KeyFoggetState = DataCanbus.DATA[121];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(KeyFoggetState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePersonalization() {
-        int PersonalizationSate = DataCanbus.DATA[24];
+        int PersonalizationSate = DataCanbus.DATA[122];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(PersonalizationSate != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoRelockDoor() {
-        int AutoRelockDoorState = DataCanbus.DATA[25];
+        int AutoRelockDoorState = DataCanbus.DATA[123];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setChecked(AutoRelockDoorState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSideBlidWarn() {
-        int SideBlindState = DataCanbus.DATA[27];
+        int SideBlindState = DataCanbus.DATA[125];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setChecked(SideBlindState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLeaveAutoLatch() {
-        int LeaverDoorState = DataCanbus.DATA[28];
+        int LeaverDoorState = DataCanbus.DATA[126];
         if (LeaverDoorState == 0) {
             ((TextView) findViewById(R.id.tv_text4)).setText(R.string.klc_onstar_close);
         } else if (LeaverDoorState == 1) {
@@ -349,15 +348,15 @@ public class RzcKlcRemoteAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarStatusNote() {
-        int CarStatusNote = DataCanbus.DATA[30];
+        int CarStatusNote = DataCanbus.DATA[128];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setChecked(CarStatusNote != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAutoCollision() {
-        int AutoCollisionSate = DataCanbus.DATA[29];
+        int AutoCollisionSate = DataCanbus.DATA[127];
         if (AutoCollisionSate == 0) {
             ((TextView) findViewById(R.id.tv_text5)).setText(R.string.klc_onstar_close);
         } else if (AutoCollisionSate == 1) {

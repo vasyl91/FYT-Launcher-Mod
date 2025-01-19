@@ -20,12 +20,11 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
-import com.android.launcher66.AppsCustomizePagedView;
+
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.JLog;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AppsCustomizeTabHost extends TabHost implements LauncherTransitionable, TabHost.OnTabChangeListener, Insettable {
     private static final String APPS_TAB_TAG = "APPS";
     static final String LOG_TAG = "AppsCustomizeTabHost";
@@ -46,8 +45,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         super(context, attrs);
         this.mInsets = new Rect();
         this.mLayoutInflater = LayoutInflater.from(context);
-        this.mRelayoutAndMakeVisible = new Runnable() { // from class: com.android.launcher66.AppsCustomizeTabHost.1
-            @Override // java.lang.Runnable
+        this.mRelayoutAndMakeVisible = new Runnable() { 
+            @Override
             public void run() {
                 AppsCustomizeTabHost.this.mTabs.requestLayout();
                 AppsCustomizeTabHost.this.mTabsContainer.setAlpha(1.0f);
@@ -63,7 +62,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         setOnTabChangedListener(this);
     }
 
-    @Override // com.android.launcher66.Insettable
+    @Override
     public void setInsets(Rect insets) {
         this.mInsets.set(insets);
         FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) this.mContent.getLayoutParams();
@@ -74,7 +73,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         this.mContent.setLayoutParams(flp);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         setup();
@@ -89,8 +88,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         if (tabs == null || this.mAppsCustomizePane == null) {
             throw new Resources.NotFoundException();
         }
-        TabContentFactory contentFactory = new TabContentFactory() { // from class: com.android.launcher66.AppsCustomizeTabHost.2
-            @Override // android.widget.TabHost.TabContentFactory
+        TabContentFactory contentFactory = new TabContentFactory() { 
+            @Override
             public View createTabContent(String tag) {
                 return appsCustomizePane;
             }
@@ -118,7 +117,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         this.mTabsContainer.setAlpha(0.0f);
     }
 
-    @Override // android.widget.FrameLayout, android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         boolean remeasureTabWidth = this.mTabs.getLayoutParams().width <= 0;
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -132,7 +131,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (this.mInTransition && this.mTransitioningToWorkspace) {
             return true;
@@ -140,7 +139,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         return super.onInterceptTouchEvent(ev);
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (this.mInTransition && this.mTransitioningToWorkspace) {
             return super.onTouchEvent(event);
@@ -151,30 +150,30 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         return super.onTouchEvent(event);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onTabChangedStart() {
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void reloadCurrentPage() {
         mAppsCustomizePane.loadAssociatedPages(mAppsCustomizePane.getCurrentPage());
         mAppsCustomizePane.requestFocus();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onTabChangedEnd(AppsCustomizePagedView.ContentType type) {
-        JLog.getInstance().e("onTabChangedEnd");
+        JLog.getInstance().i("onTabChangedEnd");
         mAppsCustomizePane.setContentType(type);
     }
 
-    @Override // android.widget.TabHost.OnTabChangeListener
+    @Override
     public void onTabChanged(String tabId) {
-        JLog.getInstance().e("onTabChanged");
+        JLog.getInstance().i("onTabChanged");
         final AppsCustomizePagedView.ContentType type = getContentTypeForTabTag(tabId);
         Resources res = getResources();
         final int duration = res.getInteger(R.integer.config_tabTransitionDuration);
-        post(new Runnable() { // from class: com.android.launcher66.AppsCustomizeTabHost.3
-            @Override // java.lang.Runnable
+        post(new Runnable() { 
+            @Override
             public void run() {
                 if (AppsCustomizeTabHost.this.mAppsCustomizePane.getMeasuredWidth() <= 0 || AppsCustomizeTabHost.this.mAppsCustomizePane.getMeasuredHeight() <= 0) {
                     AppsCustomizeTabHost.this.reloadCurrentPage();
@@ -210,7 +209,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
                 AppsCustomizeTabHost.this.onTabChangedStart();
                 AppsCustomizeTabHost.this.onTabChangedEnd(type);
                 ObjectAnimator outAnim = LauncherAnimUtils.ofFloat(AppsCustomizeTabHost.this.mAnimationBuffer, "alpha", 0.0f);
-                outAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.AppsCustomizeTabHost.3.1
+                outAnim.addListener(new AnimatorListenerAdapter() { 
                     private void clearAnimationBuffer() {
                         AppsCustomizeTabHost.this.mAnimationBuffer.setVisibility(View.GONE);
                         PagedViewWidget.setRecyclePreviewsWhenDetachedFromWindow(false);
@@ -218,19 +217,19 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
                         PagedViewWidget.setRecyclePreviewsWhenDetachedFromWindow(true);
                     }
 
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         clearAnimationBuffer();
                     }
 
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                    @Override
                     public void onAnimationCancel(Animator animation) {
                         clearAnimationBuffer();
                     }
                 });
                 ObjectAnimator inAnim = LauncherAnimUtils.ofFloat(AppsCustomizeTabHost.this.mAppsCustomizePane, "alpha", 1.0f);
-                inAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.AppsCustomizeTabHost.3.2
-                    @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                inAnim.addListener(new AnimatorListenerAdapter() { 
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         AppsCustomizeTabHost.this.reloadCurrentPage();
                     }
@@ -269,7 +268,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         return APPS_TAB_TAG;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public int getDescendantFocusability() {
         if (getVisibility() != View.VISIBLE) {
             return 393216;
@@ -290,12 +289,12 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         }
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public View getContent() {
         return this.mContent;
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionPrepare(Launcher l, boolean animated, boolean toWorkspace) {
         this.mAppsCustomizePane.onLauncherTransitionPrepare(l, animated, toWorkspace);
         this.mInTransition = true;
@@ -312,7 +311,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         }
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStart(Launcher l, boolean animated, boolean toWorkspace) {
         if (animated) {
             enableAndBuildHardwareLayer();
@@ -320,11 +319,11 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         l.dismissWorkspaceCling(null);
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionStep(Launcher l, float t) {
     }
 
-    @Override // com.android.launcher66.LauncherTransitionable
+    @Override
     public void onLauncherTransitionEnd(Launcher l, boolean animated, boolean toWorkspace) {
         this.mAppsCustomizePane.onLauncherTransitionEnd(l, animated, toWorkspace);
         this.mInTransition = false;
@@ -385,8 +384,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         setBackgroundColor(Color.argb(0, 0, 0, 0));
         float finalAlpha = getResources().getInteger(R.integer.config_appsCustomizeSpringLoadedBgAlpha) / 100.0f;
         ValueAnimator bgAnimator = ValueAnimator.ofObject(new FloatEvaluator(), Float.valueOf(0.0f), Float.valueOf(finalAlpha));
-        bgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.AppsCustomizeTabHost.4
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        bgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int alpha = (int) (((Float) animation.getAnimatedValue()).floatValue() * 255.0f);
                 AppsCustomizeTabHost.this.setBackgroundColor(Color.argb(alpha, 0, 0, 0));

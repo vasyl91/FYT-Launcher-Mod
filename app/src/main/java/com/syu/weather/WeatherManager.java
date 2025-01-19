@@ -4,25 +4,28 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.location.Criteria;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
+import android.location.GnssStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.http.Headers;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.SparseArray;
+
+import androidx.annotation.NonNull;
+
+import com.android.async.AsyncTask;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.syu.esri.ShapeDB;
 import com.syu.esri.ShapeData;
 import com.syu.esri.ShapeIndex;
 import com.syu.esri.ShapeReader;
-import com.syu.weather.NetworkCheck;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -34,21 +37,19 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@SuppressLint("MissingPermission")
 public class WeatherManager {
     private Exception e;
     private static Throwable th;
@@ -70,6 +71,7 @@ public class WeatherManager {
     public static final String OPEN_WEATHER_URL_NEW = "http://apk.carsql.com:8211/weather/latlon=";
     public static final int SUCCESS_CODE = 1;
     public static final String SYU_WEATHER_URL = "http://apk.carsql.com/Weather/CurrentDay?city=";
+    private FusedLocationProviderClient fusedLocationClient;
     public static WeatherManager instance;
     String cityName;
     Handler handler;
@@ -88,49 +90,54 @@ public class WeatherManager {
     long lastWeatherTime = 0;
     boolean isFirst = true;
     int minDis = 3;
-    GpsStatus.Listener mListener = new GpsStatus.Listener() { // from class: com.syu.weather.WeatherManager.1
+    GnssStatus.Callback mListener = new GnssStatus.Callback() {
         long time;
 
-        @Override // android.location.GpsStatus.Listener
-        public void onGpsStatusChanged(int event) {
+        @Override 
+        public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
             if (SystemClock.elapsedRealtime() - this.time > 10000) {
                 this.time = SystemClock.elapsedRealtime();
-                GpsStatus status = WeatherManager.this.mLocationManager.getGpsStatus(null);
-                WeatherManager.this.updateGpsStatus(event, status);
+                double maxSatellites = status.getSatelliteCount();
+                double usedInFix = 0;
+                for (int i = 0; i < maxSatellites; ++i) {
+                    if (status.usedInFix(i)) {
+                        ++usedInFix;
+                    }
+                }
             }
         }
     };
-    LocationListener mNetListener = new LocationListener() { // from class: com.syu.weather.WeatherManager.2
-        @Override // android.location.LocationListener
+    LocationListener mNetListener = new LocationListener() { 
+        @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onProviderEnabled(String provider) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onProviderDisabled(String provider) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onLocationChanged(Location location) {
         }
     };
-    LocationListener mGpsListener = new LocationListener() { // from class: com.syu.weather.WeatherManager.3
-        @Override // android.location.LocationListener
+    LocationListener mGpsListener = new LocationListener() { 
+        @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onProviderEnabled(String provider) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onProviderDisabled(String provider) {
         }
 
-        @Override // android.location.LocationListener
+        @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
                 boolean flag = WeatherManager.this.isBetterLocation(location, WeatherManager.this.mCurLocation);
@@ -190,6 +197,7 @@ public class WeatherManager {
     WeatherManager(Context context) {
         this.inChina = false;
         this.mContext = context.getApplicationContext();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.mContext);
         SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
         String string = preferences.getString("city", "");
         this.cityName = string;
@@ -197,8 +205,8 @@ public class WeatherManager {
         this.inChina = preferences.getBoolean("inChina", this.inChina);
         this.mLocationManager = (LocationManager) this.mContext.getSystemService(Context.LOCATION_SERVICE);
         this.mNetworkCheck = new NetworkCheck(this.mContext);
-        this.mNetworkCheck.registerLisenter(new NetworkCheck.OnNetworkStateChangeLisenter() { // from class: com.syu.weather.WeatherManager.4
-            @Override // com.syu.weather.NetworkCheck.OnNetworkStateChangeLisenter
+        this.mNetworkCheck.registerLisenter(new NetworkCheck.OnNetworkStateChangeLisenter() { 
+            @Override
             public void onChanged(boolean vaild) {
                 if (vaild) {
                     WeatherManager.this.start();
@@ -215,52 +223,43 @@ public class WeatherManager {
     }
 
     public void start() {
+        if (mLocationManager != null) {
+            mLocationManager.registerGnssStatusCallback(mListener, null); 
+        }
         if (this.mNetworkCheck != null && this.mNetworkCheck.hasNet && !this.isRunning) {
             this.lastLocationTime = this.lastWeatherTime = 0L;
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            criteria.setAltitudeRequired(false);
-            criteria.setBearingRequired(false);
-            criteria.setCostAllowed(false);
-            criteria.setPowerRequirement(Criteria.POWER_LOW);
-            Location location = this.mLocationManager.getLastKnownLocation("gps");
-            if (location == null) {
-                location = this.mLocationManager.getLastKnownLocation("network");
-            }
-
-            if (this.mCurLocation == null) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
-                    this.updateLocation(location);
-                    this.isFirst = false;
-                } else {
-                    (new Thread() {
-                        public void run() {
-                            boolean flag = true;
+                    Location mLocation = location;
+                    if (WeatherManager.this.mCurLocation == null) {
+                        if (mLocation != null) {
+                            WeatherManager.this.updateLocation(mLocation);
+                            WeatherManager.this.isFirst = false;
+                        } else {
+                            (new Thread(() -> {
+                                boolean flag = true;
 
-                            while(flag) {
-                                try {
-                                    Thread.sleep(500L);
-                                } catch (InterruptedException var3) {
-                                    var3.printStackTrace();
+                                while(flag) {
+                                    try {
+                                        Thread.sleep(500L);
+                                    } catch (InterruptedException var3) {
+                                        var3.printStackTrace();
+                                    }
+
+                                    if (WeatherManager.this.mCurLocation != null || mLocation != null) {
+                                        WeatherManager.this.updateLocation(mLocation);
+                                        WeatherManager.this.isFirst = false;
+                                        flag = false;
+                                    }
                                 }
 
-                                Location location = WeatherManager.this.mLocationManager.getLastKnownLocation("gps");
-                                if (location == null) {
-                                    location = WeatherManager.this.mLocationManager.getLastKnownLocation("network");
-                                }
-
-                                if (WeatherManager.this.mCurLocation != null || location != null) {
-                                    WeatherManager.this.updateLocation(location);
-                                    WeatherManager.this.isFirst = false;
-                                    flag = false;
-                                }
-                            }
-
+                            })).start();
                         }
-                    }).start();
+                    }
                 }
-            }
-
+            }).addOnFailureListener(e -> {
+                e.printStackTrace();
+            });
             if (this.mLocationManager.isProviderEnabled("gps")) {
                 this.mLocationManager.requestLocationUpdates("gps", 30000L, (float)this.minDis, this.mGpsListener);
             }
@@ -274,14 +273,17 @@ public class WeatherManager {
     }
 
     void stop() {
+        mLocationManager.unregisterGnssStatusCallback(mListener); 
         if (this.mLocationManager != null) {
             try {
                 this.mLocationManager.removeUpdates(this.mGpsListener);
             } catch (Exception e) {
+                e.printStackTrace();
             }
             try {
                 this.mLocationManager.removeUpdates(this.mNetListener);
             } catch (Exception e2) {
+                e2.printStackTrace();
             }
         }
         this.isRunning = false;
@@ -301,7 +303,13 @@ public class WeatherManager {
             if (this.mCurLocation == null || this.mCurWeather == null || !this.mCurWeather.vaild() || temptime - this.lastLocationTime > 120000L) {
                 this.mCurLocation = location;
                 (new AsyncTask<Location, Void, String>() {
-                    protected String doInBackground(Location... params) {
+                    @Override
+                    protected String doInBackground(Location location) throws Exception {
+                        return "";
+                    }
+
+                    @Override
+                    protected String doInBackground(Location... params) throws Exception {
                         if (params != null && params.length > 0) {
                             String city = "";
                             if (city == null || "".equals(city)) {
@@ -345,6 +353,11 @@ public class WeatherManager {
                             }
                         }
 
+                    }
+
+                    @Override
+                    protected void onBackgroundError(Exception e) {
+                        e.printStackTrace();
                     }
                 }).execute(new Location[]{this.mCurLocation});
             }
@@ -399,7 +412,7 @@ public class WeatherManager {
 
     public String getContentFromUrl(String url) {
         try {
-            HttpClient httpclient = new DefaultHttpClient();
+            HttpClient httpclient = HttpClientBuilder.create().build();
             HttpGet get = new HttpGet(url);
             HttpResponse response = httpclient.execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
@@ -625,6 +638,11 @@ public class WeatherManager {
         if (!this.isGettingWeather && city != null && !city.isEmpty()) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
+                @Override
+                protected WeatherDescription doInBackground(String s) throws Exception {
+                    return null;
+                }
+
                 public WeatherDescription doInBackground(String... params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
@@ -655,6 +673,11 @@ public class WeatherManager {
 
                     }
                 }
+
+                @Override
+                protected void onBackgroundError(Exception e) {
+                    e.printStackTrace();
+                }
             }).execute(new String[]{city});
         }
     }
@@ -663,6 +686,11 @@ public class WeatherManager {
         if (!this.isGettingWeather && lat != null && lon != null) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
+                @Override
+                protected WeatherDescription doInBackground(String s) throws Exception {
+                    return null;
+                }
+
                 public WeatherDescription doInBackground(String... params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
@@ -698,17 +726,12 @@ public class WeatherManager {
                         Log.e("Logs", "mCurWeather city = " + WeatherManager.this.mCurWeather.city + "\nmCurWeather.weather = " + WeatherManager.this.mCurWeather.weather + "\nmCurWeather.curTem = " + WeatherManager.this.mCurWeather.curTem + "\nmCurWeather.temDescription = " + WeatherManager.this.mCurWeather.temDescription + "\nmCurWeather.wind = " + WeatherManager.this.mCurWeather.wind);
                     }
                 }
-            }).execute(new String[]{city});
-        }
-    }
 
-    public void updateGpsStatus(int event, GpsStatus status) {
-        if (event == 4) {
-            int maxSatellites = status.getMaxSatellites();
-            Iterator<GpsSatellite> it = status.getSatellites().iterator();
-            for (int count = 0; it.hasNext() && count <= maxSatellites; count++) {
-                it.next();
-            }
+                @Override
+                protected void onBackgroundError(Exception e) {
+                    e.printStackTrace();
+                }
+            }).execute(new String[]{city});
         }
     }
 
@@ -750,6 +773,11 @@ public class WeatherManager {
             String url = String.format(Locale.US, "http://apk.carsql.com/Weather/WetherMain?name=%s", this.checkCity(city));
             (new AsyncTask<String, DailyWeather, WeatherManager.RecentWeather>() {
                 int resultCode = -2;
+
+                @Override
+                protected RecentWeather doInBackground(String s) throws Exception {
+                    return null;
+                }
 
                 protected WeatherManager.RecentWeather doInBackground(String... params) {
                     WeatherManager.RecentWeather recentWeather = null;
@@ -796,6 +824,11 @@ public class WeatherManager {
                     }
 
                 }
+
+                @Override
+                protected void onBackgroundError(Exception e) {
+                    e.printStackTrace();
+                }
             }).execute(new String[]{url});
         }
     }
@@ -808,7 +841,7 @@ public class WeatherManager {
         public mThread_readLocalData() {
         }
 
-        @Override // java.lang.Thread, java.lang.Runnable
+        @Override
         public void run() {
             ShapeIndex shx = null;
             ByteArrayOutputStream out = null;

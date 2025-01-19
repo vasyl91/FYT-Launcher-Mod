@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_Bnr_RongweiRx5 extends AirBase {
     public Air_0439_Bnr_RongweiRx5(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0273_rzc_mingjueruiteng/air_rzc_xp1mingjueruiteng_n.webp";
         this.mPathHighlight = "0273_rzc_mingjueruiteng/air_rzc_xp1mingjueruiteng_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -80,14 +80,14 @@ public class Air_0439_Bnr_RongweiRx5 extends AirBase {
             } else if (left_temp == 15) {
                 c.drawText("HI", 70.0f, 142.0f, this.mPaint);
             } else {
-                c.drawText(new StringBuilder().append(left_temp + 15).toString(), 70.0f, 142.0f, this.mPaint);
+                c.drawText(String.valueOf(left_temp + 15), 70.0f, 142.0f, this.mPaint);
             }
         } else if (left_temp == 0) {
             c.drawText("LOW", 70.0f, 142.0f, this.mPaint);
         } else if (left_temp == 31) {
             c.drawText("HI", 70.0f, 142.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp + 17).toString(), 70.0f, 142.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp + 17), 70.0f, 142.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

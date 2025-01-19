@@ -3,20 +3,20 @@ package com.syu.carinfo.od.bmw;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.bmw.ODBMWX1CarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
                 case 11:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text1)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text1) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text1)).setText("km");
@@ -28,7 +28,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                     }
                     break;
                 case 12:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text2)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text2) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text2)).setText(R.string.rzc_others_language_setting_15);
@@ -52,7 +52,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                     }
                     break;
                 case 13:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text3)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text3) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text3)).setText("l/100km");
@@ -70,7 +70,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                     }
                     break;
                 case 14:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text4)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text4) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text4)).setText("℃");
@@ -82,7 +82,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                     }
                     break;
                 case 15:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text5)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text5) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text5)).setText(R.string.str_bogoo_bmw_time_format_0);
@@ -94,31 +94,31 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                     }
                     break;
                 case 16:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text6)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text6) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text6)).setText(R.string.off);
                                 break;
                             default:
-                                ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text6)).setText(new StringBuilder().append(value).toString());
+                                ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value));
                                 break;
                         }
                     }
                     break;
                 case 17:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text7)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text7) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text7)).setText(R.string.off);
                                 break;
                             default:
-                                ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text7)).setText(new StringBuilder().append(value).toString());
+                                ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value));
                                 break;
                         }
                     }
                     break;
                 case 18:
-                    if (((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text8)) != null) {
+                    if (ODBMWX1CarSet.this.findViewById(R.id.tv_text8) != null) {
                         switch (value) {
                             case 0:
                                 ((TextView) ODBMWX1CarSet.this.findViewById(R.id.tv_text8)).setText(R.string.rzc_c4l_close);
@@ -133,14 +133,14 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_bmw_x1_settings);
+        //setContentView(R.layout.layout_0452_od_bmw_x1_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.ctv_checkedtext1).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext2).setOnClickListener(this);
@@ -158,15 +158,11 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
         findViewById(R.id.btn_plus5).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                setCarInfo(1, 1);
-                setCarInfo(1, 0);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 int value0 = DataCanbus.DATA[11];
                 int value1 = DataCanbus.DATA[12];
                 int value2 = DataCanbus.DATA[13];
@@ -178,7 +174,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value02, value1, value2, value3, value4);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 int value03 = DataCanbus.DATA[11];
                 int value12 = DataCanbus.DATA[12];
                 int value22 = DataCanbus.DATA[13];
@@ -190,7 +186,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value04, value12, value22, value32, value42);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
+            case R.id.btn_minus2 /* 2131427458 */:
                 int value05 = DataCanbus.DATA[11];
                 int value13 = DataCanbus.DATA[12];
                 int value23 = DataCanbus.DATA[13];
@@ -202,7 +198,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value05, value14, value23, value33, value43);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 int value06 = DataCanbus.DATA[11];
                 int value15 = DataCanbus.DATA[12];
                 int value24 = DataCanbus.DATA[13];
@@ -214,7 +210,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value06, value16, value24, value34, value44);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
+            case R.id.btn_minus3 /* 2131427461 */:
                 int value07 = DataCanbus.DATA[11];
                 int value17 = DataCanbus.DATA[12];
                 int value25 = DataCanbus.DATA[13];
@@ -226,7 +222,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value07, value17, value26, value35, value45);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 int value08 = DataCanbus.DATA[11];
                 int value18 = DataCanbus.DATA[12];
                 int value27 = DataCanbus.DATA[13];
@@ -238,7 +234,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value08, value18, value28, value36, value46);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
+            case R.id.btn_minus4 /* 2131427464 */:
                 int value09 = DataCanbus.DATA[11];
                 int value19 = DataCanbus.DATA[12];
                 int value29 = DataCanbus.DATA[13];
@@ -250,7 +246,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value09, value19, value29, value38, value47);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 int value010 = DataCanbus.DATA[11];
                 int value110 = DataCanbus.DATA[12];
                 int value210 = DataCanbus.DATA[13];
@@ -262,7 +258,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value010, value110, value210, value310, value48);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
+            case R.id.btn_minus5 /* 2131427467 */:
                 int value011 = DataCanbus.DATA[11];
                 int value111 = DataCanbus.DATA[12];
                 int value211 = DataCanbus.DATA[13];
@@ -273,7 +269,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value011, value111, value211, value311, value49);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 int value012 = DataCanbus.DATA[11];
                 int value112 = DataCanbus.DATA[12];
                 int value212 = DataCanbus.DATA[13];
@@ -284,15 +280,19 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
                 }
                 setCarInfo1(value012, value112, value212, value312, value410);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                setCarInfo(1, 1);
+                setCarInfo(1, 0);
+                break;
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 setCarInfo(2, 1);
                 setCarInfo(2, 0);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 setCarInfo(3, 1);
                 setCarInfo(3, 0);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 setCarInfo(4, 1);
                 setCarInfo(4, 0);
                 break;
@@ -307,19 +307,19 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
         DataCanbus.PROXY.cmd(1, new int[]{value0, value1, value2, value3, value4}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
@@ -331,7 +331,7 @@ public class ODBMWX1CarSet extends BaseActivity implements View.OnClickListener 
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);

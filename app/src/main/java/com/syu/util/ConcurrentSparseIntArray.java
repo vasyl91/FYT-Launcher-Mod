@@ -1,6 +1,5 @@
 package com.syu.util;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ConcurrentSparseIntArray implements Cloneable {
     private static final int[] EMPTY_INTS = new int[0];
     private int[] mKeys;
@@ -42,8 +41,8 @@ public class ConcurrentSparseIntArray implements Cloneable {
         clone = null;
         try {
             clone = (ConcurrentSparseIntArray) super.clone();
-            clone.mKeys = (int[]) this.mKeys.clone();
-            clone.mValues = (int[]) this.mValues.clone();
+            clone.mKeys = this.mKeys.clone();
+            clone.mValues = this.mValues.clone();
         } catch (CloneNotSupportedException e) {
         }
         return clone;

@@ -5,28 +5,28 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0017_WC2_KeDiYaKe extends AirBase {
     public Air_0017_WC2_KeDiYaKe(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 260;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0017_wc2_golf7/air_wc2_kediyake_n.webp";
         this.mPathHighlight = "0017_wc2_golf7/air_wc2_kediyake_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -124,7 +124,7 @@ public class Air_0017_WC2_KeDiYaKe extends AirBase {
         } else if (temp == 255) {
             c.drawText("HI", 76.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp * 5) / 10.0f).toString(), 76.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf((temp * 5) / 10.0f), 76.0f, 72.0f, this.mPaint);
         }
         int temp2 = this.DATA[99];
         if (temp2 == 254) {
@@ -132,7 +132,7 @@ public class Air_0017_WC2_KeDiYaKe extends AirBase {
         } else if (temp2 == 255) {
             c.drawText("HI", 930.0f, 72.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp2 * 5) / 10.0f).toString(), 930.0f, 72.0f, this.mPaint);
+            c.drawText(String.valueOf((temp2 * 5) / 10.0f), 930.0f, 72.0f, this.mPaint);
         }
         int temp3 = this.DATA[154];
         if (temp3 == 254) {
@@ -140,7 +140,7 @@ public class Air_0017_WC2_KeDiYaKe extends AirBase {
         } else if (temp3 == 255) {
             c.drawText("HI", 416.0f, 236.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp3 * 5) / 10.0f).toString(), 416.0f, 236.0f, this.mPaint);
+            c.drawText(String.valueOf((temp3 * 5) / 10.0f), 416.0f, 236.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

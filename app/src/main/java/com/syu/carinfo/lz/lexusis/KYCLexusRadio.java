@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
@@ -15,24 +16,23 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static KYCLexusRadio mInit;
     byte unit = 0;
     int band = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusRadio.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 128:
+                case 140:
                     KYCLexusRadio.this.updateRadioBand();
                     break;
-                case 129:
+                case 141:
                     KYCLexusRadio.this.updateRadioNum();
                     break;
-                case 130:
+                case 142:
                     if (value == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_scan)).setText("SCAN");
                         break;
@@ -40,7 +40,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_scan)).setText("");
                         break;
                     }
-                case 131:
+                case 143:
                     if (value == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_st)).setText("ST");
                         break;
@@ -48,16 +48,16 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_st)).setText("");
                         break;
                     }
-                case 132:
+                case 144:
                     if (KYCLexusRadio.this.unit == 1) {
-                        ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText(new StringBuilder().append(value).toString());
+                        ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText(String.valueOf(value));
                         break;
                     } else {
                         int value2 = value * 10;
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq)).setText((value2 / 100) + "." + ((value2 % 100) / 10) + (value2 % 10));
                         break;
                     }
-                case 133:
+                case 145:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq1)).setText("   " + value + "  khz");
                         break;
@@ -66,7 +66,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq1)).setText("   " + (value3 / 100) + "." + (value3 % 100) + "  mhz");
                         break;
                     }
-                case 134:
+                case 146:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq2)).setText("   " + value + "  khz");
                         break;
@@ -75,7 +75,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq2)).setText("   " + (value4 / 100) + "." + (value4 % 100) + "  mhz");
                         break;
                     }
-                case 135:
+                case 147:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq3)).setText("   " + value + "  khz");
                         break;
@@ -84,7 +84,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq3)).setText("   " + (value5 / 100) + "." + (value5 % 100) + "  mhz");
                         break;
                     }
-                case 136:
+                case 148:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq4)).setText("   " + value + "  khz");
                         break;
@@ -93,7 +93,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq4)).setText("   " + (value6 / 100) + "." + (value6 % 100) + "  mhz");
                         break;
                     }
-                case 137:
+                case 149:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq5)).setText("   " + value + "  khz");
                         break;
@@ -102,7 +102,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq5)).setText("   " + (value7 / 100) + "." + (value7 % 100) + "  mhz");
                         break;
                     }
-                case 138:
+                case 150:
                     if (KYCLexusRadio.this.unit == 1) {
                         ((TextView) KYCLexusRadio.this.findViewById(R.id.dj_lexus_radio_freq6)).setText("   " + value + "  khz");
                         break;
@@ -116,8 +116,8 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     };
     int num = 0;
     int curnum = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusRadio.2
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             KYCLexusRadio.this.num++;
             if (KYCLexusRadio.this.num == 3 && KYCLexusRadio.this.curnum != 0) {
@@ -129,29 +129,29 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     };
     boolean flag = false;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_djlexus_carradio);
+        //setContentView(R.layout.layout_djlexus_carradio);
         init();
     }
 
     public void init() {
         mInit = this;
-        ((Button) findViewById(R.id.btn_lexus_radio_frq1)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_radio_frq2)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_radio_frq3)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_radio_frq4)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_radio_frq5)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_lexus_radio_frq6)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_radio_scan_plus)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_radio_scan_minu)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_radio_prev)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.lexus_radio_next)).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq1).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq2).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq3).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq4).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq5).setOnTouchListener(this);
+        findViewById(R.id.btn_lexus_radio_frq6).setOnTouchListener(this);
+        findViewById(R.id.lexus_radio_scan_plus).setOnTouchListener(this);
+        findViewById(R.id.lexus_radio_scan_minu).setOnTouchListener(this);
+        findViewById(R.id.lexus_radio_prev).setOnTouchListener(this);
+        findViewById(R.id.lexus_radio_next).setOnTouchListener(this);
         findViewById(R.id.lexus_radio_am).setVisibility(8);
         findViewById(R.id.lexus_radio_fm).setVisibility(8);
-        ((Button) findViewById(R.id.lexus_radio_toaudio)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.lz.lexusis.KYCLexusRadio.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.lexus_radio_toaudio).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -165,35 +165,35 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.notifyCanbus);
     }
 
     public void updateRadioNum() {
-        int value = DataCanbus.DATA[129];
+        int value = DataCanbus.DATA[141];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_radio_freq1)).setTextColor(-1);
@@ -255,7 +255,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     }
 
     public void updateRadioBand() {
-        int value = DataCanbus.DATA[128];
+        int value = DataCanbus.DATA[140];
         switch (value) {
             case 0:
                 this.unit = (byte) 0;
@@ -303,63 +303,63 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
         HandlerUI.getInstance().removeCallbacks(this.mCalTime);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mSetCurFrq(int value) {
         this.flag = true;
         DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_radio_prev /* 2131427850 */:
+                case R.id.lexus_radio_prev /* 2131427866 */:
                     DataCanbus.PROXY.cmd(1, new int[]{19, 1}, null, null);
                     break;
-                case R.id.lexus_radio_next /* 2131427851 */:
+                case R.id.lexus_radio_next /* 2131427867 */:
                     DataCanbus.PROXY.cmd(1, new int[]{20, 1}, null, null);
                     break;
-                case R.id.lexus_radio_scan_plus /* 2131427853 */:
+                case R.id.lexus_radio_scan_plus /* 2131427869 */:
                     DataCanbus.PROXY.cmd(1, new int[]{22, 1}, null, null);
                     break;
-                case R.id.lexus_radio_scan_minu /* 2131427854 */:
+                case R.id.lexus_radio_scan_minu /* 2131427870 */:
                     DataCanbus.PROXY.cmd(1, new int[]{21, 1}, null, null);
                     break;
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     this.curnum = 1;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     this.curnum = 2;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     this.curnum = 3;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     this.curnum = 4;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     this.curnum = 5;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     this.curnum = 6;
                     mUpdatermCalTime(true);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_radio_scan_plus /* 2131427853 */:
+                case R.id.lexus_radio_scan_plus /* 2131427869 */:
                     DataCanbus.PROXY.cmd(1, new int[]{22}, null, null);
                     break;
-                case R.id.lexus_radio_scan_minu /* 2131427854 */:
+                case R.id.lexus_radio_scan_minu /* 2131427870 */:
                     DataCanbus.PROXY.cmd(1, new int[]{21}, null, null);
                     break;
-                case R.id.btn_lexus_radio_frq1 /* 2131427858 */:
+                case R.id.btn_lexus_radio_frq1 /* 2131427874 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -367,7 +367,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(1, new int[]{16, 1}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq2 /* 2131427860 */:
+                case R.id.btn_lexus_radio_frq2 /* 2131427876 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -375,7 +375,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(1, new int[]{16, 2}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq3 /* 2131427862 */:
+                case R.id.btn_lexus_radio_frq3 /* 2131427878 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -383,7 +383,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(1, new int[]{16, 3}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq4 /* 2131427864 */:
+                case R.id.btn_lexus_radio_frq4 /* 2131427880 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -391,7 +391,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(1, new int[]{16, 4}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq5 /* 2131427866 */:
+                case R.id.btn_lexus_radio_frq5 /* 2131427882 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -399,7 +399,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(1, new int[]{16, 5}, null, null);
                         break;
                     }
-                case R.id.btn_lexus_radio_frq6 /* 2131427868 */:
+                case R.id.btn_lexus_radio_frq6 /* 2131427884 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -412,7 +412,7 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
@@ -420,14 +420,14 @@ public class KYCLexusRadio extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
         removeNotify();
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             FuncMain.setChannel(0);

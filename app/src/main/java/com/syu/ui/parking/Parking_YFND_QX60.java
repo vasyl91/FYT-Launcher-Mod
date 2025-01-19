@@ -6,46 +6,46 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.view.MotionEvent;
+
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Parking_YFND_QX60 extends ParkingBase {
     private final float X_TxtMsg;
     private final float Y_TxtMsg;
     private boolean b_msg;
-    private Rect back;
-    private Rect camera;
+    private final Rect back;
+    private final Rect camera;
     int data0;
-    private Rect down;
+    private final Rect down;
     public int iParkBtn;
     public int iParkCamer;
     public int iParkPage;
     public int iParkText;
-    private Rect left;
-    private Rect left_p;
-    private Rect little;
-    private Rect msg;
-    private Rect pa_mod;
-    private Rect pa_reset;
-    private Rect pa_star;
-    private Rect pa_stop;
-    private Rect pa_stop_3;
-    private Rect pa_stop_6;
-    private Rect pa_switch;
-    private Rect pa_switch_6;
-    private Rect pa_tip;
-    private Rect right;
-    private Rect right_p;
-    private Rect t_left;
-    private Rect t_right;
-    private int tempTextSize;
-    private Rect up;
-    private Rect z_left;
-    private Rect z_right;
+    private final Rect left;
+    private final Rect left_p;
+    private final Rect little;
+    private final Rect msg;
+    private final Rect pa_mod;
+    private final Rect pa_reset;
+    private final Rect pa_star;
+    private final Rect pa_stop;
+    private final Rect pa_stop_3;
+    private final Rect pa_stop_6;
+    private final Rect pa_switch;
+    private final Rect pa_switch_6;
+    private final Rect pa_tip;
+    private final Rect right;
+    private final Rect right_p;
+    private final Rect t_left;
+    private final Rect t_right;
+    private final int tempTextSize;
+    private final Rect up;
+    private final Rect z_left;
+    private final Rect z_right;
 
     public Parking_YFND_QX60(Context context) {
         super(context);
@@ -83,13 +83,13 @@ public class Parking_YFND_QX60 extends ParkingBase {
         this.data0 = 0;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 540;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase
+    @Override
     protected void initDrawable() {
         this.mDrawableNull = ToolkitRes.loadDrawable("parking/parking_null.webp");
         this.mDrawableNormal_1 = ToolkitRes.loadDrawable("parking/qx60/parking_001.webp");
@@ -110,7 +110,7 @@ public class Parking_YFND_QX60 extends ParkingBase {
         return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.data0 = 0;
         int x = (int) (event.getX() / this.mScale);
@@ -168,8 +168,8 @@ public class Parking_YFND_QX60 extends ParkingBase {
         }
         if (this.data0 != 0) {
             DataCanbus.PROXY.cmd(1, new int[]{this.data0, 1}, null, null);
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.ui.parking.Parking_YFND_QX60.1
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     DataCanbus.PROXY.cmd(1, new int[]{Parking_YFND_QX60.this.data0}, null, null);
                 }
@@ -178,17 +178,13 @@ public class Parking_YFND_QX60 extends ParkingBase {
         return false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         this.iParkPage = this.DATA[90];
         this.iParkText = this.DATA[89];
         this.iParkBtn = this.DATA[91] & 15;
         this.iParkCamer = this.DATA[92];
-        if (this.iParkText == 129 || this.iParkText == 130) {
-            this.b_msg = true;
-        } else {
-            this.b_msg = false;
-        }
+        this.b_msg = this.iParkText == 129 || this.iParkText == 130;
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
         c.drawColor(0, PorterDuff.Mode.CLEAR);

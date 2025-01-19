@@ -4,34 +4,32 @@ import android.os.Bundle;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PsaAllAlarmRecordActi extends BaseActivity {
     public static PsaAllAlarmRecordActi mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PsaAllAlarmRecordActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 95:
+                case 107:
                     PsaAllAlarmRecordActi.this.mUpdaterValue1();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa_all_alarm_record);
+        //setContentView(R.layout.layout_psa_all_alarm_record);
         mInstance = this;
     }
 
     public void updateUpdaterValue120() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[107];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             switch (value) {
                 case 0:
@@ -217,49 +215,49 @@ public class PsaAllAlarmRecordActi extends BaseActivity {
                 case 308:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_134);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_RIGHT /* 506 */:
+                case 506:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fa);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_FRONT /* 507 */:
+                case 507:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fb);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_REAR /* 508 */:
+                case 508:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fc);
                     break;
-                case ConstRzcAddData.U_CAR_WIPER_LEV /* 509 */:
+                case 509:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fd);
                     break;
-                case ConstRzcAddData.U_CAR_CUR_SPEED /* 510 */:
+                case 510:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fe);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_SPEED /* 511 */:
+                case 511:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1ff);
                     break;
-                case ConstRzcAddData.U_CAR_TOTAL_MILEAGE /* 512 */:
+                case 512:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_200);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_LEFT /* 514 */:
+                case 514:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_202);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_RIGHT /* 515 */:
+                case 515:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_203);
                     break;
-                case ConstRzcAddData.U_CAR_ACCON /* 516 */:
+                case 516:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_204);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT /* 517 */:
+                case 517:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_205);
                     break;
-                case ConstRzcAddData.U_CAR_REAR_BACK /* 518 */:
+                case 518:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_206);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_FUEL /* 521 */:
+                case 521:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_209);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_WATER /* 522 */:
+                case 522:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_20a);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_MOTOR_OIL /* 523 */:
+                case 523:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_20b);
                     break;
                 case 32767:
@@ -272,33 +270,33 @@ public class PsaAllAlarmRecordActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[107];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             switch (value) {
                 case 0:
@@ -484,49 +482,49 @@ public class PsaAllAlarmRecordActi extends BaseActivity {
                 case 308:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_134);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_RIGHT /* 506 */:
+                case 506:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fa);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_FRONT /* 507 */:
+                case 507:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fb);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT_REAR /* 508 */:
+                case 508:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fc);
                     break;
-                case ConstRzcAddData.U_CAR_WIPER_LEV /* 509 */:
+                case 509:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fd);
                     break;
-                case ConstRzcAddData.U_CAR_CUR_SPEED /* 510 */:
+                case 510:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1fe);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_SPEED /* 511 */:
+                case 511:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_1ff);
                     break;
-                case ConstRzcAddData.U_CAR_TOTAL_MILEAGE /* 512 */:
+                case 512:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_200);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_LEFT /* 514 */:
+                case 514:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_202);
                     break;
-                case ConstRzcAddData.U_CAR_SEAT_BELT_RIGHT /* 515 */:
+                case 515:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_203);
                     break;
-                case ConstRzcAddData.U_CAR_ACCON /* 516 */:
+                case 516:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_204);
                     break;
-                case ConstRzcAddData.U_CAR_LIGHT /* 517 */:
+                case 517:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_205);
                     break;
-                case ConstRzcAddData.U_CAR_REAR_BACK /* 518 */:
+                case 518:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_206);
                     break;
-                case ConstRzcAddData.U_CAR_AVG_FUEL /* 521 */:
+                case 521:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_209);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_WATER /* 522 */:
+                case 522:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_20a);
                     break;
-                case ConstRzcAddData.U_CAR_TEMP_MOTOR_OIL /* 523 */:
+                case 523:
                     ((TextView) findViewById(R.id.tv_text1)).setText(R.string.bz408_warning_20b);
                     break;
                 case 32767:

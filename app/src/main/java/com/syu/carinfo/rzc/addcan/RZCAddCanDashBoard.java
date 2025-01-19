@@ -15,18 +15,17 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZCAddCanDashBoard extends Activity {
     public static boolean mIsFront = false;
     int unit = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = R.drawable.ic_dashboard_car_light;
             int i2 = R.drawable.ic_dashboard_car_null;
             switch (updateCode) {
                 case ConstRzcAddData.U_CAR_FRAME_NUM /* 501 */:
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.car_frame_num_info)).setText(String.valueOf(RZCAddCanDashBoard.this.getString(R.string.str_car_frame_num)) + ConstRzcAddData.CarFrameNum);
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.car_frame_num_info)).setText(String.valueOf(RZCAddCanDashBoard.this.getString(R.string.str_car_frame_num)) + ConstRzcAddData.CarFrameNum);
                     break;
                 case ConstRzcAddData.U_CAR_LIGHT_WIDTH /* 502 */:
                     int value = DataCanbus.DATA[502];
@@ -36,12 +35,12 @@ public class RZCAddCanDashBoard extends Activity {
                         i = 2130839521;
                     }
                     imageView.setImageDrawable(resources.getDrawable(i));
-                    ImageView imageView2 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_width_top);
+                    //ImageView imageView2 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_width_top);
                     Resources resources2 = RZCAddCanDashBoard.this.getResources();
                     if (value == 1) {
-                        i2 = R.drawable.ic_dashboard_top_light_width;
+                        //i2 = R.drawable.ic_dashboard_top_light_width;
                     }
-                    imageView2.setImageDrawable(resources2.getDrawable(i2));
+                    //imageView2.setImageDrawable(resources2.getDrawable(i2));
                     break;
                 case ConstRzcAddData.U_CAR_LIGHT_NEAR /* 503 */:
                     int value2 = DataCanbus.DATA[503];
@@ -87,25 +86,25 @@ public class RZCAddCanDashBoard extends Activity {
                         i = 2130839521;
                     }
                     imageView7.setImageDrawable(resources7.getDrawable(i));
-                    ImageView imageView8 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_front_top);
+                    //ImageView imageView8 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_front_top);
                     Resources resources8 = RZCAddCanDashBoard.this.getResources();
                     if (value4 == 1) {
-                        i2 = R.drawable.ic_dashboard_top_light_front;
+                        //i2 = R.drawable.ic_dashboard_top_light_front;
                     }
-                    imageView8.setImageDrawable(resources8.getDrawable(i2));
+                    //imageView8.setImageDrawable(resources8.getDrawable(i2));
                     break;
                 case ConstRzcAddData.U_CAR_LIGHT_REAR /* 508 */:
                     int value5 = DataCanbus.DATA[508];
-                    ImageView imageView9 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_rear_top);
+                    //ImageView imageView9 = (ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_light_rear_top);
                     Resources resources9 = RZCAddCanDashBoard.this.getResources();
                     if (value5 == 1) {
-                        i2 = R.drawable.ic_dashboard_top_light_rear;
+                        //i2 = R.drawable.ic_dashboard_top_light_rear;
                     }
-                    imageView9.setImageDrawable(resources9.getDrawable(i2));
+                    //imageView9.setImageDrawable(resources9.getDrawable(i2));
                     break;
                 case ConstRzcAddData.U_CAR_WIPER_LEV /* 509 */:
                     int value6 = DataCanbus.DATA[509];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_wiper_lev)).setText(String.format("%d", Integer.valueOf(value6)));
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_wiper_lev)).setText(String.format("%d", Integer.valueOf(value6)));
                     break;
                 case ConstRzcAddData.U_CAR_CUR_SPEED /* 510 */:
                     RZCAddCanDashBoard.this.updateSpeed();
@@ -133,19 +132,19 @@ public class RZCAddCanDashBoard extends Activity {
                     break;
                 case ConstRzcAddData.U_CAR_CUR_FUEL /* 520 */:
                     int value8 = DataCanbus.DATA[520];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_curfuel)).setText(String.valueOf(value8 / 10) + "." + (value8 % 10) + "L/100km");
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_curfuel)).setText(String.valueOf(value8 / 10) + "." + (value8 % 10) + "L/100km");
                     break;
                 case ConstRzcAddData.U_CAR_AVG_FUEL /* 521 */:
                     int value9 = DataCanbus.DATA[521];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_avgfuel)).setText(String.valueOf(value9 / 10) + "." + (value9 % 10) + "L/100km");
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_avgfuel)).setText(String.valueOf(value9 / 10) + "." + (value9 % 10) + "L/100km");
                     break;
                 case ConstRzcAddData.U_CAR_TEMP_WATER /* 522 */:
                     int value10 = DataCanbus.DATA[522];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_water_temp)).setText(String.format("%d ℃", Integer.valueOf(value10 - 40)));
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_water_temp)).setText(String.format("%d ℃", Integer.valueOf(value10 - 40)));
                     break;
                 case ConstRzcAddData.U_CAR_TEMP_MOTOR_OIL /* 523 */:
                     int value11 = DataCanbus.DATA[523];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_oil_temp)).setText(String.format("%d ℃", Integer.valueOf(value11 - 40)));
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_oil_temp)).setText(String.format("%d ℃", Integer.valueOf(value11 - 40)));
                     break;
                 case ConstRzcAddData.U_CAR_ENGINE_SPEED /* 524 */:
                     int value12 = DataCanbus.DATA[524];
@@ -154,7 +153,7 @@ public class RZCAddCanDashBoard extends Activity {
                     break;
                 case ConstRzcAddData.U_CAR_VOLTAGE /* 525 */:
                     int value13 = DataCanbus.DATA[525];
-                    ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_voltage)).setText(String.valueOf(value13 / 1000) + "." + ((value13 % 1000) / 100) + "V");
+                    //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_voltage)).setText(String.valueOf(value13 / 1000) + "." + ((value13 % 1000) / 100) + "V");
                     break;
                 case ConstRzcAddData.U_DOOR_ENGINE_ADD /* 553 */:
                     int value14 = DataCanbus.DATA[553];
@@ -213,9 +212,9 @@ public class RZCAddCanDashBoard extends Activity {
                 case ConstRzcAddData.U_SPEED_UNIT /* 559 */:
                     RZCAddCanDashBoard.this.unit = DataCanbus.DATA[559];
                     if (RZCAddCanDashBoard.this.unit == 0) {
-                        ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_speed_unit)).setText("km/h");
+                        //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_speed_unit)).setText("km/h");
                     } else {
-                        ((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_speed_unit)).setText("mp/h");
+                        //((TextView) RZCAddCanDashBoard.this.findViewById(R.id.txt_car_speed_unit)).setText("mp/h");
                     }
                     RZCAddCanDashBoard.this.updateSpeed();
                     RZCAddCanDashBoard.this.updateTotalMile();
@@ -225,8 +224,8 @@ public class RZCAddCanDashBoard extends Activity {
         }
     };
     int num = 0;
-    Runnable mShowTurnLeftLight = new Runnable() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.2
-        @Override // java.lang.Runnable
+    Runnable mShowTurnLeftLight = new Runnable() { 
+        @Override
         public void run() {
             int i = R.drawable.ic_dashboard_car_null;
             RZCAddCanDashBoard.this.num++;
@@ -245,8 +244,8 @@ public class RZCAddCanDashBoard extends Activity {
         }
     };
     int num1 = 0;
-    Runnable mShowTurnRightLight = new Runnable() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.3
-        @Override // java.lang.Runnable
+    Runnable mShowTurnRightLight = new Runnable() { 
+        @Override
         public void run() {
             int i = R.drawable.ic_dashboard_car_null;
             RZCAddCanDashBoard.this.num1++;
@@ -265,47 +264,47 @@ public class RZCAddCanDashBoard extends Activity {
         }
     };
     int num2 = 0;
-    Runnable mShowLifeBelt_left = new Runnable() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.4
-        @Override // java.lang.Runnable
+    Runnable mShowLifeBelt_left = new Runnable() { 
+        @Override
         public void run() {
             RZCAddCanDashBoard.this.num2++;
             if (RZCAddCanDashBoard.this.num2 > 1) {
                 RZCAddCanDashBoard.this.num2 = 0;
             }
-            ((ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_lifebelt_left)).setImageDrawable(RZCAddCanDashBoard.this.getResources().getDrawable(RZCAddCanDashBoard.this.num2 == 1 ? R.drawable.ic_dashboard_top_lifebelt : R.drawable.ic_dashboard_car_null));
+            //((ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_lifebelt_left)).setImageDrawable(RZCAddCanDashBoard.this.getResources().getDrawable(RZCAddCanDashBoard.this.num2 == 1 ? R.drawable.ic_dashboard_top_lifebelt : R.drawable.ic_dashboard_car_null));
             HandlerUI.getInstance().removeCallbacks(RZCAddCanDashBoard.this.mShowLifeBelt_left);
             HandlerUI.getInstance().postDelayed(RZCAddCanDashBoard.this.mShowLifeBelt_left, 500L);
         }
     };
     int num3 = 0;
-    Runnable mShowLifeBelt_right = new Runnable() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.5
-        @Override // java.lang.Runnable
+    Runnable mShowLifeBelt_right = new Runnable() { 
+        @Override
         public void run() {
             RZCAddCanDashBoard.this.num3++;
             if (RZCAddCanDashBoard.this.num3 > 1) {
                 RZCAddCanDashBoard.this.num3 = 0;
             }
-            ((ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_lifebelt_right)).setImageDrawable(RZCAddCanDashBoard.this.getResources().getDrawable(RZCAddCanDashBoard.this.num2 == 1 ? R.drawable.ic_dashboard_top_lifebelt : R.drawable.ic_dashboard_car_null));
+            //((ImageView) RZCAddCanDashBoard.this.findViewById(R.id.image_car_lifebelt_right)).setImageDrawable(RZCAddCanDashBoard.this.getResources().getDrawable(RZCAddCanDashBoard.this.num2 == 1 ? R.drawable.ic_dashboard_top_lifebelt : R.drawable.ic_dashboard_car_null));
             HandlerUI.getInstance().removeCallbacks(RZCAddCanDashBoard.this.mShowLifeBelt_right);
             HandlerUI.getInstance().postDelayed(RZCAddCanDashBoard.this.mShowLifeBelt_right, 500L);
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
         if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_rzc_addcan_dashboard_9853);
+            //setContentView(R.layout.layout_rzc_addcan_dashboard_9853);
         } else {
-            setContentView(R.layout.layout_rzc_addcan_dashboard);
+            //setContentView(R.layout.layout_rzc_addcan_dashboard);
         }
         init();
     }
 
     public void init() {
-        ((Button) findViewById(R.id.btn_speed_unit_change)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard.6
-            @Override // android.view.View.OnClickListener
+        /*((Button) findViewById(R.id.btn_speed_unit_change)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[559];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -313,10 +312,10 @@ public class RZCAddCanDashBoard extends Activity {
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(101, iArr, null, null);
             }
-        });
+        });*/
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -325,7 +324,7 @@ public class RZCAddCanDashBoard extends Activity {
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -404,7 +403,7 @@ public class RZCAddCanDashBoard extends Activity {
         DataCanbus.NOTIFY_EVENTS[559].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeed() {
         int speed = DataCanbus.DATA[510];
         switch (this.unit) {
@@ -420,7 +419,7 @@ public class RZCAddCanDashBoard extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTotalMile() {
         int value = DataCanbus.DATA[512];
         if (this.unit == 0) {
@@ -430,18 +429,18 @@ public class RZCAddCanDashBoard extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDrivenableMile() {
         int value = DataCanbus.DATA[513];
         if (this.unit == 0) {
-            ((TextView) findViewById(R.id.txt_car_mileage)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
+            //((TextView) findViewById(R.id.txt_car_mileage)).setText(String.valueOf(value / 10) + "." + (value % 10) + "km");
         } else {
             int value2 = (value * 10) / 16;
-            ((TextView) findViewById(R.id.txt_car_mileage)).setText(String.valueOf(value2 / 10) + "." + (value2 % 10) + "mil");
+            //((TextView) findViewById(R.id.txt_car_mileage)).setText(String.valueOf(value2 / 10) + "." + (value2 % 10) + "mil");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTurnleftLight(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowTurnLeftLight);
@@ -453,7 +452,7 @@ public class RZCAddCanDashBoard extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTurnrightLight(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowTurnRightLight);
@@ -465,25 +464,25 @@ public class RZCAddCanDashBoard extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLifeBeltLeft(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowLifeBelt_left);
             HandlerUI.getInstance().postDelayed(this.mShowLifeBelt_left, 500L);
         } else {
             HandlerUI.getInstance().removeCallbacks(this.mShowLifeBelt_left);
-            ((ImageView) findViewById(R.id.image_car_lifebelt_left)).setImageDrawable(getResources().getDrawable(R.drawable.ic_dashboard_car_null));
+            //((ImageView) findViewById(R.id.image_car_lifebelt_left)).setImageDrawable(getResources().getDrawable(R.drawable.ic_dashboard_car_null));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLifeBeltRight(int value) {
         if (value == 1) {
             HandlerUI.getInstance().removeCallbacks(this.mShowLifeBelt_right);
             HandlerUI.getInstance().postDelayed(this.mShowLifeBelt_right, 500L);
         } else {
             HandlerUI.getInstance().removeCallbacks(this.mShowLifeBelt_right);
-            ((ImageView) findViewById(R.id.image_car_lifebelt_right)).setImageDrawable(getResources().getDrawable(R.drawable.ic_dashboard_car_null));
+            //((ImageView) findViewById(R.id.image_car_lifebelt_right)).setImageDrawable(getResources().getDrawable(R.drawable.ic_dashboard_car_null));
         }
     }
 }

@@ -14,11 +14,10 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC2FordLincoinRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.ford.WC2FordLincoinRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 4:
@@ -46,18 +45,18 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
         if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
             if (LauncherApplication.getConfiguration() == 1) {
-                setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control_9853);
+                //setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control_9853);
             } else {
-                setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
+                //setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
             }
         } else {
-            setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
+            //setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
         }
         init();
     }
@@ -75,7 +74,7 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         findViewById(R.id.air_xts_steer_hot).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -83,7 +82,7 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -91,7 +90,7 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -175,31 +174,31 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[28];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteerHotOn() {
         int power = DataCanbus.DATA[27];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(power == 0 ? R.drawable.ic_xts_steer_hot_n : R.drawable.ic_xts_steer_hot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontHotOn() {
         int power = DataCanbus.DATA[26];
         findViewById(R.id.air_xts_front_hot).setBackgroundResource(power == 0 ? R.drawable.ic_xts_fronthot_n : R.drawable.ic_xts_fronthot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int power = DataCanbus.DATA[4];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(power == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[8];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -207,13 +206,13 @@ public class WC2FordLincoinRearAirControlAct extends Activity implements View.On
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[6];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[10];
         if (leave < 0) {

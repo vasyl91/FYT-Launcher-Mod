@@ -10,11 +10,10 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -55,18 +54,18 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
 
     private void sendCmd(int data0, int data1, int data2, int data3) {
         DataCanbus.PROXY.cmd(2, new int[]{data0, data1, data2, data3}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_AirControlAct.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(2, new int[4], null, null);
             }
         }, 100L);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0255_rzc_hantengx5_air_control);
+        //setContentView(R.layout.layout_0255_rzc_hantengx5_air_control);
         init();
     }
 
@@ -87,7 +86,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         findViewById(R.id.air_xts_auto).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -95,7 +94,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -107,7 +106,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         int data0 = 0;
@@ -187,7 +186,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[23];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -204,25 +203,25 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_power).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[12];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int acOn = DataCanbus.DATA[27];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[13];
         if (cycle == 0) {
@@ -232,19 +231,19 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[18];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[17];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
         int leave = DataCanbus.DATA[22];
@@ -256,7 +255,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[19];
         int foot = DataCanbus.DATA[21];
@@ -308,7 +307,7 @@ public class RZC_0255_HanTengX5_AirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAuto() {
         int value = DataCanbus.DATA[15];
         findViewById(R.id.air_xts_auto).setBackgroundResource(value == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);

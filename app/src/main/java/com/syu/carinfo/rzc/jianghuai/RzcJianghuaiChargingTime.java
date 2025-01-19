@@ -9,7 +9,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcJianghuaiChargingTime extends BaseActivity {
     int mode = 0;
     int value1_1 = 0;
@@ -21,48 +20,48 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
     int value4_1 = 0;
     int value4_2 = 0;
     int value5 = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 48:
+                case 126:
                     RzcJianghuaiChargingTime.this.value1_1 = value;
                     RzcJianghuaiChargingTime.this.UpdateCharingTimeValue1(value);
                     break;
-                case 49:
+                case 127:
                     RzcJianghuaiChargingTime.this.value1_2 = value;
                     RzcJianghuaiChargingTime.this.UpdateCharingTimeValue1(value);
                     break;
-                case 50:
+                case 128:
                     RzcJianghuaiChargingTime.this.value2_1 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value2)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 51:
+                case 129:
                     RzcJianghuaiChargingTime.this.value2_2 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value2)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 52:
+                case 130:
                     RzcJianghuaiChargingTime.this.value3_1 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value3)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 53:
+                case 131:
                     RzcJianghuaiChargingTime.this.value3_2 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value3)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 54:
+                case 132:
                     RzcJianghuaiChargingTime.this.value4_1 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value4)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 55:
+                case 133:
                     RzcJianghuaiChargingTime.this.value4_2 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value4)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 56:
+                case 134:
                     RzcJianghuaiChargingTime.this.value5 = value;
                     ((TextView) RzcJianghuaiChargingTime.this.findViewById(R.id.rzc_jianghuai_chargingtime_value5)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 57:
+                case 135:
                     RzcJianghuaiChargingTime.this.mode = value;
                     RzcJianghuaiChargingTime.this.UpdateModeSet(value);
                     break;
@@ -70,17 +69,17 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_rzc_jianghuai_chargingtime);
+        //setContentView(R.layout.layout_0439_rzc_jianghuai_chargingtime);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value1_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value1_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime rzcJianghuaiChargingTime = RzcJianghuaiChargingTime.this;
@@ -98,8 +97,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value1_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value1_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime.this.value1_1++;
@@ -115,8 +114,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value2_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value2_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime rzcJianghuaiChargingTime = RzcJianghuaiChargingTime.this;
@@ -134,8 +133,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value2_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value2_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime.this.value2_1++;
@@ -151,8 +150,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value3_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value3_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime rzcJianghuaiChargingTime = RzcJianghuaiChargingTime.this;
@@ -170,8 +169,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value3_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value3_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime.this.value3_1++;
@@ -187,8 +186,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value4_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value4_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime.this.value4_1 += 5;
@@ -205,8 +204,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value4_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value4_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 1) {
                     RzcJianghuaiChargingTime.this.value4_1 += 5;
@@ -223,8 +222,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value5_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value5_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 2) {
                     RzcJianghuaiChargingTime rzcJianghuaiChargingTime = RzcJianghuaiChargingTime.this;
@@ -236,8 +235,8 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_value5_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_value5_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (RzcJianghuaiChargingTime.this.mode == 2) {
                     RzcJianghuaiChargingTime.this.value5++;
@@ -248,15 +247,15 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_set1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_set1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 RzcJianghuaiChargingTime.this.mode = 1;
                 RzcJianghuaiChargingTime.this.SendChargingData();
             }
         });
-        ((Button) findViewById(R.id.jianghuai_chargingmode_set2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiChargingTime.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jianghuai_chargingmode_set2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 RzcJianghuaiChargingTime.this.mode = 2;
                 RzcJianghuaiChargingTime.this.SendChargingData();
@@ -264,47 +263,47 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateCharingTimeValue1(int value) {
         switch (value) {
             case 1:
@@ -331,7 +330,7 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void UpdateModeSet(int value) {
         switch (value) {
             case 1:
@@ -359,7 +358,7 @@ public class RzcJianghuaiChargingTime extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void SendChargingData() {
         if (this.mode == 1) {
             DataCanbus.PROXY.cmd(2, new int[]{this.mode, this.value1_1, this.value2_1, this.value3_1, this.value4_1}, null, null);

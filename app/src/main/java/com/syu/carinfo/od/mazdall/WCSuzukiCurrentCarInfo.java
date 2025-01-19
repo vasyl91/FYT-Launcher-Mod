@@ -3,111 +3,111 @@ package com.syu.carinfo.od.mazdall;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCSuzukiCurrentCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.mazdall.WCSuzukiCurrentCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
+                case 99:
                     if (value == 65535) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text1)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text1)).setText(String.valueOf(value / 10) + "." + (value % 10) + " kWh/100km");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text1)).setText(value / 10 + "." + (value % 10) + " kWh/100km");
                         break;
                     }
-                case 88:
+                case 100:
                     if (value == 65535) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text2)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text2)).setText(String.valueOf(value / 10) + "." + (value % 10) + " kWh/100km");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text2)).setText(value / 10 + "." + (value % 10) + " kWh/100km");
                         break;
                     }
-                case 89:
+                case 101:
                     if (value == 65535) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text3)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km/h");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text3)).setText(value / 10 + "." + (value % 10) + " km/h");
                         break;
                     }
-                case 90:
+                case 102:
                     if (value == 65535) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text4)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text4)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text4)).setText(value / 10 + "." + (value % 10) + " km");
                         break;
                     }
-                case 91:
+                case 103:
                     if (value == 65535) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text5)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text5)).setText(String.valueOf(value / 10) + "." + (value % 10) + " km");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text5)).setText(value / 10 + "." + (value % 10) + " km");
                         break;
                     }
-                case 92:
+                case 104:
                     int hour = (value >> 8) & 65535;
                     int min = value & 255;
                     if (value == 16777215) {
                         ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text6)).setText("----");
                         break;
                     } else {
-                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text6)).setText(String.valueOf(hour / 10) + "H" + min + "M");
+                        ((TextView) WCSuzukiCurrentCarInfo.this.findViewById(R.id.tv_text6)).setText(hour / 10 + "H" + min + "M");
                         break;
                     }
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc_suzuki_cur_carinfo);
+        //setContentView(R.layout.layout_0443_wc_suzuki_cur_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -11,46 +11,45 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalHybridCarActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Log.d("canbus", String.format("IUiNotify->updateCode:%d", Integer.valueOf(updateCode)));
             switch (updateCode) {
-                case 271:
+                case 299:
                     Golf7FunctionalHybridCarActi.this.mUpdaterHybridVisibleOrGone();
                     break;
-                case 272:
+                case 300:
                     Golf7FunctionalHybridCarActi.this.mUpdaterHybridChargeCurrentMax();
                     break;
-                case 273:
+                case 301:
                     Golf7FunctionalHybridCarActi.this.mUpdaterHybridTemperatureInter();
                     break;
-                case 274:
+                case 302:
                     Golf7FunctionalHybridCarActi.this.mUpdaterHybridAirUseBatterySwitch();
                     break;
-                case 275:
+                case 303:
                     Golf7FunctionalHybridCarActi.this.mUpdateHybridChargeLowLimit();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_functional_hybridcar);
+        //setContentView(R.layout.layout_golf7_functional_hybridcar);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.glf7_btn_functional_charge_current_max_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_charge_current_max_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[272];
+                int value2 = DataCanbus.DATA[300];
                 if (value2 == 5) {
                     value = 255;
                 } else if (value2 == 10) {
@@ -63,11 +62,11 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(145, new int[]{1, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_functional_charge_current_max_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_charge_current_max_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[272];
+                int value2 = DataCanbus.DATA[300];
                 if (value2 == 5) {
                     value = 10;
                 } else if (value2 == 10) {
@@ -80,11 +79,11 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(145, new int[]{1, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_functional_temperatuer_inter_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_temperatuer_inter_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[273];
+                int value2 = DataCanbus.DATA[301];
                 if (value2 != 254) {
                     if (value2 == 255) {
                         value = 59;
@@ -97,11 +96,11 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_functional_temperatuer_inter_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_temperatuer_inter_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[273];
+                int value2 = DataCanbus.DATA[301];
                 if (value2 != 255) {
                     if (value2 == 254) {
                         value = 32;
@@ -114,27 +113,27 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.glf7_btn_air_use_battery_switch)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.glf7_btn_air_use_battery_switch)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[274];
+                int value = DataCanbus.DATA[302];
                 int value2 = value != 0 ? 0 : 1;
                 DataCanbus.PROXY.cmd(145, new int[]{3, value2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_functional_battery_charge_low_limit_m)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_battery_charge_low_limit_m)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[275];
+                int value = DataCanbus.DATA[303];
                 if (value != 0) {
                     DataCanbus.PROXY.cmd(145, new int[]{4, value - 1}, null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.glf7_btn_functional_battery_charge_low_limit_p)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalHybridCarActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.glf7_btn_functional_battery_charge_low_limit_p)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[275];
+                int value = DataCanbus.DATA[303];
                 if (value < 10) {
                     DataCanbus.PROXY.cmd(145, new int[]{4, value + 1}, null, null);
                 }
@@ -142,36 +141,36 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[271].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[272].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[273].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[274].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[275].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[299].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[300].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[301].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[302].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[303].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[271].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[272].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[273].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[274].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[275].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[299].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[300].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[301].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[302].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[303].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHybridVisibleOrGone() {
-        int value = DataCanbus.DATA[271];
+        int value = DataCanbus.DATA[299];
         findViewById(R.id.glf7_view_functional_charge_current_max).setVisibility((value & 128) != 0 ? 0 : 8);
         findViewById(R.id.glf7_view_functional_temperature_inter).setVisibility((value & 64) != 0 ? 0 : 8);
         findViewById(R.id.glf7_view_functional_air_use_battery_switch).setVisibility((value & 32) != 0 ? 0 : 8);
         findViewById(R.id.glf7_view_functional_battery_charge_low_limit).setVisibility((value & 16) == 0 ? 8 : 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHybridChargeCurrentMax() {
-        int value = DataCanbus.DATA[272];
+        int value = DataCanbus.DATA[300];
         if (((TextView) findViewById(R.id.glf7_txt_functional_charge_current_max)) != null) {
             if (value == 255) {
                 ((TextView) findViewById(R.id.glf7_txt_functional_charge_current_max)).setText(R.string.MAX);
@@ -181,9 +180,9 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHybridTemperatureInter() {
-        int value = DataCanbus.DATA[273];
+        int value = DataCanbus.DATA[301];
         if (((TextView) findViewById(R.id.glf7_txt_functional_temperature_inter)) != null) {
             if (value == 254) {
                 ((TextView) findViewById(R.id.glf7_txt_functional_temperature_inter)).setText(R.string.MIN);
@@ -196,15 +195,15 @@ public class Golf7FunctionalHybridCarActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterHybridAirUseBatterySwitch() {
-        int value = DataCanbus.DATA[274];
+        int value = DataCanbus.DATA[302];
         ((CheckedTextView) findViewById(R.id.glf7_btn_air_use_battery_switch)).setChecked(value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateHybridChargeLowLimit() {
-        int value = DataCanbus.DATA[275];
+        int value = DataCanbus.DATA[303];
         ((TextView) findViewById(R.id.glf7_txt_functional_battery_charge_low_limit)).setText(String.valueOf(value * 10) + " %");
     }
 }

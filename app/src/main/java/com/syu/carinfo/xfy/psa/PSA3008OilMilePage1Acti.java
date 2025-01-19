@@ -7,52 +7,51 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSA3008OilMilePage1Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xfy.psa.PSA3008OilMilePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 34:
+                case 110:
                     PSA3008OilMilePage1Acti.this.mUpdaterOilExpend();
-                case 35:
+                case 111:
                     PSA3008OilMilePage1Acti.this.mUpdaterDrivingMileage();
-                case 36:
+                case 112:
                     PSA3008OilMilePage1Acti.this.mUpdaterDivedMile();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa_all_oil_page1);
+        //setContentView(R.layout.layout_psa_all_oil_page1);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, 80);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[34];
+        int value = DataCanbus.DATA[110];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv1)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv1)).setText("--.--");
@@ -62,9 +61,9 @@ public class PSA3008OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[35];
+        int value = DataCanbus.DATA[111];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv2)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv2)).setText("----");
@@ -74,9 +73,9 @@ public class PSA3008OilMilePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDivedMile() {
-        int value = DataCanbus.DATA[36];
+        int value = DataCanbus.DATA[112];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv3)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page1_tv3)).setText("----");

@@ -122,6 +122,10 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     private TextView rectangleName;
 
     private SharedPreferences sharedPrefs;
+    private Button mTopDown;
+    private Button mBottomUp;
+    private Button mLeftToRight;
+    private Button mRightToLeft;
     private Button mConfirmLayout;
     private View mRootView;
     private LayoutInflater mInflater;
@@ -169,7 +173,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;
-            statsWidth = 240;
+            statsWidth = 245;
             statsHeight = 55;
             mapMinHeight = 284;
             musicMinHeight = 284;
@@ -178,7 +182,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
-            statsWidth = 240;
+            statsWidth = 245;
             statsHeight = 55;
             mapMinHeight = 340;
             musicMinHeight = 340;
@@ -186,7 +190,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             ballDiameter = 75.0f;
             coordinatesSize = 50;
             nameTextSize = 40;
-            statsWidth = 430;
+            statsWidth = 435;
             statsHeight = 100;
             mapMinHeight = 340;
             musicMinHeight = 340;
@@ -196,21 +200,21 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         colorballs = new ArrayList<>();
 
         rectangleName = rootView.findViewById(R.id.rectangle_name);
-        rectangleName.setText("Map");
+        rectangleName.setText(mContext.getString(R.string.creator_map));
 
         Button mTopUp = rootView.findViewById(R.id.top_up);
         mTopUp.setOnClickListener(this);
-        Button mTopDown = rootView.findViewById(R.id.top_down);
+        mTopDown = rootView.findViewById(R.id.top_down);
         mTopDown.setOnClickListener(this);
-        Button mBottomUp = rootView.findViewById(R.id.bottom_up);
+        mBottomUp = rootView.findViewById(R.id.bottom_up);
         mBottomUp.setOnClickListener(this);
         Button mBottomDown = rootView.findViewById(R.id.bottom_down);
         mBottomDown.setOnClickListener(this);
         Button mLeftToLeft = rootView.findViewById(R.id.left_to_left);
         mLeftToLeft.setOnClickListener(this);
-        Button mLeftToRight = rootView.findViewById(R.id.left_to_right);
+        mLeftToRight = rootView.findViewById(R.id.left_to_right);
         mLeftToRight.setOnClickListener(this);
-        Button mRightToLeft = rootView.findViewById(R.id.right_to_left);
+        mRightToLeft = rootView.findViewById(R.id.right_to_left);
         mRightToLeft.setOnClickListener(this);
         Button mRightToRight = rootView.findViewById(R.id.right_to_right); 
         mRightToRight.setOnClickListener(this);      
@@ -258,14 +262,14 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", margin + radioMinHeight);   
         initRect(context, new int[]{radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY, 12, 13, 14, 15});               
     
-        statsTopLeftX = sharedPrefs.getInt("statsTopLeftX", 20);
-        statsTopLeftY = sharedPrefs.getInt("statsTopLeftY", 20);          
-        statsTopRightX = sharedPrefs.getInt("statsTopRightX", statsTopLeftX + statsWidth);    
-        statsTopRightY = sharedPrefs.getInt("statsTopRightY", statsTopLeftY);
-        statsBottomRightX = sharedPrefs.getInt("statsBottomRightX", statsTopRightX);
-        statsBottomRightY = sharedPrefs.getInt("statsBottomRightY", statsTopRightY + statsHeight);
-        statsBottomLeftX = sharedPrefs.getInt("statsBottomLeftX", statsTopLeftX);
-        statsBottomLeftY = sharedPrefs.getInt("statsBottomLeftY", statsTopLeftY + statsHeight);
+        statsTopLeftX = sharedPrefs.getInt("statsTopLeftX", margin + 10);
+        statsTopLeftY = sharedPrefs.getInt("statsTopLeftY", margin + 10);          
+        statsTopRightX = statsTopLeftX + statsWidth;    
+        statsTopRightY = statsTopLeftY;
+        statsBottomRightX = statsTopRightX;
+        statsBottomRightY = statsTopRightY + statsHeight;
+        statsBottomLeftX = statsTopLeftX;
+        statsBottomLeftY = statsTopLeftY + statsHeight;
         initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 16, 17, 18, 19});
     }
 
@@ -319,15 +323,15 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
 
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Widgets are overlapping!");
-        builder.setMessage("Current layout won't be saved.");
-        builder.setPositiveButton("Proceed and don't save", new DialogInterface.OnClickListener() {
+        builder.setTitle(mContext.getString(R.string.overlapping));
+        builder.setMessage(mContext.getString(R.string.wont_save));
+        builder.setPositiveButton(mContext.getString(R.string.proceed_dont_save), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
             }
         });
-        builder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(mContext.getString(R.string.dismiss), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -409,7 +413,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         } else {
             drawRectSecondGroup(canvas, 1, 2, 3, paintMap);
         }
-        drawCoordinates(canvas, 0, 1, 2, 3, "Map");
+        drawCoordinates(canvas, 0, 1, 2, 3, mContext.getString(R.string.creator_map));
         rectMap = new Rectangle(point[0], point[1], point[2], point[3]);
 
         if (date) {   
@@ -422,7 +426,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             } else {
                 drawRectSecondGroup(canvas, 5, 6, 7, paintDate);
             }
-            drawCoordinates(canvas, 4, 5, 6, 7, "Date"); 
+            drawCoordinates(canvas, 4, 5, 6, 7, mContext.getString(R.string.creator_date)); 
             rectDate = new Rectangle(point[4], point[5], point[6], point[7]);
         }  
   
@@ -436,7 +440,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             } else {
                 drawRectSecondGroup(canvas, 9, 10, 11, paintMusic);
             }
-            drawCoordinates(canvas, 8, 9, 10, 11, "Music");
+            drawCoordinates(canvas, 8, 9, 10, 11, mContext.getString(R.string.creator_music));
             rectMusic = new Rectangle(point[8], point[9], point[10], point[11]); 
         }        
 
@@ -450,7 +454,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             } else {
                 drawRectSecondGroup(canvas, 13, 14, 15, paintRadio);
             }
-            drawCoordinates(canvas, 12, 13, 14, 15, "Radio");
+            drawCoordinates(canvas, 12, 13, 14, 15, mContext.getString(R.string.creator_radio));
             rectRadio = new Rectangle(point[12], point[13], point[14], point[15]); 
         }
 
@@ -460,7 +464,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             statsMinY = Math.min(point[16].y, point[18].y);
             statsMaxY = Math.max(point[16].y, point[18].y);
             canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, paint); 
-            drawStatsCoordinates(canvas, 16, 17, 18, 19, "Stats");
+            drawStatsCoordinates(canvas, 16, 17, 18, 19, mContext.getString(R.string.stats_category));
         }
 
         // draw the balls on the canvas
@@ -630,13 +634,21 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         if ((statsMinX < X && X < statsMaxX) && (statsMinY < Y && Y < statsMaxY)) {
                             diffX = 0;
                             diffY = 0;
-                            rectangleName.setText("Stats");
+                            rectangleName.setText(mContext.getString(R.string.stats_category));
                             selectedWidget = 5;
                             isInsideStats = true;                            
                             isInsideMap = false;
                             isInsideDate = false;
                             isInsideMusic = false;
                             isInsideRadio = false;
+                            mTopDown.setAlpha(.5f);
+                            mTopDown.setClickable(false);
+                            mBottomUp.setAlpha(.5f);
+                            mBottomUp.setClickable(false);
+                            mLeftToRight.setAlpha(.5f);
+                            mLeftToRight.setClickable(false);
+                            mRightToLeft.setAlpha(.5f);
+                            mRightToLeft.setClickable(false);
                             currentTouch = none;
                             break;
                         }  
@@ -645,8 +657,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     if ((mapMinX + sizeOfRect < X && X < mapMaxX - sizeOfRect) && (mapMinY + sizeOfRect < Y && Y < mapMaxY - sizeOfRect)) {
                         diffX = 0;
                         diffY = 0;
-                        rectangleName.setText("Map");
-                        selectedWidget = 1;
+                        rectangleName.setText(mContext.getString(R.string.creator_map));
+                        selectedWidget = 1;                        
+                        mTopDown.setAlpha(1.0f);
+                        mTopDown.setClickable(true);
+                        mBottomUp.setAlpha(1.0f);
+                        mBottomUp.setClickable(true);
+                        mLeftToRight.setAlpha(1.0f);
+                        mLeftToRight.setClickable(true);
+                        mRightToLeft.setAlpha(1.0f);
+                        mRightToLeft.setClickable(true);
                         isInsideMap = true;
                         break;
                     } 
@@ -655,8 +675,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         if ((dateMinX + sizeOfRect < X && X < dateMaxX - sizeOfRect) && (dateMinY + sizeOfRect < Y && Y < dateMaxY - sizeOfRect)) {
                             diffX = 0;
                             diffY = 0;
-                            rectangleName.setText("Date");
-                            selectedWidget = 2;
+                            rectangleName.setText(mContext.getString(R.string.creator_date));
+                            selectedWidget = 2;                        
+                            mTopDown.setAlpha(1.0f);
+                            mTopDown.setClickable(true);
+                            mBottomUp.setAlpha(1.0f);
+                            mBottomUp.setClickable(true);
+                            mLeftToRight.setAlpha(1.0f);
+                            mLeftToRight.setClickable(true);
+                            mRightToLeft.setAlpha(1.0f);
+                            mRightToLeft.setClickable(true);
                             isInsideDate = true;
                             break;
                         }  
@@ -666,8 +694,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         if ((musicMinX + sizeOfRect < X && X < musicMaxX - sizeOfRect) && (musicMinY + sizeOfRect < Y && Y < musicMaxY - sizeOfRect)) {
                             diffX = 0;
                             diffY = 0;
-                            rectangleName.setText("Music");
-                            selectedWidget = 3;
+                            rectangleName.setText(mContext.getString(R.string.creator_music));
+                            selectedWidget = 3;                        
+                            mTopDown.setAlpha(1.0f);
+                            mTopDown.setClickable(true);
+                            mBottomUp.setAlpha(1.0f);
+                            mBottomUp.setClickable(true);
+                            mLeftToRight.setAlpha(1.0f);
+                            mLeftToRight.setClickable(true);
+                            mRightToLeft.setAlpha(1.0f);
+                            mRightToLeft.setClickable(true);
                             isInsideMusic = true;
                             break;
                         }  
@@ -677,8 +713,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         if ((radioMinX + sizeOfRect < X && X < radioMaxX - sizeOfRect) && (radioMinY + sizeOfRect < Y && Y < radioMaxY - sizeOfRect)) {
                             diffX = 0;
                             diffY = 0;
-                            rectangleName.setText("Radio");
-                            selectedWidget = 4;
+                            rectangleName.setText(mContext.getString(R.string.creator_radio));
+                            selectedWidget = 4;                        
+                            mTopDown.setAlpha(1.0f);
+                            mTopDown.setClickable(true);
+                            mBottomUp.setAlpha(1.0f);
+                            mBottomUp.setClickable(true);
+                            mLeftToRight.setAlpha(1.0f);
+                            mLeftToRight.setClickable(true);
+                            mRightToLeft.setAlpha(1.0f);
+                            mRightToLeft.setClickable(true);
                             isInsideRadio = true;
                             break;
                         }  
@@ -922,6 +966,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     topUp(8, 9, 10, musicMinHeight);
                 } else if (selectedWidget == 4) {
                     topUp(12, 13, 14, radioMinHeight);
+                } else if (selectedWidget == 5) {
+                    up(16, 17, 18, 19);
                 }
                 invalidate();  
                 break;
@@ -934,7 +980,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     topDown(8, 9, 10, musicMinHeight);
                 } else if (selectedWidget == 4) {
                     topDown(12, 13, 14, radioMinHeight);
-                }
+                } 
                 invalidate();  
                 break;
             case R.id.bottom_up:
@@ -958,6 +1004,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     bottomDown(10, 11);
                 } else if (selectedWidget == 4) {
                     bottomDown(14, 15);
+                } else if (selectedWidget == 5) {
+                    down(16, 17, 18, 19);
                 }
                 invalidate();  
                 break;
@@ -970,6 +1018,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     leftToLeft(8, 9, 11, musicMinWidth);
                 } else if (selectedWidget == 4) {
                     leftToLeft(12, 13, 15, radioMinWidth);
+                } else if (selectedWidget == 5) {
+                    left(16, 17, 18, 19);
                 }
                 invalidate();  
                 break;
@@ -1006,6 +1056,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     rightToRight(9, 10);
                 } else if (selectedWidget == 4) {
                     rightToRight(13, 14);
+                } else if (selectedWidget == 5) {
+                    right(16, 17, 18, 19);
                 }
                 invalidate();  
                 break;
@@ -1013,7 +1065,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                 savePrefs();
                 View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
                 TextView text = toastLayout.findViewById(R.id.toast_text);
-                String message = "Layout has been set! Press Home button to see the result.";
+                String message = mContext.getString(R.string.layout_set);
                 text.setText(message);
                 text.setTextSize(30);
                 Toast toast = Toast.makeText(mContext, message, Toast.LENGTH_LONG);
@@ -1157,6 +1209,42 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         }
     }
 
+    private void up(int topLeft, int topRight, int bottomRight, int bottomLeft) {
+        if (point[topLeft].y > minBorderY) {
+            point[topLeft].y = point[topLeft].y - 1;
+            point[topRight].y = point[topRight].y - 1;
+            point[bottomRight].y = point[bottomRight].y - 1;
+            point[bottomLeft].y = point[bottomLeft].y - 1;
+        } 
+    }
+
+    private void down(int topLeft, int topRight, int bottomRight, int bottomLeft) {
+        if (point[bottomRight].y < (maxBorderY - margin)) {
+            point[topLeft].y = point[topLeft].y + 1;
+            point[topRight].y = point[topRight].y + 1;
+            point[bottomRight].y = point[bottomRight].y + 1;
+            point[bottomLeft].y = point[bottomLeft].y + 1;
+        }  
+    }
+
+    private void left(int topLeft, int topRight, int bottomRight, int bottomLeft) {
+        if (point[topLeft].x > minBorderX) {
+            point[topLeft].x = point[topLeft].x - 1;
+            point[topRight].x = point[topRight].x - 1;
+            point[bottomRight].x = point[bottomRight].x - 1;
+            point[bottomLeft].x = point[bottomLeft].x - 1;
+        } 
+    }
+
+    private void right(int topLeft, int topRight, int bottomRight, int bottomLeft) {
+        if (point[bottomRight].x < (maxBorderX - margin)) {
+            point[topLeft].x = point[topLeft].x + 1;
+            point[topRight].x = point[topRight].x + 1;
+            point[bottomRight].x = point[bottomRight].x + 1;
+            point[bottomLeft].x = point[bottomLeft].x + 1;
+        }  
+    }
+
     private void savePrefs() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putInt("mapTopLeftX", colorballs.get(0).getX());  
@@ -1201,7 +1289,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             editor.putInt("statsTopLeftX", point[16].x);  
             editor.putInt("statsTopLeftY", point[16].y);            
         } 
-        editor.commit();
+        editor.apply();
     }
 
     private void initRect(Context context, int[] values) {

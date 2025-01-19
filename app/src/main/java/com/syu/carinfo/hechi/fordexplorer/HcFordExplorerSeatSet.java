@@ -9,23 +9,22 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static HcFordExplorerSeatSet mInit;
     byte unit = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hechi.fordexplorer.HcFordExplorerSeatSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             HcFordExplorerSeatSet.this.updateSeatState();
         }
     };
     int state = 0;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_xc_ford_seatset);
+        //setContentView(R.layout.layout_0439_xc_ford_seatset);
         init();
     }
 
@@ -44,11 +43,11 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.ford_seat_sub1 /* 2131427817 */:
+                case R.id.ford_seat_sub1 /* 2131427833 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{1, 1}, null, null);
                         break;
@@ -56,7 +55,7 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{4, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub2 /* 2131427818 */:
+                case R.id.ford_seat_sub2 /* 2131427834 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{2, 1}, null, null);
                         break;
@@ -64,7 +63,7 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{5, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub3 /* 2131427819 */:
+                case R.id.ford_seat_sub3 /* 2131427835 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{3, 1}, null, null);
                         break;
@@ -72,7 +71,7 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{6, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add1 /* 2131427820 */:
+                case R.id.ford_seat_add1 /* 2131427836 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{1, 2}, null, null);
                         break;
@@ -80,7 +79,7 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{4, 2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add2 /* 2131427821 */:
+                case R.id.ford_seat_add2 /* 2131427837 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{2, 2}, null, null);
                         break;
@@ -88,7 +87,7 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{5, 2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add3 /* 2131427822 */:
+                case R.id.ford_seat_add3 /* 2131427838 */:
                     if (this.state == 4) {
                         DataCanbus.PROXY.cmd(7, new int[]{3, 1}, null, null);
                         break;
@@ -96,64 +95,64 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                         DataCanbus.PROXY.cmd(7, new int[]{6, 1}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub_1 /* 2131427823 */:
+                case R.id.ford_seat_sub_1 /* 2131427839 */:
                     if (this.state == 5) {
-                        int value = DataCanbus.DATA[81] - 1;
+                        int value = DataCanbus.DATA[141] - 1;
                         if (value < 0) {
                             value = 2;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{7, value}, null, null);
                         break;
                     } else if (this.state == 7) {
-                        int value2 = DataCanbus.DATA[84] - 1;
+                        int value2 = DataCanbus.DATA[144] - 1;
                         if (value2 < 0) {
                             value2 = 2;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{9, value2}, null, null);
                         break;
                     }
-                case R.id.ford_seat_sub_2 /* 2131427824 */:
+                case R.id.ford_seat_sub_2 /* 2131427840 */:
                     if (this.state == 5) {
-                        int value3 = DataCanbus.DATA[82] - 1;
+                        int value3 = DataCanbus.DATA[142] - 1;
                         if (value3 < 0) {
                             value3 = 2;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{8, value3}, null, null);
                         break;
                     } else if (this.state == 7) {
-                        int value4 = DataCanbus.DATA[85] - 1;
+                        int value4 = DataCanbus.DATA[145] - 1;
                         if (value4 < 0) {
                             value4 = 2;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{10, value4}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add_1 /* 2131427825 */:
+                case R.id.ford_seat_add_1 /* 2131427841 */:
                     if (this.state == 5) {
-                        int value5 = DataCanbus.DATA[81] + 1;
+                        int value5 = DataCanbus.DATA[141] + 1;
                         if (value5 > 2) {
                             value5 = 0;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{7, value5}, null, null);
                         break;
                     } else if (this.state == 7) {
-                        int value6 = DataCanbus.DATA[84] + 1;
+                        int value6 = DataCanbus.DATA[144] + 1;
                         if (value6 > 2) {
                             value6 = 0;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{9, value6}, null, null);
                         break;
                     }
-                case R.id.ford_seat_add_2 /* 2131427826 */:
+                case R.id.ford_seat_add_2 /* 2131427842 */:
                     if (this.state == 5) {
-                        int value7 = DataCanbus.DATA[82] + 1;
+                        int value7 = DataCanbus.DATA[142] + 1;
                         if (value7 > 2) {
                             value7 = 0;
                         }
                         DataCanbus.PROXY.cmd(7, new int[]{8, value7}, null, null);
                         break;
                     } else if (this.state == 7) {
-                        int value8 = DataCanbus.DATA[85] + 1;
+                        int value8 = DataCanbus.DATA[145] + 1;
                         if (value8 > 2) {
                             value8 = 0;
                         }
@@ -168,65 +167,65 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.notifyCanbus);
     }
 
     public void updateSeatState() {
-        if (DataCanbus.DATA[86] != 0) {
-            this.state = DataCanbus.DATA[86];
+        if (DataCanbus.DATA[146] != 0) {
+            this.state = DataCanbus.DATA[146];
         }
         switch (this.state) {
             case 4:
                 findViewById(R.id.layout_view1).setVisibility(0);
                 findViewById(R.id.layout_view2).setVisibility(8);
                 ((TextView) findViewById(R.id.tv_text1)).setText("驾驶侧靠背");
-                switch (DataCanbus.DATA[71]) {
+                switch (DataCanbus.DATA[131]) {
                     case 0:
                         ((TextView) findViewById(R.id.tv_text2)).setText("");
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[73]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[133]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist1);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[74]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[134]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist2);
                         break;
                     case 3:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[75]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[135]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist3);
                         break;
                 }
@@ -234,17 +233,17 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                 findViewById(R.id.layout_view1).setVisibility(8);
                 findViewById(R.id.layout_view2).setVisibility(0);
                 ((TextView) findViewById(R.id.tv_text1)).setText("驾驶侧按摩");
-                switch (DataCanbus.DATA[80]) {
+                switch (DataCanbus.DATA[140]) {
                     case 0:
                         ((TextView) findViewById(R.id.tv_text2)).setText("");
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[81]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[141]).toString());
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage1);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[82]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[142]).toString());
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage2);
                         break;
                 }
@@ -252,21 +251,21 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                 findViewById(R.id.layout_view1).setVisibility(0);
                 findViewById(R.id.layout_view2).setVisibility(8);
                 ((TextView) findViewById(R.id.tv_text1)).setText("乘客侧靠背");
-                switch (DataCanbus.DATA[72]) {
+                switch (DataCanbus.DATA[132]) {
                     case 0:
                         ((TextView) findViewById(R.id.tv_text2)).setText("");
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[76]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[136]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist1);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[77]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[137]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist2);
                         break;
                     case 3:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[78]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[138]).toString());
                         findViewById(R.id.ford_seat_status).setBackgroundResource(R.drawable.ic_seat_waist3);
                         break;
                 }
@@ -274,17 +273,17 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
                 findViewById(R.id.layout_view1).setVisibility(8);
                 findViewById(R.id.layout_view2).setVisibility(0);
                 ((TextView) findViewById(R.id.tv_text1)).setText("乘客侧按摩");
-                switch (DataCanbus.DATA[83]) {
+                switch (DataCanbus.DATA[143]) {
                     case 0:
                         ((TextView) findViewById(R.id.tv_text2)).setText("");
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_null);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[84]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[144]).toString());
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage1);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[85]).toString());
+                        ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder().append(DataCanbus.DATA[145]).toString());
                         findViewById(R.id.ford_seat_status1).setBackgroundResource(R.drawable.ic_seat_massage2);
                         break;
                 }
@@ -295,14 +294,14 @@ public class HcFordExplorerSeatSet extends Activity implements View.OnTouchListe
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         isFront = true;
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;

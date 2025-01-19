@@ -1,56 +1,48 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
 import com.syu.carinfo.psa_all.PsaAllAlarmRecordActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0012_WC2_XueTieLongC4L extends CallbackCanbusBase {
-    public static final int U_CNT_MAX = 27;
-    public static final int U_DOOR_BACK = 26;
-    public static final int U_DOOR_BEGIN = 21;
-    public static final int U_DOOR_END = 27;
-    public static final int U_DOOR_ENGINE = 21;
-    public static final int U_DOOR_FL = 22;
-    public static final int U_DOOR_FR = 23;
-    public static final int U_DOOR_RL = 24;
-    public static final int U_DOOR_RR = 25;
+    public static final int U_CNT_MAX = 117;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 27; i++) {
+        for (int i = 0; i < 117; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 21;
-        DoorHelper.sUcDoorFl = 22;
-        DoorHelper.sUcDoorFr = 23;
-        DoorHelper.sUcDoorRl = 24;
-        DoorHelper.sUcDoorRr = 25;
-        DoorHelper.sUcDoorBack = 26;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 21; i2 < 27; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 21; i < 27; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 27) {
-            if (updateCode == 18) {
+        if (updateCode >= 0 && updateCode < 117) {
+            if (updateCode == 115) {
                 HandlerCanbus.update(updateCode, ints);
-                int value = DataCanbus.DATA[18];
+                int value = DataCanbus.DATA[115];
                 if (value == 1 && !PSAOilMileIndexActi.mIsFront) {
                     JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.psa.PsaOilMileIndexActi");
                     return;
@@ -62,9 +54,9 @@ public class Callback_0012_WC2_XueTieLongC4L extends CallbackCanbusBase {
                     return;
                 }
             }
-            if (updateCode == 19) {
+            if (updateCode == 116) {
                 HandlerCanbus.update(updateCode, ints);
-                int value2 = DataCanbus.DATA[19];
+                int value2 = DataCanbus.DATA[116];
                 if (value2 == 1 && !PSAOilMileIndexActi.mIsFront) {
                     JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.psa.PsaAlarmRecordActi");
                     return;

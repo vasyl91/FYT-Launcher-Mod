@@ -9,55 +9,54 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XpMrbAirControlAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.XpMrbAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 89:
-                    XpMrbAirControlAct.this.mUpdateCycle();
-                    break;
-                case 93:
+                case 11:
                     XpMrbAirControlAct.this.mUpdateAcOn();
                     break;
-                case 97:
-                    XpMrbAirControlAct.this.mUpdateAirTempLeft();
+                case 12:
+                    XpMrbAirControlAct.this.mUpdateCycle();
                     break;
-                case 98:
-                    XpMrbAirControlAct.this.mUpdateAirTempRight();
-                    break;
-                case 99:
+                case 18:
                     XpMrbAirControlAct.this.updateBtnSource();
                     break;
-                case 100:
+                case 19:
                     XpMrbAirControlAct.this.updateBtnSource();
                     break;
-                case 101:
+                case 20:
                     XpMrbAirControlAct.this.updateBtnSource();
                     break;
-                case 102:
+                case 21:
                     XpMrbAirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 110:
+                case 27:
+                    XpMrbAirControlAct.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    XpMrbAirControlAct.this.mUpdateAirTempRight();
+                    break;
+                case 49:
                     XpMrbAirControlAct.this.mUpdaterAirAuto();
                     break;
-                case 112:
+                case 62:
                     XpMrbAirControlAct.this.mUpdateAirSync();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_359_xp_gm_mairuibao_air_control);
+        //setContentView(R.layout.layout_359_xp_gm_mairuibao_air_control);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.btn_air_temp_left_plus).setOnClickListener(this);
         findViewById(R.id.btn_air_temp_left_minus).setOnClickListener(this);
@@ -76,7 +75,7 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
         findViewById(R.id.air_xts_auto).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -84,7 +83,7 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -92,7 +91,7 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -148,47 +147,47 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
                 YLFunc.CAR_AIR_CONTROL(7, 21);
                 YLFunc.CAR_AIR_CONTROL(7, 0);
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 YLFunc.CAR_AIR_CONTROL(7, 9);
                 YLFunc.CAR_AIR_CONTROL(7, 0);
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
                 YLFunc.CAR_AIR_CONTROL(7, 10);
                 YLFunc.CAR_AIR_CONTROL(7, 0);
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
     }
 
     void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[97];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == 0) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -201,7 +200,7 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
     }
 
     void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[98];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == 0) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -214,22 +213,22 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
     }
 
     void mUpdaterAirAuto() {
-        int auto = DataCanbus.DATA[110];
+        int auto = DataCanbus.DATA[49];
         findViewById(R.id.air_xts_auto).setBackgroundResource(auto == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
     void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[93];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
     void mUpdateAirSync() {
-        int auto = DataCanbus.DATA[112];
+        int auto = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_sync).setBackgroundResource(auto == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
     void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[89];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_p);
         } else if (cycle == 0) {
@@ -238,17 +237,17 @@ public class XpMrbAirControlAct extends BaseActivity implements View.OnClickList
     }
 
     void mUpdaterAirWindLevelLeft() {
-        int level = DataCanbus.DATA[102];
+        int level = DataCanbus.DATA[21];
         if (((TextView) findViewById(R.id.dj_xts_air_winlevel)) != null && level > -1 && level < 9) {
             ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[99];
-        int foot = DataCanbus.DATA[101];
-        int body = DataCanbus.DATA[100];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
         if (body == 1 && foot != 1) {
             findViewById(R.id.air_xts_mode_body).setBackgroundResource(R.drawable.ic_xts_mode_body_p);
         } else {

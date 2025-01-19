@@ -6,15 +6,17 @@ import android.graphics.Typeface;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+
 import java.util.Calendar;
+
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Modulation extends TextView {
     public static Modulation modulation;
-    private Boolean bRegister;
+    private final Boolean bRegister;
     private IntentFilter filter;
     private Typeface gmeTypeface;
 
@@ -47,13 +49,13 @@ public class Modulation extends TextView {
         modulation = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         setModulation();
         super.onAttachedToWindow();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

@@ -14,105 +14,85 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListener {
     public static AirControlMaiTengDZSJ mInstance;
     public static boolean mIsFront = false;
     int Msgbox_Num = 0;
     int Msgbox_Num_p = 0;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.golf7.AirControlMaiTengDZSJ.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
+                case 10:
                     AirControlMaiTengDZSJ.this.updatePower(this.value);
                     if (ConstGolf.isWcGolf()) {
-                        AirControlMaiTengDZSJ.this.updateBlowWin(DataCanbus.DATA[153]);
+                        AirControlMaiTengDZSJ.this.updateBlowWin(DataCanbus.DATA[18]);
                         break;
                     } else {
-                        AirControlMaiTengDZSJ.this.updateBlowWin(DataCanbus.DATA[94]);
+                        AirControlMaiTengDZSJ.this.updateBlowWin(DataCanbus.DATA[18]);
                         break;
                     }
-                case 88:
-                case 89:
-                    AirControlMaiTengDZSJ.this.updateAuto();
-                    break;
-                case 90:
-                    if (ConstGolf.isWcGolf()) {
-                        AirControlMaiTengDZSJ.this.updateSync(this.value);
-                        break;
-                    }
-                case 91:
+                case 11:
                     AirControlMaiTengDZSJ.this.updateAC(this.value);
                     break;
-                case 92:
-                case 192:
-                    AirControlMaiTengDZSJ.this.updateSeatHotBlow_FL();
-                    break;
-                case 93:
-                case 191:
-                    AirControlMaiTengDZSJ.this.updateSeatHotBlow_FR();
-                    break;
-                case 94:
-                    if (!ConstGolf.isWcGolf()) {
-                        AirControlMaiTengDZSJ.this.updateBlowWin(this.value);
-                        break;
-                    }
-                case 95:
-                    AirControlMaiTengDZSJ.this.updateBlowBody(this.value);
-                    AirControlMaiTengDZSJ.this.updateAuto();
-                    break;
-                case 96:
-                    AirControlMaiTengDZSJ.this.updateBlowFoot(this.value);
-                    AirControlMaiTengDZSJ.this.updateAuto();
-                    break;
-                case 97:
-                    AirControlMaiTengDZSJ.this.mUpdaterAirWindLevelLeft(this.value);
-                    break;
-                case 98:
-                    AirControlMaiTengDZSJ.this.updateTempLeft(this.value);
-                    break;
-                case 99:
-                    AirControlMaiTengDZSJ.this.updateTempRight(this.value);
-                    break;
-                case 100:
-                    if (!ConstGolf.isWcGolf()) {
-                        AirControlMaiTengDZSJ.this.updateSync(this.value);
-                        break;
-                    }
-                case 101:
-                    AirControlMaiTengDZSJ.this.uRearSteerHeat(this.value);
-                    break;
-                case 122:
+                case 12:
                     if (!ConstGolf.isWcGolf()) {
                         AirControlMaiTengDZSJ.this.updateCycle(this.value);
                         break;
+                    } else {
+                        AirControlMaiTengDZSJ.this.updateCycle(this.value);
+                        break;
                     }
-                case 151:
-                    AirControlMaiTengDZSJ.this.updateRearLock(this.value);
+                case 13:
+                case 53:
+                    AirControlMaiTengDZSJ.this.updateAuto();
                     break;
-                case 153:
+                case 14:
+                    if (!ConstGolf.isWcGolf()) {
+                        AirControlMaiTengDZSJ.this.updateSync(this.value);
+                        break;
+                    }
+                case 18:
                     if (ConstGolf.isWcGolf()) {
                         AirControlMaiTengDZSJ.this.updateBlowWin(this.value);
                         AirControlMaiTengDZSJ.this.updateAuto();
                         break;
-                    }
-                case 154:
-                    AirControlMaiTengDZSJ.this.updateTempBack(this.value);
-                    break;
-                case 155:
-                    this.value = DataCanbus.DATA[updateCode] & 255;
-                    AirControlMaiTengDZSJ.this.updateWindMode(this.value);
-                    break;
-                case 157:
-                    if (ConstGolf.isWcGolf()) {
-                        AirControlMaiTengDZSJ.this.updateCycle(this.value);
+                    } else {
+                        AirControlMaiTengDZSJ.this.updateBlowWin(this.value);
                         break;
                     }
-                case 221:
+                case 19:
+                    AirControlMaiTengDZSJ.this.updateBlowBody(this.value);
+                    AirControlMaiTengDZSJ.this.updateAuto();
+                    break;
+                case 20:
+                    AirControlMaiTengDZSJ.this.updateBlowFoot(this.value);
+                    AirControlMaiTengDZSJ.this.updateAuto();
+                    break;
+                case 21:
+                    AirControlMaiTengDZSJ.this.mUpdaterAirWindLevelLeft(this.value);
+                    break;
+                case 27:
+                    AirControlMaiTengDZSJ.this.updateTempLeft(this.value);
+                    break;
+                case 28:
+                    AirControlMaiTengDZSJ.this.updateTempRight(this.value);
+                    break;
+                case 29:
+                case 31:
+                    AirControlMaiTengDZSJ.this.updateSeatHotBlow_FL();
+                    break;
+                case 30:
+                case 32:
+                    AirControlMaiTengDZSJ.this.updateSeatHotBlow_FR();
+                    break;
+                case 40:
+                    AirControlMaiTengDZSJ.this.updateTempBack(this.value);
+                    break;
+                case 55:
                     if (((ImageView) AirControlMaiTengDZSJ.this.findViewById(R.id.image_RHeatDriver)) != null) {
                         switch (this.value) {
                             case 0:
@@ -130,14 +110,29 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         }
                     }
                     break;
+                case 62:
+                    if (ConstGolf.isWcGolf()) {
+                        AirControlMaiTengDZSJ.this.updateSync(this.value);
+                        break;
+                    }
+                case 66:
+                    AirControlMaiTengDZSJ.this.uRearSteerHeat(this.value);
+                    break;
+                case 67:
+                    AirControlMaiTengDZSJ.this.updateRearLock(this.value);
+                    break;
+                case 69:
+                    this.value = DataCanbus.DATA[updateCode] & 255;
+                    AirControlMaiTengDZSJ.this.updateWindMode(this.value);
+                    break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0017_maiteng_air_dzsj);
+        //setContentView(R.layout.layout_0017_maiteng_air_dzsj);
         setListener();
         mInstance = this;
     }
@@ -191,7 +186,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value = 0;
         int cmdId = 0;
@@ -205,8 +200,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_templeft_munits /* 2131427346 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 20;
-                    int value2 = DataCanbus.DATA[98] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value2 = DataCanbus.DATA[27] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value2 == 254 || value2 <= 32) {
                             value = 254;
                             break;
@@ -235,8 +230,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_templeft_plus /* 2131427348 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 20;
-                    int value3 = DataCanbus.DATA[98] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value3 = DataCanbus.DATA[27] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value3 != 254 && value3 >= 32) {
                             if (value3 == 255 || value3 >= 59) {
                                 value = 255;
@@ -269,8 +264,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_tempright_munits /* 2131427350 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 21;
-                    int value4 = DataCanbus.DATA[99] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value4 = DataCanbus.DATA[28] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value4 == 254 || value4 <= 32) {
                             value = 254;
                             break;
@@ -299,8 +294,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_tempright_plus /* 2131427352 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 21;
-                    int value5 = DataCanbus.DATA[99] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value5 = DataCanbus.DATA[28] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value5 != 254 && value5 >= 32) {
                             if (value5 == 255 || value5 >= 59) {
                                 value = 255;
@@ -333,8 +328,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_tempback_munits /* 2131427354 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 22;
-                    int value6 = DataCanbus.DATA[154] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value6 = DataCanbus.DATA[40] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value6 == 254 || value6 <= 32) {
                             value = 254;
                             break;
@@ -363,8 +358,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_tempback_plus /* 2131427356 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 22;
-                    int value7 = DataCanbus.DATA[154] & 255;
-                    if (DataCanbus.DATA[156] == 0) {
+                    int value7 = DataCanbus.DATA[40] & 255;
+                    if (DataCanbus.DATA[37] == 0) {
                         if (value7 != 254 && value7 >= 32) {
                             if (value7 == 255 || value7 >= 59) {
                                 value = 255;
@@ -400,7 +395,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 178;
                 }
-                if (DataCanbus.DATA[87] != 0) {
+                if (DataCanbus.DATA[10] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -410,7 +405,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_dzsj_sync /* 2131427358 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 17;
-                    if (DataCanbus.DATA[90] != 0) {
+                    if (DataCanbus.DATA[62] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -419,7 +414,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                     }
                 } else {
                     cmdId = 179;
-                    if (DataCanbus.DATA[100] != 0) {
+                    if (DataCanbus.DATA[14] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -433,7 +428,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 188;
                 }
-                if (DataCanbus.DATA[151] != 0) {
+                if (DataCanbus.DATA[67] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -453,7 +448,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                     }
                 } else {
                     cmdId = 32;
-                    if (DataCanbus.DATA[190] != 1) {
+                    if (DataCanbus.DATA[76] != 1) {
                         value = 1;
                         break;
                     } else {
@@ -463,7 +458,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 }
             case R.id.btn_air_steerheat /* 2131427361 */:
                 cmdId = 35;
-                value = (DataCanbus.DATA[101] + 1) % 2;
+                value = (DataCanbus.DATA[66] + 1) % 2;
                 break;
             case R.id.btn_dzsj_set /* 2131427362 */:
                 try {
@@ -521,7 +516,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 183;
                 }
-                value = DataCanbus.DATA[97] - 1;
+                value = DataCanbus.DATA[21] - 1;
                 if (value <= 0) {
                     value = 0;
                     break;
@@ -532,14 +527,14 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 183;
                 }
-                value = DataCanbus.DATA[97] + 1;
+                value = DataCanbus.DATA[21] + 1;
                 if (value >= 7) {
                     value = 7;
                     break;
                 }
             case R.id.btn_air_ac /* 2131427390 */:
                 cmdId = 15;
-                if (DataCanbus.DATA[91] != 0) {
+                if (DataCanbus.DATA[11] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -549,7 +544,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_mode_win /* 2131427391 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 26;
-                    if (DataCanbus.DATA[153] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -558,7 +553,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                     }
                 } else {
                     cmdId = 182;
-                    if (DataCanbus.DATA[94] != 0) {
+                    if (DataCanbus.DATA[18] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -572,7 +567,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 180;
                 }
-                if (DataCanbus.DATA[95] != 0) {
+                if (DataCanbus.DATA[19] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -585,7 +580,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                 } else {
                     cmdId = 181;
                 }
-                if (DataCanbus.DATA[96] != 0) {
+                if (DataCanbus.DATA[20] != 0) {
                     value = 0;
                     break;
                 } else {
@@ -595,7 +590,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             case R.id.btn_air_cycle /* 2131427394 */:
                 if (ConstGolf.isWcGolf()) {
                     cmdId = 19;
-                    if (DataCanbus.DATA[157] != 0) {
+                    if (DataCanbus.DATA[12] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -604,7 +599,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                     }
                 } else {
                     cmdId = 176;
-                    if (DataCanbus.DATA[122] != 0) {
+                    if (DataCanbus.DATA[12] != 0) {
                         value = 0;
                         break;
                     } else {
@@ -618,7 +613,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (!ConstGolf.isWcGolf()) {
@@ -639,7 +634,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -653,69 +648,69 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[221].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[221].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mCanbusNotify);
     }
 
     protected void updateSeatHotBlow_FR() {
         if (((ImageView) findViewById(R.id.image_FRHeatDriver)) != null) {
-            int value1 = DataCanbus.DATA[191];
-            int value2 = DataCanbus.DATA[93];
+            int value1 = DataCanbus.DATA[32];
+            int value2 = DataCanbus.DATA[30];
             if (value1 == 0) {
                 switch (value2) {
                     case 0:
@@ -756,8 +751,8 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
 
     protected void updateSeatHotBlow_FL() {
         if (((ImageView) findViewById(R.id.image_FLHeatDriver)) != null) {
-            int value1 = DataCanbus.DATA[192];
-            int value2 = DataCanbus.DATA[92];
+            int value1 = DataCanbus.DATA[31];
+            int value2 = DataCanbus.DATA[29];
             if (value1 == 0) {
                 switch (value2) {
                     case 0:
@@ -802,7 +797,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempLeft(int value) {
         Boolean isHot = false;
         if (((TextView) findViewById(R.id.tv_air_templeft)) != null) {
@@ -816,7 +811,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             ((TextView) findViewById(R.id.tv_air_templeft)).setText((value / 2.0f) + "℃");
                             if (value >= 46) {
                                 isHot = true;
@@ -841,7 +836,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             int value2 = (value * 5) + 155;
                             ((TextView) findViewById(R.id.tv_air_templeft)).setText((value2 / 10.0f) + "℃");
                             if (value2 >= 230) {
@@ -870,7 +865,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempRight(int value) {
         Boolean isHot = false;
         if (((TextView) findViewById(R.id.tv_air_tempright)) != null) {
@@ -884,7 +879,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             ((TextView) findViewById(R.id.tv_air_tempright)).setText((value / 2.0f) + "℃");
                             if (value >= 46) {
                                 isHot = true;
@@ -909,7 +904,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             int value2 = (value * 5) + 155;
                             ((TextView) findViewById(R.id.tv_air_tempright)).setText((value2 / 10.0f) + "℃");
                             if (value2 >= 230) {
@@ -938,7 +933,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempBack(int value) {
         Boolean isHot = false;
         if (((TextView) findViewById(R.id.tv_air_tempback)) != null) {
@@ -952,7 +947,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             ((TextView) findViewById(R.id.tv_air_tempback)).setText((value / 2.0f) + "℃");
                             if (value >= 46) {
                                 isHot = true;
@@ -977,7 +972,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
                         isHot = true;
                         break;
                     default:
-                        if (DataCanbus.DATA[156] == 0) {
+                        if (DataCanbus.DATA[37] == 0) {
                             int value2 = (value * 5) + 155;
                             ((TextView) findViewById(R.id.tv_air_tempback)).setText((value2 / 10.0f) + "℃");
                             if (value2 >= 230) {
@@ -1003,7 +998,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePower(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_power)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_power)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_power_p : R.drawable.ic_dzsj_dz_power);
@@ -1036,18 +1031,18 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
         setViewVisible((Button) findViewById(R.id.btn_dzsj_show), true);
         if (((ProgressBar) findViewById(R.id.pb_wind_progress)) != null) {
-            ((ProgressBar) findViewById(R.id.pb_wind_progress)).setProgress(DataCanbus.DATA[97]);
+            ((ProgressBar) findViewById(R.id.pb_wind_progress)).setProgress(DataCanbus.DATA[21]);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAC(int value) {
         if (((Button) findViewById(R.id.btn_air_ac)) != null) {
             ((Button) findViewById(R.id.btn_air_ac)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_ac : R.drawable.ic_dzsj_dz_ac_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCycle(int value) {
         if (((Button) findViewById(R.id.btn_air_cycle)) != null) {
             ((Button) findViewById(R.id.btn_air_cycle)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_cycle : R.drawable.ic_dzsj_dz_cycle_p);
@@ -1060,7 +1055,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateWindMode(int value) {
         int i = R.drawable.ic_dzsj_dz_list_bingo_p;
         if (((ImageView) findViewById(R.id.iv_dzsj_right)) != null) {
@@ -1077,91 +1072,91 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             }
         }
         if (((ImageView) findViewById(R.id.iv_air_wind0)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_wind0)).setImageDrawable(getResources().getDrawable(value == 0 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_wind0)).setImageDrawable(getResources().getDrawable(value == 0 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_wind1)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_wind1)).setImageDrawable(getResources().getDrawable(value == 1 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_wind1)).setImageDrawable(getResources().getDrawable(value == 1 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_wind2)) != null) {
             ImageView imageView = (ImageView) findViewById(R.id.iv_air_wind2);
             Resources resources = getResources();
             if (value != 2) {
-                i = 2130839577;
+                i = 2130840225;
             }
             imageView.setImageDrawable(resources.getDrawable(i));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearLock(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_rear_lock)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_rear_lock)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_rear : R.drawable.ic_dzsj_dz_rear_p);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowWin(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_win)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_win)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_up : R.drawable.ic_dzsj_dz_up_p);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_win)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_win)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_win)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_win_r)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_win_r)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_win_r)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowBody(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_body)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_body)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_body : R.drawable.ic_dzsj_dz_body_p);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_body)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_body)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_body)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_body_r)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_body_r)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_body_r)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_rear_body)) != null) {
             if (ConstGolf.isWcGolf()) {
-                ((ImageView) findViewById(R.id.image_air_mode_rear_body)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+                ((ImageView) findViewById(R.id.image_air_mode_rear_body)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
             } else {
                 ((ImageView) findViewById(R.id.image_air_mode_rear_body)).setVisibility(8);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBlowFoot(int value) {
         if (((Button) findViewById(R.id.btn_air_mode_foot)) != null) {
             ((Button) findViewById(R.id.btn_air_mode_foot)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_foot : R.drawable.ic_dzsj_dz_foot_p);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_foot)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_foot)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_foot)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_foot_r)) != null) {
-            ((ImageView) findViewById(R.id.image_air_mode_foot_r)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+            ((ImageView) findViewById(R.id.image_air_mode_foot_r)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
         }
         if (((ImageView) findViewById(R.id.image_air_mode_rear_foot)) != null) {
             if (ConstGolf.isWcGolf()) {
-                ((ImageView) findViewById(R.id.image_air_mode_rear_foot)).setVisibility((value == 0 || DataCanbus.DATA[87] == 0) ? 8 : 0);
+                ((ImageView) findViewById(R.id.image_air_mode_rear_foot)).setVisibility((value == 0 || DataCanbus.DATA[10] == 0) ? 8 : 0);
             } else {
                 ((ImageView) findViewById(R.id.image_air_mode_rear_foot)).setVisibility(8);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAuto() {
         int LeftList_Num = 3;
-        if (DataCanbus.DATA[88] == 1) {
+        if (DataCanbus.DATA[53] == 1) {
             LeftList_Num = 1;
         }
-        if (DataCanbus.DATA[153] == 1 && DataCanbus.DATA[95] == 0 && DataCanbus.DATA[96] == 0) {
+        if (DataCanbus.DATA[18] == 1 && DataCanbus.DATA[19] == 0 && DataCanbus.DATA[20] == 0) {
             LeftList_Num = 2;
         }
-        if (DataCanbus.DATA[89] == 1) {
+        if (DataCanbus.DATA[13] == 1) {
             LeftList_Num = 0;
         }
         show_left(LeftList_Num);
@@ -1186,25 +1181,25 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
             }
         }
         if (((ImageView) findViewById(R.id.iv_air_maxac)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_maxac)).setImageDrawable(getResources().getDrawable(LeftList_Num == 1 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_maxac)).setImageDrawable(getResources().getDrawable(LeftList_Num == 1 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_front)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_front)).setImageDrawable(getResources().getDrawable(LeftList_Num == 2 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_front)).setImageDrawable(getResources().getDrawable(LeftList_Num == 2 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_auto)) != null) {
-            ((ImageView) findViewById(R.id.iv_air_auto)).setImageDrawable(getResources().getDrawable(LeftList_Num == 0 ? 2130839578 : 2130839577));
+            ((ImageView) findViewById(R.id.iv_air_auto)).setImageDrawable(getResources().getDrawable(LeftList_Num == 0 ? 2130840226 : 2130840225));
         }
         if (((ImageView) findViewById(R.id.iv_air_manually)) != null) {
             ImageView imageView = (ImageView) findViewById(R.id.iv_air_manually);
             Resources resources = getResources();
             if (LeftList_Num != 3) {
-                i = 2130839577;
+                i = 2130840225;
             }
             imageView.setImageDrawable(resources.getDrawable(i));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSync(int value) {
         if (((Button) findViewById(R.id.btn_dzsj_sync)) != null) {
             ((Button) findViewById(R.id.btn_dzsj_sync)).setBackgroundResource(value == 0 ? R.drawable.ic_dzsj_dz_sync : R.drawable.ic_dzsj_dz_sync_p);
@@ -1212,7 +1207,7 @@ public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListe
     }
 
     void mUpdaterAirWindLevelLeft(int value) {
-        if (DataCanbus.DATA[87] == 0) {
+        if (DataCanbus.DATA[10] == 0) {
             value = 0;
         }
         if (((ProgressBar) findViewById(R.id.pb_wind_progress)) != null) {

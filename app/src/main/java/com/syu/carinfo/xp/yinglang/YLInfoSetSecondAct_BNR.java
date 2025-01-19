@@ -10,93 +10,92 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickListener {
-    int[] ids = {124, 125, 126, 127, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.yinglang.YLInfoSetSecondAct_BNR.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {185, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             YLInfoSetSecondAct_BNR.this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 20:
+                case 117:
                     YLInfoSetSecondAct_BNR.this.updaternearCarUnlock();
                     break;
-                case 21:
+                case 118:
                     YLInfoSetSecondAct_BNR.this.updaterForgotKey();
                     break;
-                case 22:
+                case 119:
                     YLInfoSetSecondAct_BNR.this.updaterDriverStyle();
                     break;
-                case 23:
+                case 120:
                     YLInfoSetSecondAct_BNR.this.updaterRelockDoor();
                     break;
-                case 24:
+                case 121:
                     YLInfoSetSecondAct_BNR.this.updaterautoWipers();
                     break;
-                case 25:
+                case 122:
                     YLInfoSetSecondAct_BNR.this.updaterblindZone();
                     break;
-                case 26:
+                case 123:
                     YLInfoSetSecondAct_BNR.this.updaterleaveCarLock();
                     break;
-                case 27:
+                case 124:
                     YLInfoSetSecondAct_BNR.this.updaterhandTraffic();
                     break;
-                case 28:
+                case 125:
                     YLInfoSetSecondAct_BNR.this.updateradaptiveForwardLight();
                     break;
-                case 29:
+                case 126:
                     YLInfoSetSecondAct_BNR.this.updaterMirrorAutoFold();
                     break;
-                case 30:
+                case 127:
                     YLInfoSetSecondAct_BNR.this.updaterReverTiltMirror();
                     break;
-                case 31:
+                case 128:
                     YLInfoSetSecondAct_BNR.this.updatereasyExitCar();
                     break;
-                case 32:
+                case 129:
                     YLInfoSetSecondAct_BNR.this.updaterAutoMemory();
                     break;
-                case 124:
+                case 185:
                     YLInfoSetSecondAct_BNR.this.uCrashPrepare(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 125:
+                case 189:
                     YLInfoSetSecondAct_BNR.this.uRampStartAssist(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 126:
+                case 190:
                     YLInfoSetSecondAct_BNR.this.uRemoteDoorWindow(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 127:
+                case 191:
                     YLInfoSetSecondAct_BNR.this.uCarState(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 135:
+                case 192:
                     YLInfoSetSecondAct_BNR.this.uRemoteAirPower(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 136:
+                case 193:
                     YLInfoSetSecondAct_BNR.this.uRemoteRearAirPower(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 137:
+                case 194:
                     YLInfoSetSecondAct_BNR.this.uRemoteRearDefrog(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 138:
+                case 195:
                     YLInfoSetSecondAct_BNR.this.uAcc(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 139:
+                case 196:
                     YLInfoSetSecondAct_BNR.this.uRearSeat(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 140:
+                case 197:
                     YLInfoSetSecondAct_BNR.this.uCrashType(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 141:
+                case 198:
                     YLInfoSetSecondAct_BNR.this.uWalker(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 142:
+                case 199:
                     YLInfoSetSecondAct_BNR.this.uChangeLane(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 143:
+                case 200:
                     YLInfoSetSecondAct_BNR.this.uEasyExit(YLInfoSetSecondAct_BNR.this.value);
                     break;
-                case 144:
+                case 201:
                     YLInfoSetSecondAct_BNR.this.uRearCarPass(YLInfoSetSecondAct_BNR.this.value);
                     break;
             }
@@ -104,10 +103,10 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
     };
     int value;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xp_yl_info_second_set_bnr);
+        //setContentView(R.layout.layout_xp_yl_info_second_set_bnr);
         setUI();
     }
 
@@ -144,73 +143,57 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         ((Button) findViewById(R.id.wc_gm_walker_p)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.wc_weilang_auto_fangzhuang_preper_pre /* 2131431904 */:
-            case R.id.wc_weilang_auto_fangzhuang_preper_next /* 2131431906 */:
-                int value1 = DataCanbus.DATA[124] + 1;
-                if (value1 == 4) {
-                    value1 = 3;
-                }
-                YLFunc.CAR_COMM_CONTROL(25, value1 % 3);
+            case R.id.wc_weilang_remote_car_window_control_check /* 2131431973 */:
+                int value1 = DataCanbus.DATA[190];
+                YLFunc.CAR_COMM_CONTROL(27, value1 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_weilang_car_state_check /* 2131431908 */:
-                int value12 = DataCanbus.DATA[127];
-                YLFunc.CAR_COMM_CONTROL(26, value12 == 0 ? 1 : 0);
+            case R.id.xfl_ck_air_rear_window_auto_foggest_check /* 2131432816 */:
+                int value12 = DataCanbus.DATA[194];
+                YLFunc.CAR_AIR_CONTROL(98, value12 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_gm_cruise_check /* 2131431910 */:
-                int value13 = DataCanbus.DATA[138];
-                YLFunc.CAR_COMM_CONTROL(96, value13 == 0 ? 1 : 0);
+            case R.id.rzc_gl8_remote_start_air /* 2131433401 */:
+                int value13 = DataCanbus.DATA[192];
+                YLFunc.CAR_AIR_CONTROL(96, value13 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_weilang_remote_car_window_control_check /* 2131432023 */:
-                int value14 = DataCanbus.DATA[126];
-                YLFunc.CAR_COMM_CONTROL(27, value14 == 0 ? 1 : 0);
+            case R.id.rzc_gl8_start_rear_air /* 2131433403 */:
+                int value14 = DataCanbus.DATA[193] + 1;
+                YLFunc.CAR_AIR_CONTROL(97, value14 % 3);
                 break;
-            case R.id.xfl_ck_air_rear_window_auto_foggest_check /* 2131432890 */:
-                int value15 = DataCanbus.DATA[137];
-                YLFunc.CAR_AIR_CONTROL(98, value15 == 0 ? 1 : 0);
+            case R.id.xp_yl_lane_assist_pre /* 2131433431 */:
+            case R.id.xp_yl_lane_assist_next /* 2131433433 */:
+                int value15 = DataCanbus.DATA[189];
+                YLFunc.CAR_COMM_CONTROL(28, value15 == 0 ? 1 : 0);
                 break;
-            case R.id.rzc_gl8_remote_start_air /* 2131433479 */:
-                int value16 = DataCanbus.DATA[135];
-                YLFunc.CAR_AIR_CONTROL(96, value16 == 0 ? 1 : 0);
+            case R.id.xp_yl_Near_car_unlocked_set_check /* 2131433441 */:
+                int value16 = DataCanbus.DATA[117];
+                YLFunc.CAR_COMM_CONTROL(12, value16 == 0 ? 1 : 0);
                 break;
-            case R.id.rzc_gl8_start_rear_air /* 2131433481 */:
-                int value17 = DataCanbus.DATA[136] + 1;
-                YLFunc.CAR_AIR_CONTROL(97, value17 % 3);
-                break;
-            case R.id.xp_yl_lane_assist_pre /* 2131433517 */:
-            case R.id.xp_yl_lane_assist_next /* 2131433519 */:
-                int value18 = DataCanbus.DATA[125];
-                YLFunc.CAR_COMM_CONTROL(28, value18 == 0 ? 1 : 0);
-                break;
-            case R.id.xp_yl_Near_car_unlocked_set_check /* 2131433526 */:
-                int value19 = DataCanbus.DATA[20];
-                YLFunc.CAR_COMM_CONTROL(12, value19 == 0 ? 1 : 0);
-                break;
-            case R.id.xp_yl_remote_Forgotten_Keys_check /* 2131433528 */:
-                int value2 = DataCanbus.DATA[21];
+            case R.id.xp_yl_remote_Forgotten_Keys_check /* 2131433444 */:
+                int value2 = DataCanbus.DATA[118];
                 YLFunc.CAR_COMM_CONTROL(13, value2 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_PERSONALIZATION_BY_DRIVER_check /* 2131433530 */:
-                int value3 = DataCanbus.DATA[22];
+            case R.id.xp_yl_PERSONALIZATION_BY_DRIVER_check /* 2131433446 */:
+                int value3 = DataCanbus.DATA[119];
                 YLFunc.CAR_COMM_CONTROL(14, value3 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_AUTO_RELOCK_DOORS_check /* 2131433532 */:
-                int value4 = DataCanbus.DATA[23];
+            case R.id.xp_yl_AUTO_RELOCK_DOORS_check /* 2131433448 */:
+                int value4 = DataCanbus.DATA[120];
                 YLFunc.CAR_COMM_CONTROL(15, value4 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_car_set_Second_auto_rain_refresh_check /* 2131433534 */:
-                int value5 = DataCanbus.DATA[24];
+            case R.id.xp_yl_car_set_Second_auto_rain_refresh_check /* 2131433450 */:
+                int value5 = DataCanbus.DATA[121];
                 YLFunc.CAR_COMM_CONTROL(24, value5 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_Side_blind_zone_check /* 2131433536 */:
-                int value6 = DataCanbus.DATA[25];
+            case R.id.xp_yl_Side_blind_zone_check /* 2131433452 */:
+                int value6 = DataCanbus.DATA[122];
                 YLFunc.CAR_COMM_CONTROL(22, value6 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_leave_door_latch_pre /* 2131433538 */:
-                int value132 = DataCanbus.DATA[26];
+            case R.id.xp_yl_leave_door_latch_pre /* 2131433454 */:
+                int value132 = DataCanbus.DATA[123];
                 if (value132 == 0) {
                     YLFunc.CAR_COMM_CONTROL(23, 2);
                     break;
@@ -221,8 +204,8 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
                     YLFunc.CAR_COMM_CONTROL(23, 1);
                     break;
                 }
-            case R.id.xp_yl_leave_door_latch_next /* 2131433540 */:
-                int value142 = DataCanbus.DATA[26];
+            case R.id.xp_yl_leave_door_latch_next /* 2131433456 */:
+                int value142 = DataCanbus.DATA[123];
                 if (value142 == 0) {
                     YLFunc.CAR_COMM_CONTROL(23, 1);
                     break;
@@ -233,55 +216,71 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
                     YLFunc.CAR_COMM_CONTROL(23, 0);
                     break;
                 }
-            case R.id.xp_yinglang_left_right_traffic_check /* 2131433542 */:
-                int value7 = DataCanbus.DATA[27];
+            case R.id.xp_yinglang_left_right_traffic_check /* 2131433458 */:
+                int value7 = DataCanbus.DATA[124];
                 YLFunc.CAR_COMM_CONTROL(16, value7 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yinglang_adaptive_forward_lighting_check /* 2131433545 */:
-                int value8 = DataCanbus.DATA[28];
+            case R.id.xp_yinglang_adaptive_forward_lighting_check /* 2131433461 */:
+                int value8 = DataCanbus.DATA[125];
                 YLFunc.CAR_COMM_CONTROL(17, value8 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_comfort_Automatic_folding_mirrors_check /* 2131433548 */:
-                int value9 = DataCanbus.DATA[29];
+            case R.id.xp_yl_comfort_Automatic_folding_mirrors_check /* 2131433464 */:
+                int value9 = DataCanbus.DATA[126];
                 YLFunc.CAR_COMM_CONTROL(18, value9 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_comfort_Mirror_reversing_automatic_tilt_check /* 2131433550 */:
-                int value10 = DataCanbus.DATA[30];
+            case R.id.xp_yl_comfort_Mirror_reversing_automatic_tilt_check /* 2131433466 */:
+                int value10 = DataCanbus.DATA[127];
                 YLFunc.CAR_COMM_CONTROL(19, value10 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_easy_exit_check /* 2131433552 */:
-                int value11 = DataCanbus.DATA[31];
+            case R.id.xp_yl_easy_exit_check /* 2131433468 */:
+                int value11 = DataCanbus.DATA[128];
                 YLFunc.CAR_COMM_CONTROL(20, value11 == 0 ? 1 : 0);
                 break;
-            case R.id.xp_yl_auto_memory_check /* 2131433554 */:
-                int value122 = DataCanbus.DATA[32];
+            case R.id.xp_yl_auto_memory_check /* 2131433470 */:
+                int value122 = DataCanbus.DATA[129];
                 YLFunc.CAR_COMM_CONTROL(21, value122 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_gm_rearseat_reminder /* 2131433556 */:
-                int value110 = DataCanbus.DATA[139];
+            case R.id.wc_weilang_auto_fangzhuang_preper_pre /* 2131433472 */:
+            case R.id.wc_weilang_auto_fangzhuang_preper_next /* 2131433474 */:
+                int value17 = DataCanbus.DATA[185] + 1;
+                if (value17 == 4) {
+                    value17 = 3;
+                }
+                YLFunc.CAR_COMM_CONTROL(25, value17 % 3);
+                break;
+            case R.id.wc_weilang_car_state_check /* 2131433476 */:
+                int value18 = DataCanbus.DATA[191];
+                YLFunc.CAR_COMM_CONTROL(26, value18 == 0 ? 1 : 0);
+                break;
+            case R.id.wc_gm_cruise_check /* 2131433478 */:
+                int value19 = DataCanbus.DATA[195];
+                YLFunc.CAR_COMM_CONTROL(96, value19 == 0 ? 1 : 0);
+                break;
+            case R.id.wc_gm_rearseat_reminder /* 2131433480 */:
+                int value110 = DataCanbus.DATA[196];
                 YLFunc.CAR_COMM_CONTROL(97, value110 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_gm_crash_remind_type /* 2131433558 */:
-                int value111 = DataCanbus.DATA[140];
+            case R.id.wc_gm_crash_remind_type /* 2131433482 */:
+                int value111 = DataCanbus.DATA[197];
                 YLFunc.CAR_COMM_CONTROL(98, value111 == 0 ? 1 : 0);
                 break;
-            case R.id.wc_gm_walker_m /* 2131433561 */:
-            case R.id.wc_gm_walker_p /* 2131433563 */:
-                int value112 = DataCanbus.DATA[141] + 1;
+            case R.id.wc_gm_walker_m /* 2131433485 */:
+            case R.id.wc_gm_walker_p /* 2131433487 */:
+                int value112 = DataCanbus.DATA[198] + 1;
                 YLFunc.CAR_COMM_CONTROL(99, value112 % 3);
                 break;
-            case R.id.ctv_sb_so3_change_wall_warm /* 2131433565 */:
-                int value113 = DataCanbus.DATA[142];
+            case R.id.ctv_sb_so3_change_wall_warm /* 2131433489 */:
+                int value113 = DataCanbus.DATA[199];
                 YLFunc.CAR_COMM_CONTROL(100, value113 == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_sb_so3_back_car_accose_warm /* 2131433567 */:
-                int value114 = DataCanbus.DATA[144];
+            case R.id.ctv_sb_so3_back_car_accose_warm /* 2131433491 */:
+                int value114 = DataCanbus.DATA[201];
                 YLFunc.CAR_COMM_CONTROL(102, value114 == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
@@ -310,7 +309,7 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -321,46 +320,46 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
         for (int i = 0; i < this.ids.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.ids[i]].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
         for (int i = 0; i < this.ids.length; i++) {
             DataCanbus.NOTIFY_EVENTS[this.ids[i]].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaternearCarUnlock() {
-        int switchOn = DataCanbus.DATA[20];
+        int switchOn = DataCanbus.DATA[117];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.xp_yl_Near_car_unlocked_set_check)).setChecked(false);
             ((TextView) findViewById(R.id.xp_yl_Near_car_unlocked_set_tv)).setText(R.string.klc_remote_Smart_Near_car_unlocked_all_door);
@@ -473,39 +472,39 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterForgotKey() {
-        int switchOn = DataCanbus.DATA[21];
+        int switchOn = DataCanbus.DATA[118];
         ((CheckedTextView) findViewById(R.id.xp_yl_remote_Forgotten_Keys_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDriverStyle() {
-        int switchOn = DataCanbus.DATA[22];
+        int switchOn = DataCanbus.DATA[119];
         ((CheckedTextView) findViewById(R.id.xp_yl_PERSONALIZATION_BY_DRIVER_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRelockDoor() {
-        int switchOn = DataCanbus.DATA[23];
+        int switchOn = DataCanbus.DATA[120];
         ((CheckedTextView) findViewById(R.id.xp_yl_AUTO_RELOCK_DOORS_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterautoWipers() {
-        int switchOn = DataCanbus.DATA[24];
+        int switchOn = DataCanbus.DATA[121];
         ((CheckedTextView) findViewById(R.id.xp_yl_car_set_Second_auto_rain_refresh_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterblindZone() {
-        int switchOn = DataCanbus.DATA[25];
+        int switchOn = DataCanbus.DATA[122];
         ((CheckedTextView) findViewById(R.id.xp_yl_Side_blind_zone_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterleaveCarLock() {
-        int switchOn = DataCanbus.DATA[26];
+        int switchOn = DataCanbus.DATA[123];
         if (switchOn == 0) {
             ((TextView) findViewById(R.id.xp_yl_leave_door_latch_tv)).setText(R.string.klc_onstar_close);
         } else if (switchOn == 1) {
@@ -515,9 +514,9 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterhandTraffic() {
-        int switchOn = DataCanbus.DATA[27];
+        int switchOn = DataCanbus.DATA[124];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.xp_yinglang_left_right_traffic_check)).setChecked(false);
             ((TextView) findViewById(R.id.xp_yinglang_left_right_traffic_Tv)).setText(R.string.xp_yinglang_car_set_Second_str2);
@@ -527,9 +526,9 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateradaptiveForwardLight() {
-        int switchOn = DataCanbus.DATA[28];
+        int switchOn = DataCanbus.DATA[125];
         if (switchOn == 0) {
             ((CheckedTextView) findViewById(R.id.xp_yinglang_adaptive_forward_lighting_check)).setChecked(false);
             ((TextView) findViewById(R.id.xp_yinglang_adaptive_forward_lighting_Tv)).setText(R.string.xp_yinglang_car_set_Second_str5);
@@ -539,27 +538,27 @@ public class YLInfoSetSecondAct_BNR extends Activity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMirrorAutoFold() {
-        int switchOn = DataCanbus.DATA[29];
+        int switchOn = DataCanbus.DATA[126];
         ((CheckedTextView) findViewById(R.id.xp_yl_comfort_Automatic_folding_mirrors_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterReverTiltMirror() {
-        int switchOn = DataCanbus.DATA[30];
+        int switchOn = DataCanbus.DATA[127];
         ((CheckedTextView) findViewById(R.id.xp_yl_comfort_Mirror_reversing_automatic_tilt_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatereasyExitCar() {
-        int switchOn = DataCanbus.DATA[31];
+        int switchOn = DataCanbus.DATA[128];
         ((CheckedTextView) findViewById(R.id.xp_yl_easy_exit_check)).setChecked(switchOn != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoMemory() {
-        int switchOn = DataCanbus.DATA[32];
+        int switchOn = DataCanbus.DATA[129];
         ((CheckedTextView) findViewById(R.id.xp_yl_auto_memory_check)).setChecked(switchOn != 0);
     }
 }

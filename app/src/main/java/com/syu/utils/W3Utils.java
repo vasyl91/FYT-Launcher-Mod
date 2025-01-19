@@ -14,6 +14,7 @@ import com.syu.remote.Callback;
 import com.syu.remote.RemoteTools;
 import com.syu.util.FytPackage;
 import com.syu.utils.W3DialogUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -71,7 +72,7 @@ public class W3Utils implements Callback.OnRefreshLisenter {
     }
 
     public static void removeFilterApp(String pkg) {
-        if (pkg != null && pkg.length() > 0 && mFilterApps != null && mFilterApps.contains(pkg)) {
+        if (pkg != null && pkg.length() > 0 && mFilterApps != null) {
             mFilterApps.remove(pkg);
         }
     }
@@ -90,7 +91,7 @@ public class W3Utils implements Callback.OnRefreshLisenter {
     public static W3Utils initialize(Context context) {
         String value = "";
         try {
-            value = (String) Tools.callMethod(null, Tools.getMethod("android.os.SystemProperties", "get", (Class<?>[]) new Class[]{String.class, String.class}), "ro.client.foreign", "false");
+            value = (String) Tools.callMethod(null, Tools.getMethod("android.os.SystemProperties", "get", new Class[]{String.class, String.class}), "ro.client.foreign", "false");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,7 +145,7 @@ public class W3Utils implements Callback.OnRefreshLisenter {
         preferences.edit().clear().commit();
     }
 
-    @Override // com.syu.remote.Callback.OnRefreshLisenter
+    @Override
     public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
         if (updateCode == 2 && ints != null && ints.length > 0) {
             boolean filter = ints[0] == 1;

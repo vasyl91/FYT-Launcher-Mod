@@ -9,10 +9,9 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_360_DspinfoActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
@@ -22,17 +21,17 @@ public class Wc_360_DspinfoActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_360_dspinfo);
+        //setContentView(R.layout.layout_360_dspinfo);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.wc_322_volume_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_volume_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
                 int value2 = DataCanbus.DATA[0] & 255;
@@ -44,8 +43,8 @@ public class Wc_360_DspinfoActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{8, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_322_volume_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_322_volume_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
                 int value2 = DataCanbus.DATA[0] & 255;
@@ -59,29 +58,29 @@ public class Wc_360_DspinfoActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void ma6d70() {
         int temp = DataCanbus.DATA[0] & 65535;
         int value = temp & 255;

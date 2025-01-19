@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0425_XFY_VOLVOXC60 extends AirBase {
     public Air_0425_XFY_VOLVOXC60(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "00425_xfy_volvoxc60/xc60_air.webp";
         this.mPathHighlight = "00425_xfy_volvoxc60/xc60_air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -80,7 +80,7 @@ public class Air_0425_XFY_VOLVOXC60 extends AirBase {
         if (value3 == 31) {
             c.drawText("AUTO", 490.0f, 100.0f, this.mPaint);
         } else if (value3 >= 0 && value3 <= 18) {
-            c.drawText(new StringBuilder(String.valueOf(value3)).toString(), 490.0f, 100.0f, this.mPaint);
+            c.drawText(String.valueOf(value3), 490.0f, 100.0f, this.mPaint);
         } else {
             c.drawText("ERROR", 490.0f, 100.0f, this.mPaint);
         }
@@ -91,9 +91,9 @@ public class Air_0425_XFY_VOLVOXC60 extends AirBase {
         } else if (temp == 80) {
             c.drawText("HI", 70.0f, 135.0f, this.mPaint);
         } else if (this.DATA[57] == 0) {
-            c.drawText(new StringBuilder(String.valueOf(temp / 2.0f)).toString(), 70.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 70.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(temp + 28)).toString(), 70.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp + 28), 70.0f, 135.0f, this.mPaint);
         }
         int temp2 = this.DATA[21];
         if (temp2 == 16) {
@@ -101,9 +101,9 @@ public class Air_0425_XFY_VOLVOXC60 extends AirBase {
         } else if (temp2 == 80) {
             c.drawText("HI", 914.0f, 135.0f, this.mPaint);
         } else if (this.DATA[57] == 0) {
-            c.drawText(new StringBuilder(String.valueOf(temp2 / 2.0f)).toString(), 914.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 914.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder(String.valueOf(temp2 + 28)).toString(), 914.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 + 28), 914.0f, 135.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

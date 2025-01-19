@@ -13,11 +13,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OD_NissanXimaCarinfoAct extends BaseActivity {
     int tempunit = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.xima.OD_NissanXimaCarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
@@ -29,48 +28,48 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
                     OD_NissanXimaCarinfoAct.this.mUpdaterDoor();
                     OD_NissanXimaCarinfoAct.this.mUpdaterDoorBack();
                     break;
-                case 102:
+                case 114:
                     OD_NissanXimaCarinfoAct.this.mUpdaterSafetyBelt();
                     break;
-                case 103:
+                case 115:
                     OD_NissanXimaCarinfoAct.this.mUpdaterCleanLiquid();
                     break;
-                case 104:
+                case 116:
                     OD_NissanXimaCarinfoAct.this.mUpdaterBreakwarn();
                     break;
-                case 105:
+                case 117:
                     OD_NissanXimaCarinfoAct.this.mUpdaterEngineSpeed();
                     break;
-                case 106:
+                case 118:
                     OD_NissanXimaCarinfoAct.this.mUpdaterCurrentVelocity();
                     break;
-                case 107:
+                case 119:
                     OD_NissanXimaCarinfoAct.this.mUpdaterBatteryVol();
                     break;
-                case 108:
+                case 120:
                     OD_NissanXimaCarinfoAct.this.mUpdaterOutTemp();
                     break;
-                case 109:
+                case 121:
                     OD_NissanXimaCarinfoAct.this.mUpdaterDrivingMileage();
                     break;
-                case 110:
+                case 122:
                     OD_NissanXimaCarinfoAct.this.mUpdaterLastOil();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_dasauto);
+        //setContentView(R.layout.layout_dasauto);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.dasauto_btn_setting)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.xima.OD_NissanXimaCarinfoAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dasauto_btn_setting)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -83,21 +82,21 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DoorHelper.disableDoorWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         DoorHelper.disableDoorWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         this.tempunit = SystemProperties.getInt("persist.fyt.temperature", 0);
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
@@ -106,18 +105,18 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
@@ -125,20 +124,20 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEngineSpeed() {
-        int value = DataCanbus.DATA[105];
+        int value = DataCanbus.DATA[117];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_engine_speed)).setText(String.valueOf(value) + " RPM");
         } else {
@@ -146,9 +145,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurrentVelocity() {
-        int value = DataCanbus.DATA[106];
+        int value = DataCanbus.DATA[118];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_current_speed)).setText(String.valueOf(value * 0.01f) + " km/h");
         } else {
@@ -156,9 +155,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[109];
+        int value = DataCanbus.DATA[121];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_mileage)).setText(String.valueOf(value) + " km");
         } else {
@@ -166,9 +165,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSafetyBelt() {
-        int value = DataCanbus.DATA[102];
+        int value = DataCanbus.DATA[114];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_safety_belt)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_safety_belt)).setTextColor(-65536);
@@ -180,9 +179,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCleanLiquid() {
-        int value = DataCanbus.DATA[103];
+        int value = DataCanbus.DATA[115];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_cleaning_liquid)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_cleaning_liquid)).setTextColor(-65536);
@@ -194,9 +193,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBreakwarn() {
-        int value = DataCanbus.DATA[104];
+        int value = DataCanbus.DATA[116];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_hand_brake)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_hand_brake)).setTextColor(-65536);
@@ -208,9 +207,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBatteryVol() {
-        int value = DataCanbus.DATA[107];
+        int value = DataCanbus.DATA[119];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_battery_voltage)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 100), Integer.valueOf(value % 100))) + " V");
         } else {
@@ -218,9 +217,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOutTemp() {
-        int value = DataCanbus.DATA[108];
+        int value = DataCanbus.DATA[120];
         if (((TextView) findViewById(R.id.dasauto_tv_outside_temperature)) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.dasauto_tv_outside_temperature)).setText("OFF");
@@ -244,9 +243,9 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLastOil() {
-        int value = DataCanbus.DATA[110];
+        int value = DataCanbus.DATA[122];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_last_oil)).setText(String.valueOf(value) + " km");
         } else {
@@ -254,14 +253,14 @@ public class OD_NissanXimaCarinfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDoor() {
         if (((DoorContentView) findViewById(R.id.dasauto_door_xp)) != null) {
             ((DoorContentView) findViewById(R.id.dasauto_door_xp)).invalidate();
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDoorBack() {
         if (DoorHelper.sUcDoorBack > -1) {
             int value = DataCanbus.DATA[DoorHelper.sUcDoorBack];

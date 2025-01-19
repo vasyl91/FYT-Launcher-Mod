@@ -11,43 +11,42 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7MaintenanceActi_DZSJ.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 70:
-                case 71:
+                case 167:
+                case 168:
                     Golf7MaintenanceActi_DZSJ.this.mUpdaterCarDistance();
                     break;
-                case 72:
-                case 73:
+                case 169:
+                case 170:
                     Golf7MaintenanceActi_DZSJ.this.mUpdaterOilDistancge();
                     break;
-                case 82:
+                case 179:
                     Golf7MaintenanceActi_DZSJ.this.mUpdaterCarId();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
             requestWindowFeature(1);
             getWindow().setFlags(1024, 1024);
         }
-        setContentView(R.layout.layout_golf7_miantenance_od);
+        //setContentView(R.layout.layout_golf7_miantenance_od);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7MaintenanceActi_DZSJ.2
-                @Override // android.view.View.OnClickListener
+            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent();
@@ -61,44 +60,44 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(98, new int[]{3}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCarId() {
         String value = ConstGolf.mCarId;
         if (value != null) {
@@ -106,9 +105,9 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCarDistance() {
-        int value = DataCanbus.DATA[70];
+        int value = DataCanbus.DATA[167];
         int flag_d = value >> 24;
         int data = value & 65535;
         String str_day = "";
@@ -119,7 +118,7 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         } else if (flag_d == 2) {
             str_day = String.valueOf(getResources().getString(R.string.overdue)) + data + getResources().getString(R.string.day);
         }
-        int value2 = DataCanbus.DATA[71];
+        int value2 = DataCanbus.DATA[168];
         int flag_m = value2 >> 24;
         int unit = (value2 >> 16) & 255;
         int distance = value2 & 65535;
@@ -140,9 +139,9 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilDistancge() {
-        int value = DataCanbus.DATA[72];
+        int value = DataCanbus.DATA[169];
         int flag_d = value >> 24;
         int data = value & 65535;
         String str_day = "";
@@ -153,7 +152,7 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         } else if (flag_d == 2) {
             str_day = String.valueOf(getResources().getString(R.string.overdue)) + data + getResources().getString(R.string.day);
         }
-        int value2 = DataCanbus.DATA[73];
+        int value2 = DataCanbus.DATA[170];
         int flag_m = value2 >> 24;
         int unit = (value2 >> 16) & 255;
         int distance = value2 & 65535;
@@ -174,7 +173,7 @@ public class Golf7MaintenanceActi_DZSJ extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

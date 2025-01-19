@@ -12,11 +12,10 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.XpZHFordRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 17:
@@ -44,13 +43,13 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 1900997 || DataCanbus.DATA[1000] == 2032069) {
-            setContentView(R.layout.layout_0452_zh_13explorer_hand_air_rear_control);
+            //setContentView(R.layout.layout_0452_zh_13explorer_hand_air_rear_control);
         } else {
-            setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
+            //setContentView(R.layout.layout_0443_wc_18ruijie_air_rear_control);
         }
         init();
     }
@@ -88,7 +87,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -96,7 +95,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -104,7 +103,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -156,8 +155,8 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
 
     private void sendCmd(int cmd) {
         DataCanbus.PROXY.cmd(1, new int[]{172, cmd}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.ruijie15.XpZHFordRearAirControlAct.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(1, new int[]{172}, null, null);
             }
@@ -184,7 +183,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[67];
         if (findViewById(R.id.air_xts_rearlock) != null) {
@@ -192,7 +191,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteerHotOn() {
         int power = DataCanbus.DATA[66];
         if (findViewById(R.id.air_xts_steer_hot) != null) {
@@ -200,7 +199,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontHotOn() {
         int power = DataCanbus.DATA[17];
         if (findViewById(R.id.air_xts_front_hot) != null) {
@@ -208,7 +207,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int power = DataCanbus.DATA[53];
         if (findViewById(R.id.air_xts_maxac) != null) {
@@ -216,7 +215,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -224,7 +223,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[42];
         if (findViewById(R.id.air_xts_power) != null) {
@@ -232,7 +231,7 @@ public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchL
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[44];
         if (leave < 0) {

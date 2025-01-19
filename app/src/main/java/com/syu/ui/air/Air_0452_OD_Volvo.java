@@ -5,30 +5,30 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_OD_Volvo extends AirBase {
     public Air_0452_OD_Volvo(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0001_wc1_dazhong/air.webp";
         this.mPathHighlight = "0001_wc1_dazhong/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -103,7 +103,7 @@ public class Air_0452_OD_Volvo extends AirBase {
                 c.drawText("NO", 51.0f, 67.0f, this.mPaint);
                 break;
             default:
-                c.drawText(new StringBuilder().append((value5 * 5) / 10.0f).toString(), 51.0f, 67.0f, this.mPaint);
+                c.drawText(String.valueOf((value5 * 5) / 10.0f), 51.0f, 67.0f, this.mPaint);
                 break;
         }
         int value6 = this.DATA[20];
@@ -118,7 +118,7 @@ public class Air_0452_OD_Volvo extends AirBase {
                 c.drawText("NO", 945.0f, 67.0f, this.mPaint);
                 break;
             default:
-                c.drawText(new StringBuilder().append((value6 * 5) / 10.0f).toString(), 945.0f, 67.0f, this.mPaint);
+                c.drawText(String.valueOf((value6 * 5) / 10.0f), 945.0f, 67.0f, this.mPaint);
                 break;
         }
         canvas.save();

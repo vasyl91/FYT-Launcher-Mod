@@ -10,7 +10,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Dongnanv5SettingActi extends BaseActivity {
     private Button mBtnBackshowMinus;
     private Button mBtnBackshowPlus;
@@ -18,8 +17,8 @@ public class Dongnanv5SettingActi extends BaseActivity {
     private CheckedTextView mCtvLightOnChoose;
     private CheckedTextView mCtvPhotoOnChoose;
     private TextView mTvBackshowInfo;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -39,14 +38,14 @@ public class Dongnanv5SettingActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_dongnanv5_functional_state);
+        //setContentView(R.layout.layout_0439_dongnanv5_functional_state);
         this.mTvBackshowInfo = (TextView) findViewById(R.id.tv_dongnanv5_back_show);
         this.mBtnBackshowMinus = (Button) findViewById(R.id.dongnanv5_btn_backshow_minus);
-        this.mBtnBackshowMinus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.2
-            @Override // android.view.View.OnClickListener
+        this.mBtnBackshowMinus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[21] - 1;
                 if (value < 0) {
@@ -56,8 +55,8 @@ public class Dongnanv5SettingActi extends BaseActivity {
             }
         });
         this.mBtnBackshowPlus = (Button) findViewById(R.id.dongnanv5_btn_backshow_plus);
-        this.mBtnBackshowPlus.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.3
-            @Override // android.view.View.OnClickListener
+        this.mBtnBackshowPlus.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[21] + 1;
                 if (value > 1) {
@@ -67,8 +66,8 @@ public class Dongnanv5SettingActi extends BaseActivity {
             }
         });
         this.mCtvPhotoOnChoose = (CheckedTextView) findViewById(R.id.ctv_dongnanv5_set_photo_onoff);
-        this.mCtvPhotoOnChoose.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.4
-            @Override // android.view.View.OnClickListener
+        this.mCtvPhotoOnChoose.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
                 int value2 = DataCanbus.DATA[18];
@@ -81,8 +80,8 @@ public class Dongnanv5SettingActi extends BaseActivity {
             }
         });
         this.mCtvLightOnChoose = (CheckedTextView) findViewById(R.id.ctv_dongnanv5_set_light_onoff);
-        this.mCtvLightOnChoose.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.5
-            @Override // android.view.View.OnClickListener
+        this.mCtvLightOnChoose.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
                 int value2 = DataCanbus.DATA[19];
@@ -95,8 +94,8 @@ public class Dongnanv5SettingActi extends BaseActivity {
             }
         });
         this.mCtvBlindwarnOnChoose = (CheckedTextView) findViewById(R.id.ctv_dongnanv5_set_blind_onoff);
-        this.mCtvBlindwarnOnChoose.setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.od.dongnanv5.Dongnanv5SettingActi.6
-            @Override // android.view.View.OnClickListener
+        this.mCtvBlindwarnOnChoose.setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
                 int value2 = DataCanbus.DATA[20];
@@ -110,7 +109,7 @@ public class Dongnanv5SettingActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.notifyCanbus, 1);
@@ -118,7 +117,7 @@ public class Dongnanv5SettingActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[21].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.notifyCanbus);
@@ -126,7 +125,7 @@ public class Dongnanv5SettingActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBackshowInfo(int value) {
         switch (value) {
             case 0:
@@ -138,21 +137,21 @@ public class Dongnanv5SettingActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePhotoOn(int value) {
         if (this.mCtvPhotoOnChoose != null) {
             this.mCtvPhotoOnChoose.setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterLightOn(int value) {
         if (this.mCtvLightOnChoose != null) {
             this.mCtvLightOnChoose.setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlindwarnOn(int value) {
         if (this.mCtvBlindwarnOnChoose != null) {
             this.mCtvBlindwarnOnChoose.setChecked(value == 1);

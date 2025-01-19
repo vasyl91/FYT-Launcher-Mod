@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.widget.util.TimeUtil;
@@ -11,7 +12,7 @@ import com.syu.widget.util.TimeUtil;
 public class Date extends TextView {
     public static Date mDate;
     private IntentFilter filter;
-    private Context mContext;
+    private final Context mContext;
 
     public static Date getDate() {
         return mDate;
@@ -39,13 +40,13 @@ public class Date extends TextView {
         mDate = this;
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setDate();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }

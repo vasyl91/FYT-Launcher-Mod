@@ -1,11 +1,10 @@
 package com.android.launcher66;
 
-import android.os.AsyncTask;
 import android.os.Process;
-import com.android.launcher66.AsyncTaskPageData;
+
+import com.android.async.AsyncTask;
 
 /* compiled from: AppsCustomizePagedView.java */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTaskPageData> {
     AsyncTaskPageData.Type dataType;
     int page;
@@ -16,8 +15,12 @@ class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTas
         this.dataType = ty;
     }
 
-    /* JADX INFO: Access modifiers changed from: protected */
-    @Override // android.os.AsyncTask
+    @Override
+    protected AsyncTaskPageData doInBackground(AsyncTaskPageData asyncTaskPageData) throws Exception {
+        return null;
+    }
+
+    @Override 
     public AsyncTaskPageData doInBackground(AsyncTaskPageData... params) {
         if (params.length != 1) {
             return null;
@@ -26,10 +29,14 @@ class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTas
         return params[0];
     }
 
-    /* JADX INFO: Access modifiers changed from: protected */
-    @Override // android.os.AsyncTask
+    @Override 
     public void onPostExecute(AsyncTaskPageData result) {
         result.postExecuteCallback.run(this, result);
+    }
+
+    @Override
+    protected void onBackgroundError(Exception e) {
+        e.printStackTrace();
     }
 
     void setThreadPriority(int p) {

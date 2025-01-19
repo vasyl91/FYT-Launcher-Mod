@@ -12,14 +12,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODBentNATCarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.ODBentNATCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 22:
+                case 98:
                     if (((TextView) ODBentNATCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         switch (val) {
                             case 0:
@@ -31,19 +30,19 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
                         }
                     }
                     break;
-                case 23:
+                case 99:
                     ODBentNATCarSet.this.setCheck((CheckedTextView) ODBentNATCarSet.this.findViewById(R.id.ctv_checkedtext1), val == 1);
                     break;
-                case 24:
+                case 100:
                     ODBentNATCarSet.this.setCheck((CheckedTextView) ODBentNATCarSet.this.findViewById(R.id.ctv_checkedtext2), val == 1);
                     break;
-                case 25:
+                case 101:
                     ODBentNATCarSet.this.setCheck((CheckedTextView) ODBentNATCarSet.this.findViewById(R.id.ctv_checkedtext3), val == 1);
                     break;
-                case 26:
+                case 102:
                     ODBentNATCarSet.this.setCheck((CheckedTextView) ODBentNATCarSet.this.findViewById(R.id.ctv_checkedtext4), val == 1);
                     break;
-                case 27:
+                case 103:
                     if (((TextView) ODBentNATCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         switch (val) {
                             case 0:
@@ -65,14 +64,14 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_od_bent_nat_settings);
+        //setContentView(R.layout.layout_0453_od_bent_nat_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -85,48 +84,48 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
         setSelfClick((Button) findViewById(R.id.btn_plus2), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[23];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[98] - 1;
+                if (value < 0) {
                     value = 1;
                 }
-                setCarInfo(2, value);
+                setCarInfo(1, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value2 = DataCanbus.DATA[22] - 1;
-                if (value2 < 0) {
-                    value2 = 1;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value2 = DataCanbus.DATA[98] + 1;
+                if (value2 > 1) {
+                    value2 = 0;
                 }
                 setCarInfo(1, value2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value3 = DataCanbus.DATA[22] + 1;
-                if (value3 > 1) {
-                    value3 = 0;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value3 = DataCanbus.DATA[103] - 1;
+                if (value3 < 0) {
+                    value3 = 3;
                 }
-                setCarInfo(1, value3);
+                setCarInfo(6, value3);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value4 = DataCanbus.DATA[27] - 1;
-                if (value4 < 0) {
-                    value4 = 3;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value4 = DataCanbus.DATA[103] + 1;
+                if (value4 > 3) {
+                    value4 = 0;
                 }
                 setCarInfo(6, value4);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value5 = DataCanbus.DATA[27] + 1;
-                if (value5 > 3) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value5 = DataCanbus.DATA[99];
+                if (value5 == 1) {
                     value5 = 0;
+                } else if (value5 == 0) {
+                    value5 = 1;
                 }
-                setCarInfo(6, value5);
+                setCarInfo(2, value5);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value6 = DataCanbus.DATA[24];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value6 = DataCanbus.DATA[100];
                 if (value6 == 1) {
                     value6 = 0;
                 } else if (value6 == 0) {
@@ -134,8 +133,8 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
                 }
                 setCarInfo(3, value6);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value7 = DataCanbus.DATA[25];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value7 = DataCanbus.DATA[101];
                 if (value7 == 1) {
                     value7 = 0;
                 } else if (value7 == 0) {
@@ -143,8 +142,8 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
                 }
                 setCarInfo(4, value7);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int value8 = DataCanbus.DATA[26];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value8 = DataCanbus.DATA[102];
                 if (value8 == 1) {
                     value8 = 0;
                 } else if (value8 == 0) {
@@ -152,7 +151,7 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
                 }
                 setCarInfo(5, value8);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
                 dialog(R.string.str_416_reset_tire, 7);
                 break;
         }
@@ -162,49 +161,49 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
         DataCanbus.PROXY.cmd(0, new int[]{value1, value2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         setCarInfo(0, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 
     protected void dialog(int stringId, final int cmd) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.ODBentNATCarSet.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 final int i = cmd;
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.sanlin.ODBentNATCarSet.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(0, new int[]{i}, null, null);
                     }
@@ -212,8 +211,8 @@ public class ODBentNATCarSet extends BaseActivity implements View.OnClickListene
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.ODBentNATCarSet.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }

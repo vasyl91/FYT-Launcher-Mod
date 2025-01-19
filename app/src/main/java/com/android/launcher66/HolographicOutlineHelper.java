@@ -1,5 +1,7 @@
 package com.android.launcher66;
 
+import static android.view.View.MEASURED_STATE_MASK;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
@@ -9,7 +11,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import androidx.core.view.ViewCompat;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class HolographicOutlineHelper {
     private static final int EXTRA_THICK = 2;
     static HolographicOutlineHelper INSTANCE = null;
@@ -109,7 +110,7 @@ public class HolographicOutlineHelper {
         int[] brightOutlineOffset = new int[2];
         Bitmap brightOutline = glowShape.extractAlpha(this.mBlurPaint, brightOutlineOffset);
         srcDstCanvas.setBitmap(glowShape);
-        srcDstCanvas.drawColor(ViewCompat.MEASURED_STATE_MASK, PorterDuff.Mode.SRC_OUT);
+        srcDstCanvas.drawColor(MEASURED_STATE_MASK, PorterDuff.Mode.SRC_OUT);
         switch (thickness) {
             case 0:
                 innerBlurMaskFilter = this.mThickInnerBlurMaskFilter;

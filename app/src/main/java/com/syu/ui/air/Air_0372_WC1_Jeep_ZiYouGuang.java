@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0372_WC1_Jeep_ZiYouGuang extends AirBase {
     public Air_0372_WC1_Jeep_ZiYouGuang(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0372_wc1_jeep_ziyouguang/372_wc_ziyouguang.webp";
         this.mPathHighlight = "0372_wc1_jeep_ziyouguang/372_wc_ziyouguang_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -104,7 +104,7 @@ public class Air_0372_WC1_Jeep_ZiYouGuang extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 50.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 50.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 50.0f, 140.0f, this.mPaint);
         }
         int temp2 = this.DATA[71];
         if (temp2 == -2) {
@@ -112,7 +112,7 @@ public class Air_0372_WC1_Jeep_ZiYouGuang extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 941.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 941.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 941.0f, 140.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

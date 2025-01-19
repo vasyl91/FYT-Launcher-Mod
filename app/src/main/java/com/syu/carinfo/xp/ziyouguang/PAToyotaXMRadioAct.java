@@ -12,14 +12,13 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0397_BNR_XP1_VScreen_Camry2013;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAToyotaXMRadioAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 201:
+                case 224:
                     if (value == 1) {
                         PAToyotaXMRadioAct.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_toyota_xmradio_scan_p);
                         break;
@@ -27,72 +26,72 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                         PAToyotaXMRadioAct.this.findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_toyota_xmradio_scan_n);
                         break;
                     }
-                case 202:
+                case 225:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text1)).setText("SAT " + value);
                     break;
-                case 203:
+                case 226:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text2)).setText("CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 204:
+                case 227:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text13)).setText("1.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 205:
+                case 228:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text14)).setText("2.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 206:
+                case 229:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text15)).setText("3.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 207:
+                case 230:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text16)).setText("4.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 208:
+                case 231:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text17)).setText("5.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 209:
+                case 232:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text18)).setText("6.     CH" + (value / 100) + ((value % 100) / 10) + (value % 10));
                     break;
-                case 210:
+                case 233:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text3)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMName);
                     break;
-                case 211:
+                case 234:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text4)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMTitle);
                     break;
-                case 212:
+                case 235:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text5)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCategory);
                     break;
-                case 213:
+                case 236:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text6)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMStatus);
                     break;
-                case 215:
+                case 237:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text7)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH1);
                     break;
-                case 216:
+                case 238:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text8)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH2);
                     break;
-                case 217:
+                case 239:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text9)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH3);
                     break;
-                case 218:
+                case 240:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text10)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH4);
                     break;
-                case 219:
+                case 241:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text11)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH5);
                     break;
-                case 220:
+                case 242:
                     ((TextView) PAToyotaXMRadioAct.this.findViewById(R.id.tv_text12)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.XMCH6);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0397_pa_toyota_xmradio);
+        //setContentView(R.layout.layout_0397_pa_toyota_xmradio);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.btn_plus1).setOnTouchListener(this);
         findViewById(R.id.btn_plus2).setOnTouchListener(this);
@@ -108,27 +107,27 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
         findViewById(R.id.btn_plus12).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
         switch (id) {
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 data0 = 2;
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 data0 = 3;
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 data0 = 1;
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 data0 = 13;
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 data0 = 14;
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text13)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text7)).setTextColor(Color.parseColor("#666666"));
@@ -138,7 +137,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 4;
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text14)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text8)).setTextColor(Color.parseColor("#666666"));
@@ -148,7 +147,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 5;
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text15)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text9)).setTextColor(Color.parseColor("#666666"));
@@ -158,7 +157,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 6;
                 break;
-            case R.id.btn_plus9 /* 2131427515 */:
+            case R.id.btn_plus9 /* 2131427481 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text16)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text10)).setTextColor(Color.parseColor("#666666"));
@@ -168,7 +167,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 7;
                 break;
-            case R.id.btn_plus10 /* 2131427519 */:
+            case R.id.btn_plus10 /* 2131427484 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text17)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text11)).setTextColor(Color.parseColor("#666666"));
@@ -178,7 +177,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 8;
                 break;
-            case R.id.btn_plus11 /* 2131427523 */:
+            case R.id.btn_plus11 /* 2131427487 */:
                 if (event.getAction() == 0) {
                     ((TextView) findViewById(R.id.tv_text18)).setTextColor(Color.parseColor("#666666"));
                     ((TextView) findViewById(R.id.tv_text12)).setTextColor(Color.parseColor("#666666"));
@@ -188,7 +187,7 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
                 }
                 data0 = 9;
                 break;
-            case R.id.btn_plus12 /* 2131427527 */:
+            case R.id.btn_plus12 /* 2131427490 */:
                 data0 = 10;
                 break;
         }
@@ -202,62 +201,62 @@ public class PAToyotaXMRadioAct extends BaseActivity implements View.OnTouchList
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         FuncMain.setChannel(11);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[204].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[208].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[209].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[210].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[211].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[212].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[213].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[215].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[217].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[219].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[220].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[224].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[225].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[226].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[227].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[228].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[229].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[230].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[232].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[233].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[235].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[237].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[238].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[239].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[240].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[241].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[242].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[208].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[209].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[210].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[211].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[212].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[213].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[215].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[217].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[224].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[225].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[227].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[228].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[229].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[230].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[232].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[233].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[235].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[237].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[238].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[239].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[240].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[241].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[242].removeNotify(this.mNotifyCanbus);
     }
 }

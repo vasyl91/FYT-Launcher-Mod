@@ -10,12 +10,11 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListener {
     public static XP_MQB_AllAirControl mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.XP_MQB_AllAirControl.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 66:
@@ -84,10 +83,10 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         DataCanbus.PROXY.cmd(107, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0040_xp_mqb_air_control);
+        //setContentView(R.layout.layout_0040_xp_mqb_air_control);
         mInstance = this;
         init();
     }
@@ -116,7 +115,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         findViewById(R.id.air_xts_aqs).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -124,7 +123,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -133,7 +132,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         if (event.getAction() == 0) {
@@ -341,7 +340,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[109];
         switch (value) {
@@ -360,7 +359,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[107];
         switch (value) {
@@ -379,7 +378,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[66];
         int temp = DataCanbus.DATA[99];
@@ -398,7 +397,7 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[66];
         int temp = DataCanbus.DATA[100];
@@ -422,31 +421,31 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[92];
         findViewById(R.id.air_xts_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int acOn = DataCanbus.DATA[94];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[88];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[87];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[89];
         if (cycle == 0) {
@@ -456,13 +455,13 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[93];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[98];
         if (leave < 0) {
@@ -475,43 +474,43 @@ public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListen
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterClearOn() {
         int acOn = DataCanbus.DATA[104];
         findViewById(R.id.air_xts_clear).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_clear_air_n : R.drawable.ic_xts_clear_air_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSteerHeatOn() {
         int acOn = DataCanbus.DATA[106];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_steer_hot_n : R.drawable.ic_xts_steer_hot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFGlassHeatOn() {
         int acOn = DataCanbus.DATA[108];
         findViewById(R.id.air_xts_front_hot).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_fronthot_n : R.drawable.ic_xts_fronthot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAQSOn() {
         int acOn = DataCanbus.DATA[102];
         findViewById(R.id.air_xts_aqs).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_aqs_n : R.drawable.ic_xts_aqs_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
         int acOn = DataCanbus.DATA[96];
         findViewById(R.id.air_xts_mode_body).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootLeftOn() {
         int acOn = DataCanbus.DATA[97];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowWindow() {
         int acOn = DataCanbus.DATA[95];
         findViewById(R.id.air_xts_mode_win).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_win_n : R.drawable.ic_xts_mode_win_p);

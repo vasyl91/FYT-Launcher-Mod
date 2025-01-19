@@ -3,9 +3,9 @@ package com.syu.util;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
+
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AppUtil {
     public static boolean isInTheTaskbar(Context context, String packageName) {
         try {

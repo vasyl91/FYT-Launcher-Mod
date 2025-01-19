@@ -9,14 +9,13 @@ import com.syu.carinfo.golf7.Golf7Data;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_StartStopAct extends BaseActivity {
     private TextView[] mTvWarning = new TextView[7];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_StartStopAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 75:
+                case 172:
                     if (ints == null) {
                         for (int i = 0; i < 7; i++) {
                             int[] ints2 = ConstGolf.mSartStop[i];
@@ -34,14 +33,14 @@ public class Golf7_XP_StartStopAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_start_stop);
+        //setContentView(R.layout.layout_golf7_start_stop);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mTvWarning[0] = (TextView) findViewById(R.id.golf7_tv_start_stop_0);
         this.mTvWarning[1] = (TextView) findViewById(R.id.golf7_tv_start_stop_1);
@@ -52,29 +51,29 @@ public class Golf7_XP_StartStopAct extends BaseActivity {
         this.mTvWarning[6] = (TextView) findViewById(R.id.golf7_tv_start_stop_6);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void startStopWarrning(int[] ints) {
         String str;
         int index = 0;

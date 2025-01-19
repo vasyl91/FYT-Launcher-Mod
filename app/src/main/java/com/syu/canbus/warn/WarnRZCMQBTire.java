@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
-import com.syu.module.canbus.Callback_0077_XP1_ACCORD9_H;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WarnRZCMQBTire {
     private static WarnRZCMQBTire mInstance;
     Context context;
@@ -31,7 +30,7 @@ public class WarnRZCMQBTire {
 
     public void showWindowTip(int updateCode, int value) {
         PopupWindow window = WarnUtils.getWindow();
-        if (value == 0 && updateCode == 386) {
+        if (value == 0 && updateCode == 378) {
             this.ecode = 0;
             if (window.isShowing()) {
                 window.dismiss();
@@ -39,7 +38,7 @@ public class WarnRZCMQBTire {
             }
             return;
         }
-        if (value == 0 && updateCode == 387) {
+        if (value == 0 && updateCode == 379) {
             this.etype = 0;
             if (window.isShowing()) {
                 window.dismiss();
@@ -50,23 +49,23 @@ public class WarnRZCMQBTire {
         initTip(updateCode, value);
         if (this.sWarnContent != null) {
             WarnUtils.showWindow();
-            WarnUtils.postDimiss(Callback_0077_XP1_ACCORD9_H.Band_Am);
+            WarnUtils.postDimiss(10000);
         }
     }
 
     private void initTip(int updateCode, int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0160_mqb_tire_warn, (ViewGroup) null, false);
-            this.mTextWarn1 = (TextView) this.sWarnContent.findViewById(R.id.tv_text1);
-            this.mTextWarn2 = (TextView) this.sWarnContent.findViewById(R.id.tv_text2);
-            this.mTextWarn3 = (TextView) this.sWarnContent.findViewById(R.id.tv_text3);
-            this.mTextWarn4 = (TextView) this.sWarnContent.findViewById(R.id.tv_text4);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0160_mqb_tire_warn, null, false);
+            this.mTextWarn1 = this.sWarnContent.findViewById(R.id.tv_text1);
+            this.mTextWarn2 = this.sWarnContent.findViewById(R.id.tv_text2);
+            this.mTextWarn3 = this.sWarnContent.findViewById(R.id.tv_text3);
+            this.mTextWarn4 = this.sWarnContent.findViewById(R.id.tv_text4);
         }
-        if (updateCode == 386) {
+        if (updateCode == 378) {
             this.ecode = value;
         }
-        if (updateCode == 387) {
+        if (updateCode == 379) {
             this.etype = value;
         }
         this.mTextWarn1.setTextColor(-1);

@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemProperties;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -29,12 +28,6 @@ import com.syu.module.canbus.ConnectionCanbus;
 import com.syu.module.canbus.up.ConnectionCanUp;
 import com.syu.module.main.ConnectionMain;
 import com.syu.module.sound.ConnectionSound;
-import com.syu.ui.air.AirHelper;
-import com.syu.ui.benzair.Air_BenzHelper;
-import com.syu.ui.benzair.Show_BenzHelper;
-import com.syu.ui.carvol.CarVolHelper;
-import com.syu.ui.door.DoorHelper;
-import com.syu.ui.parking.ParkingHelper;
 import com.syu.util.CustomIcons;
 import com.syu.util.DebugView;
 import com.syu.util.FytPackage;
@@ -93,7 +86,7 @@ public class LauncherApplication extends LitePalApplication {
         super.onCreate();
         initData();
         initProperties();
-        sHandler = new Handler();
+        sHandler = new Handler(Looper.getMainLooper());
         CrashHandler.getInstance(getApplicationContext());
         writeCanOgg();
         cfg();
@@ -331,12 +324,6 @@ public class LauncherApplication extends LitePalApplication {
         Configuration config = getResources().getConfiguration();
         int smallestScreenWidth = config.smallestScreenWidthDp;
         //Log.v("zed", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + smallestScreenWidth);
-        AirHelper.getInstance().initWindow(this);
-        DoorHelper.getInstance().initWindow(this);
-        ParkingHelper.getInstance().initWindow(this);
-        Air_BenzHelper.getInstance().initWindow(this);
-        Show_BenzHelper.getInstance().initWindow(this);
-        CarVolHelper.getInstance().initWindow(this);
     }
 
     private void connectService() {

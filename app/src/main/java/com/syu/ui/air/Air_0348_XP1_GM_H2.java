@@ -5,11 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.util.ToolkitMath;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0348_XP1_GM_H2 extends AirBase {
     private int nWindLevelLeft;
 
@@ -17,19 +17,19 @@ public class Air_0348_XP1_GM_H2 extends AirBase {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0253_xp1_yinglang/air.webp";
         this.mPathHighlight = "0253_xp1_yinglang/air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -118,11 +118,11 @@ public class Air_0348_XP1_GM_H2 extends AirBase {
                 break;
             default:
                 if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
-                    c.drawText(new StringBuilder(String.valueOf(((value4 * 9) / 10) + 32)).toString(), 64.0f, 62.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value4 * 9) / 10) + 32), 64.0f, 62.0f, this.mPaint);
                     break;
                 } else {
                     int value5 = value4 * 5;
-                    c.drawText(String.valueOf(value5 / 10) + "." + (value5 % 10), 64.0f, 62.0f, this.mPaint);
+                    c.drawText(value5 / 10 + "." + (value5 % 10), 64.0f, 62.0f, this.mPaint);
                     break;
                 }
         }
@@ -136,11 +136,11 @@ public class Air_0348_XP1_GM_H2 extends AirBase {
                 break;
             default:
                 if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
-                    c.drawText(new StringBuilder(String.valueOf(((value6 * 9) / 10) + 32)).toString(), 926.0f, 62.0f, this.mPaint);
+                    c.drawText(String.valueOf(((value6 * 9) / 10) + 32), 926.0f, 62.0f, this.mPaint);
                     break;
                 } else {
                     int value7 = value6 * 5;
-                    c.drawText(String.valueOf(value7 / 10) + "." + (value7 % 10), 926.0f, 62.0f, this.mPaint);
+                    c.drawText(value7 / 10 + "." + (value7 % 10), 926.0f, 62.0f, this.mPaint);
                     break;
                 }
         }

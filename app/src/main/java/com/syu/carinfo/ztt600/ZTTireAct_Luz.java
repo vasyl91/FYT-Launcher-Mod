@@ -8,41 +8,40 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZTTireAct_Luz extends BaseActivity {
     String str;
     int val;
-    private int[] ids = {72, 73, 74, 75, 76, 77, 78, 79, 80};
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ztt600.ZTTireAct_Luz.1
-        @Override // com.syu.module.IUiNotify
+    private int[] ids = {138, 139, 140, 141, 142, 143, 144, 145, 146};
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             ZTTireAct_Luz.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 72:
+                case 138:
                     ZTTireAct_Luz.this.uSystem(ZTTireAct_Luz.this.val);
                     break;
-                case 73:
+                case 139:
                     ZTTireAct_Luz.this.uWarnRL(ZTTireAct_Luz.this.val);
                     break;
-                case 74:
+                case 140:
                     ZTTireAct_Luz.this.uWarnRR(ZTTireAct_Luz.this.val);
                     break;
-                case 75:
+                case 141:
                     ZTTireAct_Luz.this.uWarnFL(ZTTireAct_Luz.this.val);
                     break;
-                case 76:
+                case 142:
                     ZTTireAct_Luz.this.uWarnFR(ZTTireAct_Luz.this.val);
                     break;
-                case 77:
+                case 143:
                     ZTTireAct_Luz.this.uRL(ZTTireAct_Luz.this.val);
                     break;
-                case 78:
+                case 144:
                     ZTTireAct_Luz.this.uRR(ZTTireAct_Luz.this.val);
                     break;
-                case 79:
+                case 145:
                     ZTTireAct_Luz.this.uFR(ZTTireAct_Luz.this.val);
                     break;
-                case 80:
+                case 146:
                     ZTTireAct_Luz.this.uFL(ZTTireAct_Luz.this.val);
                     break;
             }
@@ -50,28 +49,28 @@ public class ZTTireAct_Luz extends BaseActivity {
     };
     private String[] strsWarn = {"No Warning", "High Pressure Warning", "Low Pressure Warning", "Quik Leakage", "Lost Sensor", "Sensor Battery Low", "Sensor Failure"};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_265_luz_t600_tire);
+        //setContentView(R.layout.layout_265_luz_t600_tire);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 

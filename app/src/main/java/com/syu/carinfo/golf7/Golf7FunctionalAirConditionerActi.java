@@ -12,55 +12,54 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalAirConditionerActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 87:
+                case 10:
                     Golf7FunctionalAirConditionerActi.this.mUpdaterAirConditionerSwitch();
                     break;
-                case 147:
-                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirAuoWind();
-                    break;
-                case 148:
-                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirFrontfrog();
-                    break;
-                case 149:
-                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirAutoCycle();
-                    break;
-                case 190:
-                    Golf7FunctionalAirConditionerActi.this.uClearAir(DataCanbus.DATA[updateCode]);
-                    break;
-                case 193:
+                case 55:
                     Golf7FunctionalAirConditionerActi.this.mUpdaterSteerSeatHot(DataCanbus.DATA[updateCode]);
                     break;
-                case 469:
+                case 72:
                     Golf7FunctionalAirConditionerActi.this.setCheck((CheckedTextView) Golf7FunctionalAirConditionerActi.this.findViewById(R.id.ctv_checkedtext1), DataCanbus.DATA[updateCode] != 0);
+                    break;
+                case 76:
+                    Golf7FunctionalAirConditionerActi.this.uClearAir(DataCanbus.DATA[updateCode]);
+                    break;
+                case 210:
+                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirAuoWind();
+                    break;
+                case 211:
+                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirFrontfrog();
+                    break;
+                case 212:
+                    Golf7FunctionalAirConditionerActi.this.mUpdaterAirAutoCycle();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
             requestWindowFeature(1);
             getWindow().setFlags(1024, 1024);
-            setContentView(R.layout.layout_golf7_functional_state_air_conditioner_od);
+            //setContentView(R.layout.layout_golf7_functional_state_air_conditioner_od);
         } else {
-            setContentView(R.layout.layout_golf7_functional_state_air_conditioner);
+            //setContentView(R.layout.layout_golf7_functional_state_air_conditioner);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.2
-                @Override // android.view.View.OnClickListener
+            ((Button) findViewById(R.id.glf7_btn_car_back_od)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Golf7FunctionalAirConditionerActi.this.onKeyDown(4, null);
@@ -70,10 +69,10 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 }
             });
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.tuguan_streer_seat_hot_check), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.tuguan_streer_seat_hot_check), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[193] & 255;
+                int value = DataCanbus.DATA[55] & 255;
                 if (value != 0) {
                     DataCanbus.PROXY.cmd(136, new int[1], null, null);
                 } else {
@@ -81,10 +80,10 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_conditioner_switch), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.4
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_conditioner_switch), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[87] & 255;
+                int value = DataCanbus.DATA[10] & 255;
                 if (value != 0) {
                     DataCanbus.PROXY.cmd(38, new int[1], null, null);
                 } else {
@@ -92,10 +91,10 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_auto_frog), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.5
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_auto_frog), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[148] & 255;
+                int value = DataCanbus.DATA[211] & 255;
                 if (value != 0) {
                     DataCanbus.PROXY.cmd(107, new int[]{10}, null, null);
                 } else {
@@ -103,14 +102,14 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 }
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_auto_cycle), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.6
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_auto_cycle), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[149] & 255;
+                int value = DataCanbus.DATA[212] & 255;
                 if (DataCanbus.DATA[1000] == 437) {
                     DataCanbus.PROXY.cmd(107, new int[]{49, 1}, null, null);
-                    HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.6.1
-                        @Override // java.lang.Runnable
+                    HandlerUI.getInstance().postDelayed(new Runnable() { 
+                        @Override
                         public void run() {
                             DataCanbus.PROXY.cmd(107, new int[]{49}, null, null);
                         }
@@ -124,11 +123,11 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 remoteModuleProxy.cmd(107, iArr, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_air_auto_sete_minus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.7
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_air_auto_sete_minus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int switchOn;
-                int switchOn2 = DataCanbus.DATA[147] & 255;
+                int switchOn2 = DataCanbus.DATA[210] & 255;
                 if (switchOn2 > 0) {
                     switchOn = switchOn2 - 1;
                 } else {
@@ -137,11 +136,11 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(107, new int[]{1, switchOn}, null, null);
             }
         });
-        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_air_auto_sete_plus), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.8
-            @Override // android.view.View.OnClickListener
+        setSelfClick((Button) findViewById(R.id.glf7_btn_functional_air_auto_sete_plus), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int switchOn;
-                int switchOn2 = DataCanbus.DATA[147] & 255;
+                int switchOn2 = DataCanbus.DATA[210] & 255;
                 if (switchOn2 < 3) {
                     switchOn = switchOn2 + 1;
                 } else {
@@ -150,46 +149,46 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(107, new int[]{1, switchOn}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_auto), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.9
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_auto), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(107, new int[]{129}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_acmax), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.10
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_acmax), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(107, new int[]{129, 1}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_maxfront), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.11
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_maxfront), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(107, new int[]{129, 2}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_manual), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.12
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_preset_mode_manual), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(107, new int[]{129, 3}, null, null);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_clear_air), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.13
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.glf7_view_functional_air_clear_air), new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 DataCanbus.PROXY.cmd(107, new int[]{80, 1}, null, null);
-                HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.13.1
-                    @Override // java.lang.Runnable
+                HandlerUI.getInstance().postDelayed(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(107, new int[]{80}, null, null);
                     }
                 }, 100L);
             }
         });
-        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalAirConditionerActi.14
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[469] & 255;
+                int value = DataCanbus.DATA[72] & 255;
                 if (value != 0) {
                     DataCanbus.PROXY.cmd(107, new int[]{43}, null, null);
                 } else {
@@ -199,7 +198,7 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
@@ -223,45 +222,45 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[469].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[210].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[211].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[212].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[469].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[210].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[211].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[212].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSteerSeatHot(int value) {
         setCheck((CheckedTextView) findViewById(R.id.tuguan_streer_seat_hot_check), value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirConditionerSwitch() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[10];
         setCheck((CheckedTextView) findViewById(R.id.glf7_btn_functional_air_conditioner_switch), value != 0);
         if (DataCanbus.DATA[1000] == 437 || ConstGolf.isWcGolf() || DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256) {
             setViewVisible(findViewById(R.id.glf7_btn_functional_air_conditioner_switch_view), false);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAuoWind() {
-        int value = DataCanbus.DATA[147];
+        int value = DataCanbus.DATA[210];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -281,9 +280,9 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirFrontfrog() {
-        int value = DataCanbus.DATA[148];
+        int value = DataCanbus.DATA[211];
         if (ConstGolf.isWcGolf()) {
             int enable = (65280 & value) >> 8;
             int switchOn = value & 255;
@@ -294,9 +293,9 @@ public class Golf7FunctionalAirConditionerActi extends BaseActivity {
         setViewVisible(findViewById(R.id.glf7_view_functional_air_auto_frog), false);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAutoCycle() {
-        int value = DataCanbus.DATA[149];
+        int value = DataCanbus.DATA[212];
         int enable = (65280 & value) >> 8;
         int switchOn = value & 255;
         if (ConstGolf.isWcGolf()) {

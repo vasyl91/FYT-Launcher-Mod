@@ -10,29 +10,28 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcLightAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcLightAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 43:
+                case 140:
                     KlcLightAct.this.updateLookIngForLight();
                     break;
-                case 44:
+                case 141:
                     KlcLightAct.this.updateLuosuoDelay();
                     break;
-                case 138:
+                case 190:
                     KlcLightAct.this.updateLocationLight();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_light_set);
+        //setContentView(R.layout.layout_klc_light_set);
         setUI();
     }
 
@@ -43,16 +42,16 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.klc_btn_Lasuo_headlight_delay_next)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_btn_Look_for_lightsParking_check /* 2131431927 */:
-                int valLightPark = DataCanbus.DATA[43] & 255;
+            case R.id.klc_btn_Look_for_lightsParking_check /* 2131431877 */:
+                int valLightPark = DataCanbus.DATA[140] & 255;
                 KlcFunc.C_CAR_LIGHT(1, valLightPark == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Lasuo_headlight_delay_pre /* 2131431929 */:
-                int valLasuoDelayPre = DataCanbus.DATA[44] & 255;
+            case R.id.klc_btn_Lasuo_headlight_delay_pre /* 2131431879 */:
+                int valLasuoDelayPre = DataCanbus.DATA[141] & 255;
                 if (valLasuoDelayPre == 0) {
                     KlcFunc.C_CAR_LIGHT(2, 3);
                     break;
@@ -66,8 +65,8 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LIGHT(2, 2);
                     break;
                 }
-            case R.id.klc_btn_Lasuo_headlight_delay_next /* 2131431931 */:
-                int valLasuoDelayNext = DataCanbus.DATA[44] & 255;
+            case R.id.klc_btn_Lasuo_headlight_delay_next /* 2131431881 */:
+                int valLasuoDelayNext = DataCanbus.DATA[141] & 255;
                 if (valLasuoDelayNext == 0) {
                     KlcFunc.C_CAR_LIGHT(2, 1);
                     break;
@@ -81,20 +80,20 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
                     KlcFunc.C_CAR_LIGHT(2, 0);
                     break;
                 }
-            case R.id.klc_btn_location_lights_check /* 2131431933 */:
-                int valLocationLights = DataCanbus.DATA[138] & 255;
+            case R.id.klc_btn_location_lights_check /* 2131431883 */:
+                int valLocationLights = DataCanbus.DATA[190] & 255;
                 KlcFunc.C_CAR_LIGHT(3, valLocationLights != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -105,20 +104,20 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLookIngForLight() {
-        int val = DataCanbus.DATA[43];
+        int val = DataCanbus.DATA[140];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (DataCanbus.DATA[1000] == 254) {
@@ -132,9 +131,9 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLocationLight() {
-        int val = DataCanbus.DATA[138];
+        int val = DataCanbus.DATA[190];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {
@@ -145,9 +144,9 @@ public class KlcLightAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateLuosuoDelay() {
-        int val = DataCanbus.DATA[44];
+        int val = DataCanbus.DATA[141];
         int enable = (val >> 8) & 255;
         int switchOn = val & 255;
         if (enable == 0) {

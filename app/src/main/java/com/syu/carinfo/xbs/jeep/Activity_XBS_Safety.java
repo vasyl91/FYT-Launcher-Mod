@@ -13,23 +13,22 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_XBS_Safety extends Activity {
     AdapterCarInfo adapter;
     ListView mListView;
     TextView mText;
     List<CarInfo> mList = new ArrayList();
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xbs.jeep.Activity_XBS_Safety.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Activity_XBS_Safety.this.adapter.setValue(updateCode, DataCanbus.DATA[updateCode]);
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         this.mText = (TextView) findViewById(R.id.tv_car_title);
         this.mListView = (ListView) findViewById(R.id.list_carinfo);
         initValue();
@@ -108,7 +107,7 @@ public class Activity_XBS_Safety extends Activity {
         this.mList.add(carInfo19);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -126,7 +125,7 @@ public class Activity_XBS_Safety extends Activity {
         this.adapter.updateList(this.mList);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -155,7 +154,7 @@ public class Activity_XBS_Safety extends Activity {
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);

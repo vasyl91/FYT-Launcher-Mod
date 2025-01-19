@@ -12,20 +12,19 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OtherFragment extends BaseFragment {
     AdapterCarInfo adapter;
     ListView mListView;
     TextView mText;
     List<CarInfo> mList = new ArrayList();
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bnr.jeep.OtherFragment.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             OtherFragment.this.adapter.setValue(updateCode, DataCanbus.DATA[updateCode]);
         }
     };
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         this.mText = (TextView) findView(R.id.tv_car_title);
         this.mListView = (ListView) findView(R.id.list_carinfo);
@@ -38,11 +37,11 @@ public class OtherFragment extends BaseFragment {
 
     private void initValue() {
         this.mList.clear();
-        CarInfo carInfo = new CarInfo(2, 96, R.string.wc_372_anglestr);
+        CarInfo carInfo = new CarInfo(2, 165, R.string.wc_372_anglestr);
         carInfo.setCmd(1, 177);
         carInfo.setDiplsys(new String[]{getString(R.string.str_pack_complete), getString(R.string.str_compass_checking)});
         this.mList.add(carInfo);
-        CarInfo carInfo2 = new CarInfo(2, 97, R.string.str_compass_deviation_value);
+        CarInfo carInfo2 = new CarInfo(2, 166, R.string.str_compass_deviation_value);
         carInfo2.setCmd(1, 176);
         String[] strs = new String[16];
         for (int i = 0; i < 16; i++) {
@@ -50,64 +49,64 @@ public class OtherFragment extends BaseFragment {
         }
         carInfo2.setDiplsys(strs);
         this.mList.add(carInfo2);
-        CarInfo carInfo3 = new CarInfo(1, 78, R.string.jeep_headlights_off_delay);
+        CarInfo carInfo3 = new CarInfo(1, 147, R.string.jeep_headlights_off_delay);
         carInfo3.setCmd(1, 144);
         carInfo3.setDiplsys(new String[]{getString(R.string.jeep_comfortsystems_0), getString(R.string.jeep_comfortsystems_1), getString(R.string.jeep_comfortsystems_2)});
         carInfo3.setCanCycleChange(true);
         this.mList.add(carInfo3);
-        CarInfo carInfo4 = new CarInfo(0, 108, R.string.wc_17zhinanzhe_str4);
+        CarInfo carInfo4 = new CarInfo(0, 177, R.string.wc_17zhinanzhe_str4);
         carInfo4.setCmd(1, 145);
         this.mList.add(carInfo4);
-        CarInfo carInfo5 = new CarInfo(0, 99, R.string.jeep_autoparkbrake);
+        CarInfo carInfo5 = new CarInfo(0, 168, R.string.jeep_autoparkbrake);
         carInfo5.setCmd(1, 192);
         this.mList.add(carInfo5);
-        CarInfo carInfo6 = new CarInfo(1, 109, R.string.jeep_speedvolume);
+        CarInfo carInfo6 = new CarInfo(1, 178, R.string.jeep_speedvolume);
         carInfo6.setCmd(1, 208);
         carInfo6.setDiplsys(new String[]{"OFF", "1", "2", "3"});
         this.mList.add(carInfo6);
-        CarInfo carInfo7 = new CarInfo(0, 110, R.string.jeep_surroundsound);
+        CarInfo carInfo7 = new CarInfo(0, 179, R.string.jeep_surroundsound);
         carInfo7.setCmd(1, 209);
         this.mList.add(carInfo7);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initListener() {
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_list;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[176].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[172].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[176].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[172].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.mNotifyCanbus);
     }
 }

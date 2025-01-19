@@ -2,13 +2,13 @@ package com.syu.module;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public final class UiNotifyEvent implements Runnable {
     public static final Handler HANDLER_UI = new Handler(Looper.getMainLooper());
-    private ArrayList<IUiNotify> mUiNotifies = new ArrayList<>();
+    private final ArrayList<IUiNotify> mUiNotifies = new ArrayList<>();
     private int mUpdateCode;
 
     public UiNotifyEvent() {
@@ -82,7 +82,7 @@ public final class UiNotifyEvent implements Runnable {
             this.strs = strs;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             synchronized (UiNotifyEvent.this) {
                 Iterator it = UiNotifyEvent.this.mUiNotifies.iterator();
@@ -94,7 +94,7 @@ public final class UiNotifyEvent implements Runnable {
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public synchronized void run() {
         Iterator<IUiNotify> it = this.mUiNotifies.iterator();
         while (it.hasNext()) {

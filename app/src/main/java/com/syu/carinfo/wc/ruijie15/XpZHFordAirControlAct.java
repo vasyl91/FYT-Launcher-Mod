@@ -13,12 +13,11 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XpZHFordAirControlAct extends Activity implements View.OnTouchListener {
     public static XpZHFordAirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruijie15.XpZHFordAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 10:
@@ -94,8 +93,8 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
 
     private void sendCmd(int cmd) {
         DataCanbus.PROXY.cmd(1, new int[]{172, cmd}, null, null);
-        HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.wc.ruijie15.XpZHFordAirControlAct.2
-            @Override // java.lang.Runnable
+        HandlerUI.getInstance().postDelayed(new Runnable() { 
+            @Override
             public void run() {
                 DataCanbus.PROXY.cmd(1, new int[]{172}, null, null);
             }
@@ -103,17 +102,17 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         mInstance = this;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 1900997) {
-            setContentView(R.layout.layout_0452_zh_13explorer_hand_air_control);
+            //setContentView(R.layout.layout_0452_zh_13explorer_hand_air_control);
         } else if (DataCanbus.DATA[1000] == 1966533) {
-            setContentView(R.layout.layout_0452_zh_13explorer_auto_air_control);
+            //setContentView(R.layout.layout_0452_zh_13explorer_auto_air_control);
         } else if (DataCanbus.DATA[1000] == 2032069) {
-            setContentView(R.layout.layout_0452_zh_16explorer_hand_air_control);
+            //setContentView(R.layout.layout_0452_zh_16explorer_hand_air_control);
         } else {
-            setContentView(R.layout.layout_0443_wc_18ruijie_air_control);
+            //setContentView(R.layout.layout_0443_wc_18ruijie_air_control);
         }
         init();
     }
@@ -190,7 +189,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -198,7 +197,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -206,7 +205,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -484,7 +483,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatColdRight() {
         int value = DataCanbus.DATA[32];
         if (findViewById(R.id.air_xts_seatwin_right) != null) {
@@ -505,7 +504,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[30];
         if (findViewById(R.id.air_xts_seathot_right) != null) {
@@ -526,7 +525,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatColdLeft() {
         int value = DataCanbus.DATA[31];
         if (findViewById(R.id.air_xts_seatwin_left) != null) {
@@ -547,7 +546,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[29];
         if (findViewById(R.id.air_xts_seathot_left) != null) {
@@ -568,7 +567,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int value = DataCanbus.DATA[27];
         int unit = DataCanbus.DATA[37];
@@ -611,7 +610,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int value = DataCanbus.DATA[28];
         if (DataCanbus.DATA[1000] == 1900997 || DataCanbus.DATA[1000] == 2032069) {
@@ -657,7 +656,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         if (findViewById(R.id.air_xts_auto) != null) {
@@ -665,7 +664,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
         int acOn = DataCanbus.DATA[14];
         if (findViewById(R.id.air_xts_dual) != null) {
@@ -673,7 +672,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcMAxOn() {
         int acOn = DataCanbus.DATA[53];
         if (findViewById(R.id.air_xts_maxac) != null) {
@@ -681,7 +680,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         if (findViewById(R.id.air_xts_ac) != null) {
@@ -689,7 +688,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[10];
         if (findViewById(R.id.air_xts_power) != null) {
@@ -697,7 +696,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[12];
         if (findViewById(R.id.air_xts_cycle) != null) {
@@ -709,7 +708,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[15];
         if (findViewById(R.id.air_xts_front) != null) {
@@ -717,7 +716,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[16];
         if (findViewById(R.id.air_xts_rear) != null) {
@@ -725,7 +724,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
         if (leave < 0) {
@@ -740,7 +739,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
         int acOn = DataCanbus.DATA[19];
         if (findViewById(R.id.air_xts_mode_body) != null) {
@@ -748,7 +747,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootLeftOn() {
         int acOn = DataCanbus.DATA[20];
         if (findViewById(R.id.air_xts_mode_foot) != null) {
@@ -756,7 +755,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowWindow() {
         int acOn = DataCanbus.DATA[18];
         if (findViewById(R.id.air_xts_mode_win) != null) {
@@ -764,7 +763,7 @@ public class XpZHFordAirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[18];
         int foot = DataCanbus.DATA[20];

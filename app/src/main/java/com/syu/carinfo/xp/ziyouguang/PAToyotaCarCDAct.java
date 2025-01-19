@@ -11,15 +11,14 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0397_BNR_XP1_VScreen_Camry2013;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListener {
     int cdtype = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAToyotaCarCDAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 191:
+                case 214:
                     if (value == 1) {
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus5).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_rpt_p);
                         break;
@@ -27,7 +26,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus5).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_rpt_n);
                         break;
                     }
-                case 192:
+                case 215:
                     if (value == 1) {
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_random_p);
                         break;
@@ -35,7 +34,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus6).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_random_n);
                         break;
                     }
-                case 193:
+                case 216:
                     if (value == 1) {
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus7).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_scan_p);
                         break;
@@ -43,7 +42,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus7).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_scan_n);
                         break;
                     }
-                case 194:
+                case 217:
                     if (value == 1) {
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus8).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_full_p);
                         break;
@@ -51,7 +50,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         PAToyotaCarCDAct.this.findViewById(R.id.btn_plus8).setBackgroundResource(R.drawable.ic_pa_toyota_carcd_full_n);
                         break;
                     }
-                case 195:
+                case 218:
                     PAToyotaCarCDAct.this.cdtype = value;
                     if (value == 1) {
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text1)).setText("DVD ");
@@ -60,7 +59,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text1)).setText("CD");
                         break;
                     }
-                case 196:
+                case 219:
                     switch (value) {
                         case 1:
                             ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text8)).setText(R.string.jeep_playstate3);
@@ -87,7 +86,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                             ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text8)).setText(R.string.jeep_playstate1);
                             break;
                     }
-                case 197:
+                case 220:
                     if (PAToyotaCarCDAct.this.cdtype == 1) {
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text5)).setText("Title: " + value);
                         break;
@@ -95,7 +94,7 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text5)).setText("Folder: " + value);
                         break;
                     }
-                case 198:
+                case 221:
                     if (PAToyotaCarCDAct.this.cdtype == 1) {
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text6)).setText("Chapter: " + value);
                         break;
@@ -103,33 +102,33 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
                         ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text6)).setText("File: " + value);
                         break;
                     }
-                case 199:
+                case 222:
                     int hour = value / 3600;
                     int min = (value % 3600) / 60;
                     int sec = value % 60;
                     ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text7)).setText(String.valueOf(hour / 10) + (hour % 10) + ":" + (min / 10) + (min % 10) + ":" + (sec / 10) + (sec % 10));
                     break;
-                case 200:
+                case 223:
                     ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text2)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.CDName);
                     break;
-                case 221:
+                case 243:
                     ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text3)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.CDFolder);
                     break;
-                case 222:
+                case 244:
                     ((TextView) PAToyotaCarCDAct.this.findViewById(R.id.tv_text4)).setText(Callback_0397_BNR_XP1_VScreen_Camry2013.CDArtist);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0397_pa_toyota_carcd);
+        //setContentView(R.layout.layout_0397_pa_toyota_carcd);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.btn_plus1).setOnTouchListener(this);
         findViewById(R.id.btn_plus2).setOnTouchListener(this);
@@ -143,39 +142,39 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
         findViewById(R.id.btn_plus10).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
         switch (id) {
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 data0 = 1;
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 data0 = 2;
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 data0 = 4;
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 data0 = 3;
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 data0 = 8;
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 data0 = 9;
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 data0 = 10;
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 data0 = 7;
                 break;
-            case R.id.btn_plus9 /* 2131427515 */:
+            case R.id.btn_plus9 /* 2131427481 */:
                 data0 = 11;
                 break;
-            case R.id.btn_plus10 /* 2131427519 */:
+            case R.id.btn_plus10 /* 2131427484 */:
                 data0 = 12;
                 break;
         }
@@ -189,48 +188,48 @@ public class PAToyotaCarCDAct extends BaseActivity implements View.OnTouchListen
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         FuncMain.setChannel(13);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[214].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[215].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[216].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[217].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[218].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[219].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[220].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[221].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[222].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[223].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[243].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[244].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[214].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[215].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[216].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[217].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[218].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[219].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[220].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[221].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[222].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[223].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[243].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[244].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -1,12 +1,12 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.syu.carinfo.od.mazdall.MazdAllMaintenanceWarnAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_OD_MZD_ALL extends CallbackCanbusBase {
     public static final int U_CARINF_D32_D6_D7_D8 = 94;
     public static final int U_CARINF_DAY_CUR = 107;
@@ -141,7 +141,7 @@ public class Callback_0439_OD_MZD_ALL extends CallbackCanbusBase {
     public static String mId3Name;
     public static String mIdArtist3Name;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 134; i++) {
@@ -159,7 +159,7 @@ public class Callback_0439_OD_MZD_ALL extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -167,7 +167,7 @@ public class Callback_0439_OD_MZD_ALL extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 134) {
             switch (updateCode) {

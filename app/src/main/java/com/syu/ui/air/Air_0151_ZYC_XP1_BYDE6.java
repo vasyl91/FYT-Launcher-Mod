@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0151_ZYC_XP1_BYDE6 extends AirBase {
     public Air_0151_ZYC_XP1_BYDE6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0151_daojun_xp1_byds6/air_zyc_xp1_byde6_n.webp";
         this.mPathHighlight = "0151_daojun_xp1_byds6/air_zyc_xp1_byde6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -86,7 +86,7 @@ public class Air_0151_ZYC_XP1_BYDE6 extends AirBase {
                 c.drawText("NONE", 55.0f, 152.0f, this.mPaint);
                 break;
             default:
-                c.drawText(new StringBuilder().append(temp).toString(), 55.0f, 152.0f, this.mPaint);
+                c.drawText(String.valueOf(temp), 55.0f, 152.0f, this.mPaint);
                 break;
         }
         canvas.save();

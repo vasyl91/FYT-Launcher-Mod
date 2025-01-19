@@ -2,12 +2,12 @@ package com.syu.module.canbus;
 
 import android.content.Intent;
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
     private static final ModuleCallbackCanbusProxy INSTANCE = new ModuleCallbackCanbusProxy();
     private CallbackCanbusBase mCallback;
@@ -40,7 +40,7 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
         return ints != null && ints.length >= min;
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             if (updateCode < 1000) {

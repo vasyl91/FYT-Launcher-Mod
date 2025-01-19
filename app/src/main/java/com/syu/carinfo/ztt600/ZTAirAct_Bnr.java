@@ -10,7 +10,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZTAirAct_Bnr extends BaseActivity {
     public static boolean mIsFront = false;
     int itempl;
@@ -18,62 +17,62 @@ public class ZTAirAct_Bnr extends BaseActivity {
     int val;
     int touchState = -1;
     int cmd = 0;
-    private int[] ids = {31, 32, 33, 37, 39, 40, 41, 42, 44, 45, 46, 47, 65, 48, 38, 85, 68, 69};
+    private int[] ids = {10, 11, 12, 21, 28, 65, 16, 27, 13, 14, 77, 53, 58, 37, 151, 29, 30};
     int cycle = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ztt600.ZTAirAct_Bnr.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             ZTAirAct_Bnr.this.val = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 31:
+                case 10:
                     ZTAirAct_Bnr.this.uPower(ZTAirAct_Bnr.this.val);
                     break;
-                case 32:
+                case 11:
                     ZTAirAct_Bnr.this.uAc(ZTAirAct_Bnr.this.val);
                     break;
-                case 33:
+                case 12:
                     ZTAirAct_Bnr.this.uCycle(ZTAirAct_Bnr.this.val);
                     break;
-                case 37:
-                    ZTAirAct_Bnr.this.uWindLevel(ZTAirAct_Bnr.this.val);
-                    break;
-                case 38:
-                    ZTAirAct_Bnr.this.uTempUnit(ZTAirAct_Bnr.this.val);
-                    break;
-                case 39:
-                    ZTAirAct_Bnr.this.uTempRight(ZTAirAct_Bnr.this.val);
-                    break;
-                case 40:
-                    ZTAirAct_Bnr.this.uFrontFrog(ZTAirAct_Bnr.this.val);
-                    break;
-                case 41:
-                    ZTAirAct_Bnr.this.uRearFrog(ZTAirAct_Bnr.this.val);
-                    break;
-                case 42:
-                    ZTAirAct_Bnr.this.uTempLeft(ZTAirAct_Bnr.this.val);
-                    break;
-                case 44:
+                case 13:
                     ZTAirAct_Bnr.this.uAuto(ZTAirAct_Bnr.this.val);
                     break;
-                case 45:
+                case 14:
                     ZTAirAct_Bnr.this.uDual(ZTAirAct_Bnr.this.val);
                     break;
-                case 46:
-                    ZTAirAct_Bnr.this.uMode(ZTAirAct_Bnr.this.val);
+                case 16:
+                    ZTAirAct_Bnr.this.uRearFrog(ZTAirAct_Bnr.this.val);
                     break;
-                case 47:
-                    ZTAirAct_Bnr.this.uAcMax(ZTAirAct_Bnr.this.val);
+                case 21:
+                    ZTAirAct_Bnr.this.uWindLevel(ZTAirAct_Bnr.this.val);
                     break;
-                case 48:
-                    ZTAirAct_Bnr.this.uBlowFace(ZTAirAct_Bnr.this.val);
+                case 27:
+                    ZTAirAct_Bnr.this.uTempLeft(ZTAirAct_Bnr.this.val);
                     break;
-                case 68:
+                case 28:
+                    ZTAirAct_Bnr.this.uTempRight(ZTAirAct_Bnr.this.val);
+                    break;
+                case 29:
                     ZTAirAct_Bnr.this.uSeatLeft(ZTAirAct_Bnr.this.val);
                     break;
-                case 69:
+                case 30:
                     ZTAirAct_Bnr.this.uSeatRight(ZTAirAct_Bnr.this.val);
                     break;
-                case 85:
+                case 37:
+                    ZTAirAct_Bnr.this.uTempUnit(ZTAirAct_Bnr.this.val);
+                    break;
+                case 53:
+                    ZTAirAct_Bnr.this.uAcMax(ZTAirAct_Bnr.this.val);
+                    break;
+                case 58:
+                    ZTAirAct_Bnr.this.uBlowFace(ZTAirAct_Bnr.this.val);
+                    break;
+                case 65:
+                    ZTAirAct_Bnr.this.uFrontFrog(ZTAirAct_Bnr.this.val);
+                    break;
+                case 77:
+                    ZTAirAct_Bnr.this.uMode(ZTAirAct_Bnr.this.val);
+                    break;
+                case 151:
                     ZTAirAct_Bnr.this.uAirType(ZTAirAct_Bnr.this.val);
                     break;
             }
@@ -83,18 +82,18 @@ public class ZTAirAct_Bnr extends BaseActivity {
     String str = "";
     private int unit = 0;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (DataCanbus.DATA[85] == 2) {
-            setContentView(R.layout.layout_265_bnr_t600_air_control_zidong);
+        if (DataCanbus.DATA[151] == 2) {
+            //setContentView(R.layout.layout_265_bnr_t600_air_control_zidong);
         } else {
-            setContentView(R.layout.layout_265_bnr_t600_air_control_shoudong);
+            //setContentView(R.layout.layout_265_bnr_t600_air_control_shoudong);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         initListener();
         bindView(R.id.btn_air_temp_left_plus);
@@ -106,8 +105,8 @@ public class ZTAirAct_Bnr extends BaseActivity {
     }
 
     private void initListener() {
-        this.mClick = new View.OnClickListener() { // from class: com.syu.carinfo.ztt600.ZTAirAct_Bnr.2
-            @Override // android.view.View.OnClickListener
+        this.mClick = new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int cmd = 0;
                 switch (v.getId()) {
@@ -159,27 +158,27 @@ public class ZTAirAct_Bnr extends BaseActivity {
                     case R.id.btn_air_temp_right_minus /* 2131427451 */:
                         cmd = 4;
                         break;
-                    case R.id.air_xts_dual /* 2131427460 */:
-                        cmd = 16;
-                        break;
-                    case R.id.air_xts_mode_footbody /* 2131427461 */:
+                    case R.id.air_xts_mode_footbody /* 2131427502 */:
                         cmd = 33;
                         break;
-                    case R.id.air_xts_mode_footwin /* 2131427462 */:
-                        cmd = 32;
-                        break;
-                    case R.id.air_xts_clear /* 2131427465 */:
-                        cmd = 37;
-                        break;
-                    case R.id.air_xts_rear /* 2131427534 */:
+                    case R.id.air_xts_rear /* 2131427560 */:
                         cmd = 20;
                         break;
-                    case R.id.air_cycle_outer /* 2131427557 */:
+                    case R.id.air_xts_dual /* 2131427566 */:
+                        cmd = 16;
+                        break;
+                    case R.id.air_xts_clear /* 2131427569 */:
+                        cmd = 37;
+                        break;
+                    case R.id.air_xts_mode_footwin /* 2131427632 */:
+                        cmd = 32;
+                        break;
+                    case R.id.air_cycle_outer /* 2131428106 */:
                         if (ZTAirAct_Bnr.this.cycle == 1) {
                             cmd = 25;
                             break;
                         }
-                    case R.id.air_cycle_inter /* 2131427558 */:
+                    case R.id.air_cycle_inter /* 2131428107 */:
                         if (ZTAirAct_Bnr.this.cycle == 0) {
                             cmd = 25;
                             break;
@@ -198,7 +197,7 @@ public class ZTAirAct_Bnr extends BaseActivity {
         return v;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -206,7 +205,7 @@ public class ZTAirAct_Bnr extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -214,19 +213,19 @@ public class ZTAirAct_Bnr extends BaseActivity {
         mIsFront = false;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmd, int value) {
         DataCanbus.PROXY.cmd(0, cmd, value);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.notifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.notifyCanbus);
@@ -289,7 +288,7 @@ public class ZTAirAct_Bnr extends BaseActivity {
     }
 
     void uTempLeft(int val) {
-        uAirType(DataCanbus.DATA[85]);
+        uAirType(DataCanbus.DATA[151]);
         this.itempl = val;
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             this.str = "";
@@ -328,7 +327,7 @@ public class ZTAirAct_Bnr extends BaseActivity {
     }
 
     void uTempRight(int val) {
-        uAirType(DataCanbus.DATA[85]);
+        uAirType(DataCanbus.DATA[151]);
         this.itempr = val;
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             this.str = "";

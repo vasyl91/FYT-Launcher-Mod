@@ -9,29 +9,28 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0364_RZC_XP1_MaiRuiBao16;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcOnstatWifiAct extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcOnstatWifiAct.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 120:
+                case 187:
                     RzcKlcOnstatWifiAct.this.updaterWifiName();
                     break;
-                case 121:
+                case 188:
                     RzcKlcOnstatWifiAct.this.updaterWifiPsWord();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_onstar_wifi);
+        //setContentView(R.layout.layout_rzc_klc_onstar_wifi);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
@@ -39,27 +38,27 @@ public class RzcKlcOnstatWifiAct extends Activity implements View.OnClickListene
         DataCanbus.PROXY.cmd(8, 66);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[187].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[187].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.mNotifyCanbus);
     }
 
     protected void finalize() throws Throwable {
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWifiName() {
         String str = Callback_0364_RZC_XP1_MaiRuiBao16.WifiName;
         if (str != null) {
@@ -67,7 +66,7 @@ public class RzcKlcOnstatWifiAct extends Activity implements View.OnClickListene
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWifiPsWord() {
         String str = Callback_0364_RZC_XP1_MaiRuiBao16.WifiPsword;
         if (str != null) {
@@ -75,7 +74,7 @@ public class RzcKlcOnstatWifiAct extends Activity implements View.OnClickListene
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 }

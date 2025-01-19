@@ -10,52 +10,51 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OdNazhijieU7SetFunc extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 19:
+                case 98:
                     OdNazhijieU7SetFunc.this.updateReversingviewLev(value);
                     break;
-                case 20:
+                case 99:
                     OdNazhijieU7SetFunc.this.mUpdaterSideSafeViewOn(value);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_od_nazhijieu7_setfunc);
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_od_nazhijieu7_setfunc);
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19] - 1;
+                int value = DataCanbus.DATA[98] - 1;
                 if (value < 0) {
                     value = 1;
                 }
                 DataCanbus.PROXY.cmd(0, new int[]{146, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[19] + 1;
+                int value = DataCanbus.DATA[98] + 1;
                 if (value > 1) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(0, new int[]{146, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[20];
+                int value2 = DataCanbus.DATA[99];
                 if (value2 == 0) {
                     value = 1;
                 } else {
@@ -66,19 +65,19 @@ public class OdNazhijieU7SetFunc extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateReversingviewLev(int value) {
         switch (value) {
             case 0:
@@ -90,7 +89,7 @@ public class OdNazhijieU7SetFunc extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSideSafeViewOn(int value) {
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);

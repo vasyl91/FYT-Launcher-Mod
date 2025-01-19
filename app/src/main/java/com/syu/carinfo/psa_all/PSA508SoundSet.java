@@ -10,38 +10,37 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSA508SoundSet extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PSA508SoundSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 188:
+                case 200:
                     PSA508SoundSet.this.updateBalance(value);
                     break;
-                case 189:
+                case 201:
                     PSA508SoundSet.this.updateFade(value);
                     break;
-                case 190:
+                case 202:
                     PSA508SoundSet.this.updateDistribution(value);
                     break;
-                case 191:
+                case 203:
                     PSA508SoundSet.this.updateLoudness(value);
                     break;
-                case 192:
+                case 204:
                     PSA508SoundSet.this.updateVolumeSpeed(value);
                     break;
-                case 193:
+                case 205:
                     PSA508SoundSet.this.updateSelection(value);
                     break;
-                case 194:
+                case 206:
                     PSA508SoundSet.this.updateTweeter(value);
                     break;
-                case 195:
+                case 207:
                     PSA508SoundSet.this.updateBass(value);
                     break;
-                case 231:
+                case 243:
                     if (((CheckedTextView) PSA508SoundSet.this.findViewById(R.id.ctv_checkedtext3)) != null) {
                         ((CheckedTextView) PSA508SoundSet.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value != 0);
                         break;
@@ -50,10 +49,10 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_252_psa508_sound_set);
+        //setContentView(R.layout.layout_252_psa508_sound_set);
         setListener();
     }
 
@@ -75,43 +74,43 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[188].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[193].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[194].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[202].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[203].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[204].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[205].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[206].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[207].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[243].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[188].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[193].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[194].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[202].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[203].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[204].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[205].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[206].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[207].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[243].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
@@ -124,11 +123,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
         int value9;
         int value10;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                setCmd(12, DataCanbus.DATA[191] != 0 ? 0 : 1);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value11 = DataCanbus.DATA[188];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value11 = DataCanbus.DATA[200];
                 if (value11 > 0) {
                     value10 = value11 - 1;
                 } else {
@@ -136,8 +132,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(2, value10);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value12 = DataCanbus.DATA[188];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value12 = DataCanbus.DATA[200];
                 if (value12 < 14) {
                     value9 = value12 + 1;
                 } else {
@@ -145,8 +141,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(2, value9);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value13 = DataCanbus.DATA[189];
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value13 = DataCanbus.DATA[201];
                 if (value13 > 0) {
                     value8 = value13 - 1;
                 } else {
@@ -154,8 +150,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(3, value8);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value14 = DataCanbus.DATA[189];
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value14 = DataCanbus.DATA[201];
                 if (value14 < 14) {
                     value7 = value14 + 1;
                 } else {
@@ -163,12 +159,12 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(3, value7);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-            case R.id.btn_plus3 /* 2131427490 */:
-                setCmd(11, DataCanbus.DATA[190] != 0 ? 0 : 1);
+            case R.id.btn_minus3 /* 2131427461 */:
+            case R.id.btn_plus3 /* 2131427463 */:
+                setCmd(11, DataCanbus.DATA[202] != 0 ? 0 : 1);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value15 = DataCanbus.DATA[193];
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value15 = DataCanbus.DATA[205];
                 if (value15 > 0) {
                     value6 = value15 - 1;
                 } else {
@@ -176,8 +172,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(14, value6);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value16 = DataCanbus.DATA[193];
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value16 = DataCanbus.DATA[205];
                 if (value16 < 5) {
                     value5 = value16 + 1;
                 } else {
@@ -185,8 +181,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(14, value5);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value17 = DataCanbus.DATA[194];
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value17 = DataCanbus.DATA[206];
                 if (value17 > 0) {
                     value4 = value17 - 1;
                 } else {
@@ -194,8 +190,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(15, value4);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value18 = DataCanbus.DATA[194];
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value18 = DataCanbus.DATA[206];
                 if (value18 < 14) {
                     value3 = value18 + 1;
                 } else {
@@ -203,8 +199,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(15, value3);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value19 = DataCanbus.DATA[195];
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value19 = DataCanbus.DATA[207];
                 if (value19 > 0) {
                     value2 = value19 - 1;
                 } else {
@@ -212,8 +208,8 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(16, value2);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value20 = DataCanbus.DATA[195];
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value20 = DataCanbus.DATA[207];
                 if (value20 < 14) {
                     value = value20 + 1;
                 } else {
@@ -221,11 +217,14 @@ public class PSA508SoundSet extends Activity implements View.OnClickListener {
                 }
                 setCmd(16, value);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                setCmd(13, DataCanbus.DATA[192] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                setCmd(12, DataCanbus.DATA[203] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                DataCanbus.PROXY.cmd(101, 24, DataCanbus.DATA[231] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                setCmd(13, DataCanbus.DATA[204] != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                DataCanbus.PROXY.cmd(101, 24, DataCanbus.DATA[243] != 0 ? 0 : 1);
                 break;
         }
     }

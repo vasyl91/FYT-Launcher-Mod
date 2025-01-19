@@ -7,7 +7,6 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ActivityUtils {
     public static boolean startActivitySafely(@NonNull Context context, Intent intent, int... flags) {
         if (context == null || intent == null) {
@@ -40,7 +39,7 @@ public class ActivityUtils {
         if (pkg != null && pkg.length() > 0) {
             intent.setPackage(pkg);
         }
-        boolean success = startActivitySafely(context, intent, new int[0]);
+        boolean success = startActivitySafely(context, intent);
         return success;
     }
 
@@ -53,7 +52,7 @@ public class ActivityUtils {
         Intent intent = new Intent();
         ComponentName c = new ComponentName(pkg, clazz);
         intent.setComponent(c);
-        boolean success = startActivitySafely(context, intent, new int[0]);
+        boolean success = startActivitySafely(context, intent);
         return success;
     }
 }

@@ -12,12 +12,11 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityAccord7AirControl extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     int tempunit = 0;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.accord.ActivityAccord7AirControl.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -55,10 +54,10 @@ public class ActivityAccord7AirControl extends Activity implements View.OnTouchL
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_274_accord7_air_control);
+        ////setContentView(R.layout.layout_274_accord7_air_control);
         setListener();
     }
 
@@ -81,7 +80,7 @@ public class ActivityAccord7AirControl extends Activity implements View.OnTouchL
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int cmdId = -1;
         switch (v.getId()) {
@@ -152,7 +151,7 @@ public class ActivityAccord7AirControl extends Activity implements View.OnTouchL
         DataCanbus.PROXY.cmd(0, cmdId, touchState);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -160,7 +159,7 @@ public class ActivityAccord7AirControl extends Activity implements View.OnTouchL
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();

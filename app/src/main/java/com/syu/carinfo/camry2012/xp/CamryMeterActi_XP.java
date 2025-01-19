@@ -9,64 +9,63 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryMeterActi_XP extends BaseActivity {
     int carid = 0;
     int unit = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry2012.xp.CamryMeterActi_XP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 86:
+                case 98:
                     CamryMeterActi_XP.this.mUpdaterAveSpeed();
                     break;
-                case 91:
+                case 103:
                     CamryMeterActi_XP.this.unit = (value >> 24) & 255;
                     break;
-                case 134:
+                case 146:
                     CamryMeterActi_XP.this.mUpdaterRearLock();
                     break;
-                case 135:
+                case 147:
                     CamryMeterActi_XP.this.mUpdaterFRLock();
                     break;
-                case 136:
+                case 148:
                     CamryMeterActi_XP.this.mUpdaterFLLock();
                     break;
-                case 137:
+                case 149:
                     CamryMeterActi_XP.this.mUpdaterDomer();
                     break;
-                case 138:
+                case 150:
                     CamryMeterActi_XP.this.mUpdaterTripTotal();
                     break;
-                case 139:
+                case 151:
                     CamryMeterActi_XP.this.mUpdaterTripLast();
                     break;
-                case 140:
+                case 152:
                     CamryMeterActi_XP.this.mUpdaterTripA();
                     break;
-                case 141:
+                case 153:
                     CamryMeterActi_XP.this.mUpdaterTripB();
                     break;
-                case 142:
+                case 154:
                     CamryMeterActi_XP.this.mUpdaterCurSpeed();
                     break;
-                case 143:
+                case 155:
                     CamryMeterActi_XP.this.mUpdaterEngine();
                     break;
-                case 144:
+                case 156:
                     CamryMeterActi_XP.this.mUpdaterOutTemp();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_base_info);
-        findViewById(R.id.camry_light).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry2012.xp.CamryMeterActi_XP.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_camry_base_info);
+        findViewById(R.id.camry_light).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -80,50 +79,50 @@ public class CamryMeterActi_XP extends BaseActivity {
         this.carid = (DataCanbus.DATA[1000] >> 16) & 65535;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(20, new int[]{65}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripTotal() {
-        int value = DataCanbus.DATA[138];
+        int value = DataCanbus.DATA[150];
         if (this.unit == 1) {
             if (value > 0) {
                 ((TextView) findViewById(R.id.camry_meter_total)).setText(String.valueOf(value) + " miles");
@@ -140,9 +139,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripLast() {
-        int value = DataCanbus.DATA[139];
+        int value = DataCanbus.DATA[151];
         if (this.unit == 1) {
             if (value > 0 && value < 10000) {
                 ((TextView) findViewById(R.id.camry_meter_mile)).setText(String.valueOf(value) + " miles");
@@ -159,9 +158,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripA() {
-        int value = DataCanbus.DATA[140];
+        int value = DataCanbus.DATA[152];
         if (this.unit == 1) {
             if (value > 0) {
                 ((TextView) findViewById(R.id.camry_meter_a)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " miles");
@@ -178,9 +177,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTripB() {
-        int value = DataCanbus.DATA[141];
+        int value = DataCanbus.DATA[153];
         if (this.unit == 1) {
             if (value > 0) {
                 ((TextView) findViewById(R.id.camry_meter_b)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 10), Integer.valueOf(value % 10))) + " miles");
@@ -197,9 +196,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCurSpeed() {
-        int value = DataCanbus.DATA[142];
+        int value = DataCanbus.DATA[154];
         if (this.unit == 1) {
             if (value > 0) {
                 ((TextView) findViewById(R.id.camry_meter_curr_speed)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(value / 100), Integer.valueOf(value % 100))) + " mph");
@@ -216,9 +215,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAveSpeed() {
-        int value = DataCanbus.DATA[86];
+        int value = DataCanbus.DATA[98];
         if (this.unit == 1) {
             if (value > 0) {
                 if ((DataCanbus.DATA[1000] & 65535) == 112 || ((DataCanbus.DATA[1000] & 65535) == 397 && this.carid >= 42 && this.carid <= 77)) {
@@ -244,9 +243,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         ((TextView) findViewById(R.id.camry_meter_ave_speed)).setText("--.-- km/h");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterEngine() {
-        int value = DataCanbus.DATA[143];
+        int value = DataCanbus.DATA[155];
         if ((DataCanbus.DATA[1000] & 65535) == 112 || ((DataCanbus.DATA[1000] & 65535) == 397 && this.carid >= 42 && this.carid <= 77)) {
             value /= 4;
         }
@@ -257,9 +256,9 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOutTemp() {
-        int value = DataCanbus.DATA[144];
+        int value = DataCanbus.DATA[156];
         if ((DataCanbus.DATA[1000] & 65535) == 112 || ((DataCanbus.DATA[1000] & 65535) == 397 && this.carid >= 42 && this.carid <= 77)) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.camry_meter_out_temp)).setText("--.-- °C");
@@ -285,42 +284,42 @@ public class CamryMeterActi_XP extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearLock() {
         int i = R.drawable.ic_camry_lock_lock;
-        int value = DataCanbus.DATA[134];
+        int value = DataCanbus.DATA[146];
         if (((DataCanbus.DATA[1000] & 65535) == 397 && this.carid >= 42 && this.carid <= 77) || (DataCanbus.DATA[1000] & 65535) == 112) {
-            ((TextView) findViewById(R.id.camry_lock_rear_left)).setBackgroundResource((value & 2) == 0 ? 2130839342 : 2130839343);
+            ((TextView) findViewById(R.id.camry_lock_rear_left)).setBackgroundResource((value & 2) == 0 ? 2130839814 : 2130839815);
             TextView textView = (TextView) findViewById(R.id.camry_lock_rear_right);
             if ((value & 1) != 0) {
-                i = 2130839343;
+                i = 2130839815;
             }
             textView.setBackgroundResource(i);
             return;
         }
-        ((TextView) findViewById(R.id.camry_lock_rear_left)).setBackgroundResource(value == 0 ? 2130839342 : 2130839343);
+        ((TextView) findViewById(R.id.camry_lock_rear_left)).setBackgroundResource(value == 0 ? 2130839814 : 2130839815);
         TextView textView2 = (TextView) findViewById(R.id.camry_lock_rear_right);
         if (value != 0) {
-            i = 2130839343;
+            i = 2130839815;
         }
         textView2.setBackgroundResource(i);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFRLock() {
-        int value = DataCanbus.DATA[135];
+        int value = DataCanbus.DATA[147];
         ((TextView) findViewById(R.id.camry_lock_front_right)).setBackgroundResource(value == 0 ? R.drawable.ic_camry_lock_lock : R.drawable.ic_camry_lock_unlock);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFLLock() {
-        int value = DataCanbus.DATA[136];
+        int value = DataCanbus.DATA[148];
         ((TextView) findViewById(R.id.camry_lock_front_left)).setBackgroundResource(value == 0 ? R.drawable.ic_camry_lock_lock : R.drawable.ic_camry_lock_unlock);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDomer() {
-        int value = DataCanbus.DATA[137];
+        int value = DataCanbus.DATA[149];
         switch (value) {
             case 1:
                 ((TextView) findViewById(R.id.camry_dormer_status)).setText(R.string.camry_dormer_open);

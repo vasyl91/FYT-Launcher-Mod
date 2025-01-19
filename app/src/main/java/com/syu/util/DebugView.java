@@ -5,22 +5,22 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.View;
 import android.view.WindowManager;
+
 import java.util.Locale;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DebugView extends View {
-    private int CELL_HEIGHT;
+    private final int CELL_HEIGHT;
     int[] COLOR;
     private final int MAX;
     private final int TEXT_SIZE;
-    private int[] mColors;
+    private final int[] mColors;
     private int mCount;
     private boolean mDbg;
     private int mLastIndex;
-    private WindowManager.LayoutParams mLp;
+    private final WindowManager.LayoutParams mLp;
     private int mMsgCnt;
-    private String[] mMsgs;
-    private Paint mPaint;
+    private final String[] mMsgs;
+    private final Paint mPaint;
 
     public DebugView(Context context) {
         super(context);
@@ -71,13 +71,13 @@ public class DebugView extends View {
             if (data.length - start < length) {
                 length = data.length - start;
             }
-            String msg = String.valueOf(str) + " * ";
+            String msg = str + " * ";
             for (int i = 0; i < length; i++) {
                 String c = Integer.toHexString(data[start + i] & 255).toUpperCase(Locale.CHINA);
                 if (c.length() < 2) {
                     c = "0" + c;
                 }
-                msg = String.valueOf(msg) + c + " ";
+                msg = msg + c + " ";
             }
             HandlerUI.getInstance().post(new MessageHelper(msg));
         }
@@ -88,26 +88,26 @@ public class DebugView extends View {
             if (data.length - start < length) {
                 length = data.length - start;
             }
-            String msg = String.valueOf(str) + " * ";
+            String msg = str + " * ";
             for (int i = 0; i < length; i++) {
                 String c = Integer.toHexString(data[start + i] & 255).toUpperCase(Locale.CHINA);
                 if (c.length() < 2) {
                     c = "0" + c;
                 }
-                msg = String.valueOf(msg) + c + " ";
+                msg = msg + c + " ";
             }
             HandlerUI.getInstance().post(new MessageHelper(msg));
         }
     }
 
     private class MessageHelper implements Runnable {
-        private String mMessage;
+        private final String mMessage;
 
         public MessageHelper(String msg) {
             this.mMessage = msg;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             DebugView.this.mLastIndex++;
             DebugView.this.mCount++;
@@ -124,7 +124,7 @@ public class DebugView extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         if (this.mCount != 0) {
             int count = this.mCount;

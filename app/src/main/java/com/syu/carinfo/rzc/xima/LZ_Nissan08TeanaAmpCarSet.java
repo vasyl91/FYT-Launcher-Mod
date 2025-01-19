@@ -11,52 +11,51 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZ_Nissan08TeanaAmpCarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.xima.LZ_Nissan08TeanaAmpCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 99:
+                case 111:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 100:
+                case 112:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text2)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 101:
+                case 113:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text3)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text3)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 102:
+                case 114:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text4)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text4)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 103:
+                case 115:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text5)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text5)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 104:
+                case 116:
                     LZ_Nissan08TeanaAmpCarSet.this.setCheck((CheckedTextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 106:
+                case 118:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text6)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text6)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 107:
+                case 119:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text7)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 152:
+                case 164:
                     if (((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text8)) != null) {
                         ((TextView) LZ_Nissan08TeanaAmpCarSet.this.findViewById(R.id.tv_text8)).setText(new StringBuilder().append(value).toString());
                         break;
@@ -65,14 +64,14 @@ public class LZ_Nissan08TeanaAmpCarSet extends BaseActivity implements View.OnCl
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_lz_nissan_teana_settings);
+        //setContentView(R.layout.layout_0453_lz_nissan_teana_settings);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_453_LZ_Teana_08_TW /* 15663557 */:
@@ -117,67 +116,67 @@ public class LZ_Nissan08TeanaAmpCarSet extends BaseActivity implements View.OnCl
         setSelfClick((Button) findViewById(R.id.btn_plus8), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                setCarInfo(7, 0);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 setCarInfo(0, 0);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 setCarInfo(0, 1);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
+            case R.id.btn_minus2 /* 2131427458 */:
                 setCarInfo(1, 0);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 setCarInfo(1, 1);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
+            case R.id.btn_minus3 /* 2131427461 */:
                 setCarInfo(3, 0);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 setCarInfo(3, 1);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
+            case R.id.btn_minus4 /* 2131427464 */:
                 setCarInfo(5, 0);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 setCarInfo(5, 1);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
+            case R.id.btn_minus5 /* 2131427467 */:
                 setCarInfo(4, 0);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 setCarInfo(4, 1);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
+            case R.id.btn_minus6 /* 2131427470 */:
                 setCarInfo(6, 0);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 setCarInfo(6, 1);
                 break;
-            case R.id.btn_minus7 /* 2131427505 */:
+            case R.id.btn_minus7 /* 2131427473 */:
                 setCarInfo(8, 0);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 setCarInfo(8, 1);
                 break;
-            case R.id.btn_minus8 /* 2131427509 */:
-                int value = DataCanbus.DATA[152] - 1;
+            case R.id.btn_minus8 /* 2131427476 */:
+                int value = DataCanbus.DATA[164] - 1;
                 if (value < 0) {
                     value = 3;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{24, value}, null, null);
                 break;
-            case R.id.btn_plus8 /* 2131427511 */:
-                int value2 = DataCanbus.DATA[152] + 1;
+            case R.id.btn_plus8 /* 2131427478 */:
+                int value2 = DataCanbus.DATA[164] + 1;
                 if (value2 > 3) {
                     value2 = 0;
                 }
                 DataCanbus.PROXY.cmd(1, new int[]{24, value2}, null, null);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                setCarInfo(7, 0);
                 break;
         }
     }
@@ -186,44 +185,44 @@ public class LZ_Nissan08TeanaAmpCarSet extends BaseActivity implements View.OnCl
         DataCanbus.PROXY.cmd(2, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(3, new int[]{59}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
     }
 }

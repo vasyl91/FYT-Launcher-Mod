@@ -174,18 +174,12 @@ public class BitmapUtils {
 
             Method method = clazz.getMethod("setDataSource", String.class);
             method.invoke(instance, filePath);
-
-            // The method name changes between API Level 9 and 10.
-            if (Build.VERSION.SDK_INT <= 9) {
-                return (Bitmap) clazz.getMethod("captureFrame").invoke(instance);
-            } else {
-                byte[] data = (byte[]) clazz.getMethod("getEmbeddedPicture").invoke(instance);
-                if (data != null) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    if (bitmap != null) return bitmap;
-                }
-                return (Bitmap) clazz.getMethod("getFrameAtTime").invoke(instance);
+            byte[] data = (byte[]) clazz.getMethod("getEmbeddedPicture").invoke(instance);
+            if (data != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                if (bitmap != null) return bitmap;
             }
+            return (Bitmap) clazz.getMethod("getFrameAtTime").invoke(instance);
         } catch (IllegalArgumentException ex) {
             // Assume this is a corrupt video file
         } catch (RuntimeException ex) {

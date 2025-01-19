@@ -11,16 +11,15 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFord_FunctionlActi extends Activity {
     List<CarInfo> mList = new ArrayList();
     int[] titles = {R.string.rzc_others_language_setting, R.string.wc_273_unit, R.string.wc_372_amblight, R.string.str_mic_set, R.string.str_guandao_amp, R.string.str_pitch_and_roll};
     Class[] clsess = {Activity_0452_PA_Ford_Language.class, Activity_0452_PA_Ford_Unit.class, Activity_0452_PA_Ford_AmbientLightSet.class, Activity_0452_PA_Ford_MICtype.class, Activity_0452_PA_Ford_AmpSet.class, Activity_0452_PA_Ford_PitchAndRoll.class};
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         initValue();
         AdapterCarInfo adapter = new AdapterCarInfo(this, this.mList);
         ((ListView) findViewById(R.id.list_carinfo)).setAdapter((ListAdapter) adapter);
@@ -36,7 +35,7 @@ public class PAFord_FunctionlActi extends Activity {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

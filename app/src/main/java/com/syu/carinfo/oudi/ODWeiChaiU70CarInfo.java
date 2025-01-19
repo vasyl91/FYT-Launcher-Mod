@@ -8,64 +8,63 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODWeiChaiU70CarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.ODWeiChaiU70CarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 24:
+                case 102:
                     ODWeiChaiU70CarInfo.this.updateCarinfo1();
                     break;
-                case 27:
+                case 105:
                     ODWeiChaiU70CarInfo.this.updateCarinfo2();
                     break;
-                case 28:
+                case 106:
                     ODWeiChaiU70CarInfo.this.updateCarinfo3();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_weichai_carinfo);
+        //setContentView(R.layout.layout_0452_od_weichai_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo1() {
-        int value = DataCanbus.DATA[24];
+        int value = DataCanbus.DATA[102];
         if ((value & 128) != 0) {
             ((TextView) findViewById(R.id.tv_text1)).setText("-" + (255 - value) + " ℃");
             return;
@@ -73,15 +72,15 @@ public class ODWeiChaiU70CarInfo extends BaseActivity implements View.OnClickLis
         ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value) + " ℃");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo2() {
-        int value = DataCanbus.DATA[27];
+        int value = DataCanbus.DATA[105];
         ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value) + " km");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo3() {
-        int value = DataCanbus.DATA[28];
+        int value = DataCanbus.DATA[106];
         ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(value) + " km");
     }
 }

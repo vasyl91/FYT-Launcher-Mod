@@ -12,7 +12,6 @@ import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcOnStarAct extends BaseActivity {
     Button BtnMute;
     StringBuffer buffer;
@@ -22,24 +21,24 @@ public class RzcKlcOnStarAct extends BaseActivity {
     public static boolean mIsFront = false;
     public static boolean isChannle = true;
     boolean IsIntentOn = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcOnStarAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (DataCanbus.DATA[1000] == 7471556) {
                 switch (updateCode) {
-                    case 31:
+                    case 122:
                         RzcKlcOnStarAct.this.updaterOnStarNum();
                         break;
-                    case 32:
+                    case 123:
                         RzcKlcOnStarAct.this.updaterOnStarState();
                         break;
                 }
             }
             switch (updateCode) {
-                case 20:
+                case 118:
                     RzcKlcOnStarAct.this.updaterOnStarNum();
                     break;
-                case 21:
+                case 119:
                     RzcKlcOnStarAct.this.updaterOnStarState();
                     break;
             }
@@ -48,15 +47,15 @@ public class RzcKlcOnStarAct extends BaseActivity {
     int OnStarState = -1;
     boolean IsChange = false;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_onstar_set);
+        //setContentView(R.layout.layout_rzc_klc_onstar_set);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (getIntent().getStringExtra("onstar") != null && getIntent().getStringExtra("onstar").equals("on")) {
             this.IsIntentOn = true;
@@ -74,13 +73,13 @@ public class RzcKlcOnStarAct extends BaseActivity {
     public void onExtraClik(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.rzc_onStarDelete /* 2131432759 */:
+            case R.id.rzc_onStarDelete /* 2131432686 */:
                 if (this.buffer != null && this.buffer.length() > 0) {
                     this.buffer.deleteCharAt(this.buffer.length() - 1);
                     this.showInputTv.setText(this.buffer.toString());
                     break;
                 }
-            case R.id.rzc_btn1 /* 2131432760 */:
+            case R.id.rzc_btn1 /* 2131432687 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(1);
@@ -94,7 +93,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn2 /* 2131432761 */:
+            case R.id.rzc_btn2 /* 2131432688 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(2);
@@ -108,7 +107,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn3 /* 2131432762 */:
+            case R.id.rzc_btn3 /* 2131432689 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(3);
@@ -122,7 +121,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn11 /* 2131432763 */:
+            case R.id.rzc_btn11 /* 2131432690 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append('*');
@@ -136,7 +135,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn4 /* 2131432764 */:
+            case R.id.rzc_btn4 /* 2131432691 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(4);
@@ -150,7 +149,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn5 /* 2131432765 */:
+            case R.id.rzc_btn5 /* 2131432692 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(5);
@@ -164,7 +163,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn6 /* 2131432766 */:
+            case R.id.rzc_btn6 /* 2131432693 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(6);
@@ -178,7 +177,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn0 /* 2131432767 */:
+            case R.id.rzc_btn0 /* 2131432694 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(0);
@@ -192,7 +191,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn7 /* 2131432768 */:
+            case R.id.rzc_btn7 /* 2131432695 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(7);
@@ -206,7 +205,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn8 /* 2131432769 */:
+            case R.id.rzc_btn8 /* 2131432696 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(8);
@@ -220,7 +219,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn9 /* 2131432770 */:
+            case R.id.rzc_btn9 /* 2131432697 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append(9);
@@ -234,7 +233,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_btn10 /* 2131432771 */:
+            case R.id.rzc_btn10 /* 2131432698 */:
                 if (this.buffer != null) {
                     if (this.OnStarState == 4) {
                         this.buffer.append('#');
@@ -248,7 +247,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.rzc_callanswer /* 2131432772 */:
+            case R.id.rzc_callanswer /* 2131432699 */:
                 if (this.OnStarState == 2) {
                     RzcKlcFunc.CAR_ON_START_CTL(2);
                     break;
@@ -278,7 +277,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
                     RzcKlcFunc.CAR_ON_START_CALL(this.showints);
                     break;
                 }
-            case R.id.rzc_callhang /* 2131432773 */:
+            case R.id.rzc_callhang /* 2131432700 */:
                 if (this.OnStarState == 1) {
                     RzcKlcFunc.CAR_ON_START_CTL(3);
                     break;
@@ -295,7 +294,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -303,16 +302,20 @@ public class RzcKlcOnStarAct extends BaseActivity {
             KlcFunc.SWITCH_MAIN_STATE(12);
         }
         addUpdater();
+        if (this.OnStarState == 0 || this.OnStarState == -1) {
+            RzcKlcFunc.CAR_ON_START_CTL(1);
+        }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
+        RzcKlcFunc.CAR_ON_START_CTL(0);
         mIsFront = false;
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             KlcFunc.SWITCH_MAIN_STATE(0);
@@ -323,27 +326,27 @@ public class RzcKlcOnStarAct extends BaseActivity {
 
     private void addUpdater() {
         if (DataCanbus.DATA[1000] == 7471556) {
-            DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
         } else {
-            DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-            DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
     private void removeUpdater() {
         if (DataCanbus.DATA[1000] == 7471556) {
-            DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
         } else {
-            DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-            DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOnStarState() {
-        this.OnStarState = DataCanbus.DATA[21];
+        this.OnStarState = DataCanbus.DATA[119];
         if (this.OnStarState == 0 && this.IsChange && this.IsIntentOn) {
             KlcFunc.SWITCH_MAIN_STATE(0);
             moveTaskToBack(true);
@@ -356,7 +359,7 @@ public class RzcKlcOnStarAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOnStarNum() {
         String str = GmConstData.anjixingNumber;
         if (str != null) {

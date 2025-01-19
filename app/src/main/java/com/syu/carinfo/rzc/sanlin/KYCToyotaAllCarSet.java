@@ -1,5 +1,6 @@
 package com.syu.carinfo.rzc.sanlin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,6 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -27,20 +27,20 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 86:
+                case 98:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext3), value == 1);
                     break;
-                case 87:
+                case 99:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text7)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 88:
+                case 100:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text8)) != null) {
                         switch (value) {
                             case 0:
@@ -58,7 +58,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 89:
+                case 101:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text9)) != null) {
                         switch (value) {
                             case 0:
@@ -76,30 +76,30 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 90:
+                case 102:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext4), value == 1);
                     break;
-                case 91:
+                case 103:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext5), value == 1);
                     break;
-                case 92:
+                case 104:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext6), value == 1);
                     break;
-                case 93:
+                case 105:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext7), value == 1);
                     break;
-                case 94:
+                case 106:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text10)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text10)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 95:
+                case 107:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext8), value == 1);
                     break;
-                case 96:
+                case 108:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext9), value == 1);
                     break;
-                case 97:
+                case 109:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text11)) != null) {
                         switch (value) {
                             case 0:
@@ -111,24 +111,24 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 98:
+                case 110:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext10), value == 1);
                     break;
-                case 99:
+                case 111:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext11), value == 1);
                     break;
-                case 100:
+                case 112:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text12)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text12)).setText(new StringBuilder().append(value + 1).toString());
                         break;
                     }
-                case 101:
+                case 113:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext12), value == 1);
                     break;
-                case 102:
+                case 114:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext13), value == 1);
                     break;
-                case 103:
+                case 115:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text13)) != null) {
                         switch (value) {
                             case 0:
@@ -146,7 +146,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 104:
+                case 116:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text15)) != null) {
                         switch (value) {
                             case 0:
@@ -161,15 +161,15 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 105:
+                case 117:
                     KYCToyotaAllCarSet.this.updateLauguageSet();
                     break;
-                case 106:
+                case 118:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text14)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text14)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 107:
+                case 119:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text6)) != null) {
                         if (value > 7) {
                             ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text6)).setText("R" + (value - 7));
@@ -183,7 +183,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 108:
+                case 120:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text5)) != null) {
                         if (value > 7) {
                             ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text5)).setText("R" + (value - 7));
@@ -197,7 +197,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 109:
+                case 121:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text2)) != null) {
                         if (value > 7) {
                             ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text2)).setText("+" + (value - 7));
@@ -211,7 +211,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 110:
+                case 122:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text4)) != null) {
                         if (value > 7) {
                             ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text4)).setText("+" + (value - 7));
@@ -225,7 +225,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 111:
+                case 123:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text3)) != null) {
                         if (value > 7) {
                             ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text3)).setText("+" + (value - 7));
@@ -239,55 +239,29 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
-                case 112:
+                case 124:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 113:
+                case 125:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text1)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                         break;
                     }
-                case 114:
+                case 126:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext2), value == 1);
                     break;
-                case 115:
+                case 127:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text16)) != null) {
                         ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text16)).setText(String.valueOf(value) + " km");
                         break;
                     }
-                case 116:
-                    if (value == 1) {
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view1).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view2).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view3).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view4).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view5).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view6).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view7).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view8).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view14).setVisibility(0);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_text_view1).setVisibility(0);
-                        break;
-                    } else {
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view1).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view2).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view3).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view4).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view5).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view6).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view7).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view8).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_view14).setVisibility(8);
-                        KYCToyotaAllCarSet.this.findViewById(R.id.layout_text_view1).setVisibility(8);
-                        break;
-                    }
-                case 117:
+                case 129:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext14), value == 1);
                     break;
-                case 118:
+                case 130:
                     KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext15), value == 1);
                     break;
-                case 156:
+                case 168:
                     if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text17)) != null) {
                         switch (value) {
                             case 0:
@@ -305,18 +279,74 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
                         }
                     }
                     break;
+                case 169:
+                    KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext20), value == 1);
+                    break;
+                case 170:
+                    KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext19), value == 1);
+                    break;
+                case 177:
+                    if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text18)) != null) {
+                        switch (value) {
+                            case 0:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text18)).setText(R.string.off);
+                                break;
+                            case 1:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text18)).setText("7.5s");
+                                break;
+                            case 2:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text18)).setText("15s");
+                                break;
+                            case 3:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text18)).setText("30s");
+                                break;
+                        }
+                    }
+                    break;
+                case 178:
+                    if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text19)) != null) {
+                        ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text19)).setText(new StringBuilder().append(value + 1).toString());
+                        break;
+                    }
+                case 179:
+                    KYCToyotaAllCarSet.this.setCheck((CheckedTextView) KYCToyotaAllCarSet.this.findViewById(R.id.ctv_checkedtext22), value == 1);
+                    break;
+                case 180:
+                    if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text20)) != null) {
+                        switch (value) {
+                            case 0:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text20)).setText(R.string.jeep_forwardcollisionwarn_0);
+                                break;
+                            case 1:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text20)).setText(R.string.jeep_forwardcollisionwarn_1);
+                                break;
+                        }
+                    }
+                    break;
+                case 181:
+                    if (((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text21)) != null) {
+                        switch (value) {
+                            case 0:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text21)).setText(R.string.jeep_forwardcollisionwarn_0);
+                                break;
+                            case 1:
+                                ((TextView) KYCToyotaAllCarSet.this.findViewById(R.id.tv_text21)).setText(R.string.jeep_forwardcollisionwarn_1);
+                                break;
+                        }
+                    }
+                    break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_kyc_toyota_all_settings);
+        //setContentView(R.layout.layout_0452_kyc_toyota_all_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -330,8 +360,8 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 KYCToyotaAllCarSet.this.language_set = position;
                 if (KYCToyotaAllCarSet.this.language_set >= 0 && KYCToyotaAllCarSet.this.language_set <= KYCToyotaAllCarSet.this.mLauStylelist.size() && KYCToyotaAllCarSet.this.send_lang != null) {
@@ -343,7 +373,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[105];
+        int value = DataCanbus.DATA[117];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -358,7 +388,7 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         findViewById(R.id.layout_view16).setVisibility(8);
         this.mPopShowView = getWindow().getDecorView();
@@ -376,8 +406,8 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (KYCToyotaAllCarSet.this.mLauStyle == null) {
                     KYCToyotaAllCarSet.this.initLauStyle();
@@ -389,6 +419,16 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
             }
         });
         switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15_YC /* 590279 */:
+            case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15H_YC /* 655815 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_MO /* 1966534 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_TX /* 2032070 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_12_MO /* 2097606 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_12_TX /* 2163142 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_10_MO /* 2228678 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_10_TX /* 2294214 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_14_MO /* 2359750 */:
+            case FinalCanbus.CAR_454_KYC_Toyota_Lexus_GX_14_TX /* 2425286 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_LX570_07_MO /* 6357445 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_LX570_07_TX /* 6422981 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_LX570_12_MO /* 6488517 */:
@@ -448,6 +488,10 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext16), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext17), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext18), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext19), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext20), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext21), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext22), this);
         setSelfClick((Button) findViewById(R.id.btn_minus1), this);
         setSelfClick((Button) findViewById(R.id.btn_plus1), this);
         setSelfClick((Button) findViewById(R.id.btn_minus2), this);
@@ -478,382 +522,485 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         setSelfClick((Button) findViewById(R.id.btn_plus14), this);
         setSelfClick((Button) findViewById(R.id.btn_minus15), this);
         setSelfClick((Button) findViewById(R.id.btn_plus15), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus16), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus16), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus17), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus17), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus18), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus18), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus19), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus19), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus20), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus20), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         switch (v.getId()) {
-            case R.id.btn_minus13 /* 2131427468 */:
-                int value2 = DataCanbus.DATA[103];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value2 = DataCanbus.DATA[125];
                 if (value2 > 0) {
                     value2--;
                 }
-                setCarInfo(20, value2);
+                setAmp(7, value2);
                 break;
-            case R.id.btn_plus13 /* 2131427470 */:
-                int value3 = DataCanbus.DATA[103];
-                if (value3 < 3) {
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value3 = DataCanbus.DATA[125];
+                if (value3 < 63) {
                     value3++;
                 }
-                setCarInfo(20, value3);
+                setAmp(7, value3);
                 break;
-            case R.id.btn_minus14 /* 2131427471 */:
-                int value4 = DataCanbus.DATA[106];
-                if (value4 > 0) {
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value4 = DataCanbus.DATA[121];
+                if (value4 > 2) {
                     value4--;
                 }
-                setCarInfo(44, value4);
+                setAmp(4, value4);
                 break;
-            case R.id.btn_plus14 /* 2131427473 */:
-                int value5 = DataCanbus.DATA[106];
-                if (value5 < 6) {
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value5 = DataCanbus.DATA[121];
+                if (value5 < 12) {
                     value5++;
                 }
-                setCarInfo(44, value5);
+                setAmp(4, value5);
                 break;
-            case R.id.btn_minus15 /* 2131427474 */:
-                int value6 = DataCanbus.DATA[104];
-                if (value6 > 0) {
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value6 = DataCanbus.DATA[123];
+                if (value6 > 2) {
                     value6--;
                 }
-                setCarInfo(43, value6);
+                setAmp(6, value6);
                 break;
-            case R.id.btn_plus15 /* 2131427476 */:
-                int value7 = DataCanbus.DATA[104];
-                if (value7 < 2) {
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value7 = DataCanbus.DATA[123];
+                if (value7 < 12) {
                     value7++;
                 }
-                setCarInfo(43, value7);
+                setAmp(6, value7);
                 break;
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                if (DataCanbus.DATA[112] == 1) {
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value8 = DataCanbus.DATA[122];
+                if (value8 > 2) {
+                    value8--;
+                }
+                setAmp(5, value8);
+                break;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value9 = DataCanbus.DATA[122];
+                if (value9 < 12) {
+                    value9++;
+                }
+                setAmp(5, value9);
+                break;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value10 = DataCanbus.DATA[120];
+                if (value10 > 0) {
+                    value10--;
+                }
+                setAmp(2, value10);
+                break;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value11 = DataCanbus.DATA[120];
+                if (value11 < 14) {
+                    value11++;
+                }
+                setAmp(2, value11);
+                break;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value12 = DataCanbus.DATA[119];
+                if (value12 > 0) {
+                    value12--;
+                }
+                setAmp(1, value12);
+                break;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value13 = DataCanbus.DATA[119];
+                if (value13 < 14) {
+                    value13++;
+                }
+                setAmp(1, value13);
+                break;
+            case R.id.btn_minus7 /* 2131427473 */:
+                int value14 = DataCanbus.DATA[99];
+                if (value14 > 0) {
+                    value14--;
+                }
+                setCarInfo(6, value14);
+                break;
+            case R.id.btn_plus7 /* 2131427475 */:
+                int value15 = DataCanbus.DATA[99];
+                if (value15 < 4) {
+                    value15++;
+                }
+                setCarInfo(6, value15);
+                break;
+            case R.id.btn_minus8 /* 2131427476 */:
+                int value16 = DataCanbus.DATA[100];
+                if (value16 > 0) {
+                    value16--;
+                }
+                setCarInfo(12, value16);
+                break;
+            case R.id.btn_plus8 /* 2131427478 */:
+                int value17 = DataCanbus.DATA[100];
+                if (value17 < 3) {
+                    value17++;
+                }
+                setCarInfo(12, value17);
+                break;
+            case R.id.btn_minus9 /* 2131427479 */:
+                int value18 = DataCanbus.DATA[101];
+                if (value18 > 0) {
+                    value18--;
+                }
+                setCarInfo(7, value18);
+                break;
+            case R.id.btn_plus9 /* 2131427481 */:
+                int value19 = DataCanbus.DATA[101];
+                if (value19 < 3) {
+                    value19++;
+                }
+                setCarInfo(7, value19);
+                break;
+            case R.id.btn_minus10 /* 2131427482 */:
+                int value20 = DataCanbus.DATA[106];
+                if (value20 > 0) {
+                    value20--;
+                }
+                setCarInfo(5, value20);
+                break;
+            case R.id.btn_plus10 /* 2131427484 */:
+                int value21 = DataCanbus.DATA[106];
+                if (value21 < 6) {
+                    value21++;
+                }
+                setCarInfo(5, value21);
+                break;
+            case R.id.btn_minus11 /* 2131427485 */:
+                int value22 = DataCanbus.DATA[109];
+                if (value22 == 1) {
+                    value22 = 0;
+                } else if (value22 == 0) {
+                    value22 = 1;
+                }
+                setCarInfo(15, value22);
+                break;
+            case R.id.btn_plus11 /* 2131427487 */:
+                int value23 = DataCanbus.DATA[109];
+                if (value23 == 1) {
+                    value23 = 0;
+                } else if (value23 == 0) {
+                    value23 = 1;
+                }
+                setCarInfo(15, value23);
+                break;
+            case R.id.btn_minus12 /* 2131427488 */:
+                int value24 = DataCanbus.DATA[112];
+                if (value24 > 0) {
+                    value24--;
+                }
+                setCarInfo(35, value24);
+                break;
+            case R.id.btn_plus12 /* 2131427490 */:
+                int value25 = DataCanbus.DATA[112];
+                if (value25 < 4) {
+                    value25++;
+                }
+                setCarInfo(35, value25);
+                break;
+            case R.id.btn_minus13 /* 2131427491 */:
+                int value26 = DataCanbus.DATA[115];
+                if (value26 > 0) {
+                    value26--;
+                }
+                setCarInfo(20, value26);
+                break;
+            case R.id.btn_plus13 /* 2131427493 */:
+                int value27 = DataCanbus.DATA[115];
+                if (value27 < 3) {
+                    value27++;
+                }
+                setCarInfo(20, value27);
+                break;
+            case R.id.btn_minus14 /* 2131427494 */:
+                int value28 = DataCanbus.DATA[118];
+                if (value28 > 0) {
+                    value28--;
+                }
+                setCarInfo(44, value28);
+                break;
+            case R.id.btn_plus14 /* 2131427496 */:
+                int value29 = DataCanbus.DATA[118];
+                if (value29 < 6) {
+                    value29++;
+                }
+                setCarInfo(44, value29);
+                break;
+            case R.id.btn_minus15 /* 2131427515 */:
+                int value30 = DataCanbus.DATA[116];
+                if (value30 > 0) {
+                    value30--;
+                }
+                setCarInfo(43, value30);
+                break;
+            case R.id.btn_plus15 /* 2131427517 */:
+                int value31 = DataCanbus.DATA[116];
+                if (value31 < 2) {
+                    value31++;
+                }
+                setCarInfo(43, value31);
+                break;
+            case R.id.btn_minus16 /* 2131427518 */:
+                int value32 = DataCanbus.DATA[168] - 1;
+                if (value32 < 0) {
+                    value32 = 3;
+                }
+                setAmp(12, value32);
+                break;
+            case R.id.btn_plus16 /* 2131427520 */:
+                int value33 = DataCanbus.DATA[168] + 1;
+                if (value33 > 3) {
+                    value33 = 0;
+                }
+                setAmp(12, value33);
+                break;
+            case R.id.btn_minus17 /* 2131427521 */:
+                int value34 = DataCanbus.DATA[177] - 1;
+                if (value34 < 0) {
+                    value34 = 3;
+                }
+                setCarInfo(45, value34);
+                break;
+            case R.id.btn_plus17 /* 2131427523 */:
+                int value35 = DataCanbus.DATA[177] + 1;
+                if (value35 > 3) {
+                    value35 = 0;
+                }
+                setCarInfo(45, value35);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                if (DataCanbus.DATA[124] == 1) {
                     value = 8;
                 } else {
                     value = 1;
                 }
                 setAmp(3, value);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value8 = DataCanbus.DATA[113];
-                if (value8 > 0) {
-                    value8--;
-                }
-                setAmp(7, value8);
-                break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value9 = DataCanbus.DATA[113];
-                if (value9 < 63) {
-                    value9++;
-                }
-                setAmp(7, value9);
-                break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value10 = DataCanbus.DATA[109];
-                if (value10 > 2) {
-                    value10--;
-                }
-                setAmp(4, value10);
-                break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value11 = DataCanbus.DATA[109];
-                if (value11 < 12) {
-                    value11++;
-                }
-                setAmp(4, value11);
-                break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value12 = DataCanbus.DATA[111];
-                if (value12 > 2) {
-                    value12--;
-                }
-                setAmp(6, value12);
-                break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value13 = DataCanbus.DATA[111];
-                if (value13 < 12) {
-                    value13++;
-                }
-                setAmp(6, value13);
-                break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value14 = DataCanbus.DATA[110];
-                if (value14 > 2) {
-                    value14--;
-                }
-                setAmp(5, value14);
-                break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value15 = DataCanbus.DATA[110];
-                if (value15 < 12) {
-                    value15++;
-                }
-                setAmp(5, value15);
-                break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value16 = DataCanbus.DATA[108];
-                if (value16 > 0) {
-                    value16--;
-                }
-                setAmp(2, value16);
-                break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value17 = DataCanbus.DATA[108];
-                if (value17 < 14) {
-                    value17++;
-                }
-                setAmp(2, value17);
-                break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value18 = DataCanbus.DATA[107];
-                if (value18 > 0) {
-                    value18--;
-                }
-                setAmp(1, value18);
-                break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value19 = DataCanbus.DATA[107];
-                if (value19 < 14) {
-                    value19++;
-                }
-                setAmp(1, value19);
-                break;
-            case R.id.btn_minus7 /* 2131427505 */:
-                int value20 = DataCanbus.DATA[87];
-                if (value20 > 0) {
-                    value20--;
-                }
-                setCarInfo(6, value20);
-                break;
-            case R.id.btn_plus7 /* 2131427507 */:
-                int value21 = DataCanbus.DATA[87];
-                if (value21 < 4) {
-                    value21++;
-                }
-                setCarInfo(6, value21);
-                break;
-            case R.id.btn_minus8 /* 2131427509 */:
-                int value22 = DataCanbus.DATA[88];
-                if (value22 > 0) {
-                    value22--;
-                }
-                setCarInfo(12, value22);
-                break;
-            case R.id.btn_plus8 /* 2131427511 */:
-                int value23 = DataCanbus.DATA[88];
-                if (value23 < 3) {
-                    value23++;
-                }
-                setCarInfo(12, value23);
-                break;
-            case R.id.btn_minus9 /* 2131427513 */:
-                int value24 = DataCanbus.DATA[89];
-                if (value24 > 0) {
-                    value24--;
-                }
-                setCarInfo(7, value24);
-                break;
-            case R.id.btn_plus9 /* 2131427515 */:
-                int value25 = DataCanbus.DATA[89];
-                if (value25 < 3) {
-                    value25++;
-                }
-                setCarInfo(7, value25);
-                break;
-            case R.id.btn_minus10 /* 2131427517 */:
-                int value26 = DataCanbus.DATA[94];
-                if (value26 > 0) {
-                    value26--;
-                }
-                setCarInfo(5, value26);
-                break;
-            case R.id.btn_plus10 /* 2131427519 */:
-                int value27 = DataCanbus.DATA[94];
-                if (value27 < 6) {
-                    value27++;
-                }
-                setCarInfo(5, value27);
-                break;
-            case R.id.btn_minus11 /* 2131427521 */:
-                int value28 = DataCanbus.DATA[97];
-                if (value28 == 1) {
-                    value28 = 0;
-                } else if (value28 == 0) {
-                    value28 = 1;
-                }
-                setCarInfo(15, value28);
-                break;
-            case R.id.btn_plus11 /* 2131427523 */:
-                int value29 = DataCanbus.DATA[97];
-                if (value29 == 1) {
-                    value29 = 0;
-                } else if (value29 == 0) {
-                    value29 = 1;
-                }
-                setCarInfo(15, value29);
-                break;
-            case R.id.btn_minus12 /* 2131427525 */:
-                int value30 = DataCanbus.DATA[100];
-                if (value30 > 0) {
-                    value30--;
-                }
-                setCarInfo(35, value30);
-                break;
-            case R.id.btn_plus12 /* 2131427527 */:
-                int value31 = DataCanbus.DATA[100];
-                if (value31 < 4) {
-                    value31++;
-                }
-                setCarInfo(35, value31);
-                break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                int value32 = DataCanbus.DATA[114];
-                if (value32 == 1) {
-                    value32 = 0;
-                } else if (value32 == 0) {
-                    value32 = 1;
-                }
-                setAmp(9, value32);
-                break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                int value33 = DataCanbus.DATA[86];
-                if (value33 == 1) {
-                    value33 = 0;
-                } else if (value33 == 0) {
-                    value33 = 1;
-                }
-                setCarInfo(4, value33);
-                break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                int value34 = DataCanbus.DATA[90];
-                if (value34 == 1) {
-                    value34 = 0;
-                } else if (value34 == 0) {
-                    value34 = 1;
-                }
-                setCarInfo(0, value34);
-                break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                int value35 = DataCanbus.DATA[91];
-                if (value35 == 1) {
-                    value35 = 0;
-                } else if (value35 == 0) {
-                    value35 = 1;
-                }
-                setCarInfo(1, value35);
-                break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                int value36 = DataCanbus.DATA[92];
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                int value36 = DataCanbus.DATA[126];
                 if (value36 == 1) {
                     value36 = 0;
                 } else if (value36 == 0) {
                     value36 = 1;
                 }
-                setCarInfo(2, value36);
+                setAmp(9, value36);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                int value37 = DataCanbus.DATA[93];
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value37 = DataCanbus.DATA[98];
                 if (value37 == 1) {
                     value37 = 0;
                 } else if (value37 == 0) {
                     value37 = 1;
                 }
-                setCarInfo(3, value37);
+                setCarInfo(4, value37);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                int value38 = DataCanbus.DATA[95];
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value38 = DataCanbus.DATA[102];
                 if (value38 == 1) {
                     value38 = 0;
                 } else if (value38 == 0) {
                     value38 = 1;
                 }
-                setCarInfo(13, value38);
+                setCarInfo(0, value38);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                int value39 = DataCanbus.DATA[96];
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value39 = DataCanbus.DATA[103];
                 if (value39 == 1) {
                     value39 = 0;
                 } else if (value39 == 0) {
                     value39 = 1;
                 }
-                setCarInfo(14, value39);
+                setCarInfo(1, value39);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                int value40 = DataCanbus.DATA[98];
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                int value40 = DataCanbus.DATA[104];
                 if (value40 == 1) {
                     value40 = 0;
                 } else if (value40 == 0) {
                     value40 = 1;
                 }
-                setCarInfo(16, value40);
+                setCarInfo(2, value40);
                 break;
-            case R.id.ctv_checkedtext11 /* 2131427543 */:
-                int value41 = DataCanbus.DATA[99];
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value41 = DataCanbus.DATA[105];
                 if (value41 == 1) {
                     value41 = 0;
                 } else if (value41 == 0) {
                     value41 = 1;
                 }
-                setCarInfo(17, value41);
+                setCarInfo(3, value41);
                 break;
-            case R.id.ctv_checkedtext12 /* 2131427544 */:
-                int value42 = DataCanbus.DATA[101];
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value42 = DataCanbus.DATA[107];
                 if (value42 == 1) {
                     value42 = 0;
                 } else if (value42 == 0) {
                     value42 = 1;
                 }
-                setCarInfo(18, value42);
+                setCarInfo(13, value42);
                 break;
-            case R.id.ctv_checkedtext13 /* 2131427545 */:
-                int value43 = DataCanbus.DATA[102];
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int value43 = DataCanbus.DATA[108];
                 if (value43 == 1) {
                     value43 = 0;
                 } else if (value43 == 0) {
                     value43 = 1;
                 }
-                setCarInfo(19, value43);
+                setCarInfo(14, value43);
                 break;
-            case R.id.ctv_checkedtext14 /* 2131427546 */:
-                int value44 = DataCanbus.DATA[117];
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                int value44 = DataCanbus.DATA[110];
                 if (value44 == 1) {
                     value44 = 0;
                 } else if (value44 == 0) {
                     value44 = 1;
                 }
-                setAmp(96, value44);
+                setCarInfo(16, value44);
                 break;
-            case R.id.ctv_checkedtext15 /* 2131427547 */:
-                int value45 = DataCanbus.DATA[118];
+            case R.id.ctv_checkedtext11 /* 2131427553 */:
+                int value45 = DataCanbus.DATA[111];
                 if (value45 == 1) {
                     value45 = 0;
                 } else if (value45 == 0) {
                     value45 = 1;
                 }
-                setAmp(97, value45);
+                setCarInfo(17, value45);
                 break;
-            case R.id.ctv_checkedtext16 /* 2131427548 */:
+            case R.id.ctv_checkedtext12 /* 2131427554 */:
+                int value46 = DataCanbus.DATA[113];
+                if (value46 == 1) {
+                    value46 = 0;
+                } else if (value46 == 0) {
+                    value46 = 1;
+                }
+                setCarInfo(18, value46);
+                break;
+            case R.id.ctv_checkedtext13 /* 2131427555 */:
+                int value47 = DataCanbus.DATA[114];
+                if (value47 == 1) {
+                    value47 = 0;
+                } else if (value47 == 0) {
+                    value47 = 1;
+                }
+                setCarInfo(19, value47);
+                break;
+            case R.id.ctv_checkedtext14 /* 2131427556 */:
+                int value48 = DataCanbus.DATA[129];
+                if (value48 == 1) {
+                    value48 = 0;
+                } else if (value48 == 0) {
+                    value48 = 1;
+                }
+                setAmp(96, value48);
+                break;
+            case R.id.ctv_checkedtext15 /* 2131427557 */:
+                int value49 = DataCanbus.DATA[130];
+                if (value49 == 1) {
+                    value49 = 0;
+                } else if (value49 == 0) {
+                    value49 = 1;
+                }
+                setAmp(97, value49);
+                break;
+            case R.id.ctv_checkedtext16 /* 2131427558 */:
                 setAmp(98, 1);
                 break;
-            case R.id.ctv_checkedtext17 /* 2131427647 */:
+            case R.id.ctv_checkedtext17 /* 2131427559 */:
                 setAmp(99, 1);
                 break;
-            case R.id.ctv_checkedtext18 /* 2131427649 */:
+            case R.id.ctv_checkedtext18 /* 2131427661 */:
                 setAmp(100, 1);
                 break;
-            case R.id.btn_minus16 /* 2131427888 */:
-                int value46 = DataCanbus.DATA[156] - 1;
-                if (value46 < 0) {
-                    value46 = 3;
+            case R.id.ctv_checkedtext19 /* 2131427663 */:
+                int value50 = DataCanbus.DATA[170];
+                if (value50 == 1) {
+                    value50 = 0;
+                } else if (value50 == 0) {
+                    value50 = 1;
                 }
-                setAmp(12, value46);
+                setAmp(8, value50);
                 break;
-            case R.id.btn_plus16 /* 2131427889 */:
-                int value47 = DataCanbus.DATA[156] + 1;
-                if (value47 > 3) {
-                    value47 = 0;
+            case R.id.ctv_checkedtext20 /* 2131427665 */:
+                int value51 = DataCanbus.DATA[169];
+                if (value51 == 1) {
+                    value51 = 0;
+                } else if (value51 == 0) {
+                    value51 = 1;
                 }
-                setAmp(12, value47);
+                setAmp(10, value51);
+                break;
+            case R.id.ctv_checkedtext21 /* 2131427667 */:
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(this, KYCToyotaTireAct.class);
+                    startActivity(intent);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            case R.id.ctv_checkedtext22 /* 2131427669 */:
+                int value52 = DataCanbus.DATA[179];
+                if (value52 == 1) {
+                    value52 = 0;
+                } else if (value52 == 0) {
+                    value52 = 1;
+                }
+                setCarInfo(22, value52);
+                break;
+            case R.id.btn_minus18 /* 2131427894 */:
+                int value53 = DataCanbus.DATA[178] - 1;
+                if (value53 < 0) {
+                    value53 = 4;
+                }
+                setCarInfo(21, value53 + 1);
+                break;
+            case R.id.btn_plus18 /* 2131427895 */:
+                int value54 = DataCanbus.DATA[178] + 1;
+                if (value54 > 4) {
+                    value54 = 0;
+                }
+                setCarInfo(21, value54 + 1);
+                break;
+            case R.id.btn_minus19 /* 2131427896 */:
+                int value55 = DataCanbus.DATA[180] - 1;
+                if (value55 < 0) {
+                    value55 = 1;
+                }
+                setCarInfo(23, value55);
+                break;
+            case R.id.btn_plus19 /* 2131427897 */:
+                int value56 = DataCanbus.DATA[180] + 1;
+                if (value56 > 1) {
+                    value56 = 0;
+                }
+                setCarInfo(23, value56);
+                break;
+            case R.id.btn_minus20 /* 2131427905 */:
+                int value57 = DataCanbus.DATA[181] - 1;
+                if (value57 < 0) {
+                    value57 = 1;
+                }
+                setCarInfo(46, value57);
+                break;
+            case R.id.btn_plus20 /* 2131427906 */:
+                int value58 = DataCanbus.DATA[181] + 1;
+                if (value58 > 1) {
+                    value58 = 0;
+                }
+                setCarInfo(46, value58);
                 break;
         }
     }
@@ -866,32 +1013,20 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         DataCanbus.PROXY.cmd(0, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
@@ -909,27 +1044,34 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[178].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[179].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
@@ -947,10 +1089,29 @@ public class KYCToyotaAllCarSet extends BaseActivity implements View.OnClickList
         DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[178].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[179].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mNotifyCanbus);
     }
 }

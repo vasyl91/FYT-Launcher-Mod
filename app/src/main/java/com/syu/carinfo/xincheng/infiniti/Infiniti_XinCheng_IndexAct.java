@@ -8,16 +8,15 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnClickListener {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xincheng_infiniti_index);
+        //setContentView(R.layout.layout_xincheng_infiniti_index);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
@@ -40,10 +39,10 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent();
                     intent.setClass(this, Infiniti_XinCheng_CarTire.class);
@@ -53,7 +52,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent();
                     if (5046724 == DataCanbus.DATA[1000] || 5112260 == DataCanbus.DATA[1000]) {
@@ -67,7 +66,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 try {
                     Intent intent3 = new Intent();
                     intent3.setClass(this, Infiniti_XinCheng_CarSet.class);
@@ -77,7 +76,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 try {
                     Intent intent4 = new Intent();
                     intent4.setClass(this, Infiniti_XinCheng_CarSet1.class);
@@ -87,7 +86,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
                 try {
                     Intent intent5 = new Intent();
                     intent5.setClass(this, Infiniti_XinCheng_EQSet.class);
@@ -97,7 +96,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
                 try {
                     Intent intent6 = new Intent();
                     intent6.setClass(this, Infiniti_XinCheng_AirSeatSet.class);
@@ -107,7 +106,7 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
                     e6.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
                 try {
                     Intent intent7 = new Intent();
                     intent7.setClass(this, Infiniti_XinCheng_DirvmodeSet.class);
@@ -120,13 +119,13 @@ public class Infiniti_XinCheng_IndexAct extends BaseActivity implements View.OnC
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, new int[]{1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
     }

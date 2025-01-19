@@ -14,40 +14,39 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0170_XP1_AnKeSela;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class M3CarCD extends BaseActivity {
     public static M3CarCD mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp_angkesailam3.M3CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 99:
                     M3CarCD.this.updaterCdTextInfo();
                     break;
-                case 2:
+                case 100:
                     M3CarCD.this.mUpdaterTrackTime();
                     break;
-                case 3:
-                case 5:
+                case 101:
+                case 103:
                     M3CarCD.this.mUpdaterStatus();
                     break;
-                case 4:
+                case 102:
                     M3CarCD.this.mUpdaterTrack();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_170_carcd);
+        //setContentView(R.layout.layout_170_carcd);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.jeep_btn_play)).setOnTouchListener(new ButtonListener());
         ((Button) findViewById(R.id.jeep_btn_ff)).setOnTouchListener(new ButtonListener());
@@ -65,45 +64,45 @@ public class M3CarCD extends BaseActivity {
         }
 
         /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-        @Override // android.view.View.OnTouchListener
+        @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == 0) {
                 switch (v.getId()) {
-                    case R.id.jeep_btn_play /* 2131427575 */:
+                    case R.id.jeep_btn_play /* 2131427585 */:
                         DataCanbus.PROXY.cmd(0, new int[]{2}, null, null);
                         break;
-                    case R.id.jeep_btn_pause /* 2131427576 */:
+                    case R.id.jeep_btn_pause /* 2131427586 */:
                         DataCanbus.PROXY.cmd(0, new int[]{1}, null, null);
                         break;
-                    case R.id.jeep_btn_fr /* 2131427610 */:
+                    case R.id.jeep_btn_fr /* 2131427622 */:
                         DataCanbus.PROXY.cmd(0, new int[]{3}, null, null);
                         break;
-                    case R.id.jeep_btn_ff /* 2131427611 */:
+                    case R.id.jeep_btn_ff /* 2131427623 */:
                         DataCanbus.PROXY.cmd(0, new int[]{4}, null, null);
                         break;
-                    case R.id.jeep_btn_loop /* 2131428345 */:
-                        if ((DataCanbus.DATA[5] & 1) == 1) {
+                    case R.id.jeep_btn_loop /* 2131427737 */:
+                        if ((DataCanbus.DATA[103] & 1) == 1) {
                             DataCanbus.PROXY.cmd(0, new int[]{8}, null, null);
                             break;
                         } else {
                             DataCanbus.PROXY.cmd(0, new int[]{7}, null, null);
                             break;
                         }
-                    case R.id.jeep_btn_backward /* 2131428346 */:
-                        DataCanbus.PROXY.cmd(0, new int[]{6}, null, null);
-                        break;
-                    case R.id.jeep_btn_forward /* 2131428347 */:
-                        DataCanbus.PROXY.cmd(0, new int[]{5}, null, null);
-                        break;
-                    case R.id.jeep_btn_random /* 2131428348 */:
-                        if (((DataCanbus.DATA[5] >> 1) & 1) == 1) {
+                    case R.id.jeep_btn_random /* 2131427740 */:
+                        if (((DataCanbus.DATA[103] >> 1) & 1) == 1) {
                             DataCanbus.PROXY.cmd(0, new int[]{10}, null, null);
                             break;
                         } else {
                             DataCanbus.PROXY.cmd(0, new int[]{9}, null, null);
                             break;
                         }
-                    case R.id.jeep_btn_open /* 2131428801 */:
+                    case R.id.jeep_btn_backward /* 2131428334 */:
+                        DataCanbus.PROXY.cmd(0, new int[]{6}, null, null);
+                        break;
+                    case R.id.jeep_btn_forward /* 2131428335 */:
+                        DataCanbus.PROXY.cmd(0, new int[]{5}, null, null);
+                        break;
+                    case R.id.jeep_btn_open /* 2131428837 */:
                         DataCanbus.PROXY.cmd(0, new int[]{11}, null, null);
                         break;
                 }
@@ -111,12 +110,12 @@ public class M3CarCD extends BaseActivity {
             return false;
         }
 
-        @Override // android.view.View.OnClickListener
+        @Override
         public void onClick(View v) {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -127,7 +126,7 @@ public class M3CarCD extends BaseActivity {
         FuncMain.setChannel(13);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -135,30 +134,30 @@ public class M3CarCD extends BaseActivity {
         DataCanbus.PROXY.cmd(0, new int[1], null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStatus() {
-        int value = DataCanbus.DATA[3];
-        int value1 = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[101];
+        int value1 = DataCanbus.DATA[103];
         StringBuffer sb = new StringBuffer();
         switch (value) {
             case 0:
@@ -202,7 +201,7 @@ public class M3CarCD extends BaseActivity {
         ((TextView) findViewById(R.id.jeep_tv_state)).setText(sb.toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCdTextInfo() {
         int infoType = Callback_0170_XP1_AnKeSela.infoType & 65535;
         String strInfo = "";
@@ -221,9 +220,9 @@ public class M3CarCD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrack() {
-        int track = DataCanbus.DATA[4];
+        int track = DataCanbus.DATA[102];
         if (track == 16777215) {
             ((TextView) findViewById(R.id.jeep_tv_track)).setText("---");
         } else {
@@ -231,10 +230,10 @@ public class M3CarCD extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterTrackTime() {
-        int value = (DataCanbus.DATA[2] >> 16) & 65535;
-        int valueall = DataCanbus.DATA[2] & 65535;
+        int value = (DataCanbus.DATA[100] >> 16) & 65535;
+        int valueall = DataCanbus.DATA[100] & 65535;
         if (value == 65535) {
             ((TextView) findViewById(R.id.jeep_tv_time)).setText("--:-- / --:--");
         } else {

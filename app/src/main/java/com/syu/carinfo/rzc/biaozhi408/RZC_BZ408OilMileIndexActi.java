@@ -11,17 +11,16 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_BZ408OilMileIndexActi extends TabActivity {
     public RadioButton btnPage1;
     public RadioButton btnPage2;
     public RadioButton btnPage3;
     private RadioGroup mGroup;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 153:
+                case 164:
                     RZC_BZ408OilMileIndexActi.this.mUpdaterValue1();
                     break;
             }
@@ -30,10 +29,10 @@ public class RZC_BZ408OilMileIndexActi extends TabActivity {
     private TabHost mTabHost;
     public TextView mTvTpis;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_biaozhi408_oil_index);
+        //setContentView(R.layout.layout_rzc_biaozhi408_oil_index);
         init();
     }
 
@@ -46,17 +45,17 @@ public class RZC_BZ408OilMileIndexActi extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage1").setIndicator("tabPage1").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage1Acti.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage2").setIndicator("tabPage2").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage2Acti.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage3").setIndicator("tabPage3").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage3Acti.class)));
-        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.2
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.rzc_bz408_oil_btn_page1 /* 2131432616 */:
+                    case R.id.rzc_bz408_oil_btn_page1 /* 2131432542 */:
                         RZC_BZ408OilMileIndexActi.this.mTabHost.setCurrentTabByTag("tabPage1");
                         break;
-                    case R.id.rzc_bz408_oil_btn_page2 /* 2131432617 */:
+                    case R.id.rzc_bz408_oil_btn_page2 /* 2131432543 */:
                         RZC_BZ408OilMileIndexActi.this.mTabHost.setCurrentTabByTag("tabPage2");
                         break;
-                    case R.id.rzc_bz408_oil_btn_page3 /* 2131432618 */:
+                    case R.id.rzc_bz408_oil_btn_page3 /* 2131432544 */:
                         RZC_BZ408OilMileIndexActi.this.mTabHost.setCurrentTabByTag("tabPage3");
                         break;
                 }
@@ -64,13 +63,13 @@ public class RZC_BZ408OilMileIndexActi extends TabActivity {
         });
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -81,16 +80,16 @@ public class RZC_BZ408OilMileIndexActi extends TabActivity {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[153];
+        int value = DataCanbus.DATA[164];
         if (this.mTabHost != null) {
             this.mTabHost.setCurrentTab(value);
         }

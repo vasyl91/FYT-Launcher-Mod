@@ -1,13 +1,13 @@
 package com.syu.util;
 
 import android.os.SystemClock;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class SecondTickThread extends Thread {
     private static final SecondTickThread INSTANCE = new SecondTickThread();
-    private ArrayList<Runnable> ticks = new ArrayList<>();
+    private final ArrayList<Runnable> ticks = new ArrayList<>();
 
     public static SecondTickThread getInstance() {
         return INSTANCE;
@@ -32,7 +32,7 @@ public class SecondTickThread extends Thread {
         }
     }
 
-    @Override // java.lang.Thread, java.lang.Runnable
+    @Override
     public void run() {
         while (true) {
             long startMllis = SystemClock.uptimeMillis();

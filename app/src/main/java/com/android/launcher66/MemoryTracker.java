@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.os.SystemClock;
@@ -16,7 +17,6 @@ import android.util.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class MemoryTracker extends Service {
     public static final String ACTION_START_TRACKING = "com.android.launcher66.action.START_TRACKING";
     private static final int MSG_START = 1;
@@ -29,8 +29,8 @@ public class MemoryTracker extends Service {
     public final ArrayList<Long> mPids = new ArrayList<>();
     private int[] mPidsArray = new int[0];
     private final Object mLock = new Object();
-    Handler mHandler = new Handler() { // from class: com.android.launcher66.MemoryTracker.1
-        @Override // android.os.Handler
+    Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
         public void handleMessage(Message m) {
             switch (m.what) {
                 case 1:
@@ -155,7 +155,7 @@ public class MemoryTracker extends Service {
         }
     }
 
-    @Override // android.app.Service
+    @Override
     public void onCreate() {
         this.mAm = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> svcs = this.mAm.getRunningServices(256);
@@ -175,12 +175,12 @@ public class MemoryTracker extends Service {
         }
     }
 
-    @Override // android.app.Service
+    @Override
     public void onDestroy() {
         this.mHandler.sendEmptyMessage(2);
     }
 
-    @Override // android.app.Service
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "Received start id " + startId + ": " + intent);
         if (intent != null && ACTION_START_TRACKING.equals(intent.getAction())) {
@@ -202,7 +202,7 @@ public class MemoryTracker extends Service {
         }
     }
 
-    @Override // android.app.Service
+    @Override
     public IBinder onBind(Intent intent) {
         this.mHandler.sendEmptyMessage(1);
         return this.mBinder;

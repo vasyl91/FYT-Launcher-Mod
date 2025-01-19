@@ -8,95 +8,94 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OD_Lamborghini_PanelButton extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.OD_Lamborghini_PanelButton.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 87:
-                    OD_Lamborghini_PanelButton.this.findViewById(R.id.Button10).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_big_light_p : R.drawable.ic_lamborghini_big_light_n);
+                case 99:
+                    OD_Lamborghini_PanelButton.this.findViewById(R.id.btn_plus10).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_big_light_p : R.drawable.ic_lamborghini_big_light_n);
                     break;
-                case 88:
-                    OD_Lamborghini_PanelButton.this.findViewById(R.id.Button11).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_wulight_p : R.drawable.ic_lamborghini_wulight_n);
+                case 100:
+                    OD_Lamborghini_PanelButton.this.findViewById(R.id.btn_plus11).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_wulight_p : R.drawable.ic_lamborghini_wulight_n);
                     break;
-                case 89:
-                    OD_Lamborghini_PanelButton.this.findViewById(R.id.Button9).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_esp_off_p : R.drawable.ic_lamborghini_esp_off_n);
+                case 101:
+                    OD_Lamborghini_PanelButton.this.findViewById(R.id.btn_plus9).setBackgroundResource(value == 1 ? R.drawable.ic_lamborghini_esp_off_p : R.drawable.ic_lamborghini_esp_off_n);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_lamborghini_carinfo);
-        setSelfClick((Button) findViewById(R.id.Button1), this);
-        setSelfClick((Button) findViewById(R.id.Button2), this);
-        setSelfClick((Button) findViewById(R.id.Button3), this);
-        setSelfClick((Button) findViewById(R.id.Button4), this);
-        setSelfClick((Button) findViewById(R.id.Button5), this);
-        setSelfClick((Button) findViewById(R.id.Button6), this);
-        setSelfClick((Button) findViewById(R.id.Button7), this);
-        setSelfClick((Button) findViewById(R.id.Button8), this);
-        setSelfClick((Button) findViewById(R.id.Button9), this);
-        setSelfClick((Button) findViewById(R.id.Button10), this);
-        setSelfClick((Button) findViewById(R.id.Button11), this);
-        setSelfClick((Button) findViewById(R.id.Button12), this);
+        //setContentView(R.layout.layout_0452_od_lamborghini_carinfo);
+        setSelfClick((Button) findViewById(R.id.btn_plus1), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus2), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus3), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus4), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus5), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus6), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus7), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus8), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus9), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus10), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus11), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus12), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         int cmd = 0;
         switch (id) {
-            case R.id.Button1 /* 2131427898 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 cmd = 65;
                 break;
-            case R.id.Button2 /* 2131427899 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 cmd = 64;
                 break;
-            case R.id.Button3 /* 2131427900 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 cmd = 63;
                 break;
-            case R.id.Button4 /* 2131427901 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 cmd = 62;
                 break;
-            case R.id.Button9 /* 2131427902 */:
-                cmd = 58;
-                break;
-            case R.id.Button5 /* 2131427903 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 cmd = 69;
                 break;
-            case R.id.Button6 /* 2131427904 */:
+            case R.id.btn_plus6 /* 2131427472 */:
                 cmd = 68;
                 break;
-            case R.id.Button7 /* 2131427905 */:
+            case R.id.btn_plus7 /* 2131427475 */:
                 cmd = 67;
                 break;
-            case R.id.Button8 /* 2131427906 */:
+            case R.id.btn_plus8 /* 2131427478 */:
                 cmd = 66;
                 break;
-            case R.id.Button10 /* 2131428592 */:
+            case R.id.btn_plus9 /* 2131427481 */:
+                cmd = 58;
+                break;
+            case R.id.btn_plus10 /* 2131427484 */:
                 cmd = 70;
                 break;
-            case R.id.Button11 /* 2131428593 */:
+            case R.id.btn_plus11 /* 2131427487 */:
                 cmd = 71;
                 break;
-            case R.id.Button12 /* 2131428594 */:
+            case R.id.btn_plus12 /* 2131427490 */:
                 cmd = 72;
                 break;
         }
@@ -105,17 +104,17 @@ public class OD_Lamborghini_PanelButton extends BaseActivity implements View.OnC
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[88].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[88].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
     }
 }

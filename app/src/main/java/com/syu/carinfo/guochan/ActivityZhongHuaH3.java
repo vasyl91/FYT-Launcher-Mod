@@ -8,34 +8,33 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityZhongHuaH3 extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.guochan.ActivityZhongHuaH3.1
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 93:
+                case 142:
                     ActivityZhongHuaH3.this.updateAutoLock(this.value);
                     break;
-                case 94:
+                case 143:
                     ActivityZhongHuaH3.this.updateAutoUnLock(this.value);
                     break;
-                case 95:
+                case 144:
                     ActivityZhongHuaH3.this.updateAutoReLock(this.value);
                     break;
-                case 96:
+                case 145:
                     ActivityZhongHuaH3.this.updateDoorUnLock(this.value);
                     break;
-                case 97:
+                case 146:
                     ActivityZhongHuaH3.this.updateLockDoubleLight(this.value);
                     break;
-                case 98:
+                case 147:
                     ActivityZhongHuaH3.this.updateUnLockDoubleLight(this.value);
                     break;
-                case 99:
+                case 148:
                     ActivityZhongHuaH3.this.updateRearViewAutoFold(this.value);
                     break;
             }
@@ -43,10 +42,10 @@ public class ActivityZhongHuaH3 extends Activity implements View.OnClickListener
     };
     int value;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_419_zhonghua_h3);
+        //setContentView(R.layout.layout_419_zhonghua_h3);
         setListener();
     }
 
@@ -60,67 +59,67 @@ public class ActivityZhongHuaH3 extends Activity implements View.OnClickListener
         ((CheckedTextView) findViewById(R.id.ctv_419_rear_view_auto_fold)).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_419_auto_lock /* 2131430033 */:
-                this.value = DataCanbus.DATA[93] & 255;
+            case R.id.ctv_419_auto_lock /* 2131429985 */:
+                this.value = DataCanbus.DATA[142] & 255;
                 setCarCmd(1, this.value == 0 ? 1 : 0);
                 break;
-            case R.id.ctv_419_auto_unlock /* 2131430035 */:
-                this.value = DataCanbus.DATA[94] & 255;
+            case R.id.ctv_419_auto_unlock /* 2131429987 */:
+                this.value = DataCanbus.DATA[143] & 255;
                 setCarCmd(2, this.value != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_419_auto_relock /* 2131430037 */:
-                this.value = DataCanbus.DATA[95] & 255;
+            case R.id.ctv_419_auto_relock /* 2131429989 */:
+                this.value = DataCanbus.DATA[144] & 255;
                 setCarCmd(3, this.value != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_419_door_unlock /* 2131430039 */:
-                this.value = DataCanbus.DATA[96] & 255;
+            case R.id.ctv_419_door_unlock /* 2131429991 */:
+                this.value = DataCanbus.DATA[145] & 255;
                 setCarCmd(4, this.value != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_419_lock_double_light /* 2131430041 */:
-                this.value = DataCanbus.DATA[97] & 255;
+            case R.id.ctv_419_lock_double_light /* 2131429993 */:
+                this.value = DataCanbus.DATA[146] & 255;
                 setCarCmd(5, this.value != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_419_unlock_double_light /* 2131430043 */:
-                this.value = DataCanbus.DATA[98] & 255;
+            case R.id.ctv_419_unlock_double_light /* 2131429995 */:
+                this.value = DataCanbus.DATA[147] & 255;
                 setCarCmd(6, this.value != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_419_rear_view_auto_fold /* 2131430045 */:
-                this.value = DataCanbus.DATA[99] & 255;
+            case R.id.ctv_419_rear_view_auto_fold /* 2131429997 */:
+                this.value = DataCanbus.DATA[148] & 255;
                 setCarCmd(7, this.value != 0 ? 0 : 1);
                 break;
         }

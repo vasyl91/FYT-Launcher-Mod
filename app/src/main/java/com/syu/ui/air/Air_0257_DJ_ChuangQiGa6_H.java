@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0257_DJ_ChuangQiGa6_H extends AirBase {
     public Air_0257_DJ_ChuangQiGa6_H(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0257_dj_chuangqiga6/air_257_dj_ga6.webp";
         this.mPathHighlight = "0257_dj_chuangqiga6/air_257_dj_ga6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -93,7 +93,7 @@ public class Air_0257_DJ_ChuangQiGa6_H extends AirBase {
         } else if (temp == -3) {
             c.drawText("HIGH", 64.0f, 148.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 64.0f, 148.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 64.0f, 148.0f, this.mPaint);
         }
         int temp2 = this.DATA[35];
         if (temp2 == -1) {
@@ -103,7 +103,7 @@ public class Air_0257_DJ_ChuangQiGa6_H extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HIGH", 926.0f, 148.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 926.0f, 148.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 926.0f, 148.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

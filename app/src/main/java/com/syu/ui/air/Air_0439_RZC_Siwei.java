@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_RZC_Siwei extends AirBase {
     public Air_0439_RZC_Siwei(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_rzc_siwei/air_rzc_wiwei.webp";
         this.mPathHighlight = "0439_rzc_siwei/air_rzc_wiwei_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -92,12 +92,12 @@ public class Air_0439_RZC_Siwei extends AirBase {
             c.drawText("HI", 55.0f, 54.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 11338180 || DataCanbus.DATA[1000] == 5964229) {
             if (temp >= 36 && temp <= 50) {
-                c.drawText(new StringBuilder().append(((temp - 36) + 18) / 1.0f).toString(), 55.0f, 54.0f, this.mPaint);
+                c.drawText(String.valueOf((temp - 36) + 18), 55.0f, 54.0f, this.mPaint);
             } else {
                 c.drawText("NO", 55.0f, 54.0f, this.mPaint);
             }
         } else if (temp >= 30 && temp <= 70) {
-            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 55.0f, 54.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 55.0f, 54.0f, this.mPaint);
         } else {
             c.drawText("NO", 55.0f, 54.0f, this.mPaint);
         }
@@ -110,12 +110,12 @@ public class Air_0439_RZC_Siwei extends AirBase {
             c.drawText("HI", 941.0f, 54.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 11338180 || DataCanbus.DATA[1000] == 5964229) {
             if (temp2 >= 36 && temp2 <= 50) {
-                c.drawText(new StringBuilder().append(((temp2 - 36) + 18) / 1.0f).toString(), 941.0f, 54.0f, this.mPaint);
+                c.drawText(String.valueOf((temp2 - 36) + 18), 941.0f, 54.0f, this.mPaint);
             } else {
                 c.drawText("NO", 941.0f, 54.0f, this.mPaint);
             }
         } else if (temp2 >= 30 && temp2 <= 70) {
-            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 941.0f, 54.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 941.0f, 54.0f, this.mPaint);
         } else {
             c.drawText("NO", 941.0f, 54.0f, this.mPaint);
         }

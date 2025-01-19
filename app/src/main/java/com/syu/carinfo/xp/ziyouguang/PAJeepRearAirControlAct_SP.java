@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepRearAirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 40:
@@ -45,14 +44,14 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         DataCanbus.PROXY.cmd(8, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_0374_pa_jeep_air_rear_control);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_0374_pa_jeep_air_rear_control);
         } else {
-            setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control_7731);
+            //setContentView(R.layout.layout_0334_rzc_ruijie_air_rear_control_7731);
         }
         init();
     }
@@ -70,7 +69,7 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         findViewById(R.id.air_xts_mode_footbody).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -78,7 +77,7 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -86,7 +85,7 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -118,7 +117,7 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
             case R.id.air_xts_rearlock /* 2131427446 */:
                 data0 = 32;
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 data0 = 9;
                 break;
         }
@@ -149,19 +148,19 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearCtrlOn() {
         int power = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[40];
@@ -184,13 +183,13 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[42];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[44];
         if (leave < 0) {
@@ -203,7 +202,7 @@ public class PAJeepRearAirControlAct_SP extends Activity implements View.OnTouch
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[47];
         int body = DataCanbus.DATA[46];

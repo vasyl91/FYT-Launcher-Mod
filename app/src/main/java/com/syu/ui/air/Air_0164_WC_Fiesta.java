@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0164_WC_Fiesta extends AirBase {
     public Air_0164_WC_Fiesta(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0174_xp_mengdiou/xp_mengdiou.webp";
         this.mPathHighlight = "0174_xp_mengdiou/xp_mengdiou_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String str;
         String str2;
@@ -79,7 +79,7 @@ public class Air_0164_WC_Fiesta extends AirBase {
                 str = "NO";
                 break;
             default:
-                str = new StringBuilder(String.valueOf(value2 / 2.0f)).toString();
+                str = String.valueOf(value2 / 2.0f);
                 break;
         }
         c.drawText(str, 60.0f, 60.0f, this.mPaint);
@@ -95,7 +95,7 @@ public class Air_0164_WC_Fiesta extends AirBase {
                 str2 = "NO";
                 break;
             default:
-                str2 = new StringBuilder(String.valueOf(value3 / 2.0f)).toString();
+                str2 = String.valueOf(value3 / 2.0f);
                 break;
         }
         c.drawText(str2, 940.0f, 60.0f, this.mPaint);

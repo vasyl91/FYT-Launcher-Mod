@@ -16,7 +16,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class InstallWidgetReceiver {
     public static final String ACTION_INSTALL_WIDGET = "com.android.launcher66.action.INSTALL_WIDGET";
     public static final String ACTION_SUPPORTS_CLIPDATA_MIMETYPE = "com.android.launcher66.action.SUPPORTS_CLIPDATA_MIMETYPE";
@@ -52,35 +51,35 @@ public class InstallWidgetReceiver {
             this.mTargetLayoutPos = targetPos;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public void registerDataSetObserver(DataSetObserver observer) {
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public void unregisterDataSetObserver(DataSetObserver observer) {
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public int getCount() {
             return this.mActivities.size();
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public Object getItem(int position) {
             return null;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public long getItemId(int position) {
             return position;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public boolean hasStableIds() {
             return true;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Context context = parent.getContext();
             PackageManager packageManager = context.getPackageManager();
@@ -104,32 +103,32 @@ public class InstallWidgetReceiver {
             return convertView;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public int getItemViewType(int position) {
             return 0;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public int getViewTypeCount() {
             return 1;
         }
 
-        @Override // android.widget.Adapter
+        @Override
         public boolean isEmpty() {
             return this.mActivities.isEmpty();
         }
 
-        @Override // android.widget.ListAdapter
+        @Override
         public boolean areAllItemsEnabled() {
             return false;
         }
 
-        @Override // android.widget.ListAdapter
+        @Override
         public boolean isEnabled(int position) {
             return true;
         }
 
-        @Override // android.content.DialogInterface.OnClickListener
+        @Override
         public void onClick(DialogInterface dialog, int which) {
             AppWidgetProviderInfo widgetInfo = this.mActivities.get(which).widgetInfo;
             PendingAddWidgetInfo createInfo = new PendingAddWidgetInfo(widgetInfo, this.mMimeType, this.mClipData);

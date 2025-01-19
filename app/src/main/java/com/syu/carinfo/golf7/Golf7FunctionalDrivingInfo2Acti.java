@@ -14,55 +14,54 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
 @SuppressLint({"CutPasteId"})
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 132:
+                case 195:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D26();
                     break;
-                case 133:
+                case 196:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D24();
                     break;
-                case 134:
+                case 197:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D22();
                     break;
-                case 135:
+                case 198:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D20();
                     break;
-                case 136:
+                case 199:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D37();
                     break;
-                case 137:
+                case 200:
                     Golf7FunctionalDrivingInfo2Acti.this.mUpdater86D36();
                     break;
-                case 227:
+                case 269:
                     Golf7FunctionalDrivingInfo2Acti.this.enable_Wc(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
             requestWindowFeature(1);
             getWindow().setFlags(1024, 1024);
-            setContentView(R.layout.layout_golf7_functional_driving_info2_od);
+            //setContentView(R.layout.layout_golf7_functional_driving_info2_od);
         } else {
-            setContentView(R.layout.layout_golf7_functional_driving_info2);
+            //setContentView(R.layout.layout_golf7_functional_driving_info2);
         }
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         if (DataCanbus.DATA[1000] == 327720 || DataCanbus.DATA[1000] == 393256 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.2
-                @Override // android.view.View.OnClickListener
+            setSelfClick((Button) findViewById(R.id.glf7_btn_car_back_od), new View.OnClickListener() { 
+                @Override
                 public void onClick(View v) {
                     try {
                         Golf7FunctionalDrivingInfo2Acti.this.onKeyDown(4, null);
@@ -72,11 +71,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 }
             });
         }
-        ((Button) findViewById(R.id.wc_golf_dcc_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_dcc_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[132] & 255;
+                int value2 = DataCanbus.DATA[195] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -85,11 +84,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{1, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_dcc_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_dcc_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[132] & 255;
+                int value2 = DataCanbus.DATA[195] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -98,11 +97,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{1, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_bend_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_bend_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[133] & 255;
+                int value2 = DataCanbus.DATA[196] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -111,11 +110,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{2, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_bend_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_bend_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[133] & 255;
+                int value2 = DataCanbus.DATA[196] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -124,11 +123,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{2, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_engine_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_engine_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[134] & 255;
+                int value2 = DataCanbus.DATA[197] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -137,11 +136,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{3, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_engine_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_engine_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[134] & 255;
+                int value2 = DataCanbus.DATA[197] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -150,11 +149,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{3, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_acc_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_acc_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[135] & 255;
+                int value2 = DataCanbus.DATA[198] & 255;
                 if (value2 > 0) {
                     value = value2 - 1;
                 } else {
@@ -163,11 +162,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_acc_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_acc_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[135] & 255;
+                int value2 = DataCanbus.DATA[198] & 255;
                 if (value2 < 2) {
                     value = value2 + 1;
                 } else {
@@ -176,11 +175,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_air_condition_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_air_condition_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[136] & 255;
+                int value2 = DataCanbus.DATA[199] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -189,11 +188,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{5, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_air_condition_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_air_condition_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[136] & 255;
+                int value2 = DataCanbus.DATA[199] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -202,11 +201,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{5, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_steering_set_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_steering_set_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[137] & 255;
+                int value2 = DataCanbus.DATA[200] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -215,11 +214,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{6, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.wc_golf_steering_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_golf_steering_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[137] & 255;
+                int value2 = DataCanbus.DATA[200] & 255;
                 if (value2 == 1) {
                     value = 0;
                 } else {
@@ -233,8 +232,8 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         } else {
             findViewById(R.id.wc_view_golf_driving_reset).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.wc_golf_driving_reset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.wc_golf_driving_reset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 Golf7FunctionalDrivingInfo2Acti.this.dialog(R.string.driving_mode_reset);
             }
@@ -245,11 +244,11 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.16
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.16.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(104, new int[]{7}, null, null);
                     }
@@ -257,8 +256,8 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo2Acti.17
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -266,48 +265,48 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[227].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[269].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[227].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[269].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D26() {
-        int value = DataCanbus.DATA[132];
+        int value = DataCanbus.DATA[195];
         if (DataCanbus.DATA[1000] == 17 || DataCanbus.DATA[1000] == 65553 || DataCanbus.DATA[1000] == 131089 || DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769 || DataCanbus.DATA[1000] == 524305) {
             findViewById(R.id.wc_golf_dcc).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_dcc_set_show)) != null) {
@@ -359,9 +358,9 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D24() {
-        int value = DataCanbus.DATA[133];
+        int value = DataCanbus.DATA[196];
         if (ConstGolf.isWcGolf()) {
             findViewById(R.id.wc_golf_bend).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_bend_set_show)) != null) {
@@ -384,9 +383,9 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         findViewById(R.id.wc_golf_bend).setVisibility(8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D22() {
-        int value = DataCanbus.DATA[134];
+        int value = DataCanbus.DATA[197];
         if (ConstGolf.isWcGolf()) {
             findViewById(R.id.wc_golf_engine).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_engine_set_show)) != null) {
@@ -409,9 +408,9 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         findViewById(R.id.wc_golf_engine).setVisibility(8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D20() {
-        int value = DataCanbus.DATA[135];
+        int value = DataCanbus.DATA[198];
         if (ConstGolf.isWcGolf()) {
             findViewById(R.id.wc_golf_acc).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_acc_set_show)) != null) {
@@ -434,9 +433,9 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         findViewById(R.id.wc_golf_acc).setVisibility(8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D37() {
-        int value = DataCanbus.DATA[136];
+        int value = DataCanbus.DATA[199];
         if (ConstGolf.isWcGolf()) {
             findViewById(R.id.wc_golf_air_condition).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_air_condition_set_show)) != null) {
@@ -456,9 +455,9 @@ public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
         findViewById(R.id.wc_golf_air_condition).setVisibility(8);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdater86D36() {
-        int value = DataCanbus.DATA[137];
+        int value = DataCanbus.DATA[200];
         if (ConstGolf.isWcGolf()) {
             findViewById(R.id.wc_golf_steering).setVisibility(0);
             if (((TextView) findViewById(R.id.wc_golf_steering_set_show)) != null) {

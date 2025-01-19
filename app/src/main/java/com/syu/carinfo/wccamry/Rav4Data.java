@@ -2,7 +2,6 @@ package com.syu.carinfo.wccamry;
 
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Rav4Data {
     public static int[] mOilNum0 = {0, 10, 20, 30};
     public static int[] mOilNum1 = {0, 20, 40, 60};

@@ -9,39 +9,38 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XPAccord9ScreenActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 29:
+                case 127:
                     XPAccord9ScreenActi.this.mUpdaterScreenDisplay();
                     break;
-                case 30:
+                case 128:
                     XPAccord9ScreenActi.this.mUpdaterBrightness();
                     break;
-                case 31:
+                case 129:
                     XPAccord9ScreenActi.this.mUpdaterContrast();
                     break;
-                case 32:
+                case 130:
                     XPAccord9ScreenActi.this.mUpdaterSaturation();
                     break;
-                case 34:
+                case 132:
                     XPAccord9ScreenActi.this.mUpdaterScreenColor();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_accord9_xp_screen);
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_display_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_accord9_xp_screen);
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_display_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[29];
+                int value = DataCanbus.DATA[127];
                 if (value == 2) {
                     DataCanbus.PROXY.cmd(66, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -51,10 +50,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_display_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_display_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[29];
+                int value = DataCanbus.DATA[127];
                 if (value == 0) {
                     DataCanbus.PROXY.cmd(66, new int[]{1}, null, null);
                 } else if (value == 1) {
@@ -64,10 +63,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[30] - 1;
+                int value = DataCanbus.DATA[128] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -76,10 +75,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(67, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_brightness_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[30] + 1;
+                int value = DataCanbus.DATA[128] + 1;
                 if (value < 2) {
                     value = 2;
                 } else if (value > 10) {
@@ -88,10 +87,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(67, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[31] - 1;
+                int value = DataCanbus.DATA[129] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -100,10 +99,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(68, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_contrast_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[31] + 1;
+                int value = DataCanbus.DATA[129] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -112,10 +111,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(68, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[32] - 1;
+                int value = DataCanbus.DATA[130] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -124,10 +123,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(69, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_saturation_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[32] + 1;
+                int value = DataCanbus.DATA[130] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 10) {
@@ -136,10 +135,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(69, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_color_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_color_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[34] - 1;
+                int value = DataCanbus.DATA[132] - 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -148,10 +147,10 @@ public class XPAccord9ScreenActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(65, new int[]{value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_color_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.accord9.xp.XPAccord9ScreenActi.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.xp_accord9_btn_car_screen_color_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[34] + 1;
+                int value = DataCanbus.DATA[132] + 1;
                 if (value < 0) {
                     value = 0;
                 } else if (value > 3) {
@@ -162,7 +161,7 @@ public class XPAccord9ScreenActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (DataCanbus.DATA[1000] == 41 || DataCanbus.DATA[1000] == 65577) {
@@ -182,27 +181,27 @@ public class XPAccord9ScreenActi extends BaseActivity {
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterScreenDisplay() {
-        int value = DataCanbus.DATA[29];
+        int value = DataCanbus.DATA[127];
         if (((TextView) findViewById(R.id.xp_accord9_tv_car_screen_display)) != null) {
             switch (value) {
                 case 1:
@@ -270,9 +269,9 @@ public class XPAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBrightness() {
-        int value = DataCanbus.DATA[30];
+        int value = DataCanbus.DATA[128];
         if (((TextView) findViewById(R.id.xp_accord9_tv_car_screen_brightness)) != null) {
             int value2 = value - 5;
             if (value2 > 0) {
@@ -285,9 +284,9 @@ public class XPAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterContrast() {
-        int value = DataCanbus.DATA[31];
+        int value = DataCanbus.DATA[129];
         if (((TextView) findViewById(R.id.xp_accord9_tv_car_screen_contrast)) != null) {
             int value2 = value - 5;
             if (value2 > 0) {
@@ -300,9 +299,9 @@ public class XPAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSaturation() {
-        int value = DataCanbus.DATA[32];
+        int value = DataCanbus.DATA[130];
         if (((TextView) findViewById(R.id.xp_accord9_tv_car_screen_saturation)) != null) {
             int value2 = value - 5;
             if (value2 > 0) {
@@ -315,9 +314,9 @@ public class XPAccord9ScreenActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterScreenColor() {
-        int value = DataCanbus.DATA[34];
+        int value = DataCanbus.DATA[132];
         if (((TextView) findViewById(R.id.xp_accord9_tv_car_screen_color)) != null) {
             switch (value) {
                 case 1:

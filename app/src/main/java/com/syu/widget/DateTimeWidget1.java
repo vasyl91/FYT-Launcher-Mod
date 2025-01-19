@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.RemoteViews;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.util.WeatherUtils;
 import com.syu.weather.WeatherDescription;
 import com.syu.widget.util.TimeUtil;
+
 import share.ResValue;
 
 public class DateTimeWidget1 extends Widget {
@@ -21,7 +23,8 @@ public class DateTimeWidget1 extends Widget {
         super(context, id);
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void updateViews(RemoteViews views) {
         int index;
         views.setTextViewText(ResValue.getInstance().dt_weekday1, TimeUtil.getWeekDay(this.mContext));
@@ -57,7 +60,7 @@ public class DateTimeWidget1 extends Widget {
         }
         for (int i = 0; i < len; i++) {
             try {
-                if (times[i] != ':' && (index = Math.max(0, Math.min(Integer.parseInt(new String(new char[]{times[i]})), mImageRes.length - 1))) >= 0) {
+                if (times[i] != ':' && (index = Math.max(0, Math.min(Integer.parseInt(String.valueOf(times[i])), mImageRes.length - 1))) >= 0) {
                     int w = len > 3 ? i : i + 1;
                     views.setImageViewResource(mImageId[Math.max(0, Math.min(w, mImageId.length - 1))], mImageRes[index]);
                 }
@@ -79,30 +82,32 @@ public class DateTimeWidget1 extends Widget {
             views.setTextViewText(ResValue.getInstance().weather_city, weather.getCity());
             views.setTextViewText(ResValue.getInstance().weather_temp_range, weather.getTemDescription());
             views.setTextViewText(ResValue.getInstance().weather_temp, weather.getCurTem());
-            views.setTextViewText(ResValue.getInstance().weather_weather, String.valueOf(weather.getWeather()) + weather.getCurTem());
-            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(this.mContext, weather.getWeather()));
+            views.setTextViewText(ResValue.getInstance().weather_weather, weather.getWeather() + weather.getCurTem());
+            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(weather.getWeather()));
         }
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
         Intent mIntent = new Intent("android.settings.DATE_SETTINGS");
         PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, mIntent, PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(ResValue.getInstance().dt_layout, pendIntent);
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = ResValue.getInstance().fyt_xml_dtwidget1;
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     protected void add() {
         TimeUpdateReceiver.addWidget(this);
         super.add();
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     public void delete() {
         TimeUpdateReceiver.removeWidget(this);
         super.delete();

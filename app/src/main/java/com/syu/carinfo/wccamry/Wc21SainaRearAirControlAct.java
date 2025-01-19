@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wccamry.Wc21SainaRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -79,10 +78,10 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         DataCanbus.PROXY.cmd(27, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0294_wc_21saina_rearair_control);
+        //setContentView(R.layout.layout_0294_wc_21saina_rearair_control);
         init();
     }
 
@@ -105,7 +104,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         findViewById(R.id.air_xts_seatwin_right).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -113,7 +112,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -121,7 +120,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -216,7 +215,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[125];
         switch (value) {
@@ -235,7 +234,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[124];
         switch (value) {
@@ -254,7 +253,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[69];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -268,7 +267,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int temp = DataCanbus.DATA[123];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
@@ -282,19 +281,19 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[122];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[68];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[68];
         if (leave < 0) {
@@ -307,7 +306,7 @@ public class Wc21SainaRearAirControlAct extends Activity implements View.OnTouch
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlow() {
         int mode = DataCanbus.DATA[93];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(R.drawable.ic_xts_mode_foot_n);

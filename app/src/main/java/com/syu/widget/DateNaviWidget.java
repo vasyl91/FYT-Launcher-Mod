@@ -6,15 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.RemoteViews;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MyAutoMapReceiver;
 import com.android.launcher66.R;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
+
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DateNaviWidget extends Widget {
     private static final String TAG = "Vanness";
     private static int count = 0;
@@ -24,7 +25,7 @@ public class DateNaviWidget extends Widget {
         super(context, _id);
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     protected void updateViews(RemoteViews views) {
         if (CarStates.mAccState == 0) {
             views.setTextViewText(ResValue.getInstance().car_speed, "0");
@@ -32,7 +33,7 @@ public class DateNaviWidget extends Widget {
             views.setImageViewResource(ResValue.getInstance().map_instr, ResValue.getInstance().car);
         }
         if (Launcher.getLauncher() != null) {
-            views.setTextViewText(ResValue.getInstance().tv_speed, new StringBuilder(String.valueOf(Launcher.getLauncher().carSpeed)).toString());
+            views.setTextViewText(ResValue.getInstance().tv_speed, String.valueOf(Launcher.getLauncher().carSpeed));
         }
         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_widget_amauto)) {
             if (MyAutoMapReceiver.mCurSpeed >= 10) {
@@ -88,11 +89,11 @@ public class DateNaviWidget extends Widget {
         if (MyAutoMapReceiver.mCurDis_Remain > 1500) {
             float dis = MyAutoMapReceiver.mCurDis_Remain / 1000.0f;
             String str = String.format("%1$.1f", Float.valueOf(dis));
-            views.setTextViewText(ResValue.getInstance().cur_distance, String.valueOf(str) + "km");
+            views.setTextViewText(ResValue.getInstance().cur_distance, str + "km");
         } else {
-            views.setTextViewText(ResValue.getInstance().cur_distance, String.valueOf(MyAutoMapReceiver.mCurDis_Remain) + "m");
+            views.setTextViewText(ResValue.getInstance().cur_distance, MyAutoMapReceiver.mCurDis_Remain + "m");
         }
-        views.setTextViewText(ResValue.getInstance().car_speed, new StringBuilder(String.valueOf(MyAutoMapReceiver.mCurSpeed)).toString());
+        views.setTextViewText(ResValue.getInstance().car_speed, String.valueOf(MyAutoMapReceiver.mCurSpeed));
         switch (MyAutoMapReceiver.mCurState) {
             case 2:
             case 9:
@@ -107,22 +108,24 @@ public class DateNaviWidget extends Widget {
         }
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     protected void add() {
         super.add();
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     public void delete() {
         super.delete();
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = getLayoutId(LauncherApplication.sForeign ? "fyt_xml_dt_navi_widget_f" : layoutName);
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));

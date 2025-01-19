@@ -1,11 +1,15 @@
 package com.android.recycler;
 
-import android.app.DialogFragment;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -13,10 +17,18 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import androidx.activity.ComponentDialog;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.AllAppsList;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 
 import java.util.ArrayList;
 
@@ -27,6 +39,8 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     ArrayList<AppInfo> mData;
     GridView mGridView;
     private ItemClickDataListener mItemClickDataListener;
+    public static final String LIST_OPEN = "list.open";
+    public static final String LIST_CLOSE = "list.close";
 
     public interface ItemClickDataListener {
         void onClickData(AppInfo appInfo);
@@ -34,6 +48,18 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Helpers.listOpen = true;
+        Helpers.overviewMode = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats)  {  
+            Helpers.foregroundAppOpened = false;
+            Helpers.inAllApps = false;
+            Helpers.isInRecent = false;
+            Intent intentOpen = new Intent(LIST_OPEN);
+            LauncherApplication.sApp.sendBroadcast(intentOpen);
+        }
         View view = inflater.inflate(R.layout.dialog_fragment_applist, container);
         this.mData = AllAppsList.data;
         this.currentAppIcon = (ImageView) view.findViewById(R.id.current_app_icon);
@@ -42,15 +68,20 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         this.mAdapter = new AppSelectAdapter(this.mData);
         this.mGridView.setAdapter((ListAdapter) this.mAdapter);
         this.mGridView.setOnItemClickListener(this);
-        view.setOnClickListener(v -> AppListDialogFragment.this.dismiss());
+        view.setOnClickListener(v -> {
+            AppListDialogFragment.this.dismiss(); 
+            Helpers.listOpen = false;
+            Intent intentClose = new Intent(LIST_CLOSE);
+            LauncherApplication.sApp.sendBroadcast(intentClose);            
+        });
+        getDialog().getWindow().requestFeature(1);
         return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        getDialog().getWindow().requestFeature(1);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         getDialog().getWindow().setType(2999);
-        super.onActivityCreated(savedInstanceState);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
         getDialog().getWindow().setLayout(-1, -1);
         getDialog().setCanceledOnTouchOutside(true);
@@ -62,6 +93,31 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             this.mItemClickDataListener.onClickData(this.mData.get(position));
         }
         dismiss();
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ComponentDialog dialog = (ComponentDialog) super.onCreateDialog(savedInstanceState);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                AppListDialogFragment.this.dismiss(); 
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                boolean userLayout = prefs.getBoolean("user_layout", false);
+                boolean userStats = prefs.getBoolean("user_stats", false);
+                if (userLayout && userStats)  {  
+                    Helpers.listOpen = false;
+                    Helpers.isInRecent = false;
+                    Intent intentClose = new Intent(LIST_CLOSE);
+                    LauncherApplication.sApp.sendBroadcast(intentClose);  
+                }    
+            }
+        };
+        dialog.getOnBackPressedDispatcher().addCallback(this, callback);
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
     }
 
     class AppSelectAdapter extends BaseAdapter {

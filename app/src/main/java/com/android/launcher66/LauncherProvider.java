@@ -48,7 +48,7 @@ public class LauncherProvider extends ContentProvider {
     private static final String ACTION_APPWIDGET_DEFAULT_WORKSPACE_CONFIGURE = "com.android.launcher.action.APPWIDGET_DEFAULT_WORKSPACE_CONFIGURE";
     static final String AUTHORITY = "com.android.launcher66.settings";
     static final Uri CONTENT_APPWIDGET_RESET_URI = Uri.parse("content://com.android.launcher66.settings/appWidgetReset");
-    private static final String DATABASE_NAME = "launcher3.db";
+    private static final String DATABASE_NAME = "launcher66.db";
     private static final int DATABASE_VERSION = 15;
     static final String DEFAULT_WORKSPACE_RESOURCE_ID = "DEFAULT_WORKSPACE_RESOURCE_ID";
     static final String EMPTY_DATABASE_CREATED = "EMPTY_DATABASE_CREATED";
@@ -66,7 +66,7 @@ public class LauncherProvider extends ContentProvider {
         void onRow(ContentValues contentValues);
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public boolean onCreate() {
         Context context = getContext();
         this.mOpenHelper = new DatabaseHelper(context);
@@ -74,13 +74,13 @@ public class LauncherProvider extends ContentProvider {
         return true;
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public String getType(Uri uri) {
         SqlArguments args = new SqlArguments(uri, null, null);
         return TextUtils.isEmpty(args.where) ? "vnd.android.cursor.dir/" + args.table : "vnd.android.cursor.item/" + args.table;
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
@@ -91,7 +91,7 @@ public class LauncherProvider extends ContentProvider {
         return result;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static long dbInsertAndCheck(DatabaseHelper helper, SQLiteDatabase db, String table, String nullColumnHack, ContentValues values) {
         if (!values.containsKey("_id")) {
             throw new RuntimeException("Error: attempting to add item without specifying an id");
@@ -99,14 +99,14 @@ public class LauncherProvider extends ContentProvider {
         return db.insert(table, nullColumnHack, values);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public static void deleteId(SQLiteDatabase db, long id) {
         Uri uri = LauncherSettings.Favorites.getContentUri(id, false);
         SqlArguments args = new SqlArguments(uri, null, null);
         db.delete(args.table, args.where, args.args);
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public Uri insert(Uri uri, ContentValues initialValues) {
         SqlArguments args = new SqlArguments(uri);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
@@ -120,7 +120,7 @@ public class LauncherProvider extends ContentProvider {
         return uri2;
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         SqlArguments args = new SqlArguments(uri);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
@@ -144,7 +144,7 @@ public class LauncherProvider extends ContentProvider {
         }
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         LogPreview.show("delete");
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
@@ -156,7 +156,7 @@ public class LauncherProvider extends ContentProvider {
         return count;
     }
 
-    @Override // android.content.ContentProvider
+    @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         LogPreview.show("update");
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
@@ -206,7 +206,7 @@ public class LauncherProvider extends ContentProvider {
             if (sp.getBoolean(UPGRADED_FROM_OLD_DATABASE, false)) {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.remove(UPGRADED_FROM_OLD_DATABASE);
-                editor.commit();
+                editor.apply();
                 loadedOldDb = true;
             }
         }
@@ -228,7 +228,7 @@ public class LauncherProvider extends ContentProvider {
             }
             this.mOpenHelper.loadFavorites(this.mOpenHelper.getWritableDatabase(), workspaceResId);
             this.mOpenHelper.setFlagJustLoadedOldDb();
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -266,7 +266,7 @@ public class LauncherProvider extends ContentProvider {
             resolver.notifyChange(LauncherProvider.CONTENT_APPWIDGET_RESET_URI, null);
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        @Override
         public void onCreate(SQLiteDatabase db) {
             this.mMaxItemId = 1L;
             this.mMaxScreenId = 0L;
@@ -276,8 +276,8 @@ public class LauncherProvider extends ContentProvider {
                 this.mAppWidgetHost.deleteHost();
                 sendAppWidgetResetNotify();
             }
-            ContentValuesCallback permuteScreensCb = new ContentValuesCallback() { // from class: com.android.launcher66.LauncherProvider.DatabaseHelper.1
-                @Override // com.android.launcher66.LauncherProvider.ContentValuesCallback
+            ContentValuesCallback permuteScreensCb = new ContentValuesCallback() { 
+                @Override
                 public void onRow(ContentValues values) {
                     int container = values.getAsInteger(Stats.EXTRA_CONTAINER).intValue();
                     if (container == -100) {
@@ -301,14 +301,14 @@ public class LauncherProvider extends ContentProvider {
             db.execSQL("CREATE TABLE workspaceScreens (_id INTEGER,screenRank INTEGER,modified INTEGER NOT NULL DEFAULT 0);");
         }
 
-        /* JADX INFO: Access modifiers changed from: private */
+        
         public void setFlagJustLoadedOldDb() {
             String spKey = LauncherAppState.getSharedPreferencesKey();
             SharedPreferences sp = this.mContext.getSharedPreferences(spKey, 0);
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean(LauncherProvider.UPGRADED_FROM_OLD_DATABASE, true);
             editor.putBoolean(LauncherProvider.EMPTY_DATABASE_CREATED, false);
-            editor.commit();
+            editor.apply();
         }
 
         private void setFlagEmptyDbCreated() {
@@ -317,10 +317,10 @@ public class LauncherProvider extends ContentProvider {
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean(LauncherProvider.EMPTY_DATABASE_CREATED, true);
             editor.putBoolean(LauncherProvider.UPGRADED_FROM_OLD_DATABASE, false);
-            editor.commit();
+            editor.apply();
         }
 
-        /* JADX INFO: Access modifiers changed from: private */
+        
         public long upgradeLauncherDb_permuteScreens(long screen) {
             return screen >= 2 ? screen - 2 : 3 + screen;
         }
@@ -412,7 +412,7 @@ public class LauncherProvider extends ContentProvider {
             return total;
         }
 
-        @Override // android.database.sqlite.SQLiteOpenHelper
+        @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             int version = oldVersion;
             if (version < 3) {

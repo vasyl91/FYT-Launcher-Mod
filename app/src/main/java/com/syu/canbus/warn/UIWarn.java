@@ -5,11 +5,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.loopview.MessageHandler;
 import com.syu.util.TimeLocker;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIWarn {
     private static final int COLOR_RED = -65536;
     private static final int COLOR_WHITE = -1;
@@ -24,7 +25,7 @@ public class UIWarn {
     public static View sWarnView;
     public static final TimeLocker LOCK_SHOW_UI = new TimeLocker();
     private static int sWarnUIID = -1;
-    private static int[] ResID = {R.layout.layout_wc_ruijie15_warn_1, R.layout.layout_wc_ruijie15_warn_1, R.layout.layout_wc_ruijie15_warn_2, R.layout.layout_wc_ruijie15_warn_3, R.layout.layout_wc_ruijie15_warn_4, R.layout.layout_wc_ruijie15_warn_5, R.layout.layout_wc_ruijie15_warn_6, R.layout.layout_wc_ruijie15_warn_7, R.layout.layout_wc_ruijie15_warn_8, R.layout.layout_wc_ruijie15_warn_9, R.layout.layout_wc_ruijie15_warn_10, R.layout.layout_wc_ruijie15_warn_11, R.layout.layout_wc_ruijie15_warn_12, R.layout.layout_wc_ruijie15_warn_13, R.layout.layout_wc_ruijie15_warn_14, R.layout.layout_wc_ruijie15_warn_15, R.layout.layout_wc_ruijie15_warn_16, R.layout.layout_wc_ruijie15_warn_17, R.layout.layout_wc_ruijie15_warn_18, R.layout.layout_wc_ruijie15_warn_19, R.layout.layout_wc_ruijie15_warn_20, R.layout.layout_wc_ruijie15_warn_21, R.layout.layout_wc_ruijie15_warn_22, R.layout.layout_wc_ruijie15_warn_23, R.layout.layout_wc_ruijie15_warn_24, R.layout.layout_wc_ruijie15_warn_25, R.layout.layout_wc_ruijie15_warn_26, R.layout.layout_wc_ruijie15_warn_27, R.layout.layout_wc_ruijie15_warn_28, R.layout.layout_wc_ruijie15_warn_29, R.layout.layout_wc_ruijie15_warn_30, R.layout.layout_wc_ruijie15_warn_31, R.layout.layout_wc_ruijie15_warn_32, R.layout.layout_wc_ruijie15_warn_33, R.layout.layout_wc_ruijie15_warn_34, R.layout.layout_wc_ruijie15_warn_35, R.layout.layout_wc_ruijie15_warn_36, R.layout.layout_wc_ruijie15_warn_37, R.layout.layout_wc_ruijie15_warn_38, R.layout.layout_wc_ruijie15_warn_39, R.layout.layout_wc_ruijie15_warn_40, R.layout.layout_wc_ruijie15_warn_41, R.layout.layout_wc_ruijie15_warn_42, R.layout.layout_wc_ruijie15_warn_43, R.layout.layout_wc_ruijie15_warn_44, R.layout.layout_wc_ruijie15_warn_45, R.layout.layout_wc_ruijie15_warn_46, R.layout.layout_wc_ruijie15_warn_47, R.layout.layout_wc_ruijie15_warn_48, R.layout.layout_wc_ruijie15_warn_49, R.layout.layout_wc_ruijie15_warn_50, R.layout.layout_wc_ruijie15_warn_51, R.layout.layout_wc_ruijie15_warn_52, R.layout.layout_wc_ruijie15_warn_53, R.layout.layout_wc_ruijie15_warn_54, R.layout.layout_wc_ruijie15_warn_55, R.layout.layout_wc_ruijie15_warn_56};
+    private static final int[] ResID = {R.layout.layout_wc_ruijie15_warn_1, R.layout.layout_wc_ruijie15_warn_1, R.layout.layout_wc_ruijie15_warn_2, R.layout.layout_wc_ruijie15_warn_3, R.layout.layout_wc_ruijie15_warn_4, R.layout.layout_wc_ruijie15_warn_5, R.layout.layout_wc_ruijie15_warn_6, R.layout.layout_wc_ruijie15_warn_7, R.layout.layout_wc_ruijie15_warn_8, R.layout.layout_wc_ruijie15_warn_9, R.layout.layout_wc_ruijie15_warn_10, R.layout.layout_wc_ruijie15_warn_11, R.layout.layout_wc_ruijie15_warn_12, R.layout.layout_wc_ruijie15_warn_13, R.layout.layout_wc_ruijie15_warn_14, R.layout.layout_wc_ruijie15_warn_15, R.layout.layout_wc_ruijie15_warn_16, R.layout.layout_wc_ruijie15_warn_17, R.layout.layout_wc_ruijie15_warn_18, R.layout.layout_wc_ruijie15_warn_19, R.layout.layout_wc_ruijie15_warn_20, R.layout.layout_wc_ruijie15_warn_21, R.layout.layout_wc_ruijie15_warn_22, R.layout.layout_wc_ruijie15_warn_23, R.layout.layout_wc_ruijie15_warn_24, R.layout.layout_wc_ruijie15_warn_25, R.layout.layout_wc_ruijie15_warn_26, R.layout.layout_wc_ruijie15_warn_27, R.layout.layout_wc_ruijie15_warn_28, R.layout.layout_wc_ruijie15_warn_29, R.layout.layout_wc_ruijie15_warn_30, R.layout.layout_wc_ruijie15_warn_31, R.layout.layout_wc_ruijie15_warn_32, R.layout.layout_wc_ruijie15_warn_33, R.layout.layout_wc_ruijie15_warn_34, R.layout.layout_wc_ruijie15_warn_35, R.layout.layout_wc_ruijie15_warn_36, R.layout.layout_wc_ruijie15_warn_37, R.layout.layout_wc_ruijie15_warn_38, R.layout.layout_wc_ruijie15_warn_39, R.layout.layout_wc_ruijie15_warn_40, R.layout.layout_wc_ruijie15_warn_41, R.layout.layout_wc_ruijie15_warn_42, R.layout.layout_wc_ruijie15_warn_43, R.layout.layout_wc_ruijie15_warn_44, R.layout.layout_wc_ruijie15_warn_45, R.layout.layout_wc_ruijie15_warn_46, R.layout.layout_wc_ruijie15_warn_47, R.layout.layout_wc_ruijie15_warn_48, R.layout.layout_wc_ruijie15_warn_49, R.layout.layout_wc_ruijie15_warn_50, R.layout.layout_wc_ruijie15_warn_51, R.layout.layout_wc_ruijie15_warn_52, R.layout.layout_wc_ruijie15_warn_53, R.layout.layout_wc_ruijie15_warn_54, R.layout.layout_wc_ruijie15_warn_55, R.layout.layout_wc_ruijie15_warn_56};
     static int textColor = -1;
     static int time = 0;
     private static int sPackUI = -1;
@@ -117,7 +118,7 @@ public class UIWarn {
                 WarnUtils.showWindow();
                 switch (time2) {
                     case 0:
-                        WarnUtils.postDimiss(3000);
+                        WarnUtils.postDimiss(MessageHandler.WHAT_ITEM_SELECTED);
                         break;
                     case 1:
                         WarnUtils.postDimiss(5000);
@@ -133,7 +134,7 @@ public class UIWarn {
         time = 0;
         if (sWarnView == null) {
             sWarnView = new WarnView(context, R.layout.layout_focus_warn).getView();
-            mTextWarn = (TextView) sWarnView.findViewById(R.id.tv_focus_warn);
+            mTextWarn = sWarnView.findViewById(R.id.tv_focus_warn);
         }
         if (sWarnView != null) {
             WarnUtils.getWindow().setContentView(sWarnView);
@@ -144,17 +145,17 @@ public class UIWarn {
                     case 1:
                         str = context.getString(R.string.str_focus_warm_0_1);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 2:
                         str = context.getString(R.string.str_focus_warm_0_2);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 3:
                         str = context.getString(R.string.str_focus_warm_0_3);
                         textColor = COLOR_YELLOW;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 4:
                         str = context.getString(R.string.str_focus_warm_0_4);
@@ -183,7 +184,7 @@ public class UIWarn {
                     case 1:
                         str = context.getString(R.string.str_focus_warm_1_1);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 2:
                         str = context.getString(R.string.str_focus_warm_1_2);
@@ -254,32 +255,32 @@ public class UIWarn {
                     case 2:
                         str = context.getString(R.string.str_focus_warm_3_2);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 3:
                         str = context.getString(R.string.str_focus_warm_3_3);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 4:
                         str = context.getString(R.string.str_focus_warm_3_4);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 5:
                         str = context.getString(R.string.str_focus_warm_3_5);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 6:
                         str = context.getString(R.string.str_focus_warm_3_6);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 7:
                         str = context.getString(R.string.str_focus_warm_3_7);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                 }
             case 4:
@@ -327,12 +328,12 @@ public class UIWarn {
                     case 3:
                         str = context.getString(R.string.str_focus_warm_5_3);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 4:
                         str = context.getString(R.string.str_focus_warm_5_4);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 5:
                         str = context.getString(R.string.str_focus_warm_5_5);
@@ -342,7 +343,7 @@ public class UIWarn {
                     case 6:
                         str = context.getString(R.string.str_focus_warm_5_6);
                         textColor = COLOR_YELLOW;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 7:
                         str = context.getString(R.string.str_focus_warm_5_7);
@@ -355,7 +356,7 @@ public class UIWarn {
                     case 0:
                         str = context.getString(R.string.str_focus_warm_6_0);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 1:
                         str = context.getString(R.string.str_focus_warm_6_1);
@@ -365,24 +366,24 @@ public class UIWarn {
                         break;
                     case 3:
                         str = context.getString(R.string.str_focus_warm_6_3);
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 4:
                         str = context.getString(R.string.str_focus_warm_6_4);
                         break;
                     case 5:
                         str = context.getString(R.string.str_focus_warm_6_5);
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 6:
                         str = context.getString(R.string.str_focus_warm_6_6);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 7:
                         str = context.getString(R.string.str_focus_warm_6_7);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                 }
             case 7:
@@ -409,18 +410,18 @@ public class UIWarn {
                         break;
                     case 4:
                         str = context.getString(R.string.str_focus_warm_7_4);
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 5:
                         str = context.getString(R.string.str_focus_warm_7_5);
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 6:
                         str = context.getString(R.string.str_focus_warm_7_6);
                         break;
                     case 7:
                         str = context.getString(R.string.str_focus_warm_7_7);
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                 }
             case 8:
@@ -450,7 +451,7 @@ public class UIWarn {
                     case 6:
                         str = context.getString(R.string.str_focus_warm_8_6);
                         textColor = COLOR_YELLOW;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 7:
                         str = context.getString(R.string.str_focus_warm_8_7);
@@ -463,7 +464,7 @@ public class UIWarn {
                     case 0:
                         str = context.getString(R.string.str_focus_warm_9_0);
                         textColor = COLOR_YELLOW;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                     case 1:
                         str = context.getString(R.string.str_focus_warm_9_1);
@@ -529,7 +530,7 @@ public class UIWarn {
                     case 7:
                         str = context.getString(R.string.str_focus_warm_15_7);
                         textColor = COLOR_RED;
-                        time = 10000;
+                        time = TIME_LONG;
                         break;
                 }
         }

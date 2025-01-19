@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_OD_Hongqi_H7 extends AirBase {
     public Air_0452_OD_Hongqi_H7(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_od_hongqi/air_hongqi_h7.webp";
         this.mPathHighlight = "0452_od_hongqi/air_hongqi_h7_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -79,15 +79,15 @@ public class Air_0452_OD_Hongqi_H7 extends AirBase {
         this.mPaint.setTextSize(20.0f);
         int value4 = this.DATA[15];
         if (value4 <= 3) {
-            c.drawText(new StringBuilder().append(value4).toString(), 109.0f, 67.0f, this.mPaint);
+            c.drawText(String.valueOf(value4), 109.0f, 67.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value4 - 3).toString(), 109.0f, 67.0f, this.mPaint);
+            c.drawText(String.valueOf(value4 - 3), 109.0f, 67.0f, this.mPaint);
         }
         int value5 = this.DATA[16];
         if (value5 <= 3) {
-            c.drawText(new StringBuilder().append(value5).toString(), 906.0f, 67.0f, this.mPaint);
+            c.drawText(String.valueOf(value5), 906.0f, 67.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(value5 - 3).toString(), 906.0f, 67.0f, this.mPaint);
+            c.drawText(String.valueOf(value5 - 3), 906.0f, 67.0f, this.mPaint);
         }
         this.mPaint.setTextSize(25.0f);
         int left_temp = this.DATA[13];
@@ -97,7 +97,7 @@ public class Air_0452_OD_Hongqi_H7 extends AirBase {
             c.drawText("HI", 55.0f, 136.0f, this.mPaint);
         } else {
             int left_temp2 = (left_temp * 5) + 175;
-            c.drawText(String.valueOf(left_temp2 / 10) + "." + (left_temp2 % 10), 55.0f, 136.0f, this.mPaint);
+            c.drawText(left_temp2 / 10 + "." + (left_temp2 % 10), 55.0f, 136.0f, this.mPaint);
         }
         int right_temp = this.DATA[14];
         if (right_temp == -2) {
@@ -106,7 +106,7 @@ public class Air_0452_OD_Hongqi_H7 extends AirBase {
             c.drawText("HI", 937.0f, 136.0f, this.mPaint);
         } else {
             int right_temp2 = (right_temp * 5) + 175;
-            c.drawText(String.valueOf(right_temp2 / 10) + "." + (right_temp2 % 10), 937.0f, 136.0f, this.mPaint);
+            c.drawText(right_temp2 / 10 + "." + (right_temp2 % 10), 937.0f, 136.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

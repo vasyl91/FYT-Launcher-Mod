@@ -5,21 +5,21 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class SkinFactory implements LayoutInflater.Factory2, Observer {
+public class SkinFactory implements LayoutInflater.Factory2, PropertyChangeListener {
+
     public final String[] a = {"android.widget.", "android.view.", "android.webkit."};
     SkinAttribute mSkinAttribute = new SkinAttribute();
     private static final ConcurrentHashMap<String, Constructor<? extends View>> sConstructorMap = new ConcurrentHashMap<String, Constructor<? extends View>>(); //= new HashMap<>();
     static final Class<?>[] mConstructorSignature = {Context.class, AttributeSet.class};
     private static final CopyOnWriteArrayList<String> sBadViewConstructorMap = new CopyOnWriteArrayList<>();
 
-    @Override // android.view.LayoutInflater.Factory2
+    @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
         View view = createViewFromTag(name, context, attrs);
         if (view == null) {
@@ -35,8 +35,8 @@ public class SkinFactory implements LayoutInflater.Factory2, Observer {
         return this.mSkinAttribute;
     }
 
-    @Override // java.util.Observer
-    public void update(Observable observable, Object o) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         this.mSkinAttribute.applySkin();
     }
 
@@ -94,7 +94,7 @@ public class SkinFactory implements LayoutInflater.Factory2, Observer {
 
     private Constructor<? extends View> findConstructor(Context context, String name) {
         Constructor<? extends View> constructor = sConstructorMap.get(name);
-        if (null == constructor && !sBadViewConstructorMap.contains(name)) {
+        if (null == constructor && !sBadViewConstructorMap.contains(name) && !name.contains("android.widget.ViewStub")) {
             try {
                 Class<? extends View> clazz = context.getClassLoader().loadClass(name).asSubclass(View.class);
                 constructor = clazz.getConstructor(mConstructorSignature);
@@ -107,7 +107,7 @@ public class SkinFactory implements LayoutInflater.Factory2, Observer {
         return constructor;
     }
 
-    @Override // android.view.LayoutInflater.Factory
+    @Override
     public View onCreateView(String s, Context context, AttributeSet attributeSet) {
         return null;
     }

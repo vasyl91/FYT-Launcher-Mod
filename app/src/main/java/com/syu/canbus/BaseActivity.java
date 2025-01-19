@@ -5,24 +5,24 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckedTextView;
+
 import com.syu.entity.CarInfo;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BaseActivity extends Activity {
     public View.OnClickListener mClick;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -41,7 +41,7 @@ public class BaseActivity extends Activity {
     public void removeNotify() {
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -87,7 +87,7 @@ public class BaseActivity extends Activity {
     }
 
     public <T extends View> T bindViewOnClick(int i, View.OnClickListener onClickListener) {
-        T t = (T) findViewById(i);
+        T t = findViewById(i);
         setSelfClick(t, onClickListener);
         return t;
     }

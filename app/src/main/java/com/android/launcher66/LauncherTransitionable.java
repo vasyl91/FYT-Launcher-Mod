@@ -3,7 +3,6 @@ package com.android.launcher66;
 import android.view.View;
 
 /* compiled from: Launcher.java */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 interface LauncherTransitionable {
     View getContent();
 

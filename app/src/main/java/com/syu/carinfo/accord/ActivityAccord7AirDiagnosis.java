@@ -7,53 +7,52 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityAccord7AirDiagnosis extends Activity {
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.accord.ActivityAccord7AirDiagnosis.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 50:
+                case 100:
                     updateSensorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text1), value);
                     break;
-                case 51:
+                case 101:
                     updateSensorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text2), value);
                     break;
-                case 52:
+                case 102:
                     updateSensorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text3), value);
                     break;
-                case 53:
+                case 103:
                     updateSensorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text4), value);
                     break;
-                case 54:
+                case 104:
                     updateMotorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text5), value);
                     break;
-                case 55:
+                case 105:
                     updateMotorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text6), value);
                     break;
-                case 56:
+                case 106:
                     updateMotorState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text7), value);
                     break;
-                case 57:
+                case 107:
                     updateBlowerMotor(value);
                     break;
-                case 58:
+                case 108:
                     updateAirMixOpenDegreeState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text9), value);
                     break;
-                case 59:
+                case 109:
                     updateAirMixOpenDegreeState((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text10), value);
                     break;
-                case 60:
+                case 110:
                     updateSunlightLevel((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text11), value);
                     break;
-                case 61:
+                case 111:
                     updateCarTemp((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text12), value);
                     break;
-                case 62:
+                case 112:
                     updateCarTemp((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text13), value);
                     break;
-                case 63:
+                case 113:
                     updateEnginerCoolant((TextView) ActivityAccord7AirDiagnosis.this.findViewById(R.id.tv_text14), value);
                     break;
             }
@@ -146,57 +145,55 @@ public class ActivityAccord7AirDiagnosis extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_274_accord7_air_diagnosis);
+        //setContentView(R.layout.layout_274_accord7_air_diagnosis);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mCanbusNotify);
     }
 }

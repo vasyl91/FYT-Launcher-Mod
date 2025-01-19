@@ -1,6 +1,5 @@
 package com.syu.carinfo.accord9.wc;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AccordConfig {
     public static final String[] mStrLockSetAutoTime = {"0s", "30s", "60s", "90s"};
     public static final String[] mStrLightOffAutoTime = {"0s", "15s", "30s", "60s"};

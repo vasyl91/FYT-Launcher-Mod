@@ -7,53 +7,52 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DS5CarLog3Act extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dongjian.wc2.ds5.DS5CarLog3Act.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 8:
+                case 105:
                     DS5CarLog3Act.this.updaterpingjunOil3();
                     break;
-                case 9:
+                case 106:
                     DS5CarLog3Act.this.updaterpingjunSpeed3();
                     break;
-                case 10:
+                case 107:
                     DS5CarLog3Act.this.updaterleijiLicheng3();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_302_dongjian_wc2_ds5_car_log_page3);
+        //setContentView(R.layout.layout_302_dongjian_wc2_ds5_car_log_page3);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterpingjunOil3() {
-        int pingjunOil3Value = DataCanbus.DATA[8];
+        int pingjunOil3Value = DataCanbus.DATA[105];
         if (pingjunOil3Value < 65535) {
             ((TextView) findViewById(R.id.dongjian_wc2_ds5_pingjun_oil_page3_tv)).setText(((pingjunOil3Value >> 8) & 255) + "." + (pingjunOil3Value & 255) + "L/100Km");
         } else if (pingjunOil3Value == 65535) {
@@ -61,9 +60,9 @@ public class DS5CarLog3Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterpingjunSpeed3() {
-        int pingjunSpeed3Value = DataCanbus.DATA[9];
+        int pingjunSpeed3Value = DataCanbus.DATA[106];
         if (pingjunSpeed3Value < 65535) {
             ((TextView) findViewById(R.id.dongjian_wc2_ds5_pingjun_speed_page3_tv)).setText(pingjunSpeed3Value + "Km/h");
         } else if (pingjunSpeed3Value == 65535) {
@@ -71,9 +70,9 @@ public class DS5CarLog3Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterleijiLicheng3() {
-        int allLicheng3Value = DataCanbus.DATA[10];
+        int allLicheng3Value = DataCanbus.DATA[107];
         if (allLicheng3Value < 65535) {
             ((TextView) findViewById(R.id.dongjian_wc2_ds5_all_licheng_page3_tv)).setText(allLicheng3Value + "Km");
         } else if (allLicheng3Value == 65535) {

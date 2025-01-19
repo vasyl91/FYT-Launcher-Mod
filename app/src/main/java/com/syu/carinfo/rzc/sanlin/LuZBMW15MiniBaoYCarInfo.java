@@ -8,15 +8,14 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LuZBMW15MiniBaoYCarInfo extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.LuZBMW15MiniBaoYCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             String str;
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 61:
+                case 152:
                     LuZBMW15MiniBaoYCarInfo.this.findViewById(R.id.layout_view1).setVisibility(8);
                     LuZBMW15MiniBaoYCarInfo.this.findViewById(R.id.layout_view2).setVisibility(8);
                     LuZBMW15MiniBaoYCarInfo.this.findViewById(R.id.layout_view3).setVisibility(8);
@@ -83,26 +82,26 @@ public class LuZBMW15MiniBaoYCarInfo extends BaseActivity implements View.OnClic
                             LuZBMW15MiniBaoYCarInfo.this.findViewById(R.id.layout_view8).setVisibility(0);
                             break;
                     }
-                case 62:
-                case 63:
-                case 64:
-                case 65:
-                case 66:
-                case 67:
-                case 68:
-                case 69:
-                case 70:
-                case 71:
-                    int data1 = DataCanbus.DATA[62];
-                    int data2 = DataCanbus.DATA[63];
-                    int data3 = DataCanbus.DATA[64];
-                    int data4 = DataCanbus.DATA[65];
-                    int data5 = DataCanbus.DATA[66];
-                    int data6 = DataCanbus.DATA[67];
-                    int data7 = DataCanbus.DATA[68];
-                    int data8 = DataCanbus.DATA[69];
-                    int data9 = DataCanbus.DATA[70];
-                    int data10 = DataCanbus.DATA[71];
+                case 153:
+                case 154:
+                case 155:
+                case 156:
+                case 157:
+                case 158:
+                case 159:
+                case 160:
+                case 161:
+                case 162:
+                    int data1 = DataCanbus.DATA[153];
+                    int data2 = DataCanbus.DATA[154];
+                    int data3 = DataCanbus.DATA[155];
+                    int data4 = DataCanbus.DATA[156];
+                    int data5 = DataCanbus.DATA[157];
+                    int data6 = DataCanbus.DATA[158];
+                    int data7 = DataCanbus.DATA[159];
+                    int data8 = DataCanbus.DATA[160];
+                    int data9 = DataCanbus.DATA[161];
+                    int data10 = DataCanbus.DATA[162];
                     String str2 = String.valueOf(String.valueOf("") + LuZBMW15MiniBaoYCarInfo.this.UpdateData2(data2)) + LuZBMW15MiniBaoYCarInfo.this.UpdateData3(data3);
                     if (data4 == 1) {
                         str2 = String.valueOf(String.valueOf(str2) + "_20" + (data7 / 10) + (data7 % 10)) + "_" + (data8 / 10) + (data8 % 10);
@@ -149,60 +148,61 @@ public class LuZBMW15MiniBaoYCarInfo extends BaseActivity implements View.OnClic
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_luz_bmw_15mini_baoy_carinfo);
+        //setContentView(R.layout.layout_0453_luz_bmw_15mini_baoy_carinfo);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
+        DataCanbus.PROXY.cmd(2, new int[]{75}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         v.getId();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public String UpdateData2(int value) {
         switch (value) {
             case 1:
@@ -228,7 +228,7 @@ public class LuZBMW15MiniBaoYCarInfo extends BaseActivity implements View.OnClic
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public String UpdateData3(int value) {
         switch (value) {
             case 0:

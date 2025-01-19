@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_BNR_Toyota extends AirBase {
     public Air_0439_BNR_Toyota(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 300;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0294_wc_toyota/vw_18prado_air.webp";
         this.mPathHighlight = "0294_wc_toyota/vw_18prado_air_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -84,7 +84,7 @@ public class Air_0439_BNR_Toyota extends AirBase {
             } else if (temp >= 33 && temp <= 38) {
                 temp = ((temp - 33) * 5) + 150;
             }
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 70.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 70.0f, 60.0f, this.mPaint);
         }
         int temp2 = this.DATA[12];
         if (temp2 == -1) {
@@ -99,7 +99,7 @@ public class Air_0439_BNR_Toyota extends AirBase {
             } else if (temp2 >= 33 && temp2 <= 38) {
                 temp2 = ((temp2 - 33) * 5) + 150;
             }
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 925.0f, 60.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 925.0f, 60.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

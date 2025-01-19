@@ -9,68 +9,67 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_RZC_CarCD_AoDeSai extends Activity {
     public static boolean mIsFront = false;
     private int timeAMPM;
     private int timeFormat;
     private int timeH;
     private int timeM;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.Act_RZC_CarCD_AoDeSai.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 9:
+                case 100:
                     Act_RZC_CarCD_AoDeSai.this.uRadioSt(value);
                     break;
-                case 10:
+                case 101:
                     Act_RZC_CarCD_AoDeSai.this.uRadioScan(value);
                     break;
-                case 12:
+                case 103:
                     Act_RZC_CarCD_AoDeSai.this.uRadioFrq(value);
                     break;
-                case 22:
+                case 113:
                     Act_RZC_CarCD_AoDeSai.this.uInfoTitleIndex(value);
                     break;
-                case 23:
+                case 114:
                     Act_RZC_CarCD_AoDeSai.this.uInfoHilight(value);
                     break;
-                case 24:
+                case 115:
                     Act_RZC_CarCD_AoDeSai.this.uInfoContent(strs != null ? strs[0] : "");
                     break;
-                case 26:
+                case 117:
                     Act_RZC_CarCD_AoDeSai.this.uCarVol(value);
                     break;
-                case 27:
+                case 118:
                     Act_RZC_CarCD_AoDeSai.this.uTimeFormat(value);
                     break;
-                case 28:
+                case 119:
                     Act_RZC_CarCD_AoDeSai.this.uTimeAMPM(value);
                     break;
-                case 29:
+                case 120:
                     Act_RZC_CarCD_AoDeSai.this.uTimeHour(value);
                     break;
-                case 30:
+                case 121:
                     Act_RZC_CarCD_AoDeSai.this.uTimeMinitus(value);
                     break;
-                case 32:
+                case 123:
                     Act_RZC_CarCD_AoDeSai.this.uCDState(value);
                     break;
-                case 33:
+                case 124:
                     Act_RZC_CarCD_AoDeSai.this.uCDTrack(value);
                     break;
-                case 34:
+                case 125:
                     Act_RZC_CarCD_AoDeSai.this.uPlayState(value);
                     break;
-                case 35:
-                case 36:
+                case 126:
+                case 127:
                     Act_RZC_CarCD_AoDeSai.this.uCDTime();
                     break;
-                case 37:
+                case 128:
                     Act_RZC_CarCD_AoDeSai.this.uCDNum(value);
                     break;
-                case 38:
+                case 129:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd1_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -78,7 +77,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd1_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 39:
+                case 130:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd2_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -86,7 +85,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd2_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 40:
+                case 131:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd3_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -94,7 +93,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd3_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 41:
+                case 132:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd4_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -102,7 +101,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd4_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 42:
+                case 133:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd5_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -110,7 +109,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd5_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 43:
+                case 134:
                     if (value == 1) {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd6_img)).setImageResource(R.drawable.ic_sbd_ready);
                         break;
@@ -118,29 +117,29 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                         ((ImageView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.xuni_cd6_img)).setImageResource(R.drawable.ic_sbd_gray);
                         break;
                     }
-                case 76:
+                case 135:
                     Act_RZC_CarCD_AoDeSai.this.uUSBFileNum(value);
                     break;
-                case 77:
+                case 136:
                     Act_RZC_CarCD_AoDeSai.this.uUSBTrack(value);
                     break;
-                case 78:
+                case 137:
                     Act_RZC_CarCD_AoDeSai.this.uPlayUSBState(value);
                     break;
-                case 79:
-                case 80:
+                case 138:
+                case 139:
                     Act_RZC_CarCD_AoDeSai.this.uUSBTime();
                     break;
-                case 81:
+                case 140:
                     Act_RZC_CarCD_AoDeSai.this.uDiscWorkState(value);
                     break;
-                case 82:
+                case 141:
                     Act_RZC_CarCD_AoDeSai.this.uWorkUSBState(value);
                     break;
-                case 83:
-                case 84:
-                    int hour = DataCanbus.DATA[83];
-                    int min = DataCanbus.DATA[84];
+                case 142:
+                case 143:
+                    int hour = DataCanbus.DATA[142];
+                    int min = DataCanbus.DATA[143];
                     if (((TextView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.tv_text11)) != null) {
                         ((TextView) Act_RZC_CarCD_AoDeSai.this.findViewById(R.id.tv_text11)).setText(String.valueOf(hour / 10) + (hour % 10) + ":" + (min / 10) + (min % 10));
                         break;
@@ -152,13 +151,13 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
     private int hilight = 0;
     int CD_STATE = -1;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_rzc_09aodesai_carcd);
+        //setContentView(R.layout.layout_0452_rzc_09aodesai_carcd);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -168,7 +167,7 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -176,77 +175,77 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[78].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[79].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[78].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[79].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uTimeMinitus(int value2) {
@@ -341,8 +340,8 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
 
     protected void uCDTime() {
         if (this.CD_STATE == 4) {
-            int min = DataCanbus.DATA[35];
-            int sec = DataCanbus.DATA[36];
+            int min = DataCanbus.DATA[126];
+            int sec = DataCanbus.DATA[127];
             if (((TextView) findViewById(R.id.tv_text7)) != null) {
                 ((TextView) findViewById(R.id.tv_text7)).setText(String.valueOf((min / 10) + (min % 10)) + ":" + (sec / 10) + (sec % 10));
             }
@@ -351,8 +350,8 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
 
     protected void uUSBTime() {
         if (this.CD_STATE == 6) {
-            int min = DataCanbus.DATA[79];
-            int sec = DataCanbus.DATA[80];
+            int min = DataCanbus.DATA[138];
+            int sec = DataCanbus.DATA[139];
             if (((TextView) findViewById(R.id.tv_text7)) != null) {
                 ((TextView) findViewById(R.id.tv_text7)).setText(String.valueOf((min / 10) + (min % 10)) + ":" + (sec / 10) + (sec % 10));
             }
@@ -425,9 +424,9 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_385_carradioinfo1);
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.str_385_carradioinfo2);
                 ((TextView) findViewById(R.id.tv_text7)).setText("FM1");
-                uRadioSt(DataCanbus.DATA[9]);
-                uRadioScan(DataCanbus.DATA[10]);
-                uRadioFrq(DataCanbus.DATA[12]);
+                uRadioSt(DataCanbus.DATA[100]);
+                uRadioScan(DataCanbus.DATA[101]);
+                uRadioFrq(DataCanbus.DATA[103]);
                 break;
             case 2:
                 findViewById(R.id.six_die_show_view).setVisibility(8);
@@ -438,9 +437,9 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_385_carradioinfo1);
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.str_385_carradioinfo2);
                 ((TextView) findViewById(R.id.tv_text7)).setText("FM2");
-                uRadioSt(DataCanbus.DATA[9]);
-                uRadioScan(DataCanbus.DATA[10]);
-                uRadioFrq(DataCanbus.DATA[12]);
+                uRadioSt(DataCanbus.DATA[100]);
+                uRadioScan(DataCanbus.DATA[101]);
+                uRadioFrq(DataCanbus.DATA[103]);
                 break;
             case 3:
                 findViewById(R.id.six_die_show_view).setVisibility(8);
@@ -451,9 +450,9 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_385_carradioinfo1);
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.str_385_carradioinfo2);
                 ((TextView) findViewById(R.id.tv_text7)).setText("AM1");
-                uRadioSt(DataCanbus.DATA[9]);
-                uRadioScan(DataCanbus.DATA[10]);
-                uRadioFrq(DataCanbus.DATA[12]);
+                uRadioSt(DataCanbus.DATA[100]);
+                uRadioScan(DataCanbus.DATA[101]);
+                uRadioFrq(DataCanbus.DATA[103]);
                 break;
             case 4:
                 findViewById(R.id.six_die_show_view).setVisibility(0);
@@ -462,11 +461,11 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_385_carcdinfo2);
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_385_carcdinfo3);
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.str_385_carcdinfo4);
-                uPlayState(DataCanbus.DATA[34]);
-                uDiscWorkState(DataCanbus.DATA[81]);
+                uPlayState(DataCanbus.DATA[125]);
+                uDiscWorkState(DataCanbus.DATA[140]);
                 uCDTime();
-                uCDTrack(DataCanbus.DATA[33]);
-                uCDNum(DataCanbus.DATA[37]);
+                uCDTrack(DataCanbus.DATA[124]);
+                uCDNum(DataCanbus.DATA[128]);
                 break;
             case 5:
             default:
@@ -489,11 +488,11 @@ public class Act_RZC_CarCD_AoDeSai extends Activity {
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_385_carcdinfo2);
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.str_385_carcdinfo3);
                 ((TextView) findViewById(R.id.tv_text4)).setText(R.string.str_385_carcdinfo4);
-                uPlayUSBState(DataCanbus.DATA[78]);
-                uWorkUSBState(DataCanbus.DATA[82]);
+                uPlayUSBState(DataCanbus.DATA[137]);
+                uWorkUSBState(DataCanbus.DATA[141]);
                 uUSBTime();
-                uUSBTrack(DataCanbus.DATA[77]);
-                uUSBFileNum(DataCanbus.DATA[76]);
+                uUSBTrack(DataCanbus.DATA[136]);
+                uUSBFileNum(DataCanbus.DATA[135]);
                 break;
         }
     }

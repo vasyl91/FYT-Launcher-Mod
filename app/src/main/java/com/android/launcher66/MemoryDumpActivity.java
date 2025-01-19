@@ -29,13 +29,12 @@ import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class MemoryDumpActivity extends Activity {
     private static Exception e;
     private static Throwable th;
     private static final String TAG = "MemoryDumpActivity";
 
-    @Override // android.app.Activity
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -149,11 +148,11 @@ public class MemoryDumpActivity extends Activity {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     public void onStart() {
         super.onStart();
-        startDump(this, new Runnable() { // from class: com.android.launcher66.MemoryDumpActivity.1
-            @Override // java.lang.Runnable
+        startDump(this, new Runnable() { 
+            @Override
             public void run() {
                 MemoryDumpActivity.this.finish();
             }
@@ -165,8 +164,8 @@ public class MemoryDumpActivity extends Activity {
     }
 
     public static void startDump(final Context context, final Runnable andThen) {
-        ServiceConnection connection = new ServiceConnection() { // from class: com.android.launcher66.MemoryDumpActivity.2
-            @Override // android.content.ServiceConnection
+        ServiceConnection connection = new ServiceConnection() { 
+            @Override
             public void onServiceConnected(ComponentName className, IBinder service) {
                 Log.v(MemoryDumpActivity.TAG, "service connected, dumping...");
                 MemoryDumpActivity.dumpHprofAndShare(context, ((MemoryTracker.MemoryTrackerInterface) service).getService());
@@ -176,7 +175,7 @@ public class MemoryDumpActivity extends Activity {
                 }
             }
 
-            @Override // android.content.ServiceConnection
+            @Override
             public void onServiceDisconnected(ComponentName className) {
             }
         };

@@ -1,5 +1,7 @@
 package com.android.launcher66;
 
+import static android.view.accessibility.AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
@@ -9,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,6 +23,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.CellLayout;
 import com.syu.log.LogPreview;
 import java.util.ArrayList;
@@ -74,8 +80,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         setMotionEventSplittingEnabled(false);
         setChildrenDrawingOrderEnabled(true);
         setOnHierarchyChangeListener(this);
-        this.mLeftHoverDrawable = getResources().getDrawable(R.drawable.page_hover_left_holo);
-        this.mRightHoverDrawable = getResources().getDrawable(R.drawable.page_hover_right_holo);
+        this.mLeftHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_left_holo);
+        this.mRightHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_right_holo);
     }
 
     public void setup(Launcher launcher, DragController controller) {
@@ -83,7 +89,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         this.mDragController = controller;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         return this.mDragController.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
     }
@@ -149,7 +155,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return false;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         int action = ev.getAction();
         if (action == 0) {
@@ -166,7 +172,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return this.mDragController.onInterceptTouchEvent(ev);
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onInterceptHoverEvent(MotionEvent ev) {
         Folder currentFolder;
         LogPreview.show("onInterceptHoverEvent");
@@ -214,14 +220,19 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         AccessibilityManager accessibilityManager = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (accessibilityManager.isEnabled()) {
             int stringId = isEditingName ? R.string.folder_tap_to_rename : R.string.folder_tap_to_close;
-            AccessibilityEvent event = AccessibilityEvent.obtain(8);
+            AccessibilityEvent event;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                event = AccessibilityEvent.obtain(CONTENT_CHANGE_TYPE_PANE_TITLE);
+            } else {
+                event = new AccessibilityEvent(CONTENT_CHANGE_TYPE_PANE_TITLE);
+            }
             onInitializeAccessibilityEvent(event);
             event.getText().add(getContext().getString(stringId));
             accessibilityManager.sendAccessibilityEvent(event);
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     public boolean onRequestSendAccessibilityEvent(View child, AccessibilityEvent event) {
         Folder currentFolder = this.mLauncher.getWorkspace().getOpenFolder();
         if (currentFolder != null) {
@@ -233,7 +244,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return super.onRequestSendAccessibilityEvent(child, event);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public void addChildrenForAccessibility(ArrayList<View> childrenForAccessibility) {
         Folder currentFolder = this.mLauncher.getWorkspace().getOpenFolder();
         if (currentFolder != null) {
@@ -243,12 +254,12 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onHoverEvent(MotionEvent ev) {
         return false;
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         boolean handled = false;
         int action = ev.getAction();
@@ -324,7 +335,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         r.set(left, top, v.getMeasuredWidth() + left, v.getMeasuredHeight() + top);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     public boolean dispatchUnhandledMove(View focused, int direction) {
         return this.mDragController.dispatchUnhandledMove(focused, direction);
     }
@@ -372,7 +383,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
     }
 
-    @Override // android.widget.FrameLayout, android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         int count = getChildCount();
@@ -460,8 +471,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         int fromX = r.left;
         int fromY = r.top;
         child.setVisibility(View.INVISIBLE);
-        Runnable onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.DragLayer.1
-            @Override // java.lang.Runnable
+        Runnable onCompleteRunnable = new Runnable() { 
+            @Override
             public void run() {
                 child.setVisibility(View.VISIBLE);
                 if (onFinishAnimationRunnable != null) {
@@ -495,8 +506,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
         final float initAlpha = view.getAlpha();
         final float dropViewScale = view.getScaleX();
-        ValueAnimator.AnimatorUpdateListener updateCb = new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.DragLayer.2
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        ValueAnimator.AnimatorUpdateListener updateCb = new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int i;
                 float percent = ((Float) animation.getAnimatedValue()).floatValue();
@@ -550,8 +561,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         this.mDropAnim.setDuration(duration);
         this.mDropAnim.setFloatValues(0.0f, 1.0f);
         this.mDropAnim.addUpdateListener(updateCb);
-        this.mDropAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.DragLayer.3
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        this.mDropAnim.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 if (onCompleteRunnable != null) {
                     onCompleteRunnable.run();
@@ -584,22 +595,22 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return this.mDropView;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void fadeOutDragView() {
         this.mFadeOutAnim = new ValueAnimator();
         this.mFadeOutAnim.setDuration(150L);
         this.mFadeOutAnim.setFloatValues(0.0f, 1.0f);
         this.mFadeOutAnim.removeAllUpdateListeners();
-        this.mFadeOutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.DragLayer.4
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        this.mFadeOutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float percent = ((Float) animation.getAnimatedValue()).floatValue();
                 float alpha = 1.0f - percent;
                 DragLayer.this.mDropView.setAlpha(alpha);
             }
         });
-        this.mFadeOutAnim.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.DragLayer.5
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+        this.mFadeOutAnim.addListener(new AnimatorListenerAdapter() { 
+            @Override
             public void onAnimationEnd(Animator animation) {
                 if (DragLayer.this.mDropView != null) {
                     DragLayer.this.mDragController.onDeferredEndDrag(DragLayer.this.mDropView);
@@ -611,12 +622,12 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         this.mFadeOutAnim.start();
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewAdded(View parent, View child) {
         updateChildIndices();
     }
 
-    @Override // android.view.ViewGroup.OnHierarchyChangeListener
+    @Override
     public void onChildViewRemoved(View parent, View child) {
         updateChildIndices();
     }
@@ -628,7 +639,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected int getChildDrawingOrder(int childCount, int i) {
         return i;
     }
@@ -647,7 +658,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (this.mInScrollArea && !LauncherAppState.getInstance().isScreenLarge()) {

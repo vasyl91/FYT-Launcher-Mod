@@ -10,29 +10,28 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirControl_TuAng_ClearAir extends Activity implements View.OnClickListener {
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.golf7.AirControl_TuAng_ClearAir.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 190:
-                    AirControl_TuAng_ClearAir.this.uClearAir(this.value);
-                    break;
-                case 226:
+                case 73:
                     AirControl_TuAng_ClearAir.this.uClearProgress(this.value);
+                    break;
+                case 76:
+                    AirControl_TuAng_ClearAir.this.uClearAir(this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_tuang_clearair);
+        //setContentView(R.layout.layout_golf7_tuang_clearair);
         initUI();
     }
 
@@ -47,24 +46,24 @@ public class AirControl_TuAng_ClearAir extends Activity implements View.OnClickL
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.golf7_air_btn_power /* 2131431030 */:
-            case R.id.iv_fan /* 2131431640 */:
-                int value = DataCanbus.DATA[190];
+            case R.id.golf7_air_btn_power /* 2131431006 */:
+            case R.id.iv_fan /* 2131431617 */:
+                int value = DataCanbus.DATA[76];
                 setAirCmd(32, value == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -75,13 +74,13 @@ public class AirControl_TuAng_ClearAir extends Activity implements View.OnClickL
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[226].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[226].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mCanbusNotify);
     }
 
     protected void uClearAir(int val) {

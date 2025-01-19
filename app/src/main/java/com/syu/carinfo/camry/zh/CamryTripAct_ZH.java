@@ -5,30 +5,30 @@ import android.view.View;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
+import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryTripAct_ZH extends BaseActivity {
     private VerticalProgressbar_ZH[] mProgressbar = new VerticalProgressbar_ZH[15];
     private TextView[] mOilTv = new TextView[4];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.camry.zh.CamryTripAct_ZH.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 89:
+                case 101:
                     CamryTripAct_ZH.this.mUpdaterAveragVelocity();
                     break;
-                case 90:
+                case 102:
                     CamryTripAct_ZH.this.mUpdaterDrivingTime();
                     break;
-                case 91:
+                case 103:
                     CamryTripAct_ZH.this.mUpdaterDrivingMileage();
                     break;
-                case 92:
+                case 104:
                     CamryTripAct_ZH.this.mUpdaterOilExpend();
                     break;
-                case 123:
+                case 135:
                     if (ints != null) {
                         CamryTripAct_ZH.this.mUpdaterOilValue(ints);
                         break;
@@ -39,14 +39,14 @@ public class CamryTripAct_ZH extends BaseActivity {
     int[] mOilNum0 = {0, 10, 20, 30};
     int[] mOilNum1 = {0, 20, 40, 60};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_trip_zh);
+        //setContentView(R.layout.layout_camry_trip_zh);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mProgressbar[0] = (VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_0);
         this.mProgressbar[1] = (VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_1);
@@ -67,35 +67,35 @@ public class CamryTripAct_ZH extends BaseActivity {
         this.mOilTv[1] = (TextView) findViewById(R.id.camry_tv_oil_1);
         this.mOilTv[2] = (TextView) findViewById(R.id.camry_tv_oil_2);
         this.mOilTv[3] = (TextView) findViewById(R.id.camry_tv_oil_3);
-        findViewById(R.id.camry_btn_clear).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.camry.zh.CamryTripAct_ZH.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.camry_btn_clear).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(10, null, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[89].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[89].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingTime() {
-        int time = DataCanbus.DATA[90];
+        int time = DataCanbus.DATA[102];
         if (time > -1) {
             int hour = time / 60;
             int minute = time % 60;
@@ -108,18 +108,18 @@ public class CamryTripAct_ZH extends BaseActivity {
     private void mUpdataOilUnit(int unit) {
         if (((TextView) findViewById(R.id.camry_tv_oil_unit)) != null) {
             if (unit == 0) {
-                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText("MPG");
+                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_MPG);
             } else if (unit == 1) {
-                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText("km/L");
+                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
             } else if (unit == 2) {
-                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText("L/100km");
+                ((TextView) findViewById(R.id.camry_tv_oil_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilExpend() {
-        int value = DataCanbus.DATA[92];
+        int value = DataCanbus.DATA[104];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         int numMax = 30;
@@ -164,16 +164,16 @@ public class CamryTripAct_ZH extends BaseActivity {
         ((VerticalProgressbar_ZH) findViewById(R.id.camry_progressbar_cur)).invalidate();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[91];
+        int value = DataCanbus.DATA[103];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
         if (unit == 2) {
-            str = String.valueOf(num) + " KM";
+            str = String.valueOf(num) + " " + CamryData.MILEAGE_UNIT_KM;
         } else if (unit == 1) {
-            str = String.valueOf(num) + " MILE";
+            str = String.valueOf(num) + " " + CamryData.MILEAGE_UNIT_MILE;
         } else if (unit == 0) {
             str = String.valueOf(num) + " ";
         }
@@ -186,16 +186,16 @@ public class CamryTripAct_ZH extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAveragVelocity() {
-        int value = DataCanbus.DATA[89];
+        int value = DataCanbus.DATA[101];
         int unit = (value >> 24) & 255;
         int num = value & 16777215;
         String str = "";
         if (unit == 2) {
-            str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " KM";
+            str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " " + CamryData.MILEAGE_UNIT_KM;
         } else if (unit == 1) {
-            str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " MILE";
+            str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " " + CamryData.MILEAGE_UNIT_MILE;
         } else if (unit == 0) {
             str = String.valueOf(String.format("%d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " ";
         }
@@ -204,7 +204,7 @@ public class CamryTripAct_ZH extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterOilValue(int[] ints) {
         if (ints[0] > -1 && ints[0] < 30) {
             int value = ints[1];

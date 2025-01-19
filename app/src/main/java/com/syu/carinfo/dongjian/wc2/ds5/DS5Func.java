@@ -2,7 +2,6 @@ package com.syu.carinfo.dongjian.wc2.ds5;
 
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DS5Func {
     public static void C_CAR_COMPUTER_SET(int val1, int val2) {
         DataCanbus.PROXY.cmd(0, new int[]{val1, val2}, null, null);

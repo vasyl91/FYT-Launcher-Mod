@@ -9,15 +9,14 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcFYTOilMilePage3Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.feiyate.RzcFYTOilMilePage3Acti.1
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
         /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 29:
-                case 51:
+                case 100:
+                case 122:
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue1();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue2();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
@@ -25,22 +24,22 @@ public class RzcFYTOilMilePage3Acti extends BaseActivity {
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
                     break;
-                case 30:
+                case 101:
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
                     break;
-                case 52:
-                    RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
-                    RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
-                    RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
-                    break;
-                case 53:
-                    RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
+                case 123:
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
                     break;
-                case 54:
+                case 124:
+                    RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
+                    RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
+                    RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
+                    RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
+                    break;
+                case 125:
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue2();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue3();
                     RzcFYTOilMilePage3Acti.this.mUpdaterValue4();
@@ -51,53 +50,53 @@ public class RzcFYTOilMilePage3Acti extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_fyt_all_oil_page3);
+        //setContentView(R.layout.layout_fyt_all_oil_page3);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.psa_all_btn_oil_page3_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.feiyate.RzcFYTOilMilePage3Acti.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.psa_all_btn_oil_page3_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, new int[]{242, 1}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(1, new int[]{80, 2}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int value = DataCanbus.DATA[51];
-        int value1 = DataCanbus.DATA[29] & 255;
+        int value = DataCanbus.DATA[122];
+        int value1 = DataCanbus.DATA[100] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv1)) != null) {
             if (value == 65535) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv1)).setText("--.--");
@@ -119,9 +118,9 @@ public class RzcFYTOilMilePage3Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[54];
+        int value = DataCanbus.DATA[125];
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv2)) != null) {
             if (value == 16777215) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv2)).setText("----");
@@ -131,10 +130,10 @@ public class RzcFYTOilMilePage3Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value = DataCanbus.DATA[53];
-        int unit = DataCanbus.DATA[30] & 255;
+        int value = DataCanbus.DATA[124];
+        int unit = DataCanbus.DATA[101] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv3)) != null) {
             if (value == 16777215) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv3)).setText("----");
@@ -146,10 +145,10 @@ public class RzcFYTOilMilePage3Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
-        int value = DataCanbus.DATA[52];
-        int unit = DataCanbus.DATA[30] & 255;
+        int value = DataCanbus.DATA[123];
+        int unit = DataCanbus.DATA[101] & 255;
         if (((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv4)) != null) {
             if (value == 255) {
                 ((TextView) findViewById(R.id.psa_all_tv_oil_page3_tv4)).setText("----");

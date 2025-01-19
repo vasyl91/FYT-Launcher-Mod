@@ -1,6 +1,5 @@
 package com.syu.util;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class StringSparseArray<E> implements Cloneable {
     private boolean mGarbage;
     private String[] mKeys;
@@ -45,8 +44,8 @@ public class StringSparseArray<E> implements Cloneable {
         StringSparseArray<E> clone = null;
         try {
             clone = (StringSparseArray) super.clone();
-            clone.mKeys = (String[]) this.mKeys.clone();
-            clone.mValues = (Object[]) this.mValues.clone();
+            clone.mKeys = this.mKeys.clone();
+            clone.mValues = this.mValues.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             return clone;

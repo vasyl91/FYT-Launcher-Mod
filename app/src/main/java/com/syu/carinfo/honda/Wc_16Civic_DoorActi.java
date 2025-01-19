@@ -11,44 +11,57 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_16Civic_DoorActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            int value = DataCanbus.DATA[updateCode] & 65535;
             switch (updateCode) {
-                case 58:
+                case 129:
                     Wc_16Civic_DoorActi.this.m65D13();
                     break;
-                case 59:
+                case 130:
                     Wc_16Civic_DoorActi.this.m65D11();
                     break;
-                case 60:
+                case 131:
                     Wc_16Civic_DoorActi.this.m65D10();
                     break;
-                case 86:
+                case 147:
                     Wc_16Civic_DoorActi.this.m65D16();
                     break;
-                case 87:
+                case 148:
                     Wc_16Civic_DoorActi.this.m65D14();
+                    break;
+                case 184:
+                    int switchOn = value & 255;
+                    if (switchOn == 1) {
+                        ((TextView) Wc_16Civic_DoorActi.this.findViewById(R.id.tv_text6)).setText(R.string.klc_remote_Smart_Near_car_unlocked_all_door);
+                        break;
+                    } else {
+                        ((TextView) Wc_16Civic_DoorActi.this.findViewById(R.id.tv_text6)).setText(R.string.klc_remote_Smart_Near_car_unlocked_only_driver);
+                        break;
+                    }
+                case 185:
+                    int switchOn2 = value & 255;
+                    ((CheckedTextView) Wc_16Civic_DoorActi.this.findViewById(R.id.ctv_checkedtext3)).setChecked(switchOn2 == 1);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_321_civic_door);
+        //setContentView(R.layout.layout_321_civic_door);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.2
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[58] & 255;
+                int value = DataCanbus.DATA[129] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[2];
                 iArr[0] = 3;
@@ -56,11 +69,33 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
                 remoteModuleProxy.cmd(104, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[131] & 255;
+                RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
+                int[] iArr = new int[2];
+                iArr[0] = 1;
+                iArr[1] = value == 0 ? 1 : 0;
+                remoteModuleProxy.cmd(104, iArr, null, null);
+            }
+        });
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[185] & 255;
+                RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
+                int[] iArr = new int[2];
+                iArr[0] = 6;
+                iArr[1] = value == 0 ? 1 : 0;
+                remoteModuleProxy.cmd(104, iArr, null, null);
+            }
+        });
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[59] & 255;
+                int value2 = DataCanbus.DATA[130] & 255;
                 if (value2 > 1) {
                     value = value2 - 1;
                 } else {
@@ -69,11 +104,11 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{2, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[59] & 255;
+                int value2 = DataCanbus.DATA[130] & 255;
                 if (value2 < 3) {
                     value = value2 + 1;
                 } else {
@@ -82,92 +117,105 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(104, new int[]{2, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[60] & 255;
-                RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
-                int[] iArr = new int[2];
-                iArr[0] = 1;
-                iArr[1] = value == 0 ? 1 : 0;
-                remoteModuleProxy.cmd(104, iArr, null, null);
-            }
-        });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.6
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[87] - 1;
+                int value = DataCanbus.DATA[148] - 1;
                 if (value < 0) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(104, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[87] + 1;
+                int value = DataCanbus.DATA[148] + 1;
                 if (value > 2) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(104, new int[]{4, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[86] - 1;
+                int value = DataCanbus.DATA[147] - 1;
                 if (value < 0) {
                     value = 0;
                 }
                 DataCanbus.PROXY.cmd(104, new int[]{5, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.Wc_16Civic_DoorActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[86] + 1;
+                int value = DataCanbus.DATA[147] + 1;
                 if (value > 2) {
                     value = 2;
                 }
                 DataCanbus.PROXY.cmd(104, new int[]{5, value}, null, null);
+            }
+        });
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[184] - 1;
+                if (value < 0) {
+                    value = 1;
+                }
+                DataCanbus.PROXY.cmd(104, new int[]{7, value}, null, null);
+            }
+        });
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
+            public void onClick(View v) {
+                int value = DataCanbus.DATA[184] + 1;
+                if (value > 1) {
+                    value = 0;
+                }
+                DataCanbus.PROXY.cmd(104, new int[]{7, value}, null, null);
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[86].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[184].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[185].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[86].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[87].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[184].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[185].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m65D13() {
-        int temp = DataCanbus.DATA[58] & 65535;
+        int temp = DataCanbus.DATA[129] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -177,9 +225,9 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m65D11() {
-        int temp = DataCanbus.DATA[59] & 65535;
+        int temp = DataCanbus.DATA[130] & 65535;
         int switchOn = temp & 255;
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             if (switchOn == 1) {
@@ -196,9 +244,9 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m65D10() {
-        int temp = DataCanbus.DATA[60] & 65535;
+        int temp = DataCanbus.DATA[131] & 65535;
         int switchOn = temp & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(switchOn == 1);
         if (switchOn == 1) {
@@ -208,9 +256,9 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m65D16() {
-        int value = DataCanbus.DATA[86];
+        int value = DataCanbus.DATA[147];
         if (((TextView) findViewById(R.id.tv_text5)) != null) {
             switch (value) {
                 case 1:
@@ -226,9 +274,9 @@ public class Wc_16Civic_DoorActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void m65D14() {
-        int value = DataCanbus.DATA[87];
+        int value = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.tv_text4)) != null) {
             switch (value) {
                 case 1:

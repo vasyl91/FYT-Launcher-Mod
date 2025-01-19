@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcChevroletBlazerRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcChevroletBlazerRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 64:
@@ -47,10 +46,10 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0061_rzc_chevroletblazer_air_control_r);
+        //setContentView(R.layout.layout_0061_rzc_chevroletblazer_air_control_r);
         init();
     }
 
@@ -68,7 +67,7 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         findViewById(R.id.air_xts_sync).setOnTouchListener(this);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -121,7 +120,7 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -129,7 +128,7 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -157,37 +156,37 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutokOn() {
         int power = DataCanbus.DATA[68];
         findViewById(R.id.air_xts_auto).setBackgroundResource(power == 1 ? R.drawable.ic_xts_auto_p : R.drawable.ic_xts_auto_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int power = DataCanbus.DATA[69];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(power == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
         int acOn = DataCanbus.DATA[70];
         findViewById(R.id.air_xts_sync).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowFootLeftOn() {
         int acOn = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_mode_foot).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBlowBodyLeftOn() {
         int acOn = DataCanbus.DATA[66];
         findViewById(R.id.air_xts_mode_body).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[64];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -208,7 +207,7 @@ public class RzcChevroletBlazerRearAirControlAct extends Activity implements Vie
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         String str;
         int leave = DataCanbus.DATA[65];

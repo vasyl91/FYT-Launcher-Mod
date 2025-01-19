@@ -6,11 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIRZC18Yuanjing {
     private static UIRZC18Yuanjing mInstance;
     Context context;
@@ -28,11 +28,11 @@ public class UIRZC18Yuanjing {
     public void showWindowTip(int updateCode, int value) {
         WarnUtils.getWindow();
         initTip(updateCode, value);
-        if (this.sWarnContent != null && DataCanbus.DATA[182] != 0) {
+        if (this.sWarnContent != null && DataCanbus.DATA[194] != 0) {
             WarnUtils.showWindow();
             WarnUtils.postDimiss(5000);
         }
-        if (this.sWarnContent != null && DataCanbus.DATA[184] != 0) {
+        if (this.sWarnContent != null && DataCanbus.DATA[196] != 0) {
             WarnUtils.showWindow();
             WarnUtils.postDimiss(20000);
         }
@@ -41,17 +41,17 @@ public class UIRZC18Yuanjing {
     private void initTip(int updateCode, int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_139_fatigue_warn, (ViewGroup) null, false);
-            this.mLayoutImage = (ImageView) this.sWarnContent.findViewById(R.id.iv_ax5_warn);
-            this.mTextWarn = (TextView) this.sWarnContent.findViewById(R.id.tv_ax5_text);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_139_fatigue_warn, null, false);
+            this.mLayoutImage = this.sWarnContent.findViewById(R.id.iv_ax5_warn);
+            this.mTextWarn = this.sWarnContent.findViewById(R.id.tv_ax5_text);
         }
-        if (updateCode == 182) {
-            this.mTextWarn.setText("还有" + DataCanbus.DATA[168] + "公里需要保养");
+        if (updateCode == 194) {
+            this.mTextWarn.setText("还有" + DataCanbus.DATA[180] + "公里需要保养");
             ((TextView) this.sWarnContent.findViewById(R.id.tv_text1)).setText("");
         }
-        if (DataCanbus.DATA[184] == 1) {
+        if (DataCanbus.DATA[196] == 1) {
             ((TextView) this.sWarnContent.findViewById(R.id.tv_text1)).setText("请注意休息!");
-            switch (DataCanbus.DATA[183]) {
+            switch (DataCanbus.DATA[195]) {
                 case 1:
                     this.mTextWarn.setText("你已经连续驾驶0.5小时,");
                     break;

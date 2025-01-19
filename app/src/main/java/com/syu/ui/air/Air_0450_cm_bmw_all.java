@@ -5,25 +5,24 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0450_cm_bmw_all extends AirBase {
     public Air_0450_cm_bmw_all(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1920;
         this.mContentHeight = 182;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0450_benz_air/air_cm_bmw_n.webp";
         this.mPathHighlight = "0450_benz_air/air_cm_bmw_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -75,7 +74,7 @@ public class Air_0450_cm_bmw_all extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 555.0f, 104.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp / 2.0f) + "℃", 550.0f, 104.0f, this.mPaint);
+            c.drawText(temp / 2.0f + "℃", 550.0f, 104.0f, this.mPaint);
         }
         int temp2 = this.DATA[24];
         if (temp2 == -1) {
@@ -85,7 +84,7 @@ public class Air_0450_cm_bmw_all extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 1375.0f, 104.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp2 / 2.0f) + "℃", 1370.0f, 104.0f, this.mPaint);
+            c.drawText(temp2 / 2.0f + "℃", 1370.0f, 104.0f, this.mPaint);
         }
         canvas.save();
         canvas.scale(1.0f, 1.0f);

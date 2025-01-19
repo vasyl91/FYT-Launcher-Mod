@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import com.android.launcher66.CellLayout;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class MCellLayout extends CellLayout implements View.OnLongClickListener {
     public MCellLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -22,7 +21,7 @@ public class MCellLayout extends CellLayout implements View.OnLongClickListener 
         setOnLongClickListener(this);
     }
 
-    @Override // com.android.launcher66.CellLayout, android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int left = getPaddingLeft();
         int top = getPaddingTop();
@@ -33,17 +32,17 @@ public class MCellLayout extends CellLayout implements View.OnLongClickListener 
         }
     }
 
-    @Override // com.android.launcher66.CellLayout
+    @Override
     boolean existsEmptyCell() {
         return false;
     }
 
-    @Override // com.android.launcher66.CellLayout
+    @Override
     public boolean animateChildToPosition(View child, int cellX, int cellY, int duration, int delay, boolean permanent, boolean adjustOccupied) {
         return false;
     }
 
-    @Override // com.android.launcher66.CellLayout
+    @Override
     public boolean addViewToCellLayout(View child, int index, int childId, CellLayout.LayoutParams params, boolean markCells) {
         if (params.cellX < 0 || params.cellX > getCountX() || params.cellY < 0 || params.cellY > getCountY()) {
             return false;
@@ -61,12 +60,12 @@ public class MCellLayout extends CellLayout implements View.OnLongClickListener 
         return true;
     }
 
-    @Override // com.android.launcher66.CellLayout
+    @Override
     int[] createArea(int pixelX, int pixelY, int minSpanX, int minSpanY, int spanX, int spanY, View dragView, int[] result, int[] resultSpan, int mode) {
         return new int[]{-1, -1};
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         if (!(v instanceof MCellLayout) || Launcher.getWorkSpace().isInOverviewMode()) {
             return true;

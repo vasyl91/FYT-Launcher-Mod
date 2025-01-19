@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,9 +105,9 @@ public class FytPackage {
         Intent intent;
         if (pkg.equals(sysSetAction)) {
             intent = new Intent("android.settings.SETTINGS");
-            mainIntent = new Intent("android.settings.SETTINGS", (Uri) null);
+            mainIntent = new Intent("android.settings.SETTINGS", null);
         } else {
-            mainIntent = new Intent("android.intent.action.MAIN", (Uri) null);
+            mainIntent = new Intent("android.intent.action.MAIN", null);
             intent = new Intent("android.intent.action.MAIN");
         }
         mainIntent.setPackage(pkg);

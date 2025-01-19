@@ -5,28 +5,28 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 import android.os.SystemProperties;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0294_WC2_Toyota_All extends AirBase {
     public Air_0294_WC2_Toyota_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0020_xp1_camry2013/air_bnr_camry2013.webp";
         this.mPathHighlight = "0020_xp1_camry2013/air_bnr_camry2013_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -86,9 +86,9 @@ public class Air_0294_WC2_Toyota_All extends AirBase {
         } else if (temp == -3) {
             c.drawText("HIGH", 70.0f, 140.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 1704230 || DataCanbus.DATA[1000] == 2359590 || DataCanbus.DATA[1000] == 2425126 || DataCanbus.DATA[1000] == 2490662 || DataCanbus.DATA[1000] == 2556198 || DataCanbus.DATA[1000] == 2752806 || DataCanbus.DATA[1000] == 2818342) {
-            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 70.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 70.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 10.0f).toString(), 70.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 10.0f), 70.0f, 140.0f, this.mPaint);
         }
         int temp2 = this.DATA[50];
         if (temp2 == -1) {
@@ -98,9 +98,9 @@ public class Air_0294_WC2_Toyota_All extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HIGH", 920.0f, 140.0f, this.mPaint);
         } else if (DataCanbus.DATA[1000] == 1704230 || DataCanbus.DATA[1000] == 2359590 || DataCanbus.DATA[1000] == 2425126 || DataCanbus.DATA[1000] == 2490662 || DataCanbus.DATA[1000] == 2556198 || DataCanbus.DATA[1000] == 2752806 || DataCanbus.DATA[1000] == 2818342) {
-            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 920.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 920.0f, 140.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 10.0f).toString(), 920.0f, 140.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 10.0f), 920.0f, 140.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

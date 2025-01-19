@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PagedViewGridLayout extends GridLayout implements Page {
     static final String TAG = "PagedViewGridLayout";
     private int mCellCountX;
@@ -34,13 +33,13 @@ public class PagedViewGridLayout extends GridLayout implements Page {
         }
     }
 
-    @Override // android.widget.GridLayout, android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSpecSize = Math.min(getSuggestedMinimumWidth(), View.MeasureSpec.getSize(widthMeasureSpec));
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(widthSpecSize, MeasureSpec.EXACTLY), heightMeasureSpec);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.mOnLayoutListener = null;
@@ -50,7 +49,7 @@ public class PagedViewGridLayout extends GridLayout implements Page {
         this.mOnLayoutListener = r;
     }
 
-    @Override // android.widget.GridLayout, android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (this.mOnLayoutListener != null) {
@@ -58,7 +57,7 @@ public class PagedViewGridLayout extends GridLayout implements Page {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = super.onTouchEvent(event);
         int count = getPageChildCount();
@@ -70,29 +69,29 @@ public class PagedViewGridLayout extends GridLayout implements Page {
         return result;
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeAllViewsOnPage() {
         removeAllViews();
         this.mOnLayoutListener = null;
         setLayerType(View.LAYER_TYPE_NONE, null);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeViewOnPageAt(int index) {
         removeViewAt(index);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int getPageChildCount() {
         return getChildCount();
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public View getChildOnPageAt(int i) {
         return getChildAt(i);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int indexOfChildOnPage(View v) {
         return indexOfChild(v);
     }

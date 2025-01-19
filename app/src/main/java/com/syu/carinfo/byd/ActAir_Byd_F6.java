@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActAir_Byd_F6 extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.byd.ActAir_Byd_F6.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -53,10 +52,10 @@ public class ActAir_Byd_F6 extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_276_dj_bydf6);
+        ////setContentView(R.layout.layout_276_dj_bydf6);
         setListener();
     }
 
@@ -79,7 +78,7 @@ public class ActAir_Byd_F6 extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int cmdId = -1;
         switch (v.getId()) {
@@ -150,7 +149,7 @@ public class ActAir_Byd_F6 extends Activity implements View.OnTouchListener {
         DataCanbus.PROXY.cmd(0, cmdId, touchState);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -158,7 +157,7 @@ public class ActAir_Byd_F6 extends Activity implements View.OnTouchListener {
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();

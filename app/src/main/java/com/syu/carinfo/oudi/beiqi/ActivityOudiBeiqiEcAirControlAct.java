@@ -10,11 +10,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.beiqi.ActivityOudiBeiqiEcAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 7:
@@ -44,10 +43,10 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0227_rzc_19ec5_air_control);
+        //setContentView(R.layout.layout_0227_rzc_19ec5_air_control);
         init();
     }
 
@@ -64,7 +63,7 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         findViewById(R.id.air_xts_heat).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -72,7 +71,7 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -80,7 +79,7 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -146,7 +145,7 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMode() {
         int win = DataCanbus.DATA[12];
         int body = DataCanbus.DATA[14];
@@ -200,25 +199,25 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycleOn() {
         int power = DataCanbus.DATA[9];
         findViewById(R.id.air_xts_cycle).setBackgroundResource(power == 0 ? R.drawable.ic_xts_cycle_n : R.drawable.ic_xts_cycle_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateHeattOn() {
         int power = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_heat).setBackgroundResource(power == 0 ? R.drawable.ic_xts_heat_n : R.drawable.ic_xts_heat_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int power = DataCanbus.DATA[8];
         findViewById(R.id.air_xts_ac).setBackgroundResource(power == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int temp = DataCanbus.DATA[17] + 17;
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -226,13 +225,13 @@ public class ActivityOudiBeiqiEcAirControlAct extends Activity implements View.O
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[7];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[16];
         if (leave < 0) {

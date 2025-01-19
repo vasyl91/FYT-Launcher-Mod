@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_OUDI_Dongnan_all extends AirBase {
     public Air_0452_OUDI_Dongnan_all(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0452_oudi_dongnan/air_0452_dongnan.webp";
         this.mPathHighlight = "0452_oudi_dongnan/air_0452_dongnan_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -79,7 +79,7 @@ public class Air_0452_OUDI_Dongnan_all extends AirBase {
         } else if (temp == -1) {
             c.drawText("NONE", 39.0f, 65.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp * 5) + 155) / 10.0f).toString(), 39.0f, 65.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp * 5) + 155) / 10.0f), 39.0f, 65.0f, this.mPaint);
         }
         int temp2 = this.DATA[12];
         if (temp2 == -2) {
@@ -89,7 +89,7 @@ public class Air_0452_OUDI_Dongnan_all extends AirBase {
         } else if (temp2 == -1) {
             c.drawText("NONE", 954.0f, 65.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((temp2 * 5) + 155) / 10.0f).toString(), 954.0f, 65.0f, this.mPaint);
+            c.drawText(String.valueOf(((temp2 * 5) + 155) / 10.0f), 954.0f, 65.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

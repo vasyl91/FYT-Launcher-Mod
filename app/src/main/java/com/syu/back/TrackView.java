@@ -8,11 +8,14 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
+
 import androidx.core.internal.view.SupportMenu;
 import androidx.core.view.InputDeviceCompat;
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
 import com.syu.back.TrackUtils;
 
 public class TrackView extends View {
@@ -65,7 +68,7 @@ public class TrackView extends View {
         this.type = TrackUtils.TRACK_TYPE.BENZ;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         this.mWidth = getMeasuredWidth();
@@ -74,7 +77,7 @@ public class TrackView extends View {
         this.utils.setup(this.mWidth, this.mHeight);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.mWidth != 0 && this.mHeight != 0) {

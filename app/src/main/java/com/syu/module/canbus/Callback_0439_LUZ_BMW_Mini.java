@@ -1,11 +1,26 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_LUZ_BMW_Mini extends CallbackCanbusBase {
+    public static final int U_CARINF_D19_D0_B30 = 37;
+    public static final int U_CARINF_D19_D0_B6 = 36;
+    public static final int U_CARINF_D19_D0_B7 = 35;
+    public static final int U_CARINF_D19_D1_B0 = 45;
+    public static final int U_CARINF_D19_D1_B1 = 44;
+    public static final int U_CARINF_D19_D1_B2 = 43;
+    public static final int U_CARINF_D19_D1_B3 = 42;
+    public static final int U_CARINF_D19_D1_B4 = 41;
+    public static final int U_CARINF_D19_D1_B5 = 40;
+    public static final int U_CARINF_D19_D1_B6 = 39;
+    public static final int U_CARINF_D19_D1_B7 = 38;
+    public static final int U_CARINF_D19_D2_B0 = 46;
+    public static final int U_CARINF_D19_D3_B70 = 47;
+    public static final int U_CARINF_D19_D4_B70 = 48;
+    public static final int U_CARINF_D19_D5_B70 = 49;
     public static final int U_CARINF_D34_D0_B70 = 7;
     public static final int U_CARINF_D34_D1_B70 = 8;
     public static final int U_CARINF_D34_D2_D3 = 9;
@@ -28,17 +43,18 @@ public class Callback_0439_LUZ_BMW_Mini extends CallbackCanbusBase {
     public static final int U_CARINF_D38_D0_B5 = 19;
     public static final int U_CARINF_D38_D0_B6 = 18;
     public static final int U_CARINF_D38_D0_B7 = 17;
+    public static final int U_CARINF_D38_D1_B4 = 34;
     public static final int U_CARINF_D38_D1_B65 = 26;
     public static final int U_CARINF_D38_D1_B7 = 25;
     public static final int U_CARINF_D38_D2_B70 = 27;
     public static final int U_CARINF_D38_D3_D4 = 28;
     public static final int U_CARINF_D38_D5_B70 = 29;
-    public static final int U_CNT_MAX = 34;
+    public static final int U_CNT_MAX = 50;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 34; i++) {
+        for (int i = 0; i < 50; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -53,7 +69,7 @@ public class Callback_0439_LUZ_BMW_Mini extends CallbackCanbusBase {
         DoorHelper.getInstance().buildUi();
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -61,9 +77,9 @@ public class Callback_0439_LUZ_BMW_Mini extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 34) {
+        if (updateCode >= 0 && updateCode < 50) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

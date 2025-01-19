@@ -8,14 +8,13 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xp_374_AegeaIndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_geshitu_wc_index);
-        findViewById(R.id.wc_geshitu_btn_trip).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Xp_374_AegeaIndexActi.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_geshitu_wc_index);
+        findViewById(R.id.wc_geshitu_btn_trip).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -37,6 +36,9 @@ public class Xp_374_AegeaIndexActi extends BaseActivity {
                         case FinalCanbus.CAR_XP_Renault_05_17Duster /* 1180072 */:
                         case FinalCanbus.CAR_XP_Renault_20ARKANA /* 1245608 */:
                         case FinalCanbus.CAR_XP_Renault_15KOLEOS /* 1376680 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
                             intent.setClass(Xp_374_AegeaIndexActi.this, Xp_424_OilDisplayActi.class);
                             break;
                         default:
@@ -49,8 +51,8 @@ public class Xp_374_AegeaIndexActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.wc_geshitu_btn_setting).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Xp_374_AegeaIndexActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.wc_geshitu_btn_setting).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -74,6 +76,9 @@ public class Xp_374_AegeaIndexActi extends BaseActivity {
                         case FinalCanbus.CAR_XP_Renault_20Clio_Low /* 786856 */:
                         case FinalCanbus.CAR_XP_Renault_20Clio_M /* 1049000 */:
                         case FinalCanbus.CAR_XP_Renault_20Clio_H /* 1114536 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
+                        case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
                             intent.setClass(Xp_374_AegeaIndexActi.this, Activity_424_ClioFuncSet.class);
                             break;
                         default:
@@ -88,7 +93,7 @@ public class Xp_374_AegeaIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

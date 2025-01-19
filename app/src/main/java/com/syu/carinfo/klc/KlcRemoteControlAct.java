@@ -10,53 +10,52 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KlcRemoteControlAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.klc.KlcRemoteControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 32:
+                case 129:
                     updateRemoteLockFeedBack();
                     break;
-                case 33:
+                case 130:
                     updateRemoteUnLockFeedBack();
                     break;
-                case 34:
+                case 131:
                     updateRemoteLockSet();
                     break;
-                case 35:
+                case 132:
                     updateRemoteUnlockAutoLock();
                     break;
-                case 36:
+                case 133:
                     updateRelockRemoteOpenDoor();
                     break;
-                case 37:
+                case 134:
                     updateDriverKeyAutoShibie();
                     break;
-                case 38:
+                case 135:
                     updateYuanchengStartSet();
                     break;
-                case 39:
+                case 136:
                     updateNearCarUnlock();
                     break;
-                case 40:
+                case 137:
                     updateLeaveCarLock();
                     break;
-                case 41:
+                case 138:
                     updateForgetKey();
                     break;
-                case 42:
+                case 139:
                     updateRemoteHuayimenSet();
                     break;
-                case 70:
+                case 167:
                     updateRemoteWindowControl();
                     break;
             }
         }
 
         private void updateRemoteLockFeedBack() {
-            int val = DataCanbus.DATA[32];
+            int val = DataCanbus.DATA[129];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -80,7 +79,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRemoteUnLockFeedBack() {
-            int val = DataCanbus.DATA[33];
+            int val = DataCanbus.DATA[130];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -99,7 +98,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRemoteLockSet() {
-            int val = DataCanbus.DATA[34];
+            int val = DataCanbus.DATA[131];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -118,7 +117,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRemoteUnlockAutoLock() {
-            int val = DataCanbus.DATA[35];
+            int val = DataCanbus.DATA[132];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -130,7 +129,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRelockRemoteOpenDoor() {
-            int val = DataCanbus.DATA[36];
+            int val = DataCanbus.DATA[133];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -142,7 +141,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateDriverKeyAutoShibie() {
-            int val = DataCanbus.DATA[37];
+            int val = DataCanbus.DATA[134];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -154,7 +153,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateYuanchengStartSet() {
-            int val = DataCanbus.DATA[38];
+            int val = DataCanbus.DATA[135];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -166,7 +165,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateNearCarUnlock() {
-            int val = DataCanbus.DATA[39];
+            int val = DataCanbus.DATA[136];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -185,7 +184,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateLeaveCarLock() {
-            int val = DataCanbus.DATA[40];
+            int val = DataCanbus.DATA[137];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -205,7 +204,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateForgetKey() {
-            int val = DataCanbus.DATA[41];
+            int val = DataCanbus.DATA[138];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -217,7 +216,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRemoteHuayimenSet() {
-            int val = DataCanbus.DATA[42];
+            int val = DataCanbus.DATA[139];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -236,7 +235,7 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
 
         private void updateRemoteWindowControl() {
-            int val = DataCanbus.DATA[70];
+            int val = DataCanbus.DATA[167];
             int enable = (val >> 8) & 255;
             int switchOn = val & 255;
             if (enable == 0) {
@@ -248,10 +247,10 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_klc_remote_control_set);
+        //setContentView(R.layout.layout_klc_remote_control_set);
         setUI();
     }
 
@@ -272,12 +271,12 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
         ((CheckedTextView) findViewById(R.id.wc_weilang_remote_car_window_control_check)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.klc_remote_Remote_control_latch_pre /* 2131431993 */:
-                int valLatchPre = DataCanbus.DATA[32] & 255;
+            case R.id.klc_remote_Remote_control_latch_pre /* 2131431943 */:
+                int valLatchPre = DataCanbus.DATA[129] & 255;
                 if (valLatchPre == 0) {
                     KlcFunc.C_CAR_REMOTE(1, 3);
                     break;
@@ -291,8 +290,8 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
                     KlcFunc.C_CAR_REMOTE(1, 2);
                     break;
                 }
-            case R.id.klc_remote_Remote_control_latch_next /* 2131431995 */:
-                int valLatchNext = DataCanbus.DATA[32] & 255;
+            case R.id.klc_remote_Remote_control_latch_next /* 2131431945 */:
+                int valLatchNext = DataCanbus.DATA[129] & 255;
                 if (valLatchNext == 0) {
                     KlcFunc.C_CAR_REMOTE(1, 1);
                     break;
@@ -306,40 +305,40 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
                     KlcFunc.C_CAR_REMOTE(1, 0);
                     break;
                 }
-            case R.id.klc_btn_Remote_control_Unlock_Feedback_check /* 2131431997 */:
-                int valFeed = DataCanbus.DATA[33] & 255;
+            case R.id.klc_btn_Remote_control_Unlock_Feedback_check /* 2131431947 */:
+                int valFeed = DataCanbus.DATA[130] & 255;
                 KlcFunc.C_CAR_REMOTE(2, valFeed == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Remote_control_Unlock_check /* 2131432000 */:
-                int valUnlock = DataCanbus.DATA[34] & 255;
+            case R.id.klc_btn_Remote_control_Unlock_check /* 2131431950 */:
+                int valUnlock = DataCanbus.DATA[131] & 255;
                 KlcFunc.C_CAR_REMOTE(3, valUnlock == 0 ? 1 : 0);
                 break;
-            case R.id.klc_Remote_unlocking_doors_automatically_relock_check /* 2131432003 */:
-                int valRemoteAutoRelock = DataCanbus.DATA[35] & 255;
+            case R.id.klc_Remote_unlocking_doors_automatically_relock_check /* 2131431953 */:
+                int valRemoteAutoRelock = DataCanbus.DATA[132] & 255;
                 KlcFunc.C_CAR_REMOTE(4, valRemoteAutoRelock == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Re_opened_door_lock_Remote_control_check /* 2131432005 */:
-                int valReOpen = DataCanbus.DATA[36] & 255;
+            case R.id.klc_btn_Re_opened_door_lock_Remote_control_check /* 2131431955 */:
+                int valReOpen = DataCanbus.DATA[133] & 255;
                 KlcFunc.C_CAR_REMOTE(5, valReOpen == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Automatic_identification_key_driver_check /* 2131432007 */:
-                int valAutoKey = DataCanbus.DATA[37] & 255;
+            case R.id.klc_btn_Automatic_identification_key_driver_check /* 2131431957 */:
+                int valAutoKey = DataCanbus.DATA[134] & 255;
                 KlcFunc.C_CAR_REMOTE(6, valAutoKey == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Remote_Start_check /* 2131432009 */:
-                int valRemoteStart = DataCanbus.DATA[38] & 255;
+            case R.id.klc_btn_Remote_Start_check /* 2131431959 */:
+                int valRemoteStart = DataCanbus.DATA[135] & 255;
                 KlcFunc.C_CAR_REMOTE(7, valRemoteStart == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Smart_Near_car_unlocked_check /* 2131432011 */:
-                int valSmartNearUnlock = DataCanbus.DATA[39] & 255;
+            case R.id.klc_btn_Smart_Near_car_unlocked_check /* 2131431961 */:
+                int valSmartNearUnlock = DataCanbus.DATA[136] & 255;
                 KlcFunc.C_CAR_REMOTE(8, valSmartNearUnlock == 0 ? 1 : 0);
                 break;
-            case R.id.klc_btn_Forgotten_Keys_check /* 2131432014 */:
-                int valForgotKey = DataCanbus.DATA[41] & 255;
+            case R.id.klc_btn_Forgotten_Keys_check /* 2131431964 */:
+                int valForgotKey = DataCanbus.DATA[138] & 255;
                 KlcFunc.C_CAR_REMOTE(9, valForgotKey == 0 ? 1 : 0);
                 break;
-            case R.id.klc_Smart_from_the_car_latch_pre /* 2131432016 */:
-                int valSmartCarPre = DataCanbus.DATA[40] & 255;
+            case R.id.klc_Smart_from_the_car_latch_pre /* 2131431966 */:
+                int valSmartCarPre = DataCanbus.DATA[137] & 255;
                 if (valSmartCarPre == 0) {
                     KlcFunc.C_CAR_REMOTE(10, 2);
                     break;
@@ -350,8 +349,8 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
                     KlcFunc.C_CAR_REMOTE(10, 1);
                     break;
                 }
-            case R.id.klc_Smart_from_the_car_latch_next /* 2131432018 */:
-                int valSmartCarNext = DataCanbus.DATA[40] & 255;
+            case R.id.klc_Smart_from_the_car_latch_next /* 2131431968 */:
+                int valSmartCarNext = DataCanbus.DATA[137] & 255;
                 if (valSmartCarNext == 0) {
                     KlcFunc.C_CAR_REMOTE(10, 1);
                     break;
@@ -362,25 +361,25 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
                     KlcFunc.C_CAR_REMOTE(10, 0);
                     break;
                 }
-            case R.id.klc_remote_Remote_control_sliding_door_set_check /* 2131432020 */:
-                int valSilidSet = DataCanbus.DATA[42] & 255;
+            case R.id.klc_remote_Remote_control_sliding_door_set_check /* 2131431970 */:
+                int valSilidSet = DataCanbus.DATA[139] & 255;
                 KlcFunc.C_CAR_REMOTE(11, valSilidSet == 0 ? 1 : 0);
                 break;
-            case R.id.wc_weilang_remote_car_window_control_check /* 2131432023 */:
-                int value = DataCanbus.DATA[70] & 255;
+            case R.id.wc_weilang_remote_car_window_control_check /* 2131431973 */:
+                int value = DataCanbus.DATA[167] & 255;
                 KlcFunc.C_CAR_REMOTE(12, value == 0 ? 1 : 0);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         findViewById(R.id.wc_weilang_remote_car_window_control_view).setVisibility(0);
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -391,32 +390,32 @@ public class KlcRemoteControlAct extends Activity implements View.OnClickListene
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -8,12 +8,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoView4 extends View {
     private float angle;
     private int autoStep;
@@ -41,8 +41,8 @@ public class InfoView4 extends View {
         this.mini = 0;
         this.autoStep = 0;
         this.mPath = new Path();
-        this.speedH = new Handler() { // from class: com.syu.carinfo.golf7.InfoView4.1
-            @Override // android.os.Handler
+        this.speedH = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message msg) {
                 if (msg.what != 1) {
                     if (InfoView4.this.currenSpeed != InfoView4.this.targetSpeed) {
@@ -93,7 +93,7 @@ public class InfoView4 extends View {
         this.mPath.close();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.width = w;
@@ -131,7 +131,7 @@ public class InfoView4 extends View {
     protected void onDrawText() {
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.bg_digit != null) {
@@ -169,7 +169,7 @@ public class InfoView4 extends View {
         this.angle -= 122;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void speedanim() {
         if (this.currenSpeed >= 10) {
         }

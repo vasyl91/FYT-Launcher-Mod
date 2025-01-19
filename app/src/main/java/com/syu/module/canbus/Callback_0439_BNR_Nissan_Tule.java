@@ -1,53 +1,36 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0439_BNR_Nissan_Tule;
+//import com.syu.ui.air.Air_0439_BNR_Nissan_Tule;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_BNR_Nissan_Tule extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 9;
-    public static final int U_AIR_AUTO = 12;
-    public static final int U_AIR_BEGIN = 7;
-    public static final int U_AIR_BLOW_BODY = 16;
-    public static final int U_AIR_BLOW_FOOT = 17;
-    public static final int U_AIR_BLOW_MODE = 18;
-    public static final int U_AIR_BLOW_UP = 15;
-    public static final int U_AIR_CYCLE = 10;
-    public static final int U_AIR_DUAL = 13;
-    public static final int U_AIR_END = 23;
-    public static final int U_AIR_MAXFRONT = 14;
-    public static final int U_AIR_POWER = 8;
-    public static final int U_AIR_REAR_DEFROST = 11;
-    public static final int U_AIR_TEMP_LEFT = 20;
-    public static final int U_AIR_TEMP_RIGHT = 21;
-    public static final int U_AIR_TEMP_UNIT = 22;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 19;
-    public static final int U_CARINF_AVGFUEL = 36;
-    public static final int U_CARINF_BEGIN = 34;
-    public static final int U_CARINF_END = 39;
-    public static final int U_CARINF_MILEAGE = 35;
-    public static final int U_CARINF_TRAVELABLE = 37;
-    public static final int U_CAR_TIRE_BEGIN = 24;
-    public static final int U_CAR_TIRE_END = 33;
-    public static final int U_CAR_TIRE_VALUE_FL = 25;
-    public static final int U_CAR_TIRE_VALUE_FR = 26;
-    public static final int U_CAR_TIRE_VALUE_RL = 27;
-    public static final int U_CAR_TIRE_VALUE_RR = 28;
-    public static final int U_CAR_TIRE_WARN_FL = 29;
-    public static final int U_CAR_TIRE_WARN_FR = 30;
-    public static final int U_CAR_TIRE_WARN_RL = 31;
-    public static final int U_CAR_TIRE_WARN_RR = 32;
-    public static final int U_CNT_MAX = 40;
-    public static final int U_CUR_MOTOR_SPEED = 38;
+    public static final int U_CARINF_AVGFUEL = 110;
+    public static final int U_CARINF_BEGIN = 108;
+    public static final int U_CARINF_END = 113;
+    public static final int U_CARINF_MILEAGE = 109;
+    public static final int U_CARINF_TRAVELABLE = 111;
+    public static final int U_CAR_TIRE_BEGIN = 98;
+    public static final int U_CAR_TIRE_END = 107;
+    public static final int U_CAR_TIRE_VALUE_FL = 99;
+    public static final int U_CAR_TIRE_VALUE_FR = 100;
+    public static final int U_CAR_TIRE_VALUE_RL = 101;
+    public static final int U_CAR_TIRE_VALUE_RR = 102;
+    public static final int U_CAR_TIRE_WARN_FL = 103;
+    public static final int U_CAR_TIRE_WARN_FR = 104;
+    public static final int U_CAR_TIRE_WARN_RL = 105;
+    public static final int U_CAR_TIRE_WARN_RR = 106;
+    public static final int U_CNT_MAX = 114;
+    public static final int U_CUR_MOTOR_SPEED = 112;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 114; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -60,15 +43,15 @@ public class Callback_0439_BNR_Nissan_Tule extends CallbackCanbusBase {
         for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        AirHelper.getInstance().buildUi(new Air_0439_BNR_Nissan_Tule(LauncherApplication.getInstance()));
-        for (int i3 = 7; i3 < 23; i3++) {
+        //AirHelper.getInstance().buildUi(new Air_0439_BNR_Nissan_Tule(LauncherApplication.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 7; i < 23; i++) {
+        for (int i = 10; i < 97; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
@@ -78,9 +61,9 @@ public class Callback_0439_BNR_Nissan_Tule extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 40) {
+        if (updateCode >= 0 && updateCode < 114) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

@@ -7,24 +7,23 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OD_Zotye_T700_Pm25 extends BaseActivity {
-    int[] ids = {39, 40, 41, 42};
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.od.dongnanv5.OD_Zotye_T700_Pm25.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {110, 111, 112, 113};
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 39:
+                case 110:
                     OD_Zotye_T700_Pm25.this.uCarIn(value);
                     break;
-                case 40:
+                case 111:
                     OD_Zotye_T700_Pm25.this.uCarOut(value);
                     break;
-                case 41:
+                case 112:
                     OD_Zotye_T700_Pm25.this.uLevelIn(value);
                     break;
-                case 42:
+                case 113:
                     OD_Zotye_T700_Pm25.this.uLevelOut(value);
                     break;
             }
@@ -32,13 +31,13 @@ public class OD_Zotye_T700_Pm25 extends BaseActivity {
     };
     private int[] strIdPM = {R.string.str_265_2, R.string.str_265_3, R.string.str_265_4, R.string.str_265_5, R.string.str_265_6, R.string.str_265_7};
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_od_zotye_t700_pm25);
+        //setContentView(R.layout.layout_0452_od_zotye_t700_pm25);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.PROXY.cmd(2, new int[]{66}, null, null);
         for (int i : this.ids) {
@@ -46,7 +45,7 @@ public class OD_Zotye_T700_Pm25 extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);

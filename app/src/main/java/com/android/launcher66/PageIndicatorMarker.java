@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PageIndicatorMarker extends FrameLayout {
     private static final int MARKER_FADE_DURATION = 175;
     private static final String TAG = "PageIndicator";
@@ -27,7 +26,7 @@ public class PageIndicatorMarker extends FrameLayout {
         this.mIsActive = false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         this.mActiveMarker = (ImageView) findViewById(R.id.active);

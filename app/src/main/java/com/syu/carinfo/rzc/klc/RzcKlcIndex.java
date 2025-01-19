@@ -5,17 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import com.syu.canbus.R;
+import com.syu.carinfo.rzc.andra.GmAndraTireAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcIndex extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcIndex.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 71:
-                    int value = DataCanbus.DATA[71];
+                case 132:
+                    int value = DataCanbus.DATA[132];
                     if (value == 1) {
                         RzcKlcIndex.this.findViewById(R.id.layout_view1).setVisibility(0);
                         break;
@@ -27,10 +28,10 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_klc_index);
+        //setContentView(R.layout.layout_rzc_klc_index);
         setUI();
     }
 
@@ -41,13 +42,34 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
         findViewById(R.id.ctv_checkedtext6).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext1).setOnClickListener(this);
         findViewById(R.id.ctv_checkedtext2).setOnClickListener(this);
+        findViewById(R.id.ctv_checkedtext7).setOnClickListener(this);
+        findViewById(R.id.ctv_checkedtext8).setOnClickListener(this);
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_RZC_ALL_GM_22VELITE6_EV /* 7274557 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_22VELITE6_PHEV /* 7340093 */:
+                findViewById(R.id.layout_view7).setVisibility(0);
+                break;
+            default:
+                findViewById(R.id.layout_view7).setVisibility(8);
+                break;
+        }
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_RZC_ALL_GM_HUMMER_09_H2 /* 5308477 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban /* 7471165 */:
+            case FinalCanbus.CAR_RZC_ALL_GM_10_23Suburban_H /* 7536701 */:
+                findViewById(R.id.layout_view9).setVisibility(0);
+                break;
+            default:
+                findViewById(R.id.layout_view9).setVisibility(8);
+                break;
+        }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 try {
                     Intent intent = new Intent();
                     intent.setClass(this, RZCKlcEVCarInfo.class);
@@ -57,7 +79,7 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 try {
                     Intent intent2 = new Intent();
                     intent2.setClass(this, RZCKlcCarSet2.class);
@@ -67,7 +89,7 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e2.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
                 try {
                     Intent intent3 = new Intent();
                     intent3.setClass(this, RzcKlcCarSetAct.class);
@@ -77,7 +99,7 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e3.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
                 try {
                     Intent intent4 = new Intent();
                     intent4.setClass(this, RzcKlcAirAct.class);
@@ -87,7 +109,7 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e4.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
                 try {
                     Intent intent5 = new Intent();
                     intent5.setClass(this, RzcKlcComfortAct.class);
@@ -97,7 +119,7 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e5.printStackTrace();
                     return;
                 }
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
                 try {
                     Intent intent6 = new Intent();
                     intent6.setClass(this, RzcKlcOnStarAct.class);
@@ -107,16 +129,48 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
                     e6.printStackTrace();
                     return;
                 }
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                try {
+                    Intent intent7 = new Intent();
+                    intent7.setClass(this, RZCChargeIndexAct.class);
+                    startActivity(intent7);
+                    break;
+                } catch (Exception e7) {
+                    e7.printStackTrace();
+                    return;
+                }
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                try {
+                    Intent intent8 = new Intent();
+                    intent8.setClass(this, GmAndraTireAct.class);
+                    startActivity(intent8);
+                    break;
+                } catch (Exception e8) {
+                    e8.printStackTrace();
+                    return;
+                }
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                try {
+                    Intent intent9 = new Intent();
+                    intent9.setClass(this, RZCKlcCarAmpSet.class);
+                    startActivity(intent9);
+                    break;
+                } catch (Exception e9) {
+                    e9.printStackTrace();
+                    return;
+                }
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
+        DataCanbus.PROXY.cmd(8, new int[]{67}, null, null);
+        DataCanbus.PROXY.cmd(8, new int[]{6}, null, null);
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -127,10 +181,10 @@ public class RzcKlcIndex extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
     }
 }

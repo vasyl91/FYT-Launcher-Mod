@@ -7,14 +7,13 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcInfeonidiIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_infinit_indexact);
+        //setContentView(R.layout.layout_infinit_indexact);
         findViewById(R.id.layout_view1).setVisibility(8);
-        if (DataCanbus.DATA[1000] == 5308859 || DataCanbus.DATA[1000] == 8651195) {
+        if (DataCanbus.DATA[1000] == 5308859 || DataCanbus.DATA[1000] == 8651195 || DataCanbus.DATA[1000] == 15204795) {
             findViewById(R.id.layout_view1).setVisibility(0);
         }
         if (DataCanbus.DATA[1000] == 7209403) {
@@ -22,12 +21,12 @@ public class WcInfeonidiIndexAct extends BaseActivity {
         } else {
             findViewById(R.id.layout_view2).setVisibility(0);
         }
-        findViewById(R.id.jeep_car_info).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_info).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[1000] == 5308859 || DataCanbus.DATA[1000] == 8651195 || DataCanbus.DATA[1000] == 1507771 || DataCanbus.DATA[1000] == 7209403) {
+                    if (DataCanbus.DATA[1000] == 5308859 || DataCanbus.DATA[1000] == 8651195 || DataCanbus.DATA[1000] == 1507771 || DataCanbus.DATA[1000] == 7209403 || DataCanbus.DATA[1000] == 15204795) {
                         intent.setClass(WcInfeonidiIndexAct.this, WcInfeinidiEQSet.class);
                     } else {
                         intent.setClass(WcInfeonidiIndexAct.this, WcInfinitCarInfo.class);
@@ -38,8 +37,8 @@ public class WcInfeonidiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -50,8 +49,8 @@ public class WcInfeonidiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -62,12 +61,12 @@ public class WcInfeonidiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_air).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_air).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[104] == 2) {
+                    if (DataCanbus.DATA[156] == 2) {
                         intent.setClass(WcInfeonidiIndexAct.this, WcInfinitCarCD.class);
                     } else {
                         intent.setClass(WcInfeonidiIndexAct.this, WcInfinitCarRadio.class);

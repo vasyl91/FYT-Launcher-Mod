@@ -11,41 +11,40 @@ import com.syu.carinfo.xfl.chuangku.XflCkFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class SO3AirAct extends Activity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.saiou3.SO3AirAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 97:
                     SO3AirAct.this.updaterAutoModeWild();
                     break;
-                case 1:
+                case 98:
                     SO3AirAct.this.updaterAirQuality();
                     break;
-                case 2:
+                case 99:
                     SO3AirAct.this.updaterZoonTemp();
                     break;
-                case 3:
+                case 100:
                     SO3AirAct.this.updaterRearWindowDefog();
                     break;
-                case 4:
+                case 101:
                     SO3AirAct.this.updaterFrontWindowDefog();
                     break;
-                case 5:
+                case 102:
                     SO3AirAct.this.mUpdateBackAirState();
                     break;
-                case 6:
+                case 103:
                     SO3AirAct.this.updaterAirStartMode();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_sb_so3_air_set);
+        //setContentView(R.layout.layout_sb_so3_air_set);
         setUI();
     }
 
@@ -64,11 +63,11 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.xfl_ck_back_air_start_mode_next)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.xfl_ck_btn_Auto_air_volume_pre /* 2131432881 */:
-                int AutoModeWildState = DataCanbus.DATA[0];
+            case R.id.xfl_ck_btn_Auto_air_volume_pre /* 2131432807 */:
+                int AutoModeWildState = DataCanbus.DATA[97];
                 if (AutoModeWildState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(0, 2);
                     break;
@@ -79,8 +78,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(0, 1);
                     break;
                 }
-            case R.id.xfl_ck_btn_Auto_air_volume_next /* 2131432883 */:
-                int AutoModeWildState2 = DataCanbus.DATA[0];
+            case R.id.xfl_ck_btn_Auto_air_volume_next /* 2131432809 */:
+                int AutoModeWildState2 = DataCanbus.DATA[97];
                 if (AutoModeWildState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(0, 1);
                     break;
@@ -91,8 +90,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(0, 0);
                     break;
                 }
-            case R.id.xfl_ck_air_Air_quality_sensor_pre /* 2131432884 */:
-                int AirQualityState = DataCanbus.DATA[1];
+            case R.id.xfl_ck_air_Air_quality_sensor_pre /* 2131432810 */:
+                int AirQualityState = DataCanbus.DATA[98];
                 if (AirQualityState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(1, 2);
                     break;
@@ -103,8 +102,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(1, 1);
                     break;
                 }
-            case R.id.xfl_ck_air_Air_quality_sensor_next /* 2131432886 */:
-                int AirQualityState2 = DataCanbus.DATA[1];
+            case R.id.xfl_ck_air_Air_quality_sensor_next /* 2131432812 */:
+                int AirQualityState2 = DataCanbus.DATA[98];
                 if (AirQualityState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(1, 1);
                     break;
@@ -115,8 +114,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(1, 0);
                     break;
                 }
-            case R.id.xfl_ck_air_Auto_zone_climate_control_pre /* 2131432887 */:
-                int ZoonTempState = DataCanbus.DATA[2];
+            case R.id.xfl_ck_air_Auto_zone_climate_control_pre /* 2131432813 */:
+                int ZoonTempState = DataCanbus.DATA[99];
                 if (ZoonTempState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(2, 2);
                     break;
@@ -127,8 +126,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(2, 1);
                     break;
                 }
-            case R.id.xfl_ck_air_Auto_zone_climate_control_next /* 2131432889 */:
-                int ZoonTempState2 = DataCanbus.DATA[2];
+            case R.id.xfl_ck_air_Auto_zone_climate_control_next /* 2131432815 */:
+                int ZoonTempState2 = DataCanbus.DATA[99];
                 if (ZoonTempState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(2, 1);
                     break;
@@ -139,14 +138,14 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(2, 0);
                     break;
                 }
-            case R.id.xfl_ck_air_rear_window_auto_foggest_check /* 2131432890 */:
-                XflCkFunc.CAR_AIR_CONTROL(5, DataCanbus.DATA[3] != 0 ? 0 : 1);
+            case R.id.xfl_ck_air_rear_window_auto_foggest_check /* 2131432816 */:
+                XflCkFunc.CAR_AIR_CONTROL(5, DataCanbus.DATA[100] != 0 ? 0 : 1);
                 break;
-            case R.id.xfl_ck_air_front_window_auto_foggest_check /* 2131432891 */:
-                XflCkFunc.CAR_AIR_CONTROL(6, DataCanbus.DATA[4] != 0 ? 0 : 1);
+            case R.id.xfl_ck_air_front_window_auto_foggest_check /* 2131432817 */:
+                XflCkFunc.CAR_AIR_CONTROL(6, DataCanbus.DATA[101] != 0 ? 0 : 1);
                 break;
-            case R.id.xfl_ck_air_start_mode_pre /* 2131432892 */:
-                int AirStartModeState = DataCanbus.DATA[6];
+            case R.id.xfl_ck_air_start_mode_pre /* 2131432818 */:
+                int AirStartModeState = DataCanbus.DATA[103];
                 if (AirStartModeState == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(3, 2);
                     break;
@@ -157,8 +156,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(3, 1);
                     break;
                 }
-            case R.id.xfl_ck_air_start_mode_next /* 2131432894 */:
-                int AirStartModeState2 = DataCanbus.DATA[6];
+            case R.id.xfl_ck_air_start_mode_next /* 2131432820 */:
+                int AirStartModeState2 = DataCanbus.DATA[103];
                 if (AirStartModeState2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(3, 1);
                     break;
@@ -169,8 +168,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(3, 0);
                     break;
                 }
-            case R.id.xfl_ck_back_air_start_mode_pre /* 2131432895 */:
-                int mBackAir = DataCanbus.DATA[5];
+            case R.id.xfl_ck_back_air_start_mode_pre /* 2131432821 */:
+                int mBackAir = DataCanbus.DATA[102];
                 if (mBackAir == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(4, 2);
                     break;
@@ -181,8 +180,8 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_AIR_CONTROL(4, 1);
                     break;
                 }
-            case R.id.xfl_ck_back_air_start_mode_next /* 2131432897 */:
-                int mBackAir2 = DataCanbus.DATA[5];
+            case R.id.xfl_ck_back_air_start_mode_next /* 2131432823 */:
+                int mBackAir2 = DataCanbus.DATA[102];
                 if (mBackAir2 == 0) {
                     XflCkFunc.CAR_AIR_CONTROL(4, 2);
                     break;
@@ -196,13 +195,13 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
@@ -213,28 +212,28 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAutoModeWild() {
-        int AutoModeWildState = DataCanbus.DATA[0];
+        int AutoModeWildState = DataCanbus.DATA[97];
         if (AutoModeWildState == 0) {
             ((TextView) findViewById(R.id.xfl_ck_air_Automatic_air_volume_Tv)).setText(R.string.klc_air_low);
         } else if (AutoModeWildState == 1) {
@@ -244,9 +243,9 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirQuality() {
-        int AirQualityState = DataCanbus.DATA[1];
+        int AirQualityState = DataCanbus.DATA[98];
         if (AirQualityState == 0) {
             ((TextView) findViewById(R.id.xfl_ck_air_Air_quality_sensor_TV)).setText(R.string.klc_air_Low_sensitivity);
         } else if (AirQualityState == 1) {
@@ -256,9 +255,9 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterZoonTemp() {
-        int ZoonTempState = DataCanbus.DATA[2];
+        int ZoonTempState = DataCanbus.DATA[99];
         if (ZoonTempState == 0) {
             ((TextView) findViewById(R.id.xfl_ck_air_Auto_zone_climate_control_TV)).setText(R.string.klc_air_Auto_zone_climate_controlUni_form_Set);
         } else if (ZoonTempState == 1) {
@@ -268,21 +267,21 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterRearWindowDefog() {
-        int RearWindowAutoState = DataCanbus.DATA[3];
+        int RearWindowAutoState = DataCanbus.DATA[100];
         ((CheckedTextView) findViewById(R.id.xfl_ck_air_rear_window_auto_foggest_check)).setChecked(RearWindowAutoState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFrontWindowDefog() {
-        int FrontWindowAutoState = DataCanbus.DATA[4];
+        int FrontWindowAutoState = DataCanbus.DATA[101];
         ((CheckedTextView) findViewById(R.id.xfl_ck_air_front_window_auto_foggest_check)).setChecked(FrontWindowAutoState != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAirStartMode() {
-        int AirStartModeState = DataCanbus.DATA[6];
+        int AirStartModeState = DataCanbus.DATA[103];
         if (AirStartModeState == 0) {
             ((TextView) findViewById(R.id.xfl_ck_air_start_mode_Tv)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (AirStartModeState == 1) {
@@ -292,9 +291,9 @@ public class SO3AirAct extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateBackAirState() {
-        int mBackAir = DataCanbus.DATA[5];
+        int mBackAir = DataCanbus.DATA[102];
         if (mBackAir == 0) {
             ((TextView) findViewById(R.id.xfl_ck_back_air_start_mode_Tv)).setText(R.string.klc_Parking_with_trailer_Off);
         } else if (mBackAir == 1) {

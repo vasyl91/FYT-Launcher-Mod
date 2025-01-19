@@ -3,12 +3,13 @@ package com.syu.remote;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Callback extends IModuleCallback.Stub {
     List<Lisenter> mLisenters = new ArrayList();
     Handler mHandler = new Handler(Looper.getMainLooper());
@@ -23,7 +24,7 @@ public class Callback extends IModuleCallback.Stub {
         }
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         Massage state = new Massage(updateCode, ints, flts, strs);
         state.refresh();
@@ -40,7 +41,7 @@ public class Callback extends IModuleCallback.Stub {
         Iterator<Lisenter> iterator = new ArrayList(this.mLisenters).iterator();
         while (iterator.hasNext()) {
             Lisenter lisenter = iterator.next();
-            if (lisenter.lisenter.equals(mLisenter) && this.mLisenters.contains(lisenter)) {
+            if (lisenter.lisenter.equals(mLisenter)) {
                 this.mLisenters.remove(lisenter);
             }
         }
@@ -67,8 +68,8 @@ public class Callback extends IModuleCallback.Stub {
         int code;
         float[] flts;
         int[] ints;
-        Runnable refesh = new Runnable() { // from class: com.syu.remote.Callback.Massage.1
-            @Override // java.lang.Runnable
+        Runnable refesh = new Runnable() { 
+            @Override
             public void run() {
                 for (Lisenter lisenter : Callback.this.mLisenters) {
                     if (lisenter.code == Massage.this.code) {

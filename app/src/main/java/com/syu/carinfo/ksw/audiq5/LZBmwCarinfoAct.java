@@ -10,12 +10,11 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LZBmwCarinfoAct extends Activity {
     public static LZBmwCarinfoAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.ksw.audiq5.LZBmwCarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = R.drawable.ic_bmw_dashboard_car_null;
             switch (updateCode) {
@@ -73,8 +72,8 @@ public class LZBmwCarinfoAct extends Activity {
                     }
                     imageView6.setImageDrawable(resources6.getDrawable(i));
                     break;
-                case 12:
-                    int value7 = DataCanbus.DATA[12];
+                case 103:
+                    int value7 = DataCanbus.DATA[103];
                     if (value7 == 1) {
                         ((TextView) LZBmwCarinfoAct.this.findViewById(R.id.txt_car_handbrake_state)).setText(R.string.str_handbrake_pulled_up);
                     } else {
@@ -82,17 +81,17 @@ public class LZBmwCarinfoAct extends Activity {
                     }
                     ((ImageView) LZBmwCarinfoAct.this.findViewById(R.id.image_car_handbrake)).setImageDrawable(LZBmwCarinfoAct.this.getResources().getDrawable(value7 == 1 ? R.drawable.ic_bmw_dashboard_car_handbrake_p : R.drawable.ic_bmw_dashboard_car_handbrake));
                     break;
-                case 15:
-                case 19:
+                case 106:
+                case 110:
                     LZBmwCarinfoAct.this.updateSpeed();
                     break;
-                case 16:
-                    int value8 = DataCanbus.DATA[16];
+                case 107:
+                    int value8 = DataCanbus.DATA[107];
                     ((TextView) LZBmwCarinfoAct.this.findViewById(R.id.txt_car_engine_speed)).setText(String.valueOf(value8) + " rpm");
                     ((InfoView) LZBmwCarinfoAct.this.findViewById(R.id.infoView_enginespeed)).setSpeed(value8);
                     break;
-                case 47:
-                    int value9 = DataCanbus.DATA[47];
+                case 116:
+                    int value9 = DataCanbus.DATA[116];
                     if (value9 == 1) {
                         ((TextView) LZBmwCarinfoAct.this.findViewById(R.id.txt_car_belt_state)).setText(R.string.str_seat_belt_tied);
                     } else {
@@ -104,14 +103,14 @@ public class LZBmwCarinfoAct extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_lz_bmw_dashboard);
+        //setContentView(R.layout.layout_lz_bmw_dashboard);
         mInstance = this;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -119,7 +118,7 @@ public class LZBmwCarinfoAct extends Activity {
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -128,37 +127,37 @@ public class LZBmwCarinfoAct extends Activity {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeed() {
-        int speed = DataCanbus.DATA[15];
-        int unit = DataCanbus.DATA[19];
+        int speed = DataCanbus.DATA[106];
+        int unit = DataCanbus.DATA[110];
         switch (unit) {
             case 0:
                 ((InfoView2) findViewById(R.id.infoView_speed)).setSpeed(speed);

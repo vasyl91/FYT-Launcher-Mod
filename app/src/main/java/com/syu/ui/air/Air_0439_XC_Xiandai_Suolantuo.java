@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_XC_Xiandai_Suolantuo extends AirBase {
     public Air_0439_XC_Xiandai_Suolantuo(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0355_xp_qiyak5/air_xp_qiya_k5_n.webp";
         this.mPathHighlight = "0355_xp_qiyak5/air_xp_qiya_k5_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -71,7 +71,7 @@ public class Air_0439_XC_Xiandai_Suolantuo extends AirBase {
         } else if (left_temp == -1) {
             c.drawText("No", 70.0f, 55.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 2.0f).toString(), 70.0f, 55.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 2.0f), 70.0f, 55.0f, this.mPaint);
         }
         int right_temp = this.DATA[13];
         if (right_temp == -2) {
@@ -81,7 +81,7 @@ public class Air_0439_XC_Xiandai_Suolantuo extends AirBase {
         } else if (right_temp == -1) {
             c.drawText("No", 930.0f, 55.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(right_temp / 2.0f).toString(), 930.0f, 55.0f, this.mPaint);
+            c.drawText(String.valueOf(right_temp / 2.0f), 930.0f, 55.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

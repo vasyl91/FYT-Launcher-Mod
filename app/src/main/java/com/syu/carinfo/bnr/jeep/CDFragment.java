@@ -7,33 +7,32 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CDFragment extends BaseFragment implements View.OnClickListener {
     int currentindex;
     String currenttime;
     private int cycle;
-    int[] ids = {111, 112, 113, 114, 115, 116};
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bnr.jeep.CDFragment.1
-        @Override // com.syu.module.IUiNotify
+    int[] ids = {180, 181, 182, 183, 184, 185};
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             CDFragment.this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 111:
+                case 180:
                     CDFragment.this.uCDState(CDFragment.this.value);
                     break;
-                case 112:
+                case 181:
                     CDFragment.this.uCDPlayMode(CDFragment.this.value);
                     break;
-                case 113:
+                case 182:
                     CDFragment.this.uCDCurrentIndex(CDFragment.this.value);
                     break;
-                case 114:
+                case 183:
                     CDFragment.this.uCDPlayTime(CDFragment.this.value);
                     break;
-                case 115:
+                case 184:
                     CDFragment.this.uCDPlayTotalTime(CDFragment.this.value);
                     break;
-                case 116:
+                case 185:
                     CDFragment.this.uCDTotalIndex(CDFragment.this.value);
                     break;
             }
@@ -44,7 +43,7 @@ public class CDFragment extends BaseFragment implements View.OnClickListener {
     String totaltime;
     private int value;
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void initView() {
         bindViewOnClick(R.id.jeep_btn_prev, this);
         bindViewOnClick(R.id.jeep_btn_play, this);
@@ -52,19 +51,19 @@ public class CDFragment extends BaseFragment implements View.OnClickListener {
         bindViewOnClick(R.id.jeep_btn_next, this);
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public int getViewLayout() {
         return R.layout.layout_0117_bnr_ziyouguang_cd;
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void addNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].addNotify(this.mNotifyCanbus, 1);
         }
     }
 
-    @Override // com.syu.canbus.BaseFragment
+    @Override
     public void removeNotify() {
         for (int i : this.ids) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(this.mNotifyCanbus);
@@ -139,25 +138,25 @@ public class CDFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.jeep_cycle_info /* 2131427572 */:
+            case R.id.jeep_cycle_info /* 2131427582 */:
                 setcmd(this.cycle == 0 ? 14 : 15);
                 break;
-            case R.id.jeep_random_info /* 2131427573 */:
+            case R.id.jeep_random_info /* 2131427583 */:
                 setcmd(this.random == 0 ? 9 : 10);
                 break;
-            case R.id.jeep_btn_prev /* 2131427574 */:
+            case R.id.jeep_btn_prev /* 2131427584 */:
                 setcmd(3);
                 break;
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 setcmd(2);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 setcmd(1);
                 break;
-            case R.id.jeep_btn_next /* 2131427577 */:
+            case R.id.jeep_btn_next /* 2131427587 */:
                 setcmd(4);
                 break;
         }

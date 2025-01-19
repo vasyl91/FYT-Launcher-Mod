@@ -13,7 +13,6 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RadioRuler extends View {
     public static int MAX_ALL_RULER;
     public static int MAX_ALL_RULER_REAL;
@@ -37,8 +36,8 @@ public class RadioRuler extends View {
     public int mXBak;
     public static int STARTPOINT = 0;
     public static int ERACHROAD = 0;
-    public static final ICallback mRulerListener = new ICallback() { // from class: com.syu.carinfo.focus.yl.RadioRuler.1
-        @Override // com.syu.carinfo.focus.yl.RadioRuler.ICallback
+    public static final ICallback mRulerListener = new ICallback() { 
+        @Override
         public void uiChange(float ratio) {
             if (ratio >= 0.0f && ratio <= 1.0f) {
                 String str = "";
@@ -54,7 +53,7 @@ public class RadioRuler extends View {
             }
         }
 
-        @Override // com.syu.carinfo.focus.yl.RadioRuler.ICallback
+        @Override
         public void cmdChange(int cur, int max) {
             int step = (((ActivityRadio.mFreqMax - ActivityRadio.mFreqMin) / ActivityRadio.mFreqStep) * cur) / max;
             int freq = (ActivityRadio.mFreqStep * step) + ActivityRadio.mFreqMin;
@@ -177,7 +176,7 @@ public class RadioRuler extends View {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mAction = event.getAction();
         if (this.mAction == 0) {
@@ -211,7 +210,7 @@ public class RadioRuler extends View {
         return true;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         if (this.mBitmapNumber != null) {
             canvas.drawBitmap(this.mBitmapNumber, 0.0f, this.DRAW_NUMBER_Y, (Paint) null);

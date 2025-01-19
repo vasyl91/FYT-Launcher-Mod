@@ -9,15 +9,15 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAJeepAirControlAct_SP mInstance;
     public static boolean mIsFront = false;
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAJeepAirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -96,12 +96,12 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
                 case 67:
                     PAJeepAirControlAct_SP.this.mUpdateRearLockOn();
                     break;
-                case 399:
+                case 411:
                     if (PAJeepAirControlAct_SP.this.findViewById(R.id.air_pa_jeep_aux) != null) {
                         PAJeepAirControlAct_SP.this.findViewById(R.id.air_pa_jeep_aux).setBackgroundResource(value == 0 ? R.drawable.ic_air_pa_jeep_aux_n : R.drawable.ic_air_pa_jeep_aux_p);
                         break;
                     }
-                case 400:
+                case 412:
                     if (PAJeepAirControlAct_SP.this.findViewById(R.id.air_pa_jeep_seatback_left) != null) {
                         switch (value) {
                             case 0:
@@ -119,7 +119,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
                         }
                     }
                     break;
-                case 401:
+                case 413:
                     if (PAJeepAirControlAct_SP.this.findViewById(R.id.air_pa_jeep_seatback_right) != null) {
                         switch (value) {
                             case 0:
@@ -149,13 +149,13 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         DataCanbus.PROXY.cmd(8, new int[]{data0}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 2031990 || DataCanbus.DATA[1000] == 2294134 || DataCanbus.DATA[1000] == 2359670) {
-            setContentView(R.layout.layout_0374_pa_jeep_13gmc_air_sp);
+            //setContentView(R.layout.layout_0374_pa_jeep_13gmc_air_sp);
         } else {
-            setContentView(R.layout.layout_0374_pa_jeep_air_sp);
+            //setContentView(R.layout.layout_0374_pa_jeep_air_sp);
         }
         init();
         mInstance = this;
@@ -205,7 +205,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -213,7 +213,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -221,7 +221,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -291,19 +291,19 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data0 = 23;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data0 = 13;
-                break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 data0 = 9;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 11;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 14;
                 break;
-            case R.id.tv_sp_front /* 2131427929 */:
+            case R.id.air_xts_dual /* 2131427566 */:
+                data0 = 13;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 11;
+                break;
+            case R.id.tv_sp_front /* 2131427932 */:
                 this.pagenum = 0;
                 findViewById(R.id.veiw_air_front).setVisibility(0);
                 findViewById(R.id.veiw_air_rear).setVisibility(8);
@@ -311,7 +311,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
                 ((TextView) findViewById(R.id.tv_sp_rear)).setTextColor(Color.parseColor("#666666"));
                 mUpdatePowerOn();
                 break;
-            case R.id.tv_sp_rear /* 2131427930 */:
+            case R.id.tv_sp_rear /* 2131427933 */:
                 this.pagenum = 1;
                 findViewById(R.id.veiw_air_front).setVisibility(8);
                 findViewById(R.id.veiw_air_rear).setVisibility(0);
@@ -319,39 +319,39 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
                 ((TextView) findViewById(R.id.tv_sp_rear)).setTextColor(Color.parseColor("#ffffff"));
                 mUpdatePowerOn();
                 break;
-            case R.id.air_pa_jeep_seatback_left /* 2131427932 */:
+            case R.id.air_pa_jeep_seatback_left /* 2131427935 */:
                 data0 = 32;
                 break;
-            case R.id.air_pa_jeep_aux /* 2131427933 */:
+            case R.id.air_pa_jeep_aux /* 2131427936 */:
                 data0 = 34;
                 break;
-            case R.id.air_pa_jeep_seatback_right /* 2131427934 */:
+            case R.id.air_pa_jeep_seatback_right /* 2131427937 */:
                 data0 = 33;
                 break;
-            case R.id.air_pa_jeep_auto_rear /* 2131427937 */:
+            case R.id.air_pa_jeep_auto_rear /* 2131427940 */:
                 data0 = 2;
                 break;
-            case R.id.air_pa_jeep_temp_left_plus_rear /* 2131427938 */:
-            case R.id.air_pa_jeep_temp_right_plus_rear /* 2131427942 */:
+            case R.id.air_pa_jeep_temp_left_plus_rear /* 2131427941 */:
+            case R.id.air_pa_jeep_temp_right_plus_rear /* 2131427945 */:
                 data0 = 4;
                 break;
-            case R.id.air_pa_jeep_temp_left_munits_rear /* 2131427940 */:
-            case R.id.air_pa_jeep_temp_right_munits_rear /* 2131427944 */:
+            case R.id.air_pa_jeep_temp_left_munits_rear /* 2131427943 */:
+            case R.id.air_pa_jeep_temp_right_munits_rear /* 2131427947 */:
                 data0 = 5;
                 break;
-            case R.id.air_pa_jeep_mode_foot_rear /* 2131427945 */:
+            case R.id.air_pa_jeep_mode_foot_rear /* 2131427948 */:
                 data0 = 10;
                 break;
-            case R.id.air_pa_jeep_mode_body_rear /* 2131427946 */:
+            case R.id.air_pa_jeep_mode_body_rear /* 2131427949 */:
                 data0 = 8;
                 break;
-            case R.id.air_pa_jeep_mode_footbody_rear /* 2131427947 */:
+            case R.id.air_pa_jeep_mode_footbody_rear /* 2131427950 */:
                 data0 = 9;
                 break;
-            case R.id.air_pa_jeep_wind_minuts_rear /* 2131427948 */:
+            case R.id.air_pa_jeep_wind_minuts_rear /* 2131427951 */:
                 data0 = 7;
                 break;
-            case R.id.air_pa_jeep_wind_plus_rear /* 2131427950 */:
+            case R.id.air_pa_jeep_wind_plus_rear /* 2131427953 */:
                 data0 = 6;
                 break;
         }
@@ -393,9 +393,9 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[399].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[400].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[401].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[411].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[412].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[413].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
@@ -426,24 +426,24 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[399].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[400].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[401].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[411].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[412].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[413].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
         int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_air_pa_jeep_front_n : R.drawable.ic_air_pa_jeep_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
         int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_air_pa_jeep_rear_n : R.drawable.ic_air_pa_jeep_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight() {
         int value = DataCanbus.DATA[32];
         switch (value) {
@@ -462,7 +462,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
         int value = DataCanbus.DATA[30];
         switch (value) {
@@ -481,7 +481,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
         int value = DataCanbus.DATA[29];
         switch (value) {
@@ -500,7 +500,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft() {
         int value = DataCanbus.DATA[31];
         switch (value) {
@@ -519,19 +519,19 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
         int power = DataCanbus.DATA[53];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_maxac_n : R.drawable.ic_air_pa_jeep_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSteerHotOn() {
         int acOn = DataCanbus.DATA[66];
         findViewById(R.id.air_xts_steer_hot).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_steer_n : R.drawable.ic_air_pa_jeep_steer_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
         int cycle = DataCanbus.DATA[12];
         if (cycle == 0) {
@@ -541,37 +541,37 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
         int acOn = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_dual_n : R.drawable.ic_air_pa_jeep_dual_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
         int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_auto_n : R.drawable.ic_air_pa_jeep_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
         int acOn = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_rearlock_n : R.drawable.ic_air_pa_jeep_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearAutoOn() {
         int acOn = DataCanbus.DATA[43];
         findViewById(R.id.air_pa_jeep_auto_rear).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_rearauto_n : R.drawable.ic_air_pa_jeep_rearauto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
         int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_ac_n : R.drawable.ic_air_pa_jeep_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
         int power = DataCanbus.DATA[10];
         if (this.pagenum == 1) {
@@ -580,7 +580,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_power_n : R.drawable.ic_air_pa_jeep_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRear() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[40];
@@ -621,7 +621,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[27];
@@ -655,7 +655,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
         int unit = DataCanbus.DATA[37];
         int temp = DataCanbus.DATA[28];
@@ -689,72 +689,120 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelRear() {
         int leave = DataCanbus.DATA[44];
-        switch (leave) {
-            case 0:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
-                break;
-            case 1:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind1);
-                break;
-            case 2:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind2);
-                break;
-            case 3:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind3);
-                break;
-            case 4:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind4);
-                break;
-            case 5:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind5);
-                break;
-            case 6:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind6);
-                break;
-            case 7:
-                findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind7);
-                break;
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_PA_RAM_13_18_Low_win4 /* 5177718 */:
+                if (leave > 4) {
+                    leave = 4;
+                }
+                switch (leave) {
+                    case 0:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind0);
+                        break;
+                    case 1:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind1);
+                        break;
+                    case 2:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind2);
+                        break;
+                    case 3:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind3);
+                        break;
+                    case 4:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind4);
+                        break;
+                }
+            default:
+                switch (leave) {
+                    case 0:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
+                        break;
+                    case 1:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind1);
+                        break;
+                    case 2:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind2);
+                        break;
+                    case 3:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind3);
+                        break;
+                    case 4:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind4);
+                        break;
+                    case 5:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind5);
+                        break;
+                    case 6:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind6);
+                        break;
+                    case 7:
+                        findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind7);
+                        break;
+                }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int leave = DataCanbus.DATA[21];
-        switch (leave) {
-            case 0:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
-                break;
-            case 1:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind1);
-                break;
-            case 2:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind2);
-                break;
-            case 3:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind3);
-                break;
-            case 4:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind4);
-                break;
-            case 5:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind5);
-                break;
-            case 6:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind6);
-                break;
-            case 7:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind7);
-                break;
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_PA_RAM_13_18_Low_win4 /* 5177718 */:
+                if (leave > 4) {
+                    leave = 4;
+                }
+                switch (leave) {
+                    case 0:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind0);
+                        break;
+                    case 1:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind1);
+                        break;
+                    case 2:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind2);
+                        break;
+                    case 3:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind3);
+                        break;
+                    case 4:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_win4_wind4);
+                        break;
+                }
             default:
-                findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
-                break;
+                switch (leave) {
+                    case 0:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
+                        break;
+                    case 1:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind1);
+                        break;
+                    case 2:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind2);
+                        break;
+                    case 3:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind3);
+                        break;
+                    case 4:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind4);
+                        break;
+                    case 5:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind5);
+                        break;
+                    case 6:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind6);
+                        break;
+                    case 7:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind7);
+                        break;
+                    default:
+                        findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
+                        break;
+                }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int body = DataCanbus.DATA[19];
         int window = DataCanbus.DATA[18];
@@ -800,7 +848,7 @@ public class PAJeepAirControlAct_SP extends Activity implements View.OnTouchList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRear() {
         int foot_rear = DataCanbus.DATA[47];
         int body_rear = DataCanbus.DATA[46];

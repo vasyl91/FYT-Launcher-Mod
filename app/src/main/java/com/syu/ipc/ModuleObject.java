@@ -5,28 +5,8 @@ public class ModuleObject {
     public int[] ints;
     public String[] strs;
 
-    public ModuleObject() {
-    }
-
-    public ModuleObject(int value) {
-        this.ints = new int[]{value};
-    }
-
-    public ModuleObject(int value, String strValue) {
-        this.ints = new int[]{value};
-        this.strs = new String[]{strValue};
-    }
-
-    public ModuleObject(int[] ints) {
-        this.ints = ints;
-    }
-
-    public ModuleObject(String value) {
-        this.strs = new String[]{value};
-    }
-
     public static boolean checkInts(ModuleObject obj, int min) {
-        return (obj == null || obj.ints == null || obj.ints.length < min) ? false : true;
+        return obj != null && obj.ints != null && obj.ints.length >= min;
     }
 
     public static int get(ModuleObject obj, int valueIfNotOk) {

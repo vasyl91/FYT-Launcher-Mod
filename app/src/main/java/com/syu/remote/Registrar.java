@@ -1,12 +1,12 @@
 package com.syu.remote;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.ModuleObject;
 import com.syu.remote.Callback;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class Registrar {
     protected Callback mCallback = new Callback();
     IRemoteModule mModule;
@@ -19,7 +19,7 @@ public abstract class Registrar {
     }
 
     void addOnRefreshLisenter(Callback.OnRefreshLisenter lisenter, int... codes) {
-        if (codes != null && codes.length != 0) {
+        if (codes != null) {
             for (int code : codes) {
                 if (lisenter != null) {
                     this.mCallback.addOnRefreshLisenter(lisenter, code);
@@ -54,7 +54,7 @@ public abstract class Registrar {
     }
 
     void unRegisterCode() {
-        if (this.mRefreshCode != null && this.mRefreshCode.length != 0) {
+        if (this.mRefreshCode != null) {
             for (int code : this.mRefreshCode) {
                 unRegisterCallback(this.mCallback, code);
             }

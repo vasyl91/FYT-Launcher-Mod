@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0452_OD_ZhongHuaV6 extends AirBase {
     public Air_0452_OD_ZhongHuaV6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0307_xbs_xp1_15zhonghuav3/zhonghuav3.webp";
         this.mPathHighlight = "0307_xbs_xp1_15zhonghuav3/zhonghuav3_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -81,7 +81,7 @@ public class Air_0452_OD_ZhongHuaV6 extends AirBase {
                 break;
             default:
                 int value3 = (value2 * 5) + 160;
-                c.drawText(String.valueOf(value3 / 10) + "." + (value3 % 10), 51.0f, 97.0f, this.mPaint);
+                c.drawText(value3 / 10 + "." + (value3 % 10), 51.0f, 97.0f, this.mPaint);
                 break;
         }
         int value4 = this.DATA[19];
@@ -97,7 +97,7 @@ public class Air_0452_OD_ZhongHuaV6 extends AirBase {
                 break;
             default:
                 int value5 = (value4 * 5) + 160;
-                c.drawText(String.valueOf(value5 / 10) + "." + (value5 % 10), 945.0f, 97.0f, this.mPaint);
+                c.drawText(value5 / 10 + "." + (value5 % 10), 945.0f, 97.0f, this.mPaint);
                 break;
         }
         canvas.save();

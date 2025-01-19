@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.util.Log;
 import com.android.launcher66.DragController;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public interface DropTarget {
     public static final String TAG = "DropTarget";
 
@@ -68,14 +67,14 @@ public interface DropTarget {
             }
         }
 
-        @Override // com.android.launcher66.DragController.DragListener
+        @Override
         public void onDragStart(DragSource source, Object info, int dragAction) {
             if (this.dragParity != 0) {
                 Log.e(DropTarget.TAG, "onDragEnter: Drag contract violated: " + this.dragParity);
             }
         }
 
-        @Override // com.android.launcher66.DragController.DragListener
+        @Override
         public void onDragEnd() {
             if (this.dragParity != 0) {
                 Log.e(DropTarget.TAG, "onDragExit: Drag contract violated: " + this.dragParity);

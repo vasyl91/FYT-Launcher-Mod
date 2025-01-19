@@ -117,7 +117,7 @@ public class WaveProgressView extends View {
         setBackgroundColor(0);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = measureWidth(widthMeasureSpec);
         int measuredHeight = measureHeight(heightMeasureSpec);
@@ -201,7 +201,7 @@ public class WaveProgressView extends View {
         return 400;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Log.i("hy", "onDraw");
         Bitmap bitmap = createWaveBitmap(this.mWidth, this.mHeight);
@@ -216,9 +216,9 @@ public class WaveProgressView extends View {
             canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, radius - (this.mStrokeWidth / 2.0f), this.mStrokePaint);
             float left = (getMeasuredWidth() / 2) - (this.mWidth / 2);
             float top = (getMeasuredHeight() / 2) - (this.mHeight / 2);
-            canvas.drawBitmap(bitmap, left, top, (Paint) null);
+            canvas.drawBitmap(bitmap, left, top, null);
         } else {
-            canvas.drawBitmap(bitmap, 0.0f, 0.0f, (Paint) null);
+            canvas.drawBitmap(bitmap, 0.0f, 0.0f, null);
         }
         if (!TextUtils.isEmpty(this.mText)) {
             this.mTextPaint.setColor(this.mTextColor);

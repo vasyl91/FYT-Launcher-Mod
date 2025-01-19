@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0448_LZ_BMW extends AirBase {
     public Air_0448_LZ_BMW(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0448_lz_bmw/air_lz_bmw_carui_n.webp";
         this.mPathHighlight = "0448_lz_bmw/air_lz_bmw_carui_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -85,23 +85,23 @@ public class Air_0448_LZ_BMW extends AirBase {
         } else if (value1 > 6) {
             value1 = 6;
         }
-        c.drawText(new StringBuilder().append(value1).toString(), 86.0f, 62.0f, this.mPaint);
+        c.drawText(String.valueOf(value1), 86.0f, 62.0f, this.mPaint);
         int value2 = this.DATA[45];
         if (value2 < 0) {
             value2 = 0;
         } else if (value2 > 6) {
             value2 = 6;
         }
-        c.drawText(new StringBuilder().append(value2).toString(), 931.0f, 62.0f, this.mPaint);
+        c.drawText(String.valueOf(value2), 931.0f, 62.0f, this.mPaint);
         int value = this.DATA[42];
-        c.drawText(new StringBuilder().append(value).toString(), 580.0f, 144.0f, this.mPaint);
+        c.drawText(String.valueOf(value), 580.0f, 144.0f, this.mPaint);
         int left_temp = this.DATA[40];
         if (left_temp == -2) {
             c.drawText("LOW", 46.0f, 152.0f, this.mPaint);
         } else if (left_temp == -3) {
             c.drawText("HI", 46.0f, 152.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((left_temp * 5) + 150) / 10.0f).toString(), 46.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(((left_temp * 5) + 150) / 10.0f), 46.0f, 152.0f, this.mPaint);
         }
         int right_temp = this.DATA[41];
         if (right_temp == -2) {
@@ -109,7 +109,7 @@ public class Air_0448_LZ_BMW extends AirBase {
         } else if (right_temp == -3) {
             c.drawText("HI", 930.0f, 152.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(((right_temp * 5) + 150) / 10.0f).toString(), 930.0f, 152.0f, this.mPaint);
+            c.drawText(String.valueOf(((right_temp * 5) + 150) / 10.0f), 930.0f, 152.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

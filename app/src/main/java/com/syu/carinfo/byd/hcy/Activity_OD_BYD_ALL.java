@@ -19,7 +19,6 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_OD_BYD_ALL extends BaseActivityForFragment {
     AdapterCarInfo adapter;
     ListView mListView;
@@ -28,10 +27,10 @@ public class Activity_OD_BYD_ALL extends BaseActivityForFragment {
     List<Fragment> mFrags = new ArrayList();
     String[] titles = {"PM2.5", LauncherApplication.getInstance().getString(R.string.str_mrb_str1), LauncherApplication.getInstance().getString(R.string.str_driving_settings), LauncherApplication.getInstance().getString(R.string.others_settings)};
 
-    @Override // com.syu.canbus.BaseActivityForFragment, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         this.mText = (TextView) findViewById(R.id.tv_car_title);
         this.mListView = (ListView) findViewById(R.id.list_carinfo);
         initValue();

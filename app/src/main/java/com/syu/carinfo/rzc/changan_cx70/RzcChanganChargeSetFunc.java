@@ -10,14 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.changan_cx70.RzcChanganChargeSetFunc.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 118:
+                case 195:
                     int year = (value >> 24) & 127;
                     int month = (value >> 20) & 15;
                     int monthDay = (value >> 12) & 31;
@@ -33,7 +32,7 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                         ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text2)).setText(new StringBuilder().append(minute).toString());
                         break;
                     }
-                case 119:
+                case 196:
                     int year2 = (value >> 24) & 127;
                     int month2 = (value >> 20) & 15;
                     int monthDay2 = (value >> 12) & 31;
@@ -49,10 +48,10 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                         ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text4)).setText(new StringBuilder().append(minute2).toString());
                         break;
                     }
-                case 120:
+                case 197:
                     RzcChanganChargeSetFunc.this.setCheck((CheckedTextView) RzcChanganChargeSetFunc.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 121:
+                case 198:
                     switch (value) {
                         case 1:
                             ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text5)).setText(R.string.mateng_air_con_profile_2);
@@ -61,17 +60,17 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                             ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text5)).setText(R.string.mateng_air_con_profile_0);
                             break;
                     }
-                case 122:
+                case 199:
                     if (((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text6)) != null) {
                         ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text6)).setText(String.valueOf(value) + "%");
                         break;
                     }
-                case 123:
+                case 200:
                     if (((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text7)) != null) {
                         ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text7)).setText(String.valueOf(value) + "A");
                         break;
                     }
-                case 124:
+                case 201:
                     if (((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text8)) != null) {
                         ((TextView) RzcChanganChargeSetFunc.this.findViewById(R.id.tv_text8)).setText(String.valueOf(value / 8) + "km");
                         break;
@@ -80,14 +79,14 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_rzc_changan_cs15_charge);
+        //setContentView(R.layout.layout_0453_rzc_changan_cs15_charge);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
         setSelfClick((Button) findViewById(R.id.btn_minus1), this);
@@ -106,25 +105,16 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
         setSelfClick((Button) findViewById(R.id.btn_plus7), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value3 = DataCanbus.DATA[121];
-                if (value3 == 1) {
-                    value3 = 8;
-                } else if (value3 == 8) {
-                    value3 = 1;
-                }
-                setCarInfo(3, value3);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value4 = DataCanbus.DATA[118];
-                int value1 = DataCanbus.DATA[119];
-                int hour = (value4 >> 7) & 31;
-                int minute = (value4 >> 1) & 63;
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value3 = DataCanbus.DATA[195];
+                int value1 = DataCanbus.DATA[196];
+                int hour = (value3 >> 7) & 31;
+                int minute = (value3 >> 1) & 63;
                 int hour1 = (value1 >> 7) & 31;
                 int minute1 = (value1 >> 1) & 63;
                 int hour2 = hour - 1;
@@ -133,11 +123,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour2, minute, hour1, minute1);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value5 = DataCanbus.DATA[118];
-                int value12 = DataCanbus.DATA[119];
-                int hour3 = (value5 >> 7) & 31;
-                int minute2 = (value5 >> 1) & 63;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value4 = DataCanbus.DATA[195];
+                int value12 = DataCanbus.DATA[196];
+                int hour3 = (value4 >> 7) & 31;
+                int minute2 = (value4 >> 1) & 63;
                 int hour12 = (value12 >> 7) & 31;
                 int minute12 = (value12 >> 1) & 63;
                 int hour4 = hour3 + 1;
@@ -146,11 +136,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour4, minute2, hour12, minute12);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value6 = DataCanbus.DATA[118];
-                int value13 = DataCanbus.DATA[119];
-                int hour5 = (value6 >> 7) & 31;
-                int minute3 = (value6 >> 1) & 63;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value5 = DataCanbus.DATA[195];
+                int value13 = DataCanbus.DATA[196];
+                int hour5 = (value5 >> 7) & 31;
+                int minute3 = (value5 >> 1) & 63;
                 int hour13 = (value13 >> 7) & 31;
                 int minute13 = (value13 >> 1) & 63;
                 int minute4 = minute3 - 1;
@@ -159,11 +149,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour5, minute4, hour13, minute13);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value7 = DataCanbus.DATA[118];
-                int value14 = DataCanbus.DATA[119];
-                int hour6 = (value7 >> 7) & 31;
-                int minute5 = (value7 >> 1) & 63;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value6 = DataCanbus.DATA[195];
+                int value14 = DataCanbus.DATA[196];
+                int hour6 = (value6 >> 7) & 31;
+                int minute5 = (value6 >> 1) & 63;
                 int hour14 = (value14 >> 7) & 31;
                 int minute14 = (value14 >> 1) & 63;
                 int minute6 = minute5 + 1;
@@ -172,11 +162,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour6, minute6, hour14, minute14);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value8 = DataCanbus.DATA[118];
-                int value15 = DataCanbus.DATA[119];
-                int hour7 = (value8 >> 7) & 31;
-                int minute7 = (value8 >> 1) & 63;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value7 = DataCanbus.DATA[195];
+                int value15 = DataCanbus.DATA[196];
+                int hour7 = (value7 >> 7) & 31;
+                int minute7 = (value7 >> 1) & 63;
                 int hour15 = (value15 >> 7) & 31;
                 int minute15 = (value15 >> 1) & 63;
                 int hour16 = hour15 - 1;
@@ -185,11 +175,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour7, minute7, hour16, minute15);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value9 = DataCanbus.DATA[118];
-                int value16 = DataCanbus.DATA[119];
-                int hour8 = (value9 >> 7) & 31;
-                int minute8 = (value9 >> 1) & 63;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value8 = DataCanbus.DATA[195];
+                int value16 = DataCanbus.DATA[196];
+                int hour8 = (value8 >> 7) & 31;
+                int minute8 = (value8 >> 1) & 63;
                 int hour17 = (value16 >> 7) & 31;
                 int minute16 = (value16 >> 1) & 63;
                 int hour18 = hour17 + 1;
@@ -198,11 +188,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour8, minute8, hour18, minute16);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value10 = DataCanbus.DATA[118];
-                int value17 = DataCanbus.DATA[119];
-                int hour9 = (value10 >> 7) & 31;
-                int minute9 = (value10 >> 1) & 63;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value9 = DataCanbus.DATA[195];
+                int value17 = DataCanbus.DATA[196];
+                int hour9 = (value9 >> 7) & 31;
+                int minute9 = (value9 >> 1) & 63;
                 int hour19 = (value17 >> 7) & 31;
                 int minute17 = ((value17 >> 1) & 63) - 1;
                 if (minute17 < 0) {
@@ -210,11 +200,11 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour9, minute9, hour19, minute17);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value11 = DataCanbus.DATA[118];
-                int value18 = DataCanbus.DATA[119];
-                int hour10 = (value11 >> 7) & 31;
-                int minute10 = (value11 >> 1) & 63;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value10 = DataCanbus.DATA[195];
+                int value18 = DataCanbus.DATA[196];
+                int hour10 = (value10 >> 7) & 31;
+                int minute10 = (value10 >> 1) & 63;
                 int hour110 = (value18 >> 7) & 31;
                 int minute18 = ((value18 >> 1) & 63) + 1;
                 if (minute18 > 59) {
@@ -222,63 +212,72 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
                 }
                 setCarInfo1(1, hour10, minute10, hour110, minute18);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
-                int value19 = DataCanbus.DATA[121] - 1;
-                if (value19 < 0) {
-                    value19 = 1;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value11 = DataCanbus.DATA[198] - 1;
+                if (value11 < 0) {
+                    value11 = 1;
+                }
+                setCarInfo(2, value11);
+                break;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value19 = DataCanbus.DATA[198] + 1;
+                if (value19 > 1) {
+                    value19 = 0;
                 }
                 setCarInfo(2, value19);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
-                int value20 = DataCanbus.DATA[121] + 1;
-                if (value20 > 1) {
-                    value20 = 0;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value20 = DataCanbus.DATA[199] - 1;
+                if (value20 < 60) {
+                    value20 = 60;
                 }
-                setCarInfo(2, value20);
+                setCarInfo(4, value20);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value21 = DataCanbus.DATA[122] - 1;
-                if (value21 < 60) {
-                    value21 = 60;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value21 = DataCanbus.DATA[199] + 1;
+                if (value21 < 100) {
+                    value21 = 100;
                 }
                 setCarInfo(4, value21);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value22 = DataCanbus.DATA[122] + 1;
-                if (value22 < 100) {
-                    value22 = 100;
-                }
-                setCarInfo(4, value22);
-                break;
-            case R.id.btn_minus7 /* 2131427505 */:
-                int value23 = DataCanbus.DATA[123];
-                if (value23 == 8) {
+            case R.id.btn_minus7 /* 2131427473 */:
+                int value22 = DataCanbus.DATA[200];
+                if (value22 == 8) {
                     value2 = 32;
-                } else if (value23 == 10) {
+                } else if (value22 == 10) {
                     value2 = 8;
-                } else if (value23 == 16) {
+                } else if (value22 == 16) {
                     value2 = 10;
-                } else if (value23 == 32) {
+                } else if (value22 == 32) {
                     value2 = 16;
                 } else {
                     value2 = 8;
                 }
                 setCarInfo(5, value2);
                 break;
-            case R.id.btn_plus7 /* 2131427507 */:
-                int value24 = DataCanbus.DATA[123];
-                if (value24 == 8) {
+            case R.id.btn_plus7 /* 2131427475 */:
+                int value23 = DataCanbus.DATA[200];
+                if (value23 == 8) {
                     value = 10;
-                } else if (value24 == 10) {
+                } else if (value23 == 10) {
                     value = 16;
-                } else if (value24 == 16) {
+                } else if (value23 == 16) {
                     value = 32;
-                } else if (value24 == 32) {
+                } else if (value23 == 32) {
                     value = 8;
                 } else {
                     value = 32;
                 }
                 setCarInfo(5, value);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value24 = DataCanbus.DATA[198];
+                if (value24 == 1) {
+                    value24 = 8;
+                } else if (value24 == 8) {
+                    value24 = 1;
+                }
+                setCarInfo(3, value24);
                 break;
         }
     }
@@ -291,38 +290,38 @@ public class RzcChanganChargeSetFunc extends BaseActivity implements View.OnClic
         DataCanbus.PROXY.cmd(3, new int[]{value0, value1, value2, value3, value4}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(5, new int[]{83}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[195].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[196].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[197].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[198].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[199].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[200].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[201].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[195].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[196].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[197].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[198].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[199].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[200].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[201].removeNotify(this.mNotifyCanbus);
     }
 }

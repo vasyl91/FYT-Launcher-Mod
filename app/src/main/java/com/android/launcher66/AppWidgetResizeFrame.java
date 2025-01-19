@@ -15,7 +15,6 @@ import com.android.launcher66.CellLayout;
 import com.android.launcher66.DragLayer;
 import com.syu.ipc.data.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AppWidgetResizeFrame extends FrameLayout {
     public static final int BOTTOM = 3;
     public static final int LEFT = 0;
@@ -303,8 +302,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mDeltaYAddOn = this.mRunningVInc * yThreshold;
         this.mDeltaX = 0;
         this.mDeltaY = 0;
-        post(new Runnable() { // from class: com.android.launcher66.AppWidgetResizeFrame.1
-            @Override // java.lang.Runnable
+        post(new Runnable() { 
+            @Override
             public void run() {
                 AppWidgetResizeFrame.this.snapToWidget(true);
             }
@@ -351,8 +350,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
         ObjectAnimator rightOa = LauncherAnimUtils.ofFloat(this.mRightHandle, "alpha", 1.0f);
         ObjectAnimator topOa = LauncherAnimUtils.ofFloat(this.mTopHandle, "alpha", 1.0f);
         ObjectAnimator bottomOa = LauncherAnimUtils.ofFloat(this.mBottomHandle, "alpha", 1.0f);
-        oa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.android.launcher66.AppWidgetResizeFrame.2
-            @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+        oa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+            @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 AppWidgetResizeFrame.this.requestLayout();
             }

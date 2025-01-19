@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0270_WC_TuRui extends AirBase {
     public Air_0270_WC_TuRui(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0270_wc_turui/turui.webp";
         this.mPathHighlight = "0270_wc_turui/turui_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -79,7 +79,7 @@ public class Air_0270_WC_TuRui extends AirBase {
         } else if (temp == 255) {
             c.drawText("HI", 64.0f, 80.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp * 5) / 10.0f).toString(), 64.0f, 80.0f, this.mPaint);
+            c.drawText(String.valueOf((temp * 5) / 10.0f), 64.0f, 80.0f, this.mPaint);
         }
         int temp2 = this.DATA[99] & 255;
         if (temp2 == 254) {
@@ -87,7 +87,7 @@ public class Air_0270_WC_TuRui extends AirBase {
         } else if (temp2 == 255) {
             c.drawText("HI", 927.0f, 80.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append((temp2 * 5) / 10.0f).toString(), 927.0f, 80.0f, this.mPaint);
+            c.drawText(String.valueOf((temp2 * 5) / 10.0f), 927.0f, 80.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

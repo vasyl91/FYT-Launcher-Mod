@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
@@ -12,7 +13,6 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoSBDFordLieYing extends BaseActivity {
     public static boolean mIsFront = false;
     Handler mHandler;
@@ -22,116 +22,116 @@ public class InfoSBDFordLieYing extends BaseActivity {
     public int value_min_1 = 0;
     public int value_min_2 = 0;
     public int value_min_3 = 0;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.sbd.fordlieying.InfoSBDFordLieYing.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mCanbusNotify = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 98:
                     if (strs != null) {
                         ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digital1)).setText(strs[0]);
                         InfoSBDFordLieYing.this.setShowWarningConfig("TABLE_STR_1", strs[0]);
                         break;
                     }
-                case 1:
+                case 99:
                     if (strs != null) {
                         ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digital2)).setText(strs[0]);
                         InfoSBDFordLieYing.this.setShowWarningConfig("TABLE_STR_2", strs[0]);
                         break;
                     }
-                case 2:
+                case 100:
                     if (strs != null) {
                         ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digital3)).setText(strs[0]);
                         InfoSBDFordLieYing.this.setShowWarningConfig("TABLE_STR_3", strs[0]);
                         break;
                     }
-                case 3:
+                case 101:
                     int value_1 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView1)).setSpeed(value_1);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digitalvalue1)).setText(String.valueOf(value_1) + ".0");
                     break;
-                case 4:
+                case 102:
                     int value_2 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView2)).setSpeed(value_2);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digitalvalue2)).setText(String.valueOf(value_2) + ".0");
                     break;
-                case 5:
+                case 103:
                     int value_3 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView3)).setSpeed(value_3);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.tv_digitalvalue3)).setText(String.valueOf(value_3) + ".0");
                     break;
-                case 6:
+                case 104:
                     if (DataCanbus.DATA[updateCode] > InfoSBDFordLieYing.this.value_min_1) {
                         InfoSBDFordLieYing.this.value_max_1 = DataCanbus.DATA[updateCode];
                         ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView1)).setMax(InfoSBDFordLieYing.this.value_max_1);
                     }
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num1_5)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 7:
+                case 105:
                     if (DataCanbus.DATA[updateCode] > InfoSBDFordLieYing.this.value_min_2) {
                         InfoSBDFordLieYing.this.value_max_2 = DataCanbus.DATA[updateCode];
                         ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView2)).setMax(InfoSBDFordLieYing.this.value_max_2);
                     }
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num2_5)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 8:
+                case 106:
                     if (DataCanbus.DATA[updateCode] > InfoSBDFordLieYing.this.value_min_3) {
                         InfoSBDFordLieYing.this.value_max_3 = DataCanbus.DATA[updateCode];
                         ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView3)).setMax(InfoSBDFordLieYing.this.value_max_3);
                     }
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num3_5)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 9:
+                case 107:
                     InfoSBDFordLieYing.this.value_min_1 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView1)).setMin(InfoSBDFordLieYing.this.value_min_1);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num1_1)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 10:
+                case 108:
                     InfoSBDFordLieYing.this.value_min_2 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView2)).setMin(InfoSBDFordLieYing.this.value_min_2);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num2_1)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 11:
+                case 109:
                     InfoSBDFordLieYing.this.value_min_3 = DataCanbus.DATA[updateCode];
                     ((InfoView) InfoSBDFordLieYing.this.findViewById(R.id.infoView3)).setMin(InfoSBDFordLieYing.this.value_min_3);
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num3_1)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 12:
+                case 110:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num1_2)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 13:
+                case 111:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num1_3)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 14:
+                case 112:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num1_4)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 15:
+                case 113:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num2_2)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 16:
+                case 114:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num2_3)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 17:
+                case 115:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num2_4)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 18:
+                case 116:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num3_2)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 19:
+                case 117:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num3_3)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
-                case 20:
+                case 118:
                     ((TextView) InfoSBDFordLieYing.this.findViewById(R.id.lieying_table_num3_4)).setText(String.format("%d", Integer.valueOf(DataCanbus.DATA[updateCode])));
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_398_fordlieying_info);
+        //setContentView(R.layout.layout_398_fordlieying_info);
         initView();
-        this.mHandler = new Handler();
+        this.mHandler = new Handler(Looper.getMainLooper());
     }
 
     private void initView() {
@@ -155,7 +155,7 @@ public class InfoSBDFordLieYing extends BaseActivity {
         this.value_min_3 = getMaxConfig("TABLE_MIN_INT_3", this.value_min_3);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -165,7 +165,7 @@ public class InfoSBDFordLieYing extends BaseActivity {
         requestDigitalInfo(50);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -209,57 +209,57 @@ public class InfoSBDFordLieYing extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mCanbusNotify, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mCanbusNotify);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             Intent intent = new Intent("android.intent.action.MAIN");

@@ -9,14 +9,13 @@ import com.syu.canbus.R;
 import com.syu.carinfo.rzc.sanlin.RZCNissanAmpCarSet;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XBS09TianlaiIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_xbs_09tianlai_indexact);
-        ((Button) findViewById(R.id.jeep_car_info)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_xbs_09tianlai_indexact);
+        ((Button) findViewById(R.id.jeep_car_info)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -27,8 +26,8 @@ public class XBS09TianlaiIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -39,8 +38,8 @@ public class XBS09TianlaiIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

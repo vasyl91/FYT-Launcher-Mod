@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.android.launcher66.R;
 import com.syu.ipc.data.FinalCanbus;
 
@@ -45,8 +46,8 @@ public class TurntableView3 extends View {
         this.endAngle = 96.0f;
         this.mCurrAngle = -95.0f;
         this.checked = false;
-        this.update = new Runnable() { // from class: com.fyt.widget.TurntableView3.1
-            @Override // java.lang.Runnable
+        this.update = new Runnable() { 
+            @Override
             public void run() {
                 if (Math.abs(TurntableView3.this.current - TurntableView3.this.temp) <= Math.abs(TurntableView3.this.snap)) {
                     TurntableView3.this.snap = TurntableView3.this.temp - TurntableView3.this.current;
@@ -81,8 +82,8 @@ public class TurntableView3 extends View {
         this.endAngle = 96.0f;
         this.mCurrAngle = -95.0f;
         this.checked = false;
-        this.update = new Runnable() { // from class: com.fyt.widget.TurntableView3.1
-            @Override // java.lang.Runnable
+        this.update = new Runnable() { 
+            @Override
             public void run() {
                 if (Math.abs(TurntableView3.this.current - TurntableView3.this.temp) <= Math.abs(TurntableView3.this.snap)) {
                     TurntableView3.this.snap = TurntableView3.this.temp - TurntableView3.this.current;
@@ -117,8 +118,8 @@ public class TurntableView3 extends View {
         this.endAngle = 96.0f;
         this.mCurrAngle = -95.0f;
         this.checked = false;
-        this.update = new Runnable() { // from class: com.fyt.widget.TurntableView3.1
-            @Override // java.lang.Runnable
+        this.update = new Runnable() { 
+            @Override
             public void run() {
                 if (Math.abs(TurntableView3.this.current - TurntableView3.this.temp) <= Math.abs(TurntableView3.this.snap)) {
                     TurntableView3.this.snap = TurntableView3.this.temp - TurntableView3.this.current;
@@ -151,13 +152,13 @@ public class TurntableView3 extends View {
         setAngleRange(-120, FinalCanbus.CAR_FYT_XP1_14Prado_L);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.mChanged = true;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -175,7 +176,7 @@ public class TurntableView3 extends View {
         setMeasuredDimension(resolveSizeAndState((int) (this.mDialWidth * scale), widthMeasureSpec, 0), resolveSizeAndState((int) (this.mDialHeight * scale), heightMeasureSpec, 0));
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         boolean changed = this.mChanged;
@@ -246,7 +247,7 @@ public class TurntableView3 extends View {
         return this.target;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setTarget(float target) {
         this.target = this.startAngle + (((this.endAngle - this.startAngle) / (this.max - this.min)) * (target - this.min));
         invalidate();
@@ -269,7 +270,7 @@ public class TurntableView3 extends View {
         this.target = this.endAngle;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (this.checked) {

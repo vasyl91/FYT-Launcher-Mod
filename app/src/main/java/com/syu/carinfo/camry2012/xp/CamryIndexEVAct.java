@@ -10,14 +10,13 @@ import android.widget.TabHost;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryIndexEVAct extends TabActivity {
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_camry_index_ev);
+        //setContentView(R.layout.layout_camry_index_ev);
         init();
     }
 
@@ -47,31 +46,31 @@ public class CamryIndexEVAct extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabHistory").setIndicator("tabHistory").setContent(new Intent(this, (Class<?>) CamryHistoryAct.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabBaseInfo").setIndicator("tabBaseInfo").setContent(new Intent(this, (Class<?>) CamryMeterActi.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabTireInfo").setIndicator("tabTireInfo").setContent(new Intent(this, (Class<?>) CamryTireAct.class)));
-        this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) CamrySettingsAct.class)));
+        this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSettings").setIndicator("tabSettings").setContent(new Intent(this, (Class<?>) CamrySettingsAct_RZC.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPE").setIndicator("tabPE").setContent(new Intent(this, (Class<?>) CamryicPetrolElectricActi.class)));
-        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.camry2012.xp.CamryIndexEVAct.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        ((RadioGroup) findViewById(R.id.camry_main_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.camry_btn_trip_info /* 2131428119 */:
+                    case R.id.camry_btn_trip_info /* 2131428108 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabTripInfo");
                         break;
-                    case R.id.camry_btn_history_info /* 2131428120 */:
+                    case R.id.camry_btn_history_info /* 2131428109 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabHistory");
                         break;
-                    case R.id.camry_btn_settings /* 2131428121 */:
+                    case R.id.camry_btn_settings /* 2131428110 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabSettings");
                         break;
-                    case R.id.camry_btn_base_info /* 2131430673 */:
+                    case R.id.camry_btn_base_info /* 2131430649 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabBaseInfo");
                         break;
-                    case R.id.camry_btn_trie_info /* 2131430675 */:
+                    case R.id.camry_btn_trie_info /* 2131430651 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabTireInfo");
                         break;
-                    case R.id.camry_btn_pe /* 2131430676 */:
+                    case R.id.camry_btn_pe /* 2131430652 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabPE");
                         break;
-                    case R.id.camry_btn_ev /* 2131430677 */:
+                    case R.id.camry_btn_ev /* 2131430653 */:
                         CamryIndexEVAct.this.mTabHost.setCurrentTabByTag("tabEV");
                         break;
                 }
@@ -79,13 +78,13 @@ public class CamryIndexEVAct extends TabActivity {
         });
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(20, new int[]{31}, null, null);
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

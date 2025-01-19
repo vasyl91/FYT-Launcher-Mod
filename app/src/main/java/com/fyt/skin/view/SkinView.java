@@ -8,14 +8,15 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.android.launcher66.R;
 import com.android.launcher66.Utilities;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.SkinResources;
 import com.fyt.skin.SkinUtils;
+
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class SkinView {
     List<SkinAttrParms> parms;
     View view;

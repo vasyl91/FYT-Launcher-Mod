@@ -1,6 +1,5 @@
 package com.android.launcher66;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class SpringLoadedDragController implements OnAlarmListener {
     private Launcher mLauncher;
     private CellLayout mScreen;
@@ -24,7 +23,7 @@ public class SpringLoadedDragController implements OnAlarmListener {
         this.mScreen = cl;
     }
 
-    @Override // com.android.launcher66.OnAlarmListener
+    @Override
     public void onAlarm(Alarm alarm) {
         if (this.mScreen != null) {
             Workspace w = this.mLauncher.getWorkspace();

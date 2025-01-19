@@ -1,6 +1,5 @@
 package share;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66.apk\dexFile\classes.dex */
 public class Config {
     public static final String ALLAPP = "ALLAPP";
     public static final String BRIGHT = "BRIGHT";

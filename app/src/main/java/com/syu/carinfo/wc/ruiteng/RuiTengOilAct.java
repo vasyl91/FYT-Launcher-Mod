@@ -7,46 +7,45 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RuiTengOilAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengOilAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 75:
+                case 148:
                     RuiTengOilAct.this.mUpdateOilUnit();
                     RuiTengOilAct.this.mUpdaterValue4();
                     RuiTengOilAct.this.mUpdateAverageOil3();
                     RuiTengOilAct.this.mUpdateAverageOil2();
                     RuiTengOilAct.this.mUpdateAverageOil1();
                     break;
-                case 76:
+                case 149:
                     RuiTengOilAct.this.mUpdaterValue3();
                     RuiTengOilAct.this.mUpdateTravelUnit();
                     RuiTengOilAct.this.mUpdateSumTravel();
                     break;
-                case 80:
+                case 153:
                     RuiTengOilAct.this.mUpdateTravelUnit();
                     RuiTengOilAct.this.mUpdateSumTravel();
                     break;
-                case 81:
+                case 154:
                     RuiTengOilAct.this.mUpdateOilUnit();
                     RuiTengOilAct.this.mUpdateAverageOil1();
                     break;
-                case 82:
+                case 155:
                     RuiTengOilAct.this.mUpdateOilUnit();
                     RuiTengOilAct.this.mUpdateAverageOil2();
                     break;
-                case 83:
+                case 156:
                     RuiTengOilAct.this.mUpdaterValue4();
                     RuiTengOilAct.this.mUpdateOilUnit();
                     RuiTengOilAct.this.mUpdateAverageOil3();
                     break;
-                case 84:
+                case 157:
                     RuiTengOilAct.this.mUpdateTravelUnit();
                     RuiTengOilAct.this.mUpdateSumTravel();
                     break;
-                case 85:
+                case 158:
                     RuiTengOilAct.this.mUpdateOilUnit();
                     RuiTengOilAct.this.mUpdateAverageOil3();
                     RuiTengOilAct.this.mUpdateAverageOil2();
@@ -56,43 +55,43 @@ public class RuiTengOilAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_ruiteng_oil_page);
+        //setContentView(R.layout.layout_wc_ruiteng_oil_page);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[81].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[82].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[83].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[84].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[76].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[75].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[81].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[82].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[83].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[84].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[76].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[75].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int value1 = DataCanbus.DATA[76];
+        int value1 = DataCanbus.DATA[149];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_sum_travel_tv)) != null) {
             if (value1 == 1) {
-                int value = DataCanbus.DATA[80];
-                int unit = DataCanbus.DATA[84];
+                int value = DataCanbus.DATA[153];
+                int unit = DataCanbus.DATA[157];
                 if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_sum_travel_tv)) != null) {
                     if (value == 65535) {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_sum_travel_tv)).setText("--.--");
@@ -111,13 +110,13 @@ public class RuiTengOilAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
-        int value2 = DataCanbus.DATA[75];
+        int value2 = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)) != null) {
             if (value2 == 1) {
-                int valueOil1 = DataCanbus.DATA[81];
-                int unit = DataCanbus.DATA[85];
+                int valueOil1 = DataCanbus.DATA[154];
+                int unit = DataCanbus.DATA[158];
                 if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)) != null) {
                     if (valueOil1 == 65535) {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)).setText("--.--");
@@ -129,7 +128,7 @@ public class RuiTengOilAct extends BaseActivity {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(valueOil1 / 10), Integer.valueOf(valueOil1 % 10))) + " mpg");
                     }
                 }
-                int valueOil2 = DataCanbus.DATA[82];
+                int valueOil2 = DataCanbus.DATA[155];
                 if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil2_tv)) != null) {
                     if (valueOil2 == 65535) {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil2_tv)).setText("--.--");
@@ -141,7 +140,7 @@ public class RuiTengOilAct extends BaseActivity {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil2_tv)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf(valueOil2 / 10), Integer.valueOf(valueOil2 % 10))) + " mpg");
                     }
                 }
-                int valueOil3 = DataCanbus.DATA[83];
+                int valueOil3 = DataCanbus.DATA[156];
                 if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil3_tv)) != null) {
                     if (valueOil3 == 65535) {
                         ((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil3_tv)).setText("--.--");
@@ -167,9 +166,9 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateSumTravel() {
-        int value = DataCanbus.DATA[80];
-        int unit = DataCanbus.DATA[84];
-        int value1 = DataCanbus.DATA[76];
+        int value = DataCanbus.DATA[153];
+        int unit = DataCanbus.DATA[157];
+        int value1 = DataCanbus.DATA[149];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_sum_travel_tv)) != null) {
             if (value1 == 1) {
                 if (value == 65535) {
@@ -188,9 +187,9 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateAverageOil1() {
-        int value = DataCanbus.DATA[81];
-        int unit = DataCanbus.DATA[85];
-        int value2 = DataCanbus.DATA[75];
+        int value = DataCanbus.DATA[154];
+        int unit = DataCanbus.DATA[158];
+        int value2 = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)) != null) {
             if (value2 == 1) {
                 if (value == 65535) {
@@ -213,9 +212,9 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateAverageOil2() {
-        int value = DataCanbus.DATA[82];
-        int unit = DataCanbus.DATA[85];
-        int value2 = DataCanbus.DATA[75];
+        int value = DataCanbus.DATA[155];
+        int unit = DataCanbus.DATA[158];
+        int value2 = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil2_tv)) != null) {
             if (value2 == 1) {
                 if (value == 65535) {
@@ -238,9 +237,9 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateAverageOil3() {
-        int value = DataCanbus.DATA[83];
-        int unit = DataCanbus.DATA[85];
-        int value2 = DataCanbus.DATA[75];
+        int value = DataCanbus.DATA[156];
+        int unit = DataCanbus.DATA[158];
+        int value2 = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil3_tv)) != null) {
             if (value2 == 1) {
                 if (value == 65535) {
@@ -263,9 +262,9 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateTravelUnit() {
-        int value = DataCanbus.DATA[80];
-        int unit = DataCanbus.DATA[84];
-        int value1 = DataCanbus.DATA[76];
+        int value = DataCanbus.DATA[153];
+        int unit = DataCanbus.DATA[157];
+        int value1 = DataCanbus.DATA[149];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_sum_travel_tv)) != null) {
             if (value1 == 1) {
                 if (value == 65535) {
@@ -284,11 +283,11 @@ public class RuiTengOilAct extends BaseActivity {
     }
 
     void mUpdateOilUnit() {
-        int valueOil1 = DataCanbus.DATA[81];
-        int valueOil2 = DataCanbus.DATA[82];
-        int valueOil3 = DataCanbus.DATA[83];
-        int unit = DataCanbus.DATA[85];
-        int value2 = DataCanbus.DATA[75];
+        int valueOil1 = DataCanbus.DATA[154];
+        int valueOil2 = DataCanbus.DATA[155];
+        int valueOil3 = DataCanbus.DATA[156];
+        int unit = DataCanbus.DATA[158];
+        int value2 = DataCanbus.DATA[148];
         if (((TextView) findViewById(R.id.wc_ruiteng_tv_oil_average_oil1_tv)) != null) {
             if (value2 == 1) {
                 if (valueOil1 == 65535) {

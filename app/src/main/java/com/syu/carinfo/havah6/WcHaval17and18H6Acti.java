@@ -8,27 +8,26 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcHaval17and18H6Acti extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHaval17and18H6Acti.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             Intent intent = new Intent();
             int id = v.getId();
             switch (id) {
-                case R.id.ctv_checkedtext1 /* 2131427478 */:
+                case R.id.ctv_checkedtext1 /* 2131427525 */:
                     intent.setClass(WcHaval17and18H6Acti.this, WC_0320_HavalH9AmpCarSet.class);
                     WcHaval17and18H6Acti.this.startActivity(intent);
                     break;
-                case R.id.ctv_checkedtext2 /* 2131427531 */:
+                case R.id.ctv_checkedtext2 /* 2131427541 */:
                     intent.setClass(WcHaval17and18H6Acti.this, Wc_320_CarSetlAct_newH6.class);
                     WcHaval17and18H6Acti.this.startActivity(intent);
                     break;
-                case R.id.ctv_checkedtext3 /* 2131427532 */:
+                case R.id.ctv_checkedtext3 /* 2131427542 */:
                     intent.setClass(WcHaval17and18H6Acti.this, ActivityNewH6CarInfo.class);
                     WcHaval17and18H6Acti.this.startActivity(intent);
                     break;
-                case R.id.ctv_checkedtext4 /* 2131427533 */:
+                case R.id.ctv_checkedtext4 /* 2131427544 */:
                     intent.setClass(WcHaval17and18H6Acti.this, WcHavalH6Acti.class);
                     WcHaval17and18H6Acti.this.startActivity(intent);
                     break;
@@ -36,14 +35,14 @@ public class WcHaval17and18H6Acti extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_320_wc_haval_newh6);
+        //setContentView(R.layout.layout_320_wc_haval_newh6);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setClick((Button) findViewById(R.id.ctv_checkedtext2));
         setClick((Button) findViewById(R.id.ctv_checkedtext3));
@@ -62,7 +61,7 @@ public class WcHaval17and18H6Acti extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void setClick(View v) {
         if (v != null) {
             v.setOnClickListener(this.mClick);

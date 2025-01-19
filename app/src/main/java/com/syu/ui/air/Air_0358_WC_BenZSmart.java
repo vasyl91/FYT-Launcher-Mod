@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0358_WC_BenZSmart extends AirBase {
     public Air_0358_WC_BenZSmart(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0358_wc_benzsmart/air_wc_benzsmart_n.webp";
         this.mPathHighlight = "0358_wc_benzsmart/air_wc_benzsmart_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -72,7 +72,7 @@ public class Air_0358_WC_BenZSmart extends AirBase {
         } else if (left_temp == -3) {
             c.drawText("HI", 940.0f, 130.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(left_temp / 2.0f).toString(), 940.0f, 130.0f, this.mPaint);
+            c.drawText(String.valueOf(left_temp / 2.0f), 940.0f, 130.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

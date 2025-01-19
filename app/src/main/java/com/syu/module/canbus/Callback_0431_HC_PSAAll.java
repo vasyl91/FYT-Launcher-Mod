@@ -1,36 +1,21 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0431_HC_PSAAll extends CallbackCanbusBase {
     public static final int C_CAR_CMD = 1;
-    public static final int U_AIR_AC = 12;
-    public static final int U_AIR_AUTO = 22;
-    public static final int U_AIR_BEGIN = 10;
-    public static final int U_AIR_BLOW_BODY_LEFT = 16;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 17;
-    public static final int U_AIR_BLOW_MODE_LEFT = 19;
-    public static final int U_AIR_BLOW_WIN_LEFT = 18;
-    public static final int U_AIR_CYCLE = 13;
-    public static final int U_AIR_DUAL = 23;
-    public static final int U_AIR_END = 25;
-    public static final int U_AIR_FRONT_DEFROST = 14;
-    public static final int U_AIR_POWER = 11;
-    public static final int U_AIR_REAR_DEFROST = 15;
-    public static final int U_AIR_TEMP_LEFT = 21;
-    public static final int U_AIR_TEMP_RIGHT = 24;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 20;
-    public static final int U_CNT_MAX = 100;
-    public static final int U_CUR_SPEED = 7;
-    public static final int U_ENGINE_SPEED = 8;
+    public static final int U_CNT_MAX = 101;
+    public static final int U_INFO_BT_STATE = 99;
+    public static final int U_INFO_MODULE_EXIST = 98;
+    public static final int U_INFO_USB_STATE = 100;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 101; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -45,7 +30,7 @@ public class Callback_0431_HC_PSAAll extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -53,9 +38,9 @@ public class Callback_0431_HC_PSAAll extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 100) {
+        if (updateCode >= 0 && updateCode < 101) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

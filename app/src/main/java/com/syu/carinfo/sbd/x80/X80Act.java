@@ -8,11 +8,11 @@ import android.widget.Toast;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.loopview.MessageHandler;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0375_SBD_WC1_ReservedCdBenTengX80;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class X80Act extends BaseActivity {
     private MyButton[] myButtons = new MyButton[6];
     ImageView[] image = new ImageView[6];
@@ -21,162 +21,162 @@ public class X80Act extends BaseActivity {
     private TextView[] cd4infoTv = new TextView[4];
     ImageView[] systemImage = new ImageView[6];
     ImageView[] soundImage = new ImageView[6];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.sbd.x80.X80Act.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 26:
+                case 99:
                     X80Act.this.updaterIsReceiverData();
                     break;
-                case 27:
+                case 100:
                     X80Act.this.updaterMediaState();
                     X80Act.this.updaterShowPage();
                     break;
-                case 28:
+                case 101:
                     X80Act.this.updaterdiantaiNum();
                     break;
-                case 29:
+                case 102:
                     X80Act.this.updaterband();
                     break;
-                case 31:
+                case 104:
                     X80Act.this.updaterFreq();
                     break;
-                case 32:
+                case 105:
                     X80Act.this.updaterChannelFreq1();
                     break;
-                case 33:
+                case 106:
                     X80Act.this.updaterChannelFreq2();
                     break;
-                case 34:
+                case 107:
                     X80Act.this.updaterChannelFreq3();
                     break;
-                case 35:
+                case 108:
                     X80Act.this.updaterChannelFreq4();
                     break;
-                case 36:
+                case 109:
                     X80Act.this.updaterChannelFreq5();
                     break;
-                case 37:
+                case 110:
                     X80Act.this.updaterChannelFreq6();
                     break;
-                case 38:
+                case 111:
                     X80Act.this.updaterFiles();
                     break;
-                case 39:
+                case 112:
                     X80Act.this.updaterMode();
                     break;
-                case 40:
+                case 113:
                     X80Act.this.updaterMediaState();
                     X80Act.this.updaterSongType();
                     break;
-                case 41:
+                case 114:
                     X80Act.this.updaterSongType();
                     break;
-                case 42:
+                case 115:
                     X80Act.this.updaterSongType();
                     X80Act.this.updaterTrackNum();
                     break;
-                case 43:
+                case 116:
                     X80Act.this.updaterSongType();
                     break;
-                case 44:
+                case 117:
                     X80Act.this.updaterPlayTime();
                     break;
-                case 45:
+                case 118:
                     X80Act.this.updaterPlayTime();
                     break;
-                case 46:
+                case 119:
                     X80Act.this.updaterInfo1();
                     break;
-                case 47:
+                case 120:
                     X80Act.this.updaterInfo2();
                     break;
-                case 48:
+                case 121:
                     X80Act.this.updaterInfo3();
                     break;
-                case 49:
+                case 122:
                     X80Act.this.updaterInfo4();
                     break;
-                case 50:
+                case 123:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 51:
+                case 124:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 52:
+                case 125:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 53:
+                case 126:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 54:
+                case 127:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 55:
+                case 128:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 56:
+                case 129:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 57:
+                case 130:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 58:
+                case 131:
                     X80Act.this.updaterxuniDie();
                     break;
-                case 59:
+                case 132:
                     X80Act.this.updaterVol();
                     break;
-                case 60:
+                case 133:
                     X80Act.this.updaterVol();
                     break;
-                case 61:
+                case 134:
                     X80Act.this.updaterWhichSet();
                     break;
-                case 62:
+                case 135:
                     X80Act.this.updaterAlc();
                     break;
-                case 63:
+                case 136:
                     X80Act.this.updaterXiangdu();
                     break;
-                case 64:
+                case 137:
                     X80Act.this.updaterPhoneVol();
                     break;
-                case 65:
+                case 138:
                     X80Act.this.updatertishiVol();
                     break;
-                case 66:
+                case 139:
                     X80Act.this.updaterlaidianShow();
                     break;
-                case 67:
+                case 140:
                     X80Act.this.updateryuyinSet();
                     break;
-                case 68:
+                case 141:
                     X80Act.this.updaterSoundShowID();
                     break;
-                case 69:
+                case 142:
                     X80Act.this.updaterSoundshengchang();
                     break;
-                case 70:
+                case 143:
                     X80Act.this.updaterSoundPrefect();
                     break;
-                case 71:
+                case 144:
                     X80Act.this.updaterSoundEQ();
                     break;
-                case 72:
+                case 145:
                     X80Act.this.updaterSoundLow();
                     break;
-                case 73:
+                case 146:
                     X80Act.this.updaterSoundMiddle();
                     break;
-                case 74:
+                case 147:
                     X80Act.this.updaterSoundHigh();
                     break;
             }
         }
     };
-    Runnable volrun = new Runnable() { // from class: com.syu.carinfo.sbd.x80.X80Act.2
-        @Override // java.lang.Runnable
+    Runnable volrun = new Runnable() { 
+        @Override
         public void run() {
             ((TextView) X80Act.this.findViewById(R.id.cd_tip_vol)).setVisibility(8);
         }
@@ -184,15 +184,15 @@ public class X80Act extends BaseActivity {
     Toast toast = null;
     TextView view = null;
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_375_wc_sbd_x80);
+        //setContentView(R.layout.layout_375_wc_sbd_x80);
         init();
         setUI();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.myButtons[0] = (MyButton) findViewById(R.id.freq1);
         this.myButtons[1] = (MyButton) findViewById(R.id.freq2);
@@ -250,138 +250,138 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[36].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[56].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[58].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[63].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[59].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[136].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[137].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[138].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[139].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[141].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[142].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[36].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[56].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[58].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[63].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[59].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[136].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[137].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[138].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[139].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[141].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[142].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterxuniDie() {
-        int luzhiIndex = DataCanbus.DATA[50];
-        int jindu = DataCanbus.DATA[52];
-        int playIndex = DataCanbus.DATA[51];
-        int[] dieInt = {DataCanbus.DATA[58], DataCanbus.DATA[57], DataCanbus.DATA[56], DataCanbus.DATA[55], DataCanbus.DATA[54], DataCanbus.DATA[53]};
+        int luzhiIndex = DataCanbus.DATA[123];
+        int jindu = DataCanbus.DATA[125];
+        int playIndex = DataCanbus.DATA[124];
+        int[] dieInt = {DataCanbus.DATA[131], DataCanbus.DATA[130], DataCanbus.DATA[129], DataCanbus.DATA[128], DataCanbus.DATA[127], DataCanbus.DATA[126]};
         if (luzhiIndex >= 1 && luzhiIndex <= 6) {
             if (jindu >= 0 && jindu < 100) {
-                if (findViewById(R.id.show_progress).getVisibility() != 0 && DataCanbus.DATA[27] == 2) {
+                if (findViewById(R.id.show_progress).getVisibility() != 0 && DataCanbus.DATA[100] == 2) {
                     findViewById(R.id.show_progress).setVisibility(0);
                 }
                 ((ProgressBar) findViewById(R.id.xuni_cd_progress)).setProgress(jindu);
@@ -427,9 +427,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterShowPage() {
-        int PageIndex = DataCanbus.DATA[27];
+        int PageIndex = DataCanbus.DATA[100];
         if (PageIndex == 1) {
             ((TextView) findViewById(R.id.cd_tip_show_center_tv)).setVisibility(8);
             if (findViewById(R.id.radio_view).getVisibility() == 8 || findViewById(R.id.radio_view).getVisibility() == 4) {
@@ -455,7 +455,7 @@ public class X80Act extends BaseActivity {
         }
         if (PageIndex == 2) {
             ((TextView) findViewById(R.id.cd_tip_show_center_tv)).setVisibility(8);
-            if ((findViewById(R.id.cd_view).getVisibility() == 8 || findViewById(R.id.cd_view).getVisibility() == 4) && (DataCanbus.DATA[40] == 3 || DataCanbus.DATA[40] == 4)) {
+            if ((findViewById(R.id.cd_view).getVisibility() == 8 || findViewById(R.id.cd_view).getVisibility() == 4) && (DataCanbus.DATA[113] == 3 || DataCanbus.DATA[113] == 4)) {
                 findViewById(R.id.cd_view).setVisibility(0);
             }
             if (findViewById(R.id.radio_view).getVisibility() == 0) {
@@ -519,9 +519,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterdiantaiNum() {
-        int channel = DataCanbus.DATA[28];
+        int channel = DataCanbus.DATA[101];
         for (int i = 0; i < 6; i++) {
             if (i == channel - 1) {
                 this.myButtons[channel - 1].setBackgroundResource(R.drawable.ic_sbd_freq_p);
@@ -531,9 +531,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterband() {
-        int band = DataCanbus.DATA[29];
+        int band = DataCanbus.DATA[102];
         if (band == 0) {
             ((TextView) findViewById(R.id.band)).setText("FM 1");
             ((TextView) findViewById(R.id.textshow)).setText("MHz");
@@ -556,9 +556,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFreq() {
-        int freq = DataCanbus.DATA[31];
+        int freq = DataCanbus.DATA[104];
         if (freq > 5000) {
             ((TextView) findViewById(R.id.curfre)).setText(String.format("%.02f", Float.valueOf(freq / 100.0f)));
         } else if (freq > 500 && freq < 2000) {
@@ -566,9 +566,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq1() {
-        int channelfreq1 = DataCanbus.DATA[32];
+        int channelfreq1 = DataCanbus.DATA[105];
         if (channelfreq1 > 5000) {
             this.myButtons[0].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq1 / 100.0f)));
         } else if (channelfreq1 > 500 && channelfreq1 < 2000) {
@@ -576,9 +576,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq2() {
-        int channelfreq2 = DataCanbus.DATA[33];
+        int channelfreq2 = DataCanbus.DATA[106];
         if (channelfreq2 > 5000) {
             this.myButtons[1].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq2 / 100.0f)));
         } else if (channelfreq2 > 500 && channelfreq2 < 2000) {
@@ -586,9 +586,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq3() {
-        int channelfreq3 = DataCanbus.DATA[34];
+        int channelfreq3 = DataCanbus.DATA[107];
         if (channelfreq3 > 5000) {
             this.myButtons[2].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq3 / 100.0f)));
         } else if (channelfreq3 > 500 && channelfreq3 < 2000) {
@@ -596,9 +596,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq4() {
-        int channelfreq4 = DataCanbus.DATA[35];
+        int channelfreq4 = DataCanbus.DATA[108];
         if (channelfreq4 > 5000) {
             this.myButtons[3].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq4 / 100.0f)));
         } else if (channelfreq4 > 500 && channelfreq4 < 2000) {
@@ -606,9 +606,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq5() {
-        int channelfreq5 = DataCanbus.DATA[36];
+        int channelfreq5 = DataCanbus.DATA[109];
         if (channelfreq5 > 5000) {
             this.myButtons[4].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq5 / 100.0f)));
         } else if (channelfreq5 > 500 && channelfreq5 < 2000) {
@@ -616,9 +616,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterChannelFreq6() {
-        int channelfreq6 = DataCanbus.DATA[37];
+        int channelfreq6 = DataCanbus.DATA[110];
         if (channelfreq6 > 5000) {
             this.myButtons[5].setText_Freq(String.format("%.02f", Float.valueOf(channelfreq6 / 100.0f)));
         } else if (channelfreq6 > 500 && channelfreq6 < 2000) {
@@ -626,9 +626,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMode() {
-        int mode = DataCanbus.DATA[39];
+        int mode = DataCanbus.DATA[112];
         switch (mode) {
             case 0:
                 ((TextView) findViewById(R.id.mode_text)).setVisibility(8);
@@ -667,11 +667,11 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMediaState() {
-        int pageIndex = DataCanbus.DATA[27];
+        int pageIndex = DataCanbus.DATA[100];
         if (pageIndex == 2) {
-            int mMediaState = DataCanbus.DATA[40];
+            int mMediaState = DataCanbus.DATA[113];
             ((TextView) findViewById(R.id.cd_tip_show_center_tv)).setVisibility(8);
             if (mMediaState == 5) {
                 if (findViewById(R.id.cd_view).getVisibility() != 0) {
@@ -786,12 +786,12 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSongType() {
-        int songType = DataCanbus.DATA[41];
+        int songType = DataCanbus.DATA[114];
         String mId3Info = Callback_0375_SBD_WC1_ReservedCdBenTengX80.Str1;
-        int mMediaState = DataCanbus.DATA[40];
-        int trackNum = DataCanbus.DATA[42];
+        int mMediaState = DataCanbus.DATA[113];
+        int trackNum = DataCanbus.DATA[115];
         if (mMediaState == 3 || mMediaState == 4 || mMediaState == 5) {
             if (songType == 2 || songType == 3 || songType == 4) {
                 if (mId3Info != null) {
@@ -803,28 +803,28 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTrackNum() {
-        int trackNum = DataCanbus.DATA[42];
+        int trackNum = DataCanbus.DATA[115];
         ((TextView) findViewById(R.id.track_num_tv)).setText(new StringBuilder().append(trackNum).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFiles() {
-        int files = DataCanbus.DATA[38];
+        int files = DataCanbus.DATA[111];
         ((TextView) findViewById(R.id.file_num_tv)).setText(new StringBuilder().append(files).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = DataCanbus.DATA[44];
+        int playminute = DataCanbus.DATA[117];
         if (playminute > 59) {
             playminute = 59;
         }
         if (playminute < 0) {
             playminute = 0;
         }
-        int playsecond = DataCanbus.DATA[45];
+        int playsecond = DataCanbus.DATA[118];
         if (playsecond > 59) {
             playsecond = 59;
         }
@@ -834,33 +834,33 @@ public class X80Act extends BaseActivity {
         ((TextView) findViewById(R.id.time_tv)).setText(String.valueOf(playminute) + ":" + playsecond);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterInfo1() {
         String info1 = Callback_0375_SBD_WC1_ReservedCdBenTengX80.Str2;
         this.cd4infoTv[0].setText(info1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterInfo2() {
         String info2 = Callback_0375_SBD_WC1_ReservedCdBenTengX80.Str3;
         this.cd4infoTv[1].setText(info2);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterInfo3() {
         String info3 = Callback_0375_SBD_WC1_ReservedCdBenTengX80.Str4;
         this.cd4infoTv[2].setText(info3);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterInfo4() {
         String info4 = Callback_0375_SBD_WC1_ReservedCdBenTengX80.Str5;
         this.cd4infoTv[3].setText(info4);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWhichSet() {
-        int value = DataCanbus.DATA[61];
+        int value = DataCanbus.DATA[134];
         if (value == 0) {
             for (int i = 0; i < 6; i++) {
                 this.systemImage[i].setVisibility(8);
@@ -876,9 +876,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterAlc() {
-        int value = DataCanbus.DATA[62];
+        int value = DataCanbus.DATA[135];
         if (value == 0) {
             ((TextView) findViewById(R.id.x80_alc_show_tv)).setText(R.string.klc_onstar_call_alarm_off);
             return;
@@ -892,9 +892,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterXiangdu() {
-        int value = DataCanbus.DATA[63];
+        int value = DataCanbus.DATA[136];
         if (value == 1) {
             ((TextView) findViewById(R.id.x80_deng_xiangdu_tv)).setText(R.string.rzc_c4l_open);
         } else {
@@ -902,15 +902,15 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPhoneVol() {
-        int value = DataCanbus.DATA[64];
+        int value = DataCanbus.DATA[137];
         ((TextView) findViewById(R.id.x80_phone_vol_tv)).setText(new StringBuilder().append(value).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatertishiVol() {
-        int value = DataCanbus.DATA[65];
+        int value = DataCanbus.DATA[138];
         if (value == 1) {
             ((TextView) findViewById(R.id.x80_tishi_vo_tv)).setText(R.string.rzc_c4l_open);
         } else {
@@ -918,9 +918,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterlaidianShow() {
-        int value = DataCanbus.DATA[66];
+        int value = DataCanbus.DATA[139];
         if (value == 1) {
             ((TextView) findViewById(R.id.x80_laidian_show_tv)).setText(R.string.rzc_c4l_open);
         } else {
@@ -928,9 +928,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateryuyinSet() {
-        int value = DataCanbus.DATA[67];
+        int value = DataCanbus.DATA[140];
         if (value == 0) {
             ((TextView) findViewById(R.id.x80_yuyan_set_tv)).setText(R.string.xp_yinglang_car_set_first_str2);
         } else {
@@ -938,23 +938,23 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterVol() {
         ((TextView) findViewById(R.id.cd_tip_vol)).setVisibility(0);
         LauncherApplication.getInstance().removeCallbacks(this.volrun);
-        int muteValue = DataCanbus.DATA[60];
+        int muteValue = DataCanbus.DATA[133];
         if (muteValue == 1) {
             ((TextView) findViewById(R.id.cd_tip_vol)).setText(String.valueOf(getResources().getString(R.string.str_sbd_x80_yuanche_vol)) + "Mute");
         } else {
-            int value = DataCanbus.DATA[59];
+            int value = DataCanbus.DATA[132];
             ((TextView) findViewById(R.id.cd_tip_vol)).setText(String.valueOf(getResources().getString(R.string.str_sbd_x80_yuanche_vol)) + value);
         }
-        LauncherApplication.getInstance().postDelayed(this.volrun, 3000);
+        LauncherApplication.getInstance().postDelayed(this.volrun, MessageHandler.WHAT_ITEM_SELECTED);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundShowID() {
-        int value = DataCanbus.DATA[68];
+        int value = DataCanbus.DATA[141];
         if (value == 0) {
             for (int i = 0; i < 6; i++) {
                 this.soundImage[i].setVisibility(8);
@@ -970,9 +970,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundshengchang() {
-        int value = DataCanbus.DATA[69];
+        int value = DataCanbus.DATA[142];
         if (value == 0) {
             ((TextView) findViewById(R.id.x80_shengchang_tv)).setText(R.string.str_sbd_x80_shengchang_0);
         } else if (value == 1) {
@@ -982,9 +982,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundPrefect() {
-        int value = DataCanbus.DATA[70];
+        int value = DataCanbus.DATA[143];
         if (value == 0) {
             ((TextView) findViewById(R.id.x80_zuijiatingyinwei_tv)).setText(R.string.str_sbd_x80_zuijiatingyinwei_0);
             return;
@@ -998,9 +998,9 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundEQ() {
-        int value = DataCanbus.DATA[71];
+        int value = DataCanbus.DATA[144];
         if (value == 0) {
             ((TextView) findViewById(R.id.x80_eq_tv)).setText(R.string.str_sbd_x80_eq_0);
             return;
@@ -1018,27 +1018,27 @@ public class X80Act extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundLow() {
-        int value = DataCanbus.DATA[72];
+        int value = DataCanbus.DATA[145];
         ((TextView) findViewById(R.id.x80_sound_low_tv)).setText(new StringBuilder().append(value - 7).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundMiddle() {
-        int value = DataCanbus.DATA[73];
+        int value = DataCanbus.DATA[146];
         ((TextView) findViewById(R.id.x80_sound_middle_tv)).setText(new StringBuilder().append(value - 7).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSoundHigh() {
-        int value = DataCanbus.DATA[74];
+        int value = DataCanbus.DATA[147];
         ((TextView) findViewById(R.id.x80_sound_high_tv)).setText(new StringBuilder().append(value - 7).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterIsReceiverData() {
-        int value = DataCanbus.DATA[26];
+        int value = DataCanbus.DATA[99];
         if (value == 1) {
             if (((TextView) findViewById(R.id.no_data_receiver_show)).getVisibility() != 0) {
                 ((TextView) findViewById(R.id.no_data_receiver_show)).setVisibility(0);

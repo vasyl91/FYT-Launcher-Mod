@@ -7,20 +7,23 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ZhtdBmwIndexFunc extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_jianghuai_indexact);
+        //setContentView(R.layout.layout_rzc_jianghuai_indexact);
         findViewById(R.id.rzc_jianghuai_car_tire_view).setVisibility(8);
-        findViewById(R.id.rzc_jianghuai_car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc.1
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.rzc_jianghuai_car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[1000] == 5112261) {
+                    if (DataCanbus.DATA[1000] == 5112261 || DataCanbus.DATA[1000] == 3146183 || DataCanbus.DATA[1000] == 16122310) {
                         intent.setClass(ZhtdBmwIndexFunc.this, LZNewAllBBASetFunc.class);
+                    } else if (DataCanbus.DATA[1000] == 9568710) {
+                        intent.setClass(ZhtdBmwIndexFunc.this, LZNewAllBBANoICSetFunc.class);
+                    } else if (DataCanbus.DATA[1000] == 9503174) {
+                        intent.setClass(ZhtdBmwIndexFunc.this, LZNewAllFordSetFunc.class);
                     } else {
                         intent.setClass(ZhtdBmwIndexFunc.this, ZhtdBmwSetFunc.class);
                     }
@@ -30,8 +33,8 @@ public class ZhtdBmwIndexFunc extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.rzc_jianghuai_carinfo).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.rzc_jianghuai_carinfo).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -41,8 +44,10 @@ public class ZhtdBmwIndexFunc extends BaseActivity {
                         intent.setClass(ZhtdBmwIndexFunc.this, ZhtdBenzNewCarinfoAct.class);
                     } else if (DataCanbus.DATA[1000] == 131522 || DataCanbus.DATA[1000] == 459202) {
                         intent.setClass(ZhtdBmwIndexFunc.this, ZhtdAudiNewCarinfoAct.class);
-                    } else if (DataCanbus.DATA[1000] == 5112261) {
+                    } else if (DataCanbus.DATA[1000] == 5112261 || DataCanbus.DATA[1000] == 3146183 || DataCanbus.DATA[1000] == 16122310 || DataCanbus.DATA[1000] == 9568710) {
                         intent.setClass(ZhtdBmwIndexFunc.this, LZNewAllBBATireAct.class);
+                    } else if (DataCanbus.DATA[1000] == 9503174) {
+                        intent.setClass(ZhtdBmwIndexFunc.this, LZNewAllFordTireAct.class);
                     } else {
                         intent.setClass(ZhtdBmwIndexFunc.this, ZhtdBmwCarinfoAct.class);
                     }

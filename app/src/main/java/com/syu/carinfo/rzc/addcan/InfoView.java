@@ -8,12 +8,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoView extends View {
     private float angle;
     private int autoStep;
@@ -41,8 +41,8 @@ public class InfoView extends View {
         this.mini = 0;
         this.autoStep = 0;
         this.mPath = new Path();
-        this.speedH = new Handler() { // from class: com.syu.carinfo.rzc.addcan.InfoView.1
-            @Override // android.os.Handler
+        this.speedH = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message msg) {
                 if (msg.what != 1) {
                     if (InfoView.this.currenSpeed != InfoView.this.targetSpeed) {
@@ -80,8 +80,8 @@ public class InfoView extends View {
         this.paint.setAntiAlias(true);
         getWidth();
         getHeight();
-        this.bg = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_dashboard1_engine_speed);
-        this.bg_indicate = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_dashboard_indicator1);
+        //this.bg = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_dashboard1_engine_speed);
+        //this.bg_indicate = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_dashboard_indicator1);
         this.mPath.moveTo(-10.0f, 0.0f);
         this.mPath.lineTo(0.0f, 60.0f);
         this.mPath.lineTo(10.0f, 60.0f);
@@ -90,7 +90,7 @@ public class InfoView extends View {
         this.mPath.close();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.width = w;
@@ -128,7 +128,7 @@ public class InfoView extends View {
     protected void onDrawText() {
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.bg_digit != null) {
@@ -162,7 +162,7 @@ public class InfoView extends View {
         this.angle -= 121;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void speedanim() {
         setxy();
         invalidate();

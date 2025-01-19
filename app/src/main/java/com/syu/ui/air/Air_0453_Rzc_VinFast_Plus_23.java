@@ -4,28 +4,28 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0453_Rzc_VinFast_Plus_23 extends AirBase {
     public Air_0453_Rzc_VinFast_Plus_23(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0132_wc2_havah2/air_wc1_hava_17h2s.webp";
         this.mPathHighlight = "0132_wc2_havah2/air_wc1_hava_17h2s_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -84,7 +84,7 @@ public class Air_0453_Rzc_VinFast_Plus_23 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 60.0f, 132.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp / 10) + "." + (temp % 10), 60.0f, 132.0f, this.mPaint);
+            c.drawText(temp / 10 + "." + (temp % 10), 60.0f, 132.0f, this.mPaint);
         }
         int temp2 = this.DATA[28];
         if (temp2 == -1) {
@@ -94,7 +94,7 @@ public class Air_0453_Rzc_VinFast_Plus_23 extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HI", 920.0f, 132.0f, this.mPaint);
         } else {
-            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 920.0f, 132.0f, this.mPaint);
+            c.drawText(temp2 / 10 + "." + (temp2 % 10), 920.0f, 132.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

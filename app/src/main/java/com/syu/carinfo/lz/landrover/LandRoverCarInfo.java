@@ -5,18 +5,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LandRoverCarInfo extends BaseActivity implements View.OnClickListener {
     int Distance_unit = 0;
     int Oil_unit = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.lz.landrover.LandRoverCarInfo.1
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
@@ -73,19 +73,19 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0439_landrover_carinfo);
+        //setContentView(R.layout.layout_0439_landrover_carinfo);
         setListener();
     }
 
     private void setListener() {
-        ((Button) findViewById(R.id.btn_landrover_oil1_reset)).setOnClickListener(this);
-        ((Button) findViewById(R.id.btn_landrover_oil2_reset)).setOnClickListener(this);
+        findViewById(R.id.btn_landrover_oil1_reset).setOnClickListener(this);
+        findViewById(R.id.btn_landrover_oil2_reset).setOnClickListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         updateTire1Distance_delay();
@@ -94,18 +94,18 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         updateTire4Distance_delay();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_landrover_oil1_reset /* 2131428233 */:
+            case R.id.btn_landrover_oil1_reset /* 2131428225 */:
                 setCarInfo(13, 0);
                 break;
-            case R.id.btn_landrover_oil2_reset /* 2131428234 */:
+            case R.id.btn_landrover_oil2_reset /* 2131428226 */:
                 setCarInfo(13, 1);
                 break;
         }
@@ -115,7 +115,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         DataCanbus.PROXY.cmd(0, value1, value2);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
@@ -135,7 +135,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
@@ -156,10 +156,10 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
     }
 
     private void updateTire1Distance_delay() {
-        if (((ImageView) findViewById(R.id.landrover_tire1)) != null) {
+        if (findViewById(R.id.landrover_tire1) != null) {
             ((ImageView) findViewById(R.id.landrover_tire1)).setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.lz.landrover.LandRoverCarInfo.2
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     LandRoverCarInfo.this.updateTire1Distance();
                 }
@@ -167,7 +167,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire1Distance() {
         int value = DataCanbus.DATA[24];
         if (value < 7) {
@@ -176,23 +176,23 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire1 = (ImageView) findViewById(R.id.landrover_tire1);
+        ImageView mIvIconTire1 = findViewById(R.id.landrover_tire1);
         if (mIvIconTire1 != null) {
             if (value <= 20) {
                 mIvIconTire1.layout(mIvIconTire1.getLeft(), (mIvIconTire1.getTop() - 40) + ((value - 7) * 3), mIvIconTire1.getLeft() + mIvIconTire1.getWidth(), (mIvIconTire1.getTop() - 40) + ((value - 7) * 3) + mIvIconTire1.getHeight());
             } else {
-                mIvIconTire1.layout(mIvIconTire1.getLeft(), mIvIconTire1.getTop() + ((value - 20) * 1), mIvIconTire1.getLeft() + mIvIconTire1.getWidth(), mIvIconTire1.getTop() + ((value - 20) * 1) + mIvIconTire1.getHeight());
+                mIvIconTire1.layout(mIvIconTire1.getLeft(), mIvIconTire1.getTop() + ((value - 20)), mIvIconTire1.getLeft() + mIvIconTire1.getWidth(), mIvIconTire1.getTop() + ((value - 20)) + mIvIconTire1.getHeight());
             }
             mIvIconTire1.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
         }
     }
 
     private void updateTire2Distance_delay() {
-        ImageView mIvIconTire2 = (ImageView) findViewById(R.id.landrover_tire2);
+        ImageView mIvIconTire2 = findViewById(R.id.landrover_tire2);
         if (mIvIconTire2 != null) {
             mIvIconTire2.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.lz.landrover.LandRoverCarInfo.3
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     LandRoverCarInfo.this.updateTire2Distance();
                 }
@@ -200,7 +200,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire2Distance() {
         int value = DataCanbus.DATA[25];
         if (value < 7) {
@@ -209,23 +209,23 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire2 = (ImageView) findViewById(R.id.landrover_tire2);
+        ImageView mIvIconTire2 = findViewById(R.id.landrover_tire2);
         if (mIvIconTire2 != null) {
             if (value <= 20) {
                 mIvIconTire2.layout(mIvIconTire2.getLeft(), (mIvIconTire2.getTop() - 40) + ((value - 7) * 3), mIvIconTire2.getLeft() + mIvIconTire2.getWidth(), (mIvIconTire2.getTop() - 40) + ((value - 7) * 3) + mIvIconTire2.getHeight());
             } else {
-                mIvIconTire2.layout(mIvIconTire2.getLeft(), mIvIconTire2.getTop() + ((value - 20) * 1), mIvIconTire2.getLeft() + mIvIconTire2.getWidth(), mIvIconTire2.getTop() + ((value - 20) * 1) + mIvIconTire2.getHeight());
+                mIvIconTire2.layout(mIvIconTire2.getLeft(), mIvIconTire2.getTop() + ((value - 20)), mIvIconTire2.getLeft() + mIvIconTire2.getWidth(), mIvIconTire2.getTop() + ((value - 20)) + mIvIconTire2.getHeight());
             }
             mIvIconTire2.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
         }
     }
 
     private void updateTire3Distance_delay() {
-        ImageView mIvIconTire3 = (ImageView) findViewById(R.id.landrover_tire3);
+        ImageView mIvIconTire3 = findViewById(R.id.landrover_tire3);
         if (mIvIconTire3 != null) {
             mIvIconTire3.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.lz.landrover.LandRoverCarInfo.4
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     LandRoverCarInfo.this.updateTire3Distance();
                 }
@@ -233,7 +233,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire3Distance() {
         int value = DataCanbus.DATA[26];
         if (value < 7) {
@@ -242,23 +242,23 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire3 = (ImageView) findViewById(R.id.landrover_tire3);
+        ImageView mIvIconTire3 = findViewById(R.id.landrover_tire3);
         if (mIvIconTire3 != null) {
             if (value <= 20) {
                 mIvIconTire3.layout(mIvIconTire3.getLeft(), (mIvIconTire3.getTop() - 40) + ((value - 7) * 3), mIvIconTire3.getLeft() + mIvIconTire3.getWidth(), (mIvIconTire3.getTop() - 40) + ((value - 7) * 3) + mIvIconTire3.getHeight());
             } else {
-                mIvIconTire3.layout(mIvIconTire3.getLeft(), mIvIconTire3.getTop() + ((value - 20) * 1), mIvIconTire3.getLeft() + mIvIconTire3.getWidth(), mIvIconTire3.getTop() + ((value - 20) * 1) + mIvIconTire3.getHeight());
+                mIvIconTire3.layout(mIvIconTire3.getLeft(), mIvIconTire3.getTop() + ((value - 20)), mIvIconTire3.getLeft() + mIvIconTire3.getWidth(), mIvIconTire3.getTop() + ((value - 20)) + mIvIconTire3.getHeight());
             }
             mIvIconTire3.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
         }
     }
 
     private void updateTire4Distance_delay() {
-        ImageView mIvIconTire4 = (ImageView) findViewById(R.id.landrover_tire4);
+        ImageView mIvIconTire4 = findViewById(R.id.landrover_tire4);
         if (mIvIconTire4 != null) {
             mIvIconTire4.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.carinfo.lz.landrover.LandRoverCarInfo.5
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     LandRoverCarInfo.this.updateTire4Distance();
                 }
@@ -266,7 +266,7 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTire4Distance() {
         int value = DataCanbus.DATA[27];
         if (value < 7) {
@@ -275,21 +275,21 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         if (value > 30) {
             value = 30;
         }
-        ImageView mIvIconTire4 = (ImageView) findViewById(R.id.landrover_tire4);
+        ImageView mIvIconTire4 = findViewById(R.id.landrover_tire4);
         if (mIvIconTire4 != null) {
             if (value <= 20) {
                 mIvIconTire4.layout(mIvIconTire4.getLeft(), (mIvIconTire4.getTop() - 40) + ((value - 7) * 3), mIvIconTire4.getLeft() + mIvIconTire4.getWidth(), (mIvIconTire4.getTop() - 40) + ((value - 7) * 3) + mIvIconTire4.getHeight());
             } else {
-                mIvIconTire4.layout(mIvIconTire4.getLeft(), mIvIconTire4.getTop() + ((value - 20) * 1), mIvIconTire4.getLeft() + mIvIconTire4.getWidth(), mIvIconTire4.getTop() + ((value - 20) * 1) + mIvIconTire4.getHeight());
+                mIvIconTire4.layout(mIvIconTire4.getLeft(), mIvIconTire4.getTop() + ((value - 20)), mIvIconTire4.getLeft() + mIvIconTire4.getWidth(), mIvIconTire4.getTop() + ((value - 20)) + mIvIconTire4.getHeight());
             }
             mIvIconTire4.setImageDrawable(getResources().getDrawable(R.drawable.icon_landrover_tire));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSuspensioninfo() {
         int value = DataCanbus.DATA[23];
-        if (((TextView) findViewById(R.id.landrover_suspension)) != null) {
+        if (findViewById(R.id.landrover_suspension) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.landrover_suspension)).setText(R.string.driver_system_standard);
             } else if (value == 1) {
@@ -300,10 +300,10 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDriveModeinfo() {
         int value = DataCanbus.DATA[22];
-        if (((TextView) findViewById(R.id.landrover_driving_mode)) != null) {
+        if (findViewById(R.id.landrover_driving_mode) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.landrover_driving_mode)).setText(R.string.str_mode_normal);
                 return;
@@ -322,10 +322,10 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateGearinfo() {
         int value = DataCanbus.DATA[20];
-        if (((TextView) findViewById(R.id.landrover_gearposition)) != null) {
+        if (findViewById(R.id.landrover_gearposition) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.landrover_gearposition)).setText("---");
             } else if (value == 1) {
@@ -336,10 +336,10 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateHdcOnoff() {
         int value = DataCanbus.DATA[19];
-        if (((TextView) findViewById(R.id.landrover_hdc)) != null) {
+        if (findViewById(R.id.landrover_hdc) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.landrover_hdc)).setText(R.string.str_xp_mzd_cx5_auto_door_lock_mode_0);
             } else if (value == 1) {
@@ -348,62 +348,62 @@ public class LandRoverCarInfo extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFuelCons2() {
         int value = DataCanbus.DATA[11];
-        if (((TextView) findViewById(R.id.landrover_oil2)) != null) {
+        if (findViewById(R.id.landrover_oil2) != null) {
             if (this.Oil_unit == 0) {
-                ((TextView) findViewById(R.id.landrover_oil2)).setText(String.valueOf(value / 10.0f) + " l/100km");
+                ((TextView) findViewById(R.id.landrover_oil2)).setText(value / 10.0f + " l/100km");
             } else if (this.Oil_unit == 1) {
-                ((TextView) findViewById(R.id.landrover_oil2)).setText(String.valueOf(value / 10.0f) + " mpg");
+                ((TextView) findViewById(R.id.landrover_oil2)).setText(value / 10.0f + " mpg");
             } else if (this.Oil_unit == 2) {
-                ((TextView) findViewById(R.id.landrover_oil2)).setText(String.valueOf(value / 10.0f) + " km/l");
+                ((TextView) findViewById(R.id.landrover_oil2)).setText(value / 10.0f + " km/l");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFuelCons1() {
         int value = DataCanbus.DATA[10];
-        if (((TextView) findViewById(R.id.landrover_oil1)) != null) {
+        if (findViewById(R.id.landrover_oil1) != null) {
             if (this.Oil_unit == 0) {
-                ((TextView) findViewById(R.id.landrover_oil1)).setText(String.valueOf(value / 10.0f) + " l/100km");
+                ((TextView) findViewById(R.id.landrover_oil1)).setText(value / 10.0f + " l/100km");
             } else if (this.Oil_unit == 1) {
-                ((TextView) findViewById(R.id.landrover_oil1)).setText(String.valueOf(value / 10.0f) + " mpg");
+                ((TextView) findViewById(R.id.landrover_oil1)).setText(value / 10.0f + " mpg");
             } else if (this.Oil_unit == 2) {
-                ((TextView) findViewById(R.id.landrover_oil1)).setText(String.valueOf(value / 10.0f) + " km/l");
+                ((TextView) findViewById(R.id.landrover_oil1)).setText(value / 10.0f + " km/l");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTotalMileage() {
         int value = DataCanbus.DATA[9];
-        if (((TextView) findViewById(R.id.landrover_travelled)) != null) {
+        if (findViewById(R.id.landrover_travelled) != null) {
             if (this.Distance_unit == 0) {
-                ((TextView) findViewById(R.id.landrover_travelled)).setText(String.valueOf(value) + " km");
+                ((TextView) findViewById(R.id.landrover_travelled)).setText(value + " km");
             } else if (this.Distance_unit == 1) {
-                ((TextView) findViewById(R.id.landrover_travelled)).setText(String.valueOf(value) + " mil");
+                ((TextView) findViewById(R.id.landrover_travelled)).setText(value + " mil");
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateEngineSpeed() {
         int value = DataCanbus.DATA[8];
-        if (((TextView) findViewById(R.id.landrover_motor_speed)) != null) {
-            ((TextView) findViewById(R.id.landrover_motor_speed)).setText(String.valueOf(value) + " rpm");
+        if (findViewById(R.id.landrover_motor_speed) != null) {
+            ((TextView) findViewById(R.id.landrover_motor_speed)).setText(value + " rpm");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTravelableMilegae() {
         int value = DataCanbus.DATA[7];
-        if (((TextView) findViewById(R.id.landrover_driving_mileage)) != null) {
+        if (findViewById(R.id.landrover_driving_mileage) != null) {
             if (this.Distance_unit == 0) {
-                ((TextView) findViewById(R.id.landrover_driving_mileage)).setText(String.valueOf(value) + " km");
+                ((TextView) findViewById(R.id.landrover_driving_mileage)).setText(value + " km");
             } else if (this.Distance_unit == 1) {
-                ((TextView) findViewById(R.id.landrover_driving_mileage)).setText(String.valueOf(value) + " mil");
+                ((TextView) findViewById(R.id.landrover_driving_mileage)).setText(value + " mil");
             }
         }
     }

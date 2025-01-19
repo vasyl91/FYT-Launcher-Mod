@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.WallpaperCropper" parent="@android:style/Theme.Holo">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:actionBarStyle">@style/WallpaperCropperActionBar</item>
-        <item name="android:windowActionBarOverlay">true</item>
-    </style>
-    <style name="WallpaperCropperActionBar" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">#88000000</item>
-        <item name="android:displayOptions">showCustom</item>
-    </style>
-    <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar">
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:typeface">serif</item>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowFullscreen">false</item>
-        <item name="android:defaultFocusHighlightEnabled">false</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowLightStatusBar" >true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="ThemeTranslucent" parent="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
         <item name="android:windowFullscreen">false</item>
@@ -175,18 +169,27 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
-    <style name="bz408_oil_style">
-        <item name="android:textSize">30.0px</item>
-        <item name="android:textColor">#ffffffff</item>
-        <item name="android:gravity">center</item>
-        <item name="android:padding">5.0px</item>
-        <item name="android:singleLine">true</item>
+    <style name="Theme.WallpaperCropper" parent="@android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/WallpaperCropperActionBar</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
     </style>
-    <style name="bz408_oil_text_title">
-        <item name="android:textSize">35.0px</item>
-        <item name="android:textColor">#ff057cf0</item>
-        <item name="android:gravity">center</item>
-        <item name="android:padding">5.0px</item>
-        <item name="android:singleLine">true</item>
+
+    <style name="Theme.WallpaperPicker" parent="Theme.WallpaperCropper">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
+
+    <style name="WallpaperCropperActionBar" parent="android:style/Widget.Holo.ActionBar">
+        <item name="android:displayOptions">showCustom</item>
+        <item name="android:background">#88000000</item>
+    </style>
+
+    <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar">
+    </style>
+
+    <style name="ActionBarSetWallpaperStyle" parent="@android:style/Widget.Holo.ActionButton">
+        <item name="android:textColor">#ffffffff</item>
     </style>
 </resources>

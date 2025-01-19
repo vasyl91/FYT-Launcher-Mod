@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.NetworkCapabilities;
 import android.os.Handler;
 import android.os.HandlerThread;
 import com.syu.log.LogPreview;
@@ -20,10 +20,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class NetworkState extends BroadcastReceiver {
     private static Exception e;
     private static Throwable th;
@@ -35,8 +34,8 @@ public class NetworkState extends BroadcastReceiver {
     Context mContext;
     Handler mHandler;
     int space = DELAY;
-    Runnable checkNetwork = new Runnable() { // from class: com.syu.weather.NetworkState.1
-        @Override // java.lang.Runnable
+    Runnable checkNetwork = new Runnable() { 
+        @Override
         public void run() {
             NetworkState.this.ping();
             if (NetworkState.this.isNetworkConnected()) {
@@ -74,20 +73,34 @@ public class NetworkState extends BroadcastReceiver {
         this.space = space;
     }
 
-    @Override // android.content.BroadcastReceiver
+    @Override 
     public void onReceive(Context context, Intent intent) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mobNetInfo = connectivityManager.getNetworkInfo(0);
-        NetworkInfo wifiNetInfo = connectivityManager.getNetworkInfo(1);
-        boolean mobVaild = mobNetInfo != null && mobNetInfo.isConnected();
-        boolean wifiVaild = wifiNetInfo != null && wifiNetInfo.isConnected();
-        if (mobVaild || wifiVaild) {
+        if (isConnected(context)) {
             this.mHandler.removeCallbacks(this.checkNetwork);
             this.mHandler.post(this.checkNetwork);
         } else {
             this.isNetworkAvailable = false;
             this.mHandler.removeCallbacks(this.checkNetwork);
         }
+    }
+
+    private boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+        android.net.Network network = connectivityManager.getActiveNetwork();
+        if (network == null) {
+            return false;
+        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+        if (networkCapabilities == null) {
+            return false;
+        }
+        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH);
     }
 
     public final boolean ping() {
@@ -225,7 +238,7 @@ public class NetworkState extends BroadcastReceiver {
 
     public void checkNetUrl() {
         try {
-            HttpClient httpclient = new DefaultHttpClient();
+            HttpClient httpclient = HttpClientBuilder.create().build();
             HttpGet get = new HttpGet(URL_);
             get.addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4");
             HttpResponse response = httpclient.execute(get);
@@ -264,9 +277,21 @@ public class NetworkState extends BroadcastReceiver {
 
     boolean isNetworkConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mobNetInfo = connectivityManager.getNetworkInfo(0);
-        NetworkInfo wifiNetInfo = connectivityManager.getNetworkInfo(1);
-        return (mobNetInfo != null && mobNetInfo.isConnected()) || (wifiNetInfo != null && wifiNetInfo.isConnected());
+        if (connectivityManager == null) {
+            return false;
+        }
+        android.net.Network network = connectivityManager.getActiveNetwork();
+        if (network == null) {
+            return false;
+        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+        if (networkCapabilities == null) {
+            return false;
+        }
+        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+               networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH);
     }
 
     public boolean isNetworkAvailable() {

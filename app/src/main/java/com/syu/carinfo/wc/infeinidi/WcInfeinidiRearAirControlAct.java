@@ -12,26 +12,25 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.infeinidi.WcInfeinidiRearAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 47:
-                case 48:
-                    WcInfeinidiRearAirControlAct.this.updateBtnSource();
+                case 40:
+                    WcInfeinidiRearAirControlAct.this.mUpdateAirTempLeft();
                     break;
-                case 49:
+                case 43:
                     WcInfeinidiRearAirControlAct.this.mUpdateAutoOn();
                     break;
-                case 51:
+                case 44:
                     WcInfeinidiRearAirControlAct.this.mUpdatePowerOn();
                     WcInfeinidiRearAirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 52:
-                    WcInfeinidiRearAirControlAct.this.mUpdateAirTempLeft();
+                case 46:
+                case 47:
+                    WcInfeinidiRearAirControlAct.this.updateBtnSource();
                     break;
             }
         }
@@ -41,14 +40,14 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         DataCanbus.PROXY.cmd(0, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String platform = SystemProperties.get("ro.fyt.platform", "");
-        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform)) {
-            setContentView(R.layout.layout_0443_wc_infeinidi_air_rear_control);
+        if ("6315".equals(platform) || "6312".equals(platform) || "6521".equals(platform) || "6316".equals(platform) || "6318".equals(platform)) {
+            //setContentView(R.layout.layout_0443_wc_infeinidi_air_rear_control);
         } else {
-            setContentView(R.layout.layout_0443_wc_infeinidi_air_rear_control_7731);
+            //setContentView(R.layout.layout_0443_wc_infeinidi_air_rear_control_7731);
         }
         init();
     }
@@ -64,7 +63,7 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         findViewById(R.id.air_xts_auto).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -72,7 +71,7 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -80,7 +79,7 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -126,29 +125,29 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
 
     private void addUpdater() {
         DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
         DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int power = DataCanbus.DATA[49];
+        int power = DataCanbus.DATA[43];
         findViewById(R.id.air_xts_auto).setBackgroundResource(power == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[52];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -160,15 +159,15 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[51];
+        int power = DataCanbus.DATA[44];
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[51];
+        int leave = DataCanbus.DATA[44];
         if (leave < 0) {
             leave = 0;
         }
@@ -179,10 +178,10 @@ public class WcInfeinidiRearAirControlAct extends Activity implements View.OnTou
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int foot = DataCanbus.DATA[47];
-        int body = DataCanbus.DATA[48];
+        int body = DataCanbus.DATA[46];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

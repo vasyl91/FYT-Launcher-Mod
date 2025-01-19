@@ -2,7 +2,6 @@ package com.syu.carinfo.widget;
 
 import android.os.SystemClock;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ProgressInt {
     private int mCurVal;
     private long mLastMillis;

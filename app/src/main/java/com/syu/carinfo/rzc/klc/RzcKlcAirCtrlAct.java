@@ -13,21 +13,20 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
     public static RzcKlcAirCtrlAct mInstance;
     public static boolean mIsFront = false;
     boolean bNeedSend = false;
     int cmdId = -1;
     int touchState = -1;
-    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.rzc.klc.RzcKlcAirCtrlAct.1
-        @Override // java.lang.Runnable
+    Runnable airControl = new Runnable() { 
+        @Override
         public void run() {
             RzcKlcAirCtrlAct.this.setAirControl(7, 0);
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.klc.RzcKlcAirCtrlAct.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 32:
@@ -69,13 +68,13 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataCanbus.DATA[1000] == 196669 || DataCanbus.DATA[1000] == 5111869 || DataCanbus.DATA[1000] == 4784189 || DataCanbus.DATA[1000] == 2555965 || DataCanbus.DATA[1000] == 4849725 || DataCanbus.DATA[1000] == 2687037 || DataCanbus.DATA[1000] == 4063293) {
-            setContentView(R.layout.layout_0061_rzc_gm_junyue_air_control);
+            //setContentView(R.layout.layout_0061_rzc_gm_junyue_air_control);
         } else {
-            setContentView(R.layout.layout_0061_rzc_gm_all_air_control);
+            //setContentView(R.layout.layout_0061_rzc_gm_all_air_control);
         }
         init();
         mInstance = this;
@@ -105,7 +104,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         ((Button) findViewById(R.id.air_xts_rear)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -113,7 +112,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -121,12 +120,12 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         removeUpdater();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setAirControl(int cmdId, int touchState) {
         RzcKlcFunc.CAR_AIR_CONTROL(cmdId, touchState);
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
@@ -234,7 +233,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirBLowMode() {
         int win = DataCanbus.DATA[39];
         int body = DataCanbus.DATA[40];
@@ -274,7 +273,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirFront() {
         int value = DataCanbus.DATA[46];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -286,7 +285,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirRear() {
         int value = DataCanbus.DATA[33];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -298,7 +297,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[43];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -310,7 +309,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
         int value = DataCanbus.DATA[34];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -322,7 +321,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
         int value = DataCanbus.DATA[58];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -334,7 +333,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirZone() {
         int value = DataCanbus.DATA[57];
         if (((Button) findViewById(R.id.air_xts_sync)) != null) {
@@ -346,7 +345,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
         int value = DataCanbus.DATA[32];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -358,7 +357,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[37];
         int TempUnit = SystemProperties.getInt("persist.fyt.temperature", 0);
@@ -385,7 +384,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
         int temp = DataCanbus.DATA[38];
         int TempUnit = SystemProperties.getInt("persist.fyt.temperature", 0);
@@ -412,7 +411,7 @@ public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
         int level = DataCanbus.DATA[42];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());

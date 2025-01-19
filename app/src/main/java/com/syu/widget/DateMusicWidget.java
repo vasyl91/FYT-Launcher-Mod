@@ -15,6 +15,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.widget.RemoteViews;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -23,14 +24,14 @@ import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.util.Id3Info;
 import com.syu.util.Lrc;
+
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DateMusicWidget extends Widget {
     private int count;
     private String music_path_pre;
     private boolean runAnimation;
-    private Runnable runnable;
+    private final Runnable runnable;
     private static final int[] mImageRes = {ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
     private static final int[] mImageId = {ResValue.getInstance().mtu_img_ht1, ResValue.getInstance().mtu_img_hu1, ResValue.getInstance().mtu_img_mt1, ResValue.getInstance().mtu_img_mu1};
 
@@ -39,8 +40,8 @@ public class DateMusicWidget extends Widget {
         this.music_path_pre = "";
         this.count = 0;
         this.runAnimation = false;
-        this.runnable = new Runnable() { // from class: com.syu.widget.DateMusicWidget.1
-            @Override // java.lang.Runnable
+        this.runnable = new Runnable() { 
+            @Override
             public void run() {
                 Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
                 LauncherApplication.handler.postDelayed(this, 500L);
@@ -48,7 +49,8 @@ public class DateMusicWidget extends Widget {
         };
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void updateViews(RemoteViews views) {
         LogPreview.show("updateViews");
         if (Launcher.mainState == 8) {
@@ -161,13 +163,13 @@ public class DateMusicWidget extends Widget {
         long seconds = duration % 60000;
         long second = Math.round(((float) seconds) / 1000.0f);
         if (minute < 10) {
-            time = String.valueOf("") + "0";
+            time = "" + "0";
         }
-        String time2 = String.valueOf(time) + minute + ":";
+        String time2 = time + minute + ":";
         if (second < 10) {
-            time2 = String.valueOf(time2) + "0";
+            time2 = time2 + "0";
         }
-        return String.valueOf(time2) + second;
+        return time2 + second;
     }
 
     public String timeChangeParse(long duration) {
@@ -212,7 +214,8 @@ public class DateMusicWidget extends Widget {
         return output;
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
         Intent intent = new Intent(WidgetProvider.APP_WIDGET_START);
         intent.setComponent(new ComponentName("com.syu.music", "com.syu.music.MAct"));
@@ -240,17 +243,18 @@ public class DateMusicWidget extends Widget {
         return PendingIntent.getService(context, 0, new Intent(action), PendingIntent.FLAG_IMMUTABLE);
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
+        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = ResValue.getInstance().fyt_xml_dtmusicwidget;
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     protected void add() {
         super.add();
     }
 
-    @Override // com.syu.widget.Widget
+    @Override
     public void delete() {
         TimeUpdateReceiver.removeWidget(this);
         super.delete();

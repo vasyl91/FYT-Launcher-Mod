@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Process;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
     static CrashHandler mInstance;
     final String CARSH_DIR_PATH = "/sdcard/crash";
@@ -39,7 +39,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
-    @Override // java.lang.Thread.UncaughtExceptionHandler
+    @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (!handleException(ex)) {
             if (this.mDefaultHandler == null) {
@@ -70,7 +70,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             PackageInfo pi = pm.getPackageInfo(this.mContext.getPackageName(), 1);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
-                String versionCode = new StringBuilder(String.valueOf(pi.versionCode)).toString();
+                String versionCode = String.valueOf(pi.versionCode);
                 this.infos.put("versionName", versionName);
                 this.infos.put("versionCode", versionCode);
             }
@@ -83,7 +83,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         for (Map.Entry<String, String> entry : this.infos.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            sb.append(String.valueOf(key) + "=" + value + "\n");
+            sb.append(key + "=" + value + "\n");
         }
         Writer writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);

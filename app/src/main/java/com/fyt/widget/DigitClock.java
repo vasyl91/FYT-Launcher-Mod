@@ -3,27 +3,29 @@ package com.fyt.widget;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.syu.util.TimeUtil;
 import com.syu.util.Utils;
+
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class DigitClock extends RelativeLayout {
-    private Context context;
+    private final Context context;
     private IntentFilter filter;
-    private int[] images;
+    private final int[] images;
     private int mDotHeight;
     private int mDotWidth;
     private int mViewHeight;
     private int mViewWidth;
     private Handler timeHandler;
-    private Runnable timeRunnable;
+    private final Runnable timeRunnable;
     private TextView tv1;
     private TextView tv2;
     private TextView tv3;
@@ -33,8 +35,8 @@ public class DigitClock extends RelativeLayout {
     public DigitClock(Context context, AttributeSet arg1, int arg2) {
         super(context, arg1, arg2);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
-        this.timeRunnable = new Runnable() { // from class: com.fyt.widget.DigitClock.1
-            @Override // java.lang.Runnable
+        this.timeRunnable = new Runnable() { 
+            @Override
             public void run() {
                 DigitClock.this.postInvalidate();
                 DateFormat.is24HourFormat(DigitClock.this.context);
@@ -47,13 +49,13 @@ public class DigitClock extends RelativeLayout {
                 } else if (len > 3) {
                     DigitClock.this.tv1.setVisibility(android.view.View.VISIBLE);
                 }
-                int index = Integer.parseInt(new String(new char[]{times[0]}));
+                int index = Integer.parseInt(String.valueOf(times[0]));
                 DigitClock.this.tv1.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index, DigitClock.this.images.length))]);
-                int index2 = Integer.parseInt(new String(new char[]{times[1]}));
+                int index2 = Integer.parseInt(String.valueOf(times[1]));
                 DigitClock.this.tv2.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index2, DigitClock.this.images.length))]);
-                int index3 = Integer.parseInt(new String(new char[]{times[2]}));
+                int index3 = Integer.parseInt(String.valueOf(times[2]));
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
-                int index4 = Integer.parseInt(new String(new char[]{times[3]}));
+                int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
@@ -66,8 +68,8 @@ public class DigitClock extends RelativeLayout {
     public DigitClock(Context context, AttributeSet arg1) {
         super(context, arg1);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
-        this.timeRunnable = new Runnable() { // from class: com.fyt.widget.DigitClock.1
-            @Override // java.lang.Runnable
+        this.timeRunnable = new Runnable() { 
+            @Override
             public void run() {
                 DigitClock.this.postInvalidate();
                 DateFormat.is24HourFormat(DigitClock.this.context);
@@ -80,13 +82,13 @@ public class DigitClock extends RelativeLayout {
                 } else if (len > 3) {
                     DigitClock.this.tv1.setVisibility(View.VISIBLE);
                 }
-                int index = Integer.parseInt(new String(new char[]{times[0]}));
+                int index = Integer.parseInt(String.valueOf(times[0]));
                 DigitClock.this.tv1.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index, DigitClock.this.images.length))]);
-                int index2 = Integer.parseInt(new String(new char[]{times[1]}));
+                int index2 = Integer.parseInt(String.valueOf(times[1]));
                 DigitClock.this.tv2.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index2, DigitClock.this.images.length))]);
-                int index3 = Integer.parseInt(new String(new char[]{times[2]}));
+                int index3 = Integer.parseInt(String.valueOf(times[2]));
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
-                int index4 = Integer.parseInt(new String(new char[]{times[3]}));
+                int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
@@ -99,8 +101,8 @@ public class DigitClock extends RelativeLayout {
     public DigitClock(Context context) {
         super(context);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
-        this.timeRunnable = new Runnable() { // from class: com.fyt.widget.DigitClock.1
-            @Override // java.lang.Runnable
+        this.timeRunnable = new Runnable() { 
+            @Override
             public void run() {
                 DigitClock.this.postInvalidate();
                 DateFormat.is24HourFormat(DigitClock.this.context);
@@ -113,13 +115,13 @@ public class DigitClock extends RelativeLayout {
                 } else if (len > 3) {
                     DigitClock.this.tv1.setVisibility(View.VISIBLE);
                 }
-                int index = Integer.parseInt(new String(new char[]{times[0]}));
+                int index = Integer.parseInt(String.valueOf(times[0]));
                 DigitClock.this.tv1.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index, DigitClock.this.images.length))]);
-                int index2 = Integer.parseInt(new String(new char[]{times[1]}));
+                int index2 = Integer.parseInt(String.valueOf(times[1]));
                 DigitClock.this.tv2.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index2, DigitClock.this.images.length))]);
-                int index3 = Integer.parseInt(new String(new char[]{times[2]}));
+                int index3 = Integer.parseInt(String.valueOf(times[2]));
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
-                int index4 = Integer.parseInt(new String(new char[]{times[3]}));
+                int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
@@ -173,7 +175,7 @@ public class DigitClock extends RelativeLayout {
     }
 
     private void timeRun() {
-        this.timeHandler = new Handler();
+        this.timeHandler = new Handler(Looper.getMainLooper());
         this.timeHandler.post(this.timeRunnable);
     }
 

@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0443_WC2_19focus extends AirBase {
     public Air_0443_WC2_19focus(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0443_wc2_19focus/air_wc2_19focus_n.webp";
         this.mPathHighlight = "0443_wc2_19focus/air_wc2_19focus_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -119,9 +119,9 @@ public class Air_0443_WC2_19focus extends AirBase {
         } else {
             int temp2 = temp * 5;
             if (unit == 1) {
-                c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10) + "℃", 51.0f, 58.0f, this.mPaint);
+                c.drawText(temp2 / 10 + "." + (temp2 % 10) + "℃", 51.0f, 58.0f, this.mPaint);
             } else {
-                c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10) + "℉", 51.0f, 58.0f, this.mPaint);
+                c.drawText(temp2 / 10 + "." + (temp2 % 10) + "℉", 51.0f, 58.0f, this.mPaint);
             }
         }
         int temp3 = this.DATA[19];
@@ -134,12 +134,12 @@ public class Air_0443_WC2_19focus extends AirBase {
         } else {
             int temp4 = temp3 * 5;
             if (unit == 1) {
-                c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10) + "℃", 738.0f, 58.0f, this.mPaint);
+                c.drawText(temp4 / 10 + "." + (temp4 % 10) + "℃", 738.0f, 58.0f, this.mPaint);
             } else {
-                c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10) + "℉", 738.0f, 58.0f, this.mPaint);
+                c.drawText(temp4 / 10 + "." + (temp4 % 10) + "℉", 738.0f, 58.0f, this.mPaint);
             }
         }
-        c.drawText(new StringBuilder().append(this.DATA[22]).toString(), 968.0f, 58.0f, this.mPaint);
+        c.drawText(String.valueOf(this.DATA[22]), 968.0f, 58.0f, this.mPaint);
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {
             canvas.scale(LauncherApplication.getScreenWidth() / 1024.0f, LauncherApplication.getScreenWidth() / 1024.0f);

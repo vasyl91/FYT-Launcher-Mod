@@ -3,7 +3,6 @@ package com.android.launcher66;
 import android.content.ContentValues;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 class FolderInfo extends ItemInfo {
     ArrayList<ShortcutInfo> contents = new ArrayList<>();
     ArrayList<FolderListener> listeners = new ArrayList<>();
@@ -46,7 +45,7 @@ class FolderInfo extends ItemInfo {
         }
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     void onAddToDatabase(ContentValues values) {
         super.onAddToDatabase(values);
         values.put("title", this.title.toString());
@@ -68,13 +67,13 @@ class FolderInfo extends ItemInfo {
         }
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     void unbind() {
         super.unbind();
         this.listeners.clear();
     }
 
-    @Override // com.android.launcher66.ItemInfo
+    @Override
     public String toString() {
         return "FolderInfo(id=" + this.id + " type=" + this.itemType + " container=" + this.container + " screen=" + this.screenId + " cellX=" + this.cellX + " cellY=" + this.cellY + " spanX=" + this.spanX + " spanY=" + this.spanY + " dropPos=" + this.dropPos + ")";
     }

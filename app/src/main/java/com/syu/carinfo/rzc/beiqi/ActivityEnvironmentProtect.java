@@ -7,69 +7,68 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityEnvironmentProtect extends Activity {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.beiqi.ActivityEnvironmentProtect.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 91:
+                case 103:
                     ActivityEnvironmentProtect.this.updateDriveMiles(DataCanbus.DATA[updateCode]);
                     break;
-                case 99:
+                case 111:
                     ActivityEnvironmentProtect.this.updateCO2Lev(DataCanbus.DATA[updateCode]);
                     break;
-                case 100:
+                case 112:
                     ActivityEnvironmentProtect.this.updateTreeLev(DataCanbus.DATA[updateCode]);
                     break;
-                case 101:
+                case 113:
                     ActivityEnvironmentProtect.this.updateTitleLevelMiles(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_227_environment_protect);
+        //setContentView(R.layout.layout_227_environment_protect);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(6, new int[]{57}, null, null);
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTreeLev(int value) {
         if (((TextView) findViewById(R.id.tv_277_equal_plant_tree)) != null) {
             ((TextView) findViewById(R.id.tv_277_equal_plant_tree)).setText(new StringBuilder(String.valueOf(value)).toString());
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCO2Lev(int value) {
         if (((TextView) findViewById(R.id.tv_277_co2)) != null) {
             if (DataCanbus.DATA[1000] == 786659 || DataCanbus.DATA[1000] == 1376483) {
@@ -80,7 +79,7 @@ public class ActivityEnvironmentProtect extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTitleLevelMiles(int value) {
         int titleLevelId;
         if (((TextView) findViewById(R.id.tv_227_level_title)) != null) {
@@ -131,7 +130,7 @@ public class ActivityEnvironmentProtect extends Activity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDriveMiles(int value) {
         int titleLevelId;
         if (((TextView) findViewById(R.id.tv_277_drivered)) != null) {

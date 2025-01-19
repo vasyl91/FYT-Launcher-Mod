@@ -2,6 +2,7 @@ package com.fyt.car;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -73,7 +74,7 @@ public class DataNotifier implements Runnable {
         this.REFRESHERS.clear();
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public synchronized void run() {
         Iterator<IUiRefresher> it = this.REFRESHERS.iterator();
         while (it.hasNext()) {

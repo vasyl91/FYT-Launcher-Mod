@@ -11,56 +11,55 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickListener {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.andra.GmAndraCarInfoTripB.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 119:
-                case 128:
+                case 180:
+                case 189:
                     GmAndraCarInfoTripB.this.updateCarinfo1();
                     break;
-                case 120:
-                case 129:
+                case 181:
+                case 190:
                     GmAndraCarInfoTripB.this.updateCarinfo2();
                     break;
-                case 121:
-                case 130:
+                case 182:
+                case 191:
                     GmAndraCarInfoTripB.this.updateCarinfo3();
                     break;
-                case 122:
-                case 131:
+                case 183:
+                case 192:
                     GmAndraCarInfoTripB.this.updateCarinfo4();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0061_rzc_gm_tripb_carinfo);
+        //setContentView(R.layout.layout_0061_rzc_gm_tripb_carinfo);
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(11, new int[]{74, 3}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
                 dialog(R.string.str_trip_B);
                 break;
         }
@@ -70,11 +69,11 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(String.valueOf(getResources().getString(R.string.confirm_reset)) + " " + getResources().getString(stringId) + " " + getResources().getString(R.string.data));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.GmAndraCarInfoTripB.2
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.rzc.andra.GmAndraCarInfoTripB.2.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(3, new int[]{96, 2}, null, null);
                     }
@@ -82,8 +81,8 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.GmAndraCarInfoTripB.3
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
@@ -91,34 +90,34 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
         builder.create().show();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[180].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[181].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[182].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[183].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[189].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[190].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[191].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[192].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[180].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[181].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[182].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[183].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[189].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[190].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[191].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[192].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo4() {
-        int value = DataCanbus.DATA[131];
-        int unit = DataCanbus.DATA[122];
+        int value = DataCanbus.DATA[192];
+        int unit = DataCanbus.DATA[183];
         if (unit == 1) {
             ((TextView) findViewById(R.id.tv_text4)).setText(String.valueOf(value * 0.1f) + " miles/gal");
         } else {
@@ -126,10 +125,10 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo3() {
-        int value = DataCanbus.DATA[130];
-        int unit = DataCanbus.DATA[121];
+        int value = DataCanbus.DATA[191];
+        int unit = DataCanbus.DATA[182];
         if (unit == 1) {
             ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(value * 0.1f) + " gal");
         } else {
@@ -137,10 +136,10 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo2() {
-        int value = DataCanbus.DATA[129];
-        int unit = DataCanbus.DATA[120];
+        int value = DataCanbus.DATA[190];
+        int unit = DataCanbus.DATA[181];
         if (unit == 1) {
             ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value) + " mph");
         } else {
@@ -148,10 +147,10 @@ public class GmAndraCarInfoTripB extends BaseActivity implements View.OnClickLis
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateCarinfo1() {
-        int value = DataCanbus.DATA[128];
-        int unit = DataCanbus.DATA[119];
+        int value = DataCanbus.DATA[189];
+        int unit = DataCanbus.DATA[180];
         if (unit == 1) {
             ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value * 0.1f) + " mile");
         } else {

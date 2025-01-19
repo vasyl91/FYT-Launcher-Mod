@@ -10,11 +10,10 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.ref.WeakReference;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class OPELCarKeyActivity extends BaseActivity {
     boolean isPress = false;
-    private View.OnTouchListener mTouch = new View.OnTouchListener() { // from class: com.syu.carinfo.opel.OPELCarKeyActivity.1
-        @Override // android.view.View.OnTouchListener
+    private View.OnTouchListener mTouch = new View.OnTouchListener() { 
+        @Override
         @SuppressLint({"ClickableViewAccessibility"})
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
@@ -33,14 +32,14 @@ public class OPELCarKeyActivity extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_opel_car_key);
+        //setContentView(R.layout.layout_opel_car_key);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.opel_ok)).setOnTouchListener(this.mTouch);
         ((Button) findViewById(R.id.opel_setting)).setOnTouchListener(this.mTouch);
@@ -67,57 +66,57 @@ public class OPELCarKeyActivity extends BaseActivity {
             this.mReference = new WeakReference<>(v);
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             View view = this.mReference.get();
             while (view != null && OPELCarKeyActivity.this.isPress) {
                 switch (view.getId()) {
-                    case R.id.opel_fmam /* 2131432130 */:
+                    case R.id.opel_fmam /* 2131432077 */:
                         DataCanbus.PROXY.cmd(1, 6);
                         break;
-                    case R.id.opel_cdmp3 /* 2131432131 */:
+                    case R.id.opel_cdmp3 /* 2131432078 */:
                         DataCanbus.PROXY.cmd(1, 7);
                         break;
-                    case R.id.opel_left /* 2131432132 */:
+                    case R.id.opel_left /* 2131432079 */:
                         DataCanbus.PROXY.cmd(1, 4);
                         break;
-                    case R.id.opel_ok /* 2131432133 */:
+                    case R.id.opel_ok /* 2131432080 */:
                         DataCanbus.PROXY.cmd(1, 1);
                         break;
-                    case R.id.opel_right /* 2131432134 */:
+                    case R.id.opel_right /* 2131432081 */:
                         DataCanbus.PROXY.cmd(1, 5);
                         break;
-                    case R.id.opel_bc /* 2131432135 */:
+                    case R.id.opel_bc /* 2131432082 */:
                         DataCanbus.PROXY.cmd(1, 3);
                         break;
-                    case R.id.opel_setting /* 2131432136 */:
+                    case R.id.opel_setting /* 2131432083 */:
                         DataCanbus.PROXY.cmd(1, 2);
                         break;
-                    case R.id.opel_1 /* 2131432137 */:
+                    case R.id.opel_1 /* 2131432084 */:
                         DataCanbus.PROXY.cmd(1, 8);
                         break;
-                    case R.id.opel_2 /* 2131432138 */:
+                    case R.id.opel_2 /* 2131432085 */:
                         DataCanbus.PROXY.cmd(1, 9);
                         break;
-                    case R.id.opel_3 /* 2131432139 */:
+                    case R.id.opel_3 /* 2131432086 */:
                         DataCanbus.PROXY.cmd(1, 10);
                         break;
-                    case R.id.opel_4 /* 2131432140 */:
+                    case R.id.opel_4 /* 2131432087 */:
                         DataCanbus.PROXY.cmd(1, 11);
                         break;
-                    case R.id.opel_5 /* 2131432141 */:
+                    case R.id.opel_5 /* 2131432088 */:
                         DataCanbus.PROXY.cmd(1, 12);
                         break;
-                    case R.id.opel_6 /* 2131432142 */:
+                    case R.id.opel_6 /* 2131432089 */:
                         DataCanbus.PROXY.cmd(1, 13);
                         break;
-                    case R.id.opel_7 /* 2131432143 */:
+                    case R.id.opel_7 /* 2131432090 */:
                         DataCanbus.PROXY.cmd(1, 14);
                         break;
-                    case R.id.opel_8 /* 2131432144 */:
+                    case R.id.opel_8 /* 2131432091 */:
                         DataCanbus.PROXY.cmd(1, 15);
                         break;
-                    case R.id.opel_9 /* 2131432145 */:
+                    case R.id.opel_9 /* 2131432092 */:
                         DataCanbus.PROXY.cmd(1, 16);
                         break;
                 }

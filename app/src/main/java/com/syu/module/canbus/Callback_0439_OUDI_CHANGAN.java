@@ -1,13 +1,13 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0439_OUDI_Changan;
+//import com.syu.ui.air.Air_0439_OUDI_Changan;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0439_OUDI_CHANGAN extends CallbackCanbusBase {
     public static final int CMD_AIR_CTRL = 0;
     public static final int CMD_SET_CTRL = 1;
@@ -114,7 +114,7 @@ public class Callback_0439_OUDI_CHANGAN extends CallbackCanbusBase {
     public static final int U_PRESSURE_RR_VLOW = 58;
     public static final int U_SEAT_PLEASE = 67;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 99; i++) {
@@ -130,13 +130,13 @@ public class Callback_0439_OUDI_CHANGAN extends CallbackCanbusBase {
         for (int i2 = 69; i2 < 75; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
-        AirHelper.getInstance().buildUi(new Air_0439_OUDI_Changan(LauncherApplication.getInstance()));
+        //AirHelper.getInstance().buildUi(new Air_0439_OUDI_Changan(LauncherApplication.getInstance()));
         for (int i3 = 76; i3 < 98; i3++) {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 76; i < 98; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(AirHelper.SHOW_AND_REFRESH);
@@ -148,7 +148,7 @@ public class Callback_0439_OUDI_CHANGAN extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 99) {
             HandlerCanbus.update(updateCode, ints);

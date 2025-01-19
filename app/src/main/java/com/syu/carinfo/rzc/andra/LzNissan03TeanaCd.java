@@ -11,76 +11,75 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 99:
+                case 111:
                     LzNissan03TeanaCd.this.mUpdateCd6State();
                     break;
-                case 100:
+                case 112:
                     LzNissan03TeanaCd.this.mUpdateCd5State();
                     break;
-                case 101:
+                case 113:
                     LzNissan03TeanaCd.this.mUpdateCd4State();
                     break;
-                case 102:
+                case 114:
                     LzNissan03TeanaCd.this.mUpdateCd3State();
                     break;
-                case 103:
+                case 115:
                     LzNissan03TeanaCd.this.mUpdateCd2State();
                     break;
-                case 104:
+                case 116:
                     LzNissan03TeanaCd.this.mUpdateCd1State();
                     break;
-                case 105:
+                case 117:
                     LzNissan03TeanaCd.this.mUpdateCdRpt();
                     break;
-                case 106:
+                case 118:
                     LzNissan03TeanaCd.this.mUpdateCdRandom();
                     break;
-                case 107:
+                case 119:
                     LzNissan03TeanaCd.this.mUpdateCdState();
                     break;
-                case 108:
+                case 120:
                     LzNissan03TeanaCd.this.updateDiscNum(value);
                     break;
-                case 109:
+                case 121:
                     LzNissan03TeanaCd.this.updatecdTrack();
                     break;
-                case 110:
-                case 111:
+                case 122:
+                case 123:
                     LzNissan03TeanaCd.this.updatecdTime();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_lz_nissan_03teana_carcd);
+        //setContentView(R.layout.layout_0453_lz_nissan_03teana_carcd);
         init();
     }
 
     public void init() {
-        ((Button) findViewById(R.id.lexus_cd_playpause)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_playpause)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                if (DataCanbus.DATA[107] == 1) {
+                if (DataCanbus.DATA[119] == 1) {
                     DataCanbus.PROXY.cmd(4, new int[]{1}, null, null);
                 } else {
                     DataCanbus.PROXY.cmd(4, new int[2], null, null);
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_rpt)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_rpt)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[105];
+                int value = DataCanbus.DATA[117];
                 if (value == 0) {
                     DataCanbus.PROXY.cmd(4, new int[]{7, 2}, null, null);
                     return;
@@ -94,10 +93,10 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_random)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[106];
+                int value = DataCanbus.DATA[118];
                 if (value == 0) {
                     DataCanbus.PROXY.cmd(4, new int[]{6, 1}, null, null);
                 } else if (value == 1) {
@@ -107,26 +106,26 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
                 }
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_prev)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_prev)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{3}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_next)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_next)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{2}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_prevdisc)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_prevdisc)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{9}, null, null);
             }
         });
-        ((Button) findViewById(R.id.lexus_cd_nextdisc)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.andra.LzNissan03TeanaCd.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.lexus_cd_nextdisc)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(4, new int[]{8}, null, null);
             }
@@ -135,7 +134,7 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         ((Button) findViewById(R.id.lexus_cd_skipf)).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         FuncMain.setChannel(13);
@@ -143,30 +142,30 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(4, new int[]{5, 1}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(4, new int[]{4, 1}, null, null);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.lexus_cd_skipb /* 2131427844 */:
+                case R.id.lexus_cd_skipb /* 2131427860 */:
                     DataCanbus.PROXY.cmd(4, new int[]{5}, null, null);
                     break;
-                case R.id.lexus_cd_skipf /* 2131427847 */:
+                case R.id.lexus_cd_skipf /* 2131427863 */:
                     DataCanbus.PROXY.cmd(4, new int[]{4}, null, null);
                     break;
             }
@@ -175,40 +174,40 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd1State() {
-        int value = DataCanbus.DATA[104];
+        int value = DataCanbus.DATA[116];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd1)).setText(R.string.jeep_playstate1);
@@ -219,9 +218,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd2State() {
-        int value = DataCanbus.DATA[103];
+        int value = DataCanbus.DATA[115];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd2)).setText(R.string.jeep_playstate1);
@@ -232,9 +231,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd3State() {
-        int value = DataCanbus.DATA[102];
+        int value = DataCanbus.DATA[114];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd3)).setText(R.string.jeep_playstate1);
@@ -245,9 +244,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd4State() {
-        int value = DataCanbus.DATA[101];
+        int value = DataCanbus.DATA[113];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd4)).setText(R.string.jeep_playstate1);
@@ -258,9 +257,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd5State() {
-        int value = DataCanbus.DATA[100];
+        int value = DataCanbus.DATA[112];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd5)).setText(R.string.jeep_playstate1);
@@ -271,9 +270,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCd6State() {
-        int value = DataCanbus.DATA[99];
+        int value = DataCanbus.DATA[111];
         switch (value) {
             case 0:
                 ((TextView) findViewById(R.id.dj_lexus_cd6)).setText(R.string.jeep_playstate1);
@@ -284,9 +283,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRpt() {
-        int On = DataCanbus.DATA[105];
+        int On = DataCanbus.DATA[117];
         switch (On) {
             case 1:
                 ((TextView) findViewById(R.id.tv_text1)).setText("Rpt:All disc");
@@ -303,9 +302,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdRandom() {
-        int On = DataCanbus.DATA[106];
+        int On = DataCanbus.DATA[118];
         switch (On) {
             case 1:
                 ((TextView) findViewById(R.id.tv_text2)).setText("Random:All disc");
@@ -319,9 +318,9 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCdState() {
-        int On = DataCanbus.DATA[107];
+        int On = DataCanbus.DATA[119];
         switch (On) {
             case 1:
                 ((TextView) findViewById(R.id.tv_text3)).setText(R.string.jeep_playstate2);
@@ -345,13 +344,13 @@ public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener 
     }
 
     public void updatecdTrack() {
-        int value1 = DataCanbus.DATA[109];
+        int value1 = DataCanbus.DATA[121];
         ((TextView) findViewById(R.id.dj_lexus_cd_track)).setText(String.format("TRACK: %d", Integer.valueOf(value1)));
     }
 
     public void updatecdTime() {
-        int value3 = DataCanbus.DATA[111];
-        int value4 = DataCanbus.DATA[110];
+        int value3 = DataCanbus.DATA[123];
+        int value4 = DataCanbus.DATA[122];
         ((TextView) findViewById(R.id.dj_lexus_cd_time)).setText(String.format("%d%d:%d%d", Integer.valueOf(value4 / 10), Integer.valueOf(value4 % 10), Integer.valueOf(value3 / 10), Integer.valueOf(value3 % 10)));
     }
 

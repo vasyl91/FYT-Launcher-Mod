@@ -9,109 +9,109 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAToyotaLexusLS460AirControlAct_SP mInstance;
     public static boolean mIsFront = false;
     int pagenum = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAToyotaLexusLS460AirControlAct_SP.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 60:
-                case 111:
+                case 10:
+                case 42:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdatePowerOn();
                     break;
-                case 61:
+                case 11:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAcOn();
                     break;
-                case 62:
-                case 231:
+                case 12:
+                case 54:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateCycle();
                     break;
-                case 64:
+                case 13:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAutoOn();
                     break;
-                case 65:
+                case 14:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateSyncOn();
                     break;
-                case 66:
+                case 15:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateFrontDefrost();
                     break;
-                case 70:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterAirWindLevelLeft();
-                    break;
-                case 71:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempLeft();
-                    break;
-                case 72:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRight();
-                    break;
-                case 73:
+                case 16:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateRearDefrost();
                     break;
-                case 74:
+                case 18:
+                case 19:
+                case 20:
+                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSource();
+                    break;
+                case 21:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterAirWindLevelLeft();
+                    break;
+                case 22:
+                case 23:
+                case 24:
+                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSourceRight();
+                    break;
+                case 27:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempLeft();
+                    break;
+                case 28:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRight();
+                    break;
+                case 29:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatHeatLeft();
+                    break;
+                case 30:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatHeatRight();
+                    break;
+                case 31:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatBlowLeft();
+                    break;
+                case 32:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatBlowRight();
+                    break;
+                case 33:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateFlowerOn();
+                    break;
+                case 37:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempLeft();
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRight();
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRear();
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRearRight();
                     break;
-                case 108:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateFlowerOn();
-                    break;
-                case 110:
+                case 40:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRear();
                     break;
-                case 113:
-                case 114:
-                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSourceRear();
-                    break;
-                case 115:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateRearAutoOn();
-                    break;
-                case 116:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterAirWindLevelRear();
-                    break;
-                case 117:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateRearLockOn();
-                    break;
-                case 118:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatHeatLeft();
-                    break;
-                case 119:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatHeatRight();
-                    break;
-                case 153:
-                case 154:
-                case 155:
-                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSource();
-                    break;
-                case 156:
-                case 157:
-                case 158:
-                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSourceRight();
-                    break;
-                case 161:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatBlowLeft();
-                    break;
-                case 162:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterSeatBlowRight();
-                    break;
-                case 177:
-                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateMaxAcOn();
-                    break;
-                case 214:
+                case 41:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirTempRearRight();
                     break;
-                case 232:
+                case 43:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateRearAutoOn();
+                    break;
+                case 44:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdaterAirWindLevelRear();
+                    break;
+                case 46:
+                case 47:
+                    PAToyotaLexusLS460AirControlAct_SP.this.updateBtnSourceRear();
+                    break;
+                case 49:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirBlowAutoLeft();
                     break;
-                case 233:
+                case 50:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdateAirBlowAutoRight();
                     break;
-                case 234:
+                case 53:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateMaxAcOn();
+                    break;
+                case 67:
+                    PAToyotaLexusLS460AirControlAct_SP.this.mUpdateRearLockOn();
+                    break;
+                case 80:
                     PAToyotaLexusLS460AirControlAct_SP.this.mUpdatePurifierOn();
                     break;
             }
@@ -122,10 +122,10 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         DataCanbus.PROXY.cmd(22, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_toyota_lexusls460_air_sp);
+        //setContentView(R.layout.layout_0374_pa_toyota_lexusls460_air_sp);
         init();
         mInstance = this;
     }
@@ -166,7 +166,7 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         findViewById(R.id.air_pa_jeep_wind_plus_rear).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -174,7 +174,7 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -182,7 +182,7 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -240,22 +240,22 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
             case R.id.air_xts_seatwin_right /* 2131427454 */:
                 data0 = 14;
                 break;
-            case R.id.air_xts_mode_munits /* 2131427455 */:
+            case R.id.air_xts_mode_munits /* 2131427497 */:
                 data0 = 69;
                 break;
-            case R.id.air_xts_mode_plus /* 2131427456 */:
+            case R.id.air_xts_mode_plus /* 2131427498 */:
                 data0 = 67;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data0 = 16;
-                break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 68;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 20;
                 break;
-            case R.id.tv_sp_front /* 2131427929 */:
+            case R.id.air_xts_dual /* 2131427566 */:
+                data0 = 16;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 68;
+                break;
+            case R.id.tv_sp_front /* 2131427932 */:
                 this.pagenum = 0;
                 findViewById(R.id.veiw_air_front).setVisibility(0);
                 findViewById(R.id.veiw_air_rear).setVisibility(8);
@@ -263,7 +263,7 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
                 ((TextView) findViewById(R.id.tv_sp_rear)).setTextColor(Color.parseColor("#666666"));
                 mUpdatePowerOn();
                 break;
-            case R.id.tv_sp_rear /* 2131427930 */:
+            case R.id.tv_sp_rear /* 2131427933 */:
                 this.pagenum = 1;
                 findViewById(R.id.veiw_air_front).setVisibility(8);
                 findViewById(R.id.veiw_air_rear).setVisibility(0);
@@ -271,34 +271,34 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
                 ((TextView) findViewById(R.id.tv_sp_rear)).setTextColor(Color.parseColor("#ffffff"));
                 mUpdatePowerOn();
                 break;
-            case R.id.air_pa_jeep_auto_rear /* 2131427937 */:
+            case R.id.air_pa_jeep_auto_rear /* 2131427940 */:
                 data0 = 45;
                 break;
-            case R.id.air_pa_jeep_temp_left_plus_rear /* 2131427938 */:
+            case R.id.air_pa_jeep_temp_left_plus_rear /* 2131427941 */:
                 data0 = 39;
                 break;
-            case R.id.air_pa_jeep_temp_left_munits_rear /* 2131427940 */:
+            case R.id.air_pa_jeep_temp_left_munits_rear /* 2131427943 */:
                 data0 = 38;
                 break;
-            case R.id.air_pa_jeep_temp_right_plus_rear /* 2131427942 */:
+            case R.id.air_pa_jeep_temp_right_plus_rear /* 2131427945 */:
                 data0 = 66;
                 break;
-            case R.id.air_pa_jeep_temp_right_munits_rear /* 2131427944 */:
+            case R.id.air_pa_jeep_temp_right_munits_rear /* 2131427947 */:
                 data0 = 65;
                 break;
-            case R.id.air_pa_jeep_wind_minuts_rear /* 2131427948 */:
+            case R.id.air_pa_jeep_wind_minuts_rear /* 2131427951 */:
                 data0 = 40;
                 break;
-            case R.id.air_pa_jeep_wind_plus_rear /* 2131427950 */:
+            case R.id.air_pa_jeep_wind_plus_rear /* 2131427953 */:
                 data0 = 41;
                 break;
-            case R.id.air_pa_jeep_mode_rear_plus /* 2131428016 */:
+            case R.id.air_pa_jeep_mode_rear_plus /* 2131428019 */:
                 data0 = 43;
                 break;
-            case R.id.air_xts_flower /* 2131428017 */:
+            case R.id.air_xts_flower /* 2131428020 */:
                 data0 = 32;
                 break;
-            case R.id.air_xts_purifier /* 2131428018 */:
+            case R.id.air_xts_purifier /* 2131428021 */:
                 data0 = 80;
                 break;
         }
@@ -313,102 +313,102 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[60].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[61].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[64].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[231].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[177].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[66].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[73].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[232].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[233].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[232].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[233].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[214].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[74].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[80].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[60].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[61].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[64].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[231].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[177].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[66].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[73].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[232].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[233].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[232].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[233].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[214].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[74].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[80].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[66];
+        int front = DataCanbus.DATA[15];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_air_pa_jeep_front_n : R.drawable.ic_air_pa_jeep_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[73];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_air_pa_jeep_rear_n : R.drawable.ic_air_pa_jeep_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowRight() {
-        int value = DataCanbus.DATA[162];
+        int value = DataCanbus.DATA[32];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_air_pa_jeep_seatwin_right0);
@@ -425,9 +425,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatRight() {
-        int value = DataCanbus.DATA[119];
+        int value = DataCanbus.DATA[30];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_air_pa_jeep_seathot_right0);
@@ -444,9 +444,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatHeatLeft() {
-        int value = DataCanbus.DATA[118];
+        int value = DataCanbus.DATA[29];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_air_pa_jeep_seathot_left0);
@@ -463,9 +463,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterSeatBlowLeft() {
-        int value = DataCanbus.DATA[161];
+        int value = DataCanbus.DATA[31];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_air_pa_jeep_seatwin_left0);
@@ -482,16 +482,16 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateMaxAcOn() {
-        int power = DataCanbus.DATA[177];
+        int power = DataCanbus.DATA[53];
         findViewById(R.id.air_xts_purifier).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_purifier_n : R.drawable.ic_air_pa_jeep_purifier_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[62];
-        int auto = DataCanbus.DATA[231];
+        int cycle = DataCanbus.DATA[12];
+        int auto = DataCanbus.DATA[54];
         if (auto == 1) {
             if (cycle == 0) {
                 findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_air_pa_lexus_cycle2);
@@ -511,61 +511,73 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateSyncOn() {
-        int acOn = DataCanbus.DATA[65];
-        findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_4zone_n : R.drawable.ic_air_pa_jeep_4zone_p);
+        int acOn = DataCanbus.DATA[14];
+        switch (DataCanbus.DATA[1000]) {
+            case FinalCanbus.CAR_PA_BNR_Toyota_LS460_06 /* 6095245 */:
+                findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_4zone_n : R.drawable.ic_air_pa_jeep_4zone_p);
+                break;
+            case FinalCanbus.CAR_PA_BNR_Toyota_GS_06 /* 6160781 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_IS_06 /* 6226317 */:
+            case FinalCanbus.CAR_PA_BNR_Toyota_ES_06 /* 6291853 */:
+                findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_dual_n : R.drawable.ic_air_pa_jeep_dual_p);
+                break;
+            case FinalCanbus.CAR_PA_BNR_Toyota_GX460_10 /* 6357389 */:
+                findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_3zone_n : R.drawable.ic_air_pa_jeep_3zone_p);
+                break;
+        }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[64];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_auto_n : R.drawable.ic_air_pa_jeep_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearLockOn() {
-        int acOn = DataCanbus.DATA[117];
+        int acOn = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_rearlock_n : R.drawable.ic_air_pa_jeep_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearAutoOn() {
-        int acOn = DataCanbus.DATA[115];
+        int acOn = DataCanbus.DATA[43];
         findViewById(R.id.air_pa_jeep_auto_rear).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_rearauto_n : R.drawable.ic_air_pa_jeep_rearauto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePurifierOn() {
-        int acOn = DataCanbus.DATA[234];
+        int acOn = DataCanbus.DATA[80];
         findViewById(R.id.air_xts_purifier).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_purifier_n : R.drawable.ic_air_pa_jeep_purifier_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFlowerOn() {
-        int acOn = DataCanbus.DATA[108];
+        int acOn = DataCanbus.DATA[33];
         findViewById(R.id.air_xts_flower).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_flower_n : R.drawable.ic_air_pa_jeep_flower_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAcOn() {
-        int acOn = DataCanbus.DATA[61];
+        int acOn = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(acOn == 0 ? R.drawable.ic_air_pa_jeep_ac_n : R.drawable.ic_air_pa_jeep_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[60];
+        int power = DataCanbus.DATA[10];
         if (this.pagenum == 1) {
-            power = DataCanbus.DATA[111];
+            power = DataCanbus.DATA[42];
         }
         findViewById(R.id.air_xts_power).setBackgroundResource(power == 0 ? R.drawable.ic_air_pa_jeep_power_n : R.drawable.ic_air_pa_jeep_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRear() {
-        int unit = DataCanbus.DATA[74];
-        int temp = DataCanbus.DATA[110];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[40];
         if (((TextView) findViewById(R.id.air_pa_jeep_temp_left_rear)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.air_pa_jeep_temp_left_rear)).setText("LOW");
@@ -585,10 +597,10 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRearRight() {
-        int unit = DataCanbus.DATA[74];
-        int temp = DataCanbus.DATA[214];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[41];
         if (((TextView) findViewById(R.id.air_pa_jeep_temp_right_rear)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.air_pa_jeep_temp_right_rear)).setText("LOW");
@@ -608,9 +620,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlowAutoLeft() {
-        int auto = DataCanbus.DATA[232];
+        int auto = DataCanbus.DATA[49];
         if (((TextView) findViewById(R.id.tv_air_mode_auto_left)) != null) {
             if (auto == 1) {
                 ((TextView) findViewById(R.id.tv_air_mode_auto_left)).setText("AUTO");
@@ -620,9 +632,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirBlowAutoRight() {
-        int auto = DataCanbus.DATA[233];
+        int auto = DataCanbus.DATA[50];
         if (((TextView) findViewById(R.id.tv_air_mode_auto_right)) != null) {
             if (auto == 1) {
                 ((TextView) findViewById(R.id.tv_air_mode_auto_right)).setText("AUTO");
@@ -632,10 +644,10 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int unit = DataCanbus.DATA[74];
-        int temp = DataCanbus.DATA[71];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -655,10 +667,10 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int unit = DataCanbus.DATA[74];
-        int temp = DataCanbus.DATA[72];
+        int unit = DataCanbus.DATA[37];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -678,9 +690,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelRear() {
-        int leave = DataCanbus.DATA[116];
+        int leave = DataCanbus.DATA[44];
         switch (leave) {
             case 0:
                 findViewById(R.id.air_pa_jeep_wind_lev_rear).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
@@ -709,9 +721,9 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[70];
+        int leave = DataCanbus.DATA[21];
         switch (leave) {
             case 0:
                 findViewById(R.id.air_pa_jeep_wind_lev).setBackgroundResource(R.drawable.ic_air_pa_jeep_wind0);
@@ -743,11 +755,11 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int body = DataCanbus.DATA[154];
-        int window = DataCanbus.DATA[153];
-        int foot = DataCanbus.DATA[155];
+        int body = DataCanbus.DATA[19];
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;
@@ -790,11 +802,11 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRight() {
-        int body = DataCanbus.DATA[157];
-        int window = DataCanbus.DATA[156];
-        int foot = DataCanbus.DATA[158];
+        int body = DataCanbus.DATA[23];
+        int window = DataCanbus.DATA[22];
+        int foot = DataCanbus.DATA[24];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;
@@ -837,10 +849,10 @@ public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSourceRear() {
-        int foot_rear = DataCanbus.DATA[114];
-        int body_rear = DataCanbus.DATA[113];
+        int foot_rear = DataCanbus.DATA[47];
+        int body_rear = DataCanbus.DATA[46];
         int mode_rear = 0;
         if (foot_rear == 1) {
             mode_rear = 0 | 1;

@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
@@ -14,7 +15,6 @@ import com.syu.module.canbus.Callback_0439_RZC_TOYOTA_HuangGuan;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityCarRadio extends Activity implements View.OnTouchListener {
     public static ActivityCarRadio mInst;
     public static boolean mIsFront = false;
@@ -27,8 +27,8 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
     private final int[] FREQ_PRE = {0, 875, 901, 981, 1061, 1080, 875};
     int num = 0;
     int curnum = 0;
-    Runnable mCalTime = new Runnable() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.1
-        @Override // java.lang.Runnable
+    Runnable mCalTime = new Runnable() { 
+        @Override
         public void run() {
             ActivityCarRadio.this.num++;
             if (ActivityCarRadio.this.num == 3 && ActivityCarRadio.this.curnum != 0) {
@@ -39,33 +39,33 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
         }
     };
     boolean flag = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.2
-        @Override // com.syu.module.IUiNotify
+    private final IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 51:
+                case 99:
                     ActivityCarRadio.this.mUpdaterRadioCurChannel();
                     break;
-                case 52:
+                case 100:
                     ActivityCarRadio.this.mUpdaterRadioCurFreq();
                     break;
-                case 53:
+                case 101:
                     ActivityCarRadio.this.mUpdaterRadioCurrentChannelPreset();
                     break;
-                case 54:
+                case 102:
                     ActivityCarRadio.this.updateRadioState();
                     break;
-                case 55:
+                case 103:
                     ActivityCarRadio.this.mUpdaterRadioChannelPreset();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_429_carradio);
+        //setContentView(R.layout.layout_429_carradio);
         mInst = this;
         createUI();
         setListener();
@@ -85,45 +85,45 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
         HandlerUI.getInstance().removeCallbacks(this.mCalTime);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mSetCurFrq(int value) {
         this.flag = true;
         DataCanbus.PROXY.cmd(0, 3, value);
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_am_radio0 /* 2131430083 */:
+                case R.id.btn_am_radio0 /* 2131430039 */:
                     this.curnum = 1;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio1 /* 2131430084 */:
+                case R.id.btn_am_radio1 /* 2131430040 */:
                     this.curnum = 2;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio2 /* 2131430085 */:
+                case R.id.btn_am_radio2 /* 2131430041 */:
                     this.curnum = 3;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio3 /* 2131430086 */:
+                case R.id.btn_am_radio3 /* 2131430042 */:
                     this.curnum = 4;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio4 /* 2131430087 */:
+                case R.id.btn_am_radio4 /* 2131430043 */:
                     this.curnum = 5;
                     mUpdatermCalTime(true);
                     break;
-                case R.id.btn_am_radio5 /* 2131430088 */:
+                case R.id.btn_am_radio5 /* 2131430044 */:
                     this.curnum = 6;
                     mUpdatermCalTime(true);
                     break;
             }
         } else if (event.getAction() == 1) {
             switch (v.getId()) {
-                case R.id.btn_am_radio0 /* 2131430083 */:
+                case R.id.btn_am_radio0 /* 2131430039 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -137,7 +137,7 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case R.id.btn_am_radio1 /* 2131430084 */:
+                case R.id.btn_am_radio1 /* 2131430040 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -151,7 +151,7 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case R.id.btn_am_radio2 /* 2131430085 */:
+                case R.id.btn_am_radio2 /* 2131430041 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -165,7 +165,7 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case R.id.btn_am_radio3 /* 2131430086 */:
+                case R.id.btn_am_radio3 /* 2131430042 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -179,7 +179,7 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case R.id.btn_am_radio4 /* 2131430087 */:
+                case R.id.btn_am_radio4 /* 2131430043 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -193,7 +193,7 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                         }
                     }
                     break;
-                case R.id.btn_am_radio5 /* 2131430088 */:
+                case R.id.btn_am_radio5 /* 2131430044 */:
                     mUpdatermCalTime(false);
                     this.curnum = 0;
                     this.num = 0;
@@ -213,37 +213,37 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
     }
 
     private void createUI() {
-        this.mFmRadio[0] = (Button) findViewById(R.id.btn_am_radio0);
-        this.mFmRadio[1] = (Button) findViewById(R.id.btn_am_radio1);
-        this.mFmRadio[2] = (Button) findViewById(R.id.btn_am_radio2);
-        this.mFmRadio[3] = (Button) findViewById(R.id.btn_am_radio3);
-        this.mFmRadio[4] = (Button) findViewById(R.id.btn_am_radio4);
-        this.mFmRadio[5] = (Button) findViewById(R.id.btn_am_radio5);
+        this.mFmRadio[0] = findViewById(R.id.btn_am_radio0);
+        this.mFmRadio[1] = findViewById(R.id.btn_am_radio1);
+        this.mFmRadio[2] = findViewById(R.id.btn_am_radio2);
+        this.mFmRadio[3] = findViewById(R.id.btn_am_radio3);
+        this.mFmRadio[4] = findViewById(R.id.btn_am_radio4);
+        this.mFmRadio[5] = findViewById(R.id.btn_am_radio5);
     }
 
     private void setListener() {
-        ((Button) findViewById(R.id.btn_am_radio0)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_am_radio1)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_am_radio2)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_am_radio3)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_am_radio4)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.btn_am_radio5)).setOnTouchListener(this);
-        ((Button) findViewById(R.id.freqm)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_am_radio0).setOnTouchListener(this);
+        findViewById(R.id.btn_am_radio1).setOnTouchListener(this);
+        findViewById(R.id.btn_am_radio2).setOnTouchListener(this);
+        findViewById(R.id.btn_am_radio3).setOnTouchListener(this);
+        findViewById(R.id.btn_am_radio4).setOnTouchListener(this);
+        findViewById(R.id.btn_am_radio5).setOnTouchListener(this);
+        findViewById(R.id.freqm).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, 9, 1);
                 DataCanbus.PROXY.cmd(2, 9, 0);
             }
         });
-        ((Button) findViewById(R.id.freqp)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.freqp).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, 8, 1);
                 DataCanbus.PROXY.cmd(2, 8, 0);
             }
         });
-        ((Button) findViewById(R.id.btn_band)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.5
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_band).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (ActivityCarRadio.Current_Band == 1) {
                     DataCanbus.PROXY.cmd(2, 5, 1);
@@ -257,28 +257,28 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dj.huangguan.ActivityCarRadio.6
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(0, 3, ActivityCarRadio.Current_preset_station);
             }
         });
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
         DataCanbus.PROXY.cmd(1, 16);
         FuncMain.setChannel(11);
-        if (DataCanbus.DATA[1000] != 590253 && DataCanbus.DATA[1000] != 655789 && DataCanbus.DATA[1000] != 721325 && DataCanbus.DATA[1000] != 786861 && DataCanbus.DATA[1000] != 852397 && DataCanbus.DATA[1000] != 917933 && DataCanbus.DATA[1000] != 983469 && DataCanbus.DATA[50] != 1) {
+        if (DataCanbus.DATA[1000] != 590253 && DataCanbus.DATA[1000] != 655789 && DataCanbus.DATA[1000] != 721325 && DataCanbus.DATA[1000] != 786861 && DataCanbus.DATA[1000] != 852397 && DataCanbus.DATA[1000] != 917933 && DataCanbus.DATA[1000] != 983469 && DataCanbus.DATA[98] != 1) {
             DataCanbus.PROXY.cmd(2, 5, 1);
             DataCanbus.PROXY.cmd(2, 5, 0);
         }
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -286,24 +286,24 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurChannel() {
-        int value = DataCanbus.DATA[51];
+        int value = DataCanbus.DATA[99];
         if (value == 1 || value == 2) {
             ((TextView) findViewById(R.id.channel)).setText("FM" + (value == 1 ? "" : "2"));
             ((TextView) findViewById(R.id.band)).setText("MHZ");
@@ -314,52 +314,52 @@ public class ActivityCarRadio extends Activity implements View.OnTouchListener {
         Current_Band = value;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRadioState() {
-        if (((TextView) findViewById(R.id.tv_radio_state)) != null) {
-            int i = DataCanbus.DATA[54];
+        if (findViewById(R.id.tv_radio_state) != null) {
+            int i = DataCanbus.DATA[102];
             ((TextView) findViewById(R.id.tv_radio_state)).setText("");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurFreq() {
-        int value = DataCanbus.DATA[52];
+        int value = DataCanbus.DATA[100];
         if (value == 0) {
             value = 8750;
         }
         if (Current_Band == 17 || Current_Band == 16) {
-            ((TextView) findViewById(R.id.freq)).setText(new StringBuilder().append(value).toString());
+            ((TextView) findViewById(R.id.freq)).setText(String.valueOf(value));
         } else if (DataCanbus.DATA[1000] == 6947255 || DataCanbus.DATA[1000] == 1245636) {
-            ((TextView) findViewById(R.id.freq)).setText(new StringBuilder(String.valueOf(value / 100.0f)).toString());
+            ((TextView) findViewById(R.id.freq)).setText(String.valueOf(value / 100.0f));
         } else {
-            ((TextView) findViewById(R.id.freq)).setText(new StringBuilder(String.valueOf(value / 10.0f)).toString());
+            ((TextView) findViewById(R.id.freq)).setText(String.valueOf(value / 10.0f));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioChannelPreset() {
         if (Current_Band == 17 || Current_Band == 16) {
             for (int i = 0; i < 6; i++) {
-                this.mFmRadio[i].setText(new StringBuilder().append(Callback_0429_DJ_XP1_TOYOTA_12Crown.CHANNEL_FREQ_PRESET[i + 1]).toString());
+                this.mFmRadio[i].setText(String.valueOf(Callback_0429_DJ_XP1_TOYOTA_12Crown.CHANNEL_FREQ_PRESET[i + 1]));
             }
             return;
         }
         for (int i2 = 0; i2 < 6; i2++) {
             if (DataCanbus.DATA[1000] == 6947255 || DataCanbus.DATA[1000] == 1245636) {
-                this.mFmRadio[i2].setText(new StringBuilder(String.valueOf(Callback_0439_RZC_TOYOTA_HuangGuan.CHANNEL_FREQ_PRESET[i2 + 1] / 100.0f)).toString());
+                this.mFmRadio[i2].setText(String.valueOf(Callback_0439_RZC_TOYOTA_HuangGuan.CHANNEL_FREQ_PRESET[i2 + 1] / 100.0f));
             } else {
-                this.mFmRadio[i2].setText(new StringBuilder(String.valueOf(Callback_0429_DJ_XP1_TOYOTA_12Crown.CHANNEL_FREQ_PRESET[i2 + 1] / 10.0f)).toString());
+                this.mFmRadio[i2].setText(String.valueOf(Callback_0429_DJ_XP1_TOYOTA_12Crown.CHANNEL_FREQ_PRESET[i2 + 1] / 10.0f));
             }
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRadioCurrentChannelPreset() {
-        int value = DataCanbus.DATA[53];
+        int value = DataCanbus.DATA[101];
         this.mFmRadio[Current_preset_station - 1].setBackgroundResource(R.drawable.bk_button);
         if (value >= 1 && value <= 6) {
-            Current_preset_station = DataCanbus.DATA[53];
+            Current_preset_station = DataCanbus.DATA[101];
         }
         if (Current_preset_station >= 1 && Current_preset_station <= 6) {
             this.mFmRadio[Current_preset_station - 1].setBackgroundResource(R.drawable.ic_btn_sp);

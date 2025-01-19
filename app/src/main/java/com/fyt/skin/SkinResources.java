@@ -13,9 +13,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class SkinResources {
-    private Resources appResources;
+    private final Resources appResources;
     protected boolean isDefaultSkin = true;
-    private Context mContext;
+    private final Context mContext;
     private String mSkinPkgName;
     private Resources skinResources;
 
@@ -32,9 +32,9 @@ public class SkinResources {
 
     public int getIdentifier(int resid) {
         if (!this.isDefaultSkin) {
-            //String resName = this.appResources.getResourceEntryName(resid);
-            //String resType = this.appResources.getResourceTypeName(resid);
-            int skinid = this.getIdentifier(resid);
+            String resName = this.appResources.getResourceEntryName(resid);
+            String resType = this.appResources.getResourceTypeName(resid);
+            int skinid = this.skinResources.getIdentifier(resName, resType, this.mSkinPkgName);
             return skinid;
         }
         return resid;

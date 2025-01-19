@@ -11,18 +11,13 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
-public class WCCommpassActi extends BaseActivity {
-    int iCompassArea = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.WCCommpassActi.1
-        @Override // com.syu.module.IUiNotify
+public class WCCommpassActi extends BaseActivity implements View.OnClickListener {
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode] & 255;
             switch (updateCode) {
-                case 47:
-                    WCCommpassActi.this.mUpdaterValue2();
-                    break;
-                case 48:
+                case 119:
                     switch (value) {
                         case 1:
                             ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text1)).setText(R.string.str_244_als2);
@@ -31,254 +26,305 @@ public class WCCommpassActi extends BaseActivity {
                             ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text1)).setText(R.string.str_244_als1);
                             break;
                     }
-                case 85:
+                case 154:
+                    WCCommpassActi.this.mUpdaterValue2();
+                    break;
+                case 155:
                     WCCommpassActi.this.updateRightTurnLightTime();
                     break;
-                case 91:
-                    WCCommpassActi.this.updateA6D61();
-                    break;
-                case 92:
-                    WCCommpassActi.this.updateA6D60();
-                    break;
-                case 105:
-                    WCCommpassActi.this.mUpdaterBackCarWidth();
-                    break;
-                case 106:
-                    WCCommpassActi.this.mUpdaterBackCarView();
-                    break;
-                case 107:
-                    WCCommpassActi.this.mUpdaterAutoGuid();
-                    break;
-                case 108:
-                    WCCommpassActi.this.mUpdaterStaticGuid();
-                    break;
-                case 112:
-                    if (((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext2)) != null) {
-                        ((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext2)).setChecked(value == 1);
+                case 156:
+                    if (((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext4)) != null) {
+                        ((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext4)).setChecked(value == 1);
                         break;
                     }
-                case 113:
+                case 166:
+                    WCCommpassActi.this.mUpdaterBackCarWidth();
+                    break;
+                case 167:
+                    WCCommpassActi.this.mUpdaterBackCarView();
+                    break;
+                case 168:
+                    WCCommpassActi.this.mUpdaterAutoGuid();
+                    break;
+                case 169:
+                    WCCommpassActi.this.mUpdaterStaticGuid();
+                    break;
+                case 173:
+                    switch (value) {
+                        case 1:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text6)).setText(R.string.str_parallel_parking);
+                            break;
+                        default:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text6)).setText(R.string.str_return_parking);
+                            break;
+                    }
+                case 174:
                     if (((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext3)) != null) {
                         ((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value == 1);
                         break;
+                    }
+                case 209:
+                    if (((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext5)) != null) {
+                        ((CheckedTextView) WCCommpassActi.this.findViewById(R.id.ctv_checkedtext5)).setChecked(value == 1);
+                        break;
+                    }
+                case 210:
+                    switch (value) {
+                        case 1:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text3)).setText(R.string.str_previous_screen);
+                            break;
+                        case 2:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text3)).setText(R.string.str_back_camera_wide_angle);
+                            break;
+                        case 3:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text3)).setText(R.string.str_back_camera_standard);
+                            break;
+                        default:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text3)).setText(R.string.str_back_screen_and_panorama);
+                            break;
+                    }
+                case 211:
+                    switch (value) {
+                        case 1:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text4)).setText(R.string.str_previous_screen);
+                            break;
+                        case 2:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text4)).setText(R.string.str_forward_screen_only);
+                            break;
+                        case 3:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text4)).setText(R.string.str_left_and_right_screen);
+                            break;
+                        default:
+                            ((TextView) WCCommpassActi.this.findViewById(R.id.tv_text4)).setText(R.string.str_forward_screen_and_panorama);
+                            break;
                     }
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_15crv_compass);
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.2
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[48] - 1;
-                if (value < 0) {
-                    value = 1;
+        //setContentView(R.layout.layout_wc_15crv_compass);
+        init();
+    }
+
+    @Override
+    public void init() {
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext1), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext3), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext4), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext5), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext7), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext8), this);
+        setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext9), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus1), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus1), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus2), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus2), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus3), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus3), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus4), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus4), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus5), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus5), this);
+        setSelfClick((Button) findViewById(R.id.btn_minus6), this);
+        setSelfClick((Button) findViewById(R.id.btn_plus6), this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value = DataCanbus.DATA[119];
+                int value2 = value - 1;
+                if (value2 < 0) {
+                    value2 = 1;
                 }
-                DataCanbus.PROXY.cmd(110, new int[]{21, value}, null, null);
-            }
-        });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.3
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[48] + 1;
-                if (value > 1) {
-                    value = 0;
+                DataCanbus.PROXY.cmd(110, new int[]{21, value2}, null, null);
+                break;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value3 = DataCanbus.DATA[119];
+                int value4 = value3 + 1;
+                if (value4 > 1) {
+                    value4 = 0;
                 }
-                DataCanbus.PROXY.cmd(110, new int[]{21, value}, null, null);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.4
-            @Override // android.view.View.OnClickListener
-            public void onClick(View arg0) {
-                int value = DataCanbus.DATA[47] & 255;
+                DataCanbus.PROXY.cmd(110, new int[]{21, value4}, null, null);
+                break;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value5 = DataCanbus.DATA[155];
+                int value6 = value5 - 1;
+                if (value6 < 0) {
+                    value6 = 1;
+                }
+                DataCanbus.PROXY.cmd(110, 8, value6);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value7 = DataCanbus.DATA[155];
+                int value8 = value7 + 1;
+                if (value8 > 1) {
+                    value8 = 0;
+                }
+                DataCanbus.PROXY.cmd(110, 8, value8);
+                break;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value9 = DataCanbus.DATA[210];
+                int value10 = value9 - 1;
+                if (value10 < 0) {
+                    value10 = 3;
+                }
+                DataCanbus.PROXY.cmd(110, 19, value10);
+                break;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value11 = DataCanbus.DATA[210];
+                int value12 = value11 + 1;
+                if (value12 > 3) {
+                    value12 = 0;
+                }
+                DataCanbus.PROXY.cmd(110, 19, value12);
+                break;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value13 = DataCanbus.DATA[211];
+                int value14 = value13 - 1;
+                if (value14 < 0) {
+                    value14 = 3;
+                }
+                DataCanbus.PROXY.cmd(110, 18, value14);
+                break;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value15 = DataCanbus.DATA[211];
+                int value16 = value15 + 1;
+                if (value16 > 3) {
+                    value16 = 0;
+                }
+                DataCanbus.PROXY.cmd(110, 18, value16);
+                break;
+            case R.id.btn_minus5 /* 2131427467 */:
+                int value17 = DataCanbus.DATA[166] & 255;
+                DataCanbus.PROXY.cmd(110, 13, value17 == 0 ? 7 : 6);
+                break;
+            case R.id.btn_plus5 /* 2131427469 */:
+                int value18 = DataCanbus.DATA[166] & 255;
+                DataCanbus.PROXY.cmd(110, 13, value18 == 0 ? 7 : 6);
+                break;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value19 = DataCanbus.DATA[173] & 255;
+                DataCanbus.PROXY.cmd(110, 17, value19 != 0 ? 0 : 1);
+                break;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value20 = DataCanbus.DATA[173] & 255;
+                DataCanbus.PROXY.cmd(110, 17, value20 != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value21 = DataCanbus.DATA[154] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
-                int[] iArr = new int[1];
-                iArr[0] = value != 0 ? 0 : 1;
-                remoteModuleProxy.cmd(0, iArr, null, null);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.5
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[85] & 255;
-                DataCanbus.PROXY.cmd(109, value == 0 ? 1 : 0);
-            }
-        });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.6
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[91] & 255;
-                if (value > 0) {
-                    value--;
-                }
-                DataCanbus.PROXY.cmd(2, 7, value);
-            }
-        });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.7
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[91] & 255;
-                if (value < 3) {
-                    value++;
-                }
-                DataCanbus.PROXY.cmd(2, 7, value);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.8
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[92] & 255;
-                DataCanbus.PROXY.cmd(2, 8, value == 0 ? 1 : 0);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.9
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[105] & 255;
-                DataCanbus.PROXY.cmd(110, 13, value == 0 ? 7 : 6);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.10
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[106] & 255;
-                DataCanbus.PROXY.cmd(110, 13, value == 0 ? 5 : 4);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.11
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[107] & 255;
-                DataCanbus.PROXY.cmd(110, 13, value == 0 ? 3 : 2);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.12
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[108] & 255;
-                DataCanbus.PROXY.cmd(110, 13, value == 0 ? 1 : 0);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.13
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[112] & 255;
-                DataCanbus.PROXY.cmd(110, 17, value == 0 ? 1 : 0);
-            }
-        });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.honda.WCCommpassActi.14
-            @Override // android.view.View.OnClickListener
-            public void onClick(View v) {
-                int value = DataCanbus.DATA[113] & 255;
-                DataCanbus.PROXY.cmd(110, 16, value == 0 ? 1 : 0);
-            }
-        });
+                int[] iArr = new int[2];
+                iArr[0] = 12;
+                iArr[1] = value21 == 0 ? 1 : 0;
+                remoteModuleProxy.cmd(110, iArr, null, null);
+                break;
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                int value22 = DataCanbus.DATA[174] & 255;
+                DataCanbus.PROXY.cmd(110, 16, value22 != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                int value23 = DataCanbus.DATA[156] & 255;
+                DataCanbus.PROXY.cmd(110, 14, value23 != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                int value24 = DataCanbus.DATA[209] & 255;
+                DataCanbus.PROXY.cmd(110, 20, value24 != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                int value25 = DataCanbus.DATA[167] & 255;
+                DataCanbus.PROXY.cmd(110, 13, value25 == 0 ? 5 : 4);
+                break;
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                int value26 = DataCanbus.DATA[168] & 255;
+                DataCanbus.PROXY.cmd(110, 13, value26 == 0 ? 3 : 2);
+                break;
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                int value27 = DataCanbus.DATA[169] & 255;
+                DataCanbus.PROXY.cmd(110, 13, value27 != 0 ? 0 : 1);
+                break;
+        }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[85].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[173].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[174].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[209].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[210].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[211].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[85].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[173].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[174].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[209].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[210].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[211].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterStaticGuid() {
-        int value = DataCanbus.DATA[108] & 255;
+        int value = DataCanbus.DATA[169] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext9)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAutoGuid() {
-        int value = DataCanbus.DATA[107] & 255;
+        int value = DataCanbus.DATA[168] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext8)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBackCarView() {
-        int value = DataCanbus.DATA[106] & 255;
+        int value = DataCanbus.DATA[167] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext7)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterBackCarWidth() {
-        int value = DataCanbus.DATA[105] & 255;
-        if (((CheckedTextView) findViewById(R.id.ctv_checkedtext6)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(value == 1);
-        }
+        int value = DataCanbus.DATA[166] & 255;
         ((TextView) findViewById(R.id.tv_text5)).setText(value == 0 ? R.string.str_17crv_parking_spaces0 : R.string.str_17crv_parking_spaces1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int value = DataCanbus.DATA[47] & 255;
+        int value = DataCanbus.DATA[154] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRightTurnLightTime() {
-        int value = DataCanbus.DATA[85] & 255;
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(value == 1);
+        int value = DataCanbus.DATA[155] & 255;
         ((TextView) findViewById(R.id.tv_text2)).setText(value == 0 ? "0S" : "2S");
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public void updateA6D60() {
-        int value = DataCanbus.DATA[92] & 255;
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setChecked(value != 0);
-        ((TextView) findViewById(R.id.tv_text4)).setText(value == 0 ? R.string.wc_372_volumestr0 : R.string.wc_372_surroundstr0);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public void updateA6D61() {
-        int value = DataCanbus.DATA[91] & 255;
-        switch (value) {
-            case 1:
-                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_air_low);
-                break;
-            case 2:
-                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_air_middle);
-                break;
-            case 3:
-                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.klc_air_high);
-                break;
-            default:
-                ((TextView) findViewById(R.id.tv_text3)).setText(R.string.wc_372_volumestr0);
-                break;
-        }
     }
 }

@@ -10,31 +10,30 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActMingJueZS_Set extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.mingjueruiteng.ActMingJueZS_Set.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 41:
+                case 114:
                     ActMingJueZS_Set.this.uSteerFeel(DataCanbus.DATA[updateCode]);
                     break;
-                case 42:
+                case 115:
                     ActMingJueZS_Set.this.uSearchCar(DataCanbus.DATA[updateCode]);
                     break;
-                case 43:
+                case 116:
                     ActMingJueZS_Set.this.uComeHome(DataCanbus.DATA[updateCode]);
                     break;
             }
         }
     };
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.rzc.mingjueruiteng.ActMingJueZS_Set.2
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             int val;
             switch (v.getId()) {
-                case R.id.mingjue_steerfeel_m /* 2131432789 */:
-                    int val2 = DataCanbus.DATA[41] & 15;
+                case R.id.mingjue_steerfeel_m /* 2131432716 */:
+                    int val2 = DataCanbus.DATA[114] & 15;
                     if (val2 == 0) {
                         val = 2;
                     } else {
@@ -42,27 +41,27 @@ public class ActMingJueZS_Set extends BaseActivity {
                     }
                     ActMingJueZS_Set.this.sendCmd(3, val);
                     break;
-                case R.id.mingjue_steerfeel_p /* 2131432791 */:
-                    ActMingJueZS_Set.this.sendCmd(3, ((DataCanbus.DATA[41] & 15) + 1) % 3);
+                case R.id.mingjue_steerfeel_p /* 2131432718 */:
+                    ActMingJueZS_Set.this.sendCmd(3, ((DataCanbus.DATA[114] & 15) + 1) % 3);
                     break;
-                case R.id.mingjue_searchcar_indicator /* 2131432793 */:
-                    ActMingJueZS_Set.this.sendCmd(2, (DataCanbus.DATA[42] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_searchcar_indicator /* 2131432720 */:
+                    ActMingJueZS_Set.this.sendCmd(2, (DataCanbus.DATA[115] & 15) != 1 ? 1 : 0);
                     break;
-                case R.id.mingjue_comehomewithme /* 2131432796 */:
-                    ActMingJueZS_Set.this.sendCmd(1, (DataCanbus.DATA[43] & 15) != 1 ? 1 : 0);
+                case R.id.mingjue_comehomewithme /* 2131432723 */:
+                    ActMingJueZS_Set.this.sendCmd(1, (DataCanbus.DATA[116] & 15) != 1 ? 1 : 0);
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_mingjuezs_set);
+        //setContentView(R.layout.layout_rzc_mingjuezs_set);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setClick((CheckedTextView) findViewById(R.id.mingjue_searchcar_indicator));
         setClick((CheckedTextView) findViewById(R.id.mingjue_comehomewithme));
@@ -70,30 +69,30 @@ public class ActMingJueZS_Set extends BaseActivity {
         setClick((Button) findViewById(R.id.mingjue_steerfeel_p));
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void setClick(View v) {
         if (v != null) {
             v.setOnClickListener(this.mClick);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCmd(int cmd, int para) {
         DataCanbus.PROXY.cmd(3, new int[]{3, cmd, para}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
     }
 
     protected void uSteerFeel(int i) {

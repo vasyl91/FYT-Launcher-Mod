@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.PopupWindow;
+
 import com.syu.canbus.JumpPage;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
@@ -16,7 +17,6 @@ import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class AirHelper implements Runnable {
     public static boolean sDisableAirWindowLocal;
     private int mTick;
@@ -24,8 +24,8 @@ public class AirHelper implements Runnable {
     private static final AirHelper INSTANCE = new AirHelper();
     public static int sAirWindowEnable = 1;
     public static boolean sFlagShowAirWindow = true;
-    public static final IUiNotify SHOW_AND_REFRESH = new IUiNotify() { // from class: com.syu.ui.air.AirHelper.3
-        @Override // com.syu.module.IUiNotify
+    public static final IUiNotify SHOW_AND_REFRESH = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (AirHelper.sFlagShowAirWindow) {
                 if (DataCanbus.DATA[1000] == 589841 || DataCanbus.DATA[1000] == 720913 || DataCanbus.DATA[1000] == 655377 || DataCanbus.DATA[1000] == 786449 || DataCanbus.DATA[1000] == 851985 || DataCanbus.DATA[1000] == 917521 || DataCanbus.DATA[1000] == 983057 || DataCanbus.DATA[1000] == 1048593 || DataCanbus.DATA[1000] == 1114129 || DataCanbus.DATA[1000] == 1179665 || DataCanbus.DATA[1000] == 1245201 || DataCanbus.DATA[1000] == 1310737 || DataCanbus.DATA[1000] == 1376273 || DataCanbus.DATA[1000] == 1441809 || DataCanbus.DATA[1000] == 1507345 || DataCanbus.DATA[1000] == 1572881 || DataCanbus.DATA[1000] == 1638417 || DataCanbus.DATA[1000] == 1703953 || DataCanbus.DATA[1000] == 1769489 || DataCanbus.DATA[1000] == 1835025 || DataCanbus.DATA[1000] == 1900561 || DataCanbus.DATA[1000] == 1966097 || DataCanbus.DATA[1000] == 2031633 || DataCanbus.DATA[1000] == 2097169 || DataCanbus.DATA[1000] == 2162705 || DataCanbus.DATA[1000] == 2228241 || DataCanbus.DATA[1000] == 2293777 || DataCanbus.DATA[1000] == 2359313 || DataCanbus.DATA[1000] == 2424849 || DataCanbus.DATA[1000] == 2490385 || DataCanbus.DATA[1000] == 2555921 || DataCanbus.DATA[1000] == 2621457 || DataCanbus.DATA[1000] == 2686993 || DataCanbus.DATA[1000] == 2752529 || DataCanbus.DATA[1000] == 2818065) {
@@ -278,22 +278,22 @@ public class AirHelper implements Runnable {
             }
         }
     };
-    public static final IUiNotify REFRESH_ON_SHOW = new IUiNotify() { // from class: com.syu.ui.air.AirHelper.4
-        @Override // com.syu.module.IUiNotify
+    public static final IUiNotify REFRESH_ON_SHOW = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             AirHelper.getInstance().refreshOnShow();
         }
     };
-    private Runnable mHideWindow = new Runnable() { // from class: com.syu.ui.air.AirHelper.1
-        @Override // java.lang.Runnable
+    private final Runnable mHideWindow = new Runnable() { 
+        @Override
         public void run() {
             AirHelper.this.mWindow.dismiss();
         }
     };
     int[] idAirShowInPortMode = {40, 22, 48, FinalCanbus.CAR_BNR_Yihu2012, FinalCanbus.CAR_BNR_Yihu2012_H, FinalCanbus.CAR_BNR_Yihu2012_H, 36, FinalCanbus.CAR_WC2_GM_WLD, 319, 14, 49, 115, 293, 70, FinalCanbus.CAR_RZC_XP1_17CHANGANCS75, 128, FinalCanbus.CAR_WC2_CHANGAN_17CS75, FinalCanbus.CAR_XP1_CRV2012_BNR, 298, 142, FinalCanbus.CAR_RZC_Ecosport, 334, FinalCanbus.CAR_RZC_XP1_Focus2015_Air, FinalCanbus.CAR_RCW_XP1_Focus2015, FinalCanbus.CAR_RZC_LHT_Ford_F150_Auto, FinalCanbus.CAR_RZC_Ford_Lincoln_navigator, FinalCanbus.CAR_RZC_NewFiestar, FinalCanbus.CAR_XC_RZC_NewFiestar, 61, FinalCanbus.CAR_RZC_XP1_GM_1, FinalCanbus.CAR_RZC_XP1_GM_2, FinalCanbus.CAR_RZC_XP1_GM_3, FinalCanbus.CAR_RZC_XP1_GM_3_20, 263, 255, FinalCanbus.CAR_RZC_FengShenAX5, FinalCanbus.CAR_RZC_FengShenA60, 254, 280, 257, FinalCanbus.CAR_DJ_ChuanQiGA6_M, FinalCanbus.CAR_DJ_ChuanQiGA6_H, 308, FinalCanbus.CAR_RZC_DaZhong_H, 51, FinalCanbus.CAR_WC2_GUOCHAN_9, 240, 289, FinalCanbus.CAR_WC2_ChuanQiGS4_M, FinalCanbus.CAR_WC2_ChuanQiGS4_H, FinalCanbus.CAR_WC2_17ChuanQiGS4, 367, FinalCanbus.CAR_XP1_16_TuSheng_H, 404, FinalCanbus.CAR_WC_16_QiYaLINGDONG, 1, 300, 98, FinalCanbus.CAR_WC2_GUOCHAN_2, FinalCanbus.CAR_WC2_RUIFENG_M4, 297, FinalCanbus.CAR_WC2_15_CRV_L, 76, 173, 137, FinalCanbus.CAR_RZC3_XiandaiIX35_H, 31, FinalCanbus.CAR_XP1_XiandaiIX45_M, FinalCanbus.CAR_XP1_XiandaiIX45_H, FinalCanbus.CAR_RZC_FLB_SaiOu3, 366, 432, FinalCanbus.CAR_432_HZ_B200, 394, 17, FinalCanbus.CAR_WC2_MQB, FinalCanbus.CAR_WC2_MQB_AllView, FinalCanbus.CAR_WC2_MQB_Hybrid, 45, 274, FinalCanbus.CAR_DJ_XP1_ACCORD7_H, 106, 157, FinalCanbus.CAR_RZC_XP1_RongWei_RX5_NoInternet, FinalCanbus.CAR_RZC_XP1_Mingjue_17RuiTeng, 256, FinalCanbus.CAR_SBD_WC1_ChuanQi_GS4, FinalCanbus.CAR_XP1_DaZhong_Turui, FinalCanbus.CAR_WC2_DaZhong_TuRui, FinalCanbus.CAR_WC2_GUOCHAN_14, FinalCanbus.CAR_BNR_HuaTai_ShengDaFei, 6, FinalCanbus.CAR_BYD_F3_ShuRui, FinalCanbus.CAR_CYT_ShuPing_BYDF3_SuRui, FinalCanbus.CAR_DJ_XP1_ParkAvenue, FinalCanbus.CAR_RZC_BENZ_MLSERIES_Portrait, FinalCanbus.CAR_WC2_MingJueZS, 160, FinalCanbus.CAR2_RZC_XP1_DaZhong_GaoErFu7_H, 151, FinalCanbus.CAR_DAOJUN_XP1_BYDSurui, 417, FinalCanbus.CAR_439_BNR_YUSHENG_S350, FinalCanbus.CAR_443_WC2_SgmwS, FinalCanbus.CAR_443_WC2_KangDi, FinalCanbus.CAR_WC2_GUOCHAN_10, 419, FinalCanbus.CAR_WC2_FengShenAX5, FinalCanbus.CAR_WC2_16FengShenAX7, FinalCanbus.CAR_WC2_16FengShenAX7_L, FinalCanbus.CAR_DJ_Saiou3, FinalCanbus.CAR_RZC1_MZD3_5_H, FinalCanbus.CAR_RZC1_LZ_MZD3_5_H, FinalCanbus.CAR_439_DJ_MAZIDA6, FinalCanbus.CAR_439_OuDi_Haval_H9, FinalCanbus.CAR_439_OuDi_Haval_H9_H, FinalCanbus.CAR_439_OuDi_Haval_H9_RS, FinalCanbus.CAR_439_OuDi_Haval_H9_H_RS, FinalCanbus.CAR_452_OD_Haval_VV5, FinalCanbus.CAR_452_OD_Haval_VV6, FinalCanbus.CAR_452_OD_Haval_VV7, FinalCanbus.CAR_452_OD_Haval_VV5_H, FinalCanbus.CAR_452_OD_Haval_VV6_H, FinalCanbus.CAR_452_OD_Haval_VV7_H, FinalCanbus.CAR_RZC_Haval_H9, FinalCanbus.CAR_452_RZC_Haval_H9_Low, FinalCanbus.CAR_RZC_Haval_H9_H, FinalCanbus.CAR_439_AY_BYD_SURUI, FinalCanbus.CAR_WC2_JiLiYuanJing, FinalCanbus.CAR_439_RZC_JiangHuai_ALL, FinalCanbus.CAR_439_RZC_JiangHuai_ALL_H, FinalCanbus.CAR_WC2_PSAALL_10, 307, FinalCanbus.CAR_443_WC2_Tianlai08_12, FinalCanbus.CAR_439_RZC_ZhongTaiSR7, FinalCanbus.CAR_439_RZC_ZhongTaiSR9, FinalCanbus.CAR_439_RZC_ZhongTaiSR9_H, FinalCanbus.CAR_439_HCY_BYD_E6_H, 9, 413, 132, FinalCanbus.CAR_WC2_HavalH2_H, FinalCanbus.CAR_439_RZC_BenzAll_H, FinalCanbus.CAR_RZC_XP1_17X80_L, FinalCanbus.CAR_RZC_XP1_17X80_H, 413, FinalCanbus.CAR_RZC_FengShenAX7_18, FinalCanbus.CAR_RZC_FengShenAX7_18H, FinalCanbus.CAR_RZC_XP1_YuanJingX6, FinalCanbus.CAR_RZC_ALL_GM_SP_5, FinalCanbus.CAR_RZC_ALL_GM_SP_6, FinalCanbus.CAR_RZC_ALL_GM_SP_7, FinalCanbus.CAR_RZC_ALL_GM_SP_8, FinalCanbus.CAR_RZC_ALL_GM_SP_9, FinalCanbus.CAR_RZC_ALL_GM_SP_10, FinalCanbus.CAR_RZC_ALL_GM_SP_11, FinalCanbus.CAR_RZC_ALL_GM_SP_12, FinalCanbus.CAR_RZC_ALL_GM_SP_13, FinalCanbus.CAR_RZC_ALL_GM_SP_14, FinalCanbus.CAR_RZC_ALL_GM_SP_15, FinalCanbus.CAR_RZC_ALL_GM_SP_16, FinalCanbus.CAR_RZC_ALL_GM_SP_17, FinalCanbus.CAR_RZC_ALL_GM_SP_18, FinalCanbus.CAR_RZC_ALL_GM_SP_19, FinalCanbus.CAR_RZC_ALL_GM_SP_20, FinalCanbus.CAR_RZC_ALL_GM_SP_21, FinalCanbus.CAR_RZC_ALL_GM_SP_22, FinalCanbus.CAR_RZC_ALL_GM_SP_23, FinalCanbus.CAR_RZC_ALL_GM_SP_24, FinalCanbus.CAR_RZC_ALL_GM_SP_25, FinalCanbus.CAR_RZC_ALL_GM_SP_26, FinalCanbus.CAR_RZC_ALL_GM_SP_27, FinalCanbus.CAR_RZC_ALL_GM_SP_28, FinalCanbus.CAR_RZC_ALL_GM_SP_29, FinalCanbus.CAR_RZC_ALL_GM_SP_30, FinalCanbus.CAR_RZC_ALL_GM_SP_31, FinalCanbus.CAR_RZC_ALL_GM_SP_32, FinalCanbus.CAR_RZC_ALL_GM_SP_33, FinalCanbus.CAR_RZC_ALL_GM_SP_34, FinalCanbus.CAR_RZC_ALL_GM_SP_35, 339, FinalCanbus.CAR_RZC4_PSA_ALL_M, FinalCanbus.CAR_RZC4_PSA_ALL_H, FinalCanbus.CAR_RZC_XP1_18JieTU_X70, FinalCanbus.CAR_RZC_XP1_18JieTU_X70_H, FinalCanbus.CAR_WC2_CHANGAN_19KeSai_Hand, FinalCanbus.CAR_439_OD_BenzAll, FinalCanbus.CAR_439_RCW_MZD_Ruiyi, FinalCanbus.CAR_439_OuDi_NaZhiJieU5, FinalCanbus.CAR_452_OuDi_NaZhiJieU6, FinalCanbus.CAR_439_OuDi_NaZhiJieU7, FinalCanbus.CAR_443_WC2_Nazhijie_U6, FinalCanbus.CAR_445_WC2_HaiMaM3S7, FinalCanbus.CAR_DJ_XIANDAI_Sorento, FinalCanbus.CAR_DJ_XIANDAI_Sorento_H, FinalCanbus.CAR_439_HC_Benc_C200, FinalCanbus.CAR_BNR_XP1_PsaAll, 47, FinalCanbus.CAR_RZC_CRV2012, FinalCanbus.CAR_439_OUDI_BYD_ALL, FinalCanbus.CAR_439_HCY_BYD_S6_H, FinalCanbus.CAR_RZC_ShuPing_15_Camery_AMP, FinalCanbus.CAR_RZC_ShuPing_15_Camery_AMP, FinalCanbus.CAR_RZC_ShuPing_15_Camery_AMP, FinalCanbus.CAR_BNR_ShuPing_Sonata8, FinalCanbus.CAR_BNR_ShuPing_Sonata8_AMP, FinalCanbus.CAR_BNR_ShuPing_Sonata8_AMP_KEEPAIRPANEL, FinalCanbus.CAR_RZC_DaZhong_SUP, FinalCanbus.CAR_RZC_DaZhong_SUP_H, FinalCanbus.CAR_RZC_DaZhong_SUP_M, FinalCanbus.CAR_RZC_DaZhong_MQB_SUP, FinalCanbus.CAR_RZC_DaZhong_MQB_SUP_H, FinalCanbus.CAR_443_WC2_YingFeiNiDi_14QX60_SP, FinalCanbus.CAR_439_RZC_14QiJun_Auto, FinalCanbus.CAR_439_RZC_14QiJun_Hand, FinalCanbus.CAR_RZC_ShuPing_09HighLand_L, FinalCanbus.CAR_RZC_ShuPing_09HighLand_H, FinalCanbus.CAR_BNR_18PradoHand_AirP, 412, FinalCanbus.CAR_439_HC_Nissan_XiaoKe, 290, FinalCanbus.CAR_RZC_XP1_QiChen18T70, FinalCanbus.CAR_RZC_XP1_QiChen20T70, FinalCanbus.CAR_XP_Renault_20Clio_Low, FinalCanbus.CAR_XP_Renault_20Clio_M, FinalCanbus.CAR_XP_Renault_20Clio_H, FinalCanbus.CAR_452_LUZ_SUBARU, FinalCanbus.CAR_RZC3_XianDai_Qiya_All, FinalCanbus.CAR_452_OD_Cadillac_Escalade, FinalCanbus.CAR_439_RCW_BYD_12_18Surui, FinalCanbus.CAR_439_RCW_BYD_14_15G5, FinalCanbus.CAR_439_RCW_BYD_10_15M6, FinalCanbus.CAR_439_RCW_BYD_13_17S7, FinalCanbus.CAR_439_RCW_BYD_16_19Song, FinalCanbus.CAR_439_RCW_BYD_17_19SongMax, FinalCanbus.CAR_439_RCW_BYD_12_17E6, FinalCanbus.CAR_XP_Renault_05_17Duster, FinalCanbus.CAR_RZC_XP1_15QiRuiRuiHu5, FinalCanbus.CAR_XP1_Meiganna4_TR_HAND, FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO, FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO_H, FinalCanbus.CAR_WeiChi2_18ChangChengH6, FinalCanbus.CAR_WeiChi2_18ChangChengH6_H, FinalCanbus.CAR_WC2_RENAULT_CAPTUR_19, FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC_V, FinalCanbus.CAR_439_XP_SUBARU_19FORESTER, FinalCanbus.CAR_439_XP_SUBARU_15_17FORESTER, FinalCanbus.CAR_439_XP_SUBARU_15_17CROSSTREK, FinalCanbus.CAR_DAOJUN_XP1_ATSL_High, FinalCanbus.CAR_DAOJUN_OD_SRX_XTS, FinalCanbus.CAR_DAOJUN_XP1_ATS_M, FinalCanbus.CAR_DAOJUN_OD_ATS, FinalCanbus.CAR_DJ_ShuPing_BYD_G6, FinalCanbus.CAR_DJ_ShuPing_BYD_G6_H, FinalCanbus.CAR_452_LZ_OUBao_Andela_CD, FinalCanbus.CAR_452_DJ_Ford_Fiesta_09_15, FinalCanbus.CAR_452_DJ_Ford_Kuga_09_15, FinalCanbus.CAR_RZC_OD_Sibalu_XV, FinalCanbus.CAR_RZC_17ZhiNanZhe, FinalCanbus.CAR_RZC_17ZhiNanZhe_H, FinalCanbus.CAR_452_WC_Honda_Yage8, FinalCanbus.CAR_439_RZC_08Tianlai_Auto, FinalCanbus.CAR_439_RZC_08Tianlai_Hand, FinalCanbus.CAR_RZC_Nissan_Tianlai_Gongjue, FinalCanbus.CAR_452_XP_Megane4_SP_L_AUTO, FinalCanbus.CAR_452_XP_Megane4_SP_H_AUTO, FinalCanbus.CAR_452_XP_Megane4_SP_L_HAND, FinalCanbus.CAR_BNR_HONDA_16Civic_NoAir, FinalCanbus.CAR_443_WC2_XianDai_All_07Shengda, 164, 167, FinalCanbus.CAR_XP_19QiYa_Sportage_M, FinalCanbus.CAR_XP_19QiYa_Sportage_H, FinalCanbus.CAR_XP_19QiYa_Sportage_L};
     int[] idShpOnlyInPortMode = {FinalCanbus.CAR_DJ_XP1_TOYOTA_06Prado_ShuPing};
-    private final Runnable SHOW = new Runnable() { // from class: com.syu.ui.air.AirHelper.2
-        @Override // java.lang.Runnable
+    private final Runnable SHOW = new Runnable() { 
+        @Override
         public void run() {
             AirHelper.this.mTick = 5;
             int i = DataCanbus.DATA[1000];
@@ -346,16 +346,16 @@ public class AirHelper implements Runnable {
             this.mWindow.setHeight(-2);
             this.mWindow.setBackgroundDrawable(new ColorDrawable(0));
             this.mWindow.setOutsideTouchable(true);
-            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { // from class: com.syu.ui.air.AirHelper.5
-                @Override // android.widget.PopupWindow.OnDismissListener
+            this.mWindow.setOnDismissListener(new PopupWindow.OnDismissListener() { 
+                @Override
                 public void onDismiss() {
-                    LauncherApplication.removeRootView(AirHelper.this.mWindow);
+                    //LauncherApplication.removeRootView(AirHelper.this.mWindow);
                 }
             });
         }
     }
 
-    @Override // java.lang.Runnable
+    @Override
     public void run() {
         if (this.mTick > 0) {
             this.mTick--;
@@ -379,7 +379,7 @@ public class AirHelper implements Runnable {
     }
 
     public void hideWindow() {
-        HandlerUI.getInstance().post(this.mHideWindow);
+        //HandlerUI.getInstance().post(this.mHideWindow);
     }
 
     public static void disableAirWindowLocal(boolean flag) {
@@ -397,7 +397,7 @@ public class AirHelper implements Runnable {
     }
 
     private static void calcFlagShowAirWindow() {
-        boolean flag = (sDisableAirWindowLocal || sAirWindowEnable == 0) ? false : true;
+        boolean flag = !sDisableAirWindowLocal && sAirWindowEnable != 0;
         if (sFlagShowAirWindow != flag) {
             sFlagShowAirWindow = flag;
             if (!flag) {
@@ -407,7 +407,7 @@ public class AirHelper implements Runnable {
     }
 
     public void showAndRefresh() {
-        HandlerUI.getInstance().post(this.SHOW);
+        //HandlerUI.getInstance().post(this.SHOW);
     }
 
     static boolean IsNewAirContl() {
@@ -469,18 +469,18 @@ public class AirHelper implements Runnable {
     }
 
     public void refreshOnShow() {
-        View view;
+        /*View view;
         if (this.mWindow != null && this.mWindow.isShowing() && (view = this.mWindow.getContentView()) != null) {
             view.invalidate();
-        }
+        }*/
     }
 
     public void buildUi(View view) {
-        this.mWindow.dismiss();
-        this.mWindow.setContentView(view);
+        //this.mWindow.dismiss();
+        //this.mWindow.setContentView(view);
     }
 
     public void destroyUi() {
-        this.mWindow.setContentView(null);
+        //this.mWindow.setContentView(null);
     }
 }

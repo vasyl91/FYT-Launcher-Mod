@@ -10,12 +10,11 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_420_IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_420_crown_indexact);
+        //setContentView(R.layout.layout_420_crown_indexact);
         if (LauncherApplication.getConfiguration() == 1) {
             findViewById(R.id.jeep_car_air).setVisibility(8);
         } else {
@@ -40,8 +39,8 @@ public class Wc_420_IndexAct extends BaseActivity {
                 findViewById(R.id.layout_view2).setVisibility(8);
                 break;
         }
-        ((Button) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.crown.Wc_420_IndexAct.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -52,8 +51,8 @@ public class Wc_420_IndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_airset)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.crown.Wc_420_IndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_airset)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -64,8 +63,8 @@ public class Wc_420_IndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.crown.Wc_420_IndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -76,8 +75,8 @@ public class Wc_420_IndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.crown.Wc_420_IndexAct.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.jeep_car_cd)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

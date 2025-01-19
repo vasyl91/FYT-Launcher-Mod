@@ -11,37 +11,36 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCNazhijieU6CarSet extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 19:
+                case 98:
                     WCNazhijieU6CarSet.this.updateSideVideo();
                     break;
-                case 20:
+                case 99:
                     WCNazhijieU6CarSet.this.updatePrevMile();
                     break;
-                case 21:
+                case 100:
                     WCNazhijieU6CarSet.this.updateNextMile();
                     break;
-                case 22:
+                case 101:
                     WCNazhijieU6CarSet.this.updateNextMileDis();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc_nazhijie_u6_settings);
+        //setContentView(R.layout.layout_0443_wc_nazhijie_u6_settings);
         init();
         setListener();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setListener();
     }
@@ -51,11 +50,11 @@ public class WCNazhijieU6CarSet extends BaseActivity implements View.OnClickList
         setSelfClick((CheckedTextView) findViewById(R.id.ctv_checkedtext2), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[19];
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value = DataCanbus.DATA[98];
                 if (value == 0) {
                     value = 1;
                 } else if (value == 1) {
@@ -63,67 +62,67 @@ public class WCNazhijieU6CarSet extends BaseActivity implements View.OnClickList
                 }
                 DataCanbus.PROXY.cmd(0, new int[]{9, value}, null, null);
                 break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
                 ShoeRestoreCarSetDialog();
                 break;
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSideVideo() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[98];
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
             ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePrevMile() {
-        int value = DataCanbus.DATA[20];
+        int value = DataCanbus.DATA[99];
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
             ((TextView) findViewById(R.id.tv_text1)).setText(String.valueOf(value) + " Km");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateNextMile() {
-        int value = DataCanbus.DATA[21];
+        int value = DataCanbus.DATA[100];
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
             ((TextView) findViewById(R.id.tv_text2)).setText(String.valueOf(value) + " Km");
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateNextMileDis() {
-        int value = DataCanbus.DATA[22];
+        int value = DataCanbus.DATA[101];
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
             ((TextView) findViewById(R.id.tv_text3)).setText(String.valueOf(value) + " Km");
         }
@@ -133,14 +132,14 @@ public class WCNazhijieU6CarSet extends BaseActivity implements View.OnClickList
         AlertDialog.Builder normalDialog = new AlertDialog.Builder(this);
         normalDialog.setTitle(R.string.str_update_warranty_notice);
         normalDialog.setMessage(R.string.str_update_warranty_notice);
-        normalDialog.setPositiveButton(R.string.wc_psa_all_confirm, new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet.2
-            @Override // android.content.DialogInterface.OnClickListener
+        normalDialog.setPositiveButton(R.string.wc_psa_all_confirm, new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 DataCanbus.PROXY.cmd(0, new int[]{10, 1}, null, null);
             }
         });
-        normalDialog.setNegativeButton(R.string.wc_psa_all_cancel, new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet.3
-            @Override // android.content.DialogInterface.OnClickListener
+        normalDialog.setNegativeButton(R.string.wc_psa_all_cancel, new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 DataCanbus.PROXY.cmd(0, new int[]{10}, null, null);
             }

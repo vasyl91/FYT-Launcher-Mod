@@ -3,8 +3,8 @@ package com.fyt.thread;
 public class ThreadManager {
     private static ThreadPoolProxy mDownloadPool;
     private static ThreadPoolProxy mLongPool;
-    private static Object mLongLock = new Object();
-    private static Object mDownloadLock = new Object();
+    private static final Object mLongLock = new Object();
+    private static final Object mDownloadLock = new Object();
 
     public static ThreadPoolProxy getLongPool() {
         if (mLongPool == null) {

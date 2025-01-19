@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0172_XBS_XP1_ChangChengFengJun6 extends AirBase {
     public Air_0172_XBS_XP1_ChangChengFengJun6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0172_xbs_xp1_changchengfengjun6/air_xbs_xp1_changchengfengjun6_n.webp";
         this.mPathHighlight = "0172_xbs_xp1_changchengfengjun6/air_xbs_xp1_changchengfengjun6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -70,7 +70,7 @@ public class Air_0172_XBS_XP1_ChangChengFengJun6 extends AirBase {
         } else if (temp == -3) {
             c.drawText("HI", 65.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp).toString(), 65.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 65.0f, 58.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

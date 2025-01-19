@@ -2,9 +2,9 @@ package com.syu.back;
 
 import android.graphics.Rect;
 import android.util.Log;
+
 import com.syu.ipc.data.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class TrackUtils {
     public static final int MAX_ANGLE = 35;
     public static final int MAX_DISTANCE = 3100;

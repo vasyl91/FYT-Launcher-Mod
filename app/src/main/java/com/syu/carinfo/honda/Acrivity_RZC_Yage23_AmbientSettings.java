@@ -10,14 +10,13 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.Acrivity_RZC_Yage23_AmbientSettings.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 233:
+                case 270:
                     if (((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text1)) != null) {
                         switch (value) {
                             case 2:
@@ -29,38 +28,38 @@ public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements
                         }
                     }
                     break;
-                case 234:
+                case 271:
                     if (((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text2)) != null) {
                         ((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 235:
+                case 272:
                     if (((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text3)) != null) {
                         ((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 236:
+                case 273:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext1), value != 0);
                     break;
-                case 237:
+                case 274:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext2), value != 0);
                     break;
-                case 238:
+                case 275:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext3), value != 0);
                     break;
-                case 239:
+                case 276:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext4), value != 0);
                     break;
-                case 240:
+                case 277:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext5), value != 0);
                     break;
-                case 241:
+                case 278:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext6), value != 0);
                     break;
-                case 242:
+                case 279:
                     Acrivity_RZC_Yage23_AmbientSettings.this.setCheck((CheckedTextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.ctv_checkedtext7), value != 0);
                     break;
-                case 243:
+                case 280:
                     if (((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text4)) != null) {
                         ((TextView) Acrivity_RZC_Yage23_AmbientSettings.this.findViewById(R.id.tv_text4)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
@@ -69,10 +68,10 @@ public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0298_rzc_yage23_lightsettings);
+        //setContentView(R.layout.layout_0298_rzc_yage23_lightsettings);
         setListener();
     }
 
@@ -94,7 +93,7 @@ public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements
         setSelfClick((Button) findViewById(R.id.btn_plus4), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int value;
         int value2;
@@ -104,112 +103,112 @@ public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements
         int value6;
         int value7;
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                if (DataCanbus.DATA[236] == 0) {
+            case R.id.btn_minus1 /* 2131427455 */:
+                int value8 = DataCanbus.DATA[270] - 1;
+                if (value8 < 1) {
+                    value8 = 2;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{1, value8}, null, null);
+                break;
+            case R.id.btn_plus1 /* 2131427457 */:
+                int value9 = DataCanbus.DATA[270] + 1;
+                if (value9 > 2) {
+                    value9 = 1;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{1, value9}, null, null);
+                break;
+            case R.id.btn_minus2 /* 2131427458 */:
+                int value10 = DataCanbus.DATA[271] - 1;
+                if (value10 < 1) {
+                    value10 = 10;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{2, value10}, null, null);
+                break;
+            case R.id.btn_plus2 /* 2131427460 */:
+                int value11 = DataCanbus.DATA[271] + 1;
+                if (value11 > 10) {
+                    value11 = 1;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{2, value11}, null, null);
+                break;
+            case R.id.btn_minus3 /* 2131427461 */:
+                int value12 = DataCanbus.DATA[272] - 1;
+                if (value12 < 1) {
+                    value12 = 10;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{3, value12}, null, null);
+                break;
+            case R.id.btn_plus3 /* 2131427463 */:
+                int value13 = DataCanbus.DATA[272] + 1;
+                if (value13 > 10) {
+                    value13 = 1;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{3, value13}, null, null);
+                break;
+            case R.id.btn_minus4 /* 2131427464 */:
+                int value14 = DataCanbus.DATA[280] - 1;
+                if (value14 < 10) {
+                    value14 = 1;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{48, value14}, null, null);
+                break;
+            case R.id.btn_plus4 /* 2131427466 */:
+                int value15 = DataCanbus.DATA[280] + 1;
+                if (value15 > 10) {
+                    value15 = 1;
+                }
+                DataCanbus.PROXY.cmd(109, new int[]{48, value15}, null, null);
+                break;
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                if (DataCanbus.DATA[273] == 0) {
                     value7 = 2;
                 } else {
                     value7 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{16, value7}, null, null);
                 break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int value8 = DataCanbus.DATA[233] - 1;
-                if (value8 < 1) {
-                    value8 = 2;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{1, value8}, null, null);
-                break;
-            case R.id.btn_plus1 /* 2131427482 */:
-                int value9 = DataCanbus.DATA[233] + 1;
-                if (value9 > 2) {
-                    value9 = 1;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{1, value9}, null, null);
-                break;
-            case R.id.btn_minus2 /* 2131427484 */:
-                int value10 = DataCanbus.DATA[234] - 1;
-                if (value10 < 1) {
-                    value10 = 10;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{2, value10}, null, null);
-                break;
-            case R.id.btn_plus2 /* 2131427486 */:
-                int value11 = DataCanbus.DATA[234] + 1;
-                if (value11 > 10) {
-                    value11 = 1;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{2, value11}, null, null);
-                break;
-            case R.id.btn_minus3 /* 2131427488 */:
-                int value12 = DataCanbus.DATA[235] - 1;
-                if (value12 < 1) {
-                    value12 = 10;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{3, value12}, null, null);
-                break;
-            case R.id.btn_plus3 /* 2131427490 */:
-                int value13 = DataCanbus.DATA[235] + 1;
-                if (value13 > 10) {
-                    value13 = 1;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{3, value13}, null, null);
-                break;
-            case R.id.btn_minus4 /* 2131427492 */:
-                int value14 = DataCanbus.DATA[243] - 1;
-                if (value14 < 10) {
-                    value14 = 1;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{48, value14}, null, null);
-                break;
-            case R.id.btn_plus4 /* 2131427494 */:
-                int value15 = DataCanbus.DATA[243] + 1;
-                if (value15 > 10) {
-                    value15 = 1;
-                }
-                DataCanbus.PROXY.cmd(109, new int[]{48, value15}, null, null);
-                break;
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                if (DataCanbus.DATA[237] == 0) {
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                if (DataCanbus.DATA[274] == 0) {
                     value6 = 2;
                 } else {
                     value6 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{17, value6}, null, null);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                if (DataCanbus.DATA[238] == 0) {
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                if (DataCanbus.DATA[275] == 0) {
                     value5 = 2;
                 } else {
                     value5 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{18, value5}, null, null);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                if (DataCanbus.DATA[239] == 0) {
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                if (DataCanbus.DATA[276] == 0) {
                     value4 = 2;
                 } else {
                     value4 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{19, value4}, null, null);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                if (DataCanbus.DATA[240] == 0) {
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                if (DataCanbus.DATA[277] == 0) {
                     value3 = 2;
                 } else {
                     value3 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{20, value3}, null, null);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                if (DataCanbus.DATA[241] == 0) {
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                if (DataCanbus.DATA[278] == 0) {
                     value2 = 2;
                 } else {
                     value2 = 1;
                 }
                 DataCanbus.PROXY.cmd(109, new int[]{21, value2}, null, null);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                if (DataCanbus.DATA[242] == 0) {
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                if (DataCanbus.DATA[279] == 0) {
                     value = 2;
                 } else {
                     value = 1;
@@ -219,45 +218,45 @@ public class Acrivity_RZC_Yage23_AmbientSettings extends BaseActivity implements
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[233].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[234].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[235].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[236].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[237].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[238].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[239].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[240].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[241].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[242].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[243].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[270].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[271].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[272].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[273].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[274].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[275].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[276].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[277].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[278].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[279].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[280].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[233].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[234].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[235].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[236].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[237].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[238].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[239].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[240].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[241].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[242].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[243].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[270].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[271].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[272].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[273].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[274].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[275].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[276].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[277].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[278].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[279].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[280].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.android.launcher66.PagedViewCellLayout;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PagedViewCellLayoutChildren extends ViewGroup {
     static final String TAG = "PagedViewCellLayout";
     private int mCellHeight;
@@ -19,7 +18,7 @@ public class PagedViewCellLayoutChildren extends ViewGroup {
         super(context);
     }
 
-    @Override // android.view.View
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
         int count = getChildCount();
@@ -41,7 +40,7 @@ public class PagedViewCellLayoutChildren extends ViewGroup {
         requestLayout();
     }
 
-    @Override // android.view.ViewGroup, android.view.ViewParent
+    @Override
     public void requestChildFocus(View child, View focused) {
         super.requestChildFocus(child, focused);
         if (child != null) {
@@ -51,7 +50,7 @@ public class PagedViewCellLayoutChildren extends ViewGroup {
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSpecMode = View.MeasureSpec.getMode(widthMeasureSpec);
         int widthSpecSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -72,7 +71,7 @@ public class PagedViewCellLayoutChildren extends ViewGroup {
         setMeasuredDimension(widthSpecSize, heightSpecSize);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
         int offsetX = 0;
@@ -105,7 +104,7 @@ public class PagedViewCellLayoutChildren extends ViewGroup {
         this.mCenterContent = enabled;
     }
 
-    @Override // android.view.ViewGroup
+    @Override
     protected void setChildrenDrawingCacheEnabled(boolean enabled) {
         int count = getChildCount();
         for (int i = 0; i < count; i++) {

@@ -3,34 +3,33 @@ package com.android.launcher66;
 import android.content.Context;
 import android.view.View;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class AppsCustomizeCellLayout extends CellLayout implements Page {
     public AppsCustomizeCellLayout(Context context) {
         super(context);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeAllViewsOnPage() {
         removeAllViews();
         setLayerType(View.LAYER_TYPE_NONE, null);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public void removeViewOnPageAt(int index) {
         removeViewAt(index);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int getPageChildCount() {
         return getChildCount();
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public View getChildOnPageAt(int i) {
         return getChildAt(i);
     }
 
-    @Override // com.android.launcher66.Page
+    @Override
     public int indexOfChildOnPage(View v) {
         return indexOfChild(v);
     }

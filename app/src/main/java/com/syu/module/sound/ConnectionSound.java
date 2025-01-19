@@ -1,10 +1,10 @@
 package com.syu.module.sound;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.module.ConnectionObserver;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ConnectionSound implements ConnectionObserver {
     private static final ConnectionSound INSTANCE = new ConnectionSound();
 
@@ -12,7 +12,7 @@ public class ConnectionSound implements ConnectionObserver {
         return INSTANCE;
     }
 
-    @Override // com.syu.module.ConnectionObserver
+    @Override
     public void onConnected(IRemoteToolkit toolkit) {
         try {
             DataSound.PROXY.setRemoteModule(toolkit.getRemoteModule(4));
@@ -24,7 +24,7 @@ public class ConnectionSound implements ConnectionObserver {
         DataSound.PROXY.register(callback, 3, 1);
     }
 
-    @Override // com.syu.module.ConnectionObserver
+    @Override
     public void onDisconnected() {
         DataSound.PROXY.setRemoteModule(null);
     }

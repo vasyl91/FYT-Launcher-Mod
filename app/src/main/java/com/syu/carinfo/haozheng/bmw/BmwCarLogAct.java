@@ -7,77 +7,76 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class BmwCarLogAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.haozheng.bmw.BmwCarLogAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 1:
+                case 8:
                     BmwCarLogAct.this.updatexushilicheng();
                     break;
-                case 2:
+                case 9:
                     BmwCarLogAct.this.updatepingjunSpeed();
                     break;
-                case 3:
+                case 10:
                     BmwCarLogAct.this.updatepingjunOil();
                     break;
-                case 4:
+                case 11:
                     BmwCarLogAct.this.updatexushilicheng();
                     BmwCarLogAct.this.updatepingjunSpeed();
                     break;
-                case 5:
+                case 12:
                     BmwCarLogAct.this.updatepingjunOil();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_haozheng_bmw_car_log);
+        //setContentView(R.layout.layout_haozheng_bmw_car_log);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatexushilicheng() {
-        int licheng = DataCanbus.DATA[1];
-        int JuliUnit = DataCanbus.DATA[4];
+        int licheng = DataCanbus.DATA[8];
+        int JuliUnit = DataCanbus.DATA[11];
         if (JuliUnit == 1) {
             ((TextView) findViewById(R.id.bogoo_bmw_xushi_licheng_tv)).setText(String.valueOf(licheng) + "mls");
         } else if (JuliUnit == 0) {
@@ -85,10 +84,10 @@ public class BmwCarLogAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatepingjunSpeed() {
-        int speed = DataCanbus.DATA[2];
-        int oilUnit = DataCanbus.DATA[4];
+        int speed = DataCanbus.DATA[9];
+        int oilUnit = DataCanbus.DATA[11];
         if (oilUnit == 1) {
             ((TextView) findViewById(R.id.bogoo_bmw_pingjun_speed_tv)).setText(String.valueOf(speed / 10.0f) + " mls/h");
         } else if (oilUnit == 0) {
@@ -96,10 +95,10 @@ public class BmwCarLogAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatepingjunOil() {
-        int oil = DataCanbus.DATA[3];
-        int oilUnit = DataCanbus.DATA[5];
+        int oil = DataCanbus.DATA[10];
+        int oilUnit = DataCanbus.DATA[12];
         if (oilUnit == 0) {
             ((TextView) findViewById(R.id.bogoo_bmw_pingjun_oil_tv)).setText(String.valueOf(oil / 10.0f) + " l/100km");
             return;

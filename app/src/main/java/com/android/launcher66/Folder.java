@@ -9,7 +9,10 @@ import android.content.res.Resources;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.SystemClock;
+
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.AutoScrollHelper;
 import android.text.Selection;
 import android.util.AttributeSet;
@@ -28,17 +31,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.DragLayer;
-import com.android.launcher66.DropTarget;
-import com.android.launcher66.FolderInfo;
+
 import com.syu.log.LogPreview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class Folder extends LinearLayout implements DragSource, View.OnClickListener, View.OnLongClickListener, DropTarget, FolderInfo.FolderListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
     private static final int ON_EXIT_CLOSE_DELAY = 800;
     private static final int REORDER_ANIMATION_DURATION = 230;
@@ -119,34 +118,34 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.DRAG_MODE_NONE = 0;
         this.DRAG_MODE_REORDER = 1;
         this.mDragMode = this.DRAG_MODE_NONE;
-        this.mActionModeCallback = new ActionMode.Callback() { // from class: com.android.launcher66.Folder.1
-            @Override // android.view.ActionMode.Callback
+        this.mActionModeCallback = new ActionMode.Callback() { 
+            @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 return false;
             }
 
-            @Override // android.view.ActionMode.Callback
+            @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 return false;
             }
 
-            @Override // android.view.ActionMode.Callback
+            @Override
             public void onDestroyActionMode(ActionMode mode) {
             }
 
-            @Override // android.view.ActionMode.Callback
+            @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 return false;
             }
         };
-        this.mReorderAlarmListener = new OnAlarmListener() { // from class: com.android.launcher66.Folder.2
-            @Override // com.android.launcher66.OnAlarmListener
+        this.mReorderAlarmListener = new OnAlarmListener() { 
+            @Override
             public void onAlarm(Alarm alarm) {
                 Folder.this.realTimeReorder(Folder.this.mEmptyCell, Folder.this.mTargetCell);
             }
         };
-        this.mOnExitAlarmListener = new OnAlarmListener() { // from class: com.android.launcher66.Folder.3
-            @Override // com.android.launcher66.OnAlarmListener
+        this.mOnExitAlarmListener = new OnAlarmListener() { 
+            @Override
             public void onAlarm(Alarm alarm) {
                 Folder.this.completeDragExit();
             }
@@ -172,7 +171,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         setFocusableInTouchMode(true);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         this.mScrollView = (ScrollView) findViewById(R.id.scroll_view);
@@ -195,7 +194,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.mAutoScrollHelper = new FolderAutoScrollHelper(this.mScrollView);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         Object tag = v.getTag();
         if (tag instanceof ShortcutInfo) {
@@ -203,7 +202,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // android.view.View.OnLongClickListener
+    @Override
     public boolean onLongClick(View v) {
         if (!this.mLauncher.isDraggingEnabled()) {
             return true;
@@ -257,7 +256,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.mIsEditingName = false;
     }
 
-    @Override // android.widget.TextView.OnEditorActionListener
+    @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId != 6) {
             return false;
@@ -274,7 +273,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return this.mIconDrawable;
     }
 
-    @Override // android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         return true;
     }
@@ -287,7 +286,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.mFolderIcon = icon;
     }
 
-    @Override // android.view.View
+    @Override
     public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
         return true;
     }
@@ -303,7 +302,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             this.mNumCols = numCols;
         }
 
-        @Override // java.util.Comparator
+        @Override
         public int compare(ShortcutInfo lhs, ShortcutInfo rhs) {
             int lhIndex = (lhs.cellY * this.mNumCols) + lhs.cellX;
             int rhIndex = (rhs.cellY * this.mNumCols) + rhs.cellX;
@@ -386,14 +385,14 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f);
             PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 1.0f);
             ObjectAnimator oa = LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
-            oa.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Folder.4
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            oa.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationStart(Animator animation) {
                     Folder.this.sendCustomAccessibilityEvent(32, String.format(Folder.this.getContext().getString(R.string.folder_opened), Integer.valueOf(Folder.this.mContent.getCountX()), Integer.valueOf(Folder.this.mContent.getCountY())));
                     Folder.this.mState = 1;
                 }
 
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Folder.this.mState = 2;
                     Folder.this.setLayerType(View.LAYER_TYPE_NONE, null);
@@ -412,18 +411,23 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCustomAccessibilityEvent(int type, String text) {
         AccessibilityManager accessibilityManager = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (accessibilityManager.isEnabled()) {
-            AccessibilityEvent event = AccessibilityEvent.obtain(type);
+            AccessibilityEvent event;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                event = AccessibilityEvent.obtain(type);
+            } else {
+                event = new AccessibilityEvent(type);
+            }
             onInitializeAccessibilityEvent(event);
             event.getText().add(text);
             accessibilityManager.sendAccessibilityEvent(event);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setFocusOnFirstChild() {
         View firstChild = this.mContent.getChildAt(0, 0);
         if (firstChild != null) {
@@ -437,15 +441,15 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0.9f);
             PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0.9f);
             ObjectAnimator oa = LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
-            oa.addListener(new AnimatorListenerAdapter() { // from class: com.android.launcher66.Folder.5
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            oa.addListener(new AnimatorListenerAdapter() { 
+                @Override
                 public void onAnimationEnd(Animator animation) {
                     Folder.this.onCloseComplete();
                     Folder.this.setLayerType(View.LAYER_TYPE_NONE, null);
                     Folder.this.mState = 0;
                 }
 
-                @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+                @Override
                 public void onAnimationStart(Animator animation) {
                     Folder.this.sendCustomAccessibilityEvent(32, Folder.this.getContext().getString(R.string.folder_closed));
                     Folder.this.mState = 1;
@@ -457,7 +461,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean acceptDrop(DropTarget.DragObject d) {
         ItemInfo item = (ItemInfo) d.dragInfo;
         int itemType = item.itemType;
@@ -479,7 +483,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         textView.setCompoundDrawables(null, Utilities.createIconDrawable(item.getIcon(this.mIconCache)), null, null);
         textView.setText(item.title);
         textView.setTag(item);
-        textView.setTextColor(getResources().getColor(R.color.folder_items_text_color));
+        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.folder_items_text_color));
         textView.setShadowsEnabled(false);
         textView.setOnClickListener(this);
         textView.setOnLongClickListener(this);
@@ -495,7 +499,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return true;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragEnter(DropTarget.DragObject d) {
         this.mPreviousTargetCell[0] = -1;
         this.mPreviousTargetCell[1] = -1;
@@ -506,7 +510,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return v1[1] > v2[1] || (v1[1] == v2[1] && v1[0] > v2[0]);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void realTimeReorder(int[] empty, int[] target) {
         int delay = 0;
         float delayAmount = 30.0f;
@@ -553,7 +557,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return getLayoutDirection() == android.view.View.LAYOUT_DIRECTION_RTL;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragOver(DropTarget.DragObject d) {
         LogPreview.show("onDragOver(DragObject d)...");
         DragView dragView = d.dragView;
@@ -610,7 +614,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.mRearrangeOnClose = true;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDragExit(DropTarget.DragObject d) {
         this.mAutoScrollHelper.setEnabled(false);
         if (!d.dragComplete) {
@@ -621,12 +625,12 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         this.mDragMode = this.DRAG_MODE_NONE;
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onDropCompleted(final View target, final DropTarget.DragObject d, final boolean isFlingToDelete, final boolean success) {
         if (this.mDeferDropAfterUninstall) {
             Log.d(TAG, "Deferred handling drop because waiting for uninstall.");
-            this.mDeferredAction = new Runnable() { // from class: com.android.launcher66.Folder.6
-                @Override // java.lang.Runnable
+            this.mDeferredAction = new Runnable() { 
+                @Override
                 public void run() {
                     Folder.this.onDropCompleted(target, d, isFlingToDelete, success);
                     Folder.this.mDeferredAction = null;
@@ -672,16 +676,16 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public boolean supportsFlingToDelete() {
         return true;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onFlingToDelete(DropTarget.DragObject d, int x, int y, PointF vec) {
     }
 
-    @Override // com.android.launcher66.DragSource
+    @Override
     public void onFlingToDeleteCompleted() {
     }
 
@@ -720,7 +724,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public boolean isDropEnabled() {
         return true;
     }
@@ -829,7 +833,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return height;
     }
 
-    @Override // android.widget.LinearLayout, android.view.View
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = getPaddingLeft() + getPaddingRight() + this.mContent.getDesiredWidth();
         int height = getFolderHeight();
@@ -872,7 +876,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return this.mContent.getShortcutsAndWidgets().getChildAt(index);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void onCloseComplete() {
         DragLayer parent = (DragLayer) getParent();
         if (parent != null) {
@@ -896,8 +900,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     private void replaceFolderWithFinalItem() {
-        Runnable onCompleteRunnable = new Runnable() { // from class: com.android.launcher66.Folder.7
-            @Override // java.lang.Runnable
+        Runnable onCompleteRunnable = new Runnable() { 
+            @Override
             public void run() {
                 CellLayout cellLayout = Folder.this.mLauncher.getCellLayout(Folder.this.mInfo.container, Folder.this.mInfo.screenId);
                 View child = null;
@@ -942,7 +946,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void onDrop(DropTarget.DragObject d) {
         ShortcutInfo item;
         if (d.dragInfo instanceof AppInfo) {
@@ -985,7 +989,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         v.setVisibility(android.view.View.VISIBLE);
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onAdd(ShortcutInfo item) {
         this.mItemsInvalidated = true;
         if (!this.mSuppressOnAdd) {
@@ -998,7 +1002,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onRemove(ShortcutInfo item) {
         this.mItemsInvalidated = true;
         if (item != this.mCurrentDragInfo) {
@@ -1027,12 +1031,12 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return null;
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onItemsChanged() {
         updateTextViewFocus();
     }
 
-    @Override // com.android.launcher66.FolderInfo.FolderListener
+    @Override
     public void onTitleChanged(CharSequence title) {
     }
 
@@ -1052,19 +1056,19 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return this.mItemsInReadingOrder;
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getLocationInDragLayer(int[] loc) {
         this.mLauncher.getDragLayer().getLocationInDragLayer(this, loc);
     }
 
-    @Override // android.view.View.OnFocusChangeListener
+    @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (v == this.mFolderName && hasFocus) {
             startEditingFolderName();
         }
     }
 
-    @Override // com.android.launcher66.DropTarget
+    @Override
     public void getHitRectRelativeToDragLayer(Rect outRect) {
         getHitRect(outRect);
     }

@@ -15,7 +15,6 @@ import androidx.annotation.StyleableRes;
 import java.util.ArrayList;
 import share.ResValue;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class PageIndicator extends LinearLayout {
     private static final boolean MODULATE_ALPHA_ENABLED = false;
     private static final String TAG = "PageIndicator";

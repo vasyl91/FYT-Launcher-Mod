@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
@@ -26,8 +27,8 @@ public class IconView extends FrameLayout {
     public IconView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.app_name = -1;
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.IconView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg1) {
                 IconView.this.updateStr();
             }
@@ -38,8 +39,8 @@ public class IconView extends FrameLayout {
     public IconView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.app_name = -1;
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.IconView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg1) {
                 IconView.this.updateStr();
             }
@@ -50,8 +51,8 @@ public class IconView extends FrameLayout {
     public IconView(Context context) {
         super(context);
         this.app_name = -1;
-        this.receiver = new BroadcastReceiver() { // from class: com.fyt.widget.IconView.1
-            @Override // android.content.BroadcastReceiver
+        this.receiver = new BroadcastReceiver() { 
+            @Override
             public void onReceive(Context arg0, Intent arg1) {
                 IconView.this.updateStr();
             }
@@ -68,7 +69,7 @@ public class IconView extends FrameLayout {
         this.textSize = (int) res.getDimension(R.dimen.sbd_iconview_textsize);
     }
 
-    @Override // android.view.View
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (this.app_name >= 0) {
@@ -88,7 +89,7 @@ public class IconView extends FrameLayout {
         }
     }
 
-    @Override // android.view.View
+    @Override
     public void setPressed(boolean pressed) {
         this.paddingpress = (int) getContext().getResources().getDimension(R.dimen.sbd_iconview_padding_p);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(-2, -2);
@@ -110,14 +111,14 @@ public class IconView extends FrameLayout {
         }
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter("android.intent.action.LOCALE_CHANGED");
         getContext().registerReceiver(this.receiver, filter);
     }
 
-    @Override // android.view.ViewGroup, android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getContext().unregisterReceiver(this.receiver);

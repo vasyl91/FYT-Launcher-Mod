@@ -2,7 +2,6 @@ package com.syu.carinfo.toyota.tangdu;
 
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class CamryData {
     public static final String MILEAGE_UNIT_KM = "KM";
     public static final String MILEAGE_UNIT_MILE = "MILE";

@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class UIPAFordF150Vol {
     private static UIPAFordF150Vol mInstance;
     Context context;
@@ -35,10 +35,10 @@ public class UIPAFordF150Vol {
     private void initTip(int value) {
         if (this.sWarnContent == null) {
             this.context = LauncherApplication.getInstance();
-            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0452_pa_carvol_warn, (ViewGroup) null, false);
+            this.sWarnContent = LayoutInflater.from(this.context).inflate(R.layout.layout_0452_pa_carvol_warn, null, false);
         }
         ((ProgressBar) this.sWarnContent.findViewById(R.id.pa_jeep_seekbar1)).setProgress(value);
-        ((TextView) this.sWarnContent.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(value)).toString());
+        ((TextView) this.sWarnContent.findViewById(R.id.tv_text1)).setText(String.valueOf(value));
         WarnUtils.getWindow().setContentView(this.sWarnContent);
     }
 }

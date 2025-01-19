@@ -9,14 +9,13 @@ import com.syu.canbus.R;
 import com.syu.carinfo.dasauto.DasAutoXpAct;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class KangshengXpCrvActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_047_xp_crv_index);
-        findViewById(R.id.car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.KangshengXpCrvActi.1
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_047_xp_crv_index);
+        findViewById(R.id.car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -27,13 +26,13 @@ public class KangshengXpCrvActi extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.CarInfo).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.crv.KangshengXpCrvActi.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.CarInfo).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
                     intent.setClass(KangshengXpCrvActi.this, XpCrvActi.class);
-                    if (DataCanbus.DATA[1] == 0) {
+                    if (DataCanbus.DATA[99] == 0) {
                         FuncMain.tips(KangshengXpCrvActi.this.getString(R.string.vehicle_not_exist));
                     } else {
                         KangshengXpCrvActi.this.startActivity(intent);

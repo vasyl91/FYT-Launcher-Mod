@@ -1,17 +1,19 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0452_ZH_Toyota_Proace extends CallbackCanbusBase {
     public static final int U_CARSET_BEIGIN = 0;
     public static final int U_CARSET_D38_D1_B1 = 3;
     public static final int U_CARSET_D38_D1_B2 = 2;
+    public static final int U_CARSET_D38_D1_B3 = 58;
     public static final int U_CARSET_D38_D1_B7 = 1;
     public static final int U_CARSET_D38_D3_B54 = 5;
     public static final int U_CARSET_D38_D3_B76 = 4;
     public static final int U_CARSET_D38_D4_B30 = 8;
+    public static final int U_CARSET_D38_D4_B6 = 57;
     public static final int U_CARSET_D38_D5_B3 = 7;
     public static final int U_CARSET_D38_D5_B76 = 6;
     public static final int U_CARSET_D38_D6_B2 = 56;
@@ -62,23 +64,23 @@ public class Callback_0452_ZH_Toyota_Proace extends CallbackCanbusBase {
     public static final int U_CAR_WARN_DATA7 = 17;
     public static final int U_CAR_WARN_DATA8 = 18;
     public static final int U_CAR_WARN_DATA9 = 19;
-    public static final int U_CNT_MAX = 57;
+    public static final int U_CNT_MAX = 59;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 57; i++) {
+        for (int i = 0; i < 59; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 57) {
+        if (updateCode >= 0 && updateCode < 59) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

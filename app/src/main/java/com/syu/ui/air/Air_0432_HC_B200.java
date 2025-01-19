@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0432_HC_B200 extends AirBase {
     public Air_0432_HC_B200(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0439_oudi_benz_all/od_benz_all.webp";
         this.mPathHighlight = "0439_oudi_benz_all/od_benz_all_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -71,7 +71,7 @@ public class Air_0432_HC_B200 extends AirBase {
         this.mDrawableNormal.draw(c);
         this.mPaint.setTextSize(30.0f);
         int value = this.DATA[20];
-        c.drawText(new StringBuilder().append(value).toString(), 494.0f, 145.0f, this.mPaint);
+        c.drawText(String.valueOf(value), 494.0f, 145.0f, this.mPaint);
         int temp = this.DATA[21];
         if (temp == -2) {
             c.drawText("LOW", 70.0f, 58.0f, this.mPaint);
@@ -80,7 +80,7 @@ public class Air_0432_HC_B200 extends AirBase {
         } else if (temp == -1) {
             c.drawText("--", 70.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp * 0.1f).toString(), 70.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp * 0.1f), 70.0f, 58.0f, this.mPaint);
         }
         int temp1 = this.DATA[24];
         if (temp1 == -2) {
@@ -90,7 +90,7 @@ public class Air_0432_HC_B200 extends AirBase {
         } else if (temp1 == -1) {
             c.drawText("--", 921.0f, 58.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp1 * 0.1f).toString(), 921.0f, 58.0f, this.mPaint);
+            c.drawText(String.valueOf(temp1 * 0.1f), 921.0f, 58.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

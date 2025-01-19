@@ -8,12 +8,13 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.syu.canbus.R;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class InfoLZLandroverLeftView extends View {
     private float angle;
     private int autoStep;
@@ -22,11 +23,11 @@ public class InfoLZLandroverLeftView extends View {
     Bitmap bg_indicate;
     private int currenSpeed;
     int height;
-    private Path mPath;
+    private final Path mPath;
     private int max;
     private int mini;
-    private Paint paint;
-    private Handler speedH;
+    private final Paint paint;
+    private final Handler speedH;
     private int step;
     private int targetSpeed;
     private Paint textPain;
@@ -41,8 +42,8 @@ public class InfoLZLandroverLeftView extends View {
         this.mini = 0;
         this.autoStep = 0;
         this.mPath = new Path();
-        this.speedH = new Handler() { // from class: com.syu.carinfo.lz.landrover.InfoLZLandroverLeftView.1
-            @Override // android.os.Handler
+        this.speedH = new Handler(Looper.getMainLooper()) {
+            @Override
             public void handleMessage(Message msg) {
                 if (msg.what != 1) {
                     if (InfoLZLandroverLeftView.this.currenSpeed != InfoLZLandroverLeftView.this.targetSpeed) {
@@ -90,7 +91,7 @@ public class InfoLZLandroverLeftView extends View {
         this.mPath.close();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.width = w;
@@ -103,7 +104,7 @@ public class InfoLZLandroverLeftView extends View {
         this.max = max;
         this.mini = mini;
         this.currenSpeed = mini;
-        this.height = (int) ((this.width / this.bg.getWidth()) * this.bg.getHeight());
+        this.height = (this.width / this.bg.getWidth()) * this.bg.getHeight();
         if (this.bg_digit == null) {
             this.bg_digit = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888);
         }
@@ -122,11 +123,11 @@ public class InfoLZLandroverLeftView extends View {
     protected void onDrawText() {
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (this.bg_digit != null) {
-            canvas.drawBitmap(this.bg_digit, 0.0f, 0.0f, (Paint) null);
+            canvas.drawBitmap(this.bg_digit, 0.0f, 0.0f, null);
             canvas.save();
             canvas.translate(this.width / 2, this.width / 2);
             canvas.rotate(this.angle);
@@ -156,7 +157,7 @@ public class InfoLZLandroverLeftView extends View {
         this.angle -= 180;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void speedanim() {
         if (this.currenSpeed >= 10) {
         }

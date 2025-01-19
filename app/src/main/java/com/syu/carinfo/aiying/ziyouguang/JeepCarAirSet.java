@@ -9,75 +9,67 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JeepCarAirSet extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.aiying.ziyouguang.JeepCarAirSet.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 38:
-                    JeepCarAirSet.this.mUpdateAirGoFog();
-                    break;
-                case 39:
-                    JeepCarAirSet.this.mUpdateAirAuto();
-                    break;
-                case 40:
-                    JeepCarAirSet.this.mUpdateAirSYNC();
-                    break;
-                case 41:
-                    JeepCarAirSet.this.mUpdateAirCycle();
-                    break;
-                case 42:
-                    JeepCarAirSet.this.mUpdaterAirDimRear();
-                    break;
-                case 43:
-                    JeepCarAirSet.this.mUpdaterAirAC();
-                    break;
-                case 44:
-                    JeepCarAirSet.this.mUpdaterAirTempLeft();
-                    break;
-                case 45:
-                    JeepCarAirSet.this.mUpdaterAirTempRight();
-                    break;
-                case 46:
+                case 10:
                     JeepCarAirSet.this.mUpdaterAirPower();
                     break;
-                case 47:
-                    JeepCarAirSet.this.mUpdateAirBlowBody();
+                case 11:
+                    JeepCarAirSet.this.mUpdaterAirAC();
                     break;
-                case 48:
-                    JeepCarAirSet.this.mUpdateAirBlowBodyFoot();
+                case 12:
+                    JeepCarAirSet.this.mUpdateAirCycle();
                     break;
-                case 49:
-                    JeepCarAirSet.this.mUpdateAirBlowFoot();
+                case 13:
+                    JeepCarAirSet.this.mUpdateAirAuto();
                     break;
-                case 50:
-                    JeepCarAirSet.this.mUpdateAirBlowFootFront();
+                case 15:
+                    JeepCarAirSet.this.mUpdateAirGoFog();
                     break;
-                case 51:
-                    JeepCarAirSet.this.mUpdateAirFrontDefrost();
-                    break;
-                case 52:
+                case 16:
                     JeepCarAirSet.this.mUpdateAirRearDefrost();
                     break;
-                case 53:
+                case 18:
+                case 19:
+                case 20:
+                    JeepCarAirSet.this.updateBtnSource();
+                    break;
+                case 21:
                     JeepCarAirSet.this.mUpdaterAirWindLevel();
                     break;
-                case 54:
+                case 27:
+                    JeepCarAirSet.this.mUpdaterAirTempLeft();
+                    break;
+                case 28:
+                    JeepCarAirSet.this.mUpdaterAirTempRight();
+                    break;
+                case 29:
                     JeepCarAirSet.this.mUpdaterAirSeatHeatLeft();
                     break;
-                case 55:
+                case 30:
                     JeepCarAirSet.this.mUpdaterAirSeatHeatRight();
+                    break;
+                case 62:
+                    JeepCarAirSet.this.mUpdateAirSYNC();
+                    break;
+                case 65:
+                    JeepCarAirSet.this.mUpdateAirFrontDefrost();
+                    break;
+                case 67:
+                    JeepCarAirSet.this.mUpdaterAirDimRear();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0365_aiying_jeep_carairset);
+        //setContentView(R.layout.layout_0365_aiying_jeep_carairset);
         init();
     }
 
@@ -105,7 +97,7 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         findViewById(R.id.air_xts_maxac).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         AirHelper.disableAirWindowLocal(true);
@@ -113,7 +105,7 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         addUpdater();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         AirHelper.disableAirWindowLocal(false);
@@ -121,7 +113,7 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         removeUpdater();
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -179,63 +171,61 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 DataCanbus.PROXY.cmd(2, new int[]{10}, null, null);
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 DataCanbus.PROXY.cmd(2, new int[]{2}, null, null);
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                DataCanbus.PROXY.cmd(2, new int[]{4}, null, null);
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 DataCanbus.PROXY.cmd(2, new int[]{15}, null, null);
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                DataCanbus.PROXY.cmd(2, new int[]{4}, null, null);
                 break;
         }
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[51].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[52].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[49].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[50].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[54].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[55].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[51].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[52].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[49].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[50].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[54].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[55].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
-        int temp = DataCanbus.DATA[44];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             switch (temp) {
                 case 1:
@@ -256,9 +246,9 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempRight() {
-        int temp = DataCanbus.DATA[45];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             switch (temp) {
                 case 1:
@@ -279,9 +269,9 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevel() {
-        int level = DataCanbus.DATA[53];
+        int level = DataCanbus.DATA[21];
         if (level == 8) {
             ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText("A");
         } else if (level < 8) {
@@ -289,87 +279,95 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirGoFog() {
-        int value = DataCanbus.DATA[38];
+        int value = DataCanbus.DATA[15];
         findViewById(R.id.air_xts_maxac).setBackgroundResource(value == 0 ? R.drawable.ic_xts_maxac_n : R.drawable.ic_xts_maxac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirAuto() {
-        int value = DataCanbus.DATA[39];
+        int value = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(value == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirSYNC() {
-        int value = DataCanbus.DATA[40];
+        int value = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_sync).setBackgroundResource(value == 0 ? R.drawable.ic_xts_sync_n : R.drawable.ic_xts_sync_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirCycle() {
-        int value = DataCanbus.DATA[41];
+        int value = DataCanbus.DATA[12];
         findViewById(R.id.air_xts_cycle).setBackgroundResource(value == 0 ? R.drawable.ic_xts_cycle_n : R.drawable.ic_xts_cycle_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirDimRear() {
-        int value = DataCanbus.DATA[42];
+        int value = DataCanbus.DATA[67];
         findViewById(R.id.air_xts_rearlock).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rearlock_n : R.drawable.ic_xts_rearlock_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAC() {
-        int value = DataCanbus.DATA[43];
+        int value = DataCanbus.DATA[11];
         findViewById(R.id.air_xts_ac).setBackgroundResource(value == 0 ? R.drawable.ic_xts_ac_n : R.drawable.ic_xts_ac_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirFrontDefrost() {
-        int value = DataCanbus.DATA[51];
+        int value = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(value == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirRearDefrost() {
-        int value = DataCanbus.DATA[52];
+        int value = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(value == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void mUpdateAirBlowBody() {
-        int value = DataCanbus.DATA[47];
-        findViewById(R.id.air_xts_mode_body).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_body_n : R.drawable.ic_xts_mode_body_p);
+    
+    public void updateBtnSource() {
+        int window = DataCanbus.DATA[18];
+        int foot = DataCanbus.DATA[20];
+        int body = DataCanbus.DATA[19];
+        if (window == 0 && body == 1 && foot == 1) {
+            findViewById(R.id.air_xts_mode_footbody).setBackgroundResource(R.drawable.ic_xts_mode_footbody_p);
+        } else {
+            findViewById(R.id.air_xts_mode_footbody).setBackgroundResource(R.drawable.ic_xts_mode_footbody_n);
+        }
+        if (window == 0 && body == 0 && foot == 1) {
+            findViewById(R.id.air_xts_mode_foot).setBackgroundResource(R.drawable.ic_xts_mode_foot_p);
+        } else {
+            findViewById(R.id.air_xts_mode_foot).setBackgroundResource(R.drawable.ic_xts_mode_foot_n);
+        }
+        if (window == 0 && body == 1 && foot == 0) {
+            findViewById(R.id.air_xts_mode_body).setBackgroundResource(R.drawable.ic_xts_mode_body_p);
+        } else {
+            findViewById(R.id.air_xts_mode_body).setBackgroundResource(R.drawable.ic_xts_mode_body_n);
+        }
+        if (window == 1 && body == 0 && foot == 1) {
+            findViewById(R.id.air_xts_mode_footwin).setBackgroundResource(R.drawable.ic_xts_mode_footwin_p);
+        } else {
+            findViewById(R.id.air_xts_mode_footwin).setBackgroundResource(R.drawable.ic_xts_mode_footwin_n);
+        }
+        if (window == 1 && body == 0 && foot == 0) {
+            findViewById(R.id.air_xts_mode_win).setBackgroundResource(R.drawable.ic_xts_mode_win_p);
+        } else {
+            findViewById(R.id.air_xts_mode_win).setBackgroundResource(R.drawable.ic_xts_mode_win_n);
+        }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void mUpdateAirBlowBodyFoot() {
-        int value = DataCanbus.DATA[48];
-        findViewById(R.id.air_xts_mode_footbody).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_footbody_n : R.drawable.ic_xts_mode_footbody_p);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public void mUpdateAirBlowFoot() {
-        int value = DataCanbus.DATA[49];
-        findViewById(R.id.air_xts_mode_foot).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_foot_n : R.drawable.ic_xts_mode_foot_p);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public void mUpdateAirBlowFootFront() {
-        int value = DataCanbus.DATA[50];
-        findViewById(R.id.air_xts_mode_footwin).setBackgroundResource(value == 0 ? R.drawable.ic_xts_mode_footwin_n : R.drawable.ic_xts_mode_footwin_p);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
-        int value = DataCanbus.DATA[46];
+        int value = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(value == 0 ? R.drawable.ic_xts_power_n : R.drawable.ic_xts_power_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatLeft() {
-        int value = DataCanbus.DATA[54];
+        int value = DataCanbus.DATA[29];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
@@ -386,9 +384,9 @@ public class JeepCarAirSet extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirSeatHeatRight() {
-        int value = DataCanbus.DATA[55];
+        int value = DataCanbus.DATA[30];
         switch (value) {
             case 0:
                 findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);

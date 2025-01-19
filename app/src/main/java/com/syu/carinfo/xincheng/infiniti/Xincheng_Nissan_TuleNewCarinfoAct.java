@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_TuleNewCarinfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int i = R.drawable.ic_bmw_dashboard_car_null;
             switch (updateCode) {
@@ -73,19 +72,19 @@ public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
                     }
                     imageView6.setImageDrawable(resources6.getDrawable(i));
                     break;
-                case 38:
-                    int value7 = DataCanbus.DATA[38];
+                case 105:
+                    int value7 = DataCanbus.DATA[105];
                     ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text3)).setText(String.valueOf(value7) + " km");
                     break;
-                case 98:
+                case 161:
                     Xincheng_Nissan_TuleNewCarinfoAct.this.updateSpeed();
                     break;
-                case 99:
-                    int value8 = DataCanbus.DATA[99];
+                case 162:
+                    int value8 = DataCanbus.DATA[162];
                     ((Xincheng_Nissan_TuleViewEngineSpeed) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.infoView_enginespeed)).setSpeed((value8 * 280) / 8000);
                     break;
-                case 100:
-                    int value9 = DataCanbus.DATA[100];
+                case 163:
+                    int value9 = DataCanbus.DATA[163];
                     if (value9 == 1) {
                         ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text2)).setText(R.string.klc_Parking_with_trailer_ON);
                         ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text2)).setTextColor(-65536);
@@ -95,8 +94,8 @@ public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
                         ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text2)).setTextColor(-1);
                         break;
                     }
-                case 101:
-                    int value10 = DataCanbus.DATA[101];
+                case 164:
+                    int value10 = DataCanbus.DATA[164];
                     if (value10 == 1) {
                         ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text1)).setText(R.string.str_seat_belt_tied);
                         ((TextView) Xincheng_Nissan_TuleNewCarinfoAct.this.findViewById(R.id.tv_text1)).setTextColor(-1);
@@ -110,15 +109,15 @@ public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
-        setContentView(R.layout.layout_xincheng_nissan_tule_dashboard);
+        //setContentView(R.layout.layout_xincheng_nissan_tule_dashboard);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -127,7 +126,7 @@ public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
         mIsFront = true;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -140,36 +139,36 @@ public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[38].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[38].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateSpeed() {
-        int speed = DataCanbus.DATA[98];
+        int speed = DataCanbus.DATA[161];
         ((Xincheng_Nissan_TuleViewSpeed) findViewById(R.id.infoView_speed)).setSpeed(speed);
     }
 }

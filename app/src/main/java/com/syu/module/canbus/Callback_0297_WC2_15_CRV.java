@@ -1,52 +1,44 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0297_WC2_15_CRV extends CallbackCanbusBase {
-    public static final int U_CNT_MAX = 26;
-    public static final int U_DOOR_BACK = 25;
-    public static final int U_DOOR_BEGIN = 20;
-    public static final int U_DOOR_END = 26;
-    public static final int U_DOOR_ENGINE = 20;
-    public static final int U_DOOR_FL = 21;
-    public static final int U_DOOR_FR = 22;
-    public static final int U_DOOR_RL = 23;
-    public static final int U_DOOR_RR = 24;
-    private final int[] MAX = {600, 100, 120, 200, 300, 400, ConstRzcAddData.U_CAR_ADD_START, 600, 700, 800, 900, 1000};
+    public static final int U_CNT_MAX = 118;
+    public static final int U_MISC_BEGIN = 98;
+    public static final int U_MISC_END = 117;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 26; i++) {
+        for (int i = 0; i < 118; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 20;
-        DoorHelper.sUcDoorFl = 21;
-        DoorHelper.sUcDoorFr = 22;
-        DoorHelper.sUcDoorRl = 23;
-        DoorHelper.sUcDoorRr = 24;
-        DoorHelper.sUcDoorBack = 25;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 20; i2 < 26; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 20; i < 26; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 26) {
+        if (updateCode >= 0 && updateCode < 118) {
             HandlerCanbus.update(updateCode, ints);
         }
     }

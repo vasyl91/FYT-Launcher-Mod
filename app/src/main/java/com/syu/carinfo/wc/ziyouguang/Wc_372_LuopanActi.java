@@ -10,33 +10,32 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_372_LuopanActi extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_LuopanActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 37:
+                case 134:
                     Wc_372_LuopanActi.this.mc1d3();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_372_zyg_luopan);
+        //setContentView(R.layout.layout_372_zyg_luopan);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.wc_372_luopan_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_LuopanActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_luopan_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value;
-                int value2 = DataCanbus.DATA[37] & 255;
+                int value2 = DataCanbus.DATA[134] & 255;
                 if (value2 < 15) {
                     value = value2 + 1;
                 } else {
@@ -45,8 +44,8 @@ public class Wc_372_LuopanActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(6, value);
             }
         });
-        ((Button) findViewById(R.id.wc_372_gpsangle_set_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ziyouguang.Wc_372_LuopanActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.wc_372_gpsangle_set_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(8, 1);
                 FuncMain.tips(Wc_372_LuopanActi.this.getString(R.string.str_372_calibration));
@@ -57,31 +56,31 @@ public class Wc_372_LuopanActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[37].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[37].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mc1d3() {
-        int temp = DataCanbus.DATA[37] & 65535;
+        int temp = DataCanbus.DATA[134] & 65535;
         int value = temp & 255;
         int i = (65280 & temp) >> 8;
         findViewById(R.id.wc_372_view_luopan).setVisibility(0);

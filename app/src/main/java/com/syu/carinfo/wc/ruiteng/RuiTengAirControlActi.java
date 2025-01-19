@@ -11,11 +11,10 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RuiTengAirControlActi extends BaseActivity {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -58,14 +57,14 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0282_wc_ruiteng_control);
+        //setContentView(R.layout.layout_0282_wc_ruiteng_control);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -73,7 +72,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -81,53 +80,53 @@ public class RuiTengAirControlActi extends BaseActivity {
         AirHelper.disableAirWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         AirHelper.disableAirWindowLocal(true);
-        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(9, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(9, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(9, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(9, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(8, new int[]{1}, null, null);
             }
         });
-        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(8, new int[1], null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_mode)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_mode)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(7, new int[]{255}, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_front)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[13];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -136,8 +135,8 @@ public class RuiTengAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(4, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.10
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_rear)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[14];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -146,8 +145,8 @@ public class RuiTengAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(5, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_cycle)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[12];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -156,8 +155,8 @@ public class RuiTengAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(6, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_auto)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[11];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -166,8 +165,8 @@ public class RuiTengAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(3, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_ac)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[15];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -176,15 +175,15 @@ public class RuiTengAirControlActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.ruiteng.RuiTengAirControlActi.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.air_xts_power)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(2, new int[]{255}, null, null);
             }
         });
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAcOn() {
         int value = DataCanbus.DATA[15];
         if (((Button) findViewById(R.id.air_xts_ac)) != null) {
@@ -192,7 +191,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirPower() {
         int value = DataCanbus.DATA[23];
         if (((Button) findViewById(R.id.air_xts_power)) != null) {
@@ -200,7 +199,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirAutoOn() {
         int value = DataCanbus.DATA[11];
         if (((Button) findViewById(R.id.air_xts_auto)) != null) {
@@ -208,7 +207,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFrontDefrostOn() {
         int value = DataCanbus.DATA[13];
         if (((Button) findViewById(R.id.air_xts_front)) != null) {
@@ -216,7 +215,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearDefrostOn() {
         int value = DataCanbus.DATA[14];
         if (((Button) findViewById(R.id.air_xts_rear)) != null) {
@@ -224,7 +223,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCycleType() {
         int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
@@ -232,7 +231,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
         int window = DataCanbus.DATA[19];
         int foot = DataCanbus.DATA[18];
@@ -284,7 +283,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
         int level = DataCanbus.DATA[21];
         int value = DataCanbus.DATA[20];
@@ -297,7 +296,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirTempLeft() {
         int temp = DataCanbus.DATA[16];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
@@ -314,7 +313,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
@@ -330,7 +329,7 @@ public class RuiTengAirControlActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);

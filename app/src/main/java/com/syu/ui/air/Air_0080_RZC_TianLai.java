@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0080_RZC_TianLai extends AirBase {
     public Air_0080_RZC_TianLai(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0430_wc2_tianlai03/air_wc2_tianlai03_n.webp";
         this.mPathHighlight = "0430_wc2_tianlai03/air_wc2_tianlai03_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         String tempStr;
         String tempStr2;
@@ -82,7 +82,7 @@ public class Air_0080_RZC_TianLai extends AirBase {
             tempStr = "HIGH";
         } else {
             int value_temp = arg + 16;
-            tempStr = new StringBuilder(String.valueOf(value_temp * 0.5f)).toString();
+            tempStr = String.valueOf(value_temp * 0.5f);
         }
         c.drawText(tempStr, 70.0f, 132.0f, this.mPaint);
         int arg2 = this.DATA[28];
@@ -94,7 +94,7 @@ public class Air_0080_RZC_TianLai extends AirBase {
             tempStr2 = "HIGH";
         } else {
             int value_temp2 = arg2 + 16;
-            tempStr2 = new StringBuilder(String.valueOf(value_temp2 * 0.5f)).toString();
+            tempStr2 = String.valueOf(value_temp2 * 0.5f);
         }
         c.drawText(tempStr2, 930.0f, 132.0f, this.mPaint);
         canvas.save();

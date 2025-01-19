@@ -7,15 +7,14 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class SgmwsAlarmInfoAct extends BaseActivity {
     public static int[] mStrAlarmWarningInfo = {R.string.str_sgmws_str0, R.string.str_sgmws_str1, R.string.str_sgmws_str2, R.string.str_sgmws_str3, R.string.str_sgmws_str4, R.string.str_sgmws_str5, R.string.str_sgmws_str6};
     private TextView titleview;
     private TextView[] mTvWarning = new TextView[7];
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.sgmws.SgmwsAlarmInfoAct.1
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 42:
@@ -85,14 +84,14 @@ public class SgmwsAlarmInfoAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_start_stop);
+        //setContentView(R.layout.layout_golf7_start_stop);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mTvWarning[0] = (TextView) findViewById(R.id.golf7_tv_start_stop_0);
         this.mTvWarning[1] = (TextView) findViewById(R.id.golf7_tv_start_stop_1);
@@ -105,19 +104,19 @@ public class SgmwsAlarmInfoAct extends BaseActivity {
         this.titleview.setText(R.string.alarm_record);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[41].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[42].addNotify(this.mNotifyCanbus, 1);
@@ -129,7 +128,7 @@ public class SgmwsAlarmInfoAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[48].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[41].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.mNotifyCanbus);
@@ -141,7 +140,7 @@ public class SgmwsAlarmInfoAct extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[48].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setvlauedisplay(int index, int value, boolean flag) {
         if (index <= 6 && index >= 0 && value <= 7 && value >= 0) {
             if (flag) {

@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0298_XP1_2016SIYU extends AirBase {
     public Air_0298_XP1_2016SIYU(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 260;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0298_xp1_2015siyu_crv/air_xp1_2016siyu_crv_n.webp";
         this.mPathHighlight = "0298_xp1_2015siyu_crv/air_xp1_2016siyu_crv_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -106,9 +106,9 @@ public class Air_0298_XP1_2016SIYU extends AirBase {
         } else if (temp == -3) {
             c.drawText("HIGH", 65.0f, 135.0f, this.mPaint);
         } else if (this.DATA[33] == 1) {
-            c.drawText(new StringBuilder().append(temp).toString(), 65.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp), 65.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 65.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp / 2.0f), 65.0f, 135.0f, this.mPaint);
         }
         int temp2 = this.DATA[31];
         if (temp2 == -1) {
@@ -118,9 +118,9 @@ public class Air_0298_XP1_2016SIYU extends AirBase {
         } else if (temp2 == -3) {
             c.drawText("HIGH", 930.0f, 135.0f, this.mPaint);
         } else if (this.DATA[33] == 1) {
-            c.drawText(new StringBuilder().append(temp2).toString(), 930.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2), 930.0f, 135.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 930.0f, 135.0f, this.mPaint);
+            c.drawText(String.valueOf(temp2 / 2.0f), 930.0f, 135.0f, this.mPaint);
         }
         int temp3 = this.DATA[52];
         if (temp3 == -1) {
@@ -130,9 +130,9 @@ public class Air_0298_XP1_2016SIYU extends AirBase {
         } else if (temp3 == -3) {
             c.drawText("HIGH", 304.0f, 230.0f, this.mPaint);
         } else if (this.DATA[33] == 1) {
-            c.drawText(new StringBuilder().append(temp3).toString(), 304.0f, 230.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3), 304.0f, 230.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(temp3 / 2.0f).toString(), 304.0f, 230.0f, this.mPaint);
+            c.drawText(String.valueOf(temp3 / 2.0f), 304.0f, 230.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

@@ -1,6 +1,5 @@
 package com.syu.carinfo.air;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ConstAllAirDara {
     public static int C_AIR_POWER = 255;
     public static int C_AIR_POWER_FRONT = 255;
@@ -23,23 +22,27 @@ public class ConstAllAirDara {
     public static int C_AIR_MODE_UP = 255;
     public static int C_AIR_MODE_BODY = 255;
     public static int C_AIR_MODE_FOOT = 255;
+    public static int C_AIR_MODE_BODYFOOT = 255;
+    public static int C_AIR_MODE_UPFOOT = 255;
     public static int C_AIR_MODE_UP_RIGHT = 255;
     public static int C_AIR_MODE_BODY_RIGHT = 255;
     public static int C_AIR_MODE_FOOT_RIGHT = 255;
-    public static int C_AIR_MODE_BODYFOOT = 255;
-    public static int C_AIR_MODE_UPFOOT = 255;
     public static int C_AIR_MODE_ADD = 255;
     public static int C_AIR_MODE_CENTER = 255;
     public static int C_AIR_MODE_SUB = 255;
     public static int C_AIR_MODE_CHANGER = 255;
     public static int C_AIR_MODE_CHANGER_RIGHT = 255;
     public static int C_AIR_ZONE = 255;
-    public static int C_AIR_LEFT_HEAT = 255;
     public static int C_AIR_LEFT_HEAT_PREV = 255;
-    public static int C_AIR_RIGHT_HEAT = 255;
     public static int C_AIR_RIGHT_HEAT_PREV = 255;
+    public static int C_AIR_LEFT_HEAT = 255;
+    public static int C_AIR_RIGHT_HEAT = 255;
     public static int C_AIR_LEFT_COLD = 255;
     public static int C_AIR_RIGHT_COLD = 255;
+    public static int C_AIR_LEFT_HEAT_REAR = 255;
+    public static int C_AIR_RIGHT_HEAT_REAR = 255;
+    public static int C_AIR_LEFT_COLD_REAR = 255;
+    public static int C_AIR_RIGHT_COLD_REAR = 255;
     public static int C_AIR_LEFT_MASSAGE = 255;
     public static int C_AIR_RIGHT_MASSAGE = 255;
     public static int C_AIR_LEFT_WAIST = 255;
@@ -92,7 +95,10 @@ public class ConstAllAirDara {
     public static int C_CLEAN = 255;
     public static int C_AIR_PARK = 255;
     public static int C_AIR_FRONT_ONLY = 255;
+    public static int C_AIR_FRONT_ONLY_F = 255;
     public static int C_AIR_MONO = 255;
+    public static int C_AIR_REAR_MANUAL = 255;
+    public static int C_AIR_OUTSIDE = 255;
     public static int U_AIR_POWER = 255;
     public static int U_AIR_AC = 255;
     public static int U_AIR_AC_MAX = 255;
@@ -122,6 +128,10 @@ public class ConstAllAirDara {
     public static int U_AIR_SEATHEAT_RIGHT = 255;
     public static int U_AIR_SEATWIND_LEFT = 255;
     public static int U_AIR_SEATWIND_RIGHT = 255;
+    public static int U_AIR_SEATHEAT_LEFT_REAR = 255;
+    public static int U_AIR_SEATHEAT_RIGHT_REAR = 255;
+    public static int U_AIR_SEATWIND_LEFT_REAR = 255;
+    public static int U_AIR_SEATWIND_RIGHT_REAR = 255;
     public static int U_AIR_SEATMASSAGE_LEFT = 255;
     public static int U_AIR_SEATMASSAGE_RIGHT = 255;
     public static int U_AIR_SEATWAIST_LEFT = 255;
@@ -176,13 +186,17 @@ public class ConstAllAirDara {
     public static int U_AIR_BLOW_UPFOOT_LEFT = 255;
     public static int U_AIR_PARK = 255;
     public static int U_AIR_FRONT_ONLY = 255;
+    public static int U_AIR_FRONT_ONLY_F = 255;
     public static int U_AIR_MONO = 255;
+    public static int U_AIR_REAR_MANUAL = 255;
+    public static int U_AIR_EM = 255;
     public static int U_AIR_HAVE_REAR = 255;
     public static int C_CONTRAL = 0;
     public static int TEMPERATURE_NONE = -1;
     public static int TEMPERATURE_LOW = -2;
     public static int TEMPERATURE_HIGHT = -3;
     public static boolean JumpNewAir = false;
+    public static int JumpNewAircnt = 0;
 
     public static void initClearAllId() {
         C_AIR_POWER = 255;
@@ -217,12 +231,16 @@ public class ConstAllAirDara {
         C_AIR_MODE_CHANGER = 255;
         C_AIR_MODE_CHANGER_RIGHT = 255;
         C_AIR_ZONE = 255;
-        C_AIR_LEFT_HEAT = 255;
         C_AIR_LEFT_HEAT_PREV = 255;
-        C_AIR_RIGHT_HEAT = 255;
         C_AIR_RIGHT_HEAT_PREV = 255;
+        C_AIR_LEFT_HEAT = 255;
+        C_AIR_RIGHT_HEAT = 255;
         C_AIR_LEFT_COLD = 255;
         C_AIR_RIGHT_COLD = 255;
+        C_AIR_LEFT_HEAT_REAR = 255;
+        C_AIR_RIGHT_HEAT_REAR = 255;
+        C_AIR_LEFT_COLD_REAR = 255;
+        C_AIR_RIGHT_COLD_REAR = 255;
         C_AIR_LEFT_MASSAGE = 255;
         C_AIR_RIGHT_MASSAGE = 255;
         C_AIR_LEFT_WAIST = 255;
@@ -275,7 +293,10 @@ public class ConstAllAirDara {
         C_CLEAN = 255;
         C_AIR_PARK = 255;
         C_AIR_FRONT_ONLY = 255;
+        C_AIR_FRONT_ONLY_F = 255;
         C_AIR_MONO = 255;
+        C_AIR_REAR_MANUAL = 255;
+        C_AIR_OUTSIDE = 255;
         U_AIR_POWER = 255;
         U_AIR_AC = 255;
         U_AIR_AC_MAX = 255;
@@ -305,6 +326,10 @@ public class ConstAllAirDara {
         U_AIR_SEATHEAT_RIGHT = 255;
         U_AIR_SEATWIND_LEFT = 255;
         U_AIR_SEATWIND_RIGHT = 255;
+        U_AIR_SEATHEAT_LEFT_REAR = 255;
+        U_AIR_SEATHEAT_RIGHT_REAR = 255;
+        U_AIR_SEATWIND_LEFT_REAR = 255;
+        U_AIR_SEATWIND_RIGHT_REAR = 255;
         U_AIR_SEATMASSAGE_LEFT = 255;
         U_AIR_SEATMASSAGE_RIGHT = 255;
         U_AIR_SEATWAIST_LEFT = 255;
@@ -359,7 +384,11 @@ public class ConstAllAirDara {
         U_AIR_BLOW_UPFOOT_LEFT = 255;
         U_AIR_PARK = 255;
         U_AIR_FRONT_ONLY = 255;
+        U_AIR_FRONT_ONLY_F = 255;
         U_AIR_MONO = 255;
+        U_AIR_REAR_MANUAL = 255;
+        U_AIR_REAR_MANUAL = 255;
+        U_AIR_EM = 255;
         U_AIR_HAVE_REAR = 255;
     }
 }

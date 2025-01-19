@@ -10,7 +10,7 @@ public class SimStateReceiver extends BroadcastReceiver {
     private static final int SIM_INVALID = 1;
     public static final int SIM_MSG = 1002;
     private static final int SIM_VALID = 0;
-    private int simState = 1;
+    private final int simState = 1;
 
     public int getSimState() {
         return this.simState;

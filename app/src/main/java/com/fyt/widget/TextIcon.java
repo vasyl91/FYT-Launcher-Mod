@@ -22,6 +22,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
     private int mHeight;
     private int mWidth;
     private int pressedId;
+
     @SuppressWarnings("ResourceType")
     public TextIcon(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -50,7 +51,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
         getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
-    @Override // android.view.ViewTreeObserver.OnGlobalLayoutListener
+    @Override
     public void onGlobalLayout() {
         int width = getWidth();
         int height = getHeight();
@@ -64,13 +65,13 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
                 if (wscale <= hscale) {
                     hscale = wscale;
                 }
-                setCompoundDrawablesWithIntrinsicBounds((Drawable) null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), (Drawable) null, (Drawable) null);
+                setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), null, null);
             }
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
         }
     }
 
-    @Override // android.widget.TextView, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == 0) {
             setIcon(this.pressedId);
@@ -97,7 +98,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
         if (wscale <= hscale) {
             hscale = wscale;
         }
-        setCompoundDrawablesWithIntrinsicBounds((Drawable) null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), (Drawable) null, (Drawable) null);
+        setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), null, null);
     }
 
     public Bitmap getScaleBitmap(Bitmap bitmap, float scale) {

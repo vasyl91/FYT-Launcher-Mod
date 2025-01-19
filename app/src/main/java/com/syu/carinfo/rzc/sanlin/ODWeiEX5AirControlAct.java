@@ -10,47 +10,46 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListener {
     public static ODWeiEX5AirControlAct mInstance;
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.sanlin.ODWeiEX5AirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 7:
+                case 10:
                     ODWeiEX5AirControlAct.this.mUpdatePowerOn();
                     break;
-                case 8:
+                case 12:
                     ODWeiEX5AirControlAct.this.mUpdateCycle();
                     break;
-                case 9:
+                case 13:
                     ODWeiEX5AirControlAct.this.mUpdateAutoOn();
                     break;
-                case 10:
-                    ODWeiEX5AirControlAct.this.mUpdateDualOn();
-                    break;
-                case 11:
+                case 16:
                     ODWeiEX5AirControlAct.this.mUpdateRearDefrost();
                     break;
-                case 12:
-                    ODWeiEX5AirControlAct.this.mUpdateFrontDefrost();
-                    break;
-                case 13:
-                case 14:
-                case 15:
+                case 18:
+                case 19:
+                case 20:
                     ODWeiEX5AirControlAct.this.updateBtnSource();
                     break;
-                case 16:
+                case 21:
                     ODWeiEX5AirControlAct.this.mUpdaterAirWindLevelLeft();
                     break;
-                case 17:
+                case 27:
                     ODWeiEX5AirControlAct.this.mUpdateAirTempLeft();
                     break;
-                case 18:
+                case 28:
                     ODWeiEX5AirControlAct.this.mUpdateAirTempRight();
                     break;
-                case 19:
+                case 62:
+                    ODWeiEX5AirControlAct.this.mUpdateDualOn();
+                    break;
+                case 65:
+                    ODWeiEX5AirControlAct.this.mUpdateFrontDefrost();
+                    break;
+                case 68:
                     ODWeiEX5AirControlAct.this.mUpdatePTC();
                     break;
             }
@@ -61,10 +60,10 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         DataCanbus.PROXY.cmd(2, new int[]{data0, data1}, null, null);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0453_od_weima_ex5_air_control);
+        //setContentView(R.layout.layout_0453_od_weima_ex5_air_control);
         init();
         mInstance = this;
     }
@@ -91,7 +90,7 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         findViewById(R.id.air_xts_ventilation).setOnTouchListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -99,7 +98,7 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -107,7 +106,7 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         removeUpdater();
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         int data0 = 0;
@@ -148,25 +147,25 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
             case R.id.btn_air_temp_right_minus /* 2131427451 */:
                 data0 = 7;
                 break;
-            case R.id.air_xts_dual /* 2131427460 */:
-                data0 = 12;
-                break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 data0 = 14;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                data0 = 16;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 data0 = 10;
                 break;
-            case R.id.air_xts_comfort /* 2131428627 */:
+            case R.id.air_xts_dual /* 2131427566 */:
+                data0 = 12;
+                break;
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                data0 = 16;
+                break;
+            case R.id.air_xts_comfort /* 2131428635 */:
                 data0 = 17;
                 break;
-            case R.id.air_xts_economy /* 2131428628 */:
+            case R.id.air_xts_economy /* 2131428636 */:
                 data0 = 18;
                 break;
-            case R.id.air_xts_ventilation /* 2131428629 */:
+            case R.id.air_xts_ventilation /* 2131428637 */:
                 data0 = 19;
                 break;
         }
@@ -181,40 +180,40 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[17].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[62].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[17].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[62].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempLeft() {
-        int temp = DataCanbus.DATA[17];
+        int temp = DataCanbus.DATA[27];
         if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
@@ -230,9 +229,9 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAirTempRight() {
-        int temp = DataCanbus.DATA[18];
+        int temp = DataCanbus.DATA[28];
         if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
             if (temp == -2) {
                 ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -248,27 +247,27 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateAutoOn() {
-        int acOn = DataCanbus.DATA[9];
+        int acOn = DataCanbus.DATA[13];
         findViewById(R.id.air_xts_auto).setBackgroundResource(acOn == 0 ? R.drawable.ic_xts_auto_n : R.drawable.ic_xts_auto_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateDualOn() {
-        int acOn = DataCanbus.DATA[10];
+        int acOn = DataCanbus.DATA[62];
         findViewById(R.id.air_xts_dual).setBackgroundResource(acOn == 1 ? R.drawable.ic_xts_dual_p : R.drawable.ic_xts_dual_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePowerOn() {
-        int power = DataCanbus.DATA[7];
+        int power = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setBackgroundResource(power != 0 ? R.drawable.ic_xts_power_p : R.drawable.ic_xts_power_n);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateCycle() {
-        int cycle = DataCanbus.DATA[8];
+        int cycle = DataCanbus.DATA[12];
         if (cycle == 1) {
             findViewById(R.id.air_xts_cycle).setBackgroundResource(R.drawable.ic_xts_cycle_p);
         } else {
@@ -276,15 +275,15 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateFrontDefrost() {
-        int front = DataCanbus.DATA[12];
+        int front = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setBackgroundResource(front == 0 ? R.drawable.ic_xts_front_n : R.drawable.ic_xts_front_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdatePTC() {
-        int value = DataCanbus.DATA[19];
+        int value = DataCanbus.DATA[68];
         findViewById(R.id.air_xts_comfort).setBackgroundResource(R.drawable.ic_xts_comfort_n);
         findViewById(R.id.air_xts_economy).setBackgroundResource(R.drawable.ic_xts_economy_n);
         findViewById(R.id.air_xts_ventilation).setBackgroundResource(R.drawable.ic_xts_ventilation_n);
@@ -301,15 +300,15 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdateRearDefrost() {
-        int rear = DataCanbus.DATA[11];
+        int rear = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setBackgroundResource(rear == 0 ? R.drawable.ic_xts_rear_n : R.drawable.ic_xts_rear_p);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAirWindLevelLeft() {
-        int leave = DataCanbus.DATA[16];
+        int leave = DataCanbus.DATA[21];
         if (leave < 0) {
             leave = 0;
         }
@@ -320,11 +319,11 @@ public class ODWeiEX5AirControlAct extends Activity implements View.OnTouchListe
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(str);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBtnSource() {
-        int window = DataCanbus.DATA[13];
-        int body = DataCanbus.DATA[14];
-        int foot = DataCanbus.DATA[15];
+        int window = DataCanbus.DATA[18];
+        int body = DataCanbus.DATA[19];
+        int foot = DataCanbus.DATA[20];
         int mode = 0;
         if (foot == 1) {
             mode = 0 | 1;

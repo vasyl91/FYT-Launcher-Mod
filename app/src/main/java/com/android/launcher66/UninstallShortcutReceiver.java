@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class UninstallShortcutReceiver extends BroadcastReceiver {
     private static final String ACTION_UNINSTALL_SHORTCUT = "com.android.launcher.action.UNINSTALL_SHORTCUT";
     private static ArrayList<PendingUninstallShortcutInfo> mUninstallQueue = new ArrayList<>();
@@ -26,7 +25,7 @@ public class UninstallShortcutReceiver extends BroadcastReceiver {
         }
     }
 
-    @Override // android.content.BroadcastReceiver
+    @Override
     public void onReceive(Context context, Intent data) {
         if (ACTION_UNINSTALL_SHORTCUT.equals(data.getAction())) {
             PendingUninstallShortcutInfo info = new PendingUninstallShortcutInfo(data);

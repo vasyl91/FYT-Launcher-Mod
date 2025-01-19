@@ -8,71 +8,70 @@ import com.syu.carinfo.golf7.Golf7Data;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_OilMileagePage1Acti extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_OilMileagePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 97:
                     Golf7_XP_OilMileagePage1Acti.this.mUpdaterAverageOil();
                     break;
-                case 1:
+                case 98:
                     Golf7_XP_OilMileagePage1Acti.this.mUpdaterDrivingMileage();
                     break;
-                case 2:
+                case 99:
                     Golf7_XP_OilMileagePage1Acti.this.mUpdaterRunningMileage();
                     break;
-                case 3:
+                case 100:
                     Golf7_XP_OilMileagePage1Acti.this.mUpdaterDrivingTime();
                     break;
-                case 4:
+                case 101:
                     Golf7_XP_OilMileagePage1Acti.this.mUpdaterAverageSpeed();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_oil_page1);
+        //setContentView(R.layout.layout_golf7_oil_page1);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageOil() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[97];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_average_oil)) != null) {
             int unit = ((-536870912) & value) >> 29;
             int mValue = value & 65535;
@@ -84,9 +83,9 @@ public class Golf7_XP_OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingMileage() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[98];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_mileage)) != null) {
             int unit = (536870912 & value) >> 29;
             int mValue = value & 65535;
@@ -96,9 +95,9 @@ public class Golf7_XP_OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRunningMileage() {
-        int value = DataCanbus.DATA[2];
+        int value = DataCanbus.DATA[99];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_running_mileage)) != null) {
             int unit = (536870912 & value) >> 29;
             int mValue = value & 536870911;
@@ -108,18 +107,18 @@ public class Golf7_XP_OilMileagePage1Acti extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterDrivingTime() {
-        int value = DataCanbus.DATA[3];
+        int value = DataCanbus.DATA[100];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_time)) != null) {
             int value2 = value & 16777215;
             ((TextView) findViewById(R.id.golf7_tv_oil_since_start_driving_time)).setText(String.valueOf(value2 / 60) + " " + getResources().getString(R.string.time_hour) + " " + (value2 % 60) + " " + getResources().getString(R.string.time_minute));
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterAverageSpeed() {
-        int value = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[101];
         if (((TextView) findViewById(R.id.golf7_tv_oil_since_start_average_velocity)) != null) {
             int unit = (536870912 & value) >> 29;
             int mValue = value & 65535;

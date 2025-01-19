@@ -6,6 +6,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
+
 import com.android.launcher66.R;
 
 public class AnimationView extends View implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -38,7 +39,7 @@ public class AnimationView extends View implements ViewTreeObserver.OnGlobalLayo
         }
     }
 
-    @Override // android.view.View
+    @Override
     protected void onAttachedToWindow() {
         if (this.mAnimationDrawable != null) {
             this.mAnimationDrawable.start();
@@ -46,7 +47,7 @@ public class AnimationView extends View implements ViewTreeObserver.OnGlobalLayo
         super.onAttachedToWindow();
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDetachedFromWindow() {
         if (this.mAnimationDrawable != null) {
             this.mAnimationDrawable.stop();
@@ -54,7 +55,7 @@ public class AnimationView extends View implements ViewTreeObserver.OnGlobalLayo
         super.onDetachedFromWindow();
     }
 
-    @Override // android.view.ViewTreeObserver.OnGlobalLayoutListener
+    @Override
     public void onGlobalLayout() {
     }
 }

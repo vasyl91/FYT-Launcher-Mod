@@ -11,56 +11,55 @@ import com.syu.carinfo.xfl.chuangku.XflCkFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class SO3CarBody2Act extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.saiou3.SO3CarBody2Act.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 21:
+                case 118:
                     SO3CarBody2Act.this.mUpdaterValue0();
                     break;
-                case 22:
+                case 119:
                     SO3CarBody2Act.this.mUpdaterValue1();
                     break;
-                case 23:
+                case 120:
                     SO3CarBody2Act.this.mUpdaterValue2();
                     break;
-                case 24:
+                case 121:
                     SO3CarBody2Act.this.mUpdaterValue3();
                     break;
-                case 25:
+                case 122:
                     SO3CarBody2Act.this.mUpdaterValue4();
                     break;
-                case 26:
+                case 123:
                     SO3CarBody2Act.this.mUpdaterValue5();
                     break;
-                case 27:
+                case 124:
                     SO3CarBody2Act.this.mUpdaterValue6();
                     break;
-                case 28:
+                case 125:
                     SO3CarBody2Act.this.mUpdaterValue7();
                     break;
-                case 29:
+                case 126:
                     SO3CarBody2Act.this.mUpdaterValue8();
                     break;
-                case 30:
+                case 127:
                     SO3CarBody2Act.this.mUpdaterValue9();
                     break;
-                case 31:
+                case 128:
                     SO3CarBody2Act.this.mUpdaterRearLock();
                     break;
-                case 32:
+                case 129:
                     SO3CarBody2Act.this.mUpdaterFRLock();
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_sb_so3_car_body_set2);
+        //setContentView(R.layout.layout_sb_so3_car_body_set2);
         setUI();
     }
 
@@ -81,14 +80,11 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
         ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                XflCkFunc.CAR_COMM_CONTROL(20, DataCanbus.DATA[21] != 0 ? 0 : 1);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
-                int mLeaveAutoLuck = DataCanbus.DATA[28];
+            case R.id.btn_minus1 /* 2131427455 */:
+                int mLeaveAutoLuck = DataCanbus.DATA[125];
                 if (mLeaveAutoLuck == 0) {
                     XflCkFunc.CAR_COMM_CONTROL(27, 2);
                     break;
@@ -99,8 +95,8 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_COMM_CONTROL(27, 1);
                     break;
                 }
-            case R.id.btn_plus1 /* 2131427482 */:
-                int mLeaveAutoLuck2 = DataCanbus.DATA[28];
+            case R.id.btn_plus1 /* 2131427457 */:
+                int mLeaveAutoLuck2 = DataCanbus.DATA[125];
                 if (mLeaveAutoLuck2 == 0) {
                     XflCkFunc.CAR_COMM_CONTROL(27, 2);
                     break;
@@ -111,8 +107,8 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_COMM_CONTROL(27, 1);
                     break;
                 }
-            case R.id.btn_minus2 /* 2131427484 */:
-                int mAutoUser = DataCanbus.DATA[32];
+            case R.id.btn_minus2 /* 2131427458 */:
+                int mAutoUser = DataCanbus.DATA[129];
                 if (mAutoUser == 0) {
                     XflCkFunc.CAR_COMM_CONTROL(31, 2);
                     break;
@@ -123,8 +119,8 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_COMM_CONTROL(31, 1);
                     break;
                 }
-            case R.id.btn_plus2 /* 2131427486 */:
-                int mAutoUser2 = DataCanbus.DATA[32];
+            case R.id.btn_plus2 /* 2131427460 */:
+                int mAutoUser2 = DataCanbus.DATA[129];
                 if (mAutoUser2 == 0) {
                     XflCkFunc.CAR_COMM_CONTROL(31, 2);
                     break;
@@ -135,123 +131,126 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
                     XflCkFunc.CAR_COMM_CONTROL(31, 1);
                     break;
                 }
-            case R.id.ctv_checkedtext2 /* 2131427531 */:
-                XflCkFunc.CAR_COMM_CONTROL(19, DataCanbus.DATA[22] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                XflCkFunc.CAR_COMM_CONTROL(20, DataCanbus.DATA[118] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext3 /* 2131427532 */:
-                XflCkFunc.CAR_COMM_CONTROL(21, DataCanbus.DATA[23] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext2 /* 2131427541 */:
+                XflCkFunc.CAR_COMM_CONTROL(19, DataCanbus.DATA[119] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext4 /* 2131427533 */:
-                XflCkFunc.CAR_COMM_CONTROL(22, DataCanbus.DATA[24] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext3 /* 2131427542 */:
+                XflCkFunc.CAR_COMM_CONTROL(21, DataCanbus.DATA[120] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext5 /* 2131427537 */:
-                XflCkFunc.CAR_COMM_CONTROL(23, DataCanbus.DATA[25] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext4 /* 2131427544 */:
+                XflCkFunc.CAR_COMM_CONTROL(22, DataCanbus.DATA[121] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext6 /* 2131427538 */:
-                XflCkFunc.CAR_COMM_CONTROL(24, DataCanbus.DATA[26] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext5 /* 2131427547 */:
+                XflCkFunc.CAR_COMM_CONTROL(23, DataCanbus.DATA[122] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext7 /* 2131427539 */:
-                XflCkFunc.CAR_COMM_CONTROL(25, DataCanbus.DATA[27] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext6 /* 2131427548 */:
+                XflCkFunc.CAR_COMM_CONTROL(24, DataCanbus.DATA[123] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext8 /* 2131427540 */:
-                XflCkFunc.CAR_COMM_CONTROL(28, DataCanbus.DATA[29] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext7 /* 2131427549 */:
+                XflCkFunc.CAR_COMM_CONTROL(25, DataCanbus.DATA[124] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext9 /* 2131427541 */:
-                XflCkFunc.CAR_COMM_CONTROL(29, DataCanbus.DATA[30] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext8 /* 2131427550 */:
+                XflCkFunc.CAR_COMM_CONTROL(28, DataCanbus.DATA[126] != 0 ? 0 : 1);
                 break;
-            case R.id.ctv_checkedtext10 /* 2131427542 */:
-                XflCkFunc.CAR_COMM_CONTROL(30, DataCanbus.DATA[31] != 0 ? 0 : 1);
+            case R.id.ctv_checkedtext9 /* 2131427551 */:
+                XflCkFunc.CAR_COMM_CONTROL(29, DataCanbus.DATA[127] != 0 ? 0 : 1);
+                break;
+            case R.id.ctv_checkedtext10 /* 2131427552 */:
+                XflCkFunc.CAR_COMM_CONTROL(30, DataCanbus.DATA[128] != 0 ? 0 : 1);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdate();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdate();
     }
 
     private void addUpdate() {
-        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[22].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[23].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[24].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[25].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[26].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdate() {
-        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[22].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[23].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[24].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[25].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[26].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue0() {
-        int mChangeWallWarn = DataCanbus.DATA[21];
+        int mChangeWallWarn = DataCanbus.DATA[118];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(mChangeWallWarn == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
-        int mBackCarAccossWarm = DataCanbus.DATA[22];
+        int mBackCarAccossWarm = DataCanbus.DATA[119];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setChecked(mBackCarAccossWarm == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
-        int mRemeberStation = DataCanbus.DATA[23];
+        int mRemeberStation = DataCanbus.DATA[120];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setChecked(mRemeberStation == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
-        int mDriverGoDown = DataCanbus.DATA[24];
+        int mDriverGoDown = DataCanbus.DATA[121];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setChecked(mDriverGoDown == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
-        int mBackCarAutoTilt = DataCanbus.DATA[25];
+        int mBackCarAutoTilt = DataCanbus.DATA[122];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setChecked(mBackCarAutoTilt == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue5() {
-        int mBackCameraFold = DataCanbus.DATA[26];
+        int mBackCameraFold = DataCanbus.DATA[123];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setChecked(mBackCameraFold == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue6() {
-        int mAutoWiper = DataCanbus.DATA[27];
+        int mAutoWiper = DataCanbus.DATA[124];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setChecked(mAutoWiper == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue7() {
-        int mLeaveAutoLuck = DataCanbus.DATA[28];
+        int mLeaveAutoLuck = DataCanbus.DATA[125];
         switch (mLeaveAutoLuck) {
             case 1:
                 ((TextView) findViewById(R.id.tv_text1)).setText(R.string.xp_yinglang_car_set_Second_str9);
@@ -265,27 +264,27 @@ public class SO3CarBody2Act extends Activity implements View.OnClickListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue8() {
-        int mRunWheel = DataCanbus.DATA[29];
+        int mRunWheel = DataCanbus.DATA[126];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setChecked(mRunWheel == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue9() {
-        int mRunSuspension = DataCanbus.DATA[30];
+        int mRunSuspension = DataCanbus.DATA[127];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setChecked(mRunSuspension == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterRearLock() {
-        int mFoureWheelDrive = DataCanbus.DATA[31];
+        int mFoureWheelDrive = DataCanbus.DATA[128];
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setChecked(mFoureWheelDrive == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterFRLock() {
-        int mAutoUser = DataCanbus.DATA[32];
+        int mAutoUser = DataCanbus.DATA[129];
         switch (mAutoUser) {
             case 1:
                 ((TextView) findViewById(R.id.tv_text2)).setText(R.string.str_sb_saiou3_str25);

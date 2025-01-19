@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0439_RZC_ChangAn_All extends AirBase {
     public Air_0439_RZC_ChangAn_All(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0070_rzc_xp1_changancs75/rzc_17cs75.webp";
         this.mPathHighlight = "0070_rzc_xp1_changancs75/rzc_17cs75_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -76,7 +76,7 @@ public class Air_0439_RZC_ChangAn_All extends AirBase {
         } else if (temp == 255) {
             c.drawText("", 927.0f, 84.0f, this.mPaint);
         } else {
-            c.drawText(new StringBuilder().append(18.0f + ((temp - 1) * 0.5f)).toString(), 927.0f, 84.0f, this.mPaint);
+            c.drawText(String.valueOf(18.0f + ((temp - 1) * 0.5f)), 927.0f, 84.0f, this.mPaint);
         }
         canvas.save();
         if (LauncherApplication.getConfiguration() == 1) {

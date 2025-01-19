@@ -11,7 +11,6 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_LEDScreen_AoDeSai_wc extends Activity {
     public static boolean mIsFront = false;
     ArrayList<View> bignum1;
@@ -26,133 +25,133 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
     ArrayList<View> num5;
     int[] idNumSlice = {R.id.iv_num_a, R.id.iv_num_b, R.id.iv_num_c, R.id.iv_num_d, R.id.iv_num_e, R.id.iv_num_f, R.id.iv_num_g, R.id.iv_num_h, R.id.iv_num_i, R.id.iv_num_j, R.id.iv_num_k, R.id.iv_num_l, R.id.iv_num_m, R.id.iv_num_n, R.id.iv_num_o, R.id.iv_num_p, R.id.iv_num_q, R.id.iv_num_r, R.id.iv_num_s};
     View vTempNumSlice = null;
-    private int[] resid = {47, 48, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76};
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.honda.Act_LEDScreen_AoDeSai_wc.1
-        @Override // com.syu.module.IUiNotify
+    private int[] resid = {118, 119, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147};
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 47:
+                case 118:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_dd), value == 1);
                     break;
-                case 48:
+                case 119:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_d_1), value == 1);
                     break;
-                case 49:
+                case 120:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_scan), value == 1);
                     break;
-                case 50:
+                case 121:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_rdm), value == 1);
                     break;
-                case 51:
+                case 122:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_d_2), value == 1);
                     break;
-                case 52:
+                case 123:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_rpt), value == 1);
                     break;
-                case 53:
+                case 124:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_wave), value == 1);
                     break;
-                case 54:
+                case 125:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_disc), value == 1);
                     break;
-                case 55:
+                case 126:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_asel), value == 1);
                     break;
-                case 56:
+                case 127:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_track), value == 1);
                     break;
-                case 57:
+                case 128:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_1), value == 1);
                     break;
-                case 58:
+                case 129:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_2), value == 1);
                     break;
-                case 59:
+                case 130:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_3), value == 1);
                     break;
-                case 60:
+                case 131:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_4), value == 1);
                     break;
-                case 61:
+                case 132:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_5), value == 1);
                     break;
-                case 62:
+                case 133:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_index_6), value == 1);
                     break;
-                case 63:
+                case 134:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_comment1), value == 1);
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_comment3), value == 1);
                     break;
-                case 64:
+                case 135:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_big_dot), value == 1);
                     break;
-                case 65:
+                case 136:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.num1, ints);
                         break;
                     }
-                case 66:
+                case 137:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.num2, ints);
                         break;
                     }
-                case 67:
+                case 138:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.num3, ints);
                         break;
                     }
-                case 68:
+                case 139:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.num4, ints);
                         break;
                     }
-                case 69:
+                case 140:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.num5, ints);
                         break;
                     }
-                case 70:
+                case 141:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setSTCHByCan(ints);
                         break;
                     }
-                case 71:
+                case 142:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.bignum1, ints);
                         break;
                     }
-                case 72:
+                case 143:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.bignum2, ints);
                         break;
                     }
-                case 73:
+                case 144:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.bignum3, ints);
                         break;
                     }
-                case 74:
+                case 145:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.bignum4, ints);
                         break;
                     }
-                case 75:
+                case 146:
                     if (ints != null) {
                         Act_LEDScreen_AoDeSai_wc.this.setNumByCan(Act_LEDScreen_AoDeSai_wc.this.bignum5, ints);
                         break;
                     }
-                case 76:
+                case 147:
                     Act_LEDScreen_AoDeSai_wc.this.checkViewVisible(Act_LEDScreen_AoDeSai_wc.this.findViewById(R.id.id_led_comment2), value == 1);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_166_led_screen);
+        //setContentView(R.layout.layout_166_led_screen);
         init();
     }
 
@@ -169,7 +168,7 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
         this.bignum5 = getNumViews(findViewById(R.id.id_led_big_num5));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void checkViewVisible(View v, boolean on) {
         if (v != null) {
             v.setVisibility(on ? 0 : 4);
@@ -187,7 +186,7 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
         return numSlice;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void setNumByCan(ArrayList<View> vs, int[] ints) {
         if (vs != null && vs.size() != 0 && ints != null) {
             int i = 0;
@@ -215,7 +214,7 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
         }
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();
@@ -223,7 +222,7 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -231,7 +230,7 @@ public class Act_LEDScreen_AoDeSai_wc extends Activity {
         FuncMain.setChannel(13);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;

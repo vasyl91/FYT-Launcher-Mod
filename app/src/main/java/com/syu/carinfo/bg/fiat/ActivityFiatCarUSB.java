@@ -4,40 +4,40 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityFiatCarUSB extends Activity implements View.OnClickListener {
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.bg.fiat.ActivityFiatCarUSB.1
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 0:
+                case 7:
                     ActivityFiatCarUSB.this.updateVoiceState(this.value);
                     break;
-                case 1:
+                case 8:
                     ActivityFiatCarUSB.this.updateBTState(this.value);
                     break;
-                case 2:
+                case 9:
                     ActivityFiatCarUSB.this.updateUSBState(this.value);
                     break;
-                case 3:
+                case 10:
                     ActivityFiatCarUSB.this.updatePlayTime(this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_434_bg_fiat_carusb);
+        //setContentView(R.layout.layout_434_bg_fiat_carusb);
         setListener();
     }
 
@@ -46,7 +46,7 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
         findViewById(R.id.btn_327_cd_next).setOnClickListener(this);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -54,7 +54,7 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
         setCmdKey(129);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
@@ -62,26 +62,26 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_327_cd_pre /* 2131430100 */:
+            case R.id.btn_327_cd_pre /* 2131430054 */:
                 setCmdKey(4);
                 break;
-            case R.id.btn_327_cd_next /* 2131430101 */:
+            case R.id.btn_327_cd_next /* 2131430055 */:
                 setCmdKey(3);
                 break;
         }
@@ -92,7 +92,7 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
     }
 
     protected void updateVoiceState(int value) {
-        if (((TextView) findViewById(R.id.tv_434_voice_state)) != null) {
+        if (findViewById(R.id.tv_434_voice_state) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.tv_434_voice_state)).setText(R.string.rzc_c4l_close);
             } else {
@@ -102,7 +102,7 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
     }
 
     protected void updateBTState(int value) {
-        if (((TextView) findViewById(R.id.tv_434_bt_state)) != null) {
+        if (findViewById(R.id.tv_434_bt_state) != null) {
             if (value == 0) {
                 ((TextView) findViewById(R.id.tv_434_bt_state)).setText(R.string.str_434fiat_bt_state0);
             } else {
@@ -112,13 +112,13 @@ public class ActivityFiatCarUSB extends Activity implements View.OnClickListener
     }
 
     protected void updatePlayTime(int value) {
-        if (((TextView) findViewById(R.id.tv_434_usb_playtime)) != null) {
+        if (findViewById(R.id.tv_434_usb_playtime) != null) {
             ((TextView) findViewById(R.id.tv_434_usb_playtime)).setText(String.format("%02d:%02d", Integer.valueOf(value / 60), Integer.valueOf(value % 60)));
         }
     }
 
     protected void updateUSBState(int value) {
-        if (((TextView) findViewById(R.id.tv_434_usb_state)) != null) {
+        if (findViewById(R.id.tv_434_usb_state) != null) {
             switch (value) {
                 case 0:
                     ((TextView) findViewById(R.id.tv_434_usb_state)).setText(R.string.str_434fiat_usb_state0);

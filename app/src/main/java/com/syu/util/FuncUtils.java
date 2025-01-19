@@ -14,17 +14,21 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+
 import com.syu.ipc.ModuleObject;
 import com.syu.ipc.data.FinalCanbus;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,23 +37,23 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import org.apache.http.cookie.ClientCookie;
 import org.apache.http.protocol.HTTP;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class FuncUtils {
     private static Exception e;
     private static Throwable th;
-    private static Hashtable<String, String> LOCALE_TO_CHARSET_MAP = new Hashtable<>();
+    private static final Hashtable<String, String> LOCALE_TO_CHARSET_MAP = new Hashtable<>();
     private static long lastClickTime;
     private static Calendar mCalendar;
     private static SimpleDateFormat mClockFormat;
     private static long mCurMillis;
-    private static boolean mIsDelay;
+    private static final boolean mIsDelay;
     private static long mLastMillis;
     public static HashMap<String, Typeface> mTypeFaces;
-    BroadcastReceiver mReceiver = new BroadcastReceiver() { // from class: com.syu.util.FuncUtils.1
-        @Override // android.content.BroadcastReceiver
+    BroadcastReceiver mReceiver = new BroadcastReceiver() { 
+        @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals("android.intent.action.TIMEZONE_CHANGED")) {
@@ -160,7 +164,7 @@ public class FuncUtils {
         for (int i = 0; i < data.length; i++) {
             int heightData = (data[i] & 240) / 16;
             int lowData = data[i] & 15;
-            strByte = String.valueOf(strByte) + intTo0xChar(heightData) + intTo0xChar(lowData);
+            strByte = strByte + intTo0xChar(heightData) + intTo0xChar(lowData);
         }
         return strByte;
     }
@@ -213,7 +217,7 @@ public class FuncUtils {
     }
 
     public static byte[] getBytes(char[] chars) {
-        Charset cs = Charset.forName(HTTP.UTF_8);
+        Charset cs = StandardCharsets.UTF_8;
         CharBuffer cb = CharBuffer.allocate(chars.length);
         cb.put(chars);
         cb.flip();
@@ -222,7 +226,7 @@ public class FuncUtils {
     }
 
     public static char[] getChars(byte[] bytes) {
-        Charset cs = Charset.forName(HTTP.UTF_8);
+        Charset cs = StandardCharsets.UTF_8;
         ByteBuffer bb = ByteBuffer.allocate(bytes.length);
         bb.put(bytes);
         bb.flip();
@@ -365,12 +369,12 @@ public class FuncUtils {
         int minute = (data / 60) % 60;
         int hour = ((data / 60) / 60) % 60;
         if (hour > 0) {
-            sDest.append(String.valueOf(hour) + ":");
+            sDest.append(hour + ":");
         }
         if (minute < 10) {
             sDest.append("0");
         }
-        sDest.append(String.valueOf(minute) + ":");
+        sDest.append(minute + ":");
         if (second < 10) {
             sDest.append("0");
         }
@@ -391,10 +395,10 @@ public class FuncUtils {
         }
         if (s2 < 3600) {
             String str = s2 % 60 < 10 ? ":0" + (s2 % 60) : ":" + (s2 % 60);
-            return s2 / 60 < 10 ? "0" + (s2 / 60) + str : String.valueOf(s2 / 60) + str;
+            return s2 / 60 < 10 ? "0" + (s2 / 60) + str : s2 / 60 + str;
         }
         String str2 = s2 % 60 < 10 ? ":0" + (s2 % 60) : ":" + (s2 % 60);
-        return String.valueOf(s2 / 3600) + " " + ((s2 % 3600) / 60 < 10 ? "0" + ((s2 % 3600) / 60) + str2 : String.valueOf((s2 % 3600) / 60) + str2);
+        return s2 / 3600 + " " + ((s2 % 3600) / 60 < 10 ? "0" + ((s2 % 3600) / 60) + str2 : (s2 % 3600) / 60 + str2);
     }
 
     public static String formatDuration(long duration) {
@@ -564,30 +568,30 @@ public class FuncUtils {
     public static String getFormatSize(double size) {
         double kiloByte = size / 1024.0d;
         if (kiloByte < 1.0d) {
-            return String.valueOf(size) + "Byte(s)";
+            return size + "Byte(s)";
         }
         double megaByte = kiloByte / 1024.0d;
         if (megaByte < 1.0d) {
             BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
-            return String.valueOf(result1.setScale(2, 4).toPlainString()) + "KB";
+            return result1.setScale(2, RoundingMode.HALF_UP).toPlainString() + "KB";
         }
         double gigaByte = megaByte / 1024.0d;
         if (gigaByte < 1.0d) {
             BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
-            return String.valueOf(result2.setScale(2, 4).toPlainString()) + "MB";
+            return result2.setScale(2, RoundingMode.HALF_UP).toPlainString() + "MB";
         }
         double teraBytes = gigaByte / 1024.0d;
         if (teraBytes < 1.0d) {
             BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
-            return String.valueOf(result3.setScale(2, 4).toPlainString()) + "GB";
+            return result3.setScale(2, RoundingMode.HALF_UP).toPlainString() + "GB";
         }
         BigDecimal result4 = new BigDecimal(teraBytes);
-        return String.valueOf(result4.setScale(2, 4).toPlainString()) + "TB";
+        return result4.setScale(2, RoundingMode.HALF_UP).toPlainString() + "TB";
     }
 
     public static String getExternalStorageDirectory() {
         String[] columns;
-        String dir = new String();
+        String dir = "";
         Runtime runtime = Runtime.getRuntime();
         Process proc = null;
         InputStream is = null;
@@ -610,10 +614,10 @@ public class FuncUtils {
                                 if (line.contains("fat")) {
                                     String[] columns2 = line.split(" ");
                                     if (columns2 != null && columns2.length > 1) {
-                                        dir = dir.concat(String.valueOf(columns2[1]) + "\n");
+                                        dir = dir.concat(columns2[1] + "\n");
                                     }
                                 } else if (line.contains("fuse") && (columns = line.split(" ")) != null && columns.length > 1) {
-                                    dir = dir.concat(String.valueOf(columns[1]) + "\n");
+                                    dir = dir.concat(columns[1] + "\n");
                                 }
                             }
                         } catch (Exception e) {

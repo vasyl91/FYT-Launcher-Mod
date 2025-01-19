@@ -2,7 +2,6 @@ package com.syu.util;
 
 import android.util.Log;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Print {
     public static void screenMsg(String msg) {
         ObjApp.getMsgView().msg(msg);
@@ -54,7 +53,7 @@ public class Print {
         StringBuilder sb = new StringBuilder(length);
         int end = start + length;
         for (int i = start; i < end; i++) {
-            sb.append(String.valueOf((char) data[i]) + " ");
+            sb.append((char) data[i] + " ");
         }
         return sb.toString();
     }
@@ -136,7 +135,7 @@ public class Print {
             case 13:
                 return "APP_ID_CAR_USB";
             default:
-                String result = new StringBuilder().append(appId).toString();
+                String result = String.valueOf(appId);
                 return result;
         }
     }

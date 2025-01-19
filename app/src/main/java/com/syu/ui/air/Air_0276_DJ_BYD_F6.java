@@ -4,27 +4,27 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
+
 import com.android.launcher66.LauncherApplication;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Air_0276_DJ_BYD_F6 extends AirBase {
     public Air_0276_DJ_BYD_F6(Context context) {
         super(context);
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 173;
     }
 
-    @Override // com.syu.ui.air.AirBase
+    @Override
     protected void initDrawable() {
         this.mPathNormal = "0276_dj_bydf6/air_0276_dj_bydf6_n.webp";
         this.mPathHighlight = "0276_dj_bydf6/air_0276_dj_bydf6_p.webp";
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
         c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
@@ -77,7 +77,7 @@ public class Air_0276_DJ_BYD_F6 extends AirBase {
                 break;
             default:
                 if (left_temp > 1 && left_temp < 15) {
-                    str = new StringBuilder().append(left_temp + 17).toString();
+                    str = String.valueOf(left_temp + 17);
                     break;
                 }
         }
@@ -95,7 +95,7 @@ public class Air_0276_DJ_BYD_F6 extends AirBase {
                 break;
             default:
                 if (right_temp > 1 && right_temp < 15) {
-                    str = new StringBuilder().append(right_temp + 17).toString();
+                    str = String.valueOf(right_temp + 17);
                     break;
                 }
         }

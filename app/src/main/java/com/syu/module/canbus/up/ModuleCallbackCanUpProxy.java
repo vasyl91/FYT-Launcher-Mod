@@ -1,9 +1,9 @@
 package com.syu.module.canbus.up;
 
 import android.os.RemoteException;
+
 import com.syu.ipc.IModuleCallback;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
     private static final ModuleCallbackCanUpProxy INSTANCE = new ModuleCallbackCanUpProxy();
     private CallbackCanUpBase mCallbackCanUpBase;
@@ -35,7 +35,7 @@ public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
         return ints != null && ints.length >= min;
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             if (updateCode < 100) {

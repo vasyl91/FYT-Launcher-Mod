@@ -8,24 +8,23 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC08TianlaiIndexAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_wc_08tianlai_indexact);
-        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct.2
-            @Override // android.view.View.OnClickListener
+        //setContentView(R.layout.layout_wc_08tianlai_indexact);
+        findViewById(R.id.jeep_car_cd).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.DATA[108] == 15) {
+                    if (DataCanbus.DATA[120] == 15) {
                         intent.setClass(WC08TianlaiIndexAct.this, WC08TianlaiCarCDAct.class);
                     } else {
                         intent.setClass(WC08TianlaiIndexAct.this, WC08TianlaiCar6Cd.class);
@@ -36,8 +35,8 @@ public class WC08TianlaiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_radio).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct.3
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_radio).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -48,8 +47,8 @@ public class WC08TianlaiIndexAct extends BaseActivity {
                 }
             }
         });
-        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct.4
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.jeep_car_settings).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -62,25 +61,25 @@ public class WC08TianlaiIndexAct extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
     }
 }

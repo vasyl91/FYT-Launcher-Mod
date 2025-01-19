@@ -12,19 +12,18 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7OilMileageIndexActiOD extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_oil_index_od);
+        //setContentView(R.layout.layout_golf7_oil_index_od);
         init();
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         if (findViewById(R.id.golf_msgbox) != null && findViewById(R.id.golf_msgbox).getVisibility() == 0) {
@@ -47,24 +46,24 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
             this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage4").setIndicator("tabPage4").setContent(new Intent(this, (Class<?>) Golf7FunctionalTireActiOD.class)));
             this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage5").setIndicator("tabPage5").setContent(new Intent(this, (Class<?>) Golf7FunctionalEscSystemActiOD.class)));
         }
-        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.golf_oil_btn_page1 /* 2131431598 */:
+                    case R.id.golf_oil_btn_page1 /* 2131431575 */:
                         Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabSinceStart");
                         break;
-                    case R.id.golf_oil_btn_page3 /* 2131431599 */:
+                    case R.id.golf_oil_btn_page3 /* 2131431576 */:
                         Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabSinceRefuelling");
                         break;
-                    case R.id.golf_oil_btn_page2 /* 2131431600 */:
+                    case R.id.golf_oil_btn_page2 /* 2131431577 */:
                         Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabLongTerm");
                         break;
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_oil_page_pre)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_oil_page_pre)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox) != null && Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox).getVisibility() == 0) {
                     Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox).setVisibility(8);
@@ -91,8 +90,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_oil_page_next)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_oil_page_next)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox) != null && Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox).getVisibility() == 0) {
                     Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox).setVisibility(8);
@@ -119,8 +118,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_oil_select)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_oil_select)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox) != null) {
                     if (Golf7OilMileageIndexActiOD.this.findViewById(R.id.golf_msgbox).getVisibility() == 8) {
@@ -131,14 +130,14 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_oil_media)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_oil_media)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DataCanbus.PROXY.cmd(130, null, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_oil_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_oil_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -149,8 +148,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_0)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.7
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_0)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabPage5");
@@ -161,8 +160,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.8
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabPage4");
@@ -173,8 +172,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.9
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -185,8 +184,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.10
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Golf7OilMileageIndexActiOD.this.mTabHost.setCurrentTabByTag("tabSinceStart");
@@ -197,8 +196,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.11
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -209,8 +208,8 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
                 }
             }
         });
-        ((TextView) findViewById(R.id.golf_msgbox_5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD.12
-            @Override // android.view.View.OnClickListener
+        ((TextView) findViewById(R.id.golf_msgbox_5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -223,7 +222,7 @@ public class Golf7OilMileageIndexActiOD extends TabActivity {
         });
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

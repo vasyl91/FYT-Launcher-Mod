@@ -4,26 +4,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard;
-import com.syu.carinfo.rzc.addcan.RZCAddCanDashBoard_HP;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcJianghuaiIndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_rzc_jianghuai_indexact);
-        if (DataCanbus.sCanbusId != 2621879 && DataCanbus.sCanbusId != 11338167 && DataCanbus.sCanbusId != 11403703 && DataCanbus.sCanbusId != 10879428 && DataCanbus.sCanbusId != 10944964) {
+        //setContentView(R.layout.layout_rzc_jianghuai_indexact);
+        if (DataCanbus.sCanbusId != 2621879 && DataCanbus.sCanbusId != 11338167 && DataCanbus.sCanbusId != 11403703 && DataCanbus.sCanbusId != 10879428 && DataCanbus.sCanbusId != 10944964 && DataCanbus.sCanbusId != 6029765 && DataCanbus.sCanbusId != 6095301) {
             findViewById(R.id.rzc_jianghuai_carinfo_view).setVisibility(8);
         } else {
             findViewById(R.id.rzc_jianghuai_carinfo_view).setVisibility(0);
         }
-        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct.1
-            @Override // android.view.View.OnClickListener
+        if (DataCanbus.sCanbusId == 6029765 || DataCanbus.sCanbusId == 6095301) {
+            ((TextView) findViewById(R.id.tv_text1)).setText(R.string.str_guandao_amp);
+        } else {
+            ((TextView) findViewById(R.id.tv_text1)).setText(R.string.app_name);
+        }
+        ((Button) findViewById(R.id.rzc_jianghuai_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -34,17 +36,13 @@ public class RzcJianghuaiIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rzc_jianghuai_carinfo)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_jianghuai_carinfo)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    if (DataCanbus.sCanbusId != 2621879 && DataCanbus.sCanbusId != 11338167 && DataCanbus.sCanbusId != 11403703 && DataCanbus.sCanbusId != 10879428 && DataCanbus.sCanbusId != 10944964) {
-                        if (LauncherApplication.getConfiguration() == 1) {
-                            intent.setClass(RzcJianghuaiIndexAct.this, RZCAddCanDashBoard.class);
-                        } else {
-                            intent.setClass(RzcJianghuaiIndexAct.this, RZCAddCanDashBoard_HP.class);
-                        }
+                    if (DataCanbus.sCanbusId == 6029765 || DataCanbus.sCanbusId == 6095301) {
+                        intent.setClass(RzcJianghuaiIndexAct.this, RzcJianghuaiAmpSetFunc.class);
                     } else {
                         intent.setClass(RzcJianghuaiIndexAct.this, RzcJianghuaiCarinfoAct.class);
                     }
@@ -54,8 +52,8 @@ public class RzcJianghuaiIndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.rzc_jianghuai_car_tire)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.rzc_jianghuai_car_tire)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

@@ -11,39 +11,38 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListener {
     public static XCTianLaiGjCdAct mInstance;
     public static boolean mIsFront = false;
     int cmdId = -1;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xc.gongjue.XCTianLaiGjCdAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 32:
+                case 105:
                     XCTianLaiGjCdAct.this.mUpdaterCdState(value);
                     break;
-                case 33:
+                case 106:
                     XCTianLaiGjCdAct.this.mUpdaterCdTrack();
                     break;
-                case 34:
-                case 35:
+                case 107:
+                case 108:
                     XCTianLaiGjCdAct.this.mUpdaterCdTime();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0452_tianlai_gj_cd_act);
+        //setContentView(R.layout.layout_0452_tianlai_gj_cd_act);
         mInstance = this;
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         ((Button) findViewById(R.id.cd_prev)).setOnTouchListener(this);
         ((Button) findViewById(R.id.cd_next)).setOnTouchListener(this);
@@ -51,7 +50,7 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
         ((Button) findViewById(R.id.cd_pause)).setOnTouchListener(this);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -60,7 +59,7 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
         DataCanbus.PROXY.cmd(1, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
@@ -72,20 +71,20 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int id = v.getId();
         switch (id) {
-            case R.id.cd_prev /* 2131427915 */:
+            case R.id.cd_prev /* 2131427918 */:
                 this.cmdId = 5;
                 break;
-            case R.id.cd_play /* 2131427917 */:
+            case R.id.cd_play /* 2131427920 */:
                 this.cmdId = 1;
                 break;
-            case R.id.cd_pause /* 2131427918 */:
+            case R.id.cd_pause /* 2131427921 */:
                 this.cmdId = 2;
                 break;
-            case R.id.cd_next /* 2131427920 */:
+            case R.id.cd_next /* 2131427923 */:
                 this.cmdId = 4;
                 break;
         }
@@ -102,23 +101,23 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
         return false;
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[33].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[34].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[35].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[33].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[34].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[35].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdState(int value) {
         switch (value) {
             case 0:
@@ -136,9 +135,9 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTrack() {
-        int value = DataCanbus.DATA[33];
+        int value = DataCanbus.DATA[106];
         if (value == 0 || value == 255) {
             ((TextView) findViewById(R.id.huiteng_cd_track)).setText("Track: ");
         } else {
@@ -146,10 +145,10 @@ public class XCTianLaiGjCdAct extends BaseActivity implements View.OnTouchListen
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterCdTime() {
-        int value1 = DataCanbus.DATA[34];
-        int value2 = DataCanbus.DATA[35];
+        int value1 = DataCanbus.DATA[107];
+        int value2 = DataCanbus.DATA[108];
         ((TextView) findViewById(R.id.huiteng_cd_time)).setText(String.valueOf(value1) + ":" + value2);
     }
 }

@@ -1,15 +1,18 @@
 package com.fyt.adapter;
 
 import androidx.viewpager.widget.PagerAdapter;
+
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.android.launcher66.Launcher;
 import com.syu.log.LogPreview;
+
 import java.util.ArrayList;
 
 public class HotseatAdapter extends PagerAdapter implements View.OnClickListener {
-    private Launcher mLauncher;
-    private ArrayList<View> mPagerList;
+    private final Launcher mLauncher;
+    private final ArrayList<View> mPagerList;
 
     public HotseatAdapter(Launcher context, ArrayList<View> list) {
         this.mLauncher = context;
@@ -26,7 +29,7 @@ public class HotseatAdapter extends PagerAdapter implements View.OnClickListener
         return arg0 == arg1;
     }
 
-    @Override // android.support.v4.view.PagerAdapter
+    @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = this.mPagerList.get(position);
         setViews(view);
@@ -34,7 +37,7 @@ public class HotseatAdapter extends PagerAdapter implements View.OnClickListener
         return view;
     }
 
-    @Override // android.support.v4.view.PagerAdapter
+    @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         super.destroyItem(container, position, object);
         container.removeView(this.mPagerList.get(position));
@@ -51,7 +54,7 @@ public class HotseatAdapter extends PagerAdapter implements View.OnClickListener
         }
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
     }
 }

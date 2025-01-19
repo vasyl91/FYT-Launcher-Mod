@@ -7,103 +7,102 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.oudi.RZC_0314_DongfengEv3_CarInfoAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 91:
+                case 103:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempMotor();
                     break;
-                case 92:
+                case 104:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempMotorCtrl();
                     break;
-                case 93:
+                case 105:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateVoltageLow();
                     break;
-                case 94:
+                case 106:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateVoltageHigh();
                     break;
-                case 95:
+                case 107:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateVoltageLowNum();
                     break;
-                case 96:
+                case 108:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateVoltageHighNum();
                     break;
-                case 97:
+                case 109:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempLow();
                     break;
-                case 98:
+                case 110:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempHigh();
                     break;
-                case 99:
+                case 111:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempLowNum();
                     break;
-                case 100:
+                case 112:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateTempHighNum();
                     break;
-                case 101:
+                case 113:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateRemainBattery();
                     break;
-                case 102:
+                case 114:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateBatteryState();
                     break;
-                case 103:
+                case 115:
                     RZC_0314_DongfengEv3_CarInfoAct.this.updateBMSState();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0314_dongfengev3_carinfo);
+        //setContentView(R.layout.layout_0314_dongfengev3_carinfo);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[97].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[97].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBMSState() {
-        int value = DataCanbus.DATA[103];
+        int value = DataCanbus.DATA[115];
         switch (value) {
             case 1:
                 ((TextView) findViewById(R.id.rzc_yizhiev3_bms_charge_state)).setText(R.string.str_313_parking_charge);
@@ -120,9 +119,9 @@ public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateBatteryState() {
-        int value = DataCanbus.DATA[102];
+        int value = DataCanbus.DATA[114];
         switch (value) {
             case 1:
                 ((TextView) findViewById(R.id.rzc_yizhiev3_charge_state)).setText(R.string.discharging);
@@ -136,27 +135,27 @@ public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRemainBattery() {
-        int value = DataCanbus.DATA[101];
+        int value = DataCanbus.DATA[113];
         ((TextView) findViewById(R.id.rzc_yizhiev3_battery_remain)).setText(String.valueOf(value) + "%");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempHighNum() {
-        int value = DataCanbus.DATA[100];
+        int value = DataCanbus.DATA[112];
         ((TextView) findViewById(R.id.rzc_yizhiev3_temp_high_num)).setText(new StringBuilder(String.valueOf(value)).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempLowNum() {
-        int value = DataCanbus.DATA[99];
+        int value = DataCanbus.DATA[111];
         ((TextView) findViewById(R.id.rzc_yizhiev3_temp_low_num)).setText(new StringBuilder(String.valueOf(value)).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempHigh() {
-        int value = DataCanbus.DATA[98];
+        int value = DataCanbus.DATA[110];
         if (value > 50) {
             ((TextView) findViewById(R.id.rzc_yizhiev3_temp_high)).setText(String.valueOf(value - 50) + "℃");
             return;
@@ -164,9 +163,9 @@ public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
         ((TextView) findViewById(R.id.rzc_yizhiev3_temp_high)).setText("-" + (50 - value) + "℃");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempLow() {
-        int value = DataCanbus.DATA[97];
+        int value = DataCanbus.DATA[109];
         if (value > 50) {
             ((TextView) findViewById(R.id.rzc_yizhiev3_temp_low)).setText(String.valueOf(value - 50) + "℃");
             return;
@@ -174,33 +173,33 @@ public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
         ((TextView) findViewById(R.id.rzc_yizhiev3_temp_low)).setText("-" + (50 - value) + "℃");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateVoltageHighNum() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[107];
         ((TextView) findViewById(R.id.rzc_yizhiev3_voltage_high_num)).setText(new StringBuilder(String.valueOf(value)).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateVoltageLowNum() {
-        int value = DataCanbus.DATA[95];
+        int value = DataCanbus.DATA[107];
         ((TextView) findViewById(R.id.rzc_yizhiev3_voltage_low_num)).setText(new StringBuilder(String.valueOf(value)).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateVoltageHigh() {
-        int value = DataCanbus.DATA[94];
+        int value = DataCanbus.DATA[106];
         ((TextView) findViewById(R.id.rzc_yizhiev3_voltage_low)).setText(String.valueOf(value / 1000) + "." + ((value % 1000) / 100) + ((value % 100) / 10) + (value % 10) + "V");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateVoltageLow() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[105];
         ((TextView) findViewById(R.id.rzc_yizhiev3_voltage_high)).setText(String.valueOf(value / 1000) + "." + ((value % 1000) / 100) + ((value % 100) / 10) + (value % 10) + "V");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempMotorCtrl() {
-        int value = DataCanbus.DATA[92];
+        int value = DataCanbus.DATA[104];
         if (value > 40) {
             ((TextView) findViewById(R.id.rzc_yizhiev3_motor_ctrl_temp)).setText(String.valueOf(value - 40) + "℃");
             return;
@@ -208,9 +207,9 @@ public class RZC_0314_DongfengEv3_CarInfoAct extends BaseActivity {
         ((TextView) findViewById(R.id.rzc_yizhiev3_motor_ctrl_temp)).setText("-" + (40 - value) + "℃");
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempMotor() {
-        int value = DataCanbus.DATA[91];
+        int value = DataCanbus.DATA[103];
         if (value > 40) {
             ((TextView) findViewById(R.id.rzc_yizhiev3_motor_temp)).setText(String.valueOf(value - 40) + "℃");
             return;

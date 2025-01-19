@@ -10,31 +10,30 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Act_Byd_Tang_XBS extends Activity implements View.OnClickListener {
     int iDts;
     int iSoc;
-    IUiNotify mCanbusNotify = new IUiNotify() { // from class: com.syu.carinfo.byd.Act_Byd_Tang_XBS.1
+    IUiNotify mCanbusNotify = new IUiNotify() { 
         int value;
 
-        @Override // com.syu.module.IUiNotify
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             this.value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 39:
+                case 100:
                     Act_Byd_Tang_XBS.this.uDts(this.value);
                     break;
-                case 40:
+                case 101:
                     Act_Byd_Tang_XBS.this.uSoc(this.value);
                     break;
             }
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_194_xbs_byd);
+        //setContentView(R.layout.layout_194_xbs_byd);
         setListener();
     }
 
@@ -54,7 +53,7 @@ public class Act_Byd_Tang_XBS extends Activity implements View.OnClickListener {
         DataCanbus.PROXY.cmd(1, cmdId, val);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -73,36 +72,36 @@ public class Act_Byd_Tang_XBS extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[40].addNotify(this.mCanbusNotify, 1);
-        DataCanbus.NOTIFY_EVENTS[39].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mCanbusNotify, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mCanbusNotify, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[39].removeNotify(this.mCanbusNotify);
-        DataCanbus.NOTIFY_EVENTS[40].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mCanbusNotify);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mCanbusNotify);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.xbs_dts /* 2131428880 */:
+            case R.id.xbs_dts /* 2131428839 */:
                 setAirControl(18, this.iDts != 1 ? 1 : 0);
                 break;
-            case R.id.xbs_soc_m /* 2131428882 */:
+            case R.id.xbs_soc_m /* 2131428841 */:
                 this.iSoc -= 5;
                 if (this.iSoc < 15) {
                     this.iSoc = 15;
                 }
                 setAirControl(0, this.iSoc);
                 break;
-            case R.id.xbs_soc_p /* 2131428884 */:
+            case R.id.xbs_soc_p /* 2131428843 */:
                 this.iSoc += 5;
                 if (this.iSoc > 75) {
                     this.iSoc = 75;

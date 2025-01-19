@@ -1,6 +1,7 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
@@ -8,147 +9,118 @@ import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerRemove;
 import com.syu.util.ToastInfo;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0117_XP1_LINGPAI extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 32;
-    public static final int U_AIR_ACMAX = 43;
-    public static final int U_AIR_AUTO = 28;
-    public static final int U_AIR_BEGIN = 27;
-    public static final int U_AIR_BLOW_BODY_LEFT = 34;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 35;
-    public static final int U_AIR_BLOW_UP_LEFT = 36;
-    public static final int U_AIR_CYCLE = 29;
-    public static final int U_AIR_CYCLE_AUTO = 41;
-    public static final int U_AIR_ECO = 42;
-    public static final int U_AIR_END = 48;
-    public static final int U_AIR_FRONT_DEFROST = 30;
-    public static final int U_AIR_POWER = 39;
-    public static final int U_AIR_REAR_CONTRL = 44;
-    public static final int U_AIR_REAR_DEFROST = 31;
-    public static final int U_AIR_SEATHEAT_LEFT = 46;
-    public static final int U_AIR_SEATHEAT_RIGHT = 47;
-    public static final int U_AIR_SYNC = 40;
-    public static final int U_AIR_TEMP_LEFT = 33;
-    public static final int U_AIR_TEMP_RIGHT = 38;
-    public static final int U_AIR_TEMP_UNIT = 45;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 37;
-    public static final int U_CARINDO_COMPASS_CAL = 96;
-    public static final int U_CARINDO_COMPASS_POINT = 95;
-    public static final int U_CARINFO_AMP_MODE = 107;
-    public static final int U_CARINFO_AURO_DOOR_LOCK = 65;
-    public static final int U_CARINFO_AURO_UNLOCK_ON_EXIT = 66;
-    public static final int U_CARINFO_AUTO_ADJUST_SPEED_SOUND = 109;
-    public static final int U_CARINFO_AUTO_ADJUST_SUSPENSION = 101;
-    public static final int U_CARINFO_AUTO_ANTI_HIGH_BEAM = 62;
-    public static final int U_CARINFO_AUTO_BRAKE = 99;
-    public static final int U_CARINFO_AUTO_SEAT_START = 78;
-    public static final int U_CARINFO_BEGIN = 50;
-    public static final int U_CARINFO_BRAKE_LIST_ENABLE = 98;
-    public static final int U_CARINFO_BRAKE_PARK_SENSE = 93;
-    public static final int U_CARINFO_BUSY_POINT_ALARM = 84;
-    public static final int U_CARINFO_CD_CURRENT_INDEX = 113;
-    public static final int U_CARINFO_CD_PLAYMODE = 112;
-    public static final int U_CARINFO_CD_PLAY_TIME = 114;
-    public static final int U_CARINFO_CD_PLAY_TOTALTIME = 115;
-    public static final int U_CARINFO_CD_STATE = 111;
-    public static final int U_CARINFO_CD_TOTAL_INDEX = 116;
-    public static final int U_CARINFO_COMPASS_DEVIATION_VALUE = 97;
-    public static final int U_CARINFO_CORNERLING_LIGHTS = 59;
-    public static final int U_CARINFO_DAYTIME_LIGHTS = 58;
-    public static final int U_CARINFO_DISPLAY_SUSOENSION_INFO = 105;
-    public static final int U_CARINFO_ENGINE_OFF_POWER_DELAY = 76;
-    public static final int U_CARINFO_FIRST_PRESS_KEY_UNLOCK = 71;
-    public static final int U_CARINFO_FLASH_LIGHTS_WITH_LOCK_LIGHT = 56;
-    public static final int U_CARINFO_FLASH_LIGHTS_WITH_LOCK_LOCK = 67;
-    public static final int U_CARINFO_FRONT_COLLISION_WARN = 87;
-    public static final int U_CARINFO_FRONT_COLLISION_WARN_AUTO_BRAKE = 88;
-    public static final int U_CARINFO_FRONT_PARK_VOL = 85;
-    public static final int U_CARINFO_GREETING_LIGHT = 64;
-    public static final int U_CARINFO_HEADLIGHT_DELAYED = 55;
-    public static final int U_CARINFO_HEADLIGHT_DELAYED_ENGINE = 75;
-    public static final int U_CARINFO_HEADLIGHT_ILLUMI_ON_APPROACH = 57;
-    public static final int U_CARINFO_HEADLIGHT_SENSI = 63;
-    public static final int U_CARINFO_HORN_LOCK = 68;
-    public static final int U_CARINFO_HORN_REMOTE = 73;
-    public static final int U_CARINFO_INTER_CARLIGHT = 106;
-    public static final int U_CARINFO_LANE_DEVIATION_CALI = 90;
-    public static final int U_CARINFO_LANE_DEVIATION_WARN = 94;
-    public static final int U_CARINFO_LANG = 49;
-    public static final int U_CARINFO_MIRROR_DIMMING = 61;
-    public static final int U_CARINFO_PARKVIEW_DYNAMIC_GUIDE_LINE = 81;
-    public static final int U_CARINFO_PARKVIEW_STATIC_GUIDE_LINE = 82;
-    public static final int U_CARINFO_PARK_SENSE = 79;
-    public static final int U_CARINFO_PASSIVE_ENTRY = 72;
-    public static final int U_CARINFO_POWER_LEFT_GATE_ALERT = 70;
-    public static final int U_CARINFO_RAIN_SENS_WIPERS = 91;
-    public static final int U_CARINFO_RAMP_START_ASSIST = 83;
-    public static final int U_CARINFO_REAR_BRAKE_PARK_AUTO = 92;
-    public static final int U_CARINFO_REAR_BRAKE_PARK_SENSE = 80;
-    public static final int U_CARINFO_REAR_PARK_VOL = 86;
-    public static final int U_CARINFO_REMOTE_DOOR_UNLOCK = 74;
-    public static final int U_CARINFO_REMOTE_TIP_SOUND = 108;
-    public static final int U_CARINFO_SEAT_FACILITATES_ACCESS = 77;
-    public static final int U_CARINFO_SMART_KEY_SETTINGS = 69;
-    public static final int U_CARINFO_SURROUND = 110;
-    public static final int U_CARINFO_TILT_REARVIEW_MIRROR_WHEN_REVERSING = 89;
-    public static final int U_CARINFO_TIRE_JACKS = 102;
-    public static final int U_CARINFO_TRANSPORT_MODE = 103;
-    public static final int U_CARINFO_UNIT_DISTANCE = 52;
-    public static final int U_CARINFO_UNIT_FUEL = 51;
-    public static final int U_CARINFO_UNIT_PRESS = 54;
-    public static final int U_CARINFO_UNIT_TEMP = 53;
-    public static final int U_CARINFO_UNIT_UNIT = 50;
-    public static final int U_CARINFO_WHEEL_ALIGNMENT_MODE = 104;
-    public static final int U_CARINFO_WIN_LIST = 100;
-    public static final int U_CARINFO_WIPER_WITH_HEADLIGHT = 60;
-    public static final int U_CNT_MAX = 117;
-    public static final int U_DOOR_BACK = 25;
-    public static final int U_DOOR_BEGIN = 20;
-    public static final int U_DOOR_END = 26;
-    public static final int U_DOOR_ENGINE = 20;
-    public static final int U_DOOR_FL = 21;
-    public static final int U_DOOR_FR = 22;
-    public static final int U_DOOR_RL = 23;
-    public static final int U_DOOR_RR = 24;
+    public static final int U_CARINDO_COMPASS_CAL = 165;
+    public static final int U_CARINDO_COMPASS_POINT = 164;
+    public static final int U_CARINFO_AMP_MODE = 176;
+    public static final int U_CARINFO_AURO_DOOR_LOCK = 134;
+    public static final int U_CARINFO_AURO_UNLOCK_ON_EXIT = 135;
+    public static final int U_CARINFO_AUTO_ADJUST_SPEED_SOUND = 178;
+    public static final int U_CARINFO_AUTO_ADJUST_SUSPENSION = 170;
+    public static final int U_CARINFO_AUTO_ANTI_HIGH_BEAM = 131;
+    public static final int U_CARINFO_AUTO_BRAKE = 168;
+    public static final int U_CARINFO_AUTO_SEAT_START = 147;
+    public static final int U_CARINFO_BEGIN = 119;
+    public static final int U_CARINFO_BRAKE_LIST_ENABLE = 167;
+    public static final int U_CARINFO_BRAKE_PARK_SENSE = 162;
+    public static final int U_CARINFO_BUSY_POINT_ALARM = 153;
+    public static final int U_CARINFO_CD_CURRENT_INDEX = 182;
+    public static final int U_CARINFO_CD_PLAYMODE = 181;
+    public static final int U_CARINFO_CD_PLAY_TIME = 183;
+    public static final int U_CARINFO_CD_PLAY_TOTALTIME = 184;
+    public static final int U_CARINFO_CD_STATE = 180;
+    public static final int U_CARINFO_CD_TOTAL_INDEX = 185;
+    public static final int U_CARINFO_COMPASS_DEVIATION_VALUE = 166;
+    public static final int U_CARINFO_CORNERLING_LIGHTS = 128;
+    public static final int U_CARINFO_DAYTIME_LIGHTS = 127;
+    public static final int U_CARINFO_DISPLAY_SUSOENSION_INFO = 174;
+    public static final int U_CARINFO_ENGINE_OFF_POWER_DELAY = 145;
+    public static final int U_CARINFO_FIRST_PRESS_KEY_UNLOCK = 140;
+    public static final int U_CARINFO_FLASH_LIGHTS_WITH_LOCK_LIGHT = 125;
+    public static final int U_CARINFO_FLASH_LIGHTS_WITH_LOCK_LOCK = 136;
+    public static final int U_CARINFO_FRONT_COLLISION_WARN = 156;
+    public static final int U_CARINFO_FRONT_COLLISION_WARN_AUTO_BRAKE = 157;
+    public static final int U_CARINFO_FRONT_PARK_VOL = 154;
+    public static final int U_CARINFO_GREETING_LIGHT = 133;
+    public static final int U_CARINFO_HEADLIGHT_DELAYED = 124;
+    public static final int U_CARINFO_HEADLIGHT_DELAYED_ENGINE = 144;
+    public static final int U_CARINFO_HEADLIGHT_ILLUMI_ON_APPROACH = 126;
+    public static final int U_CARINFO_HEADLIGHT_SENSI = 132;
+    public static final int U_CARINFO_HORN_LOCK = 137;
+    public static final int U_CARINFO_HORN_REMOTE = 142;
+    public static final int U_CARINFO_INTER_CARLIGHT = 175;
+    public static final int U_CARINFO_LANE_DEVIATION_CALI = 159;
+    public static final int U_CARINFO_LANE_DEVIATION_WARN = 163;
+    public static final int U_CARINFO_LANG = 118;
+    public static final int U_CARINFO_MIRROR_DIMMING = 130;
+    public static final int U_CARINFO_PARKVIEW_DYNAMIC_GUIDE_LINE = 150;
+    public static final int U_CARINFO_PARKVIEW_STATIC_GUIDE_LINE = 151;
+    public static final int U_CARINFO_PARK_SENSE = 148;
+    public static final int U_CARINFO_PASSIVE_ENTRY = 141;
+    public static final int U_CARINFO_POWER_LEFT_GATE_ALERT = 139;
+    public static final int U_CARINFO_RAIN_SENS_WIPERS = 160;
+    public static final int U_CARINFO_RAMP_START_ASSIST = 152;
+    public static final int U_CARINFO_REAR_BRAKE_PARK_AUTO = 161;
+    public static final int U_CARINFO_REAR_BRAKE_PARK_SENSE = 149;
+    public static final int U_CARINFO_REAR_PARK_VOL = 155;
+    public static final int U_CARINFO_REMOTE_DOOR_UNLOCK = 143;
+    public static final int U_CARINFO_REMOTE_TIP_SOUND = 177;
+    public static final int U_CARINFO_SEAT_FACILITATES_ACCESS = 146;
+    public static final int U_CARINFO_SMART_KEY_SETTINGS = 138;
+    public static final int U_CARINFO_SURROUND = 179;
+    public static final int U_CARINFO_TILT_REARVIEW_MIRROR_WHEN_REVERSING = 158;
+    public static final int U_CARINFO_TIRE_JACKS = 171;
+    public static final int U_CARINFO_TRANSPORT_MODE = 172;
+    public static final int U_CARINFO_UNIT_DISTANCE = 121;
+    public static final int U_CARINFO_UNIT_FUEL = 120;
+    public static final int U_CARINFO_UNIT_PRESS = 123;
+    public static final int U_CARINFO_UNIT_TEMP = 122;
+    public static final int U_CARINFO_UNIT_UNIT = 119;
+    public static final int U_CARINFO_WHEEL_ALIGNMENT_MODE = 173;
+    public static final int U_CARINFO_WIN_LIST = 169;
+    public static final int U_CARINFO_WIPER_WITH_HEADLIGHT = 129;
+    public static final int U_CNT_MAX = 186;
+    public static final int U_MISC_BEGIN = 98;
+    public static final int U_MISC_END = 117;
     ShowSeriviceInfos infos;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 117; i++) {
+        for (int i = 0; i < 186; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
-        DoorHelper.sUcDoorEngine = 20;
-        DoorHelper.sUcDoorFl = 21;
-        DoorHelper.sUcDoorFr = 22;
-        DoorHelper.sUcDoorRl = 23;
-        DoorHelper.sUcDoorRr = 24;
-        DoorHelper.sUcDoorBack = 25;
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
         DoorHelper.getInstance().buildUi();
-        for (int i2 = 20; i2 < 26; i2++) {
+        for (int i2 = 0; i2 < 6; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
-        for (int i = 20; i < 26; i++) {
+        for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        if (updateCode >= 0 && updateCode < 117) {
+        if (updateCode >= 0 && updateCode < 186) {
             HandlerCanbus.update(updateCode, ints);
         }
-        if (100 == updateCode && DataCanbus.DATA[99] == 1) {
+        if (169 == updateCode && DataCanbus.DATA[168] == 1) {
             updatedateInfos(DataCanbus.DATA[updateCode]);
         }
     }
 
-    private void updatedateInfos(int i) {
+    public void updatedateInfos(int i) {
         int resid = -1;
         switch (i) {
             case 0:
@@ -187,7 +159,7 @@ public class Callback_0117_XP1_LINGPAI extends CallbackCanbusBase {
     }
 
     public class ShowSeriviceInfos implements Runnable {
-        private String string;
+        public String string;
 
         public ShowSeriviceInfos() {
         }
@@ -196,7 +168,7 @@ public class Callback_0117_XP1_LINGPAI extends CallbackCanbusBase {
             this.string = str;
         }
 
-        @Override // java.lang.Runnable
+        @Override
         public void run() {
             ToastInfo.showToast(LauncherApplication.getInstance(), this.string);
         }

@@ -8,14 +8,14 @@ import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class RzcChanganCX70IndexAct extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_odchangan_indexact);
+        //setContentView(R.layout.layout_odchangan_indexact);
         if (DataCanbus.DATA[1000] != 7471543 && DataCanbus.DATA[1000] != 4719044 && DataCanbus.DATA[1000] != 11010500 && DataCanbus.DATA[1000] != 3473861) {
             findViewById(R.id.odchangan_car_air_view).setVisibility(8);
         }
@@ -27,8 +27,8 @@ public class RzcChanganCX70IndexAct extends BaseActivity {
         } else {
             ((TextView) findViewById(R.id.tv_text1)).setText(R.string.tire_pressure);
         }
-        ((Button) findViewById(R.id.odchangan_car_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
@@ -39,20 +39,20 @@ public class RzcChanganCX70IndexAct extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.odchangan_car_air)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_air)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();
-                    intent.setClass(RzcChanganCX70IndexAct.this, RzcChanganCOSAirControlAct.class);
+                    intent.setClass(RzcChanganCX70IndexAct.this, Air_Activity_All_Toyota_prado_HP.class);
                     RzcChanganCX70IndexAct.this.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-        ((Button) findViewById(R.id.odchangan_car_tire)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.odchangan_car_tire)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 try {
                     Intent intent = new Intent();

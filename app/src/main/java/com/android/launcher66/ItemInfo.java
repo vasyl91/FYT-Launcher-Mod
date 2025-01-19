@@ -8,8 +8,7 @@ import com.android.launcher66.LauncherSettings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
+
 public class ItemInfo {
     static final int NO_ID = -1;
     int cellX;

@@ -14,22 +14,21 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_374_VehicleIdentify extends Activity {
     AdapterCarInfo adapter;
     List<CarInfo> mList = new ArrayList();
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_374_VehicleIdentify.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             Activity_374_VehicleIdentify.this.adapter.setValue(updateCode, DataCanbus.DATA[updateCode]);
         }
     };
     private SharedPreferences sp1;
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_list);
+        //setContentView(R.layout.layout_list);
         this.sp1 = getSharedPreferences("type_button2", 0);
         initValue();
         this.adapter = new AdapterCarInfo(this, this.mList);
@@ -39,7 +38,7 @@ public class Activity_374_VehicleIdentify extends Activity {
     }
 
     private void initValue() {
-        CarInfo carInfo = new CarInfo(10, 158, R.string.str_374_vehicleidentify);
+        CarInfo carInfo = new CarInfo(10, 170, R.string.str_374_vehicleidentify);
         carInfo.setCmd(3, 0);
         carInfo.setDiplsys(new String[]{getString(R.string.str_374_vehicleidentify1), getString(R.string.str_374_vehicleidentify2), getString(R.string.str_374_vehicleidentify3)});
         carInfo.setSharedPreferences(this.sp1);
@@ -47,23 +46,23 @@ public class Activity_374_VehicleIdentify extends Activity {
         this.mList.add(carInfo);
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
     private void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
     }
 }

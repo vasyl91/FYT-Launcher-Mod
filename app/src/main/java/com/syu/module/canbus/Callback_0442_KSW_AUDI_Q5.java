@@ -1,12 +1,12 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0442_KSW_AUDI_Q5 extends CallbackCanbusBase {
     public static final int U_AIR_AC = 27;
     public static final int U_AIR_BEGIN = 25;
@@ -50,7 +50,7 @@ public class Callback_0442_KSW_AUDI_Q5 extends CallbackCanbusBase {
     public static final int U_CAR_UI_STATE = 9;
     public static final int U_CNT_MAX = 47;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 47; i++) {
@@ -68,7 +68,7 @@ public class Callback_0442_KSW_AUDI_Q5 extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -85,7 +85,7 @@ public class Callback_0442_KSW_AUDI_Q5 extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 47) {
             switch (updateCode) {

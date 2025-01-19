@@ -1,11 +1,11 @@
 package com.syu.esri;
 
 public class Polygon {
-    private int mRecordNum;
-    private double mMinX;
-    private double mMinY;
-    private double mMaxX;
-    private double mMaxY;
+    private final int mRecordNum;
+    private final double mMinX;
+    private final double mMinY;
+    private final double mMaxX;
+    private final double mMaxY;
     private double[][] mPoints = null;
 
     public Polygon(int recordNum, double minX, double minY, double maxX, double maxY, double[][] points) {
@@ -18,7 +18,7 @@ public class Polygon {
     }
 
     public boolean hit(double x, double y) {
-        for(int i = 0; i < this.mPoints.length; ++i) {
+        for (int i = 0; i < this.mPoints.length; ++i) {
             if (this.hitPolygon(this.mPoints[i], x, y)) {
                 return true;
             }
@@ -36,11 +36,12 @@ public class Polygon {
             double lastX = points[(pointCnt << 1) - 2];
             double lastY = points[(pointCnt << 1) - 1];
 
-            for(int i = 0; i < pointCnt; ++i) {
+            for (int i = 0; i < pointCnt; ++i) {
                 double curX = points[i << 1];
                 double curY = points[(i << 1) + 1];
                 if (curY != lastY) {
-                    label75: {
+                    label75:
+                    {
                         double leftX;
                         if (curX < lastX) {
                             if (x >= lastX) {

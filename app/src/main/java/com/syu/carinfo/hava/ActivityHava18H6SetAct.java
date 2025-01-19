@@ -12,128 +12,127 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class ActivityHava18H6SetAct extends BaseActivity {
-    private View.OnClickListener mClick = new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.1
-        @Override // android.view.View.OnClickListener
+    private View.OnClickListener mClick = new View.OnClickListener() { 
+        @Override
         public void onClick(View v) {
             int iAls;
             int iRainFall;
             switch (v.getId()) {
-                case R.id.btn_minus1 /* 2131427480 */:
-                    int value = DataCanbus.DATA[114] - 1;
+                case R.id.btn_minus1 /* 2131427455 */:
+                    int value = DataCanbus.DATA[126] - 1;
                     if (value < 0) {
                         value = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(50, value);
                     break;
-                case R.id.btn_plus1 /* 2131427482 */:
-                    int value2 = DataCanbus.DATA[114] + 1;
+                case R.id.btn_plus1 /* 2131427457 */:
+                    int value2 = DataCanbus.DATA[126] + 1;
                     if (value2 > 2) {
                         value2 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(50, value2);
                     break;
-                case R.id.btn_minus2 /* 2131427484 */:
-                    int value3 = DataCanbus.DATA[146] - 1;
+                case R.id.btn_minus2 /* 2131427458 */:
+                    int value3 = DataCanbus.DATA[158] - 1;
                     if (value3 < 0) {
                         value3 = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(75, value3);
                     break;
-                case R.id.btn_plus2 /* 2131427486 */:
-                    int value4 = DataCanbus.DATA[146] + 1;
+                case R.id.btn_plus2 /* 2131427460 */:
+                    int value4 = DataCanbus.DATA[158] + 1;
                     if (value4 > 2) {
                         value4 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(75, value4);
                     break;
-                case R.id.btn_minus3 /* 2131427488 */:
-                    int value5 = DataCanbus.DATA[153] - 1;
+                case R.id.btn_minus3 /* 2131427461 */:
+                    int value5 = DataCanbus.DATA[165] - 1;
                     if (value5 < 0) {
                         value5 = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(51, value5);
                     break;
-                case R.id.btn_plus3 /* 2131427490 */:
-                    int value6 = DataCanbus.DATA[153] + 1;
+                case R.id.btn_plus3 /* 2131427463 */:
+                    int value6 = DataCanbus.DATA[165] + 1;
                     if (value6 > 2) {
                         value6 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(51, value6);
                     break;
-                case R.id.btn_minus4 /* 2131427492 */:
-                    int value7 = DataCanbus.DATA[155] - 1;
+                case R.id.btn_minus4 /* 2131427464 */:
+                    int value7 = DataCanbus.DATA[167] - 1;
                     if (value7 < 0) {
                         value7 = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(66, value7);
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
-                    int value8 = DataCanbus.DATA[155] + 1;
+                case R.id.btn_plus4 /* 2131427466 */:
+                    int value8 = DataCanbus.DATA[167] + 1;
                     if (value8 > 2) {
                         value8 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(66, value8);
                     break;
-                case R.id.btn_minus5 /* 2131427496 */:
-                    int value9 = DataCanbus.DATA[157] - 1;
+                case R.id.btn_minus5 /* 2131427467 */:
+                    int value9 = DataCanbus.DATA[169] - 1;
                     if (value9 < 0) {
                         value9 = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(73, value9);
                     break;
-                case R.id.btn_plus5 /* 2131427498 */:
-                    int value10 = DataCanbus.DATA[157] + 1;
+                case R.id.btn_plus5 /* 2131427469 */:
+                    int value10 = DataCanbus.DATA[169] + 1;
                     if (value10 > 2) {
                         value10 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(73, value10);
                     break;
-                case R.id.btn_minus6 /* 2131427501 */:
-                    int value11 = DataCanbus.DATA[158] - 1;
+                case R.id.btn_minus6 /* 2131427470 */:
+                    int value11 = DataCanbus.DATA[170] - 1;
                     if (value11 < 0) {
                         value11 = 2;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(74, value11);
                     break;
-                case R.id.btn_plus6 /* 2131427503 */:
-                    int value12 = DataCanbus.DATA[158] + 1;
+                case R.id.btn_plus6 /* 2131427472 */:
+                    int value12 = DataCanbus.DATA[170] + 1;
                     if (value12 > 2) {
                         value12 = 0;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(74, value12);
                     break;
-                case R.id.rzc_havalh6_domedelay_m /* 2131427620 */:
-                    int iDomeDelayValue = DataCanbus.DATA[90] - 1;
+                case R.id.rzc_havalh6_domedelay_m /* 2131427633 */:
+                    int iDomeDelayValue = DataCanbus.DATA[102] - 1;
                     if (iDomeDelayValue < 1) {
                         iDomeDelayValue = 4;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(4, iDomeDelayValue);
                     break;
-                case R.id.rzc_havalh6_domedelay_p /* 2131427622 */:
-                    int iDomeDelayValue2 = DataCanbus.DATA[90] + 1;
+                case R.id.rzc_havalh6_domedelay_p /* 2131427635 */:
+                    int iDomeDelayValue2 = DataCanbus.DATA[102] + 1;
                     if (iDomeDelayValue2 > 4) {
                         iDomeDelayValue2 = 1;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(4, iDomeDelayValue2);
                     break;
-                case R.id.rzc_havalh6_followhome_m /* 2131427623 */:
-                    int iFollowHomeValue = DataCanbus.DATA[91] - 1;
+                case R.id.rzc_havalh6_followhome_m /* 2131427636 */:
+                    int iFollowHomeValue = DataCanbus.DATA[103] - 1;
                     if (iFollowHomeValue < 1) {
                         iFollowHomeValue = 4;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(5, iFollowHomeValue);
                     break;
-                case R.id.rzc_havalh6_followhome_p /* 2131427625 */:
-                    int iFollowHomeValue2 = DataCanbus.DATA[91] + 1;
+                case R.id.rzc_havalh6_followhome_p /* 2131427638 */:
+                    int iFollowHomeValue2 = DataCanbus.DATA[103] + 1;
                     if (iFollowHomeValue2 > 4) {
                         iFollowHomeValue2 = 1;
                     }
                     ActivityHava18H6SetAct.this.sendCMD(5, iFollowHomeValue2);
                     break;
-                case R.id.rzc_havalh6_powersave_m /* 2131427626 */:
-                    int iPowerSave = DataCanbus.DATA[92] - 1;
+                case R.id.rzc_havalh6_powersave_m /* 2131427639 */:
+                    int iPowerSave = DataCanbus.DATA[104] - 1;
                     if (DataCanbus.DATA[1000] == 1114356 || DataCanbus.DATA[1000] == 2294004) {
                         if (iPowerSave < 1) {
                             iPowerSave = 6;
@@ -143,8 +142,8 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                     }
                     ActivityHava18H6SetAct.this.sendCMD(6, iPowerSave);
                     break;
-                case R.id.rzc_havalh6_powersave_p /* 2131427628 */:
-                    int iPowerSave2 = DataCanbus.DATA[92] + 1;
+                case R.id.rzc_havalh6_powersave_p /* 2131427641 */:
+                    int iPowerSave2 = DataCanbus.DATA[104] + 1;
                     if (DataCanbus.DATA[1000] == 1114356 || DataCanbus.DATA[1000] == 2294004) {
                         if (iPowerSave2 > 6) {
                             iPowerSave2 = 1;
@@ -154,9 +153,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                     }
                     ActivityHava18H6SetAct.this.sendCMD(6, iPowerSave2);
                     break;
-                case R.id.rzc_havalh6_rainfall_m /* 2131427629 */:
-                case R.id.rzc_havalh6_rainfall_p /* 2131427631 */:
-                    int iRainFall2 = DataCanbus.DATA[93];
+                case R.id.rzc_havalh6_rainfall_m /* 2131427642 */:
+                case R.id.rzc_havalh6_rainfall_p /* 2131427644 */:
+                    int iRainFall2 = DataCanbus.DATA[105];
                     if (iRainFall2 == 0) {
                         iRainFall = 2;
                     } else {
@@ -164,9 +163,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                     }
                     ActivityHava18H6SetAct.this.sendCMD(7, iRainFall);
                     break;
-                case R.id.rzc_havalh6_als_m /* 2131427632 */:
-                case R.id.rzc_havalh6_als_p /* 2131427634 */:
-                    int iAls2 = DataCanbus.DATA[94];
+                case R.id.rzc_havalh6_als_m /* 2131427645 */:
+                case R.id.rzc_havalh6_als_p /* 2131427647 */:
+                    int iAls2 = DataCanbus.DATA[106];
                     if (iAls2 == 0) {
                         iAls = 2;
                     } else {
@@ -177,68 +176,68 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             }
         }
     };
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.2
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 90:
+                case 102:
                     ActivityHava18H6SetAct.this.updateDomeDelay();
                     break;
-                case 91:
+                case 103:
                     ActivityHava18H6SetAct.this.updateFollowHome();
                     break;
-                case 92:
+                case 104:
                     ActivityHava18H6SetAct.this.updatePowerSave();
                     break;
-                case 93:
+                case 105:
                     ActivityHava18H6SetAct.this.updateRainFall();
                     break;
-                case 94:
+                case 106:
                     ActivityHava18H6SetAct.this.updateAls();
                     break;
-                case 95:
+                case 107:
                     ActivityHava18H6SetAct.this.updateScreenBright();
                     break;
-                case 96:
+                case 108:
                     ActivityHava18H6SetAct.this.updateRearViewAuto();
                     break;
-                case 98:
+                case 110:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext21)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext21)).setChecked(value == 1);
                         break;
                     }
-                case 105:
+                case 117:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext2)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext2)).setChecked(value == 1);
                         break;
                     }
-                case 106:
+                case 118:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext3)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext3)).setChecked(value == 1);
                         break;
                     }
-                case 107:
+                case 119:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext1)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
                         break;
                     }
-                case 111:
+                case 123:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext4)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext4)).setChecked(value == 1);
                         break;
                     }
-                case 112:
+                case 124:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext5)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext5)).setChecked(value == 1);
                         break;
                     }
-                case 113:
+                case 125:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext6)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext6)).setChecked(value == 1);
                         break;
                     }
-                case 114:
+                case 126:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text1)).setText(R.string.wc_golf_normal);
@@ -250,52 +249,52 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text1)).setText(R.string.klc_air_low);
                             break;
                     }
-                case 115:
+                case 127:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext7)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext7)).setChecked(value == 1);
                         break;
                     }
-                case 116:
+                case 128:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext8)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext8)).setChecked(value == 1);
                         break;
                     }
-                case 117:
+                case 129:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext9)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext9)).setChecked(value == 1);
                         break;
                     }
-                case 118:
+                case 130:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext10)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext10)).setChecked(value == 1);
                         break;
                     }
-                case 119:
+                case 131:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext11)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext11)).setChecked(value == 1);
                         break;
                     }
-                case 120:
+                case 132:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext12)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext12)).setChecked(value == 1);
                         break;
                     }
-                case 121:
+                case 133:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext13)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext13)).setChecked(value == 1);
                         break;
                     }
-                case 122:
+                case 134:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext14)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext14)).setChecked(value == 1);
                         break;
                     }
-                case 123:
+                case 135:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext15)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext15)).setChecked(value == 1);
                         break;
                     }
-                case 146:
+                case 158:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text2)).setText(R.string.str_bright_gold);
@@ -307,32 +306,32 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text2)).setText(R.string.str_403_ambient_5);
                             break;
                     }
-                case 148:
+                case 160:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext16)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext16)).setChecked(value == 1);
                         break;
                     }
-                case 149:
+                case 161:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext17)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext17)).setChecked(value == 1);
                         break;
                     }
-                case 150:
+                case 162:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext18)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext18)).setChecked(value == 1);
                         break;
                     }
-                case 151:
+                case 163:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext19)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext19)).setChecked(value == 1);
                         break;
                     }
-                case 152:
+                case 164:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext20)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext20)).setChecked(value == 1);
                         break;
                     }
-                case 153:
+                case 165:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text3)).setText(R.string.wc_golf_normal);
@@ -344,12 +343,12 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text3)).setText(R.string.klc_air_low);
                             break;
                     }
-                case 154:
+                case 166:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext22)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext22)).setChecked(value == 1);
                         break;
                     }
-                case 155:
+                case 167:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text4)).setText("15km/h");
@@ -361,12 +360,12 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text4)).setText(R.string.off);
                             break;
                     }
-                case 156:
+                case 168:
                     if (((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext23)) != null) {
                         ((CheckedTextView) ActivityHava18H6SetAct.this.findViewById(R.id.ctv_checkedtext23)).setChecked(value == 1);
                         break;
                     }
-                case 157:
+                case 169:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text5)).setText(R.string.klc_air_middle);
@@ -378,7 +377,7 @@ public class ActivityHava18H6SetAct extends BaseActivity {
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text5)).setText(R.string.str_short);
                             break;
                     }
-                case 158:
+                case 170:
                     switch (value) {
                         case 1:
                             ((TextView) ActivityHava18H6SetAct.this.findViewById(R.id.tv_text6)).setText(R.string.klc_remote_Remote_control_latch_speaker);
@@ -394,10 +393,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0244_rzc_havalh6set);
+        //setContentView(R.layout.layout_0244_rzc_havalh6set);
         initview();
         init();
     }
@@ -515,6 +514,8 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             case FinalCanbus.CAR_RZC_HavalH7_19_H_NoAmp /* 1769716 */:
             case FinalCanbus.CAR_RZC_Haval_H7Hongbiao_18 /* 2097396 */:
             case FinalCanbus.CAR_RZC_Haval_H7Hongbiao_18_H /* 2162932 */:
+            case FinalCanbus.CAR_RZC_HavalH7L_17 /* 2359540 */:
+            case FinalCanbus.CAR_RZC_HavalH7L_17_H /* 2425076 */:
                 findViewById(R.id.layout_view1).setVisibility(0);
                 findViewById(R.id.layout_view2).setVisibility(0);
                 findViewById(R.id.layout_view3).setVisibility(0);
@@ -564,7 +565,7 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setonClick((Button) findViewById(R.id.rzc_havalh6_domedelay_m));
         setonClick((Button) findViewById(R.id.rzc_havalh6_domedelay_p));
@@ -589,10 +590,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         setonClick((Button) findViewById(R.id.btn_minus6));
         setonClick((Button) findViewById(R.id.btn_plus6));
         if (((CheckedTextView) findViewById(R.id.rzc_havalH6_rearview_auto)) != null) {
-            ((CheckedTextView) findViewById(R.id.rzc_havalH6_rearview_auto)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.3
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.rzc_havalH6_rearview_auto)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[96] & 255;
+                    int value = DataCanbus.DATA[108] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 9;
@@ -602,10 +603,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext1)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.4
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[107] & 255;
+                    int value = DataCanbus.DATA[119] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 11;
@@ -615,10 +616,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.5
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[105] & 255;
+                    int value = DataCanbus.DATA[117] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 23;
@@ -628,10 +629,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext3)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.6
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[106] & 255;
+                    int value = DataCanbus.DATA[118] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 24;
@@ -641,10 +642,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext4)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.7
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext4)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[111] & 255;
+                    int value = DataCanbus.DATA[123] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 28;
@@ -654,10 +655,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext5)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.8
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext5)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[112] & 255;
+                    int value = DataCanbus.DATA[124] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 48;
@@ -667,10 +668,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext6)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.9
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext6)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[113] & 255;
+                    int value = DataCanbus.DATA[125] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 49;
@@ -680,10 +681,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext7)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.10
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext7)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[115] & 255;
+                    int value = DataCanbus.DATA[127] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 52;
@@ -693,10 +694,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext8)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.11
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext8)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[116] & 255;
+                    int value = DataCanbus.DATA[128] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 53;
@@ -706,10 +707,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext9)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.12
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext9)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[117] & 255;
+                    int value = DataCanbus.DATA[129] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 54;
@@ -719,10 +720,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext10)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.13
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext10)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[118] & 255;
+                    int value = DataCanbus.DATA[130] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 55;
@@ -732,10 +733,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext11)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.14
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext11)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[119] & 255;
+                    int value = DataCanbus.DATA[131] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 57;
@@ -745,10 +746,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext12)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.15
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext12)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[120] & 255;
+                    int value = DataCanbus.DATA[132] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 58;
@@ -758,10 +759,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext13)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.16
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext13)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[121] & 255;
+                    int value = DataCanbus.DATA[133] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 59;
@@ -771,10 +772,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext14)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.17
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext14)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[122] & 255;
+                    int value = DataCanbus.DATA[134] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 60;
@@ -784,10 +785,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext15)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.18
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext15)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[123] & 255;
+                    int value = DataCanbus.DATA[135] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 61;
@@ -797,10 +798,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext16)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.19
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext16)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[148] & 255;
+                    int value = DataCanbus.DATA[160] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 76;
@@ -810,10 +811,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext17)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.20
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext17)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[149] & 255;
+                    int value = DataCanbus.DATA[161] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 77;
@@ -823,10 +824,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext18)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext18)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.21
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext18)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[150] & 255;
+                    int value = DataCanbus.DATA[162] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 78;
@@ -836,10 +837,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext19)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext19)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.22
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext19)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[151] & 255;
+                    int value = DataCanbus.DATA[163] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 79;
@@ -849,10 +850,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext20)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext20)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.23
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext20)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[152] & 255;
+                    int value = DataCanbus.DATA[164] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 255;
@@ -862,10 +863,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext21)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext21)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.24
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext21)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[98] & 255;
+                    int value = DataCanbus.DATA[110] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 13;
@@ -875,10 +876,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext22)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext22)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.25
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext22)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[154] & 255;
+                    int value = DataCanbus.DATA[166] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 65;
@@ -888,10 +889,10 @@ public class ActivityHava18H6SetAct extends BaseActivity {
             });
         }
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext23)) != null) {
-            ((CheckedTextView) findViewById(R.id.ctv_checkedtext23)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.hava.ActivityHava18H6SetAct.26
-                @Override // android.view.View.OnClickListener
+            ((CheckedTextView) findViewById(R.id.ctv_checkedtext23)).setOnClickListener(new View.OnClickListener() { 
+                @Override
                 public void onClick(View arg0) {
-                    int value = DataCanbus.DATA[156] & 255;
+                    int value = DataCanbus.DATA[168] & 255;
                     RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                     int[] iArr = new int[2];
                     iArr[0] = 72;
@@ -902,7 +903,7 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void sendCMD(int cmd, int val) {
         DataCanbus.PROXY.cmd(2, new int[]{cmd, val}, null, null);
     }
@@ -913,110 +914,110 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(9, new int[]{49}, null, null);
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[114].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[115].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[116].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[150].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[151].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[152].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[153].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[134].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[135].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[162].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[163].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[164].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[165].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[169].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[170].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[90].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[114].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[115].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[116].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[150].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[151].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[152].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[153].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[134].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[135].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[162].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[163].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[164].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[165].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[169].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[170].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearViewAuto() {
-        int value = DataCanbus.DATA[96];
+        int value = DataCanbus.DATA[108];
         if (((CheckedTextView) findViewById(R.id.rzc_havalH6_rearview_auto)) != null) {
             ((CheckedTextView) findViewById(R.id.rzc_havalH6_rearview_auto)).setChecked(value == 1);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateDomeDelay() {
-        int domedelay = DataCanbus.DATA[90];
+        int domedelay = DataCanbus.DATA[102];
         String str = "";
         if (((TextView) findViewById(R.id.rzc_havalh6_domedelay_text)) != null) {
             switch (domedelay) {
@@ -1037,9 +1038,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFollowHome() {
-        int followhome = DataCanbus.DATA[91];
+        int followhome = DataCanbus.DATA[103];
         String str = "";
         if (((TextView) findViewById(R.id.rzc_havalh6_followhome_text)) != null) {
             switch (followhome) {
@@ -1060,9 +1061,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updatePowerSave() {
-        int powersave = DataCanbus.DATA[92];
+        int powersave = DataCanbus.DATA[104];
         String str = "";
         if (((TextView) findViewById(R.id.rzc_havalh6_powersave_text)) != null) {
             switch (powersave) {
@@ -1089,9 +1090,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRainFall() {
-        int rainfall = DataCanbus.DATA[93];
+        int rainfall = DataCanbus.DATA[105];
         if (((TextView) findViewById(R.id.rzc_havalh6_rainfall_text)) != null) {
             if (rainfall == 1) {
                 ((TextView) findViewById(R.id.rzc_havalh6_rainfall_text)).setText(R.string.str_244_rainfall2);
@@ -1101,9 +1102,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAls() {
-        int als = DataCanbus.DATA[94];
+        int als = DataCanbus.DATA[106];
         if (((TextView) findViewById(R.id.rzc_havalh6_als_text)) != null) {
             if (als == 1) {
                 ((TextView) findViewById(R.id.rzc_havalh6_als_text)).setText(R.string.str_244_als2);
@@ -1113,9 +1114,9 @@ public class ActivityHava18H6SetAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateScreenBright() {
-        int bright = DataCanbus.DATA[95];
+        int bright = DataCanbus.DATA[107];
         if (((TextView) findViewById(R.id.rzc_havalh6_bright_adjust_text)) != null) {
             if (DataCanbus.DATA[1000] == 458996 || DataCanbus.DATA[1000] == 1573108 || DataCanbus.DATA[1000] == 655604 || DataCanbus.DATA[1000] == 1179892 || DataCanbus.DATA[1000] == 852212) {
                 if (bright <= 15) {

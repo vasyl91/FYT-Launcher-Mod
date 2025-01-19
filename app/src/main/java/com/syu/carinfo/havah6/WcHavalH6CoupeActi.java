@@ -11,10 +11,9 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WcHavalH6CoupeActi extends BaseActivity {
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 11:
@@ -48,17 +47,17 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_havalh6_coupe);
+        //setContentView(R.layout.layout_havalh6_coupe);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[13] & 255) - 1;
                 if (value < 0) {
@@ -69,8 +68,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{16, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[13] & 255) + 1;
                 if (value < 0) {
@@ -81,8 +80,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{16, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.4
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[14] & 255) - 1;
                 if (value < 0) {
@@ -93,8 +92,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.5
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[14] & 255) + 1;
                 if (value < 0) {
@@ -105,8 +104,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{17, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.6
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[15] & 255) - 1;
                 if (value < 0) {
@@ -117,8 +116,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{18, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.7
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[15] & 255) + 1;
                 if (value < 0) {
@@ -129,8 +128,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{18, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.8
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[16] & 255) - 1;
                 if (value < 0) {
@@ -141,8 +140,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{19, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.9
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus4)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[16] & 255) + 1;
                 if (value < 0) {
@@ -153,8 +152,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(1, new int[]{19, value}, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.10
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = DataCanbus.DATA[17] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -164,8 +163,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 remoteModuleProxy.cmd(1, iArr, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.11
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[12] & 255) - 1;
                 if (value < 0) {
@@ -176,8 +175,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{7, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.12
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus5)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[12] & 255) + 1;
                 if (value < 0) {
@@ -188,8 +187,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{7, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.13
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_minus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[11] & 255) - 1;
                 if (value < 0) {
@@ -200,8 +199,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
                 DataCanbus.PROXY.cmd(0, new int[]{8, value}, null, null);
             }
         });
-        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.14
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus6)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 int value = (DataCanbus.DATA[11] & 255) + 1;
                 if (value < 0) {
@@ -215,8 +214,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         if ((DataCanbus.DATA[1000] == 262559 || DataCanbus.DATA[1000] == 197023) && findViewById(R.id.wc_ha_com_cal3) != null) {
             findViewById(R.id.wc_ha_com_cal3).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.15
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[18] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -228,8 +227,8 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         if (DataCanbus.DATA[1000] != 131487 && DataCanbus.DATA[1000] != 262559 && DataCanbus.DATA[1000] != 197023 && findViewById(R.id.wc_rearview_auto) != null) {
             findViewById(R.id.wc_rearview_auto).setVisibility(8);
         }
-        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.havah6.WcHavalH6CoupeActi.16
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.ctv_checkedtext3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View arg0) {
                 int value = DataCanbus.DATA[19] & 255;
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
@@ -240,7 +239,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[13].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[14].addNotify(this.notifyCanbus, 1);
@@ -253,7 +252,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[19].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.notifyCanbus);
@@ -266,7 +265,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue9() {
         int value = DataCanbus.DATA[19] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext3)) != null) {
@@ -274,7 +273,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue8() {
         int value = DataCanbus.DATA[18] & 255;
         if (((CheckedTextView) findViewById(R.id.ctv_checkedtext2)) != null) {
@@ -282,7 +281,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue1() {
         int value = DataCanbus.DATA[13] & 255;
         if (((TextView) findViewById(R.id.tv_text1)) != null) {
@@ -300,7 +299,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue2() {
         int value = DataCanbus.DATA[14] & 255;
         if (((TextView) findViewById(R.id.tv_text2)) != null) {
@@ -318,7 +317,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue3() {
         int value = DataCanbus.DATA[15] & 255;
         if (((TextView) findViewById(R.id.tv_text3)) != null) {
@@ -332,7 +331,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue4() {
         int value = DataCanbus.DATA[16] & 255;
         if (((TextView) findViewById(R.id.tv_text4)) != null) {
@@ -344,13 +343,13 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue5() {
         int value = DataCanbus.DATA[17] & 255;
         ((CheckedTextView) findViewById(R.id.ctv_checkedtext1)).setChecked(value == 1);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue6() {
         int value = DataCanbus.DATA[12] & 255;
         if (((TextView) findViewById(R.id.tv_text5)) != null) {
@@ -368,7 +367,7 @@ public class WcHavalH6CoupeActi extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue7() {
         int value = DataCanbus.DATA[11] & 255;
         if (((TextView) findViewById(R.id.tv_text6)) != null) {

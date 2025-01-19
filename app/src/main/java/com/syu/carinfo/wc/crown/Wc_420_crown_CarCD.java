@@ -10,7 +10,6 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static boolean mIsFront = false;
     static int sHasDisc = 0;
@@ -23,37 +22,37 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
     int random = 0;
     int scan_disc = 0;
     int scan = 0;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc.crown.Wc_420_crown_CarCD.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 67:
+                case 117:
                     Wc_420_crown_CarCD.this.updaterDiscState();
                     break;
-                case 69:
+                case 119:
                     Wc_420_crown_CarCD.this.updaterDiscState();
                     break;
-                case 70:
+                case 120:
                     Wc_420_crown_CarCD.this.updaterPlayTime();
                     break;
-                case 71:
+                case 121:
                     Wc_420_crown_CarCD.this.updaterFiles();
                     break;
-                case 72:
+                case 122:
                     Wc_420_crown_CarCD.this.updaterMode();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setContentView(R.layout.layout_420_wc_crown_carcd);
+        //setContentView(R.layout.layout_420_wc_crown_carcd);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.image[0] = (ImageView) findViewById(R.id.xuni_cd1_img);
         this.image[1] = (ImageView) findViewById(R.id.xuni_cd2_img);
@@ -83,23 +82,23 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         findViewById(R.id.jeep_btn_disc_next).setOnClickListener(this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.jeep_btn_play /* 2131427575 */:
+            case R.id.jeep_btn_play /* 2131427585 */:
                 DataCanbus.PROXY.cmd(1, 1, 0);
                 break;
-            case R.id.jeep_btn_pause /* 2131427576 */:
+            case R.id.jeep_btn_pause /* 2131427586 */:
                 DataCanbus.PROXY.cmd(1, 2, 0);
                 break;
-            case R.id.jeep_btn_fr /* 2131427610 */:
+            case R.id.jeep_btn_fr /* 2131427622 */:
                 DataCanbus.PROXY.cmd(1, 7, 1);
                 break;
-            case R.id.jeep_btn_ff /* 2131427611 */:
+            case R.id.jeep_btn_ff /* 2131427623 */:
                 DataCanbus.PROXY.cmd(1, 7, 0);
                 break;
-            case R.id.jeep_btn_loop /* 2131428345 */:
+            case R.id.jeep_btn_loop /* 2131427737 */:
                 if (this.rep_disc == 1) {
                     DataCanbus.PROXY.cmd(1, 3, 0);
                     break;
@@ -110,7 +109,7 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
                     DataCanbus.PROXY.cmd(1, 3, 2);
                     break;
                 }
-            case R.id.jeep_btn_random /* 2131428348 */:
+            case R.id.jeep_btn_random /* 2131427740 */:
                 if (this.random_disc == 1) {
                     DataCanbus.PROXY.cmd(1, 5, 0);
                     break;
@@ -121,13 +120,13 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
                     DataCanbus.PROXY.cmd(1, 5, 2);
                     break;
                 }
-            case R.id.jeep_btn_disc_prev /* 2131430046 */:
+            case R.id.jeep_btn_disc_prev /* 2131429998 */:
                 DataCanbus.PROXY.cmd(1, 6, 1);
                 break;
-            case R.id.jeep_btn_disc_next /* 2131430047 */:
+            case R.id.jeep_btn_disc_next /* 2131429999 */:
                 DataCanbus.PROXY.cmd(1, 6, 0);
                 break;
-            case R.id.jeep_btn_scan /* 2131430048 */:
+            case R.id.jeep_btn_scan /* 2131430000 */:
                 if (this.scan_disc == 1) {
                     DataCanbus.PROXY.cmd(1, 4, 0);
                     break;
@@ -146,7 +145,7 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
     
         return true;
      */
-    @Override // android.view.View.OnLongClickListener
+    @Override
     /*
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct code enable 'Show inconsistent code' option in preferences
@@ -160,10 +159,10 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
             r2 = 1
             int r0 = r7.getId()
             switch(r0) {
-                case 2131427575: goto Ld;
-                case 2131427576: goto L1f;
-                case 2131427610: goto L19;
-                case 2131427611: goto L13;
+                case 2131427585: goto Ld;
+                case 2131427586: goto L1f;
+                case 2131427622: goto L19;
+                case 2131427623: goto L13;
                 default: goto Lc;
             }
         Lc:
@@ -188,7 +187,7 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         throw new UnsupportedOperationException("Method not decompiled: com.syu.carinfo.wc.crown.Wc_420_crown_CarCD.onLongClick(android.view.View):boolean");
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
@@ -197,39 +196,39 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         DataCanbus.PROXY.cmd(3, 4);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[72].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[67].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[69].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[70].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[71].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[68].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[117].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[72].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[67].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[69].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[70].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[71].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[68].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[117].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDiscState() {
-        int havedisc = DataCanbus.DATA[67] & 65535;
-        int disc = (DataCanbus.DATA[69] >> 8) & 255;
-        int track = DataCanbus.DATA[69] & 255;
-        sDiscNum = (DataCanbus.DATA[69] >> 8) & 255;
+        int havedisc = DataCanbus.DATA[117] & 65535;
+        int disc = (DataCanbus.DATA[119] >> 8) & 255;
+        int track = DataCanbus.DATA[119] & 255;
+        sDiscNum = (DataCanbus.DATA[119] >> 8) & 255;
         if (((havedisc >> 0) & 1) == 1) {
             sHasDisc |= 1;
         } else {
@@ -279,16 +278,16 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterPlayTime() {
-        int playminute = (DataCanbus.DATA[70] >> 8) & 255;
+        int playminute = (DataCanbus.DATA[120] >> 8) & 255;
         if (playminute > 59) {
             playminute = 59;
         }
         if (playminute < 0) {
             playminute = 0;
         }
-        int playsecond = DataCanbus.DATA[70] & 255;
+        int playsecond = DataCanbus.DATA[120] & 255;
         if (playsecond > 59) {
             playsecond = 59;
         }
@@ -298,9 +297,9 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         ((TextView) findViewById(R.id.time_tv)).setText(String.valueOf(playminute) + ":" + playsecond);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterFiles() {
-        int files = DataCanbus.DATA[71];
+        int files = DataCanbus.DATA[121];
         switch (files) {
             case 0:
                 ((TextView) findViewById(R.id.file_num_tv)).setText("read TOC");
@@ -347,9 +346,9 @@ public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickList
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterMode() {
-        int mode = DataCanbus.DATA[72] & 255;
+        int mode = DataCanbus.DATA[122] & 255;
         if (this.rep_disc != ((mode >> 4) & 1) && ((mode >> 4) & 1) == 1) {
             ((TextView) findViewById(R.id.mode_tv)).setText(R.string.str_388_all_disc_rep);
         }

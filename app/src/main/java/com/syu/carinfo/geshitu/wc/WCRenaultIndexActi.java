@@ -11,12 +11,11 @@ import com.syu.carinfo.wc.leinuo.Megane4SetActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WCRenaultIndexActi extends BaseActivity {
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0352_wc_renault_index);
+        //setContentView(R.layout.layout_0352_wc_renault_index);
         switch (DataCanbus.DATA[1000]) {
             case FinalCanbus.CAR_WC2_RENAULT_Megane4 /* 459104 */:
             case FinalCanbus.CAR_WC2_RENAULT_Megane4_M /* 983392 */:
@@ -36,8 +35,8 @@ public class WCRenaultIndexActi extends BaseActivity {
                 findViewById(R.id.layout_view1).setVisibility(8);
                 break;
         }
-        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.geshitu.wc.WCRenaultIndexActi.1
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus1)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -48,8 +47,8 @@ public class WCRenaultIndexActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.geshitu.wc.WCRenaultIndexActi.2
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus2)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -60,8 +59,8 @@ public class WCRenaultIndexActi extends BaseActivity {
                 }
             }
         });
-        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.geshitu.wc.WCRenaultIndexActi.3
-            @Override // android.view.View.OnClickListener
+        ((Button) findViewById(R.id.btn_plus3)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -74,7 +73,7 @@ public class WCRenaultIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
     }

@@ -15,83 +15,82 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class DasAutoWcAct extends BaseActivity {
     public Callback_0001_WC1_DaZhong mCallback = null;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.dasauto.DasAutoWcAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 case 0:
-                    DasAutoWcAct.this.updaterTrip();
-                    break;
                 case 1:
-                    DasAutoWcAct.this.updaterLastOilWarning();
-                    break;
                 case 2:
-                    DasAutoWcAct.this.updaterBatteryVolWarning();
-                    break;
                 case 3:
-                    DasAutoWcAct.this.updaterSafetyBelt();
-                    break;
                 case 4:
-                    DasAutoWcAct.this.updaterCleanLiquid();
-                    break;
                 case 5:
-                    DasAutoWcAct.this.updaterLastOil();
-                    break;
-                case 6:
-                    DasAutoWcAct.this.updaterBatteryVol();
-                    break;
-                case 7:
-                    DasAutoWcAct.this.updaterDrivingMileage();
-                    break;
-                case 12:
-                    DasAutoWcAct.this.updaterWater();
-                    break;
-                case 13:
-                    DasAutoWcAct.this.updaterEngine();
-                    break;
-                case 14:
-                    DasAutoWcAct.this.updaterCurrentVelocity();
-                    break;
-                case 15:
-                    DasAutoWcAct.this.updaterEngineSpeed();
-                    break;
-                case 20:
-                    DasAutoWcAct.this.updaterOutTemp();
-                    break;
-                case 42:
-                case 43:
-                case 44:
-                case 45:
-                case 46:
-                case 47:
                     DasAutoWcAct.this.updaterDoor();
                     DasAutoWcAct.this.updaterDoorBack();
+                    break;
+                case 98:
+                    DasAutoWcAct.this.updaterTrip();
+                    break;
+                case 99:
+                    DasAutoWcAct.this.updaterLastOilWarning();
+                    break;
+                case 100:
+                    DasAutoWcAct.this.updaterBatteryVolWarning();
+                    break;
+                case 101:
+                    DasAutoWcAct.this.updaterSafetyBelt();
+                    break;
+                case 102:
+                    DasAutoWcAct.this.updaterCleanLiquid();
+                    break;
+                case 103:
+                    DasAutoWcAct.this.updaterLastOil();
+                    break;
+                case 104:
+                    DasAutoWcAct.this.updaterBatteryVol();
+                    break;
+                case 105:
+                    DasAutoWcAct.this.updaterDrivingMileage();
+                    break;
+                case 110:
+                    DasAutoWcAct.this.updaterWater();
+                    break;
+                case 111:
+                    DasAutoWcAct.this.updaterEngine();
+                    break;
+                case 112:
+                    DasAutoWcAct.this.updaterCurrentVelocity();
+                    break;
+                case 113:
+                    DasAutoWcAct.this.updaterEngineSpeed();
+                    break;
+                case 118:
+                    DasAutoWcAct.this.updaterOutTemp();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_dasauto_wc);
+        //setContentView(R.layout.layout_dasauto_wc);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
-        findViewById(R.id.dasauto_btn_setting_wc).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.dasauto.DasAutoWcAct.2
-            @Override // android.view.View.OnClickListener
+        findViewById(R.id.dasauto_btn_setting_wc).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 DasAutoWcAct.this.startActivity(new Intent(LauncherApplication.getInstance(), (Class<?>) DasAutoSettingAct.class));
             }
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         CallbackCanbusBase callback = ModuleCallbackCanbusProxy.getInstance().getCallbackCanbus();
@@ -106,70 +105,70 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
         DoorHelper.disableDoorWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[42].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[43].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[44].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[45].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[46].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[47].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[0].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[1].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[2].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[3].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[4].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[5].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[7].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[8].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[9].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[15].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[110].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[111].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[112].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[113].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.notifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[42].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[43].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[44].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[45].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[46].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[47].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[7].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[8].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[9].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[15].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[110].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[111].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[112].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[113].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.notifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterEngineSpeed() {
-        int value = DataCanbus.DATA[15];
+        int value = DataCanbus.DATA[113];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_engine_speed_wc)).setText(String.valueOf(value) + " RPM");
         } else {
@@ -177,9 +176,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCurrentVelocity() {
-        int value = DataCanbus.DATA[14];
+        int value = DataCanbus.DATA[112];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_current_speed_wc)).setText(String.valueOf(value) + " Km/h");
         } else {
@@ -187,9 +186,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDrivingMileage() {
-        int value = DataCanbus.DATA[7];
+        int value = DataCanbus.DATA[105];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_current_speed_wc)).setText(String.valueOf(value / 10.0f) + " Mil");
         } else {
@@ -197,9 +196,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterSafetyBelt() {
-        int value = DataCanbus.DATA[3];
+        int value = DataCanbus.DATA[101];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_safety_belt_wc)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_safety_belt_wc)).setTextColor(-65536);
@@ -211,9 +210,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterCleanLiquid() {
-        int value = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[102];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_cleaning_liquid_wc)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_cleaning_liquid_wc)).setTextColor(-65536);
@@ -225,9 +224,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterBatteryVol() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[104];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_battery_voltage_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf((value >> 8) & 255), Integer.valueOf(value & 255))) + " V");
         } else {
@@ -235,9 +234,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterTrip() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_trip_wc)).setText(String.valueOf(String.format("%d.%d", Integer.valueOf((value >> 8) & 255), Integer.valueOf(value & 255))) + "L/100KM");
         } else {
@@ -245,9 +244,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterBatteryVolWarning() {
-        int value = DataCanbus.DATA[2];
+        int value = DataCanbus.DATA[100];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_battery_voltage_wc)).setTextColor(-65536);
             ((TextView) findViewById(R.id.dasauto_tv_battery_voltage_wc_icon)).setVisibility(0);
@@ -257,9 +256,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterEngine() {
-        int value = DataCanbus.DATA[13];
+        int value = DataCanbus.DATA[111];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_hand_brake_wc)).setText(R.string.alarm);
             ((TextView) findViewById(R.id.dasauto_tv_hand_brake_wc)).setTextColor(-65536);
@@ -271,9 +270,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterOutTemp() {
-        int value = DataCanbus.DATA[20];
+        int value = DataCanbus.DATA[118];
         if (((TextView) findViewById(R.id.dasauto_tv_outside_temperature_wc)) != null) {
             int mValue = (value * 5) - 400;
             if (mValue > 500) {
@@ -284,9 +283,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterLastOil() {
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[103];
         if (value > 0) {
             ((TextView) findViewById(R.id.dasauto_tv_last_oil_wc)).setText(String.valueOf(value) + " L");
         } else {
@@ -294,9 +293,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterWater() {
-        int value = DataCanbus.DATA[12];
+        int value = DataCanbus.DATA[110];
         if (value == 255) {
             ((TextView) findViewById(R.id.dasauto_tv_water_wc)).setText("--.--");
         } else if (value == 0) {
@@ -306,9 +305,9 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterLastOilWarning() {
-        int value = DataCanbus.DATA[1];
+        int value = DataCanbus.DATA[99];
         if (value == 1) {
             ((TextView) findViewById(R.id.dasauto_tv_last_oil_wc)).setTextColor(-65536);
             ((TextView) findViewById(R.id.dasauto_tv_last_oil_wc_icon)).setVisibility(0);
@@ -318,14 +317,14 @@ public class DasAutoWcAct extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDoor() {
         if (((DoorContentView) findViewById(R.id.dasauto_door_wc)) != null) {
             ((DoorContentView) findViewById(R.id.dasauto_door_wc)).invalidate();
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updaterDoorBack() {
         int value = DataCanbus.DATA[47];
         if (value == 1) {

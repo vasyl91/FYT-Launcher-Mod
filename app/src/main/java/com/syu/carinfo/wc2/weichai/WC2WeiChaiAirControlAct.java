@@ -11,46 +11,45 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouchListener {
     public static boolean mIsFront = false;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.wc2.weichai.WC2WeiChaiAirControlAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 10:
                     WC2WeiChaiAirControlAct.this.updateAirPower();
                     break;
-                case 4:
+                case 12:
                     WC2WeiChaiAirControlAct.this.updateAirCycle();
                     break;
-                case 5:
+                case 16:
                     WC2WeiChaiAirControlAct.this.updateRearDefrost();
                     break;
-                case 6:
-                    WC2WeiChaiAirControlAct.this.updateFrontDefrost();
-                    break;
-                case 11:
-                    WC2WeiChaiAirControlAct.this.updateWindMode();
-                    break;
-                case 12:
+                case 21:
                     WC2WeiChaiAirControlAct.this.updateWindValue();
                     break;
-                case 13:
+                case 27:
                     WC2WeiChaiAirControlAct.this.updateTempValue();
+                    break;
+                case 65:
+                    WC2WeiChaiAirControlAct.this.updateFrontDefrost();
+                    break;
+                case 77:
+                    WC2WeiChaiAirControlAct.this.updateWindMode();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0443_wc2_weichai_airsetting);
+        //setContentView(R.layout.layout_0443_wc2_weichai_airsetting);
         init();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         setSelfTouch(R.id.air_xts_front, this);
         setSelfTouch(R.id.air_xts_rear, this);
@@ -77,7 +76,7 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
         }
     }
 
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         int value = 0;
         switch (v.getId()) {
@@ -107,22 +106,22 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
             case R.id.air_xts_mode_body /* 2131427444 */:
                 value = 26;
                 break;
-            case R.id.air_xts_mode_footbody /* 2131427461 */:
+            case R.id.air_xts_mode_footbody /* 2131427502 */:
                 value = 27;
                 break;
-            case R.id.air_xts_mode_footwin /* 2131427462 */:
-                value = 28;
-                break;
-            case R.id.air_xts_rear /* 2131427534 */:
+            case R.id.air_xts_rear /* 2131427560 */:
                 value = 6;
                 break;
-            case R.id.air_cycle_outer /* 2131427557 */:
-                if (DataCanbus.DATA[4] == 1) {
+            case R.id.air_xts_mode_footwin /* 2131427632 */:
+                value = 28;
+                break;
+            case R.id.air_cycle_outer /* 2131428106 */:
+                if (DataCanbus.DATA[12] == 1) {
                     value = 7;
                     break;
                 }
-            case R.id.air_cycle_inter /* 2131427558 */:
-                if (DataCanbus.DATA[4] == 0) {
+            case R.id.air_cycle_inter /* 2131428107 */:
+                if (DataCanbus.DATA[12] == 0) {
                     value = 7;
                     break;
                 }
@@ -141,51 +140,51 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
         DataCanbus.PROXY.cmd(1, new int[]{data0, data1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         mIsFront = true;
         AirHelper.disableAirWindowLocal(true);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         mIsFront = false;
         AirHelper.disableAirWindowLocal(false);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[53].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[65].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[16].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[77].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[53].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[65].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[16].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[77].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateWindMode() {
         boolean body = false;
         boolean footbody = false;
         boolean foot = false;
         boolean footwin = false;
-        switch (DataCanbus.DATA[11]) {
+        switch (DataCanbus.DATA[77]) {
             case 3:
                 foot = true;
                 break;
@@ -205,9 +204,9 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
         findViewById(R.id.air_xts_mode_footwin).setSelected(footwin);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateTempValue() {
-        float value = DataCanbus.DATA[13];
+        float value = DataCanbus.DATA[27];
         if (value == 254.0f) {
             ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
             ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
@@ -220,21 +219,21 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateWindValue() {
-        int value = DataCanbus.DATA[12];
+        int value = DataCanbus.DATA[21];
         ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder(String.valueOf(value)).toString());
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirPower() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[10];
         findViewById(R.id.air_xts_power).setSelected(value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateAirCycle() {
-        int value = DataCanbus.DATA[4];
+        int value = DataCanbus.DATA[12];
         if (((Button) findViewById(R.id.air_cycle_outer)) != null) {
             ((Button) findViewById(R.id.air_cycle_outer)).setBackgroundResource(value == 0 ? R.drawable.ic_xts_cycle_out_p : R.drawable.ic_xts_cycle_n);
         }
@@ -243,15 +242,15 @@ public class WC2WeiChaiAirControlAct extends BaseActivity implements View.OnTouc
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateFrontDefrost() {
-        int value = DataCanbus.DATA[6];
+        int value = DataCanbus.DATA[65];
         findViewById(R.id.air_xts_front).setSelected(value != 0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateRearDefrost() {
-        int value = DataCanbus.DATA[5];
+        int value = DataCanbus.DATA[16];
         findViewById(R.id.air_xts_rear).setSelected(value != 0);
     }
 }

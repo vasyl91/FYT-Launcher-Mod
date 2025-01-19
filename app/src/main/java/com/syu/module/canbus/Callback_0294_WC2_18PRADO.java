@@ -1,16 +1,16 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0294_WC2_18PRADO;
+//import com.syu.ui.air.Air_0294_WC2_18PRADO;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0294_WC2_18PRADO extends CallbackCanbusBase {
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
         for (int i = 0; i < 144; i++) {
@@ -22,7 +22,7 @@ public class Callback_0294_WC2_18PRADO extends CallbackCanbusBase {
         DoorHelper.sUcDoorRl = 55;
         DoorHelper.sUcDoorRr = 56;
         DoorHelper.sUcDoorBack = 57;
-        AirHelper.getInstance().buildUi(new Air_0294_WC2_18PRADO(LauncherApplication.getInstance()));
+        //AirHelper.getInstance().buildUi(new Air_0294_WC2_18PRADO(LauncherApplication.getInstance()));
         DoorHelper.getInstance().buildUi();
         for (int i2 = 52; i2 < 58; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
@@ -35,7 +35,7 @@ public class Callback_0294_WC2_18PRADO extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 52; i < 58; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
@@ -47,7 +47,7 @@ public class Callback_0294_WC2_18PRADO extends CallbackCanbusBase {
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             switch (updateCode) {

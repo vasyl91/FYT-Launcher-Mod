@@ -1,35 +1,22 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-import com.syu.ui.air.Air_0452_LZ_Benz_Smart;
+//import com.syu.ui.air.Air_0452_LZ_Benz_Smart;
 import com.syu.ui.door.DoorHelper;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Callback_0452_LZ_Benz_Smart extends CallbackCanbusBase {
-    public static final int U_AIR_AC = 8;
-    public static final int U_AIR_AUTO = 10;
-    public static final int U_AIR_BEGIN = 6;
-    public static final int U_AIR_BLOW_BODY_LEFT = 14;
-    public static final int U_AIR_BLOW_FOOT_LEFT = 15;
-    public static final int U_AIR_BLOW_UP_LEFT = 13;
-    public static final int U_AIR_CYCLE = 9;
-    public static final int U_AIR_END = 18;
-    public static final int U_AIR_FRONT_DEFROST = 12;
-    public static final int U_AIR_POWER = 7;
-    public static final int U_AIR_REAR_DEFROST = 11;
-    public static final int U_AIR_TEMP_LEFT = 17;
-    public static final int U_AIR_WIND_LEVEL_LEFT = 16;
-    public static final int U_CARSET_D38_D0_B0 = 19;
-    public static final int U_CARSET_D38_D0_B1 = 20;
-    public static final int U_CNT_MAX = 21;
+    public static final int U_CARSET_D38_D0_B0 = 98;
+    public static final int U_CARSET_D38_D0_B1 = 99;
+    public static final int U_CNT_MAX = 100;
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void in() {
         IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
-        for (int i = 0; i < 21; i++) {
+        for (int i = 0; i < 100; i++) {
             DataCanbus.PROXY.register(callback, i, 1);
         }
         DoorHelper.sUcDoorEngine = 0;
@@ -38,8 +25,8 @@ public class Callback_0452_LZ_Benz_Smart extends CallbackCanbusBase {
         DoorHelper.sUcDoorRl = 3;
         DoorHelper.sUcDoorRr = 4;
         DoorHelper.sUcDoorBack = 5;
-        AirHelper.getInstance().buildUi(new Air_0452_LZ_Benz_Smart(LauncherApplication.getInstance()));
-        for (int i2 = 6; i2 < 18; i2++) {
+        //AirHelper.getInstance().buildUi(new Air_0452_LZ_Benz_Smart(LauncherApplication.getInstance()));
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
         DoorHelper.getInstance().buildUi();
@@ -48,19 +35,19 @@ public class Callback_0452_LZ_Benz_Smart extends CallbackCanbusBase {
         }
     }
 
-    @Override // com.syu.module.canbus.CallbackCanbusBase
+    @Override
     public void out() {
         for (int i = 0; i < 6; i++) {
             DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
         }
-        for (int i2 = 6; i2 < 18; i2++) {
+        for (int i2 = 10; i2 < 97; i2++) {
             DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
         }
         AirHelper.getInstance().destroyUi();
         DoorHelper.getInstance().destroyUi();
     }
 
-    @Override // com.syu.ipc.IModuleCallback
+    @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0) {
             HandlerCanbus.update(updateCode, ints);

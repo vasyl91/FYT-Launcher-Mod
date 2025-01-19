@@ -22,7 +22,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PSAFuncIndexActi extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -30,32 +29,32 @@ public class PSAFuncIndexActi extends BaseActivity {
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 154:
+                case 166:
                     PSAFuncIndexActi.this.mUpdaterValue53();
                     break;
-                case 155:
+                case 167:
                     PSAFuncIndexActi.this.mUpdaterValue51();
                     break;
-                case 156:
+                case 168:
                     PSAFuncIndexActi.this.updateLauguageSet();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_psa_all_func_index);
+        //setContentView(R.layout.layout_psa_all_func_index);
         initObject();
         registerListener();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -69,8 +68,8 @@ public class PSAFuncIndexActi extends BaseActivity {
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 PSAFuncIndexActi.this.language_set = position;
                 if (PSAFuncIndexActi.this.language_set >= 0 && PSAFuncIndexActi.this.language_set <= PSAFuncIndexActi.this.mLauStylelist.size() && PSAFuncIndexActi.this.send_lang != null) {
@@ -82,7 +81,7 @@ public class PSAFuncIndexActi extends BaseActivity {
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[156];
+        int value = DataCanbus.DATA[168];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -135,8 +134,8 @@ public class PSAFuncIndexActi extends BaseActivity {
     }
 
     public void registerListener() {
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.3
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_lauguage_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (PSAFuncIndexActi.this.mLauStyle == null) {
                     PSAFuncIndexActi.this.initLauStyle();
@@ -147,8 +146,8 @@ public class PSAFuncIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_parking_and_Manoeurvring)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.4
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_parking_and_Manoeurvring)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -159,8 +158,8 @@ public class PSAFuncIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_light_settings)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.5
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_light_settings)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -171,8 +170,8 @@ public class PSAFuncIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_lock_set)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.6
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_lock_set)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -183,24 +182,24 @@ public class PSAFuncIndexActi extends BaseActivity {
                 }
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_tpms_calibration)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.7
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_tpms_calibration)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 PSAFuncIndexActi.this.dialog();
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_engine_start_stop)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.8
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_engine_start_stop)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
-                int value = DataCanbus.DATA[155];
+                int value = DataCanbus.DATA[167];
                 RemoteModuleProxy remoteModuleProxy = DataCanbus.PROXY;
                 int[] iArr = new int[1];
                 iArr[0] = value != 0 ? 0 : 1;
                 remoteModuleProxy.cmd(52, iArr, null, null);
             }
         });
-        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_others)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.9
-            @Override // android.view.View.OnClickListener
+        ((CheckedTextView) findViewById(R.id.psa_all_func_btn_others)).setOnClickListener(new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
@@ -213,31 +212,31 @@ public class PSAFuncIndexActi extends BaseActivity {
         });
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[154].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[167].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[168].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[166].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[154].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[167].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[168].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[166].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue51() {
-        int value = DataCanbus.DATA[155];
+        int value = DataCanbus.DATA[167];
         if (((CheckedTextView) findViewById(R.id.psa_all_func_btn_engine_start_stop)) != null) {
             ((CheckedTextView) findViewById(R.id.psa_all_func_btn_engine_start_stop)).setChecked(value != 0);
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void mUpdaterValue53() {
-        int value = DataCanbus.DATA[154];
+        int value = DataCanbus.DATA[166];
         if (((RelativeLayout) findViewById(R.id.psa_all_func_btn_engine_start_stop_view)) != null) {
             if (value == 1) {
                 ((RelativeLayout) findViewById(R.id.psa_all_func_btn_engine_start_stop_view)).setVisibility(0);
@@ -248,22 +247,22 @@ public class PSAFuncIndexActi extends BaseActivity {
     }
 
     public void isVisibleView() {
-        if (DataCanbus.DATA[137] == 0 && DataCanbus.DATA[138] == 0) {
+        if (DataCanbus.DATA[149] == 0 && DataCanbus.DATA[150] == 0) {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_others_view)).setVisibility(8);
         } else {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_others_view)).setVisibility(0);
         }
-        if (DataCanbus.DATA[163] == 0 && DataCanbus.DATA[104] == 0 && DataCanbus.DATA[103] == 0 && DataCanbus.DATA[106] == 0) {
+        if (DataCanbus.DATA[175] == 0 && DataCanbus.DATA[116] == 0 && DataCanbus.DATA[115] == 0 && DataCanbus.DATA[118] == 0) {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_lock_set_view)).setVisibility(8);
         } else {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_lock_set_view)).setVisibility(0);
         }
-        if (DataCanbus.DATA[155] == 0 && DataCanbus.DATA[107] == 0 && DataCanbus.DATA[134] == 0 && DataCanbus.DATA[98] == 0 && DataCanbus.DATA[99] == 0 && DataCanbus.DATA[105] == 0) {
+        if (DataCanbus.DATA[167] == 0 && DataCanbus.DATA[119] == 0 && DataCanbus.DATA[146] == 0 && DataCanbus.DATA[110] == 0 && DataCanbus.DATA[111] == 0 && DataCanbus.DATA[117] == 0) {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_light_settings_view)).setVisibility(8);
         } else {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_light_settings_view)).setVisibility(0);
         }
-        if (DataCanbus.DATA[96] == 0 && DataCanbus.DATA[100] == 0 && DataCanbus.DATA[135] == 0 && DataCanbus.DATA[133] == 0 && DataCanbus.DATA[97] == 0) {
+        if (DataCanbus.DATA[108] == 0 && DataCanbus.DATA[112] == 0 && DataCanbus.DATA[147] == 0 && DataCanbus.DATA[145] == 0 && DataCanbus.DATA[109] == 0) {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_parking_and_Manoeurvring_view)).setVisibility(8);
         } else {
             ((RelativeLayout) findViewById(R.id.psa_all_func_btn_parking_and_Manoeurvring_view)).setVisibility(0);
@@ -274,11 +273,11 @@ public class PSAFuncIndexActi extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.wc_psa_all_reset_tpms));
         builder.setTitle(getResources().getString(R.string.tips));
-        builder.setPositiveButton(getResources().getString(R.string.wc_psa_all_confirm), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.10
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setPositiveButton(getResources().getString(R.string.wc_psa_all_confirm), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.10.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(23, new int[]{1}, null, null);
                     }
@@ -286,11 +285,11 @@ public class PSAFuncIndexActi extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(getResources().getString(R.string.wc_psa_all_cancel), new DialogInterface.OnClickListener() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.11
-            @Override // android.content.DialogInterface.OnClickListener
+        builder.setNegativeButton(getResources().getString(R.string.wc_psa_all_cancel), new DialogInterface.OnClickListener() { 
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(new Runnable() { // from class: com.syu.carinfo.psa_all.PSAFuncIndexActi.11.1
-                    @Override // java.lang.Runnable
+                new Thread(new Runnable() { 
+                    @Override
                     public void run() {
                         DataCanbus.PROXY.cmd(23, new int[1], null, null);
                     }

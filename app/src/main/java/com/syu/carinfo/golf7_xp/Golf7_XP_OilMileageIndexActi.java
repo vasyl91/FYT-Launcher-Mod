@@ -10,20 +10,19 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Golf7_XP_OilMileageIndexActi extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;
     public TextView mTvTpis;
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_golf7_oil_index);
+        //setContentView(R.layout.layout_golf7_oil_index);
         init();
     }
 
-    @Override // android.app.ActivityGroup, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         DataCanbus.PROXY.cmd(98, new int[]{80, 255}, null, null);
@@ -35,17 +34,17 @@ public class Golf7_XP_OilMileageIndexActi extends TabActivity {
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSinceStart").setIndicator("tabSinceStart").setContent(new Intent(this, (Class<?>) Golf7_XP_OilMileagePage1Acti.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabLongTerm").setIndicator("tabLongTerm").setContent(new Intent(this, (Class<?>) Golf7_XP_OilMileagePage2Acti.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabSinceRefuelling").setIndicator("tabSinceRefuelling").setContent(new Intent(this, (Class<?>) Golf7_XP_OilMileagePage3Acti.class)));
-        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { // from class: com.syu.carinfo.golf7_xp.Golf7_XP_OilMileageIndexActi.1
-            @Override // android.widget.RadioGroup.OnCheckedChangeListener
+        this.mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() { 
+            @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.golf_oil_btn_page1 /* 2131431598 */:
+                    case R.id.golf_oil_btn_page1 /* 2131431575 */:
                         Golf7_XP_OilMileageIndexActi.this.mTabHost.setCurrentTabByTag("tabSinceStart");
                         break;
-                    case R.id.golf_oil_btn_page3 /* 2131431599 */:
+                    case R.id.golf_oil_btn_page3 /* 2131431576 */:
                         Golf7_XP_OilMileageIndexActi.this.mTabHost.setCurrentTabByTag("tabSinceRefuelling");
                         break;
-                    case R.id.golf_oil_btn_page2 /* 2131431600 */:
+                    case R.id.golf_oil_btn_page2 /* 2131431577 */:
                         Golf7_XP_OilMileageIndexActi.this.mTabHost.setCurrentTabByTag("tabLongTerm");
                         break;
                 }
@@ -53,7 +52,7 @@ public class Golf7_XP_OilMileageIndexActi extends TabActivity {
         });
     }
 
-    @Override // android.app.Activity, android.view.KeyEvent.Callback
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == 4) {
             finish();

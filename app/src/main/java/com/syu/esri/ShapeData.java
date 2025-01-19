@@ -3,9 +3,8 @@ package com.syu.esri;
 import java.util.ArrayList;
 import java.util.List;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public class ShapeData {
-    private List<Polygon> mPolygonList = new ArrayList();
+    private final List<Polygon> mPolygonList = new ArrayList();
 
     public ShapeData(byte[] data, ShapeIndex shapeIndex) {
         int[] indices;

@@ -12,94 +12,93 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static PAFordSeatSetAct mInit;
     int pagenum = 0;
     int pagenum1 = 0;
     int pagenum_massage = 0;
-    private IUiNotify notifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.PAFordSeatSetAct.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify notifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 390:
+                case 402:
                     if (PAFordSeatSetAct.this.pagenum == 1) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 391:
+                case 403:
                     if (PAFordSeatSetAct.this.pagenum == 1) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 464:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D1_B30 /* 476 */:
                     if (PAFordSeatSetAct.this.pagenum == 0) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 465:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D1_B74 /* 477 */:
                     if (PAFordSeatSetAct.this.pagenum == 0) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D2_B74 /* 466 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D2_B74 /* 478 */:
                     if (PAFordSeatSetAct.this.pagenum == 1) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D2_B30 /* 467 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D50_D2_B30 /* 479 */:
                     if (PAFordSeatSetAct.this.pagenum == 0) {
                         ((TextView) PAFordSeatSetAct.this.findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(value)).toString());
                         break;
                     }
-                case 468:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B10 /* 480 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 0 && PAFordSeatSetAct.this.pagenum == 0) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case 469:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B32 /* 481 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 1 && PAFordSeatSetAct.this.pagenum == 0) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case 470:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B54 /* 482 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 2 && PAFordSeatSetAct.this.pagenum == 0) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B76 /* 471 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D1_B76 /* 483 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 3 && PAFordSeatSetAct.this.pagenum == 0) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B10 /* 472 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B10 /* 484 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 4 && PAFordSeatSetAct.this.pagenum == 0) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B32 /* 473 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B32 /* 485 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 0 && PAFordSeatSetAct.this.pagenum == 1) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B54 /* 474 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B54 /* 486 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 1 && PAFordSeatSetAct.this.pagenum == 1) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B76 /* 475 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D2_B76 /* 487 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 2 && PAFordSeatSetAct.this.pagenum == 1) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D3_B10 /* 476 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D3_B10 /* 488 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 3 && PAFordSeatSetAct.this.pagenum == 1) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
                     }
-                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D3_B32 /* 477 */:
+                case Callback_0374_XP1_ZiYouGuang.U_CARSET_D40_D51_D3_B32 /* 489 */:
                     if (PAFordSeatSetAct.this.pagenum_massage == 4 && PAFordSeatSetAct.this.pagenum == 1) {
                         PAFordSeatSetAct.this.updateMassageState(value);
                         break;
@@ -108,10 +107,10 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
         }
     };
 
-    @Override // android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0374_pa_ford_seatset);
+        //setContentView(R.layout.layout_0374_pa_ford_seatset);
         init();
     }
 
@@ -139,93 +138,63 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    @Override // android.view.View.OnTouchListener
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == 0) {
             switch (v.getId()) {
-                case R.id.btn_plus13 /* 2131427470 */:
-                    this.pagenum_massage = 2;
-                    updateMassageState1(this.pagenum_massage);
-                    if (this.pagenum == 1) {
-                        updateMassageState(DataCanbus.DATA[475]);
-                        break;
-                    } else {
-                        updateMassageState(DataCanbus.DATA[470]);
-                        break;
-                    }
-                case R.id.btn_plus14 /* 2131427473 */:
-                    this.pagenum_massage = 3;
-                    updateMassageState1(this.pagenum_massage);
-                    if (this.pagenum == 1) {
-                        updateMassageState(DataCanbus.DATA[476]);
-                        break;
-                    } else {
-                        updateMassageState(DataCanbus.DATA[471]);
-                        break;
-                    }
-                case R.id.btn_plus15 /* 2131427476 */:
-                    this.pagenum_massage = 4;
-                    updateMassageState1(this.pagenum_massage);
-                    if (this.pagenum == 1) {
-                        updateMassageState(DataCanbus.DATA[477]);
-                        break;
-                    } else {
-                        updateMassageState(DataCanbus.DATA[472]);
-                        break;
-                    }
-                case R.id.btn_plus1 /* 2131427482 */:
+                case R.id.btn_plus1 /* 2131427457 */:
                     this.pagenum = 0;
                     findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
                     findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                     ((Button) findViewById(R.id.btn_plus1)).setTextColor(Color.parseColor("#666666"));
                     ((Button) findViewById(R.id.btn_plus2)).setTextColor(Color.parseColor("#ffffff"));
-                    ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[464])).toString());
-                    ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[465])).toString());
-                    ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[467])).toString());
+                    ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[476])).toString());
+                    ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[477])).toString());
+                    ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[479])).toString());
                     switch (this.pagenum_massage) {
                         case 0:
-                            updateMassageState(DataCanbus.DATA[468]);
+                            updateMassageState(DataCanbus.DATA[480]);
                             break;
                         case 1:
-                            updateMassageState(DataCanbus.DATA[469]);
+                            updateMassageState(DataCanbus.DATA[481]);
                             break;
                         case 2:
-                            updateMassageState(DataCanbus.DATA[470]);
+                            updateMassageState(DataCanbus.DATA[482]);
                             break;
                         case 3:
-                            updateMassageState(DataCanbus.DATA[471]);
+                            updateMassageState(DataCanbus.DATA[483]);
                             break;
                         case 4:
-                            updateMassageState(DataCanbus.DATA[472]);
+                            updateMassageState(DataCanbus.DATA[484]);
                             break;
                     }
-                case R.id.btn_plus2 /* 2131427486 */:
+                case R.id.btn_plus2 /* 2131427460 */:
                     this.pagenum = 1;
                     findViewById(R.id.btn_plus2).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
                     findViewById(R.id.btn_plus1).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
                     ((Button) findViewById(R.id.btn_plus2)).setTextColor(Color.parseColor("#666666"));
                     ((Button) findViewById(R.id.btn_plus1)).setTextColor(Color.parseColor("#ffffff"));
-                    ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[466])).toString());
-                    ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[391])).toString());
-                    ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[390])).toString());
+                    ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[478])).toString());
+                    ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[403])).toString());
+                    ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[402])).toString());
                     switch (this.pagenum_massage) {
                         case 0:
-                            updateMassageState(DataCanbus.DATA[473]);
+                            updateMassageState(DataCanbus.DATA[485]);
                             break;
                         case 1:
-                            updateMassageState(DataCanbus.DATA[474]);
+                            updateMassageState(DataCanbus.DATA[486]);
                             break;
                         case 2:
-                            updateMassageState(DataCanbus.DATA[475]);
+                            updateMassageState(DataCanbus.DATA[487]);
                             break;
                         case 3:
-                            updateMassageState(DataCanbus.DATA[476]);
+                            updateMassageState(DataCanbus.DATA[488]);
                             break;
                         case 4:
-                            updateMassageState(DataCanbus.DATA[477]);
+                            updateMassageState(DataCanbus.DATA[489]);
                             break;
                     }
-                case R.id.btn_plus3 /* 2131427490 */:
+                case R.id.btn_plus3 /* 2131427463 */:
                     this.pagenum1 = 0;
                     findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
                     findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
@@ -234,7 +203,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                     findViewById(R.id.layout_view1).setVisibility(0);
                     findViewById(R.id.layout_view2).setVisibility(8);
                     break;
-                case R.id.btn_plus4 /* 2131427494 */:
+                case R.id.btn_plus4 /* 2131427466 */:
                     this.pagenum1 = 1;
                     findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
                     findViewById(R.id.btn_plus3).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_n);
@@ -243,7 +212,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                     findViewById(R.id.layout_view2).setVisibility(0);
                     findViewById(R.id.layout_view1).setVisibility(8);
                     break;
-                case R.id.btn_plus5 /* 2131427498 */:
+                case R.id.btn_plus5 /* 2131427469 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{83}, null, null);
                         break;
@@ -251,7 +220,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{80}, null, null);
                         break;
                     }
-                case R.id.btn_plus6 /* 2131427503 */:
+                case R.id.btn_plus6 /* 2131427472 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{84}, null, null);
                         break;
@@ -259,7 +228,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{81}, null, null);
                         break;
                     }
-                case R.id.btn_plus7 /* 2131427507 */:
+                case R.id.btn_plus7 /* 2131427475 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{85}, null, null);
                         break;
@@ -267,7 +236,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{82}, null, null);
                         break;
                     }
-                case R.id.btn_plus8 /* 2131427511 */:
+                case R.id.btn_plus8 /* 2131427478 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{83, 1}, null, null);
                         break;
@@ -275,7 +244,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{80, 1}, null, null);
                         break;
                     }
-                case R.id.btn_plus9 /* 2131427515 */:
+                case R.id.btn_plus9 /* 2131427481 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{84, 1}, null, null);
                         break;
@@ -283,7 +252,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{81, 1}, null, null);
                         break;
                     }
-                case R.id.btn_plus10 /* 2131427519 */:
+                case R.id.btn_plus10 /* 2131427484 */:
                     if (this.pagenum == 1) {
                         DataCanbus.PROXY.cmd(0, new int[]{85, 1}, null, null);
                         break;
@@ -291,103 +260,57 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                         DataCanbus.PROXY.cmd(0, new int[]{82, 1}, null, null);
                         break;
                     }
-                case R.id.btn_plus11 /* 2131427523 */:
+                case R.id.btn_plus11 /* 2131427487 */:
                     this.pagenum_massage = 0;
                     updateMassageState1(this.pagenum_massage);
                     if (this.pagenum == 1) {
-                        updateMassageState(DataCanbus.DATA[473]);
+                        updateMassageState(DataCanbus.DATA[485]);
                         break;
                     } else {
-                        updateMassageState(DataCanbus.DATA[468]);
+                        updateMassageState(DataCanbus.DATA[480]);
                         break;
                     }
-                case R.id.btn_plus12 /* 2131427527 */:
+                case R.id.btn_plus12 /* 2131427490 */:
                     this.pagenum_massage = 1;
                     updateMassageState1(this.pagenum_massage);
                     if (this.pagenum == 1) {
-                        updateMassageState(DataCanbus.DATA[474]);
+                        updateMassageState(DataCanbus.DATA[486]);
                         break;
                     } else {
-                        updateMassageState(DataCanbus.DATA[469]);
+                        updateMassageState(DataCanbus.DATA[481]);
                         break;
                     }
-                case R.id.btn_plus18 /* 2131427879 */:
+                case R.id.btn_plus13 /* 2131427493 */:
+                    this.pagenum_massage = 2;
+                    updateMassageState1(this.pagenum_massage);
                     if (this.pagenum == 1) {
-                        switch (this.pagenum_massage) {
-                            case 0:
-                                DataCanbus.PROXY.cmd(0, new int[]{91, 3}, null, null);
-                                break;
-                            case 1:
-                                DataCanbus.PROXY.cmd(0, new int[]{92, 3}, null, null);
-                                break;
-                            case 2:
-                                DataCanbus.PROXY.cmd(0, new int[]{93, 3}, null, null);
-                                break;
-                            case 3:
-                                DataCanbus.PROXY.cmd(0, new int[]{94, 3}, null, null);
-                                break;
-                            case 4:
-                                DataCanbus.PROXY.cmd(0, new int[]{95, 3}, null, null);
-                                break;
-                        }
+                        updateMassageState(DataCanbus.DATA[487]);
+                        break;
                     } else {
-                        switch (this.pagenum_massage) {
-                            case 0:
-                                DataCanbus.PROXY.cmd(0, new int[]{86, 3}, null, null);
-                                break;
-                            case 1:
-                                DataCanbus.PROXY.cmd(0, new int[]{87, 3}, null, null);
-                                break;
-                            case 2:
-                                DataCanbus.PROXY.cmd(0, new int[]{88, 3}, null, null);
-                                break;
-                            case 3:
-                                DataCanbus.PROXY.cmd(0, new int[]{89, 3}, null, null);
-                                break;
-                            case 4:
-                                DataCanbus.PROXY.cmd(0, new int[]{90, 3}, null, null);
-                                break;
-                        }
+                        updateMassageState(DataCanbus.DATA[482]);
+                        break;
                     }
-                case R.id.btn_plus19 /* 2131427881 */:
+                case R.id.btn_plus14 /* 2131427496 */:
+                    this.pagenum_massage = 3;
+                    updateMassageState1(this.pagenum_massage);
                     if (this.pagenum == 1) {
-                        switch (this.pagenum_massage) {
-                            case 0:
-                                DataCanbus.PROXY.cmd(0, new int[]{91}, null, null);
-                                break;
-                            case 1:
-                                DataCanbus.PROXY.cmd(0, new int[]{92}, null, null);
-                                break;
-                            case 2:
-                                DataCanbus.PROXY.cmd(0, new int[]{93}, null, null);
-                                break;
-                            case 3:
-                                DataCanbus.PROXY.cmd(0, new int[]{94}, null, null);
-                                break;
-                            case 4:
-                                DataCanbus.PROXY.cmd(0, new int[]{95}, null, null);
-                                break;
-                        }
+                        updateMassageState(DataCanbus.DATA[488]);
+                        break;
                     } else {
-                        switch (this.pagenum_massage) {
-                            case 0:
-                                DataCanbus.PROXY.cmd(0, new int[]{86}, null, null);
-                                break;
-                            case 1:
-                                DataCanbus.PROXY.cmd(0, new int[]{87}, null, null);
-                                break;
-                            case 2:
-                                DataCanbus.PROXY.cmd(0, new int[]{88}, null, null);
-                                break;
-                            case 3:
-                                DataCanbus.PROXY.cmd(0, new int[]{89}, null, null);
-                                break;
-                            case 4:
-                                DataCanbus.PROXY.cmd(0, new int[]{90}, null, null);
-                                break;
-                        }
+                        updateMassageState(DataCanbus.DATA[483]);
+                        break;
                     }
-                case R.id.btn_plus16 /* 2131427889 */:
+                case R.id.btn_plus15 /* 2131427517 */:
+                    this.pagenum_massage = 4;
+                    updateMassageState1(this.pagenum_massage);
+                    if (this.pagenum == 1) {
+                        updateMassageState(DataCanbus.DATA[489]);
+                        break;
+                    } else {
+                        updateMassageState(DataCanbus.DATA[484]);
+                        break;
+                    }
+                case R.id.btn_plus16 /* 2131427520 */:
                     if (this.pagenum == 1) {
                         switch (this.pagenum_massage) {
                             case 0:
@@ -425,7 +348,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                                 break;
                         }
                     }
-                case R.id.btn_plus17 /* 2131427891 */:
+                case R.id.btn_plus17 /* 2131427523 */:
                     if (this.pagenum == 1) {
                         switch (this.pagenum_massage) {
                             case 0:
@@ -463,12 +386,88 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
                                 break;
                         }
                     }
+                case R.id.btn_plus18 /* 2131427895 */:
+                    if (this.pagenum == 1) {
+                        switch (this.pagenum_massage) {
+                            case 0:
+                                DataCanbus.PROXY.cmd(0, new int[]{91, 3}, null, null);
+                                break;
+                            case 1:
+                                DataCanbus.PROXY.cmd(0, new int[]{92, 3}, null, null);
+                                break;
+                            case 2:
+                                DataCanbus.PROXY.cmd(0, new int[]{93, 3}, null, null);
+                                break;
+                            case 3:
+                                DataCanbus.PROXY.cmd(0, new int[]{94, 3}, null, null);
+                                break;
+                            case 4:
+                                DataCanbus.PROXY.cmd(0, new int[]{95, 3}, null, null);
+                                break;
+                        }
+                    } else {
+                        switch (this.pagenum_massage) {
+                            case 0:
+                                DataCanbus.PROXY.cmd(0, new int[]{86, 3}, null, null);
+                                break;
+                            case 1:
+                                DataCanbus.PROXY.cmd(0, new int[]{87, 3}, null, null);
+                                break;
+                            case 2:
+                                DataCanbus.PROXY.cmd(0, new int[]{88, 3}, null, null);
+                                break;
+                            case 3:
+                                DataCanbus.PROXY.cmd(0, new int[]{89, 3}, null, null);
+                                break;
+                            case 4:
+                                DataCanbus.PROXY.cmd(0, new int[]{90, 3}, null, null);
+                                break;
+                        }
+                    }
+                case R.id.btn_plus19 /* 2131427897 */:
+                    if (this.pagenum == 1) {
+                        switch (this.pagenum_massage) {
+                            case 0:
+                                DataCanbus.PROXY.cmd(0, new int[]{91}, null, null);
+                                break;
+                            case 1:
+                                DataCanbus.PROXY.cmd(0, new int[]{92}, null, null);
+                                break;
+                            case 2:
+                                DataCanbus.PROXY.cmd(0, new int[]{93}, null, null);
+                                break;
+                            case 3:
+                                DataCanbus.PROXY.cmd(0, new int[]{94}, null, null);
+                                break;
+                            case 4:
+                                DataCanbus.PROXY.cmd(0, new int[]{95}, null, null);
+                                break;
+                        }
+                    } else {
+                        switch (this.pagenum_massage) {
+                            case 0:
+                                DataCanbus.PROXY.cmd(0, new int[]{86}, null, null);
+                                break;
+                            case 1:
+                                DataCanbus.PROXY.cmd(0, new int[]{87}, null, null);
+                                break;
+                            case 2:
+                                DataCanbus.PROXY.cmd(0, new int[]{88}, null, null);
+                                break;
+                            case 3:
+                                DataCanbus.PROXY.cmd(0, new int[]{89}, null, null);
+                                break;
+                            case 4:
+                                DataCanbus.PROXY.cmd(0, new int[]{90}, null, null);
+                                break;
+                        }
+                    }
             }
         }
         return false;
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
@@ -492,13 +491,13 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
             findViewById(R.id.layout_view1).setVisibility(0);
             findViewById(R.id.layout_view2).setVisibility(8);
             if (this.pagenum == 1) {
-                ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[466])).toString());
-                ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[391])).toString());
-                ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[390])).toString());
+                ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[478])).toString());
+                ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[403])).toString());
+                ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[402])).toString());
             } else {
-                ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[464])).toString());
-                ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[465])).toString());
-                ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[467])).toString());
+                ((TextView) findViewById(R.id.tv_text1)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[476])).toString());
+                ((TextView) findViewById(R.id.tv_text2)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[477])).toString());
+                ((TextView) findViewById(R.id.tv_text3)).setText(new StringBuilder(String.valueOf(DataCanbus.DATA[479])).toString());
             }
         } else if (this.pagenum1 == 1) {
             findViewById(R.id.btn_plus4).setBackgroundResource(R.drawable.ic_pa_ford_xmradio_channels_p);
@@ -512,42 +511,42 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
         if (this.pagenum == 1) {
             switch (this.pagenum_massage) {
                 case 0:
-                    updateMassageState(DataCanbus.DATA[473]);
+                    updateMassageState(DataCanbus.DATA[485]);
                     break;
                 case 1:
-                    updateMassageState(DataCanbus.DATA[474]);
+                    updateMassageState(DataCanbus.DATA[486]);
                     break;
                 case 2:
-                    updateMassageState(DataCanbus.DATA[475]);
+                    updateMassageState(DataCanbus.DATA[487]);
                     break;
                 case 3:
-                    updateMassageState(DataCanbus.DATA[476]);
+                    updateMassageState(DataCanbus.DATA[488]);
                     break;
                 case 4:
-                    updateMassageState(DataCanbus.DATA[477]);
+                    updateMassageState(DataCanbus.DATA[489]);
                     break;
             }
         }
         switch (this.pagenum_massage) {
             case 0:
-                updateMassageState(DataCanbus.DATA[468]);
+                updateMassageState(DataCanbus.DATA[480]);
                 break;
             case 1:
-                updateMassageState(DataCanbus.DATA[469]);
+                updateMassageState(DataCanbus.DATA[481]);
                 break;
             case 2:
-                updateMassageState(DataCanbus.DATA[470]);
+                updateMassageState(DataCanbus.DATA[482]);
                 break;
             case 3:
-                updateMassageState(DataCanbus.DATA[471]);
+                updateMassageState(DataCanbus.DATA[483]);
                 break;
             case 4:
-                updateMassageState(DataCanbus.DATA[472]);
+                updateMassageState(DataCanbus.DATA[484]);
                 break;
         }
     }
 
-    @Override // android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         isFront = false;
@@ -555,41 +554,41 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[464].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[465].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[467].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[466].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[391].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[390].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[468].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[469].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[470].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[471].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[472].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[473].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[474].addNotify(this.notifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[475].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[476].addNotify(this.notifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[477].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[479].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[478].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[403].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[402].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[480].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[481].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[482].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[483].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[484].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[485].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[486].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[487].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[488].addNotify(this.notifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[489].addNotify(this.notifyCanbus, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[464].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[465].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[467].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[466].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[391].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[390].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[468].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[469].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[470].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[471].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[472].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[473].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[474].removeNotify(this.notifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[475].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[476].removeNotify(this.notifyCanbus);
         DataCanbus.NOTIFY_EVENTS[477].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[479].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[478].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[403].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[402].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[480].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[481].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[482].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[483].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[484].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[485].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[486].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[487].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[488].removeNotify(this.notifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[489].removeNotify(this.notifyCanbus);
     }
 
     private void updateMassageState1(int value) {
@@ -627,7 +626,7 @@ public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void updateMassageState(int value) {
         ((Button) findViewById(R.id.btn_plus16)).setTextColor(Color.parseColor("#ffffff"));
         ((Button) findViewById(R.id.btn_plus17)).setTextColor(Color.parseColor("#ffffff"));

@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.text.TextUtils;
 import android.util.Log;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\launcher66xda.apk\dexFile\classes.dex */
 public abstract class AppFilter {
     private static final boolean DBG = false;
     private static final String TAG = "AppFilter";

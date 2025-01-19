@@ -18,7 +18,6 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Activity_424_FuncSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;
@@ -26,21 +25,21 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
     private View mPopShowView;
     int[] send_lang;
     int language_set = 255;
-    IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_FuncSet.1
-        @Override // com.syu.module.IUiNotify
+    IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             int value = DataCanbus.DATA[updateCode];
             switch (updateCode) {
-                case 93:
+                case 105:
                     Activity_424_FuncSet.this.updateLauguageSet();
                     break;
-                case 94:
+                case 106:
                     Activity_424_FuncSet.this.setCheck((CheckedTextView) Activity_424_FuncSet.this.findViewById(R.id.ctv_checkedtext1), value == 1);
                     break;
-                case 143:
+                case 155:
                     ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text1)).setText(new StringBuilder().append(value).toString());
                     break;
-                case 144:
+                case 156:
                     if (value > 10) {
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text2)).setText("R" + (value - 10));
                         break;
@@ -51,7 +50,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text2)).setText("0");
                         break;
                     }
-                case 145:
+                case 157:
                     if (value > 10) {
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text3)).setText("R" + (value - 10));
                         break;
@@ -62,7 +61,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text3)).setText("0");
                         break;
                     }
-                case 146:
+                case 158:
                     if (value > 10) {
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text4)).setText("+" + (value - 10));
                         break;
@@ -73,7 +72,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text4)).setText("0");
                         break;
                     }
-                case 147:
+                case 159:
                     if (value > 10) {
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text5)).setText("+" + (value - 10));
                         break;
@@ -84,7 +83,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
                         ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text5)).setText("0");
                         break;
                     }
-                case 148:
+                case 160:
                     if (value == 1) {
                         Activity_424_FuncSet.this.findViewById(R.id.layout_view1).setVisibility(0);
                         Activity_424_FuncSet.this.findViewById(R.id.layout_view2).setVisibility(0);
@@ -102,7 +101,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
                         Activity_424_FuncSet.this.findViewById(R.id.layout_view6).setVisibility(8);
                         break;
                     }
-                case 149:
+                case 161:
                     switch (value) {
                         case 0:
                             ((TextView) Activity_424_FuncSet.this.findViewById(R.id.tv_text6)).setText(R.string.wc_17zhinanzhe_str1);
@@ -121,14 +120,14 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_0424_xp_renault_settings);
+        //setContentView(R.layout.layout_0424_xp_renault_settings);
         init();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void initLauStyle() {
         LayoutInflater inflater = (LayoutInflater) getSystemService("layout_inflater");
         View layout = inflater.inflate(R.layout.layout_lauguage, (ViewGroup) null);
@@ -141,8 +140,8 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         this.mLauStylelv.setAdapter((ListAdapter) new ArrayAdapter(this, R.layout.sound_effect_item, this.mLauStylelist));
         this.mLauStylelv.setItemsCanFocus(false);
         this.mLauStylelv.setChoiceMode(1);
-        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_FuncSet.2
-            @Override // android.widget.AdapterView.OnItemClickListener
+        this.mLauStylelv.setOnItemClickListener(new AdapterView.OnItemClickListener() { 
+            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Activity_424_FuncSet.this.language_set = position;
                 if (Activity_424_FuncSet.this.language_set >= 0 && Activity_424_FuncSet.this.language_set <= Activity_424_FuncSet.this.mLauStylelist.size() && Activity_424_FuncSet.this.send_lang != null) {
@@ -154,7 +153,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
     }
 
     public void updateLauguageSet() {
-        int value = DataCanbus.DATA[93];
+        int value = DataCanbus.DATA[105];
         int i = 0;
         while (i < this.mLauStylelist.size() && value != this.send_lang[i]) {
             i++;
@@ -169,7 +168,7 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         }
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void init() {
         this.mPopShowView = getWindow().getDecorView();
         this.mLauStylelist = new ArrayList<>();
@@ -200,8 +199,8 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         if (this.send_lang.length != this.mLauStylelist.size()) {
             throw new IllegalArgumentException("Language list length is not equal to lang cmd length");
         }
-        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { // from class: com.syu.carinfo.xp.ziyouguang.Activity_424_FuncSet.3
-            @Override // android.view.View.OnClickListener
+        setSelfClick((CheckedTextView) findViewById(R.id.all_func_btn_lauguage_set), new View.OnClickListener() { 
+            @Override
             public void onClick(View v) {
                 if (Activity_424_FuncSet.this.mLauStyle == null) {
                     Activity_424_FuncSet.this.initLauStyle();
@@ -227,61 +226,61 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         setSelfClick((Button) findViewById(R.id.btn_plus6), this);
     }
 
-    @Override // android.view.View.OnClickListener
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ctv_checkedtext1 /* 2131427478 */:
-                int value = DataCanbus.DATA[94];
-                if (value == 1) {
-                    value = 0;
-                } else if (value == 0) {
-                    value = 1;
-                }
-                setCarInfo(1, value);
-                break;
-            case R.id.btn_minus1 /* 2131427480 */:
+            case R.id.btn_minus1 /* 2131427455 */:
                 setCarAmpInfo(2, 2);
                 break;
-            case R.id.btn_plus1 /* 2131427482 */:
+            case R.id.btn_plus1 /* 2131427457 */:
                 setCarAmpInfo(2, 1);
                 break;
-            case R.id.btn_minus2 /* 2131427484 */:
+            case R.id.btn_minus2 /* 2131427458 */:
                 setCarAmpInfo(3, 2);
                 break;
-            case R.id.btn_plus2 /* 2131427486 */:
+            case R.id.btn_plus2 /* 2131427460 */:
                 setCarAmpInfo(3, 1);
                 break;
-            case R.id.btn_minus3 /* 2131427488 */:
+            case R.id.btn_minus3 /* 2131427461 */:
                 setCarAmpInfo(4, 2);
                 break;
-            case R.id.btn_plus3 /* 2131427490 */:
+            case R.id.btn_plus3 /* 2131427463 */:
                 setCarAmpInfo(4, 1);
                 break;
-            case R.id.btn_minus4 /* 2131427492 */:
+            case R.id.btn_minus4 /* 2131427464 */:
                 setCarAmpInfo(5, 2);
                 break;
-            case R.id.btn_plus4 /* 2131427494 */:
+            case R.id.btn_plus4 /* 2131427466 */:
                 setCarAmpInfo(5, 1);
                 break;
-            case R.id.btn_minus5 /* 2131427496 */:
+            case R.id.btn_minus5 /* 2131427467 */:
                 setCarAmpInfo(6, 2);
                 break;
-            case R.id.btn_plus5 /* 2131427498 */:
+            case R.id.btn_plus5 /* 2131427469 */:
                 setCarAmpInfo(6, 1);
                 break;
-            case R.id.btn_minus6 /* 2131427501 */:
-                int value2 = DataCanbus.DATA[149] - 1;
-                if (value2 < 0) {
-                    value2 = 3;
+            case R.id.btn_minus6 /* 2131427470 */:
+                int value = DataCanbus.DATA[161] - 1;
+                if (value < 0) {
+                    value = 3;
+                }
+                setCarAmpInfo(11, value);
+                break;
+            case R.id.btn_plus6 /* 2131427472 */:
+                int value2 = DataCanbus.DATA[161] + 1;
+                if (value2 > 3) {
+                    value2 = 0;
                 }
                 setCarAmpInfo(11, value2);
                 break;
-            case R.id.btn_plus6 /* 2131427503 */:
-                int value3 = DataCanbus.DATA[149] + 1;
-                if (value3 > 3) {
+            case R.id.ctv_checkedtext1 /* 2131427525 */:
+                int value3 = DataCanbus.DATA[106];
+                if (value3 == 1) {
                     value3 = 0;
+                } else if (value3 == 0) {
+                    value3 = 1;
                 }
-                setCarAmpInfo(11, value3);
+                setCarInfo(1, value3);
                 break;
         }
     }
@@ -294,41 +293,41 @@ public class Activity_424_FuncSet extends BaseActivity implements View.OnClickLi
         DataCanbus.PROXY.cmd(0, new int[]{value0, value1}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeNotify();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[143].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[144].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[145].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[146].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[147].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[148].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[149].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[106].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[155].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[156].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[157].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[158].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[159].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[160].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[161].addNotify(this.mNotifyCanbus, 1);
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[143].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[144].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[145].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[146].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[147].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[148].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[149].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[106].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[155].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[156].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[157].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[158].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[159].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[160].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[161].removeNotify(this.mNotifyCanbus);
     }
 }

@@ -7,83 +7,82 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class JiaNianHuaWarningInfo extends BaseActivity {
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.jianianhua_wc.JiaNianHuaWarningInfo.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
-                case 0:
+                case 98:
                     JiaNianHuaWarningInfo.this.Warning_check();
                     break;
-                case 1:
+                case 99:
                     JiaNianHuaWarningInfo.this.Last_OilWarning();
                     break;
-                case 2:
+                case 100:
                     JiaNianHuaWarningInfo.this.SafetyBelt();
                     break;
-                case 3:
+                case 101:
                     JiaNianHuaWarningInfo.this.CleanLiquid();
                     break;
-                case 4:
+                case 102:
                     JiaNianHuaWarningInfo.this.Handlebreak();
                     break;
-                case 5:
+                case 103:
                     JiaNianHuaWarningInfo.this.LastOil();
                     break;
-                case 6:
+                case 104:
                     JiaNianHuaWarningInfo.this.Battery();
                     break;
             }
         }
     };
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_jianianhua_warning_info);
+        //setContentView(R.layout.layout_jianianhua_warning_info);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onResume() {
         super.onResume();
         addUpdater();
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override
     protected void onPause() {
         super.onPause();
         removeUpdater();
     }
 
-    @Override // com.syu.canbus.BaseActivity
+    @Override
     protected void finalize() throws Throwable {
         removeUpdater();
     }
 
     private void addUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[1].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[2].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[3].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[4].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[5].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[6].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[98].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[99].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[100].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[101].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[102].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[103].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[104].addNotify(this.mNotifyCanbus, 1);
     }
 
     private void removeUpdater() {
-        DataCanbus.NOTIFY_EVENTS[0].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[1].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[2].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[3].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[4].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[5].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[6].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[98].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[99].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[100].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[101].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[102].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[103].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[104].removeNotify(this.mNotifyCanbus);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void Warning_check() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value == 0) {
             ((TextView) findViewById(R.id.wc_jianianhua_1)).setVisibility(8);
             ((TextView) findViewById(R.id.wc_jianianhua_2)).setVisibility(8);
@@ -101,11 +100,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         ((TextView) findViewById(R.id.wc_jianianhua_6)).setVisibility(0);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void Last_OilWarning() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[1];
+            int value1 = DataCanbus.DATA[99];
             if (((TextView) findViewById(R.id.wc_jianianhua_1)) != null) {
                 if ((value1 & 1) == 1) {
                     ((TextView) findViewById(R.id.wc_jianianhua_1)).setText(R.string.wc_jianianhua_warning_0);
@@ -138,11 +137,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void SafetyBelt() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[2];
+            int value1 = DataCanbus.DATA[100];
             if (((TextView) findViewById(R.id.wc_jianianhua_2)) != null) {
                 if ((value1 & 1) == 1) {
                     ((TextView) findViewById(R.id.wc_jianianhua_2)).setText(R.string.wc_jianianhua_warning_8);
@@ -175,11 +174,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void CleanLiquid() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[3];
+            int value1 = DataCanbus.DATA[101];
             if (((TextView) findViewById(R.id.wc_jianianhua_3)) != null) {
                 if (value1 == 0) {
                     ((TextView) findViewById(R.id.wc_jianianhua_3)).setText("");
@@ -212,11 +211,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void Handlebreak() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[4];
+            int value1 = DataCanbus.DATA[102];
             if (((TextView) findViewById(R.id.wc_jianianhua_4)) != null) {
                 if (value1 == 0) {
                     ((TextView) findViewById(R.id.wc_jianianhua_4)).setText("");
@@ -249,11 +248,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void LastOil() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[5];
+            int value1 = DataCanbus.DATA[103];
             if (((TextView) findViewById(R.id.wc_jianianhua_5)) != null) {
                 if (value1 == 0) {
                     ((TextView) findViewById(R.id.wc_jianianhua_5)).setText("");
@@ -286,11 +285,11 @@ public class JiaNianHuaWarningInfo extends BaseActivity {
         }
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
+    
     public void Battery() {
-        int value = DataCanbus.DATA[0];
+        int value = DataCanbus.DATA[98];
         if (value != 0) {
-            int value1 = DataCanbus.DATA[6];
+            int value1 = DataCanbus.DATA[104];
             if (((TextView) findViewById(R.id.wc_jianianhua_6)) != null) {
                 if (value1 == 0) {
                     ((TextView) findViewById(R.id.wc_jianianhua_6)).setText("");

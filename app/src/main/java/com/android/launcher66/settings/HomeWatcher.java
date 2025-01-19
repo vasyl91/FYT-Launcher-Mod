@@ -35,11 +35,7 @@ public class HomeWatcher {
 
     public void startWatch() {
         if (mRecevier != null) {
-            if (Build.VERSION.SDK_INT >= 33) {
-                mContext.registerReceiver(mRecevier, mFilter, Context.RECEIVER_EXPORTED);
-            } else {
-                mContext.registerReceiver(mRecevier, mFilter, Context.RECEIVER_NOT_EXPORTED);
-            }
+            mContext.registerReceiver(mRecevier, mFilter, Context.RECEIVER_EXPORTED);
         }
     }
 

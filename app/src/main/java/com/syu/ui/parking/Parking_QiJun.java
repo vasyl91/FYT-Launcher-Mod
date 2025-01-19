@@ -6,17 +6,17 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.view.MotionEvent;
+
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitRes;
 
-/* loaded from: D:\APK\APKRepatcher\Projects\com.syu.canbus_1.0.apk\dexFile\classes.dex */
 public class Parking_QiJun extends ParkingBase {
-    private String[] StrMsg;
+    private final String[] StrMsg;
     private final float X_TxtMsg;
     private final float Y_TxtMsg;
-    private boolean b_cancle;
+    private final boolean b_cancle;
     private boolean b_down;
     private boolean b_left;
     private boolean b_left_p;
@@ -26,25 +26,25 @@ public class Parking_QiJun extends ParkingBase {
     private boolean b_right_p;
     private boolean b_star;
     private boolean b_up;
-    private boolean b_up_down;
-    private Rect back;
-    private Rect camera;
-    private Rect cancle;
+    private final boolean b_up_down;
+    private final Rect back;
+    private final Rect camera;
+    private final Rect cancle;
     int data0;
-    private Rect down;
+    private final Rect down;
     public int iParkBtn;
     public int iParkCamer;
     public int iParkPage;
     public int iParkText;
-    private Rect left;
-    private Rect left_p;
-    private Rect msg;
-    private Rect right;
-    private Rect right_p;
-    private Rect star;
-    private int tempTextSize;
-    private Rect up;
-    private Rect up_down;
+    private final Rect left;
+    private final Rect left_p;
+    private final Rect msg;
+    private final Rect right;
+    private final Rect right_p;
+    private final Rect star;
+    private final int tempTextSize;
+    private final Rect up;
+    private final Rect up_down;
 
     public Parking_QiJun(Context context) {
         super(context);
@@ -82,13 +82,13 @@ public class Parking_QiJun extends ParkingBase {
         this.data0 = 0;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase
+    @Override
     protected void initSize() {
         this.mContentWidth = 1024;
         this.mContentHeight = 540;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase
+    @Override
     protected void initDrawable() {
         this.mDrawableNull = ToolkitRes.loadDrawable("parking/parking_null.png");
         this.mDrawableNormal_1 = ToolkitRes.loadDrawable("parking/qijun/parking_001.webp");
@@ -109,7 +109,7 @@ public class Parking_QiJun extends ParkingBase {
         return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
 
-    @Override // com.syu.ui.parking.ParkingBase, android.view.View
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.data0 = 0;
         int x = (int) (event.getX() / this.mScale);
@@ -145,8 +145,8 @@ public class Parking_QiJun extends ParkingBase {
         }
         if (this.data0 != 0) {
             DataCanbus.PROXY.cmd(1, new int[]{this.data0, 1}, null, null);
-            HandlerUI.getInstance().postDelayed(new Runnable() { // from class: com.syu.ui.parking.Parking_QiJun.1
-                @Override // java.lang.Runnable
+            HandlerUI.getInstance().postDelayed(new Runnable() { 
+                @Override
                 public void run() {
                     DataCanbus.PROXY.cmd(1, new int[]{Parking_QiJun.this.data0}, null, null);
                 }
@@ -155,17 +155,13 @@ public class Parking_QiJun extends ParkingBase {
         return false;
     }
 
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
         this.iParkPage = this.DATA[87];
         this.iParkText = this.DATA[86];
         this.iParkBtn = this.DATA[88];
         this.iParkCamer = this.DATA[89];
-        if (this.iParkText == 18 || this.iParkText == 19 || this.iParkText == 20 || this.iParkText == 21 || this.iParkText == 23 || this.iParkText == 24 || this.iParkText == 25 || this.iParkText == 27 || this.iParkText == 28 || this.iParkText == 29 || this.iParkText == 30 || this.iParkText == 33 || this.iParkText == 34 || this.iParkText == 38 || this.iParkText == 39 || this.iParkText == 43 || this.iParkText == 48) {
-            this.b_msg = true;
-        } else {
-            this.b_msg = false;
-        }
+        this.b_msg = this.iParkText == 18 || this.iParkText == 19 || this.iParkText == 20 || this.iParkText == 21 || this.iParkText == 23 || this.iParkText == 24 || this.iParkText == 25 || this.iParkText == 27 || this.iParkText == 28 || this.iParkText == 29 || this.iParkText == 30 || this.iParkText == 33 || this.iParkText == 34 || this.iParkText == 38 || this.iParkText == 39 || this.iParkText == 43 || this.iParkText == 48;
         if (458832 == DataCanbus.sCanbusId) {
             if (this.iParkPage == 4) {
                 this.b_left_p = ((this.iParkBtn >> 2) & 1) == 1;
