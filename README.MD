@@ -19,7 +19,7 @@ List of modifications:
 
 This requires some basic coding skills so that feature probably won't be for everyone (unless it's already adjusted for your car). 
 <details>
-1. Go to settings > Layout creator and check what does the summary say under the Fuel statistics:
+1. Go to the Settings > Layout creator and check what does the summary say under the Fuel statistics:
 
 [<img src="./images/Screenshot_2024-09-17_230715.jpg" width="50%">](./images/Screenshot_2024-09-17_230715.jpg)
 
