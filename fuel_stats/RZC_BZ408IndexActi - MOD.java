@@ -402,15 +402,11 @@ public class RZC_BZ408IndexActi extends Service implements PropertyChangeListene
     public void addNotify() {
         DataCanbus.NOTIFY_EVENTS[91].addNotify(this.mNotifyCanbus, 1);
         DataCanbus.NOTIFY_EVENTS[92].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void removeNotify() {
         DataCanbus.NOTIFY_EVENTS[91].removeNotify(this.mNotifyCanbus);
         DataCanbus.NOTIFY_EVENTS[92].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[87].addNotify(this.mNotifyCanbus, 1);
     }
 
     public void mUpdaterOilExpend() {
