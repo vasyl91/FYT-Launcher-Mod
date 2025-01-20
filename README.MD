@@ -49,8 +49,8 @@ That originally leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilM
 6. Finally proceed to [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats/RZC_BZ408OilMilePage1Acti.java) and there you will find there the methods (I left only crucial parts):
 
 ```
-    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.1
-        @Override // com.syu.module.IUiNotify
+    private IUiNotify mNotifyCanbus = new IUiNotify() { 
+        @Override 
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
             switch (updateCode) {
                 ....
@@ -71,7 +71,7 @@ That originally leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilM
         DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);
     }
 
-    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    @Override 
     protected void onResume() {
         ....
         DataCanbus.PROXY.cmd(29, new int[1], null, null);
