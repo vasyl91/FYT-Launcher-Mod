@@ -2224,7 +2224,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 SystemProperties.set("sys.lsec.pip_rect", "114 74 677 522");
             } else if (getResources().getDisplayMetrics().widthPixels == 1280) {
             	SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 606");
+                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 554");
             } else if (getResources().getDisplayMetrics().widthPixels == 1920) {
             	SystemProperties.set("persist.lsec.radius", "12");
                 SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 611");
