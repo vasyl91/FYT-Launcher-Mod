@@ -1,6 +1,9 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-TODO - update videos and screenshots for this readme.
+TODO (I'm back in 3 weeks): 
+- night mode fix with `getWallpaperId()`
+- revise layouts
+- update videos and screenshots for this readme.
 
 So far the launcher has been tested only on 2000x1100 resolution.
 
@@ -116,7 +119,7 @@ That originally leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilM
             android:exported="true">
         </service>
 ```
-Rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` accordingly to your newly modded file from step 7. says.
+Copy and paste that section and rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` according to your newly modded file from step 7. says.
 
 9. If everything goes well, enabling `Fuel statistics` in Settings shouldn't result in an error while going back to the launcher's main window and you should see a popup containing stats as on the screenshot below.
 
