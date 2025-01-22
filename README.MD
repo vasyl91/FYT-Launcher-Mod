@@ -1,8 +1,8 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
 TODO (I'm back in 3 weeks): 
-- night mode fix with `getWallpaperId()`
-- revise layouts
+- night mode fix with `getWallpaperId()` in `editor.putString(LAST_WALLPAPER, WALLPAPER_NIGHT/WALLPAPER_NIGHT);` -> `editor.putInt(LAST_WALLPAPER, getWallpaperId());` to determine if the wallpaper has changed.
+- revise layouts.
 - update videos and screenshots for this readme.
 
 So far the launcher has been tested only on 2000x1100 resolution.
