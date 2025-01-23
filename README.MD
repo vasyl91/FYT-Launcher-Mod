@@ -7,7 +7,7 @@ TODO (I'm back in 3 weeks):
 - separate canbus functions from Launcher.java, wrap them with try-catch block and create toast informing that modded by user class doesn't work as it should.
 - update videos and screenshots for this readme.
 
-So far the launcher has been tested only on 2000x1100 resolution.
+So far the launcher has been tested on 2000x1100 and 1280x720 resolutions.
 
 List of modifications:
 - Reworked music widget working with most of the music players.
