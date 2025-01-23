@@ -2,7 +2,9 @@
 
 TODO (I'm back in 3 weeks): 
 - night mode fix with `getWallpaperId()` in `editor.putString(LAST_WALLPAPER, WALLPAPER_NIGHT/WALLPAPER_NIGHT);` -> `editor.putInt(LAST_WALLPAPER, getWallpaperId());` to determine if the wallpaper has changed.
-- revise layouts.
+- revise the layouts.
+- adding function to display fuel stats only in the selected apps leaving the main screen clear.
+- separate canbus functions from Launcher.java, wrap them with try-catch block and create toast informing that modded by user class doesn't work as it should.
 - update videos and screenshots for this readme.
 
 So far the launcher has been tested only on 2000x1100 resolution.
@@ -119,7 +121,7 @@ That originally leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilM
             android:exported="true">
         </service>
 ```
-Copy and paste that section and rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` according to your newly modded file from step 7. says.
+Copy and paste that section below and rename `android:name="com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi"` accordingly to your newly modded file from step 7.
 
 9. If everything goes well, enabling `Fuel statistics` in Settings shouldn't result in an error while going back to the launcher's main window and you should see a popup containing stats as on the screenshot below.
 
