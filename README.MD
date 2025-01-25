@@ -2,7 +2,7 @@
 
 TODO (I'm back in 3 weeks): 
 - night mode fix with `getWallpaperId()` in `editor.putString(LAST_WALLPAPER, WALLPAPER_NIGHT/WALLPAPER_NIGHT);` -> `editor.putInt(LAST_WALLPAPER, getWallpaperId());` to determine if the wallpaper has changed.
-- revise the layouts.
+- improve the layouts and add 1920x1080 resolution.
 - adding function to display fuel stats only in the selected apps leaving the main screen clear.
 - separate canbus functions from Launcher.java, wrap them with try-catch block and create toast informing that modded by user class doesn't work as it should in case it doesn't. 
 - update videos and screenshots for this readme.
