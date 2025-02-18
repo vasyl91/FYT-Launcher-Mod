@@ -48,6 +48,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.settings.CanbusClasses;
 import com.android.launcher66.settings.Helpers;
 import com.syu.log.LogPreview;
 import com.syu.util.JLog;
@@ -196,6 +197,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     public static TextView instantaneousConsumption;
     public static TextView drivingMileage;
     public static AbsoluteLayout absoluteLayout;
+    private Helpers helpers = new Helpers();
 
     enum State {
         NORMAL,
@@ -468,8 +470,8 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public void createUserPage() {
-        Helpers.inAllApps = false;
-        Helpers.overviewMode = false;
+        helpers.setInAllApps(false);
+        helpers.setInOverviewMode(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean leftBar = prefs.getBoolean("left_bar", false);
@@ -532,8 +534,7 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                 leftBarSize = 100;
                 mapMinHeight = 284;
                 musicMinHeight = 284;
-            } else if (getResources().getDisplayMetrics().widthPixels == 1280
-                    || getResources().getDisplayMetrics().widthPixels == 1920) {
+            } else if (getResources().getDisplayMetrics().heightPixels == 720) {
                 leftBarSize = 110;
                 mapMinHeight = 340;
                 musicMinHeight = 340;
@@ -622,10 +623,10 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
                 absoluteRadio.setLayoutParams(new AbsoluteLayout.LayoutParams(radioWidth, radioHeight, radioTopLeftX, radioTopLeftY)); 
                 absoluteLayout.addView(absoluteRadio);
             }
-        }  
-        this.mLauncher.launchCanbus();  
+        }
+        new CanbusClasses(this.getContext()).launchCanbus();
         invalidate();
-    }
+    }   
 
     public void createCustomContentPage() {
         CellLayout customScreen2 = (CellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_screen, (ViewGroup) null);
@@ -1737,15 +1738,15 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public boolean enterOverviewMode() {
-        Helpers.overviewMode = true;
-        Helpers.listOpen = false;
+        helpers.setInOverviewMode(true);
+        helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats)  { 
-            Helpers.foregroundAppOpened = false;
-            Helpers.inAllApps = false;
-            Helpers.isInRecent = false;
+            helpers.setForegroundAppOpened(false);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(OVERVIEW_MODE_OPEN);
             LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
         }
@@ -1761,15 +1762,15 @@ public class Workspace extends SmoothPagedView implements DropTarget, DragSource
     }
 
     public void exitOverviewMode(boolean animated) {
-        Helpers.overviewMode = false;
-        Helpers.listOpen = false;
+        helpers.setInOverviewMode(false);
+        helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats)  {        
-            Helpers.foregroundAppOpened = false;
-            Helpers.inAllApps = false;
-            Helpers.isInRecent = false;
+            helpers.setForegroundAppOpened(false);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(OVERVIEW_MODE_CLOSE);
             LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
         }

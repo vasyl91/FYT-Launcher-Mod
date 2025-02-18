@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.view.View;
 
-/* compiled from: Launcher.java */
 interface LauncherTransitionable {
     View getContent();
 

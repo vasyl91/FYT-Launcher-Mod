@@ -3,7 +3,6 @@ package com.android.launcher66;
 import android.view.KeyEvent;
 import android.view.View;
 
-/* compiled from: FocusHelper.java */
 class FolderKeyEventListener implements View.OnKeyListener {
     FolderKeyEventListener() {
     }

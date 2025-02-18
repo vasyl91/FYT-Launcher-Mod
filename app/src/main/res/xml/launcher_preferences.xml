@@ -40,8 +40,14 @@
             android:key="device_settings"
             android:title="@string/device_settings" />
         <Preference
-            android:key="noti_settings"
-            android:title="@string/noti_str" />
+            android:key="notification_settings"
+            android:title="@string/notification_str" />
+        <Preference
+            android:key="accessibility_settings"
+            android:title="@string/accessibility_str" />
+        <Preference
+            android:key="wallpaper_picker"
+            android:title="@string/wallpaper_picker" />
 
     </PreferenceCategory>
 
@@ -55,43 +61,87 @@
             android:title="@string/night_mode"
             android:summaryOn="@string/night_mode_summary"
             android:maxLines="5" />
-        <SwitchPreference
-            android:key="default_wallpapers"
-            android:defaultValue="true"
-            android:title="@string/default_wallpapers" />
-        <Preference
-            android:key="save_day_wallpaper"
-            android:title="@string/save_day_wallpaper"
-            android:summary="@string/save_day_wallpaper_summary"
-            android:maxLines="5" />
-        <Preference
-            android:key="save_night_wallpaper"
-            android:title="@string/save_night_wallpaper"
-            android:summary="@string/save_night_wallpaper_summary"
-            android:maxLines="5" />
-        <SwitchPreference
-            android:key="brightness"
-            android:defaultValue="false"
-            android:title="@string/brightness" />
-        <SeekBarPreference
-            app:key="day_seek_bar"
-            app:title="@string/day_seek_bar"
-            app:defaultValue="50"
-            android:max="255"
-            app:min="0"
-            app:showSeekBarValue="false" />
-        <SeekBarPreference
-            app:key="night_seek_bar"
-            app:title="@string/night_seek_bar"
-            app:defaultValue="50"
-            android:max="255"
-            app:min="0"
-            app:showSeekBarValue="false" />
-        <Preference
-            android:key="empty"/>
-        <Preference
-            android:key="empty"/>
+        
+        <PreferenceCategory
+            app:key="correction_category"
+            app:title="@string/sun_corrections"
+            style="@style/PreferenceCategoryStyle" >
 
+            <Preference
+                android:key="sunrise_title_and_summary"
+                android:title="@string/sunrise_correction"
+                app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.CorrectionSeekBarPreference
+                android:key="sunrise_correction"
+                android:defaultValue="0" />
+            <Preference
+                android:key="sunset_title_and_summary"
+                android:title="@string/sunset_correction"
+                app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.CorrectionSeekBarPreference
+                android:key="sunset_correction"
+                android:defaultValue="0" />
+            <Preference
+                android:key="empty1"/>
+            
+        </PreferenceCategory>
+        
+        <PreferenceCategory
+            app:key="wallpapers_category"
+            app:title="@string/pick_wallpaper"
+            style="@style/PreferenceCategoryStyle" >
+            
+            <com.android.launcher66.settings.CustomSwitchPreference
+                android:key="default_wallpapers"
+                android:defaultValue="true"
+                android:title="@string/default_wallpapers"
+                app:layout="@layout/nested_preference_category_switch" />
+            <Preference
+                android:key="save_day_wallpaper"
+                android:title="@string/save_day_wallpaper"
+                android:summary="@string/save_day_wallpaper_summary"
+                android:maxLines="5"
+                app:layout="@layout/nested_preference_category_content" />
+            <Preference
+                android:key="save_night_wallpaper"
+                android:title="@string/save_night_wallpaper"
+                android:summary="@string/save_night_wallpaper_summary"
+                android:maxLines="5"
+                app:layout="@layout/nested_preference_category_content" />
+            
+        </PreferenceCategory>
+        
+        <PreferenceCategory
+            app:key="brightness_category"
+            app:title="@string/brightness"
+            style="@style/PreferenceCategoryStyle" >
+            
+            <com.android.launcher66.settings.CustomSwitchPreference
+                android:key="brightness"
+                android:defaultValue="false"
+                android:title="@string/brightness"
+                app:layout="@layout/nested_preference_category_switch" />
+            <Preference
+                android:key="day_title"
+                android:title="@string/day_seek_bar"
+                app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.BrightnessSeekBarPreference
+                android:key="day_seek_bar"
+                android:defaultValue="50" />
+            <Preference
+                android:key="night_title"
+                android:title="@string/night_seek_bar"
+                app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.BrightnessSeekBarPreference
+                android:key="night_seek_bar"
+                android:defaultValue="50" />
+            <Preference
+                android:key="empty2"/>
+            <Preference
+                android:key="empty3"/>
+            
+        </PreferenceCategory>
+        
     </PreferenceCategory>
 
 </PreferenceScreen>

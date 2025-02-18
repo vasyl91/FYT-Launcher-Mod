@@ -1,11 +1,13 @@
 package com.syu.weather;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import com.syu.log.LogPreview;
@@ -61,12 +63,17 @@ public class NetworkState extends BroadcastReceiver {
         return instance;
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public NetworkState(Context context) {
         this.mContext = context.getApplicationContext();
         this.workThread.start();
         this.mHandler = new Handler(this.workThread.getLooper());
         IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        this.mContext.registerReceiver(this, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            this.mContext.registerReceiver(this, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            this.mContext.registerReceiver(this, filter);
+        }
     }
 
     public void setSpace(int space) {
@@ -263,12 +270,17 @@ public class NetworkState extends BroadcastReceiver {
         LogPreview.show("isNetworkAvailable =============== " + this.isNetworkAvailable);
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public void registerReceiver() {
         if (isNetworkConnected()) {
             this.mHandler.post(this.checkNetwork);
         }
         IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        this.mContext.registerReceiver(this, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            this.mContext.registerReceiver(this, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            this.mContext.registerReceiver(this, filter);
+        }
     }
 
     public void unregisterReceiver() {

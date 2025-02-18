@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.graphics.Paint;
 
-/* compiled from: WidgetPreviewLoader.java */
 class PaintCache extends SoftReferenceThreadLocal<Paint> {
     PaintCache() {
     }

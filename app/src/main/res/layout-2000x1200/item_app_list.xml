@@ -2,7 +2,7 @@
 <LinearLayout android:gravity="center" 
   android:orientation="vertical" 
   android:layout_width="215.0px" 
-  android:layout_marginTop="15.0px" 
+  android:layout_marginTop="25.0px" 
   android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView 

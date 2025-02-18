@@ -86,6 +86,9 @@ public class FytPackage {
     public static final String videoAction = "com.syu.video";
     public static final String voiceAction = "com.syu.voice";
     public static final String youtubeAction = "com.google.android.youtube";
+    public static final String GMAPS = "com.google.android.apps.maps";
+    public static final String WAZE = "com.waze";
+    
 
     static {
         LOADED_LIST = null;

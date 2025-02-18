@@ -4,7 +4,6 @@ import android.os.Process;
 
 import com.android.async.AsyncTask;
 
-/* compiled from: AppsCustomizePagedView.java */
 class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTaskPageData> {
     AsyncTaskPageData.Type dataType;
     int page;

@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo;
 
 import androidx.annotation.NonNull;
 
-/* compiled from: PendingAddItemInfo.java */
 class PendingAddShortcutInfo extends PendingAddItemInfo {
     ActivityInfo shortcutActivityInfo;
 

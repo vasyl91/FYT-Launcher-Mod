@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.view.View;
 
-/* compiled from: PagedView.java */
 interface Page {
     View getChildOnPageAt(int i);
 

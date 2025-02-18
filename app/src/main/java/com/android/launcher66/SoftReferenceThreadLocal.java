@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import java.lang.ref.SoftReference;
 
-/* compiled from: WidgetPreviewLoader.java */
 abstract class SoftReferenceThreadLocal<T> {
     private ThreadLocal<SoftReference<T>> mThreadLocal = new ThreadLocal<>();
 

@@ -1623,7 +1623,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return Math.min(index, getChildCount() - 1);
     }
 
-    int getPageNearestToCenterOfScreen() {
+    public int getPageNearestToCenterOfScreen() {
         int minDistanceFromScreenCenter = Integer.MAX_VALUE;
         int minDistanceFromScreenCenterIndex = -1;
         int screenCenter = getViewportOffsetX() + getScrollX() + (getViewportWidth() / 2);

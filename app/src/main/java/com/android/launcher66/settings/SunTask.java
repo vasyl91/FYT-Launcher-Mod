@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -23,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,6 +53,7 @@ import share.ResValue;
 
 public class SunTask extends AsyncTask<String, Void, String> {
     private final Context mContext;
+    private final Helpers helpers = new Helpers();
     private final double mLatiude;
     private final double mLongitude;
     private long timeToJob;
@@ -58,16 +61,16 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private final SharedPreferences mPrefs;
     private final SharedPreferences.Editor editor;
     private final boolean defaultWallpapers;
-    private static final String LAST_WALLPAPER = "last_wallpaper";
-    private static final String WALLPAPER_DAY = "wallpaper_day";
-    private static final String WALLPAPER_NIGHT = "wallpaper_night";
     private static final String TIME_CONST = "HH:mm:ss";
+    private static final String TAG = "SunTask";
     private long sunrise = 0;
     private long sunset = 0;
     private long millisecondOfDay;
     private long dayLength;
     private static final long midnight = 86400000;
     private static  final long arcticDayLong = -3600000;
+    private long sunriseCorrectionValue;
+    private long sunsetCorrectionValue;
 
     public SunTask(Context context, double latiude, double longitude) {
         this.mContext = context;
@@ -75,6 +78,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
         this.mLongitude = longitude;
         mWallpaperManager = WallpaperManager.getInstance(context);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        sunriseCorrectionValue = mPrefs.getInt("sunrise_correction", 0) * 60000L;
+        sunsetCorrectionValue = mPrefs.getInt("sunset_correction", 0) * 60000L;
         editor = mPrefs.edit();
         defaultWallpapers = mPrefs.getBoolean("default_wallpapers", true); 
     }
@@ -104,9 +109,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 sunrise = stringToLong(Objects.requireNonNull(sunInfoObject).getString("sunrise"));
                 sunset = stringToLong(Objects.requireNonNull(sunInfoObject).getString("sunset"));
                 if (isPolarDay()) {
-                    Helpers.polarDay = true;
+                    helpers.setPolarDay(true);
                 } else if (isPerpetualNight()) {
-                    Helpers.perpetualNight = true;
+                    helpers.setPerpetualNight(true);
                 }
             } catch (IOException | JSONException e) {
                 throw new RuntimeException(e);
@@ -118,35 +123,38 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 sunset = stringToLong(sunCalc.getSunset());
             }
         }
+        editor.putString("sunrise", longToHour(sunrise));
+        editor.putString("sunset", longToHour(sunset));
+        editor.apply();
+        sunrise = sunrise + sunriseCorrectionValue;
+        sunset = sunset + sunsetCorrectionValue;
         dayOrNight();
     }
 
     private void dayOrNight() {
         if (notArctic()) {
-            editor.putString("sunrise", longToHour(sunrise));
-            editor.putString("sunset", longToHour(sunset));
-            editor.apply();
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             millisecondOfDay = 
                 TimeUnit.HOURS.toMillis(cal.get(Calendar.HOUR_OF_DAY)) +
                 TimeUnit.MINUTES.toMillis(cal.get(Calendar.MINUTE)) +
                 TimeUnit.SECONDS.toMillis(cal.get(Calendar.SECOND)) +
                 cal.get(Calendar.MILLISECOND);
+            
             if (nightBool()) {
-                Helpers.isDay = false;
+                helpers.setDay(false);
                 if (nightBoolPastMidnight()) {
                     timeToJob = sunrise - millisecondOfDay;
                 } else if (nightBoolPreMidnight()) {
                     timeToJob = (midnight - millisecondOfDay) + sunrise;
-                }             
-                Log.i("NIGHT", "waiting for sunrise at " + longToHour(sunrise) + " time to job: (ms)"+ timeToJob + " (hours)" + longToHourZone(timeToJob)
-                 + " Current time: " + longToHour(millisecondOfDay) + " Sunset at: " + longToHour(sunset));
+                }           
+                Log.i("NIGHT", "Waiting for sunrise at " + longToHour(sunrise) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
+                 + "; Current time: " + longToHour(millisecondOfDay) + "; Sunset at: " + longToHour(sunset));
             } else if (dayBool()) {
-                Helpers.isDay = true;
+                helpers.setDay(true);
                 timeToJob = sunset - millisecondOfDay;
-                Log.i("DAY", "waiting for sunset at " + longToHour(sunset) + " time to job: (ms)"+ timeToJob + " (hours)" + longToHourZone(timeToJob)
-                 + " Current time: " + longToHour(millisecondOfDay) + " Sunrise at: " + longToHour(sunrise));
-            }   
+                Log.i("DAY", "waiting for sunset at " + longToHour(sunset) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
+                 + "; Current time: " + longToHour(millisecondOfDay) + "; Sunrise at: " + longToHour(sunrise));
+            }
         }        
     }
 
@@ -161,7 +169,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private boolean notArctic() {
-        return !Helpers.perpetualNight && !Helpers.polarDay;
+        return !helpers.isPerpetualNight() && !helpers.isPolarDay();
     }
 
     private boolean nightBool() {
@@ -181,66 +189,144 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private void setWallpapers() {
-        try {
-            File mFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Launcher_drawable");
-            String lastWallpaper = mPrefs.getString(LAST_WALLPAPER, "");
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            if (allowSetDayWallpaper(mFile, lastWallpaper)) {
-                File image = new File(mFile, WALLPAPER_DAY + ".png");
-                if (allowSetWallpaperFromFile(image)) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                    mWallpaperManager.setBitmap(bitmap);                    
-                } else {
-                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg)));
-                    mWallpaperManager.setBitmap(bitmapDrawable);  
-                }
-                editor.putString(LAST_WALLPAPER, WALLPAPER_DAY);
-                editor.apply();
-            } else if (allowSetNightWallpaper(mFile, lastWallpaper)) {
-                File image = new File(mFile, WALLPAPER_NIGHT + ".png");
-                if (allowSetWallpaperFromFile(image)) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                    mWallpaperManager.setBitmap(bitmap);                    
-                } else {
-                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg_n)));
-                    mWallpaperManager.setBitmap(bitmapDrawable);  
-                }
-                editor.putString(LAST_WALLPAPER, WALLPAPER_NIGHT);
-                editor.apply();
+        File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
+        if (allowSetDayWallpaper(mFile)) {
+            File image = new File(mFile, "Day.png");
+            if (allowSetWallpaperFromFile(image)) {
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+                setWallpaperIfDifferent(bitmap, "Day");                    
+            } else {
+                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg)));
+                setWallpaperIfDifferent(bitmapDrawable, "Day");  
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } else if (allowSetNightWallpaper(mFile)) {
+            File image = new File(mFile, "Night.png");
+            if (allowSetWallpaperFromFile(image)) {
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+                setWallpaperIfDifferent(bitmap, "Night");                    
+            } else {
+                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg_n)));
+                setWallpaperIfDifferent(bitmapDrawable, "Night");  
+            }
         }
     }
 
-    private boolean allowSetDayWallpaper(File mFile, String lastWallpaper) {
-        return mFile.exists() && (!lastWallpaper.equals(WALLPAPER_DAY) && Helpers.isDay || defaultWallpapers  && Helpers.isDay || Helpers.polarDay);
+    private boolean allowSetDayWallpaper(File mFile) {
+        return mFile.exists() && (helpers.isDay() || defaultWallpapers  && helpers.isDay() || helpers.isPolarDay());
     }
 
-    private boolean allowSetNightWallpaper(File mFile, String lastWallpaper) {
-        return mFile.exists() && (!lastWallpaper.equals(WALLPAPER_NIGHT) && !Helpers.isDay || defaultWallpapers  && !Helpers.isDay || Helpers.perpetualNight);
+    private boolean allowSetNightWallpaper(File mFile) {
+        return mFile.exists() && (!helpers.isDay() || defaultWallpapers  && !helpers.isDay() || helpers.isPerpetualNight());
     }
 
     private boolean allowSetWallpaperFromFile(File image) {
         return image.exists() && !defaultWallpapers;
     }
+    
+    private Boolean setWallpaperIfDifferent(Bitmap newWallpaperBitmap, String name) {
+        try {
+            Drawable mWallpaper = mWallpaperManager.getDrawable();
+            Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
+
+            if (areBitmapsHashEqual(name)) {
+                Log.d(TAG, "Wallpaper is already set. No change needed.");
+                return false;
+            }
+
+            mWallpaperManager.setBitmap(newWallpaperBitmap);
+            saveBitmapHash(name);
+            Log.d(TAG, "Wallpaper set successfully.");
+            return true;
+
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to set wallpaper: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean areBitmapsHashEqual(String name) {
+        String savedWallpaperHash = mPrefs.getString(name + "_hash", "");
+
+        Drawable mWallpaper = mWallpaperManager.getDrawable();
+        Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
+
+        Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = digest.digest(byteArray);
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            String currentWallpaperHash = hexString.toString();
+            Log.i("HASH", "CUR: " + currentWallpaperHash + " Saved: " + savedWallpaperHash);
+            return savedWallpaperHash.equals(currentWallpaperHash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void saveBitmapHash(String name) {
+        Drawable mWallpaper = mWallpaperManager.getDrawable();
+        Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
+
+        Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
+        
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = digest.digest(byteArray);
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putString(name + "_hash", hexString.toString());
+            editor.apply();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setBrightness() { 
         int brightness = 70;
-        if (Helpers.isDay || Helpers.polarDay) {
+        if (helpers.isDay() || helpers.isPolarDay()) {
             brightness = mPrefs.getInt("day_seek_bar", 70);    
-        } else if (!Helpers.isDay || Helpers.perpetualNight) {
+        } else if (!helpers.isDay() || helpers.isPerpetualNight()) {
             brightness = mPrefs.getInt("night_seek_bar", 0);
         }
         Settings.System.putInt(this.mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
     }
-
+    
     public Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public Bitmap normalizeBitmap(Bitmap bitmap) {
+        Bitmap normalizedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(normalizedBitmap);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        return normalizedBitmap;
     }
 
     private long stringToLong(String timeStr) {
@@ -327,16 +413,13 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private void scheduleJob(Context context, long time) {
         final JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
-        // The JobService that we want to run
+        
         final ComponentName name = new ComponentName(context, DayNightMode.class);
 
-        // Schedule the job
         final int result = jobScheduler.schedule(getJobInfo(name, time));
 
-        // If successfully scheduled, log this thing
         if (result == JobScheduler.RESULT_SUCCESS) {
-            Helpers.onCreateJobInit = false; 
+            helpers.setOnCreateJobInit(false); 
             Log.d("JOB", "Scheduled job successfully!");
         }
 
@@ -359,11 +442,13 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onBackgroundError(Exception e) {
-        //
+        Log.d("SunTask", "Background error: " + e.getMessage());
     }
 
     public static class TwilightCalculator {
-
+        
+        private final Helpers helpers = new Helpers();
+        
         public TwilightCalculator(double latiude, double longitude) {
             calculateTwilight(latiude, longitude);
         }
@@ -435,10 +520,10 @@ public class SunTask extends AsyncTask<String, Void, String> {
             // The day or night never ends for the given date and location, if this value is out of
             // range.
             if (cosHourAngle >= 1) {
-                Helpers.perpetualNight = true;
+                helpers.setPerpetualNight(true);
                 return;
             } else if (cosHourAngle <= -1) {
-                Helpers.polarDay = true;
+                helpers.setPolarDay(true);
                 return;
             }
 

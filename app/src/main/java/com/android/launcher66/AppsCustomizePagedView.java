@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.SettingsActivity;
 import com.android.recycler.AppListBean;
 import com.syu.util.JLog;
 
@@ -120,12 +121,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private static String[] containsWidgets = {"com.syu.widget.DateTimeProvider", "com.syu.music.MAppWidget"};
     public static final String STATS_APP_FOREGROUND = "stats.app.foreground";
     public static PagedViewIcon icon;
+    private Helpers helpers = new Helpers();
 
     public enum ContentType {
         Applications,
         Widgets;
 
-        /* renamed from: values, reason: to resolve conflict with enum method */
         public static ContentType[] valuesCustom() {
             ContentType[] valuesCustom = values();
             int length = valuesCustom.length;
@@ -421,8 +422,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public void onClick(View v) {
         if (this.mLauncher.isAllAppsVisible() && !this.mLauncher.getWorkspace().isSwitchingState()) {
             if (v instanceof PagedViewIcon) {
-                Helpers.overviewMode = false;
-                Helpers.listOpen = false;
+                helpers.setInOverviewMode(false);
+                helpers.setListOpen(false);
                 AppInfo appInfo = (AppInfo) v.getTag();
                 if (this.mPressedIcon != null) {
                     this.mPressedIcon.lockDrawableState();
@@ -430,7 +431,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 this.mLauncher.startActivitySafely(v, appInfo.intent, appInfo);
                 this.mLauncher.getStats().recordLaunch(appInfo.intent);
                 AppListBean bean = new AppListBean(appInfo.title.toString(), appInfo.getPackageName(), appInfo.getClassName());
-                this.mLauncher.refreshLeftCycle(bean);        
+                if (appInfo.getClassName().equals("com.android.launcher66.settings.SettingsActivity")) {
+                    Intent settingsIntent = new Intent(this.mLauncher, SettingsActivity.class);
+                    this.mLauncher.startActivity(settingsIntent);
+                }
+                this.mLauncher.refreshLeftCycle(bean);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 boolean userLayout = prefs.getBoolean("user_layout", false);
                 boolean userStats = prefs.getBoolean("user_stats", false);
@@ -439,10 +444,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                     Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                     if (apps.contains(appInfo.getPackageName())) {
                         Launcher.mAppsCustomizeTabHost.setVisibility(View.GONE);
-                        Helpers.shouldAllAppsBeVisible = true;
-                        Helpers.foregroundAppOpened = true;
-                        Helpers.inAllApps = false;
-                        Helpers.isInRecent = false;
+                        helpers.setAllAppsShouldBVisible(true);
+                        helpers.setForegroundAppOpened(true);
+                        helpers.setInAllApps(false);
+                        helpers.setInRecent(false);
                         Intent intent = new Intent(STATS_APP_FOREGROUND);
                         LauncherApplication.sApp.sendBroadcast(intent);
                     }                    

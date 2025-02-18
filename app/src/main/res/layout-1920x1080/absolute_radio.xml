@@ -1,0 +1,76 @@
+<AbsoluteLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/absolute_radio" >
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@id/rl_radio"
+            android:background="@drawable/radio_bg"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:alignItems="center"
+            app:flexWrap="wrap"
+            app:flexDirection="row"
+            app:justifyContent="space_evenly" > 
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="column"
+                app:justifyContent="space_around" > 
+
+                <TextView
+                    android:textSize="21.0px"
+                    android:textColor="@android:color/white"
+                    android:id="@id/tv_band"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FM"
+                    android:layout_centerHorizontal="true" />
+
+                <Button
+                    android:id="@id/radio_btn_prev"
+                    android:background="@drawable/btn_ic_prev"
+                    android:layout_width="40.0px"
+                    android:layout_height="50.0px" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:textSize="48.0px"
+                android:textColor="@android:color/white"
+                android:gravity="center_horizontal"
+                android:id="@id/tv_freq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="87.50" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="column"
+                app:justifyContent="space_around" >
+
+                <TextView
+                    android:textSize="21.0px"
+                    android:textColor="@android:color/white"
+                    android:gravity="right"
+                    android:id="@id/tv_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="KHz"
+                    android:layout_centerHorizontal="true" /> 
+
+                <Button
+                    android:id="@id/radio_btn_next"
+                    android:background="@drawable/btn_ic_next"
+                    android:layout_width="40.0px"
+                    android:layout_height="50.0px" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+</AbsoluteLayout>

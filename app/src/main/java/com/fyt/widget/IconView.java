@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
@@ -111,11 +112,16 @@ public class IconView extends FrameLayout {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter("android.intent.action.LOCALE_CHANGED");
-        getContext().registerReceiver(this.receiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getContext().registerReceiver(this.receiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            getContext().registerReceiver(this.receiver, filter);
+        }
     }
 
     @Override

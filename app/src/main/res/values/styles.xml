@@ -161,6 +161,13 @@
         <item name="android:textColorPrimary">@color/colorAccent</item>
         <item name="android:colorControlNormal">@color/colorAccent</item>
     </style>
+    <style name="PreferenceCategoryStyle" parent="Theme.AppCompat.Light">
+        <item name="android:actionBarTheme">@style/SettingsTheme.ActionBar</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:layout">@layout/nested_preference_category</item>
+    </style>
     <style name="MyDialogActivityTheme" parent="@android:style/Theme.Dialog">
         <item name="android:backgroundDimAmount">0.4</item>
         <item name="android:windowBackground">@android:color/transparent</item>

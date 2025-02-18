@@ -1,11 +1,13 @@
 package com.syu.weather;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +41,15 @@ public class NetworkCheck extends BroadcastReceiver {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public void register(Context context) {
         Context sContext = context.getApplicationContext();
         IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        sContext.registerReceiver(this, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            sContext.registerReceiver(this, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            sContext.registerReceiver(this, filter);
+        }
         this.isRegister = true;
     }
 

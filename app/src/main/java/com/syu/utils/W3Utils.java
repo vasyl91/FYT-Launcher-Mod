@@ -46,6 +46,8 @@ public class W3Utils implements Callback.OnRefreshLisenter {
         addFilterApp("title.navi");
         addFilterApp("com.mxnavi.mxnavi");
         addFilterApp(FytPackage.GaodeACTION);
+        addFilterApp(FytPackage.GMAPS);
+        addFilterApp(FytPackage.WAZE);
         addFilterApp("cn.kuwo.player");
         addFilterApp("cn.kuwo.kwmusichd");
         addFilterApp(FytPackage.KWACTION);

@@ -85,7 +85,7 @@ public class WarnT600 implements Runnable {
             this.mLayout.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             this.mLayout.setBackgroundColor(Color.parseColor("#AA48525E"));
             this.mLayout.setPadding(10, 10, 10, 10);
-            this.mLayout.setOrientation(0);
+            this.mLayout.setOrientation(LinearLayout.HORIZONTAL);
             this.mLayout.setGravity(17);
             ImageView iv = new ImageView(this.context);
             iv.setBackgroundResource(R.drawable.ic_dasauto_wc_warnning);

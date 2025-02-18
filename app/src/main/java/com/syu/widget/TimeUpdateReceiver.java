@@ -1,10 +1,12 @@
 package com.syu.widget;
 
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 
 import com.android.launcher66.Launcher;
 import com.fyt.widget.Clock;
@@ -88,6 +90,7 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
         mWidgets.remove(widget);
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public static void register(Context context) {
         synchronized (TimeUpdateReceiver.class) {
             if (timeUpdate == null) {
@@ -100,7 +103,11 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
             filter.addAction("android.intent.action.TIME_SET");
             filter.addAction("android.intent.action.TIMEZONE_CHANGED");
             filter.addAction(SHOW_TIME);
-            context.registerReceiver(timeUpdate, filter, Context.RECEIVER_EXPORTED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(timeUpdate, filter, Context.RECEIVER_EXPORTED);
+            } else {
+                context.registerReceiver(timeUpdate, filter);
+            }
         }
     }
 

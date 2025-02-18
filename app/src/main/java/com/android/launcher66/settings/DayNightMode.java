@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.Settings;
@@ -17,15 +16,23 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
+import com.android.async.AsyncTask;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import share.ResValue;
 
 public class DayNightMode extends JobService {
 
+    private static final String TAG = "DayNightMode";
     private SharedPreferences mPrefs;
+    private boolean defaultWallpapers;
+    private final Helpers helpers = new Helpers();
 
     @Override
     public boolean onStartJob(final JobParameters params) {
@@ -39,7 +46,7 @@ public class DayNightMode extends JobService {
             setWallpapers();
             boolean brightnessBool = mPrefs.getBoolean("brightness", false);
             if (brightnessBool) {
-                setBrightness(Helpers.isDay);
+                setBrightness(helpers.isDay());
             }
             jobFinished(params, false);
         });
@@ -48,38 +55,31 @@ public class DayNightMode extends JobService {
     }
 
     private void setWallpapers() {
-        final WallpaperManager mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        boolean defaultWallpapers = mPrefs.getBoolean("default_wallpapers", true); 
-        SharedPreferences.Editor editor = mPrefs.edit();
-        File mFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Launcher_drawable");
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        try {
-            if (Helpers.isDay && mFile.exists() || Helpers.isDay && defaultWallpapers) {
-                File image = new File(mFile, "wallpaper_night.png");
-                if (image.exists() && !defaultWallpapers) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                    mWallpaperManager.setBitmap(bitmap);
-                } else {
-                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
-                    mWallpaperManager.setBitmap(bitmapDrawable);
-                }
-                editor.putString("last_wallpaper", "wallpaper_night");
-                editor.apply();
-            } else if (!Helpers.isDay && mFile.exists() || !Helpers.isDay && defaultWallpapers) {
-                File image = new File(mFile, "wallpaper_day.png");
-                if (image.exists() && !defaultWallpapers) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                    mWallpaperManager.setBitmap(bitmap);
-                } else {
-                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
-                    mWallpaperManager.setBitmap(bitmapDrawable);
-                }
-                editor.putString("last_wallpaper", "wallpaper_day");
-                editor.apply();
+        defaultWallpapers = mPrefs.getBoolean("default_wallpapers", true); 
+        File mFile = new File(getApplicationContext().getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
+        if (helpers.isDay() && mFile.exists() || helpers.isDay() && defaultWallpapers) {
+            File image = new File(mFile, "Night.png");
+            if (allowSetWallpaperFromFile(image)) {
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+                new SetWallpaperTask("Night").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmap);
+            } else {
+                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
+                new SetWallpaperTask("Night").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmapDrawable);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }     
+        } else if (!helpers.isDay() && mFile.exists() || !helpers.isDay() && defaultWallpapers) {
+            File image = new File(mFile, "Day.png");
+            if (allowSetWallpaperFromFile(image)) {
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+                new SetWallpaperTask("Day").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmap);
+            } else {
+                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
+                new SetWallpaperTask("Day").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmapDrawable);
+            }
+        } 
+    }
+
+    private boolean allowSetWallpaperFromFile(File image) {
+        return image.exists() && !defaultWallpapers;
     }
 
     @Override
@@ -104,5 +104,76 @@ public class DayNightMode extends JobService {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+    
+    private class SetWallpaperTask extends AsyncTask<Bitmap, Void, Boolean> {
+        private WallpaperManager mWallpaperManager;
+        private final String dayTime;
+
+        public SetWallpaperTask(String name) {
+            this.dayTime = name;
+        }
+
+        @Override
+        protected Boolean doInBackground(Bitmap newWallpaperBitmap) throws IOException {
+            mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+            mWallpaperManager.setBitmap(newWallpaperBitmap);
+            saveBitmapHash(dayTime);
+            return true;
+        }
+
+        public void saveBitmapHash(String name) {
+            Drawable mWallpaper = mWallpaperManager.getDrawable();
+            Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
+
+            Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
+            
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+            try {
+                MessageDigest digest = MessageDigest.getInstance("MD5");
+                byte[] hashBytes = digest.digest(byteArray);
+
+                StringBuilder hexString = new StringBuilder();
+                for (byte b : hashBytes) {
+                    String hex = Integer.toHexString(0xff & b);
+                    if (hex.length() == 1) hexString.append('0');
+                    hexString.append(hex);
+                }
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putString(name + "_hash", hexString.toString());
+                editor.apply();
+            } catch (NoSuchAlgorithmException e) {
+                Log.e(TAG, "Hash error: " + e.getMessage());
+            }
+        }
+
+        public Bitmap normalizeBitmap(Bitmap bitmap) {
+            Bitmap normalizedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(normalizedBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+            return normalizedBitmap;
+        }
+
+        @Override
+        protected Boolean doInBackground(Bitmap[] input) {
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (Boolean.TRUE.equals(success)) {
+                Log.d(TAG, "Wallpaper updated successfully.");
+            } else {
+                Log.d(TAG, "Wallpaper was not updated.");
+            }
+        }
+        
+        @Override
+        protected void onBackgroundError(Exception e) {
+            Log.d(TAG, "Background error, wallpaper was not updated:" + e.getMessage());
+        }
     }
 }

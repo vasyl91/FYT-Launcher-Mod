@@ -1,7 +1,6 @@
 package com.android.launcher66.settings;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.activity.OnBackPressedCallback;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.android.launcher66.R;
@@ -20,6 +18,7 @@ public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnH
 
     private HomeWatcher mHomeWatcher;
     private Context mContext;
+    private final Helpers helpers = new Helpers();
 
     public CreatorFragmentAppStats() {
         super();
@@ -47,7 +46,7 @@ public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnH
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Helpers.backFromCreator = true;
+                helpers.setBackFromCreator(true);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
             }
         };

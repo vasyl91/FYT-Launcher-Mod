@@ -4,6 +4,8 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -11,6 +13,7 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MyAutoMapReceiver;
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 
@@ -119,17 +122,22 @@ public class DateNaviWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = getLayoutId(LauncherApplication.sForeign ? "fyt_xml_dt_navi_widget_f" : layoutName);
     }
 
     @Override
-        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
-        Intent intent = new Intent();
-        intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
-        PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        views.setOnClickPendingIntent(ResValue.getInstance().mapview, pendIntent);
+        try {
+            PackageManager packageManager = this.mContext.getPackageManager();
+            if (Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
+                PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                views.setOnClickPendingIntent(ResValue.getInstance().mapview, pendIntent);
+            }
+        } catch (Exception e) {
+            Log.e("DateNaviWidget", "Failed to add the widget listener: " + e.getMessage());
+        }
     }
 }

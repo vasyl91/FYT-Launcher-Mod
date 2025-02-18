@@ -9,12 +9,12 @@
         android:id="@id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="142.0px"
-        android:layout_height="880.0px">
+        android:layout_height="920.0px">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@id/left_recycler_view"
             android:layout_width="142.0px"
-            android:layout_height="880.0px"
+            android:layout_height="920.0px"
             android:layout_marginTop="55.0px" />
 
     </RelativeLayout>
@@ -23,7 +23,7 @@
         android:id="@id/iv_map1"
         android:background="@drawable/ic_map_corner"
         android:layout_width="1140.0px"
-        android:layout_height="840.0px"
+        android:layout_height="880.0px"
         android:layout_marginLeft="20.0px"
         android:layout_marginTop="20.0px"
         android:layout_toRightOf="@id/rl_left_bar" />
@@ -79,7 +79,7 @@
         android:id="@id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="660.0px"
-        android:layout_height="570.0px"      
+        android:layout_height="610.0px"      
         android:layout_marginLeft="20.0px"
         app:alignItems="center"
         app:flexWrap="wrap"
@@ -183,14 +183,14 @@
         android:id="@id/rl_allapps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60.0px"
+        android:layout_marginBottom="40.0px"
         android:src="@drawable/all_apps_btn_icon"
         android:layout_alignParentBottom="true" />
 
     <ImageView
         android:id="@id/iv_list_bg"
         android:layout_width="2000.0px"
-        android:layout_height="220.0px"
+        android:layout_height="180.0px"
         android:layout_marginTop="25.0px"
         android:src="@drawable/app_list_bg"
         android:scaleType="fitXY"
@@ -199,8 +199,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@id/recycler_view"
         android:layout_width="1759.0px"
-        android:layout_height="220.0px"
-        android:layout_marginLeft="19.0px"
+        android:layout_height="180.0px"
+        android:layout_marginLeft="30.0px"
         android:layout_marginTop="25.0px"
         android:layout_alignLeft="@id/iv_map1"
         android:layout_alignParentBottom="true" />

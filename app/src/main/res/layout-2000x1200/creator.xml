@@ -9,14 +9,14 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_second"
         android:layout_width="match_parent"
-        android:layout_height="980.0px" >
+        android:layout_height="1020.0px" >
 
     </com.google.android.flexbox.FlexboxLayout>
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_bar"
         android:layout_width="match_parent"
-        android:layout_height="220.0px"
+        android:layout_height="180.0px"
         android:background="@color/colorPrimaryDark"   
         app:alignItems="center"
         app:flexWrap="wrap"

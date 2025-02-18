@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.os.Build;
 import android.os.Handler;
 
 import android.os.Looper;
@@ -59,6 +61,7 @@ public class LauncherAppState {
         sContext = context.getApplicationContext();
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private LauncherAppState() {
         if (sContext == null) {
             throw new IllegalStateException("LauncherAppState inited before app context set");
@@ -78,21 +81,28 @@ public class LauncherAppState {
         filter.addAction("android.intent.action.PACKAGE_REMOVED");
         filter.addAction("android.intent.action.PACKAGE_CHANGED");
         filter.addDataScheme("package");
-        sContext.registerReceiver(this.mModel, filter);
         IntentFilter filter2 = new IntentFilter();
         filter2.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
         filter2.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         filter2.addAction("android.intent.action.LOCALE_CHANGED");
         filter2.addAction("android.intent.action.CONFIGURATION_CHANGED");
-        sContext.registerReceiver(this.mModel, filter2);
         IntentFilter filter3 = new IntentFilter();
         filter3.addAction("android.search.action.GLOBAL_SEARCH_ACTIVITY_CHANGED");
-        sContext.registerReceiver(this.mModel, filter3, Context.RECEIVER_EXPORTED);
         IntentFilter filter4 = new IntentFilter();
         filter4.addAction("android.search.action.SEARCHABLES_CHANGED");
-        sContext.registerReceiver(this.mModel, filter4);
         ContentResolver resolver = sContext.getContentResolver();
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true, this.mFavoritesObserver);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            sContext.registerReceiver(this.mModel, filter, Context.RECEIVER_EXPORTED);
+            sContext.registerReceiver(this.mModel, filter2, Context.RECEIVER_EXPORTED);
+            sContext.registerReceiver(this.mModel, filter3, Context.RECEIVER_EXPORTED);
+            sContext.registerReceiver(this.mModel, filter4, Context.RECEIVER_EXPORTED);
+        } else {
+            sContext.registerReceiver(this.mModel, filter);
+            sContext.registerReceiver(this.mModel, filter2);
+            sContext.registerReceiver(this.mModel, filter3);
+            sContext.registerReceiver(this.mModel, filter4);
+        }
     }
 
     public void onTerminate() {

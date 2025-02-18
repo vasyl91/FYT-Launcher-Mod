@@ -30,6 +30,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private Launcher mLauncher;
     private int mMaxCount = 4;
     private boolean showAddAppView;
+    private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
@@ -78,8 +79,9 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                 LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                Helpers.overviewMode = false;
-                Helpers.listOpen = false;
+                helpers.setInOverviewMode(false);
+                helpers.setListOpen(false);
+                helpers.setAppOpenedByUser(true);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
                 boolean userLayout = prefs.getBoolean("user_layout", false);
                 boolean userStats = prefs.getBoolean("user_stats", false);
@@ -87,9 +89,9 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                     SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                     Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                     if (apps.contains(appListBean.packageName)) {
-                        Helpers.foregroundAppOpened = true;
-                        Helpers.inAllApps = false;
-                        Helpers.isInRecent = false;
+                        helpers.setForegroundAppOpened(true);
+                        helpers.setInAllApps(false);
+                        helpers.setInRecent(false);
                         Intent intentLeftApps = new Intent(RECYCLER_APP);
                         LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApps);
                     }  

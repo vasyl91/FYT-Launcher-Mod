@@ -27,6 +27,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
 
     private HomeWatcher mHomeWatcher;
     private Context mContext;
+    private final Helpers helpers = new Helpers();
     private View barTop;
     private View barBottom;
 
@@ -84,14 +85,13 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
             statsWidth = 245;
             statsHeight = 55;
             barHeight = 128;
-        } else if (getResources().getDisplayMetrics().widthPixels == 1280 
-                || getResources().getDisplayMetrics().widthPixels == 1920) {
+        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
             coordinatesSize = 45;
             nameTextSize = 35;
             statsWidth = 245;
             statsHeight = 55;
             barHeight = 160;
-        } else if (getResources().getDisplayMetrics().widthPixels == 2000) {
+        } else {
             coordinatesSize = 50;
             nameTextSize = 40;
             statsWidth = 435;
@@ -125,7 +125,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
     
         
         int bottomY = sharedPrefs.getInt("bottomY", 10);
-        if (bottomY > Helpers.windowHeight - barHeight) {
+        if (bottomY > helpers.returnWindowHeight() - barHeight) {
             barBottom.setVisibility(View.GONE);
             statsTopLeftY = sharedPrefs.getInt("appStatsTopLeftY", margin + 10) - barHeight;
         } else {

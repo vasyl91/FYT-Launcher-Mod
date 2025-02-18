@@ -17,6 +17,7 @@ junitJupiter = "5.8.1"
 appcompat = "1.7.0"
 litepal = "8ad8322cc6"
 log4j = "1.2.17"
+lombok = "1.18.34"
 material = "1.12.0"
 materialVersion = "1.1.0"
 multidex = "2.0.1"
@@ -32,6 +33,7 @@ navigationFragment = "2.8.3"
 navigationUi = "2.8.3"
 espressoDevice = "1.0.1"
 playServicesLocation = "21.3.0"
+lombokVersion = "1.18.30"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +66,7 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.r
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 litepal = { module = "com.github.guolindev:LitePal", version.ref = "litepal" }
 log4j = { module = "log4j:log4j", version.ref = "log4j" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 material-v110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
@@ -72,6 +75,7 @@ androidx-espresso-device = { group = "androidx.test.espresso", name = "espresso-
 process-phoenix = { module = "com.jakewharton:process-phoenix", version.ref = "processPhoenix" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "springContext" }
+projectlombok-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombokVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

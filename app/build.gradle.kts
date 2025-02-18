@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -115,7 +112,6 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.process.phoenix)
     implementation(libs.play.services.location)
-    implementation(libs.spring.context)
 
     testImplementation(libs.junit)
 

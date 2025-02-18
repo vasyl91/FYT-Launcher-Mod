@@ -2,7 +2,6 @@ package com.android.launcher66;
 
 import android.graphics.PointF;
 
-/* compiled from: DynamicGrid.java */
 class DeviceProfileQuery {
     PointF dimens;
     float heightDps;

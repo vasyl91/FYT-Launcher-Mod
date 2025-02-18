@@ -83,6 +83,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     boolean music = false;
     boolean radio = false;
     boolean stats = false;
+    boolean mainScreenStats = true;
     int margin;
 
     int mapMinWidth, mapMinHeight, dateMinWidth, dateMinHeight, musicMinWidth, musicMinHeight, radioMinWidth, radioMinHeight;
@@ -155,6 +156,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         music = sharedPrefs.getBoolean("user_music", false);
         radio = sharedPrefs.getBoolean("user_radio", false); 
         stats = sharedPrefs.getBoolean("user_stats", false); 
+        mainScreenStats = sharedPrefs.getBoolean("main_screen_stats", true);
+        
         margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
 
@@ -177,8 +180,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             statsHeight = 55;
             mapMinHeight = 284;
             musicMinHeight = 284;
-        } else if (getResources().getDisplayMetrics().widthPixels == 1280 
-                || getResources().getDisplayMetrics().widthPixels == 1920) {
+        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
@@ -186,7 +188,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             statsHeight = 55;
             mapMinHeight = 340;
             musicMinHeight = 340;
-        } else if (getResources().getDisplayMetrics().widthPixels == 2000) {
+        } else {
             ballDiameter = 75.0f;
             coordinatesSize = 50;
             nameTextSize = 40;
@@ -458,7 +460,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             rectRadio = new Rectangle(point[12], point[13], point[14], point[15]); 
         }
 
-        if (stats) {
+        if (stats && mainScreenStats) {
             statsMinX = Math.min(point[16].x, point[18].x);
             statsMaxX = Math.max(point[16].x, point[18].x);
             statsMinY = Math.min(point[16].y, point[18].y);
@@ -630,7 +632,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                 }
 
                 if (cnt > 0) {
-                    if (stats) {
+                    if (stats && mainScreenStats) {
                         if ((statsMinX < X && X < statsMaxX) && (statsMinY < Y && Y < statsMaxY)) {
                             diffX = 0;
                             diffY = 0;
@@ -921,7 +923,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         }         
                         invalidate();
                     } else if (isInsideStats) {
-                        if (stats) {
+                        if (stats && mainScreenStats) {
                             diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
                             diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
                             moveStatsRect(16, 17, 18, 19);
@@ -1285,7 +1287,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             editor.putInt("radioBottomLeftX", colorballs.get(15).getX());  
             editor.putInt("radioBottomLeftY", colorballs.get(15).getY());            
         }          
-        if (stats) {
+        if (stats && mainScreenStats) {
             editor.putInt("statsTopLeftX", point[16].x);  
             editor.putInt("statsTopLeftY", point[16].y);            
         } 

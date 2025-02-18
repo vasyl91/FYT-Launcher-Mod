@@ -8,6 +8,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.SystemProperties;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 import java.util.ArrayList;
@@ -30,7 +34,7 @@ public class AllAppsList {
     }
 
     public void add(AppInfo info) {
-        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && !info.componentName.getPackageName().contains("com.android.launcher")) {
+        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info)) {
             if (Config.CHIP_UIID != 5 || !info.componentName.getPackageName().equals(FytPackage.sysSetAction)) {
                 if (Config.CUSTOMER_ID != 8 || (!info.componentName.getPackageName().equals(FytPackage.ludashiACTION) && !info.componentName.getPackageName().equals(FytPackage.abenchACTION))) {
                     switch (Config.CHIP_UIID) {
@@ -53,6 +57,11 @@ public class AllAppsList {
             }
         }
     }
+
+    private boolean allowSettings(AppInfo info) {
+        return !info.componentName.getPackageName().contains("com.android.launcher") 
+        || info.componentName.getClassName().equals("com.android.launcher66.settings.SettingsActivity");   
+    } 
 
     public void clear() {
         data.clear();
@@ -213,9 +222,15 @@ public class AllAppsList {
     }
 
     private void setDefaultNavi() {
-        String naviPackage = SystemProperties.get("persist.sys.navi.packagename", "");
-        if (naviPackage.equals("")) {
-            CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, FytPackage.GaodeACTION);
+        try {
+            String naviPackage = SystemProperties.get("persist.sys.navi.packagename", "");
+            PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
+            if ((naviPackage.equals("") || naviPackage == null) && Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+                CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, FytPackage.GaodeACTION);
+            }
+        } catch (Exception e) {
+            Toast.makeText(LauncherApplication.sApp, LauncherApplication.sApp.getString(R.string.init_default_app_error), Toast.LENGTH_LONG).show();
+            Log.e("AllAppsList", "Failed to set default navi: " + e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +19,7 @@ public class HomeWatcher {
     private final IntentFilter mFilter;
     private OnHomePressedListener mListener;
     private InnerRecevier mRecevier;
+    private Helpers helpers = new Helpers();
 
     public interface OnHomePressedListener {
         //
@@ -33,9 +35,14 @@ public class HomeWatcher {
         mListener = listener;
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public void startWatch() {
         if (mRecevier != null) {
-            mContext.registerReceiver(mRecevier, mFilter, Context.RECEIVER_EXPORTED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                mContext.registerReceiver(mRecevier, mFilter, Context.RECEIVER_EXPORTED);
+            } else {
+                mContext.registerReceiver(mRecevier, mFilter);
+            }
         }
     }
 
@@ -57,7 +64,7 @@ public class HomeWatcher {
                 if (reason != null) {
                     if (mListener != null) {
                         if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {                         
-                            Helpers.backFromCreator = false;
+                            helpers.setBackFromCreator(false);
                             WindowUtil.restartPipApp();
                             Intent startMain = new Intent(Intent.ACTION_MAIN);
                             startMain.addCategory(Intent.CATEGORY_HOME);

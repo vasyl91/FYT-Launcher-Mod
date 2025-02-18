@@ -19,6 +19,7 @@ import com.android.launcher66.R;
 public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHomePressedListener {
 
     private HomeWatcher mHomeWatcher;
+    private final Helpers helpers = new Helpers();
     private Context mContext;
     private View rooView;
     private SharedPreferences sharedPrefs;
@@ -66,9 +67,9 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
             resetPrefs();
         }
         if (leftBar) {
-            if (Helpers.leftBarHasChanged) {
+            if (helpers.hasLeftBarChanged()) {
                 resetPrefs();
-                Helpers.leftBarHasChanged = false;                
+                helpers.setLeftBarChanged(false);                
             }
             rooView = inflater.inflate(R.layout.creator_left, container, false);
         } else {
@@ -91,7 +92,7 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Helpers.backFromCreator = true;
+                helpers.setBackFromCreator(true);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
             }
         };

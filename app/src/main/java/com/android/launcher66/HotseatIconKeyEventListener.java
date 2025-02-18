@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.View;
 
-/* compiled from: FocusHelper.java */
 class HotseatIconKeyEventListener implements View.OnKeyListener {
     HotseatIconKeyEventListener() {
     }

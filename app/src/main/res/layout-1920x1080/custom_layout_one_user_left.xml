@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/user_layout_left"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"> 
+
+    <RelativeLayout
+        android:id="@id/rl_left_bar"
+        android:background="@drawable/hotseat_bg"
+        android:layout_width="142.0px"
+        android:layout_height="900.0px">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@id/left_recycler_view"
+            android:layout_width="142.0px"
+            android:layout_height="900.0px"
+            android:layout_marginTop="55.0px" />
+    </RelativeLayout>
+
+    <RelativeLayout        
+        android:layout_width="1920.0px"
+        android:layout_height="180.0px"
+        android:layout_x="0px"
+        android:layout_y="900px" >
+
+        <ImageView
+            android:id="@id/rl_allapps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40.0px"
+            android:src="@drawable/all_apps_btn_icon"
+            android:layout_alignParentBottom="true" />
+
+        <ImageView
+            android:id="@id/iv_list_bg"
+            android:layout_width="1920.0px"
+            android:layout_height="180.0px"
+            android:src="@drawable/app_list_bg"
+            android:scaleType="fitXY"
+            android:layout_alignParentBottom="true" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@id/recycler_view"
+            android:layout_width="1759.0px"
+            android:layout_height="180.0px"
+            android:layout_marginLeft="30.0px"
+            android:layout_toRightOf="@id/rl_allapps"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+</AbsoluteLayout>

@@ -26,13 +26,25 @@
 
     <PreferenceCategory
         app:key="stats_category"
-        app:title="@string/stats_category">
+        app:title="@string/stats_category" >
 
         <SwitchPreferenceCompat
             android:key="user_stats"
             android:defaultValue="false"
             android:title="@string/stats_window"
+            android:maxLines="5" />     
+        <Preference
+            android:key="stats_codes"
+            android:title="@string/stats_codes"
+            android:maxLines="5" />     
+        <Preference
+            android:key="extra_stats_codes"
+            android:title="@string/extra_stats_codes"
             android:maxLines="5" />
+        <SwitchPreferenceCompat
+            android:key="main_screen_stats"
+            android:defaultValue="true"
+            android:title="@string/main_screen_stats_window" />
         <Preference
             android:key="color_picker"
             android:title="@string/color_picker" />
@@ -82,7 +94,7 @@
         <Preference
             android:key="empty"/>
         <Preference
-            android:key="empty"/>
+            android:key="empty1"/>
 
     </PreferenceCategory>
 

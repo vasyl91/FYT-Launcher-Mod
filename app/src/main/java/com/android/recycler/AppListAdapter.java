@@ -32,6 +32,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private Launcher mLauncher;
     private int mMaxCount;
     private boolean showAddAppView;
+    private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
 
     public AppListAdapter(final Launcher mLauncher, final List<AppListBean> mData) {
@@ -91,8 +92,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                         AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                        Helpers.overviewMode = false;
-                        Helpers.listOpen = false;
+                        helpers.setInOverviewMode(false);
+                        helpers.setListOpen(false);
+                        helpers.setAppOpenedByUser(true);
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
                         boolean userLayout = prefs.getBoolean("user_layout", false);
                         boolean userStats = prefs.getBoolean("user_stats", false);
@@ -100,9 +102,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                             SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                             if (apps.contains(appListBean.packageName)) {
-                                Helpers.foregroundAppOpened = true;
-                                Helpers.inAllApps = false;
-                                Helpers.isInRecent = false;
+                                helpers.setForegroundAppOpened(true);
+                                helpers.setInAllApps(false);
+                                helpers.setInRecent(false);
                                 Intent intentApps = new Intent(RECYCLER_APP);
                                 AppListAdapter.this.mLauncher.sendBroadcast(intentApps);
                             }

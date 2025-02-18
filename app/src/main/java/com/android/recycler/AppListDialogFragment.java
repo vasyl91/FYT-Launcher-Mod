@@ -39,6 +39,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     ArrayList<AppInfo> mData;
     GridView mGridView;
     private ItemClickDataListener mItemClickDataListener;
+    private Helpers helpers = new Helpers();
     public static final String LIST_OPEN = "list.open";
     public static final String LIST_CLOSE = "list.close";
 
@@ -48,15 +49,15 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Helpers.listOpen = true;
-        Helpers.overviewMode = false;
+        helpers.setListOpen(true);
+        helpers.setInOverviewMode(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats)  {  
-            Helpers.foregroundAppOpened = false;
-            Helpers.inAllApps = false;
-            Helpers.isInRecent = false;
+            helpers.setForegroundAppOpened(false);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
             Intent intentOpen = new Intent(LIST_OPEN);
             LauncherApplication.sApp.sendBroadcast(intentOpen);
         }
@@ -70,7 +71,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         this.mGridView.setOnItemClickListener(this);
         view.setOnClickListener(v -> {
             AppListDialogFragment.this.dismiss(); 
-            Helpers.listOpen = false;
+            helpers.setListOpen(false);
             Intent intentClose = new Intent(LIST_CLOSE);
             LauncherApplication.sApp.sendBroadcast(intentClose);            
         });
@@ -107,8 +108,8 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
                 boolean userLayout = prefs.getBoolean("user_layout", false);
                 boolean userStats = prefs.getBoolean("user_stats", false);
                 if (userLayout && userStats)  {  
-                    Helpers.listOpen = false;
-                    Helpers.isInRecent = false;
+                    helpers.setListOpen(false);
+                    helpers.setInRecent(false);
                     Intent intentClose = new Intent(LIST_CLOSE);
                     LauncherApplication.sApp.sendBroadcast(intentClose);  
                 }    

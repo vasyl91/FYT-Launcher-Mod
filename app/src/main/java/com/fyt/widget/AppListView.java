@@ -1,11 +1,14 @@
 package com.fyt.widget;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.SystemProperties;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 import com.syu.utils.W3Utils;
@@ -128,13 +132,14 @@ public class AppListView extends ListView {
         if (arg == 8) {
             if (Config.EXISTAMPAUTO) {
                 String str = SystemProperties.get("persist.sys.navi.packagename", "");
-                if (str.equals("") || str.equals(FytPackage.GaodeACTION)) {
+                PackageManager packageManager = context.getPackageManager();
+                if ((str.equals("") || str == null || str.equals(FytPackage.GaodeACTION)) && Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
                     SystemProperties.set("persist.sys.navi.packagename", FytPackage.GaodeACTION);
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
                     startActivitySafely(intent);
                     return;
-                }
+                } 
                 CarStates.getCar(context).mTools.sendInt(0, 24, 0);
                 return;
             }
@@ -152,7 +157,7 @@ public class AppListView extends ListView {
         if (intent == null) {
             Toast.makeText(context, R.string.activity_not_found, Toast.LENGTH_LONG).show();
         }
-        W3Utils.getUtils().check(intent, "提示", "检查到当前网络不可用或者卡已被停用,是否前往充值界面进行充值或变更套餐", "确定", "取消");
+        W3Utils.getUtils().check(intent, "Hint (translated from Chinese)", "If the current network is unavailable or the card has been deactivated, go to the recharge screen to recharge or change the subscription.", "OK", "Cancel");
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
@@ -160,22 +165,26 @@ public class AppListView extends ListView {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter("android.intent.action.LOCALE_CHANGED");
-        getContext().registerReceiver(this.receiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getContext().registerReceiver(this.receiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            getContext().registerReceiver(this.receiver, filter);
+        }
     }
 
     @Override
-    // android.widget.ListView, android.widget.AbsListView, android.widget.AdapterView, android.view.ViewGroup, android.view.View
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getContext().unregisterReceiver(this.receiver);
     }
 
     public void updateStr() {
-        Log.i("hy", "updateStr");
+        Log.i("AppListView", "updateStr");
         if (Adapter_AppList != null) {
             Adapter_AppList.notifyDataSetChanged();
         }

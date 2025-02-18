@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp" >
+
+        <TextView
+            android:id="@+id/stats_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_dialog_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="180dp"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="16dp" >
+
+                <TextView
+                    android:id="@+id/fuel_code_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fuel_code_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/fuel_code_int"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="180dp"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="16dp" >
+
+                <TextView
+                    android:id="@+id/range_code_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/range_code_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/range_code_int"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="180dp"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="16dp" >
+
+                <TextView
+                    android:id="@+id/cmdInt_code_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmdInt_code_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/cmdInt_code_int"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="180dp"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="16dp" >
+
+                <TextView
+                    android:id="@+id/cmdArr_code_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmdArr_code_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/cmdArr_code_int"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

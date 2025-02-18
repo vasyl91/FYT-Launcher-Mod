@@ -90,7 +90,7 @@
                 <Button
                     android:id="@+id/left_to_left"    
                     android:layout_width="50.0px"
-                    android:layout_height="150.0px"
+                    android:layout_height="130.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -108,7 +108,7 @@
                 <Button
                     android:id="@+id/right_to_right"    
                     android:layout_width="50.0px"
-                    android:layout_height="150.0px"
+                    android:layout_height="130.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -221,7 +221,7 @@
                 <Button
                     android:id="@+id/left_to_left_bottom"    
                     android:layout_width="50.0px"
-                    android:layout_height="150.0px"
+                    android:layout_height="130.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -239,7 +239,7 @@
                 <Button
                     android:id="@+id/right_to_right_bottom"    
                     android:layout_width="50.0px"
-                    android:layout_height="150.0px"
+                    android:layout_height="130.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />

@@ -130,7 +130,7 @@ public class LauncherApplication extends LitePalApplication {
         initGaoDeCoverView();
 
 
-        ObjApp.init(this);
+        new ObjApp(getApplicationContext());
         sActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         sWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         sResources = getResources();

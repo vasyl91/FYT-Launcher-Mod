@@ -29,7 +29,7 @@ public class SkinPathDataSource {
         this.mPref = mApplication.getSharedPreferences(SKIN_SHARED, 0);
     }
 
-    /* synthetic */ SkinPathDataSource(SkinPathDataSource skinPathDataSource) {
+    SkinPathDataSource(SkinPathDataSource skinPathDataSource) {
         this();
     }
 

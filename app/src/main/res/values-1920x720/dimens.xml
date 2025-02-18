@@ -3,9 +3,9 @@
     <dimen name="dynamic_grid_edge_margin">0.0px</dimen>
     <dimen name="toolbar_button_vertical_padding">12.0px</dimen>
     <dimen name="toolbar_button_horizontal_padding">20.0px</dimen>
-    <dimen name="apps_customize_tab_bar_height">60.0px</dimen>
+    <dimen name="apps_customize_tab_bar_height">40.0px</dimen>
     <dimen name="apps_customize_tab_bar_margin_top">0.0px</dimen>
-    <dimen name="app_icon_size">90.0px</dimen>
+    <dimen name="app_icon_size">70.0px</dimen>
     <dimen name="app_widget_preview_label_margin_top">8.0px</dimen>
     <item type="dimen" name="app_widget_preview_label_margin_left">@dimen/app_widget_preview_padding_left</item>
     <item type="dimen" name="app_widget_preview_label_margin_right">@dimen/app_widget_preview_padding_right</item>

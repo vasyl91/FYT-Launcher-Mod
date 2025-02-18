@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import share.ResValue;
 
-/* compiled from: DynamicGrid.java */
 class DeviceProfile {
     int allAppsNumCols;
     int allAppsNumRows;

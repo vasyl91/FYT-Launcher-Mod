@@ -48,9 +48,11 @@ class NotificationListener : NotificationListenerService() {
     private var meta: MediaMetadata? = null
     private var mState: Int? = 0
     private var count: Int = 0
+    private var counter: Int = 0
     private var currentState: Int? = 0
     private var paused: Boolean = false
     private var componentName: ComponentName? = null
+    private var helpers: Helpers = Helpers()
 
     private var fytState: Boolean = false
     private var fytSet: Boolean = false
@@ -149,8 +151,8 @@ class NotificationListener : NotificationListenerService() {
             }
             if (meta != null && mState == PlaybackState.STATE_PLAYING) {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    if (!Helpers.updateControllerTimeBool) {
-                        Helpers.updateControllerTimeBool = true
+                    if (!helpers.returnControllerTimeBool()) {
+                        helpers.updateControllerTimeBool(true)
                         handlerControllerTime.post(updateControllerTime)
                     }
                     setStatus(2)
@@ -205,7 +207,7 @@ class NotificationListener : NotificationListenerService() {
                     } 
                     if (fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") { 
                         handlerControllerTime.removeCallbacks(updateControllerTime)  
-                        Helpers.updateControllerTimeBool = false
+                        helpers.updateControllerTimeBool(false)
                         fytSet = true
                         setStatus(1)
                         handlerFytTime.post(updateFytTime)             
@@ -219,12 +221,20 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onDestroy() {
         sessionListener.let {
-            mediaSessionManager.removeOnActiveSessionsChangedListener(it)
+            if (this::mediaSessionManager.isInitialized) {
+                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
+            }
         }
-        handler.removeCallbacks(runTask)
-        handlerControllerTime.removeCallbacks(updateControllerTime)
-        Helpers.updateControllerTimeBool = false   
-        handlerFytTime.removeCallbacks(updateFytTime)   
+        if (this::handler.isInitialized) {
+            handler.removeCallbacks(runTask)
+        }
+        if (this:: handlerControllerTime.isInitialized) {
+            handlerControllerTime.removeCallbacks(updateControllerTime)
+        }
+        if (this::handlerFytTime.isInitialized) {
+            handlerFytTime.removeCallbacks(updateFytTime)
+        }
+        helpers.updateControllerTimeBool(false)
         unregisterReceiver(fytReceiver)
     }
 
@@ -233,7 +243,7 @@ class NotificationListener : NotificationListenerService() {
             val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
             if (am.isMusicActive) {
                 // onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
-                // it doesn't switch when user had paused previous music source before playing the new one
+                // it doesn't switch when user has paused the track from previous music source before playing the new one
                 checkActiveSessions()
             }
             handler.postDelayed(this, 10)
@@ -273,7 +283,7 @@ class NotificationListener : NotificationListenerService() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             prevMinutes = 0
-            Helpers.counter = 0
+            helpers.setCounter(0)
             meta = metadata
             set()
         }
@@ -287,7 +297,7 @@ class NotificationListener : NotificationListenerService() {
                 val editor = settings.edit()
                 editor.putInt("prevState", currentState!!)
                 editor.apply()
-                Helpers.counter = 0
+                helpers.setCounter(0)
             } else {
                 set()
             }
@@ -295,9 +305,9 @@ class NotificationListener : NotificationListenerService() {
 
         fun set() {
             if (currentState == 2 || currentState == 1) {  
-                Helpers.counter = 0
+                helpers.setCounter(0)
                 handlerControllerTime.removeCallbacks(updateControllerTime)
-                Helpers.updateControllerTimeBool = false
+                helpers.updateControllerTimeBool(false)
                 musicState = "false"
             } else if (currentState == 3) {
                 // prevents youtube live to add view every ~second
@@ -317,18 +327,18 @@ class NotificationListener : NotificationListenerService() {
                     if (dur != 0.toLong()) { // not live
                         musicState = "true"
                         setStatus(2)   
-                        if (!Helpers.updateControllerTimeBool) {
-                            Helpers.updateControllerTimeBool = true
+                        if (!helpers.returnControllerTimeBool()) {
+                            helpers.updateControllerTimeBool(true)
                             handlerControllerTime.post(updateControllerTime)
                         }  
                     } else { // live
-                        if (Helpers.counter == count) {
-                            Helpers.counter++
+                        if (helpers.returnCounter() == count) {
+                            helpers.setCounter(counter++)
                             musicState = "true"
                             curMinutes = 0
                             setStatus(2)   
-                            if (!Helpers.updateControllerTimeBool) {
-                                Helpers.updateControllerTimeBool = true
+                            if (!helpers.returnControllerTimeBool()) {
+                                helpers.updateControllerTimeBool(true)
                                 handlerControllerTime.post(updateControllerTime)
                             }             
                         }
@@ -349,7 +359,15 @@ class NotificationListener : NotificationListenerService() {
         } 
 
         if (song != null && !fytState && mediaSource == 2)  {
-            mediaControllerStatus()
+            activeControllerPackage = (mediaController?.getPackageName()).toString()
+            if (activeControllerPackage.contains("com.spotify.music")) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    mediaControllerStatus()
+                }, 600)
+            } else {
+                mediaControllerStatus()
+            }
+            
         }  
     }
 
@@ -388,7 +406,7 @@ class NotificationListener : NotificationListenerService() {
         fytAllowed = false
         Handler(Looper.getMainLooper()).postDelayed({
             fytAllowed = true
-        }, 2000) 
+        }, 2500) 
 
         totalMinutes = meta!!.getLong(MediaMetadata.METADATA_KEY_DURATION)
         mediaController!!.playbackState?.let {

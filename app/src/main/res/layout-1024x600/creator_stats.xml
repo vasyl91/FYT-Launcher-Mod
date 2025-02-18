@@ -9,7 +9,7 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_bar_top"
         android:layout_width="match_parent"
-        android:layout_height="128.0px"
+        android:layout_height="80.0px"
         android:background="@color/colorPrimaryDark"   
         app:alignItems="center"
         app:flexWrap="wrap"
@@ -17,7 +17,7 @@
         app:justifyContent="space_between" >
 
         <com.google.android.flexbox.FlexboxLayout
-            android:layout_width="110.0px"
+            android:layout_width="120.0px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15.0px"
             app:alignItems="center"
@@ -53,8 +53,8 @@
 
                 <Button
                     android:id="@+id/top_up"    
-                    android:layout_width="110.0px"
-                    android:layout_height="35.0px"
+                    android:layout_width="65.0px"
+                    android:layout_height="23.0px"
                     android:background="@drawable/arrow_up"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -71,8 +71,8 @@
 
                 <Button
                     android:id="@+id/bottom_down"    
-                    android:layout_width="110.0px"
-                    android:layout_height="35.0px"
+                    android:layout_width="65.0px"
+                    android:layout_height="23.0px"
                     android:background="@drawable/arrow_down"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -89,8 +89,8 @@
 
                 <Button
                     android:id="@+id/left_to_left"    
-                    android:layout_width="35.0px"
-                    android:layout_height="110.0px"
+                    android:layout_width="23.0px"
+                    android:layout_height="65.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -107,8 +107,8 @@
 
                 <Button
                     android:id="@+id/right_to_right"    
-                    android:layout_width="35.0px"
-                    android:layout_height="110.0px"
+                    android:layout_width="23.0px"
+                    android:layout_height="65.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -122,8 +122,8 @@
             android:textColor="@color/white"
             android:background="@color/colorAccent"
             android:textSize="15sp"  
-            android:layout_width="150.0px"
-            android:layout_height="100.0px"
+            android:layout_width="130.0px"
+            android:layout_height="65.0px"
             android:layout_marginRight="25.0px"
             android:layout_gravity="center"
             android:gravity="center" />
@@ -133,14 +133,14 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_second"
         android:layout_width="match_parent"
-        android:layout_height="472.0px" >
+        android:layout_height="520.0px" >
 
     </com.google.android.flexbox.FlexboxLayout>
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_bar_bottom"
         android:layout_width="match_parent"
-        android:layout_height="128.0px"
+        android:layout_height="80.0px"
         android:background="@color/colorPrimaryDark"   
         app:alignItems="center"
         app:flexWrap="wrap"
@@ -148,7 +148,7 @@
         app:justifyContent="space_between" >
 
         <com.google.android.flexbox.FlexboxLayout
-            android:layout_width="110.0px"
+            android:layout_width="120.0px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15.0px"
             app:alignItems="center"
@@ -184,8 +184,8 @@
 
                 <Button
                     android:id="@+id/top_up_bottom"    
-                    android:layout_width="110.0px"
-                    android:layout_height="35.0px"
+                    android:layout_width="65.0px"
+                    android:layout_height="23.0px"
                     android:background="@drawable/arrow_up"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -202,8 +202,8 @@
 
                 <Button
                     android:id="@+id/bottom_down_bottom"    
-                    android:layout_width="110.0px"
-                    android:layout_height="35.0px"
+                    android:layout_width="65.0px"
+                    android:layout_height="23.0px"
                     android:background="@drawable/arrow_down"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -220,8 +220,8 @@
 
                 <Button
                     android:id="@+id/left_to_left_bottom"    
-                    android:layout_width="35.0px"
-                    android:layout_height="110.0px"
+                    android:layout_width="23.0px"
+                    android:layout_height="65.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -238,8 +238,8 @@
 
                 <Button
                     android:id="@+id/right_to_right_bottom"    
-                    android:layout_width="35.0px"
-                    android:layout_height="110.0px"
+                    android:layout_width="23.0px"
+                    android:layout_height="65.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -253,8 +253,8 @@
             android:textColor="@color/white"
             android:background="@color/colorAccent"
             android:textSize="15sp"  
-            android:layout_width="150.0px"
-            android:layout_height="100.0px"
+            android:layout_width="130.0px"
+            android:layout_height="65.0px"
             android:layout_marginRight="25.0px"
             android:layout_gravity="center"
             android:gravity="center" />
