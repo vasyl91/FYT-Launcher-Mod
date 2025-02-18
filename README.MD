@@ -21,22 +21,30 @@ List of modifications:
 
 Music widget:
 <details>
-    ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_music.gif)
+
+![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_music.gif)
+
 </details>
 
 Night mode:
 <details>
-    ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_night_mode.gif)
+
+![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_night_mode.gif)
+
 </details>
 
 Settings:
 <details>
-    ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_settings.gif)
+
+![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_settings.gif)
+
 </details>
 
 In-app stats:
 <details>
-    ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_inapp_stat.gif)
+
+![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_inapp_stat.gif)
+
 </details>
 
 ## Fuel statistics
