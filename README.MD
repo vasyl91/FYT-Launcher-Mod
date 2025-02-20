@@ -1,17 +1,22 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-So far the launcher has been tested on 2000x1100 resolution.
+So far the launcher has been tested on 2000x1200 resolution because that is the only device I own.
 
 List of modifications:
-- Reworked music widget working with most of the music players.
+- Music widget (requires Notification Listener permission) working with most of the music players.
 - Launcher creator allowing to adjust launcher layout to user preferences.
-- Live fuel stats with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
+- Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct sunset and sunrise times, set the wallpaper and brightness for the day/night mode).
 - Settings fragment with useful tweaks.
+- New icon for the launcher and its settings with settings' icon in the app drawer.
 - Replaced part of deprecated code with the new one.
-- Added 1920x720 and 1920x1080 resolutions.
+- Added 1920x720 and 1920x1080 resolutions (need tests).
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
+
+**Gallery:**
+
+<details>
 
 [<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
 [<img src="./images/s1.png" width="50%">](./images/s1.png)[<img src="./images/s2.png" width="50%">](./images/s2.png)
@@ -19,28 +24,34 @@ List of modifications:
 [<img src="./images/s5.png" width="50%">](./images/s5.png)[<img src="./images/s6.png" width="50%">](./images/s6.png)
 [<img src="./images/s7.png" width="50%">](./images/s7.png)[<img src="./images/s8.png" width="50%">](./images/s8.png)
 
-Music widget:
+</details>
+
+**Music widget:**
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_music.gif)
 
 </details>
 
-Night mode:
+**Night mode:**
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_night_mode.gif)
 
 </details>
 
-Settings:
+**Settings:**
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_settings.gif)
 
 </details>
 
-In-app stats:
+**In-app stats:**
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_inapp_stat.gif)

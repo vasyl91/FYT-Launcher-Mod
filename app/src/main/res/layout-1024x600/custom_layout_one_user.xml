@@ -8,7 +8,7 @@
         android:layout_width="1024.0px"
         android:layout_height="80.0px"
         android:layout_x="0px"
-        android:layout_y="520px" >
+        android:layout_y="470px" >
 
         <ImageView
             android:id="@id/rl_allapps"

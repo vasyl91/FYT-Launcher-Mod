@@ -498,14 +498,14 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
             if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (value > -1 && value < 3001) {
+                if (value > 0 && value < 3001) {
                     estimateOil = false;
                     ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%d.%d", value / 10, value % 10) + " L/100km\u0020");
                 } else {
                     if (horsePower > 0 && vehicleMass > 0 && engineVolume > 0 && numberOfCylinders > 0) {
                         estimateOil = true;
                     } else {
-                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100KM\u0020");
+                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
                     }
                 }
             }         
@@ -576,18 +576,20 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
         boolean userLayout = prefs.getBoolean("user_layout", false);
         boolean userStats = prefs.getBoolean("user_stats", false);
         if (estimateOil && userLayout && userStats && absoluteStats != null) {
-            int revolutionsPerMinute = DataCanbus.DATA[rpm];            
+            int revolutionsPerMinute = DataCanbus.DATA[rpm];          
             if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (revolutionsPerMinute > -1 && revolutionsPerMinute < 9001) {
-                    double fuelConsumption = 0;
-                    if (velocity > 0 && revolutionsPerMinute > 0) {
+                if (revolutionsPerMinute > 0 && revolutionsPerMinute < 9001) {
+                    double fuelConsumption = 0; 
+                    if (velocity > 0) {
                         fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass, engineVolume, numberOfCylinders);
                     } else {
                         fuelConsumption = 0;
                     }
-                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%.1f", fuelConsumption) + " L/100km\u0020");
+                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%.1f", fuelConsumption) + " L/100KM\u0020");
+                } else {
+                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
                 }
             }
         }
@@ -598,15 +600,17 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     private static final double AIR_FUEL_RATIO = 14.7; // Stoichiometric air-fuel ratio for gasoline
 
     public static double calculateFuelConsumption(double speedVal, int rpmVal, int horsePowerVal, int vehicleMassVal, int engineVolumeVal, int numCylindersVal) {
-
         // Calculate torque (approximation)
         double torque = (horsePowerVal * 7121) / rpmVal; // 7121 is a constant for unit conversion
 
-        // Calculate engine power based on torque and rpm. Should be equal to provided horsePowerVal.
+        // Calculate engine power based on torque and rpm.
         double calculatedhorsePowerVal = (torque * rpmVal) / 7121;
 
-        // Calculate theoretical air intake (using engine volume and rpmVal).  This is a simplified approach.
-        double airIntake = (engineVolumeVal * rpmVal / 2) / 1000000 * (numCylindersVal); // Divide by 2 because each cylinder fires every other revolution.
+        // Calculate theoretical air intake (using engine volume and rpmVal).
+        double airIntake_stage1 = engineVolumeVal * rpmVal;
+        double airIntake_stage2 = airIntake_stage1 / 2.0; // Use 2.0 to ensure double division
+        double airIntake_stage3 = airIntake_stage2 / 1000000.0; // Use 1000000.0
+        double airIntake = airIntake_stage3 * numCylindersVal;
 
         //Calculate fuel consumption in kg/hour
         double fuelConsumptionKgPerHour = (airIntake / AIR_FUEL_RATIO) * FUEL_DENSITY;
@@ -617,10 +621,10 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
         // Calculate power needed to overcome road resistance
         double powerForResistance = roadResistanceForce * (speedVal/3.6);
 
-        // Add a factor related to acceleration (simplified - needs refinement)
+        // Add a factor related to acceleration (simplified)
         double accelerationFactor = 0.0;
         if (speedVal > 2) {
-            accelerationFactor = 0.001 * vehicleMassVal * (speedVal/3.6); // Very simplified, needs more research.
+            accelerationFactor = 0.001 * vehicleMassVal * (speedVal/3.6);
         }
 
         double totalPowerNeeded = powerForResistance + (horsePowerVal * 745.7) * accelerationFactor; // convert HP to Watts
@@ -629,7 +633,8 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
         double adjustedFuelConsumptionKgPerHour = fuelConsumptionKgPerHour * (1 + (totalPowerNeeded / (horsePowerVal * 745.7))); // 745.7 is the conversion from HP to HP to Watts
 
         // Convert fuel consumption to L/100km
-        return (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) / (speedVal/100);
+        double finalFuelConsumption = (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) * (100 / speedVal);
+        return finalFuelConsumption;
     }
 
     public class PropertyChangeClass {

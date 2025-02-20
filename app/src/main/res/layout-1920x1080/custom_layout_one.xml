@@ -9,12 +9,12 @@
         android:id="@id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="142.0px"
-        android:layout_height="900.0px">
+        android:layout_height="800.0px">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@id/left_recycler_view"
             android:layout_width="142.0px"
-            android:layout_height="900.0px"
+            android:layout_height="800.0px"
             android:layout_marginTop="55.0px" />
 
     </RelativeLayout>
@@ -23,7 +23,7 @@
         android:id="@id/iv_map1"
         android:background="@drawable/ic_map_corner"
         android:layout_width="1060.0px"
-        android:layout_height="860.0px"
+        android:layout_height="760.0px"
         android:layout_marginLeft="20.0px"
         android:layout_marginTop="20.0px"
         android:layout_toRightOf="@id/rl_left_bar" />
@@ -32,7 +32,7 @@
         android:id="@id/ll_time"
         android:background="@drawable/time_bg"
         android:layout_width="660.0px"
-        android:layout_height="250.0px"
+        android:layout_height="210.0px"
         android:layout_marginLeft="20.0px"
         android:layout_toRightOf="@id/iv_map1"
         android:layout_alignTop="@id/iv_map1"
@@ -79,7 +79,7 @@
         android:id="@id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="660.0px"
-        android:layout_height="590.0px"      
+        android:layout_height="530.0px"      
         android:layout_marginLeft="20.0px"
         app:alignItems="center"
         app:flexWrap="wrap"

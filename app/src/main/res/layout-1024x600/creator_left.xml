@@ -7,19 +7,19 @@
     app:flexDirection="column" >
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
-        android:layout_height="520.0px" >
+        android:layout_height="470.0px" >
 
         <RelativeLayout
             android:id="@id/rl_left_bar"
             android:background="@drawable/hotseat_bg"
             android:layout_width="100.0px"
-            android:layout_height="520.0px">
+            android:layout_height="470.0px">
         </RelativeLayout>  
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/creator_second"
             android:layout_width="924.0px"
-            android:layout_height="520.0px" >
+            android:layout_height="470.0px" >
         </com.google.android.flexbox.FlexboxLayout>      
     </com.google.android.flexbox.FlexboxLayout>
 

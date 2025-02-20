@@ -8,12 +8,12 @@
         android:id="@id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="100.0px"
-        android:layout_height="520.0px">
+        android:layout_height="470.0px">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@id/left_recycler_view"
             android:layout_width="100.0px"
-            android:layout_height="520.0px"
+            android:layout_height="470.0px"
             android:layout_marginTop="20.0px" />
     </RelativeLayout>
 
@@ -21,7 +21,7 @@
         android:layout_width="1024.0px"
         android:layout_height="80.0px"
         android:layout_x="0px"
-        android:layout_y="520px" >
+        android:layout_y="470px" >
 
         <ImageView
             android:id="@id/rl_allapps"

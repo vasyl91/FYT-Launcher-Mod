@@ -1772,23 +1772,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         intent.addCategory("android.intent.category.HOME");
         if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
             View iv_map = this.findViewById(R.id.iv_map1);
-            if (getResources().getDisplayMetrics().widthPixels == 1024) { // 1024x600
+            if (getResources().getDisplayMetrics().widthPixels == 1024) { // 1024x600 (notification bar 50)
             	SystemProperties.set("persist.lsec.radius", "10");
-                SystemProperties.set("sys.lsec.pip_rect", "107 67 687 573");
-            } else if (getResources().getDisplayMetrics().widthPixels == 1280) { // 1280x720
+                SystemProperties.set("sys.lsec.pip_rect", "107 57 687 513");
+            } else if (getResources().getDisplayMetrics().widthPixels == 1280) { // 1280x720 (notification bar 60)
             	SystemProperties.set("persist.lsec.radius", "12");
                 SystemProperties.set("sys.lsec.pip_rect", "124 74 852 554");
-            } else if (getResources().getDisplayMetrics().widthPixels == 1920 && getResources().getDisplayMetrics().heightPixels == 720) { // 1920x720
+            } else if (getResources().getDisplayMetrics().widthPixels == 1920 && getResources().getDisplayMetrics().heightPixels == 720) { // 1920x720 (notification bar 60)
             	SystemProperties.set("persist.lsec.radius", "12");
                 SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 554");
             } else {
         		SystemProperties.set("persist.lsec.radius", "14");
-                if (getResources().getDisplayMetrics().heightPixels == 1080) { // 1920x1080
-                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1222 980");
-                } else if (getResources().getDisplayMetrics().heightPixels == 1100) { // 2000x1100
+                if (getResources().getDisplayMetrics().heightPixels == 1080) { // 1920x1080 (notification bar 100)
+                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1222 880");
+                } else if (getResources().getDisplayMetrics().heightPixels == 1100) { // 2000x1100 (notification bar 100)
                     SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1000");
-                } else if (getResources().getDisplayMetrics().heightPixels == 1200) { // 2000x1200
-                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1060");
+                } else if (getResources().getDisplayMetrics().heightPixels == 1200) { // 2000x1200 (notification bar 100)
+                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1000");
                 }           
             }   
         }

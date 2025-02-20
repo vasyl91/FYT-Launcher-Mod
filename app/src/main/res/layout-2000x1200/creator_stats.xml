@@ -133,7 +133,7 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_second"
         android:layout_width="match_parent"
-        android:layout_height="1020.0px" >
+        android:layout_height="920.0px" >
 
     </com.google.android.flexbox.FlexboxLayout>
 
