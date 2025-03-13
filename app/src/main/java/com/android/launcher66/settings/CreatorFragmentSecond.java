@@ -18,6 +18,8 @@ import com.android.launcher66.R;
 
 public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHomePressedListener {
 
+    // Fragment that opens DrawView.java where user can create the layout
+
     private HomeWatcher mHomeWatcher;
     private final Helpers helpers = new Helpers();
     private Context mContext;
@@ -49,7 +51,8 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mContext = container.getContext();
-        if (getResources().getDisplayMetrics().widthPixels == 1024) {
+        if (getResources().getDisplayMetrics().widthPixels == 1024
+            || getResources().getDisplayMetrics().heightPixels == 1024) {
             mapMinHeight = 284;
             musicMinHeight = 284;
         } else {
@@ -58,19 +61,18 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
         } 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
-        date = sharedPrefs.getBoolean("user_date", false);
-        music = sharedPrefs.getBoolean("user_music", false);
-        radio = sharedPrefs.getBoolean("user_radio", false); 
-        stats = sharedPrefs.getBoolean("user_stats", false);       
+        date = sharedPrefs.getBoolean("user_date", true);
+        music = sharedPrefs.getBoolean("user_music", true);
+        radio = sharedPrefs.getBoolean("user_radio", true); 
+        stats = sharedPrefs.getBoolean("user_stats", true);       
         checkIfOverlappingMargins();
         if (overlappingMargins) {
             resetPrefs();
         }
         if (leftBar) {
             if (helpers.hasLeftBarChanged()) {
-                resetPrefs();
-                helpers.setLeftBarChanged(false);                
-            }
+                resetPrefs();  
+            }            
             rooView = inflater.inflate(R.layout.creator_left, container, false);
         } else {
             rooView = inflater.inflate(R.layout.creator, container, false);

@@ -822,11 +822,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         final Context context = this;
         new AsyncTask<Void, Bitmap, Bitmap>() {
             @Override
-            protected Bitmap doInBackground(Void unused) throws Exception {
-                return null;
-            }
-
-            @Override
             protected Bitmap doInBackground(Void...args) {
                 try {
                     int rotation = WallpaperCropActivity.getRotationFromExif(context, uri);
@@ -1164,7 +1159,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         return view;
     }
 
-    // In Launcher3, we override this with a method that catches exceptions
+    // In Launcher66, we override this with a method that catches exceptions
     // from starting activities; didn't want to copy and paste code into here
     public void startActivityForResultSafely(Intent intent, int requestCode) {
         startActivityForResult(intent, requestCode);

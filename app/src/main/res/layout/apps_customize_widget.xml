@@ -1,60 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.PagedViewWidget android:orientation="vertical"
-    android:background="@drawable/focusable_view_bg"
-    android:focusable="true"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_weight="1.0"
+<com.android.launcher66.PagedViewWidget
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66"
 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical"
+
+    android:background="@drawable/focusable_view_bg"
+    android:focusable="true">
+
+    <!-- The preview of the widget or shortcut. -->
     <com.android.launcher66.PagedViewWidgetImageView
-        android:id="@id/widget_preview"
-        android:background="@drawable/screenpanel"
-        android:paddingTop="@dimen/app_widget_preview_padding_top"
-        android:layout_width="fill_parent"
+        android:id="@+id/widget_preview"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="matrix"
-        android:layout_weight="1.0"
+        android:layout_weight="1"
+        android:paddingTop="@dimen/app_widget_preview_padding_top"
         android:paddingStart="@dimen/app_widget_preview_padding_left"
-        android:paddingEnd="@dimen/app_widget_preview_padding_right" />
-
+        android:paddingEnd="@dimen/app_widget_preview_padding_right"
+        android:scaleType="matrix"
+        android:background="@drawable/screenpanel" />
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/app_widget_preview_label_margin_top"
         android:layout_marginStart="@dimen/app_widget_preview_label_margin_left"
-        android:layout_marginEnd="@dimen/app_widget_preview_label_margin_right">
-
-        <TextView android:textSize="13.0sp"
-            android:textColor="#ffffffff"
-            android:ellipsize="marquee"
-            android:gravity="start"
-            android:id="@id/widget_name"
-            android:fadingEdge="horizontal"
+        android:layout_marginEnd="@dimen/app_widget_preview_label_margin_right"
+        android:orientation="horizontal">
+        <!-- The name of the widget. -->
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/widget_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
             android:singleLine="true"
-            android:shadowColor="#b0000000"
-            android:shadowRadius="2.0"
-            android:layout_weight="1.0"
-            android:fontFamily="sans-serif-condensed"
-            android:textAlignment="viewStart"
-            xmlns:android="http://schemas.android.com/apk/res/android" />
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
 
-        <TextView android:textSize="12.0sp"
-            android:textColor="#ffaaaaaa"
-            android:gravity="start"
-            android:layout_gravity="center"
-            android:id="@id/widget_dims"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:textAlignment="viewStart"
+            android:fontFamily="sans-serif-condensed"
+            android:shadowRadius="2.0"
+            android:shadowColor="#B0000000" />
+
+        <!-- The original dimensions of the widget (can't be the same text as above due to different
+             style. -->
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/widget_dims"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:shadowColor="#b0000000"
-            android:shadowRadius="2.0"
-            android:layout_weight="0.0"
+            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_weight="0"
+            android:gravity="start"
+
+            android:textColor="#FFAAAAAA"
+            android:textSize="12sp"
             android:fontFamily="sans-serif-condensed"
-            android:layout_marginStart="5.0px"
-            xmlns:android="http://schemas.android.com/apk/res/android" />
+            android:shadowRadius="2.0"
+            android:shadowColor="#B0000000" />
     </LinearLayout>
+
+
 </com.android.launcher66.PagedViewWidget>

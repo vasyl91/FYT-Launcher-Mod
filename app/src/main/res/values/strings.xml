@@ -118,7 +118,7 @@
     <string name="car_music">Music</string>
     <string name="car_bt">Bluetooth</string>
     <string name="car_carlife">CarLife</string>
-    <string name="music_unknown">UnKnow</string>
+    <string name="music_unknown">Unknown</string>
     <string name="car_bt_music">Bt Music</string>
     <string name="car_app">Apps</string>
     <string name="car_eq">EQ</string>
@@ -128,7 +128,7 @@
     <string name="car_wind_direction">Wind Direction</string>
     <string name="car_temprange">Temp Range</string>
     <string name="sys_settings">Settings</string>
-    <string name="music_name">Songs</string>
+    <string name="music_name">Song</string>
     <string name="music_author">Author</string>
     <string name="music_album">Album</string>
     <string name="car_link">E-CARLINK</string>
@@ -267,7 +267,9 @@
     <string name="transparent_statusbar">Transparent status bar</string>  
     <string name="notification_str">Notification listener settings</string> 
     <string name="accessibility_str">Accessibility service settings</string> 
-    <string name="wallpaper_picker">Wallpaper picker</string>      
+    <string name="wallpaper_picker">Wallpaper picker</string>  
+    <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
+    <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>      
     <string name="device_settings">Device settings</string> 
     <string name="layout_category">Layout</string>
     <string name="misc_category">Miscellaneous</string>
@@ -289,8 +291,8 @@
 
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>
-    <string name="instantaneous_consumption_val">--.--</string>
-    <string name="driving_mileage_val">-.-</string>
+    <string name="instantaneous_consumption_val">0.0 L/100km\u0020</string>
+    <string name="driving_mileage_val">-.- km\u0020</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
     <string name="stats_window_summary"><![CDATA[Look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
@@ -350,4 +352,7 @@
     <string name="materialcolorpicker__inputColor">Color: </string>
     <string name="materialcolorpicker__btnSelectColor">Select</string>
     <string name="materialcolorpicker__hash" translatable="false">#</string>
+
+    <string name="prompt_folder_full">The folder is full.</string>
+    <string name="circular_sliding_screen">Desktop cycle</string>
 </resources>

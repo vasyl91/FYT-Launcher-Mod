@@ -1,63 +1,90 @@
 package com.android.launcher66;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 
 public class Stats {
-    private FileNotFoundException e;
-    private Throwable th;
-    public static final String ACTION_LAUNCH = "com.android.launcher66.action.LAUNCH";
     private static final boolean DEBUG_BROADCASTS = false;
+    private static final String TAG = "launcher66/Stats";
+
+    public static final boolean ENABLE_STATS = false;
+    private static final boolean LOCAL_LAUNCH_LOG = false;
+
+    public static final String ACTION_LAUNCH = "com.android.launcher66.action.LAUNCH";
+    public static final String PERM_LAUNCH = "com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS";
+    public static final String EXTRA_INTENT = "intent";
+    public static final String EXTRA_CONTAINER = "container";
+    public static final String EXTRA_SCREEN = "screen";
     public static final String EXTRA_CELLX = "cellX";
     public static final String EXTRA_CELLY = "cellY";
-    public static final String EXTRA_CONTAINER = "container";
-    public static final String EXTRA_INTENT = "intent";
-    public static final String EXTRA_SCREEN = "screen";
-    private static final boolean FLUSH_IMMEDIATELY = true;
-    private static final int INITIAL_STATS_SIZE = 100;
-    private static final boolean LOCAL_LAUNCH_LOG = true;
+
     private static final String LOG_FILE_NAME = "launches.log";
-    private static final int LOG_TAG_LAUNCH = 4096;
-    private static final int LOG_TAG_VERSION = 1;
     private static final int LOG_VERSION = 1;
-    public static final String PERM_LAUNCH = "com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS";
+    private static final int LOG_TAG_VERSION = 0x1;
+    private static final int LOG_TAG_LAUNCH = 0x1000;
+
     private static final String STATS_FILE_NAME = "stats.log";
     private static final int STATS_VERSION = 1;
-    private static final String TAG = "launcher66/Stats";
-    ArrayList<Integer> mHistogram;
-    ArrayList<String> mIntents;
+    private static final int INITIAL_STATS_SIZE = 100;
+
+    // TODO: delayed/batched writes
+    private static final boolean FLUSH_IMMEDIATELY = false;
+
     private final Launcher mLauncher;
+
     DataOutputStream mLog;
 
+    ArrayList<String> mIntents;
+    ArrayList<Integer> mHistogram;
+
     public Stats(Launcher launcher) {
-        this.mLauncher = launcher;
+        mLauncher = launcher;
+
         loadStats();
-        try {
-            this.mLog = new DataOutputStream(this.mLauncher.openFileOutput(LOG_FILE_NAME, Context.MODE_APPEND));
-            this.mLog.writeInt(1);
-            this.mLog.writeInt(1);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "unable to create stats log: " + e);
-            this.mLog = null;
-        } catch (IOException e2) {
-            Log.e(TAG, "unable to write to stats log: " + e2);
-            this.mLog = null;
+
+        if (LOCAL_LAUNCH_LOG) {
+            try {
+                mLog = new DataOutputStream(mLauncher.openFileOutput(LOG_FILE_NAME, Context.MODE_APPEND));
+                mLog.writeInt(LOG_TAG_VERSION);
+                mLog.writeInt(LOG_VERSION);
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "unable to create stats log: " + e);
+                mLog = null;
+            } catch (IOException e) {
+                Log.e(TAG, "unable to write to stats log: " + e);
+                mLog = null;
+            }
+        }
+
+        if (DEBUG_BROADCASTS) {
+            launcher.registerReceiver(
+                    new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            android.util.Log.v("Stats", "got broadcast: " + intent + " for launched intent: "
+                                    + intent.getStringExtra(EXTRA_INTENT));
+                        }
+                    },
+                    new IntentFilter(ACTION_LAUNCH),
+                    PERM_LAUNCH,
+                    null
+            );
         }
     }
 
     public void incrementLaunch(String intentStr) {
-        int pos = this.mIntents.indexOf(intentStr);
+        int pos = mIntents.indexOf(intentStr);
         if (pos < 0) {
-            this.mIntents.add(intentStr);
-            this.mHistogram.add(1);
+            mIntents.add(intentStr);
+            mHistogram.add(1);
         } else {
-            this.mHistogram.set(pos, Integer.valueOf(this.mHistogram.get(pos).intValue() + 1));
+            mHistogram.set(pos, mHistogram.get(pos) + 1);
         }
     }
 
@@ -66,33 +93,45 @@ public class Stats {
     }
 
     public void recordLaunch(Intent intent, ShortcutInfo shortcut) {
-        Intent intent2 = new Intent(intent);
-        intent2.setSourceBounds(null);
-        String flat = intent2.toUri(0);
-        Intent broadcastIntent = new Intent(ACTION_LAUNCH).putExtra("intent", flat);
+        intent = new Intent(intent);
+        intent.setSourceBounds(null);
+
+        final String flat = intent.toUri(0);
+
+        Intent broadcastIntent = new Intent(ACTION_LAUNCH).putExtra(EXTRA_INTENT, flat);
         if (shortcut != null) {
-            broadcastIntent.putExtra(EXTRA_CONTAINER, shortcut.container).putExtra(EXTRA_SCREEN, shortcut.screenId).putExtra(EXTRA_CELLX, shortcut.cellX).putExtra(EXTRA_CELLY, shortcut.cellY);
+            broadcastIntent.putExtra(EXTRA_CONTAINER, shortcut.container)
+                    .putExtra(EXTRA_SCREEN, shortcut.screenId)
+                    .putExtra(EXTRA_CELLX, shortcut.cellX)
+                    .putExtra(EXTRA_CELLY, shortcut.cellY);
         }
-        this.mLauncher.sendBroadcast(broadcastIntent, "com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS");
+        mLauncher.sendBroadcast(broadcastIntent, PERM_LAUNCH);
+
         incrementLaunch(flat);
-        saveStats();
-        if (this.mLog != null) {
+
+        if (FLUSH_IMMEDIATELY) {
+            saveStats();
+        }
+
+        if (LOCAL_LAUNCH_LOG && mLog != null) {
             try {
-                this.mLog.writeInt(4096);
-                this.mLog.writeLong(System.currentTimeMillis());
+                mLog.writeInt(LOG_TAG_LAUNCH);
+                mLog.writeLong(System.currentTimeMillis());
                 if (shortcut == null) {
-                    this.mLog.writeShort(0);
-                    this.mLog.writeShort(0);
-                    this.mLog.writeShort(0);
-                    this.mLog.writeShort(0);
+                    mLog.writeShort(0);
+                    mLog.writeShort(0);
+                    mLog.writeShort(0);
+                    mLog.writeShort(0);
                 } else {
-                    this.mLog.writeShort((short) shortcut.container);
-                    this.mLog.writeShort((short) shortcut.screenId);
-                    this.mLog.writeShort((short) shortcut.cellX);
-                    this.mLog.writeShort((short) shortcut.cellY);
+                    mLog.writeShort((short) shortcut.container);
+                    mLog.writeShort((short) shortcut.screenId);
+                    mLog.writeShort((short) shortcut.cellX);
+                    mLog.writeShort((short) shortcut.cellY);
                 }
-                this.mLog.writeUTF(flat);
-                this.mLog.flush();
+                mLog.writeUTF(flat);
+                if (FLUSH_IMMEDIATELY) {
+                    mLog.flush(); // TODO: delayed writes
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -101,120 +140,59 @@ public class Stats {
 
     private void saveStats() {
         DataOutputStream stats = null;
-        DataOutputStream stats2 = null;
         try {
-            stats = new DataOutputStream(this.mLauncher.openFileOutput("stats.log.tmp", 0));
-        } catch (Throwable th) {
-            th = th;
-        }
-        try {
-            stats.writeInt(1);
-            int N = this.mHistogram.size();
+            stats = new DataOutputStream(mLauncher.openFileOutput(STATS_FILE_NAME + ".tmp", Context.MODE_PRIVATE));
+            stats.writeInt(STATS_VERSION);
+            final int N = mHistogram.size();
             stats.writeInt(N);
-            for (int i = 0; i < N; i++) {
-                stats.writeUTF(this.mIntents.get(i));
-                stats.writeInt(this.mHistogram.get(i).intValue());
+            for (int i=0; i<N; i++) {
+                stats.writeUTF(mIntents.get(i));
+                stats.writeInt(mHistogram.get(i));
             }
             stats.close();
-            stats2 = null;
-            this.mLauncher.getFileStreamPath("stats.log.tmp").renameTo(this.mLauncher.getFileStreamPath(STATS_FILE_NAME));
-            if (0 != 0) {
-                try {
-                    stats2.close();
-                } catch (IOException e3) {
-                }
-            }
-        } catch (FileNotFoundException e4) {
-            e = e4;
-            stats2 = stats;
+            stats = null;
+            mLauncher.getFileStreamPath(STATS_FILE_NAME + ".tmp")
+                     .renameTo(mLauncher.getFileStreamPath(STATS_FILE_NAME));
+        } catch (FileNotFoundException e) {
             Log.e(TAG, "unable to create stats data: " + e);
-            if (stats2 != null) {
-                try {
-                    stats2.close();
-                } catch (IOException e5) {
-                }
-            }
-        } catch (IOException e6) {
-            e = (FileNotFoundException) e6;
-            stats2 = stats;
+        } catch (IOException e) {
             Log.e(TAG, "unable to write to stats data: " + e);
-            if (stats2 != null) {
+        } finally {
+            if (stats != null) {
                 try {
-                    stats2.close();
-                } catch (IOException e7) {
-                }
-            }
-        } catch (Throwable th2) {
-            th = th2;
-            stats2 = stats;
-            if (stats2 != null) {
-                try {
-                    stats2.close();
-                } catch (IOException e8) {
-                }
-            }
-            try {
-                throw th;
-            } catch (Throwable ex) {
-                throw new RuntimeException(ex);
+                    stats.close();
+                } catch (IOException e) { }
             }
         }
     }
 
     private void loadStats() {
-        this.mIntents = new ArrayList<>(100);
-        this.mHistogram = new ArrayList<>(100);
+        mIntents = new ArrayList<String>(INITIAL_STATS_SIZE);
+        mHistogram = new ArrayList<Integer>(INITIAL_STATS_SIZE);
         DataInputStream stats = null;
         try {
-            DataInputStream stats2 = new DataInputStream(this.mLauncher.openFileInput(STATS_FILE_NAME));
-            try {
-                int version = stats2.readInt();
-                if (version == 1) {
-                    int N = stats2.readInt();
-                    for (int i = 0; i < N; i++) {
-                        String pkg = stats2.readUTF();
-                        int count = stats2.readInt();
-                        this.mIntents.add(pkg);
-                        this.mHistogram.add(Integer.valueOf(count));
-                    }
+            stats = new DataInputStream(mLauncher.openFileInput(STATS_FILE_NAME));
+            final int version = stats.readInt();
+            if (version == STATS_VERSION) {
+                final int N = stats.readInt();
+                for (int i=0; i<N; i++) {
+                    final String pkg = stats.readUTF();
+                    final int count = stats.readInt();
+                    mIntents.add(pkg);
+                    mHistogram.add(count);
                 }
-                if (stats2 != null) {
-                    try {
-                        stats2.close();
-                    } catch (IOException e) {
-                    }
-                }
-            } catch (FileNotFoundException e2) {
-                stats = stats2;
-                if (stats != null) {
-                    try {
-                        stats.close();
-                    } catch (IOException e3) {
-                    }
-                }
-            } catch (IOException e4) {
-                stats = stats2;
-                if (stats != null) {
-                    try {
-                        stats.close();
-                    } catch (IOException e5) {
-                    }
-                }
-            } catch (Throwable th) {
-                th = th;
-                stats = stats2;
-                if (stats != null) {
-                    try {
-                        stats.close();
-                    } catch (IOException e6) {
-                    }
-                }
-                throw th;
             }
-        } catch (FileNotFoundException e7) {
-        } catch (IOException e8) {
-        } catch (Throwable th2) {
-            th = th2;
+        } catch (FileNotFoundException e) {
+            // not a problem
+        } catch (IOException e) {
+            // more of a problem
+
+        } finally {
+            if (stats != null) {
+                try {
+                    stats.close();
+                } catch (IOException e) { }
+            }
         }
     }
 }

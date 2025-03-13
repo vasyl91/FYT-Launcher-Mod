@@ -157,7 +157,7 @@ public class LauncherAppState {
         return grid;
     }
 
-    DynamicGrid getDynamicGrid() {
+    public DynamicGrid getDynamicGrid() {
         return this.mDynamicGrid;
     }
 

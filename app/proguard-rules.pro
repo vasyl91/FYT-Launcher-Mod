@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all widget-related classes
+-keep class * extends android.appwidget.AppWidgetProvider { *; }
+-keep class * extends android.widget.RemoteViewsService { *; }
+-keep class * extends android.widget.RemoteViews { *; }
+
+# Keep all resources
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}

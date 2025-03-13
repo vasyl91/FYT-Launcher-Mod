@@ -5,7 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
@@ -23,7 +23,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.SystemProperties;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -62,12 +61,11 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class CanbusService extends Service implements PropertyChangeListener, LocationListener {
+public class CanbusService extends Service implements PropertyChangeListener {
 
     private static final String TAG = "CanbusService";
     private AccessibilityManager accessibilityManager;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
-    private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences prefs;
     private Helpers helpers = new Helpers();
     private IBinder binder;
@@ -84,6 +82,9 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     private static final String FUELSTATS = "fuelStats";
     private PropertyChangeClass mPropertyChangeClass = new PropertyChangeClass();
     private String curApp = "init";
+    private boolean viewAdded = false;
+    private boolean userLayout = false;
+    private boolean userStats = false;
     private boolean estimateOil = false;
     private int fuel = 0;
     private int range = 0;
@@ -93,13 +94,16 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     private int vehicleMass = 0;
     private int engineVolume = 0;
     private int numberOfCylinders = 0;
+    private int revolutionsPerMinute = 0;
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Service created");
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());    
+        userLayout = prefs.getBoolean("user_layout", false);
+        userStats = prefs.getBoolean("user_stats", false);
         horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
         vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
         engineVolume = Integer.parseInt(prefs.getString("engine_volume_code_int", "0")); // in cm³
@@ -214,9 +218,9 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                         case WindowUtil.PIP_STARTED:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            if (!helpers.isListOpen()) {
+                            if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
                                 removeView();
-                                addStatsViewMainScreen();
+                                addStatsViewMainScreen();                                
                             }
                             break;
                         case WindowUtil.PIP_REMOVED: 
@@ -234,8 +238,10 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                         case AppListDialogFragment.LIST_CLOSE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            removeView();
-                            addStatsViewMainScreen();
+                            if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
+                                removeView();
+                                addStatsViewMainScreen();                                
+                            }
                             break;
                         case Workspace.OVERVIEW_MODE_OPEN:
                             curForegroundApp = "com.android.launcher66";
@@ -245,10 +251,16 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                         case Workspace.OVERVIEW_MODE_CLOSE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            if (!helpers.hasPipStarted()) {
-                                removeView();
-                                addStatsViewMainScreen();
-                            }
+                            // needs a while to properly return current page id
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
+                                        removeView();
+                                        addStatsViewMainScreen();                                
+                                    }
+                                }
+                            }, 1000);
                             break;
                         case AppsCustomizePagedView.STATS_APP_FOREGROUND:
                             removeView();
@@ -315,17 +327,8 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
         }
         mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
         if (Launcher.mAppsCustomizeTabHost != null) {
-            mPropertyChangeClass.setBoolean(ALLAPPS, allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility(), packageName));
+            mPropertyChangeClass.setBoolean(ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
         }      
-    }
-
-    private boolean allAppsVisibility(int visivility, String packageName) {
-        if (visivility == View.INVISIBLE || visivility == View.GONE) {
-            return false;
-        } else if (!helpers.isInRecent() && !helpers.userWasInRecents()) {
-            return true;
-        }
-        return false;
     }
     
     @Override
@@ -348,7 +351,11 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                 if (String.valueOf(evt.getNewValue()).contains("com.android.launcher")) {
                     helpers.setForegroundAppOpened(false);
                 }
-                if (!String.valueOf(evt.getNewValue()).contains("com.android.launcher") && !helpers.isInAllApps() && !helpers.isInRecent() && !helpers.hasPipStarted() && !getCurrentActivityName().equals("com.android.settings")) {
+                if (!String.valueOf(evt.getNewValue()).contains("com.android.launcher") 
+                    && !helpers.isInAllApps() 
+                    && !helpers.isInRecent() 
+                    && !helpers.hasPipStarted() 
+                    && !getCurrentActivityName().equals("com.android.settings")) {
                     helpers.setForegroundAppOpened(true);
                     removeView();
                     addStatsView(true);                   
@@ -377,15 +384,21 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     }
     
     private void addStatsViewMainScreen() {
-        if (prefs.getBoolean("main_screen_stats", true)) {
+        userLayout = prefs.getBoolean("user_layout", false);
+        if (userLayout 
+            && prefs.getBoolean("main_screen_stats", true)
+            && helpers.hasPipStarted()
+            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+            && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
+            
             addStatsView(false);
         }
     }
 
     private void addStatsView(boolean mapApp) {
         removeView();
-        boolean userStats = prefs.getBoolean("user_stats", false);        
-        boolean userLayout = prefs.getBoolean("user_layout", false);
+        userLayout = prefs.getBoolean("user_layout", false);
+        userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats) {
             textColor = prefs.getString("stats_color", "#FFFFFFFF");
             String bgColor = prefs.getString("bg_stats_color", "#FF000000");
@@ -400,7 +413,8 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int statsTopLeftX, statsTopLeftY, statsWidth, statsHeight, leftBarSize;
 
-            if (getResources().getDisplayMetrics().widthPixels == 1024) {
+            if (getResources().getDisplayMetrics().widthPixels == 1024
+                || getResources().getDisplayMetrics().heightPixels == 1024) {
                 leftBarSize = 100;
                 statsWidth = 245;
                 statsHeight = 55;
@@ -450,6 +464,11 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
             );
+            if (mapApp) {
+                absoluteStats.setTag("app");
+            } else {
+                absoluteStats.setTag("main");
+            }
             parameters.gravity = Gravity.TOP | Gravity.START;
             wm.addView(absoluteStats, parameters);
             mUpdaterOilExpend();
@@ -460,6 +479,7 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
 
     public void removeView() {   
         if (absoluteStats != null) {
+            absoluteStats.setTag(null);
             wm.removeView(absoluteStats);
         }
     }
@@ -490,9 +510,6 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     }
 
     public void mUpdaterOilExpend() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());        
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats && absoluteStats != null) {
             int value = DataCanbus.DATA[fuel];
             if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
@@ -513,9 +530,6 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
     }
 
     public void mUpdaterDrivingMileage() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());        
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats && absoluteStats != null) {
             int value = DataCanbus.DATA[range];
             if (absoluteStats.findViewById(R.id.driving_mileage_val) != null) {
@@ -529,13 +543,19 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
             }
         }
     }
+
+    public void mUpdaterRPM() {
+        if (userLayout && userStats) {
+            revolutionsPerMinute = DataCanbus.DATA[rpm];          
+        }
+    }
     
     /**
      * In my case canbus stops sending the fuel consumption when the speed drops below ~40km/h.
      * This is an attemp to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation.
      * */    
     private void requestLocationUpdates() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         LocationRequest locationRequest = new LocationRequest.Builder(1000)  // Initial interval
                 .setMinUpdateIntervalMillis(500)  
@@ -544,6 +564,7 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
                     if (locationResult == null) {
@@ -552,61 +573,50 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
                     for (Location location : locationResult.getLocations()) {
                         float speed = location.getSpeed(); // m/s
                         velocity = speed * 3.6f; // in km/h
-                        mUpdaterRPM();
+                        if (estimateOil && userLayout && userStats && absoluteStats != null) {
+                            if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
+                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
+                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
+                                if (revolutionsPerMinute > -1) {
+                                    if (velocity > 0.5) {
+                                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass, engineVolume, numberOfCylinders);
+                                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%.1f", fuelConsumption) + " L/100km\u0020");
+                                    } else {
+                                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
+                                    }
+                                } 
+                            }
+                        }
                     }
                 }
             }, Looper.getMainLooper());
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {}
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {}
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {}
-
-    public void mUpdaterRPM() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());        
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
-        if (estimateOil && userLayout && userStats && absoluteStats != null) {
-            int revolutionsPerMinute = DataCanbus.DATA[rpm];          
-            if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (revolutionsPerMinute > 0 && revolutionsPerMinute < 9001) {
-                    double fuelConsumption = 0; 
-                    if (velocity > 0) {
-                        fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass, engineVolume, numberOfCylinders);
-                    } else {
-                        fuelConsumption = 0;
-                    }
-                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%.1f", fuelConsumption) + " L/100KM\u0020");
-                } else {
-                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
-                }
-            }
-        }
-    }
-
     // AI generated
     private static final double FUEL_DENSITY = 0.84; // kg/L (Average gasoline density)
     private static final double AIR_FUEL_RATIO = 14.7; // Stoichiometric air-fuel ratio for gasoline
+    private static final double RPM_TO_SPEED_RATIO = 40.0; // Approximate RPM to speed (km/h) ratio
 
-    public static double calculateFuelConsumption(double speedVal, int rpmVal, int horsePowerVal, int vehicleMassVal, int engineVolumeVal, int numCylindersVal) {
+    public static double calculateFuelConsumption(double speedVal, int rpmInput, int horsePowerVal, int vehicleMassVal, int engineVolumeVal, int numCylindersVal) { 
+        double rpmVal;
+        if (rpmInput == 0) {
+            // Estimate RPM based on speed (very simplified assumption)
+            rpmVal = speedVal * RPM_TO_SPEED_RATIO;
+            if (rpmVal == 0) {
+                rpmVal = 1000; // Avoid division by zero and set a minimum RPM when speed is zero. A stationary idling RPM can be assumed.
+            }
+        } else {
+           rpmVal = rpmInput;
+        }     
+
         // Calculate torque (approximation)
         double torque = (horsePowerVal * 7121) / rpmVal; // 7121 is a constant for unit conversion
 
         // Calculate engine power based on torque and rpm.
         double calculatedhorsePowerVal = (torque * rpmVal) / 7121;
 
-        // Calculate theoretical air intake (using engine volume and rpmVal).
+        // Calculate theoretical air intake (using engine volume and estimated rpmVal).
         double airIntake_stage1 = engineVolumeVal * rpmVal;
         double airIntake_stage2 = airIntake_stage1 / 2.0; // Use 2.0 to ensure double division
         double airIntake_stage3 = airIntake_stage2 / 1000000.0; // Use 1000000.0
@@ -623,17 +633,18 @@ public class CanbusService extends Service implements PropertyChangeListener, Lo
 
         // Add a factor related to acceleration (simplified)
         double accelerationFactor = 0.0;
-        if (speedVal > 2) {
+        if (speedVal > 0.5) {
             accelerationFactor = 0.001 * vehicleMassVal * (speedVal/3.6);
         }
 
-        double totalPowerNeeded = powerForResistance + (horsePowerVal * 745.7) * accelerationFactor; // convert HP to Watts
+        double totalPowerNeeded = powerForResistance + (calculatedhorsePowerVal * 745.7) * accelerationFactor; // convert HP to Watts
 
         // Adjust fuel consumption based on total power needed (very simplified)
-        double adjustedFuelConsumptionKgPerHour = fuelConsumptionKgPerHour * (1 + (totalPowerNeeded / (horsePowerVal * 745.7))); // 745.7 is the conversion from HP to HP to Watts
+        double adjustedFuelConsumptionKgPerHour = fuelConsumptionKgPerHour * (1 + (totalPowerNeeded / (calculatedhorsePowerVal * 745.7))); // 745.7 is the conversion from HP to HP to Watts
 
         // Convert fuel consumption to L/100km
         double finalFuelConsumption = (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) * (100 / speedVal);
+        
         return finalFuelConsumption;
     }
 

@@ -2,17 +2,19 @@ package com.android.launcher66;
 
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -22,24 +24,24 @@ import android.view.animation.LinearInterpolator;
 
 import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.DropTarget;
-import com.syu.ipc.data.FinalCanbus;
-import com.syu.util.JLog;
 import java.util.List;
 import java.util.Set;
 
 public class DeleteDropTarget extends ButtonDropTarget {
-    private TransitionDrawable mCurrentDrawable;
-    private final int mFlingDeleteMode;
-    private ColorStateList mOriginalTextColor;
-    private TransitionDrawable mRemoveDrawable;
-    private TransitionDrawable mUninstallDrawable;
-    private boolean mWaitingForUninstall;
     private static int DELETE_ANIMATION_DURATION = 285;
     private static int FLING_DELETE_ANIMATION_DURATION = 350;
     private static float FLING_TO_DELETE_FRICTION = 0.035f;
     private static int MODE_FLING_DELETE_TO_TRASH = 0;
     private static int MODE_FLING_DELETE_ALONG_VECTOR = 1;
+
+    private final int mFlingDeleteMode = MODE_FLING_DELETE_ALONG_VECTOR;
+
+    private ColorStateList mOriginalTextColor;
+    private TransitionDrawable mUninstallDrawable;
+    private TransitionDrawable mRemoveDrawable;
+    private TransitionDrawable mCurrentDrawable;
+
+    private boolean mWaitingForUninstall = false;
 
     public DeleteDropTarget(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -47,67 +49,72 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     public DeleteDropTarget(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.mFlingDeleteMode = MODE_FLING_DELETE_ALONG_VECTOR;
-        this.mWaitingForUninstall = false;
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        this.mOriginalTextColor = getTextColors();
-        Resources r = getResources();
-        this.mHoverColor = ContextCompat.getColor(getContext(), R.color.delete_target_hover_tint);
-        this.mUninstallDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.uninstall_target_selector);
-        this.mRemoveDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.remove_target_selector);
-        this.mRemoveDrawable.setCrossFadeEnabled(true);
-        this.mUninstallDrawable.setCrossFadeEnabled(true);
-        this.mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
+        // Get the drawable
+        mOriginalTextColor = getTextColors();
+
+        // Get the hover color
+        mHoverColor = ContextCompat.getColor(getContext(), R.color.delete_target_hover_tint);
+        mUninstallDrawable = (TransitionDrawable)
+                ContextCompat.getDrawable(getContext(), R.drawable.uninstall_target_selector);
+        mRemoveDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.remove_target_selector);
+
+        mRemoveDrawable.setCrossFadeEnabled(true);
+        mUninstallDrawable.setCrossFadeEnabled(true);
+
+        // The current drawable is set to either the remove drawable or the uninstall drawable 
+        // and is initially set to the remove drawable, as set in the layout xml.
+        mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
+
+        // Remove the text in the Phone UI in landscape
         int orientation = getResources().getConfiguration().orientation;
-        if (orientation == 2 && !LauncherAppState.getInstance().isScreenLarge()) {
-            setText("");
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (!LauncherAppState.getInstance().isScreenLarge()) {
+                setText("");
+            }
         }
     }
 
     private boolean isAllAppsApplication(DragSource source, Object info) {
         return (source instanceof AppsCustomizePagedView) && (info instanceof AppInfo);
     }
-
     private boolean isAllAppsWidget(DragSource source, Object info) {
-        if ((source instanceof AppsCustomizePagedView) && (info instanceof PendingAddItemInfo)) {
-            PendingAddItemInfo addInfo = (PendingAddItemInfo) info;
-            switch (addInfo.itemType) {
-                case 1:
-                case 4:
-                    return true;
+        if (source instanceof AppsCustomizePagedView) {
+            if (info instanceof PendingAddItemInfo) {
+                PendingAddItemInfo addInfo = (PendingAddItemInfo) info;
+                switch (addInfo.itemType) {
+                    case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
+                    case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
+                        return true;
+                }
             }
         }
         return false;
     }
-
     private boolean isDragSourceWorkspaceOrFolder(DragObject d) {
         return (d.dragSource instanceof Workspace) || (d.dragSource instanceof Folder);
     }
-
     private boolean isWorkspaceOrFolderApplication(DragObject d) {
         return isDragSourceWorkspaceOrFolder(d) && (d.dragInfo instanceof ShortcutInfo);
     }
-
     private boolean isWorkspaceOrFolderWidget(DragObject d) {
         return isDragSourceWorkspaceOrFolder(d) && (d.dragInfo instanceof LauncherAppWidgetInfo);
     }
-
     private boolean isWorkspaceFolder(DragObject d) {
         return (d.dragSource instanceof Workspace) && (d.dragInfo instanceof FolderInfo);
     }
 
     private void setHoverColor() {
-        this.mCurrentDrawable.startTransition(this.mTransitionDuration);
-        setTextColor(this.mHoverColor);
+        mCurrentDrawable.startTransition(mTransitionDuration);
+        setTextColor(mHoverColor);
     }
-
     private void resetHoverColor() {
-        this.mCurrentDrawable.resetTransition();
-        setTextColor(this.mOriginalTextColor);
+        mCurrentDrawable.resetTransition();
+        setTextColor(mOriginalTextColor);
     }
 
     @Override
@@ -116,115 +123,125 @@ public class DeleteDropTarget extends ButtonDropTarget {
     }
 
     public static boolean willAcceptDrop(Object info) {
-        if (info instanceof ShortcutInfo) {
-            ShortcutInfo si = (ShortcutInfo) info;
-            if (si.title.equals(Launcher.mLauncher.getResources().getString(R.string.apps))) {
-                return false;
-            }
-        }
         if (info instanceof ItemInfo) {
             ItemInfo item = (ItemInfo) info;
-            if (item.itemType == 4) {
-                return info.toString().substring(0, 9).contains("AppWidget");
-            }
-            if (item.itemType == 1) {
+            if (item.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET ||
+                    item.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
                 return true;
             }
-            if (!AppsCustomizePagedView.DISABLE_ALL_APPS && item.itemType == 2) {
+
+            if (!AppsCustomizePagedView.DISABLE_ALL_APPS &&
+                    item.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
                 return true;
             }
-            if (!AppsCustomizePagedView.DISABLE_ALL_APPS && item.itemType == 0 && (item instanceof AppInfo)) {
+
+            if (!AppsCustomizePagedView.DISABLE_ALL_APPS &&
+                    item.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION &&
+                    item instanceof AppInfo) {
                 AppInfo appInfo = (AppInfo) info;
-                return (appInfo.flags & 1) != 0;
+                return (appInfo.flags & AppInfo.DOWNLOADED_FLAG) != 0;
             }
-            if (item.itemType == 0 && (item instanceof ShortcutInfo)) {
-                if (!AppsCustomizePagedView.DISABLE_ALL_APPS) {
+
+            if (item.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION &&
+                item instanceof ShortcutInfo) {
+                if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
+                    ShortcutInfo shortcutInfo = (ShortcutInfo) info;
+                    return (shortcutInfo.flags & AppInfo.DOWNLOADED_FLAG) != 0;
+                } else {
                     return true;
                 }
-                ShortcutInfo shortcutInfo = (ShortcutInfo) info;
-                return (shortcutInfo.flags & 1) != 0;
             }
         }
-        JLog.getInstance().i("DeleteDropTarget willAcceptDrop false");
         return false;
     }
 
     @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         boolean isVisible = true;
-        boolean useUninstallLabel = !AppsCustomizePagedView.DISABLE_ALL_APPS && isAllAppsApplication(source, info);
+        boolean useUninstallLabel = !AppsCustomizePagedView.DISABLE_ALL_APPS &&
+                isAllAppsApplication(source, info);
+
+        // If we are dragging an application from AppsCustomize, only show the control if we can
+        // delete the app (it was downloaded), and rename the string to "uninstall" in such a case.
+        // Hide the delete target if it is a widget from AppsCustomize.
         if (!willAcceptDrop(info) || isAllAppsWidget(source, info)) {
             isVisible = false;
         }
-        this.mLauncher.appTextVisible(false);
+        Log.i("DeleteDropTarget", String.valueOf(isVisible));
+
         if (useUninstallLabel) {
-            setCompoundDrawablesRelativeWithIntrinsicBounds((Drawable) null, this.mUninstallDrawable, (Drawable) null, (Drawable) null);
+            setCompoundDrawablesRelativeWithIntrinsicBounds(mUninstallDrawable, null, null, null);
         } else {
-            setCompoundDrawablesRelativeWithIntrinsicBounds((Drawable) null, this.mRemoveDrawable, (Drawable) null, (Drawable) null);
+            setCompoundDrawablesRelativeWithIntrinsicBounds(mRemoveDrawable, null, null, null);
         }
-        this.mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
-        this.mActive = isVisible;
+        mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
+
+        mActive = isVisible;
         resetHoverColor();
         ((ViewGroup) getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);
         if (getText().length() > 0) {
-            setText(useUninstallLabel ? R.string.delete_target_uninstall_label : R.string.delete_target_label);
+            setText(useUninstallLabel ? R.string.delete_target_uninstall_label
+                : R.string.delete_target_label);
         }
-        JLog.getInstance().i("DeleteDropTarget onDragStart isVisible = " + isVisible + "width = " + getWidth() + " height = " + getHeight());
     }
 
     @Override
     public void onDragEnd() {
         super.onDragEnd();
-        this.mLauncher.appTextVisible(true);
-        this.mActive = false;
+        mActive = false;
     }
 
-    @Override
     public void onDragEnter(DragObject d) {
         super.onDragEnter(d);
+
         setHoverColor();
     }
 
-    @Override
     public void onDragExit(DragObject d) {
         super.onDragExit(d);
+
         if (!d.dragComplete) {
             resetHoverColor();
         } else {
-            d.dragView.setColor(this.mHoverColor);
+            // Restore the hover color if we are deleting
+            d.dragView.setColor(mHoverColor);
         }
     }
 
     private void animateToTrashAndCompleteDrop(final DragObject d) {
-        DragLayer dragLayer = this.mLauncher.getDragLayer();
-        Rect from = new Rect();
+        final DragLayer dragLayer = mLauncher.getDragLayer();
+        final Rect from = new Rect();
         dragLayer.getViewRectRelativeToSelf(d.dragView, from);
-        Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(), this.mCurrentDrawable.getIntrinsicWidth(), this.mCurrentDrawable.getIntrinsicHeight());
-        float scale = to.width() / from.width();
-        this.mSearchDropTargetBar.deferOnDragEnd();
+        final Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(),
+                mCurrentDrawable.getIntrinsicWidth(), mCurrentDrawable.getIntrinsicHeight());
+        final float scale = (float) to.width() / from.width();
+
+        mSearchDropTargetBar.deferOnDragEnd();
         deferCompleteDropIfUninstalling(d);
-        Runnable onAnimationEndRunnable = new Runnable() { 
+
+        Runnable onAnimationEndRunnable = new Runnable() {
             @Override
             public void run() {
-                DeleteDropTarget.this.completeDrop(d);
-                DeleteDropTarget.this.mSearchDropTargetBar.onDragEnd();
-                if (!LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_all_disable)) {
-                    DeleteDropTarget.this.mLauncher.exitSpringLoadedDragMode();
-                }
+                completeDrop(d);
+                mSearchDropTargetBar.onDragEnd();
+                mLauncher.exitSpringLoadedDragMode();
             }
         };
-        dragLayer.animateView(d.dragView, from, to, scale, 1.0f, 1.0f, 0.1f, 0.1f, DELETE_ANIMATION_DURATION, new DecelerateInterpolator(2.0f), new LinearInterpolator(), onAnimationEndRunnable, 0, null);
+        dragLayer.animateView(d.dragView, from, to, scale, 1f, 1f, 0.1f, 0.1f,
+                DELETE_ANIMATION_DURATION, new DecelerateInterpolator(2),
+                new LinearInterpolator(), onAnimationEndRunnable,
+                DragLayer.ANIMATION_END_DISAPPEAR, null);
     }
 
     private void deferCompleteDropIfUninstalling(DragObject d) {
-        this.mWaitingForUninstall = false;
+        mWaitingForUninstall = false;
         if (isUninstallFromWorkspace(d)) {
             if (d.dragSource instanceof Folder) {
                 ((Folder) d.dragSource).deferCompleteDropAfterUninstallActivity();
             } else if (d.dragSource instanceof Workspace) {
                 ((Workspace) d.dragSource).deferCompleteDropAfterUninstallActivity();
             }
-            this.mWaitingForUninstall = true;
+            mWaitingForUninstall = true;
         }
     }
 
@@ -323,62 +340,82 @@ public class DeleteDropTarget extends ButtonDropTarget {
         animateToTrashAndCompleteDrop(d);
     }
 
-    private ValueAnimator.AnimatorUpdateListener createFlingToTrashAnimatorListener(final DragLayer dragLayer, DragObject d, PointF vel, ViewConfiguration config) {
-        Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(), this.mCurrentDrawable.getIntrinsicWidth(), this.mCurrentDrawable.getIntrinsicHeight());
-        Rect from = new Rect();
+    /**
+     * Creates an animation from the current drag view to the delete trash icon.
+     */
+    private AnimatorUpdateListener createFlingToTrashAnimatorListener(final DragLayer dragLayer,
+            DragObject d, PointF vel, ViewConfiguration config) {
+        final Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(),
+                mCurrentDrawable.getIntrinsicWidth(), mCurrentDrawable.getIntrinsicHeight());
+        final Rect from = new Rect();
         dragLayer.getViewRectRelativeToSelf(d.dragView, from);
+
+        // Calculate how far along the velocity vector we should put the intermediate point on
+        // the bezier curve
         float velocity = Math.abs(vel.length());
-        float vp = Math.min(1.0f, velocity / (config.getScaledMaximumFlingVelocity() / 2.0f));
-        int offsetY = (int) ((-from.top) * vp);
+        float vp = Math.min(1f, velocity / (config.getScaledMaximumFlingVelocity() / 2f));
+        int offsetY = (int) (-from.top * vp);
         int offsetX = (int) (offsetY / (vel.y / vel.x));
-        final float y2 = from.top + offsetY;
+        final float y2 = from.top + offsetY;                        // intermediate t/l
         final float x2 = from.left + offsetX;
-        final float x1 = from.left;
+        final float x1 = from.left;                                 // drag view t/l
         final float y1 = from.top;
-        final float x3 = to.left;
+        final float x3 = to.left;                                   // delete target t/l
         final float y3 = to.top;
-        final TimeInterpolator scaleAlphaInterpolator = new TimeInterpolator() { 
+
+        final TimeInterpolator scaleAlphaInterpolator = new TimeInterpolator() {
             @Override
             public float getInterpolation(float t) {
                 return t * t * t * t * t * t * t * t;
             }
         };
-        return new ValueAnimator.AnimatorUpdateListener() { 
+        return new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                DragView dragView = (DragView) dragLayer.getAnimatedView();
+                final DragView dragView = (DragView) dragLayer.getAnimatedView();
                 float t = ((Float) animation.getAnimatedValue()).floatValue();
                 float tp = scaleAlphaInterpolator.getInterpolation(t);
                 float initialScale = dragView.getInitialScale();
+                float finalAlpha = 0.5f;
                 float scale = dragView.getScaleX();
-                float x1o = ((1.0f - scale) * dragView.getMeasuredWidth()) / 2.0f;
-                float y1o = ((1.0f - scale) * dragView.getMeasuredHeight()) / 2.0f;
-                float x = ((1.0f - t) * (1.0f - t) * (x1 - x1o)) + (2.0f * (1.0f - t) * t * (x2 - x1o)) + (t * t * x3);
-                float y = ((1.0f - t) * (1.0f - t) * (y1 - y1o)) + (2.0f * (1.0f - t) * t * (y2 - x1o)) + (t * t * y3);
+                float x1o = ((1f - scale) * dragView.getMeasuredWidth()) / 2f;
+                float y1o = ((1f - scale) * dragView.getMeasuredHeight()) / 2f;
+                float x = (1f - t) * (1f - t) * (x1 - x1o) + 2 * (1f - t) * t * (x2 - x1o) +
+                        (t * t) * x3;
+                float y = (1f - t) * (1f - t) * (y1 - y1o) + 2 * (1f - t) * t * (y2 - x1o) +
+                        (t * t) * y3;
+
                 dragView.setTranslationX(x);
                 dragView.setTranslationY(y);
-                dragView.setScaleX((1.0f - tp) * initialScale);
-                dragView.setScaleY((1.0f - tp) * initialScale);
-                dragView.setAlpha(((1.0f - 0.5f) * (1.0f - tp)) + 0.5f);
+                dragView.setScaleX(initialScale * (1f - tp));
+                dragView.setScaleY(initialScale * (1f - tp));
+                dragView.setAlpha(finalAlpha + (1f - finalAlpha) * (1f - tp));
             }
         };
     }
 
-    private static class FlingAlongVectorAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateListener {
-        private final TimeInterpolator mAlphaInterpolator = new DecelerateInterpolator(0.75f);
+    /**
+     * Creates an animation from the current drag view along its current velocity vector.
+     * For this animation, the alpha runs for a fixed duration and we update the position
+     * progressively.
+     */
+    private static class FlingAlongVectorAnimatorUpdateListener implements AnimatorUpdateListener {
         private DragLayer mDragLayer;
-        private float mFriction;
-        private Rect mFrom;
-        private boolean mHasOffsetForScale;
-        private long mPrevTime;
         private PointF mVelocity;
+        private Rect mFrom;
+        private long mPrevTime;
+        private boolean mHasOffsetForScale;
+        private float mFriction;
 
-        public FlingAlongVectorAnimatorUpdateListener(DragLayer dragLayer, PointF vel, Rect from, long startTime, float friction) {
-            this.mDragLayer = dragLayer;
-            this.mVelocity = vel;
-            this.mFrom = from;
-            this.mPrevTime = startTime;
-            this.mFriction = 1.0f - (dragLayer.getResources().getDisplayMetrics().density * friction);
+        private final TimeInterpolator mAlphaInterpolator = new DecelerateInterpolator(0.75f);
+
+        public FlingAlongVectorAnimatorUpdateListener(DragLayer dragLayer, PointF vel, Rect from,
+                long startTime, float friction) {
+            mDragLayer = dragLayer;
+            mVelocity = vel;
+            mFrom = from;
+            mPrevTime = startTime;
+            mFriction = 1f - (dragLayer.getResources().getDisplayMetrics().density * friction);
         }
 
         @Override
@@ -409,61 +446,81 @@ public class DeleteDropTarget extends ButtonDropTarget {
             mPrevTime = curTime;
         }
     };
-
-    private ValueAnimator.AnimatorUpdateListener createFlingAlongVectorAnimatorListener(DragLayer dragLayer, DragObject d, PointF vel, long startTime, int duration, ViewConfiguration config) {
-        Rect from = new Rect();
+    private AnimatorUpdateListener createFlingAlongVectorAnimatorListener(final DragLayer dragLayer,
+            DragObject d, PointF vel, final long startTime, final int duration,
+            ViewConfiguration config) {
+        final Rect from = new Rect();
         dragLayer.getViewRectRelativeToSelf(d.dragView, from);
-        return new FlingAlongVectorAnimatorUpdateListener(dragLayer, vel, from, startTime, FLING_TO_DELETE_FRICTION);
+
+        return new FlingAlongVectorAnimatorUpdateListener(dragLayer, vel, from, startTime,
+                FLING_TO_DELETE_FRICTION);
     }
 
-    @Override
     public void onFlingToDelete(final DragObject d, int x, int y, PointF vel) {
         final boolean isAllApps = d.dragSource instanceof AppsCustomizePagedView;
+
+        // Don't highlight the icon as it's animating
         d.dragView.setColor(0);
         d.dragView.updateInitialScaleToCurrentScale();
+        // Don't highlight the target if we are flinging from AllApps
         if (isAllApps) {
             resetHoverColor();
         }
-        if (this.mFlingDeleteMode == MODE_FLING_DELETE_TO_TRASH) {
-            this.mSearchDropTargetBar.deferOnDragEnd();
-            this.mSearchDropTargetBar.finishAnimations();
+
+        if (mFlingDeleteMode == MODE_FLING_DELETE_TO_TRASH) {
+            // Defer animating out the drop target if we are animating to it
+            mSearchDropTargetBar.deferOnDragEnd();
+            mSearchDropTargetBar.finishAnimations();
         }
-        ViewConfiguration config = ViewConfiguration.get(this.mLauncher);
-        DragLayer dragLayer = this.mLauncher.getDragLayer();
+
+        final ViewConfiguration config = ViewConfiguration.get(mLauncher);
+        final DragLayer dragLayer = mLauncher.getDragLayer();
         final int duration = FLING_DELETE_ANIMATION_DURATION;
         final long startTime = AnimationUtils.currentAnimationTimeMillis();
-        TimeInterpolator tInterpolator = new TimeInterpolator() { 
+
+        // NOTE: Because it takes time for the first frame of animation to actually be
+        // called and we expect the animation to be a continuation of the fling, we have
+        // to account for the time that has elapsed since the fling finished.  And since
+        // we don't have a startDelay, we will always get call to update when we call
+        // start() (which we want to ignore).
+        final TimeInterpolator tInterpolator = new TimeInterpolator() {
             private int mCount = -1;
-            private float mOffset = 0.0f;
+            private float mOffset = 0f;
 
             @Override
             public float getInterpolation(float t) {
-                if (this.mCount < 0) {
-                    this.mCount++;
-                } else if (this.mCount == 0) {
-                    this.mOffset = Math.min(0.5f, ((float) (AnimationUtils.currentAnimationTimeMillis() - startTime)) / duration);
-                    this.mCount++;
+                if (mCount < 0) {
+                    mCount++;
+                } else if (mCount == 0) {
+                    mOffset = Math.min(0.5f, (float) (AnimationUtils.currentAnimationTimeMillis() -
+                            startTime) / duration);
+                    mCount++;
                 }
-                return Math.min(1.0f, this.mOffset + t);
+                return Math.min(1f, mOffset + t);
             }
         };
-        ValueAnimator.AnimatorUpdateListener updateCb = null;
-        if (this.mFlingDeleteMode == MODE_FLING_DELETE_TO_TRASH) {
+        AnimatorUpdateListener updateCb = null;
+        if (mFlingDeleteMode == MODE_FLING_DELETE_TO_TRASH) {
             updateCb = createFlingToTrashAnimatorListener(dragLayer, d, vel, config);
-        } else if (this.mFlingDeleteMode == MODE_FLING_DELETE_ALONG_VECTOR) {
-            updateCb = createFlingAlongVectorAnimatorListener(dragLayer, d, vel, startTime, duration, config);
+        } else if (mFlingDeleteMode == MODE_FLING_DELETE_ALONG_VECTOR) {
+            updateCb = createFlingAlongVectorAnimatorListener(dragLayer, d, vel, startTime,
+                    duration, config);
         }
         deferCompleteDropIfUninstalling(d);
-        Runnable onAnimationEndRunnable = new Runnable() { 
+
+        Runnable onAnimationEndRunnable = new Runnable() {
             @Override
             public void run() {
+                // If we are dragging from AllApps, then we allow AppsCustomizePagedView to clean up
+                // itself, otherwise, complete the drop to initiate the deletion process
                 if (!isAllApps) {
-                    DeleteDropTarget.this.mLauncher.exitSpringLoadedDragMode();
-                    DeleteDropTarget.this.completeDrop(d);
+                    mLauncher.exitSpringLoadedDragMode();
+                    completeDrop(d);
                 }
-                DeleteDropTarget.this.mLauncher.getDragController().onDeferredEndFling(d);
+                mLauncher.getDragController().onDeferredEndFling(d);
             }
         };
-        dragLayer.animateView(d.dragView, updateCb, duration, tInterpolator, onAnimationEndRunnable, 0, null);
+        dragLayer.animateView(d.dragView, updateCb, duration, tInterpolator, onAnimationEndRunnable,
+                DragLayer.ANIMATION_END_DISAPPEAR, null);
     }
 }

@@ -1,22 +1,18 @@
 package com.android.launcher66;
 
-import static android.view.accessibility.AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
@@ -24,74 +20,69 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-
-import com.android.launcher66.CellLayout;
-import com.syu.log.LogPreview;
 import java.util.ArrayList;
-import java.util.Iterator;
 
+/**
+ * A ViewGroup that coordinates dragging across its descendants
+ */
 public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChangeListener {
+    private DragController mDragController;
+    private int[] mTmpXY = new int[2];
+
+    private int mXDown, mYDown;
+    private Launcher mLauncher;
+
+    // Variables relating to resizing widgets
+    private final ArrayList<AppWidgetResizeFrame> mResizeFrames =
+            new ArrayList<AppWidgetResizeFrame>();
+    private AppWidgetResizeFrame mCurrentResizeFrame;
+
+    // Variables relating to animation of views after drop
+    private ValueAnimator mDropAnim = null;
+    private ValueAnimator mFadeOutAnim = null;
+    private TimeInterpolator mCubicEaseOutInterpolator = new DecelerateInterpolator(1.5f);
+    private DragView mDropView = null;
+    private int mAnchorViewInitialScrollX = 0;
+    private View mAnchorView = null;
+
+    private boolean mHoverPointClosesFolder = false;
+    private Rect mHitRect = new Rect();
+    private int mWorkspaceIndex = -1;
+    private int mQsbIndex = -1;
     public static final int ANIMATION_END_DISAPPEAR = 0;
     public static final int ANIMATION_END_FADE_OUT = 1;
     public static final int ANIMATION_END_REMAIN_VISIBLE = 2;
-    private View mAnchorView;
-    private int mAnchorViewInitialScrollX;
-    private TimeInterpolator mCubicEaseOutInterpolator;
-    private AppWidgetResizeFrame mCurrentResizeFrame;
-    private DragController mDragController;
-    private ValueAnimator mDropAnim;
-    private DragView mDropView;
-    private ValueAnimator mFadeOutAnim;
-    private Rect mHitRect;
-    private boolean mHoverPointClosesFolder;
-    private boolean mInScrollArea;
-    private final Rect mInsets;
-    private Launcher mLauncher;
-    private Drawable mLeftHoverDrawable;
-    private int mQsbIndex;
-    private final ArrayList<AppWidgetResizeFrame> mResizeFrames;
-    private Drawable mRightHoverDrawable;
-    private int[] mTmpXY;
+
     private TouchCompleteListener mTouchCompleteListener;
-    private int mWorkspaceIndex;
-    private int mXDown;
-    private int mYDown;
 
-    public interface TouchCompleteListener {
-        void onTouchComplete();
-    }
+    private final Rect mInsets = new Rect();
 
+    /**
+     * Used to create a new DragLayer from XML.
+     *
+     * @param context The application's context.
+     * @param attrs The attributes set containing the Workspace's customization values.
+     */
     public DragLayer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.mTmpXY = new int[2];
-        this.mResizeFrames = new ArrayList<>();
-        this.mDropAnim = null;
-        this.mFadeOutAnim = null;
-        this.mCubicEaseOutInterpolator = new DecelerateInterpolator(1.5f);
-        this.mDropView = null;
-        this.mAnchorViewInitialScrollX = 0;
-        this.mAnchorView = null;
-        this.mHoverPointClosesFolder = false;
-        this.mHitRect = new Rect();
-        this.mWorkspaceIndex = -1;
-        this.mQsbIndex = -1;
-        this.mInsets = new Rect();
+
+        // Disable multitouch across the workspace/all apps/customize tray
         setMotionEventSplittingEnabled(false);
         setChildrenDrawingOrderEnabled(true);
         setOnHierarchyChangeListener(this);
-        this.mLeftHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_left_holo);
-        this.mRightHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_right_holo);
+
+        mLeftHoverDrawable = getResources().getDrawable(R.drawable.page_hover_left_holo);
+        mRightHoverDrawable = getResources().getDrawable(R.drawable.page_hover_right_holo);
     }
 
     public void setup(Launcher launcher, DragController controller) {
-        this.mLauncher = launcher;
-        this.mDragController = controller;
+        mLauncher = launcher;
+        mDragController = controller;
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        return this.mDragController.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
+        return mDragController.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -111,44 +102,55 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
             child.setLayoutParams(flp);
         }
         mInsets.set(insets);
-        return true; 
+        return true; // I'll take it from here
     }
 
     private boolean isEventOverFolderTextRegion(Folder folder, MotionEvent ev) {
-        getDescendantRectRelativeToSelf(folder.getEditTextRegion(), this.mHitRect);
-        return this.mHitRect.contains((int) ev.getX(), (int) ev.getY());
+        getDescendantRectRelativeToSelf(folder.getEditTextRegion(), mHitRect);
+        if (mHitRect.contains((int) ev.getX(), (int) ev.getY())) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isEventOverFolder(Folder folder, MotionEvent ev) {
-        getDescendantRectRelativeToSelf(folder, this.mHitRect);
-        return this.mHitRect.contains((int) ev.getX(), (int) ev.getY());
+        getDescendantRectRelativeToSelf(folder, mHitRect);
+        if (mHitRect.contains((int) ev.getX(), (int) ev.getY())) {
+            return true;
+        }
+        return false;
     }
 
     private boolean handleTouchDown(MotionEvent ev, boolean intercept) {
         Rect hitRect = new Rect();
         int x = (int) ev.getX();
         int y = (int) ev.getY();
-        Iterator<AppWidgetResizeFrame> it = this.mResizeFrames.iterator();
-        while (it.hasNext()) {
-            AppWidgetResizeFrame child = it.next();
+
+        for (AppWidgetResizeFrame child: mResizeFrames) {
             child.getHitRect(hitRect);
-            if (hitRect.contains(x, y) && child.beginResizeIfPointInRegion(x - child.getLeft(), y - child.getTop())) {
-                this.mCurrentResizeFrame = child;
-                this.mXDown = x;
-                this.mYDown = y;
-                requestDisallowInterceptTouchEvent(true);
-                return true;
+            if (hitRect.contains(x, y)) {
+                if (child.beginResizeIfPointInRegion(x - child.getLeft(), y - child.getTop())) {
+                    mCurrentResizeFrame = child;
+                    mXDown = x;
+                    mYDown = y;
+                    requestDisallowInterceptTouchEvent(true);
+                    return true;
+                }
             }
         }
-        Folder currentFolder = this.mLauncher.getWorkspace().getOpenFolder();
-        if (currentFolder != null && !this.mLauncher.isFolderClingVisible() && intercept) {
-            if (currentFolder.isEditingName() && !isEventOverFolderTextRegion(currentFolder, ev)) {
-                currentFolder.dismissEditingName();
-                return true;
+
+        Folder currentFolder = mLauncher.getWorkspace().getOpenFolder();
+        if (currentFolder != null && !mLauncher.isFolderClingVisible() && intercept) {
+            if (currentFolder.isEditingName()) {
+                if (!isEventOverFolderTextRegion(currentFolder, ev)) {
+                    currentFolder.dismissEditingName();
+                    return true;
+                }
             }
+
             getDescendantRectRelativeToSelf(currentFolder, hitRect);
             if (!isEventOverFolder(currentFolder, ev)) {
-                this.mLauncher.closeFolder();
+                mLauncher.closeFolder();
                 return true;
             }
         }
@@ -158,74 +160,71 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         int action = ev.getAction();
-        if (action == 0) {
+
+        if (action == MotionEvent.ACTION_DOWN) {
             if (handleTouchDown(ev, true)) {
                 return true;
             }
-        } else if (action == 1 || action == 3) {
-            if (this.mTouchCompleteListener != null) {
-                this.mTouchCompleteListener.onTouchComplete();
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            if (mTouchCompleteListener != null) {
+                mTouchCompleteListener.onTouchComplete();
             }
-            this.mTouchCompleteListener = null;
+            mTouchCompleteListener = null;
         }
         clearAllResizeFrames();
-        return this.mDragController.onInterceptTouchEvent(ev);
+        return mDragController.onInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onInterceptHoverEvent(MotionEvent ev) {
-        Folder currentFolder;
-        LogPreview.show("onInterceptHoverEvent");
-        if (this.mLauncher == null || this.mLauncher.getWorkspace() == null || (currentFolder = this.mLauncher.getWorkspace().getOpenFolder()) == null) {
+        if (mLauncher == null || mLauncher.getWorkspace() == null) {
             return false;
         }
-        AccessibilityManager accessibilityManager = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (!accessibilityManager.isTouchExplorationEnabled()) {
+        Folder currentFolder = mLauncher.getWorkspace().getOpenFolder();
+        if (currentFolder == null) {
             return false;
-        }
-        int action = ev.getAction();
-        switch (action) {
-            case 7:
-                break;
-            case 8:
-            default:
-                return false;
-            case 9:
-                boolean isOverFolder = isEventOverFolder(currentFolder, ev);
-                if (!isOverFolder) {
-                    sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
-                    this.mHoverPointClosesFolder = true;
-                    return true;
+        } else {
+                AccessibilityManager accessibilityManager = (AccessibilityManager)
+                        getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            if (accessibilityManager.isTouchExplorationEnabled()) {
+                final int action = ev.getAction();
+                boolean isOverFolder;
+                switch (action) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                        isOverFolder = isEventOverFolder(currentFolder, ev);
+                        if (!isOverFolder) {
+                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            mHoverPointClosesFolder = true;
+                            return true;
+                        } else if (isOverFolder) {
+                            mHoverPointClosesFolder = false;
+                        } else {
+                            return true;
+                        }
+                    case MotionEvent.ACTION_HOVER_MOVE:
+                        isOverFolder = isEventOverFolder(currentFolder, ev);
+                        if (!isOverFolder && !mHoverPointClosesFolder) {
+                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            mHoverPointClosesFolder = true;
+                            return true;
+                        } else if (isOverFolder) {
+                            mHoverPointClosesFolder = false;
+                        } else {
+                            return true;
+                        }
                 }
-                if (!isOverFolder) {
-                    return true;
-                }
-                this.mHoverPointClosesFolder = false;
-                break;
+            }
         }
-        boolean isOverFolder2 = isEventOverFolder(currentFolder, ev);
-        if (!isOverFolder2 && !this.mHoverPointClosesFolder) {
-            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
-            this.mHoverPointClosesFolder = true;
-            return true;
-        }
-        if (!isOverFolder2) {
-            return true;
-        }
-        this.mHoverPointClosesFolder = false;
         return false;
     }
 
     private void sendTapOutsideFolderAccessibilityEvent(boolean isEditingName) {
-        AccessibilityManager accessibilityManager = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+        AccessibilityManager accessibilityManager = (AccessibilityManager)
+                getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (accessibilityManager.isEnabled()) {
             int stringId = isEditingName ? R.string.folder_tap_to_rename : R.string.folder_tap_to_close;
-            AccessibilityEvent event;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                event = AccessibilityEvent.obtain(CONTENT_CHANGE_TYPE_PANE_TITLE);
-            } else {
-                event = new AccessibilityEvent(CONTENT_CHANGE_TYPE_PANE_TITLE);
-            }
+            AccessibilityEvent event = AccessibilityEvent.obtain(
+                    AccessibilityEvent.TYPE_VIEW_FOCUSED);
             onInitializeAccessibilityEvent(event);
             event.getText().add(getContext().getString(stringId));
             accessibilityManager.sendAccessibilityEvent(event);
@@ -234,11 +233,13 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
 
     @Override
     public boolean onRequestSendAccessibilityEvent(View child, AccessibilityEvent event) {
-        Folder currentFolder = this.mLauncher.getWorkspace().getOpenFolder();
+        Folder currentFolder = mLauncher.getWorkspace().getOpenFolder();
         if (currentFolder != null) {
             if (child == currentFolder) {
                 return super.onRequestSendAccessibilityEvent(child, event);
             }
+            // Skip propagating onRequestSendAccessibilityEvent all for other children
+            // when a folder is open
             return false;
         }
         return super.onRequestSendAccessibilityEvent(child, event);
@@ -246,8 +247,9 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
 
     @Override
     public void addChildrenForAccessibility(ArrayList<View> childrenForAccessibility) {
-        Folder currentFolder = this.mLauncher.getWorkspace().getOpenFolder();
+        Folder currentFolder = mLauncher.getWorkspace().getOpenFolder();
         if (currentFolder != null) {
+            // Only add the folder as a child for accessibility when it is open
             childrenForAccessibility.add(currentFolder);
         } else {
             super.addChildrenForAccessibility(childrenForAccessibility);
@@ -256,6 +258,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
 
     @Override
     public boolean onHoverEvent(MotionEvent ev) {
+        // If we've received this, we've already done the necessary handling
+        // in onInterceptHoverEvent. Return true to consume the event.
         return false;
     }
 
@@ -263,44 +267,53 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
     public boolean onTouchEvent(MotionEvent ev) {
         boolean handled = false;
         int action = ev.getAction();
+
         int x = (int) ev.getX();
         int y = (int) ev.getY();
-        if (action == 0) {
+
+        if (action == MotionEvent.ACTION_DOWN) {
             if (handleTouchDown(ev, false)) {
                 return true;
             }
-        } else if (action == 1 || action == 3) {
-            if (this.mTouchCompleteListener != null) {
-                this.mTouchCompleteListener.onTouchComplete();
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            if (mTouchCompleteListener != null) {
+                mTouchCompleteListener.onTouchComplete();
             }
-            this.mTouchCompleteListener = null;
+            mTouchCompleteListener = null;
         }
-        if (this.mCurrentResizeFrame != null) {
+
+        if (mCurrentResizeFrame != null) {
             handled = true;
             switch (action) {
-                case 1:
-                case 3:
-                    this.mCurrentResizeFrame.visualizeResizeForDelta(x - this.mXDown, y - this.mYDown);
-                    this.mCurrentResizeFrame.onTouchUp();
-                    this.mCurrentResizeFrame = null;
+                case MotionEvent.ACTION_MOVE:
+                    mCurrentResizeFrame.visualizeResizeForDelta(x - mXDown, y - mYDown);
                     break;
-                case 2:
-                    LogPreview.show("MotionEvent.ACTION_MOVE");
-                    this.mCurrentResizeFrame.visualizeResizeForDelta(x - this.mXDown, y - this.mYDown);
-                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    mCurrentResizeFrame.visualizeResizeForDelta(x - mXDown, y - mYDown);
+                    mCurrentResizeFrame.onTouchUp();
+                    mCurrentResizeFrame = null;
             }
         }
-        if (handled) {
-            return true;
-        }
-        return this.mDragController.onTouchEvent(ev);
+        if (handled) return true;
+        return mDragController.onTouchEvent(ev);
     }
 
+    /**
+     * Determine the rect of the descendant in this DragLayer's coordinates
+     *
+     * @param descendant The descendant whose coordinates we want to find.
+     * @param r The rect into which to place the results.
+     * @return The factor by which this descendant is scaled relative to this DragLayer.
+     */
     public float getDescendantRectRelativeToSelf(View descendant, Rect r) {
-        this.mTmpXY[0] = 0;
-        this.mTmpXY[1] = 0;
-        float scale = getDescendantCoordRelativeToSelf(descendant, this.mTmpXY);
-        r.set(this.mTmpXY[0], this.mTmpXY[1], (int) (this.mTmpXY[0] + (descendant.getMeasuredWidth() * scale)), (int) (this.mTmpXY[1] + (descendant.getMeasuredHeight() * scale)));
+        mTmpXY[0] = 0;
+        mTmpXY[1] = 0;
+        float scale = getDescendantCoordRelativeToSelf(descendant, mTmpXY);
+
+        r.set(mTmpXY[0], mTmpXY[1],
+                (int) (mTmpXY[0] + scale * descendant.getMeasuredWidth()),
+                (int) (mTmpXY[1] + scale * descendant.getMeasuredHeight()));
         return scale;
     }
 
@@ -314,10 +327,27 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         return getDescendantCoordRelativeToSelf(descendant, coord, false);
     }
 
-    public float getDescendantCoordRelativeToSelf(View descendant, int[] coord, boolean includeRootScroll) {
-        return Utilities.getDescendantCoordRelativeToParent(descendant, this, coord, includeRootScroll);
+    /**
+     * Given a coordinate relative to the descendant, find the coordinate in this DragLayer's
+     * coordinates.
+     *
+     * @param descendant The descendant to which the passed coordinate is relative.
+     * @param coord The coordinate that we want mapped.
+     * @param includeRootScroll Whether or not to account for the scroll of the root descendant:
+     *          sometimes this is relevant as in a child's coordinates within the root descendant.
+     * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
+     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
+     *         assumption fails, we will need to return a pair of scale factors.
+     */
+    public float getDescendantCoordRelativeToSelf(View descendant, int[] coord,
+            boolean includeRootScroll) {
+        return Utilities.getDescendantCoordRelativeToParent(descendant, this,
+                coord, includeRootScroll);
     }
 
+    /**
+     * Inverse of {@link #getDescendantCoordRelativeToSelf(View, int[])}.
+     */
     public float mapCoordInSelfToDescendent(View descendant, int[] coord) {
         return Utilities.mapCoordInSelfToDescendent(descendant, this, coord);
     }
@@ -327,27 +357,30 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         getLocationInWindow(loc);
         int x = loc[0];
         int y = loc[1];
+
         v.getLocationInWindow(loc);
         int vX = loc[0];
         int vY = loc[1];
+
         int left = vX - x;
         int top = vY - y;
-        r.set(left, top, v.getMeasuredWidth() + left, v.getMeasuredHeight() + top);
+        r.set(left, top, left + v.getMeasuredWidth(), top + v.getMeasuredHeight());
     }
 
     @Override
     public boolean dispatchUnhandledMove(View focused, int direction) {
-        return this.mDragController.dispatchUnhandledMove(focused, direction);
+        return mDragController.dispatchUnhandledMove(focused, direction);
     }
 
     public static class LayoutParams extends FrameLayout.LayoutParams {
-        public boolean customPosition;
-        public int x;
-        public int y;
+        public int x, y;
+        public boolean customPosition = false;
 
+        /**
+         * {@inheritDoc}
+         */
         public LayoutParams(int width, int height) {
             super(width, height);
-            this.customPosition = false;
         }
 
         public void setWidth(int width) {
@@ -355,7 +388,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
 
         public int getWidth() {
-            return this.width;
+            return width;
         }
 
         public void setHeight(int height) {
@@ -363,7 +396,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
 
         public int getHeight() {
-            return this.height;
+            return height;
         }
 
         public void setX(int x) {
@@ -371,7 +404,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
 
         public int getX() {
-            return this.x;
+            return x;
         }
 
         public void setY(int y) {
@@ -379,19 +412,18 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         }
 
         public int getY() {
-            return this.y;
+            return y;
         }
     }
 
-    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
-            FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) child.getLayoutParams();
+            final FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) child.getLayoutParams();
             if (flp instanceof LayoutParams) {
-                LayoutParams lp = (LayoutParams) flp;
+                final LayoutParams lp = (LayoutParams) flp;
                 if (lp.customPosition) {
                     child.layout(lp.x, lp.y, lp.x + lp.width, lp.y + lp.height);
                 }
@@ -400,226 +432,279 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
     }
 
     public void clearAllResizeFrames() {
-        if (this.mResizeFrames.size() > 0) {
-            Iterator<AppWidgetResizeFrame> it = this.mResizeFrames.iterator();
-            while (it.hasNext()) {
-                AppWidgetResizeFrame frame = it.next();
+        if (mResizeFrames.size() > 0) {
+            for (AppWidgetResizeFrame frame: mResizeFrames) {
                 frame.commitResize();
                 removeView(frame);
             }
-            this.mResizeFrames.clear();
+            mResizeFrames.clear();
         }
     }
 
     public boolean hasResizeFrames() {
-        return this.mResizeFrames.size() > 0;
+        return mResizeFrames.size() > 0;
     }
 
     public boolean isWidgetBeingResized() {
-        return this.mCurrentResizeFrame != null;
+        return mCurrentResizeFrame != null;
     }
 
-    public void addResizeFrame(ItemInfo itemInfo, LauncherAppWidgetHostView widget, CellLayout cellLayout) {
-        AppWidgetResizeFrame resizeFrame = new AppWidgetResizeFrame(getContext(), widget, cellLayout, this);
+    public void addResizeFrame(ItemInfo itemInfo, LauncherAppWidgetHostView widget,
+            CellLayout cellLayout) {
+        AppWidgetResizeFrame resizeFrame = new AppWidgetResizeFrame(getContext(),
+                widget, cellLayout, this);
+
         LayoutParams lp = new LayoutParams(-1, -1);
         lp.customPosition = true;
+
         addView(resizeFrame, lp);
-        this.mResizeFrames.add(resizeFrame);
+        mResizeFrames.add(resizeFrame);
+
         resizeFrame.snapToWidget(false);
     }
 
-    public void animateViewIntoPosition(DragView dragView, View child) {
+    public void animateViewIntoPosition(DragView dragView, final View child) {
         animateViewIntoPosition(dragView, child, null);
     }
 
-    public void animateViewIntoPosition(DragView dragView, int[] pos, float alpha, float scaleX, float scaleY, int animationEndStyle, Runnable onFinishRunnable, int duration) {
+    public void animateViewIntoPosition(DragView dragView, final int[] pos, float alpha,
+            float scaleX, float scaleY, int animationEndStyle, Runnable onFinishRunnable,
+            int duration) {
         Rect r = new Rect();
         getViewRectRelativeToSelf(dragView, r);
-        int fromX = r.left;
-        int fromY = r.top;
-        animateViewIntoPosition(dragView, fromX, fromY, pos[0], pos[1], alpha, 1.0f, 1.0f, scaleX, scaleY, onFinishRunnable, animationEndStyle, duration, null);
+        final int fromX = r.left;
+        final int fromY = r.top;
+
+        animateViewIntoPosition(dragView, fromX, fromY, pos[0], pos[1], alpha, 1, 1, scaleX, scaleY,
+                onFinishRunnable, animationEndStyle, duration, null);
     }
 
-    public void animateViewIntoPosition(DragView dragView, View child, Runnable onFinishAnimationRunnable) {
+    public void animateViewIntoPosition(DragView dragView, final View child,
+            final Runnable onFinishAnimationRunnable) {
         animateViewIntoPosition(dragView, child, -1, onFinishAnimationRunnable, null);
     }
 
-    public void animateViewIntoPosition(DragView dragView, final View child, int duration, final Runnable onFinishAnimationRunnable, View anchorView) {
-        int toY;
-        int toX;
+    public void animateViewIntoPosition(DragView dragView, final View child, int duration,
+            final Runnable onFinishAnimationRunnable, View anchorView) {
         ShortcutAndWidgetContainer parentChildren = (ShortcutAndWidgetContainer) child.getParent();
-        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+        CellLayout.LayoutParams lp =  (CellLayout.LayoutParams) child.getLayoutParams();
         parentChildren.measureChild(child);
+
         Rect r = new Rect();
         getViewRectRelativeToSelf(dragView, r);
+
+        int coord[] = new int[2];
         float childScale = child.getScaleX();
-        int[] coord = {lp.x + ((int) ((child.getMeasuredWidth() * (1.0f - childScale)) / 2.0f)), lp.y + ((int) ((child.getMeasuredHeight() * (1.0f - childScale)) / 2.0f))};
-        float scale = getDescendantCoordRelativeToSelf((View) child.getParent(), coord) * childScale;
-        int toX2 = coord[0];
-        int toY2 = coord[1];
+        coord[0] = lp.x + (int) (child.getMeasuredWidth() * (1 - childScale) / 2);
+        coord[1] = lp.y + (int) (child.getMeasuredHeight() * (1 - childScale) / 2);
+
+        // Since the child hasn't necessarily been laid out, we force the lp to be updated with
+        // the correct coordinates (above) and use these to determine the final location
+        float scale = getDescendantCoordRelativeToSelf((View) child.getParent(), coord);
+        // We need to account for the scale of the child itself, as the above only accounts for
+        // for the scale in parents.
+        scale *= childScale;
+        int toX = coord[0];
+        int toY = coord[1];
         if (child instanceof TextView) {
             TextView tv = (TextView) child;
-            toY = (int) ((toY2 + Math.round(tv.getPaddingTop() * scale)) - ((dragView.getMeasuredHeight() * (1.0f - scale)) / 2.0f));
-            toX = toX2 - ((dragView.getMeasuredWidth() - Math.round(child.getMeasuredWidth() * scale)) / 2);
+
+            // The child may be scaled (always about the center of the view) so to account for it,
+            // we have to offset the position by the scaled size.  Once we do that, we can center
+            // the drag view about the scaled child view.
+            toY += Math.round(scale * tv.getPaddingTop());
+            toY -= dragView.getMeasuredHeight() * (1 - scale) / 2;
+            toX -= (dragView.getMeasuredWidth() - Math.round(scale * child.getMeasuredWidth())) / 2;
         } else if (child instanceof FolderIcon) {
-            toY = (int) (((int) ((toY2 + Math.round((child.getPaddingTop() - dragView.getDragRegionTop()) * scale)) - ((2.0f * scale) / 2.0f))) - (((1.0f - scale) * dragView.getMeasuredHeight()) / 2.0f));
-            toX = toX2 - ((dragView.getMeasuredWidth() - Math.round(child.getMeasuredWidth() * scale)) / 2);
+            // Account for holographic blur padding on the drag view
+            toY += Math.round(scale * (child.getPaddingTop() - dragView.getDragRegionTop()));
+            toY -= scale * Workspace.DRAG_BITMAP_PADDING / 2;
+            toY -= (1 - scale) * dragView.getMeasuredHeight() / 2;
+            // Center in the x coordinate about the target's drawable
+            toX -= (dragView.getMeasuredWidth() - Math.round(scale * child.getMeasuredWidth())) / 2;
         } else {
-            toY = toY2 - (Math.round((dragView.getHeight() - child.getMeasuredHeight()) * scale) / 2);
-            toX = toX2 - (Math.round((dragView.getMeasuredWidth() - child.getMeasuredWidth()) * scale) / 2);
+            toY -= (Math.round(scale * (dragView.getHeight() - child.getMeasuredHeight()))) / 2;
+            toX -= (Math.round(scale * (dragView.getMeasuredWidth()
+                    - child.getMeasuredWidth()))) / 2;
         }
-        int fromX = r.left;
-        int fromY = r.top;
-        child.setVisibility(View.INVISIBLE);
-        Runnable onCompleteRunnable = new Runnable() { 
-            @Override
+
+        final int fromX = r.left;
+        final int fromY = r.top;
+        child.setVisibility(INVISIBLE);
+        Runnable onCompleteRunnable = new Runnable() {
             public void run() {
-                child.setVisibility(View.VISIBLE);
+                child.setVisibility(VISIBLE);
                 if (onFinishAnimationRunnable != null) {
                     onFinishAnimationRunnable.run();
                 }
             }
         };
-        animateViewIntoPosition(dragView, fromX, fromY, toX, toY, 1.0f, 1.0f, 1.0f, scale, scale, onCompleteRunnable, 0, duration, anchorView);
+        animateViewIntoPosition(dragView, fromX, fromY, toX, toY, 1, 1, 1, scale, scale,
+                onCompleteRunnable, ANIMATION_END_DISAPPEAR, duration, anchorView);
     }
 
-    public void animateViewIntoPosition(DragView view, int fromX, int fromY, int toX, int toY, float finalAlpha, float initScaleX, float initScaleY, float finalScaleX, float finalScaleY, Runnable onCompleteRunnable, int animationEndStyle, int duration, View anchorView) {
-        Rect from = new Rect(fromX, fromY, view.getMeasuredWidth() + fromX, view.getMeasuredHeight() + fromY);
-        Rect to = new Rect(toX, toY, view.getMeasuredWidth() + toX, view.getMeasuredHeight() + toY);
-        animateView(view, from, to, finalAlpha, initScaleX, initScaleY, finalScaleX, finalScaleY, duration, null, null, onCompleteRunnable, animationEndStyle, anchorView);
+    public void animateViewIntoPosition(final DragView view, final int fromX, final int fromY,
+            final int toX, final int toY, float finalAlpha, float initScaleX, float initScaleY,
+            float finalScaleX, float finalScaleY, Runnable onCompleteRunnable,
+            int animationEndStyle, int duration, View anchorView) {
+        Rect from = new Rect(fromX, fromY, fromX +
+                view.getMeasuredWidth(), fromY + view.getMeasuredHeight());
+        Rect to = new Rect(toX, toY, toX + view.getMeasuredWidth(), toY + view.getMeasuredHeight());
+        animateView(view, from, to, finalAlpha, initScaleX, initScaleY, finalScaleX, finalScaleY, duration,
+                null, null, onCompleteRunnable, animationEndStyle, anchorView);
     }
 
-    public void animateView(final DragView view, final Rect from, final Rect to, final float finalAlpha, final float initScaleX, final float initScaleY, final float finalScaleX, final float finalScaleY, int duration, final Interpolator motionInterpolator, final Interpolator alphaInterpolator, Runnable onCompleteRunnable, int animationEndStyle, View anchorView) {
-        float dist = (float) Math.sqrt(Math.pow(to.left - from.left, 2.0d) + Math.pow(to.top - from.top, 2.0d));
-        Resources res = getResources();
-        float maxDist = res.getInteger(R.integer.config_dropAnimMaxDist);
+    public void animateView(final DragView view, final Rect from, final Rect to,
+            final float finalAlpha, final float initScaleX, final float initScaleY,
+            final float finalScaleX, final float finalScaleY, int duration,
+            final Interpolator motionInterpolator, final Interpolator alphaInterpolator,
+            final Runnable onCompleteRunnable, final int animationEndStyle, View anchorView) {
+
+        // Calculate the duration of the animation based on the object's distance
+        final float dist = (float) Math.sqrt(Math.pow(to.left - from.left, 2) +
+                Math.pow(to.top - from.top, 2));
+        final Resources res = getResources();
+        final float maxDist = (float) res.getInteger(R.integer.config_dropAnimMaxDist);
+
+        // If duration < 0, this is a cue to compute the duration based on the distance
         if (duration < 0) {
-            int duration2 = res.getInteger(R.integer.config_dropAnimMaxDuration);
+            duration = res.getInteger(R.integer.config_dropAnimMaxDuration);
             if (dist < maxDist) {
-                duration2 = (int) (duration2 * this.mCubicEaseOutInterpolator.getInterpolation(dist / maxDist));
+                duration *= mCubicEaseOutInterpolator.getInterpolation(dist / maxDist);
             }
-            duration = Math.max(duration2, res.getInteger(R.integer.config_dropAnimMinDuration));
+            duration = Math.max(duration, res.getInteger(R.integer.config_dropAnimMinDuration));
         }
+
+        // Fall back to cubic ease out interpolator for the animation if none is specified
         TimeInterpolator interpolator = null;
         if (alphaInterpolator == null || motionInterpolator == null) {
-            interpolator = this.mCubicEaseOutInterpolator;
+            interpolator = mCubicEaseOutInterpolator;
         }
+
+        // Animate the view
         final float initAlpha = view.getAlpha();
         final float dropViewScale = view.getScaleX();
-        ValueAnimator.AnimatorUpdateListener updateCb = new ValueAnimator.AnimatorUpdateListener() { 
+        AnimatorUpdateListener updateCb = new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                int i;
-                float percent = ((Float) animation.getAnimatedValue()).floatValue();
-                int width = view.getMeasuredWidth();
-                int height = view.getMeasuredHeight();
-                float alphaPercent = alphaInterpolator == null ? percent : alphaInterpolator.getInterpolation(percent);
-                float motionPercent = motionInterpolator == null ? percent : motionInterpolator.getInterpolation(percent);
+                final float percent = (Float) animation.getAnimatedValue();
+                final int width = view.getMeasuredWidth();
+                final int height = view.getMeasuredHeight();
+
+                float alphaPercent = alphaInterpolator == null ? percent :
+                        alphaInterpolator.getInterpolation(percent);
+                float motionPercent = motionInterpolator == null ? percent :
+                        motionInterpolator.getInterpolation(percent);
+
                 float initialScaleX = initScaleX * dropViewScale;
                 float initialScaleY = initScaleY * dropViewScale;
-                float scaleX = (finalScaleX * percent) + ((1.0f - percent) * initialScaleX);
-                float scaleY = (finalScaleY * percent) + ((1.0f - percent) * initialScaleY);
-                float alpha = (finalAlpha * alphaPercent) + (initAlpha * (1.0f - alphaPercent));
-                float fromLeft = from.left + (((initialScaleX - 1.0f) * width) / 2.0f);
-                float fromTop = from.top + (((initialScaleY - 1.0f) * height) / 2.0f);
-                int x = (int) (Math.round((to.left - fromLeft) * motionPercent) + fromLeft);
-                int y = (int) (Math.round((to.top - fromTop) * motionPercent) + fromTop);
-                int scrollX = x - DragLayer.this.mDropView.getScrollX();
-                if (DragLayer.this.mAnchorView != null) {
-                    i = DragLayer.this.mAnchorViewInitialScrollX - DragLayer.this.mAnchorView.getScrollX();
-                } else {
-                    i = 0;
-                }
-                int xPos = scrollX + i;
-                int yPos = y - DragLayer.this.mDropView.getScrollY();
-                DragLayer.this.mDropView.setTranslationX(xPos);
-                DragLayer.this.mDropView.setTranslationY(yPos);
-                DragLayer.this.mDropView.setScaleX(scaleX);
-                DragLayer.this.mDropView.setScaleY(scaleY);
-                DragLayer.this.mDropView.setAlpha(alpha);
+                float scaleX = finalScaleX * percent + initialScaleX * (1 - percent);
+                float scaleY = finalScaleY * percent + initialScaleY * (1 - percent);
+                float alpha = finalAlpha * alphaPercent + initAlpha * (1 - alphaPercent);
+
+                float fromLeft = from.left + (initialScaleX - 1f) * width / 2;
+                float fromTop = from.top + (initialScaleY - 1f) * height / 2;
+
+                int x = (int) (fromLeft + Math.round(((to.left - fromLeft) * motionPercent)));
+                int y = (int) (fromTop + Math.round(((to.top - fromTop) * motionPercent)));
+
+                int xPos = x - mDropView.getScrollX() + (mAnchorView != null
+                        ? (mAnchorViewInitialScrollX - mAnchorView.getScrollX()) : 0);
+                int yPos = y - mDropView.getScrollY();
+
+                mDropView.setTranslationX(xPos);
+                mDropView.setTranslationY(yPos);
+                mDropView.setScaleX(scaleX);
+                mDropView.setScaleY(scaleY);
+                mDropView.setAlpha(alpha);
             }
         };
-        animateView(view, updateCb, duration, interpolator, onCompleteRunnable, animationEndStyle, anchorView);
+        animateView(view, updateCb, duration, interpolator, onCompleteRunnable, animationEndStyle,
+                anchorView);
     }
 
-    public void animateView(DragView view, ValueAnimator.AnimatorUpdateListener updateCb, int duration, TimeInterpolator interpolator, final Runnable onCompleteRunnable, final int animationEndStyle, View anchorView) {
-        if (this.mDropAnim != null) {
-            this.mDropAnim.cancel();
-        }
-        if (this.mFadeOutAnim != null) {
-            this.mFadeOutAnim.cancel();
-        }
-        this.mDropView = view;
-        this.mDropView.cancelAnimation();
-        this.mDropView.resetLayoutParams();
+    public void animateView(final DragView view, AnimatorUpdateListener updateCb, int duration,
+            TimeInterpolator interpolator, final Runnable onCompleteRunnable,
+            final int animationEndStyle, View anchorView) {
+        // Clean up the previous animations
+        if (mDropAnim != null) mDropAnim.cancel();
+        if (mFadeOutAnim != null) mFadeOutAnim.cancel();
+
+        // Show the drop view if it was previously hidden
+        mDropView = view;
+        mDropView.cancelAnimation();
+        mDropView.resetLayoutParams();
+
+        // Set the anchor view if the page is scrolling
         if (anchorView != null) {
-            this.mAnchorViewInitialScrollX = anchorView.getScrollX();
+            mAnchorViewInitialScrollX = anchorView.getScrollX();
         }
-        this.mAnchorView = anchorView;
-        this.mDropAnim = new ValueAnimator();
-        this.mDropAnim.setInterpolator(interpolator);
-        this.mDropAnim.setDuration(duration);
-        this.mDropAnim.setFloatValues(0.0f, 1.0f);
-        this.mDropAnim.addUpdateListener(updateCb);
-        this.mDropAnim.addListener(new AnimatorListenerAdapter() { 
-            @Override
+        mAnchorView = anchorView;
+
+        // Create and start the animation
+        mDropAnim = new ValueAnimator();
+        mDropAnim.setInterpolator(interpolator);
+        mDropAnim.setDuration(duration);
+        mDropAnim.setFloatValues(0f, 1f);
+        mDropAnim.addUpdateListener(updateCb);
+        mDropAnim.addListener(new AnimatorListenerAdapter() {
             public void onAnimationEnd(Animator animation) {
                 if (onCompleteRunnable != null) {
                     onCompleteRunnable.run();
                 }
                 switch (animationEndStyle) {
-                    case 0:
-                        DragLayer.this.clearAnimatedView();
-                        break;
-                    case 1:
-                        DragLayer.this.fadeOutDragView();
-                        break;
+                case ANIMATION_END_DISAPPEAR:
+                    clearAnimatedView();
+                    break;
+                case ANIMATION_END_FADE_OUT:
+                    fadeOutDragView();
+                    break;
+                case ANIMATION_END_REMAIN_VISIBLE:
+                    break;
                 }
             }
         });
-        this.mDropAnim.start();
+        mDropAnim.start();
     }
 
     public void clearAnimatedView() {
-        if (this.mDropAnim != null) {
-            this.mDropAnim.cancel();
+        if (mDropAnim != null) {
+            mDropAnim.cancel();
         }
-        if (this.mDropView != null) {
-            this.mDragController.onDeferredEndDrag(this.mDropView);
+        if (mDropView != null) {
+            mDragController.onDeferredEndDrag(mDropView);
         }
-        this.mDropView = null;
+        mDropView = null;
         invalidate();
     }
 
     public View getAnimatedView() {
-        return this.mDropView;
+        return mDropView;
     }
 
-    
-    public void fadeOutDragView() {
-        this.mFadeOutAnim = new ValueAnimator();
-        this.mFadeOutAnim.setDuration(150L);
-        this.mFadeOutAnim.setFloatValues(0.0f, 1.0f);
-        this.mFadeOutAnim.removeAllUpdateListeners();
-        this.mFadeOutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
-            @Override
+    private void fadeOutDragView() {
+        mFadeOutAnim = new ValueAnimator();
+        mFadeOutAnim.setDuration(150);
+        mFadeOutAnim.setFloatValues(0f, 1f);
+        mFadeOutAnim.removeAllUpdateListeners();
+        mFadeOutAnim.addUpdateListener(new AnimatorUpdateListener() {
             public void onAnimationUpdate(ValueAnimator animation) {
-                float percent = ((Float) animation.getAnimatedValue()).floatValue();
-                float alpha = 1.0f - percent;
-                DragLayer.this.mDropView.setAlpha(alpha);
+                final float percent = (Float) animation.getAnimatedValue();
+
+                float alpha = 1 - percent;
+                mDropView.setAlpha(alpha);
             }
         });
-        this.mFadeOutAnim.addListener(new AnimatorListenerAdapter() { 
-            @Override
+        mFadeOutAnim.addListener(new AnimatorListenerAdapter() {
             public void onAnimationEnd(Animator animation) {
-                if (DragLayer.this.mDropView != null) {
-                    DragLayer.this.mDragController.onDeferredEndDrag(DragLayer.this.mDropView);
+                if (mDropView != null) {
+                    mDragController.onDeferredEndDrag(mDropView);
                 }
-                DragLayer.this.mDropView = null;
-                DragLayer.this.invalidate();
+                mDropView = null;
+                invalidate();
             }
         });
-        this.mFadeOutAnim.start();
+        mFadeOutAnim.start();
     }
 
     @Override
@@ -633,27 +718,51 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
     }
 
     private void updateChildIndices() {
-        if (this.mLauncher != null) {
-            this.mWorkspaceIndex = indexOfChild(this.mLauncher.getWorkspace());
-            this.mQsbIndex = indexOfChild(this.mLauncher.getSearchBar());
+        if (mLauncher != null) {
+            mWorkspaceIndex = indexOfChild(mLauncher.getWorkspace());
+            mQsbIndex = indexOfChild(mLauncher.getSearchBar());
         }
     }
 
     @Override
     protected int getChildDrawingOrder(int childCount, int i) {
-        return i;
+        // TODO: We have turned off this custom drawing order because it now effects touch
+        // dispatch order. We need to sort that issue out and then decide how to go about this.
+        if (true || LauncherAppState.isScreenLandscape(getContext()) ||
+                mWorkspaceIndex == -1 || mQsbIndex == -1 ||
+                mLauncher.getWorkspace().isDrawingBackgroundGradient()) {
+            return i;
+        }
+
+        // This ensures that the workspace is drawn above the hotseat and qsb,
+        // except when the workspace is drawing a background gradient, in which
+        // case we want the workspace to stay behind these elements.
+        if (i == mQsbIndex) {
+            return mWorkspaceIndex;
+        } else if (i == mWorkspaceIndex) {
+            return mQsbIndex;
+        } else {
+            return i;
+        }
     }
 
+    private boolean mInScrollArea;
+    private Drawable mLeftHoverDrawable;
+    private Drawable mRightHoverDrawable;
+
     void onEnterScrollArea(int direction) {
-        this.mInScrollArea = true;
+        mInScrollArea = true;
         invalidate();
     }
 
     void onExitScrollArea() {
-        this.mInScrollArea = false;
+        mInScrollArea = false;
         invalidate();
     }
 
+    /**
+     * Note: this is a reimplementation of View.isLayoutRtl() since that is currently hidden api.
+     */
     public boolean isLayoutRtl() {
         return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
@@ -661,26 +770,35 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (this.mInScrollArea && !LauncherAppState.getInstance().isScreenLarge()) {
-            Workspace workspace = this.mLauncher.getWorkspace();
+
+        if (mInScrollArea && !LauncherAppState.getInstance().isScreenLarge()) {
+            Workspace workspace = mLauncher.getWorkspace();
             int width = getMeasuredWidth();
             Rect childRect = new Rect();
             getDescendantRectRelativeToSelf(workspace.getChildAt(0), childRect);
+
             int page = workspace.getNextPage();
-            boolean isRtl = isLayoutRtl();
+            final boolean isRtl = isLayoutRtl();
             CellLayout leftPage = (CellLayout) workspace.getChildAt(isRtl ? page + 1 : page - 1);
             CellLayout rightPage = (CellLayout) workspace.getChildAt(isRtl ? page - 1 : page + 1);
+
             if (leftPage != null && leftPage.getIsDragOverlapping()) {
-                this.mLeftHoverDrawable.setBounds(0, childRect.top, this.mLeftHoverDrawable.getIntrinsicWidth(), childRect.bottom);
-                this.mLeftHoverDrawable.draw(canvas);
+                mLeftHoverDrawable.setBounds(0, childRect.top,
+                        mLeftHoverDrawable.getIntrinsicWidth(), childRect.bottom);
+                mLeftHoverDrawable.draw(canvas);
             } else if (rightPage != null && rightPage.getIsDragOverlapping()) {
-                this.mRightHoverDrawable.setBounds(width - this.mRightHoverDrawable.getIntrinsicWidth(), childRect.top, width, childRect.bottom);
-                this.mRightHoverDrawable.draw(canvas);
+                mRightHoverDrawable.setBounds(width - mRightHoverDrawable.getIntrinsicWidth(),
+                        childRect.top, width, childRect.bottom);
+                mRightHoverDrawable.draw(canvas);
             }
         }
     }
 
     public void setTouchCompleteListener(TouchCompleteListener listener) {
-        this.mTouchCompleteListener = listener;
+        mTouchCompleteListener = listener;
+    }
+
+    public interface TouchCompleteListener {
+        public void onTouchComplete();
     }
 }

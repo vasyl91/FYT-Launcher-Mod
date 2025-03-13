@@ -35,17 +35,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
 
-    public AppListAdapter(final Launcher mLauncher, final List<AppListBean> mData) {
+    public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
         this.mMaxCount = 8;
         this.mData = mData;
         this.mLauncher = mLauncher;
         (this.mDialog = new AppListDialogFragment()).setItemClickDataListener(this);
-    }
-
-    @Override
-    public int getItemCount() {
-        this.showAddAppView = (this.mData.size() > this.mMaxCount);
-        return this.mData.size();
     }
 
     public void notifyDataSetChanged(final List<AppListBean> list) {
@@ -53,6 +47,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             AppListAdapter.this.mData = list;
             AppListAdapter.this.notifyDataSetChanged();
         });
+    }
+
+    @Override
+    public int getItemCount() {
+        this.showAddAppView = (this.mData.size() > this.mMaxCount);
+        return this.mData.size();
     }
 
     @Override
@@ -91,13 +91,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         final Intent intent = new Intent();
                         intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                         AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                        
                         helpers.setInOverviewMode(false);
                         helpers.setListOpen(false);
                         helpers.setAppOpenedByUser(true);
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
                         boolean userLayout = prefs.getBoolean("user_layout", false);
                         boolean userStats = prefs.getBoolean("user_stats", false);
+                        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                         if (userLayout && userStats)  {  
                             SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));

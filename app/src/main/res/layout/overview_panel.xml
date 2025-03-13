@@ -1,35 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_gravity="bottom|center"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/overview_panel_bottom_padding"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <TextView
-        android:textSize="12.0sp"
-        android:gravity="center_horizontal"
-        android:id="@id/wallpaper_button"
-        android:tag="@string/skin_ruleless"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/bottom_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/wallpaper_button_text"
-        android:drawableTop="@drawable/wallpaper_button"
-        android:drawablePadding="4.0px"
-        android:textAllCaps="true"
-        android:fontFamily="sans-serif-condensed" />
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="@dimen/overview_panel_bottom_padding">
 
-    <TextView
-        android:textSize="12.0sp"
-        android:gravity="center_horizontal"
-        android:id="@id/settings_button"
-        android:tag="@string/skin_ruleless"
+        <TextView
+            android:id="@+id/wallpaper_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wallpaper_button_text"
+            android:drawablePadding="4dp"
+            android:drawableTop="@drawable/wallpaper_button"
+            android:gravity="center_horizontal"
+            android:fontFamily="sans-serif-condensed"
+            android:textAllCaps="true"
+            android:textColor="@color/text_color_white"
+            android:textSize="12sp" />
+        <Space
+            android:layout_width="@dimen/overview_panel_buttonSpacing"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/settings_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_button_text"
+            android:drawablePadding="4dp"
+            android:gravity="center_horizontal"
+            android:drawableTop="@drawable/setting_button"
+            android:fontFamily="sans-serif-condensed"
+            android:textAllCaps="true"
+            android:textColor="@color/text_color_white"
+            android:textSize="12sp" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/bottom_buttons_widgets"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/overview_panel_buttonSpacing"
-        android:text="@string/settings_button_text"
-        android:drawableTop="@drawable/setting_button"
-        android:drawablePadding="4.0px"
-        android:textAllCaps="true"
-        android:fontFamily="sans-serif-condensed" />
-</LinearLayout>
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="@dimen/overview_panel_bottom_padding">
+
+        <TextView
+            android:id="@+id/wallpaper_button_widgets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wallpaper_button_text"
+            android:drawablePadding="4dp"
+            android:drawableTop="@drawable/wallpaper_button"
+            android:gravity="center_horizontal"
+            android:fontFamily="sans-serif-condensed"
+            android:textAllCaps="true"
+            android:textColor="@color/text_color_white"
+            android:textSize="12sp" />
+        <Space
+            android:layout_width="@dimen/overview_panel_buttonSpacing"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/widget_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_button_text"
+            android:drawablePadding="4dp"
+            android:gravity="center_horizontal"
+            android:drawableTop="@drawable/widget_button"
+            android:fontFamily="sans-serif-condensed"
+            android:textAllCaps="true"
+            android:textColor="@color/text_color_white"
+            android:textSize="12sp"/>
+        <Space
+            android:layout_width="@dimen/overview_panel_buttonSpacing"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/settings_button_widgets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_button_text"
+            android:drawablePadding="4dp"
+            android:gravity="center_horizontal"
+            android:drawableTop="@drawable/setting_button"
+            android:fontFamily="sans-serif-condensed"
+            android:textAllCaps="true"
+            android:textColor="@color/text_color_white"
+            android:textSize="12sp" />
+    </LinearLayout>
+</RelativeLayout>

@@ -144,7 +144,7 @@
 
     <attr name="strokeColor" format="color" />
     <attr name="strokeTextColor" format="color" />
-    <attr name="strokeWidth" format="float" />
+    <attr name="strokeWidth" format="dimension" />
 
     <attr name="topImageClickEnable" format="boolean" />
     <attr name="facetype" format="string" />

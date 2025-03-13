@@ -15,7 +15,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0.4"
+        versionName = "1.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -93,8 +93,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.junit.jupiter)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.recyclerview.selection)
@@ -110,8 +108,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.preference)
     implementation(libs.flexbox)
-    implementation(libs.process.phoenix)
     implementation(libs.play.services.location)
+    implementation(libs.material)
+
 
     testImplementation(libs.junit)
 

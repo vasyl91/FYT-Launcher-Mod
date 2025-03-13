@@ -18,17 +18,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -36,10 +44,10 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.TwoStatePreference;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.R;
-import com.syu.util.WindowUtil;
-import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,7 +60,10 @@ import java.util.concurrent.TimeUnit;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, HomeWatcher.OnHomePressedListener {
 
+    // Fragment for the first window in the settings
+
     private SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor editor;
     private HomeWatcher mHomeWatcher;
     private Context mContext;
     private final Helpers helpers = new Helpers();
@@ -60,12 +71,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private View rootView;
     private static final String STATUSBAR = "transparent_statusbar";
     private static final String USER_LAYOUT = "user_layout";
+    private static final String USER_INIT_LAYOUT = "user_init_layout";
     private static final String CREATOR_FIRST = "launcher_creator_first";
     private static final String FYT_DATA = "fyt_data"; 
     private static final String DEVICE_SETTINGS = "device_settings";
     private static final String NOTIFICATION_SETTINGS = "notification_settings";
     private static final String ACCESSIBILITY_SETTINGS = "accessibility_settings";
-    private static final String WALLPAPER_PICKER = "wallpaper_picker";    
+    private static final String WALLPAPER_PICKER = "wallpaper_picker";  
+    private static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
+    private static final String WORKSPACE_TEXT_SIZE = "workspace_textSize"; 
     private static final String NIGHT_MODE = "night_mode";     
     private static final String DEFAULT_WALLPAPERS = "default_wallpapers";
     private static final String SAVE_DAY_WALLPAPER = "save_day_wallpaper";    
@@ -84,7 +98,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private boolean nightModeBool;
     private boolean defaultWallpapersBool;
     private boolean wallpaperSet = false;
-    private boolean brightnessBool;
+    private boolean brightnessBool;    
+    private Preference allAppsTextSize; 
+    private EditText allAppsTextSizeEditText;
+    private AlertDialog alertAllAppsTextSizeDialog;
+    private Preference workspaceTextSize;
+    private EditText workspaceTextSizeEditText;
+    private AlertDialog alertWorkspaceTextSizeDialog;
     private Preference nightMode;
     private PreferenceCategory wallpapersCategory;
     private Preference defaultWallpapers;
@@ -106,12 +126,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         this.mContext = this.getContext();
+        helpers.setLayoutTypeChanged(false);
         mHomeWatcher = new HomeWatcher(getActivity());
         mHomeWatcher.setOnHomePressedListener(this);
         mHomeWatcher.startWatch();
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
+        editor = sharedPrefs.edit();
         initStatusbar = sharedPrefs.getBoolean(STATUSBAR, false);
         initLayout = sharedPrefs.getBoolean(USER_LAYOUT, false);
+        editor = sharedPrefs.edit();
+        editor.putBoolean(USER_INIT_LAYOUT, initLayout);
+        editor.apply();
         initFyt = sharedPrefs.getBoolean(FYT_DATA, false);
         addPreferencesFromResource(R.xml.launcher_preferences);
         Preference transparentStatusbar = findPreference(STATUSBAR);
@@ -122,6 +147,18 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         Preference notificationPreference = findPreference(NOTIFICATION_SETTINGS);
         Preference accessibilityPreference = findPreference(ACCESSIBILITY_SETTINGS);
         Preference wallpaperPicker = findPreference(WALLPAPER_PICKER);
+
+        allAppsTextSize = findPreference(ALL_APPS_TEXT_SIZE);
+        String allAppsTextSizeStr = sharedPrefs.getString(ALL_APPS_TEXT_SIZE, "18");
+        allAppsTextSize.setSummary(allAppsTextSizeStr);
+        dialogAllAppsTextSizeEditText();
+
+
+        workspaceTextSize = findPreference(WORKSPACE_TEXT_SIZE);
+        String workspaceTextSizeStr = sharedPrefs.getString(WORKSPACE_TEXT_SIZE, "28");
+        workspaceTextSize.setSummary(workspaceTextSizeStr);
+        dialogWorkspaceTextSizeEditText();
+
         nightMode = findPreference(NIGHT_MODE);
         wallpapersCategory = findPreference("wallpapers_category");
         defaultWallpapers = findPreference(DEFAULT_WALLPAPERS);
@@ -164,6 +201,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
         if (wallpaperPicker != null) {
             wallpaperPicker.setOnPreferenceClickListener(this);
+        }
+        if (allAppsTextSize != null) {
+            allAppsTextSize.setOnPreferenceClickListener(this);
+        }
+        if (workspaceTextSize != null) {
+            workspaceTextSize.setOnPreferenceClickListener(this);
         }
         nightMode();
     }
@@ -221,6 +264,34 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             brightnessSeekBar(nightSeekBar);  
 
         }            
+    }
+
+    private void dialogAllAppsTextSizeEditText() {
+        allAppsTextSizeEditText = new EditText(this.getContext());
+        allAppsTextSizeEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "50")});
+        allAppsTextSizeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        allAppsTextSizeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        allAppsTextSizeEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveAllAppsTextSize();
+                alertAllAppsTextSizeDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
+    private void dialogWorkspaceTextSizeEditText() {
+        workspaceTextSizeEditText = new EditText(this.getContext());
+        workspaceTextSizeEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "50")});
+        workspaceTextSizeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        workspaceTextSizeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        workspaceTextSizeEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveWorkspaceTextSize();
+                alertWorkspaceTextSizeDialog.dismiss();
+            }
+            return false;
+        });
     }
     
     private void brightnessSeekBar(BrightnessSeekBarPreference seekPreference) {
@@ -367,6 +438,36 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             case WALLPAPER_PICKER:
                 onClickWallpaperPicker(rootView);
                 break;
+            case ALL_APPS_TEXT_SIZE:
+                alertAllAppsTextSizeDialog = displayAllAppsTextSizeDialog().create();
+                alertAllAppsTextSizeDialog.show();
+                Button negativeButton = alertAllAppsTextSizeDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0, 0, 80, 0);
+                negativeButton.setLayoutParams(params);
+                allAppsTextSizeEditText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(allAppsTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
+                allAppsTextSizeEditText.setSelection(allAppsTextSizeEditText.getText().length());
+                break;
+            case WORKSPACE_TEXT_SIZE:
+                alertWorkspaceTextSizeDialog = displayWorkspaceTextSizeDialog().create();
+                alertWorkspaceTextSizeDialog.show();
+                Button negativeButtonW = alertWorkspaceTextSizeDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                LinearLayout.LayoutParams paramsW = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsW.setMargins(0, 0, 80, 0);
+                negativeButtonW.setLayoutParams(paramsW);
+                workspaceTextSizeEditText.requestFocus();
+                InputMethodManager immW = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                immW.showSoftInput(workspaceTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
+                workspaceTextSizeEditText.setSelection(workspaceTextSizeEditText.getText().length());
+                break;
             case NIGHT_MODE:
                 helpers.setOnCreateJobInit(false);
                 nightModeBool = sharedPrefs.getBoolean(NIGHT_MODE, false);
@@ -407,11 +508,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 break;
             case SAVE_DAY_WALLPAPER:
                 wallpaperSet = true;
-                new SaveWallpaperTask(this.mContext).execute(AsyncTask.THREAD_POOL_EXECUTOR, "Day");
+                new SaveWallpaperTask(this.mContext).execute("Day");
                 break;
             case SAVE_NIGHT_WALLPAPER:
                 wallpaperSet = true;
-                new SaveWallpaperTask(this.mContext).execute(AsyncTask.THREAD_POOL_EXECUTOR, "Night");
+                new SaveWallpaperTask(this.mContext).execute("Night");
                 break;
             case BRIGHTNESS_PREF:
                 brightnessBool = sharedPrefs.getBoolean(BRIGHTNESS_PREF, false);
@@ -433,28 +534,67 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (initLayout != userLayoutBool) {
+                    helpers.setLayoutTypeChanged(true);
+                }
                 userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
                 userStatusbarBool = sharedPrefs.getBoolean(STATUSBAR, false);
                 userFytBool = sharedPrefs.getBoolean(FYT_DATA, false);
                 if (restartLauncher()) {
                     helpers.setBackFromCreator(false);
-                    helpers.setCorrectionChanged(false);
-                    WindowUtil.restartPipApp();
-                    Intent startMain = new Intent(Intent.ACTION_MAIN);
-                    startMain.addCategory(Intent.CATEGORY_HOME);
-                    startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(startMain);
-                    ProcessPhoenix.triggerRebirth(mContext);
+                    helpers.setFirstPreferenceWindow(true);
                 } else {
                     helpers.setFirstPreferenceWindow(true);
                     setBrightness();
-                    requireActivity().finish();
                 }
+                requireActivity().finish();
+                Intent intentUpdateUserPage = new Intent("update.user.page");
+                mContext.sendBroadcast(intentUpdateUserPage);
             }
         };
         
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+    private AlertDialog.Builder displayAllAppsTextSizeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        builder.setTitle(R.string.all_apps_textSize_str);
+        if (allAppsTextSizeEditText.getParent() != null) {
+            ((ViewGroup)allAppsTextSizeEditText.getParent()).removeView(allAppsTextSizeEditText);
+        }
+        builder.setView(allAppsTextSizeEditText);
+        allAppsTextSizeEditText.setText(allAppsTextSize.getSummary());
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveAllAppsTextSize());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
+    private AlertDialog.Builder displayWorkspaceTextSizeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        builder.setTitle(R.string.workspace_textSize_str);
+        if (workspaceTextSizeEditText.getParent() != null) {
+            ((ViewGroup)workspaceTextSizeEditText.getParent()).removeView(workspaceTextSizeEditText);
+        }
+        builder.setView(workspaceTextSizeEditText);
+        workspaceTextSizeEditText.setText(workspaceTextSize.getSummary());
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveWorkspaceTextSize());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
+    private void saveAllAppsTextSize() {
+        LauncherAppState app = LauncherAppState.getInstance();
+        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+        grid.updateIconTextSize(Integer.parseInt(allAppsTextSizeEditText.getText().toString()));
+        allAppsTextSize.setSummary(allAppsTextSizeEditText.getText().toString());
+        editor.putString(ALL_APPS_TEXT_SIZE, allAppsTextSizeEditText.getText().toString());
+        editor.apply();
+    }
+
+    private void saveWorkspaceTextSize() {
+        workspaceTextSize.setSummary(workspaceTextSizeEditText.getText().toString());
+        editor.putString(WORKSPACE_TEXT_SIZE, workspaceTextSizeEditText.getText().toString());
+        editor.apply();
     }
 
     private boolean restartLauncher() {
@@ -532,16 +672,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             this.mContext = context;
             mWallpaperManager = WallpaperManager.getInstance(this.mContext);
         }
-        
-        @Override
-        protected Boolean doInBackground(String input) {
-            daytime = input;
-            saveWallpaper(input);
-            return true;
-        }
 
         @Override
         protected Boolean doInBackground(String[] input) {
+            daytime = input[0];
+            saveWallpaper(input[0]);
             return true;
         }
 

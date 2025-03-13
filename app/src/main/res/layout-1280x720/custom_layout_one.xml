@@ -4,20 +4,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout
-        android:id="@id/rl_left_bar"
+        android:id="@+id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="110.0px"
         android:layout_height="530.0px">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@id/left_recycler_view"
+            android:id="@+id/left_recycler_view"
             android:layout_width="110.0px"
             android:layout_height="530.0px"
             android:layout_marginTop="20.0px" />
     </RelativeLayout>
 
     <ImageView
-        android:id="@id/iv_map1"
+        android:id="@+id/iv_map1"
         android:layout_width="721.0px"
         android:layout_height="480.0px"
         android:layout_marginLeft="15.0px"
@@ -26,7 +26,7 @@
         android:background="@drawable/ic_map_corner" />
 
     <RelativeLayout
-        android:id="@id/ll_time"
+        android:id="@+id/ll_time"
         android:background="@drawable/time_bg"
         android:layout_width="400.0px"
         android:layout_height="124.0px"
@@ -35,7 +35,7 @@
         android:layout_alignTop="@id/iv_map1">
 
         <com.fyt.widget.DigitClock
-            android:id="@id/digit_clock"
+            android:id="@+id/digit_clock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20.0px"
@@ -44,7 +44,7 @@
         <com.fyt.widget.Date
             android:textSize="18.0px"
             android:textColor="@android:color/white"
-            android:id="@id/date"
+            android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10.0px"
@@ -55,7 +55,7 @@
         <com.fyt.widget.WeekDay
             android:textSize="18.0px"
             android:textColor="@android:color/white"
-            android:id="@id/curWeek"
+            android:id="@+id/curWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4.0px"
@@ -66,7 +66,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@id/rl_music"
+        android:id="@+id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="400.0px"
         android:layout_height="350.0px"
@@ -77,7 +77,7 @@
         android:layout_alignBottom="@id/iv_map1">
 
         <ImageView
-            android:id="@id/iv_album_bg"
+            android:id="@+id/iv_album_bg"
             android:tag="@string/skin_ruleless"
             android:layout_width="90.0px"
             android:layout_height="90.0px"
@@ -91,7 +91,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
-            android:id="@id/tv_musicName"
+            android:id="@+id/tv_musicName"
             android:layout_width="370.0px"
             android:layout_height="wrap_content"
             android:layout_marginTop="10.0px"
@@ -106,7 +106,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
-            android:id="@id/tv_artist"
+            android:id="@+id/tv_artist"
             android:layout_width="370.0px"
             android:layout_height="wrap_content"
             android:layout_marginTop="5.0px"
@@ -116,7 +116,7 @@
             android:layout_centerHorizontal="true" />
 
         <ProgressBar
-            android:id="@id/music_progress"
+            android:id="@+id/music_progress"
             android:tag="@string/skin_ruleless"
             android:layout_width="353.0px"
             android:layout_height="30.0px"
@@ -129,7 +129,7 @@
             style="?android:attr/progressBarStyleHorizontal" />
 
         <Button
-            android:id="@id/music_playpause"
+            android:id="@+id/music_playpause"
             android:background="@drawable/music_pause_icon"
             android:layout_width="64.0px"
             android:layout_height="64.0px"
@@ -138,7 +138,7 @@
             android:layout_centerHorizontal="true" />
 
         <Button
-            android:id="@id/music_prev"
+            android:id="@+id/music_prev"
             android:background="@drawable/btn_ic_prev"
             android:layout_width="64.0px"
             android:layout_height="64.0px"
@@ -147,7 +147,7 @@
             android:layout_toStartOf="@id/music_playpause" />
 
         <Button
-            android:id="@id/music_next"
+            android:id="@+id/music_next"
             android:background="@drawable/btn_ic_next"
             android:layout_width="64.0px"
             android:layout_height="64.0px"
@@ -157,7 +157,7 @@
     </RelativeLayout>
 
     <ImageView
-        android:id="@id/rl_allapps"
+        android:id="@+id/rl_allapps"
         android:layout_width="110.0px"
         android:layout_height="110.0px"
         android:layout_marginBottom="20.0px"
@@ -165,7 +165,7 @@
         android:layout_alignParentBottom="true" />
 
     <ImageView
-        android:id="@id/iv_list_bg"
+        android:id="@+id/iv_list_bg"
         android:layout_width="1280.0px"
         android:layout_height="130.0px"
         android:layout_marginTop="20.0px"
@@ -174,7 +174,7 @@
         android:layout_alignParentBottom="true" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@id/recycler_view"
+        android:id="@+id/recycler_view"
         android:layout_width="1125.0px"
         android:layout_height="130.0px"
         android:layout_marginLeft="16.0px"

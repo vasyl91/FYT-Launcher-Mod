@@ -152,6 +152,14 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         // System.out.println("test");
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
+        /**
+        * prevents from reseting prefs when user has chosen to use the left bar 
+        * and proceed to creator to set the layout
+        */
+        Helpers helpers = new Helpers();
+        helpers.setUserOpenedCreator(true);
+        helpers.setLeftBarChanged(false);
+
         date = sharedPrefs.getBoolean("user_date", false);
         music = sharedPrefs.getBoolean("user_music", false);
         radio = sharedPrefs.getBoolean("user_radio", false); 
@@ -172,7 +180,8 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         radioMinWidth = 320;
         radioMinHeight = 145;
 
-        if (getResources().getDisplayMetrics().widthPixels == 1024) {           
+        if (getResources().getDisplayMetrics().widthPixels == 1024
+            || getResources().getDisplayMetrics().heightPixels == 1024) {           
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;

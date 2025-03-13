@@ -3,6 +3,10 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.util.Log;
+import android.view.View;
+
+import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
 
@@ -67,6 +71,18 @@ public class Helpers {
     public void setLeftBarChanged(boolean leftBarHasChanged) {
         this.leftBarHasChanged = leftBarHasChanged;
         editor.putBoolean("leftBarHasChanged", leftBarHasChanged);
+        editor.apply();
+    }
+
+
+    private boolean userOpenedCreator = false;
+    public boolean hasUserOpenedCreator() {
+        userOpenedCreator = sharedPrefs.getBoolean("userOpenedCreator", false);
+        return userOpenedCreator;
+    }
+    public void setUserOpenedCreator(boolean userOpenedCreator) {
+        this.userOpenedCreator = userOpenedCreator;
+        editor.putBoolean("userOpenedCreator", userOpenedCreator);
         editor.apply();
     }
 
@@ -215,30 +231,6 @@ public class Helpers {
     }
 
 
-    private boolean connectionOnCreate = false;
-    public boolean onCreateConnection() {
-        connectionOnCreate = sharedPrefs.getBoolean("connectionOnCreate", false);
-        return connectionOnCreate;
-    }
-    public void setOnCreateConnection(boolean connectionOnCreate) {
-        this.connectionOnCreate = connectionOnCreate;
-        editor.putBoolean("connectionOnCreate", connectionOnCreate);
-        editor.apply();
-    }
-
-
-    private boolean connectionJobInit = false;
-    public boolean onConnectionJobInit() {
-        connectionJobInit = sharedPrefs.getBoolean("connectionJobInit", false);
-        return connectionJobInit;
-    }
-    public void setConnectionJobInit(boolean connectionJobInit) {
-        this.connectionJobInit = connectionJobInit;
-        editor.putBoolean("connectionJobInit", connectionJobInit);
-        editor.apply();
-    }
-
-
     private boolean correctionChanged = false;
     public boolean hasCorrectionChanged() {
         correctionChanged = sharedPrefs.getBoolean("correctionChanged", false);
@@ -251,14 +243,14 @@ public class Helpers {
     }
 
 
-    private boolean canbusServiceRunning = false;
-    public boolean isCanbusServiceRunning() {
-        canbusServiceRunning = sharedPrefs.getBoolean("canbusServiceRunning", false);
-        return canbusServiceRunning;
+    private boolean layoutTypeChanged = false;
+    public boolean hasLayoutTypeChanged() {
+        layoutTypeChanged = sharedPrefs.getBoolean("layoutTypeChanged", false);
+        return layoutTypeChanged;
     }
-    public void setCanbusServiceRunning(boolean canbusServiceRunning) {
-        this.canbusServiceRunning = canbusServiceRunning;
-        editor.putBoolean("canbusServiceRunning", canbusServiceRunning);
+    public void setLayoutTypeChanged(boolean layoutTypeChanged) {
+        this.layoutTypeChanged = layoutTypeChanged;
+        editor.putBoolean("layoutTypeChanged", layoutTypeChanged);
         editor.apply();
     }
 
@@ -308,6 +300,79 @@ public class Helpers {
         this.windowHeight = windowHeight;
         editor.putInt("windowHeight", windowHeight);
         editor.apply();
+    }
+
+    public boolean allAppsVisibility(int visibility) {
+        if (visibility == View.INVISIBLE || visibility == View.GONE) {
+            return false;
+        } else if (!isInRecent() && !userWasInRecents()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void resetPrefs() {
+        Log.i("helpers", "resetprefs");
+        if ((hasLayoutTypeChanged() || hasLeftBarChanged()) && !hasUserOpenedCreator()) {
+            Log.i("helpers", "resetprefs2");
+            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10")); 
+            int mapMinWidth = 561;
+            int mapMinHeight;
+            int dateMinWidth = 561;
+            int dateMinHeight = 145;
+            int musicMinWidth = 320;
+            int musicMinHeight;
+            int radioMinWidth = 320;
+            int radioMinHeight = 145;
+            if (LauncherApplication.sApp.getResources().getDisplayMetrics().widthPixels == 1024
+                || LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels == 1024) {
+                mapMinHeight = 284;
+                musicMinHeight = 284;
+            } else {
+                mapMinHeight = 340;
+                musicMinHeight = 340;               
+            } 
+            if (margin < 0) {
+                margin = 10;
+            }
+            SharedPreferences.Editor editor = mPrefs.edit(); 
+            editor.putInt("mapTopLeftX", margin);  
+            editor.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
+            editor.putInt("mapTopRightX", margin + mapMinWidth);    
+            editor.putInt("mapTopRightY", margin + dateMinHeight + margin); 
+            editor.putInt("mapBottomRightX", margin + mapMinWidth);   
+            editor.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
+            editor.putInt("mapBottomLeftX", margin);  
+            editor.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
+            editor.putInt("dateTopLeftX", margin);  
+            editor.putInt("dateTopLeftY", margin);          
+            editor.putInt("dateTopRightX", margin + dateMinWidth);    
+            editor.putInt("dateTopRightY", margin); 
+            editor.putInt("dateBottomRightX", margin + dateMinWidth);  
+            editor.putInt("dateBottomRightY", margin + dateMinHeight); 
+            editor.putInt("dateBottomLeftX", margin);  
+            editor.putInt("dateBottomLeftY", margin + dateMinHeight);
+            editor.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
+            editor.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
+            editor.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            editor.putInt("musicTopRightY", margin + radioMinHeight + margin); 
+            editor.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            editor.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+            editor.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+            editor.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
+            editor.putInt("radioTopLeftX", margin + dateMinWidth + margin);
+            editor.putInt("radioTopLeftY", margin);
+            editor.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
+            editor.putInt("radioTopRightY", margin); 
+            editor.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+            editor.putInt("radioBottomRightY", margin + radioMinHeight); 
+            editor.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+            editor.putInt("radioBottomLeftY", margin + radioMinHeight);         
+            editor.putInt("statsTopLeftX", 20);
+            editor.putInt("statsTopLeftY", 20);         
+            editor.apply();
+        }
     }
     
     public static boolean isPackageInstalled(String packageName, PackageManager packageManager) {

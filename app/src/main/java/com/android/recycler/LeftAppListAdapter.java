@@ -38,6 +38,13 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
         this.mLauncher = launcher;
     }
 
+    public void notifyDataSetChanged(final List<AppListBean> data) {
+        this.mLauncher.runOnUiThread(() -> {
+            LeftAppListAdapter.this.mData = data;
+            LeftAppListAdapter.this.notifyDataSetChanged();
+        });
+    }
+
     @Override
     public int getItemCount() {
         this.showAddAppView = this.mData.size() > this.mMaxCount;
@@ -103,12 +110,5 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     @Override
     public LeftAppListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new LeftAppListHolder(LayoutInflater.from(this.mLauncher).inflate(R.layout.item_left_app_list, parent, false));
-    }
-
-    public void notifyDataSetChanged(final List<AppListBean> data) {
-        this.mLauncher.runOnUiThread(() -> {
-            LeftAppListAdapter.this.mData = data;
-            LeftAppListAdapter.this.notifyDataSetChanged();
-        });
     }
 }

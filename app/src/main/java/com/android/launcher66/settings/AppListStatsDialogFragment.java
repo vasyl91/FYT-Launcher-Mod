@@ -32,6 +32,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AppListStatsDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
+
+    /** Dialog window tha displays apps which user can select to display stats window
+     *  while the selected app is running in foreground
+     */
+
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;

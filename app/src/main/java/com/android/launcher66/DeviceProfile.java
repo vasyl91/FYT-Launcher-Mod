@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import share.ResValue;
 
-class DeviceProfile {
+public class DeviceProfile {
     int allAppsNumCols;
     int allAppsNumRows;
     int availableHeightPx;
@@ -179,6 +179,10 @@ class DeviceProfile {
         this.availableHeightPx = ahPx;
         this.allAppsNumRows = resources.getInteger(R.integer.all_apps_customize_rows);
         this.allAppsNumCols = resources.getInteger(R.integer.all_apps_customize_cols);
+    }
+
+    public void updateIconTextSize(int iSize) {
+        this.iconTextSize = iSize;
     }
 
     

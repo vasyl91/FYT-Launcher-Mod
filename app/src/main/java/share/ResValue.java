@@ -105,10 +105,12 @@ public class ResValue {
     public int syu_app_button = getResId("syu_app_button", R.id.class);
     public int tv_apps = getResId("tv_apps", R.id.class);
     public int hotseat_apps = getResId("hotseat_apps", R.id.class);
-    public int widget_button = getResId("widget_button", R.id.class);
     public int livewallpaper_button = getResId("livewallpaper_button", R.id.class);
     public int wallpaper_button = getResId("wallpaper_button", R.id.class);
+    public int widget_button = getResId("widget_button", R.id.class);
     public int settings_button = getResId("settings_button", R.id.class);
+    public int wallpaper_button_widgets = getResId("wallpaper_button_widgets", R.id.class);
+    public int settings_button_widgets = getResId("settings_button_widgets", R.id.class);
     public int curWeek = getResId("curWeek", R.id.class);
     public int btn_setwallpaper = getResId("btn_setwallpaper", R.id.class);
     public int indicator_lightbar = getResId("indicator_lightbar", R.drawable.class);
@@ -136,7 +138,6 @@ public class ResValue {
     public int workspace_custom_3g = getResId("workspace_custom_3g", R.layout.class);
     public int workspace_custom1 = getResId("workspace_custom1", R.layout.class);
     public int workspace_custom2 = getResId("workspace_custom2", R.layout.class);
-    public int workspace_custom3 = getResId("workspace_custom3", R.layout.class);
     public int btav_name = getResId("btav_name", R.id.class);
     public int btav_artist = getResId("btav_artist", R.id.class);
     public int btav_album = getResId("btav_album", R.id.class);

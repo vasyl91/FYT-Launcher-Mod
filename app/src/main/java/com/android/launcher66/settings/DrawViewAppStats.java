@@ -79,7 +79,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
-        if (getResources().getDisplayMetrics().widthPixels == 1024) { 
+        if (getResources().getDisplayMetrics().widthPixels == 1024
+            || getResources().getDisplayMetrics().heightPixels == 1024) { 
             coordinatesSize = 40;
             nameTextSize = 30;
             statsWidth = 245;

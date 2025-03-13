@@ -15,7 +15,7 @@
             android:textSize="26.0sp"
             android:textColor="@android:color/white"
             android:ellipsize="end"
-            android:id="@id/tv_freq"
+            android:id="@+id/tv_freq"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/y37"
@@ -26,7 +26,7 @@
         <TextView
             android:textSize="12.0sp"
             android:textColor="@android:color/white"
-            android:id="@id/tv_unit"
+            android:id="@+id/tv_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/y30"
@@ -36,14 +36,14 @@
             android:layout_alignBottom="@id/tv_freq" />
 
         <Button
-            android:id="@id/radio_btn_prev"
+            android:id="@+id/radio_btn_prev"
             android:background="@drawable/btn_ic_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_freq" />
 
         <Button
-            android:id="@id/radio_btn_next"
+            android:id="@+id/radio_btn_next"
             android:background="@drawable/btn_ic_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

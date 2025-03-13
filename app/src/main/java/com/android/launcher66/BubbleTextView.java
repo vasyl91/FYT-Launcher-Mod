@@ -1,114 +1,108 @@
 package com.android.launcher66;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
 import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
-import com.fyt.skin.SkinUtils;
-import com.fyt.skin.view.SkinAttrParms;
-import com.fyt.skin.view.SkinView;
 import com.syu.log.LogPreview;
 import com.syu.util.FytPackage;
-import java.util.ArrayList;
-import java.util.Iterator;
+
 import share.ResValue;
 
-public class BubbleTextView extends AppCompatTextView {
+/**
+ * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
+ * because we want to make the bubble taller than the text and TextView's clip is
+ * too aggressive.
+ */
+public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView {
+    static final float SHADOW_LARGE_RADIUS = 4.0f;
+    static final float SHADOW_SMALL_RADIUS = 1.75f;
+    static final float SHADOW_Y_OFFSET = 2.0f;
+    static final int SHADOW_LARGE_COLOUR = 0xDD000000;
+    static final int SHADOW_SMALL_COLOUR = 0xCC000000;
     static final float PADDING_H = 8.0f;
     static final float PADDING_V = 3.0f;
-    static final int SHADOW_LARGE_COLOUR = -587202560;
-    static final int SHADOW_SMALL_COLOUR = -872415232;
-    static final float SHADOW_Y_OFFSET = 2.0f;
-    private AttributeSet mAttributeSet;
-    private Drawable mBackground;
-    private boolean mBackgroundSizeChanged;
-    private boolean mDidInvalidateForPressedState;
-    private int mFocusedGlowColor;
-    private int mFocusedOutlineColor;
-    private boolean mIsTextVisible;
-    private CheckLongPressHelper mLongPressHelper;
+
+    private int mPrevAlpha = -1;
+
     private HolographicOutlineHelper mOutlineHelper;
-    private int mPressedGlowColor;
+    private final Canvas mTempCanvas = new Canvas();
+    private final Rect mTempRect = new Rect();
+    private boolean mDidInvalidateForPressedState;
     private Bitmap mPressedOrFocusedBackground;
+    private int mFocusedOutlineColor;
+    private int mFocusedGlowColor;
     private int mPressedOutlineColor;
-    private int mPrevAlpha;
-    private boolean mShadowsEnabled;
-    private boolean mStayPressed;
-    private final Canvas mTempCanvas;
-    private final Rect mTempRect;
+    private int mPressedGlowColor;
+
     private int mTextColor;
-    static float SHADOW_LARGE_RADIUS = LauncherApplication.shadow_Large_Radius;
-    static float SHADOW_SMALL_RADIUS = LauncherApplication.shadow_Small_Radius;
+    private boolean mShadowsEnabled = true;
+    private boolean mIsTextVisible;
+
+    private boolean mBackgroundSizeChanged;
+    private Drawable mBackground;
+
+    private boolean mStayPressed;
+    private CheckLongPressHelper mLongPressHelper;
 
     public BubbleTextView(Context context) {
         this(context, null);
+        init();
     }
 
     public BubbleTextView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        init();
     }
 
     public BubbleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.mPrevAlpha = -1;
-        this.mTempCanvas = new Canvas();
-        this.mTempRect = new Rect();
-        this.mShadowsEnabled = true;
-        init(attrs);
+        init();
     }
 
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        LauncherAppState app = LauncherAppState.getInstance();
-        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        setTextSize(0, grid.iconTextSize);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int iWorkspaceTextSize = Integer.parseInt(prefs.getString("workspace_textSize", String.valueOf(LauncherApplication.sApp.getResources().getInteger(R.integer.workspace_textSize))));
+        setTextSize(0, iWorkspaceTextSize);
+        setTextColor(ContextCompat.getColor(getContext(), R.color.workspace_icon_text_color));
     }
 
-    private void init(AttributeSet attrs) {
-        this.mAttributeSet = attrs;
-        this.mLongPressHelper = new CheckLongPressHelper(this);
-        this.mBackground = getBackground();
-        this.mOutlineHelper = HolographicOutlineHelper.obtain(getContext());
-        int color = ContextCompat.getColor(getContext(), R.color.outline_color);
-        this.mPressedGlowColor = color;
-        this.mPressedOutlineColor = color;
-        this.mFocusedGlowColor = color;
-        this.mFocusedOutlineColor = color;
+    private void init() {
+        mLongPressHelper = new CheckLongPressHelper(this);
+        mBackground = getBackground();
+
+        mOutlineHelper = HolographicOutlineHelper.obtain(getContext());
+
+        mFocusedOutlineColor = mFocusedGlowColor = mPressedOutlineColor = mPressedGlowColor =
+                ContextCompat.getColor(getContext(), R.color.outline_color);
+
         setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
     }
 
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache) {
         Bitmap b = info.getIcon(iconCache);
         LauncherAppState app = LauncherAppState.getInstance();
-        app.getDynamicGrid().getDeviceProfile();
-        switch (LauncherApplication.sApp.getResources().getInteger(R.integer.appNameAlign)) {
-            case 0:
-                setCompoundDrawables(Utilities.createIconDrawable(b), null, null, null);
-                break;
-            case 1:
-                setCompoundDrawables(null, Utilities.createIconDrawable(b), null, null);
-                break;
-            case 2:
-                setCompoundDrawables(null, null, Utilities.createIconDrawable(b), null);
-                break;
-            case 3:
-                setCompoundDrawables(null, null, null, Utilities.createIconDrawable(b));
-                break;
-        }
-        int padding = LauncherApplication.sApp.getResources().getInteger(R.integer.bubbletextview_padding);
-        setCompoundDrawablePadding(padding);
+        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+
+        setCompoundDrawables(null,
+                Utilities.createIconDrawable(b), null, null);
+
+        setCompoundDrawablePadding((int) ((grid.folderIconSizePx - grid.iconSizePx) / 2f));
+
         if ("com.syu.voice.VoiceLaunch".equals(info.intent.getComponent().getClassName()) || "com.syu.voice.Launch".equals(info.intent.getComponent().getClassName())) {
             String voicename = SystemProperties.get("syu.voicename");
             String voicenewname = SystemProperties.get("persist.syu.voice.newname");
@@ -134,28 +128,8 @@ public class BubbleTextView extends AppCompatTextView {
         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_shortname) && getText().length() > 6) {
             setText(String.valueOf(getText().toString().substring(0, 3)) + "...");
         }
+        setText(info.title);
         setTag(info);
-        setTag(R.id.str_tag, info.getIntent().getComponent().getPackageName());
-        addResourceId(this, info.getIconResid());
-    }
-
-    private void addResourceId(View view, int resid) {
-        ArrayList<SkinView> skinViews = SkinUtils.getSkinAttr().getSkinViews();
-        Iterator<SkinView> it = skinViews.iterator();
-        while (it.hasNext()) {
-            SkinView skinView = it.next();
-            if (skinView.getView() == view) {
-                for (SkinAttrParms sap : skinView.getParms()) {
-                    if (sap.getAttrName().equals("drawableTop")) {
-                        sap.setId(resid);
-                    }
-                    if (sap.getAttrName().equals("tag")) {
-                        sap.setId(R.id.str_tag);
-                    }
-                }
-                return;
-            }
-        }
     }
 
     private String getStr(int resid, String title) {
@@ -174,14 +148,14 @@ public class BubbleTextView extends AppCompatTextView {
     @Override
     protected boolean setFrame(int left, int top, int right, int bottom) {
         if (getLeft() != left || getRight() != right || getTop() != top || getBottom() != bottom) {
-            this.mBackgroundSizeChanged = true;
+            mBackgroundSizeChanged = true;
         }
         return super.setFrame(left, top, right, bottom);
     }
 
     @Override
     protected boolean verifyDrawable(Drawable who) {
-        return who == this.mBackground || super.verifyDrawable(who);
+        return who == mBackground || super.verifyDrawable(who);
     }
 
     @Override
@@ -195,130 +169,174 @@ public class BubbleTextView extends AppCompatTextView {
     @Override
     protected void drawableStateChanged() {
         if (isPressed()) {
-            if (!this.mDidInvalidateForPressedState) {
+            // In this case, we have already created the pressed outline on ACTION_DOWN,
+            // so we just need to do an invalidate to trigger draw
+            if (!mDidInvalidateForPressedState) {
                 setCellLayoutPressedOrFocusedIcon();
             }
         } else {
-            boolean backgroundEmptyBefore = this.mPressedOrFocusedBackground == null;
-            if (!this.mStayPressed) {
-                this.mPressedOrFocusedBackground = null;
+            // Otherwise, either clear the pressed/focused background, or create a background
+            // for the focused state
+            final boolean backgroundEmptyBefore = mPressedOrFocusedBackground == null;
+            if (!mStayPressed) {
+                mPressedOrFocusedBackground = null;
             }
-            setFocusable(false);
             if (isFocused()) {
                 if (getLayout() == null) {
-                    this.mPressedOrFocusedBackground = null;
+                    // In some cases, we get focus before we have been layed out. Set the
+                    // background to null so that it will get created when the view is drawn.
+                    mPressedOrFocusedBackground = null;
                 } else {
-                    this.mPressedOrFocusedBackground = createGlowingOutline(this.mTempCanvas, this.mFocusedGlowColor, this.mFocusedOutlineColor);
+                    mPressedOrFocusedBackground = createGlowingOutline(
+                            mTempCanvas, mFocusedGlowColor, mFocusedOutlineColor);
                 }
-                this.mStayPressed = false;
+                mStayPressed = false;
                 setCellLayoutPressedOrFocusedIcon();
             }
-            boolean backgroundEmptyNow = this.mPressedOrFocusedBackground == null;
+            final boolean backgroundEmptyNow = mPressedOrFocusedBackground == null;
             if (!backgroundEmptyBefore && backgroundEmptyNow) {
                 setCellLayoutPressedOrFocusedIcon();
             }
         }
-        Drawable d = this.mBackground;
+
+        Drawable d = mBackground;
         if (d != null && d.isStateful()) {
             d.setState(getDrawableState());
         }
         super.drawableStateChanged();
     }
 
+    /**
+     * Draw this BubbleTextView into the given Canvas.
+     *
+     * @param destCanvas the canvas to draw on
+     * @param padding the horizontal and vertical padding to use when drawing
+     */
     private void drawWithPadding(Canvas destCanvas, int padding) {
-        Rect clipRect = this.mTempRect;
+        final Rect clipRect = mTempRect;
         getDrawingRect(clipRect);
-        clipRect.bottom = (getExtendedPaddingTop() - 3) + getLayout().getLineTop(0);
+
+        // adjust the clip rect so that we don't include the text label
+        clipRect.bottom =
+            getExtendedPaddingTop() - (int) BubbleTextView.PADDING_V + getLayout().getLineTop(0);
+
+        // Draw the View into the bitmap.
+        // The translate of scrollX and scrollY is necessary when drawing TextViews, because
+        // they set scrollX and scrollY to large values to achieve centered text
         destCanvas.save();
-        destCanvas.scale(getScaleX(), getScaleY(), (getWidth() + padding) / 2, (getHeight() + padding) / 2);
-        destCanvas.translate((-getScrollX()) + (padding / 2), (-getScrollY()) + (padding / 2));
+        destCanvas.scale(getScaleX(), getScaleY(),
+                (getWidth() + padding) / 2, (getHeight() + padding) / 2);
+        destCanvas.translate(-getScrollX() + padding / 2, -getScrollY() + padding / 2);
         destCanvas.clipRect(clipRect);
         draw(destCanvas);
         destCanvas.restore();
     }
 
+    /**
+     * Returns a new bitmap to be used as the object outline, e.g. to visualize the drop location.
+     * Responsibility for the bitmap is transferred to the caller.
+     */
     private Bitmap createGlowingOutline(Canvas canvas, int outlineColor, int glowColor) {
-        int padding = this.mOutlineHelper.mMaxOuterBlurRadius;
-        Bitmap b = Bitmap.createBitmap(getWidth() + padding, getHeight() + padding, Bitmap.Config.ARGB_8888);
+        final int padding = mOutlineHelper.mMaxOuterBlurRadius;
+        final Bitmap b = Bitmap.createBitmap(
+                getWidth() + padding, getHeight() + padding, Bitmap.Config.ARGB_8888);
+
         canvas.setBitmap(b);
         drawWithPadding(canvas, padding);
-        this.mOutlineHelper.applyExtraThickExpensiveOutlineWithBlur(b, canvas, glowColor, outlineColor);
+        mOutlineHelper.applyExtraThickExpensiveOutlineWithBlur(b, canvas, glowColor, outlineColor);
         canvas.setBitmap(null);
+
         return b;
     }
 
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Call the superclass onTouchEvent first, because sometimes it changes the state to
+        // isPressed() on an ACTION_UP
         boolean result = super.onTouchEvent(event);
+
         switch (event.getAction()) {
-            case 0:
-                if (this.mPressedOrFocusedBackground == null) {
-                    this.mPressedOrFocusedBackground = createGlowingOutline(this.mTempCanvas, this.mPressedGlowColor, this.mPressedOutlineColor);
+            case MotionEvent.ACTION_DOWN:
+                // So that the pressed outline is visible immediately when isPressed() is true,
+                // we pre-create it on ACTION_DOWN (it takes a small but perceptible amount of time
+                // to create it)
+                if (mPressedOrFocusedBackground == null) {
+                    mPressedOrFocusedBackground = createGlowingOutline(
+                            mTempCanvas, mPressedGlowColor, mPressedOutlineColor);
                 }
+                // Invalidate so the pressed state is visible, or set a flag so we know that we
+                // have to call invalidate as soon as the state is "pressed"
                 if (isPressed()) {
-                    this.mDidInvalidateForPressedState = true;
+                    mDidInvalidateForPressedState = true;
                     setCellLayoutPressedOrFocusedIcon();
                 } else {
-                    this.mDidInvalidateForPressedState = false;
+                    mDidInvalidateForPressedState = false;
                 }
-                this.mLongPressHelper.postCheckForLongPress();
+
+                mLongPressHelper.postCheckForLongPress();
                 break;
-            case 1:
-            case 3:
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                // If we've touched down and up on an item, and it's still not "pressed", then
+                // destroy the pressed outline
                 if (!isPressed()) {
-                    this.mPressedOrFocusedBackground = null;
+                    mPressedOrFocusedBackground = null;
                 }
-                this.mLongPressHelper.cancelLongPress();
+
+                mLongPressHelper.cancelLongPress();
                 break;
         }
         return result;
     }
 
     void setStayPressed(boolean stayPressed) {
-        this.mStayPressed = stayPressed;
+        mStayPressed = stayPressed;
         if (!stayPressed) {
-            this.mPressedOrFocusedBackground = null;
+            mPressedOrFocusedBackground = null;
         }
         setCellLayoutPressedOrFocusedIcon();
     }
 
     void setCellLayoutPressedOrFocusedIcon() {
-        ShortcutAndWidgetContainer parent;
-        if ((getParent() instanceof ShortcutAndWidgetContainer) && (parent = (ShortcutAndWidgetContainer) getParent()) != null) {
-            CellLayout layout = (CellLayout) parent.getParent();
-            if (this.mPressedOrFocusedBackground == null) {
-                this.mPressedOrFocusedBackground = createGlowingOutline(this.mTempCanvas, this.mPressedGlowColor, this.mPressedOutlineColor);
+        if (getParent() instanceof ShortcutAndWidgetContainer) {
+            ShortcutAndWidgetContainer parent = (ShortcutAndWidgetContainer) getParent();
+            if (parent != null) {
+                CellLayout layout = (CellLayout) parent.getParent();
+                layout.setPressedOrFocusedIcon((mPressedOrFocusedBackground != null) ? this : null);
             }
-            layout.setPressedOrFocusedIcon(this);
         }
     }
 
     void clearPressedOrFocusedBackground() {
-        this.mPressedOrFocusedBackground = null;
+        mPressedOrFocusedBackground = null;
         setCellLayoutPressedOrFocusedIcon();
     }
 
     Bitmap getPressedOrFocusedBackground() {
-        return this.mPressedOrFocusedBackground;
+        return mPressedOrFocusedBackground;
     }
 
     int getPressedOrFocusedBackgroundPadding() {
-        return this.mOutlineHelper.mMaxOuterBlurRadius / 2;
+        return mOutlineHelper.mMaxOuterBlurRadius / 2;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        if (!this.mShadowsEnabled) {
+        if (!mShadowsEnabled) {
             super.draw(canvas);
             return;
         }
-        Drawable background = this.mBackground;
+
+        final Drawable background = mBackground;
         if (background != null) {
-            int scrollX = getScrollX();
-            int scrollY = getScrollY();
-            if (this.mBackgroundSizeChanged) {
-                background.setBounds(0, 0, getRight() - getLeft(), getBottom() - getTop());
-                this.mBackgroundSizeChanged = false;
+            final int scrollX = getScrollX();
+            final int scrollY = getScrollY();
+
+            if (mBackgroundSizeChanged) {
+                background.setBounds(0, 0,  getRight() - getLeft(), getBottom() - getTop());
+                mBackgroundSizeChanged = false;
             }
+
             if ((scrollX | scrollY) == 0) {
                 background.draw(canvas);
             } else {
@@ -327,15 +345,21 @@ public class BubbleTextView extends AppCompatTextView {
                 canvas.translate(-scrollX, -scrollY);
             }
         }
+
+        // If text is transparent, don't draw any shadow
         if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
             getPaint().clearShadowLayer();
             super.draw(canvas);
             return;
         }
+
+        // We enhance the shadow by drawing the shadow twice
         getPaint().setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
         super.draw(canvas);
-        canvas.save();
-        canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(), getScrollX() + getWidth(), getScrollY() + getHeight());
+        canvas.save(Canvas.CLIP_SAVE_FLAG);
+        canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(),
+                getScrollX() + getWidth(),
+                getScrollY() + getHeight(), Region.Op.INTERSECT);
         getPaint().setShadowLayer(SHADOW_SMALL_RADIUS, 0.0f, 0.0f, SHADOW_SMALL_COLOUR);
         super.draw(canvas);
         canvas.restore();
@@ -344,45 +368,45 @@ public class BubbleTextView extends AppCompatTextView {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (this.mBackground != null) {
-            this.mBackground.setCallback(this);
-        }
+        if (mBackground != null) mBackground.setCallback(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (this.mBackground != null) {
-            this.mBackground.setCallback(null);
-        }
+        if (mBackground != null) mBackground.setCallback(null);
     }
 
     @Override
     public void setTextColor(int color) {
-        this.mTextColor = color;
+        mTextColor = color;
+        super.setTextColor(color);
     }
 
     public void setShadowsEnabled(boolean enabled) {
-        this.mShadowsEnabled = enabled;
+        mShadowsEnabled = enabled;
         getPaint().clearShadowLayer();
         invalidate();
     }
 
     public void setTextVisibility(boolean visible) {
-        getResources();
-        this.mIsTextVisible = visible;
+        if (visible) {
+            super.setTextColor(mTextColor);
+        } else {
+            super.setTextColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+        }
+        mIsTextVisible = visible;
     }
 
     public boolean isTextVisible() {
-        return this.mIsTextVisible;
+        return mIsTextVisible;
     }
 
     @Override
     protected boolean onSetAlpha(int alpha) {
-        if (this.mPrevAlpha != alpha) {
-            this.mPrevAlpha = alpha;
+        if (mPrevAlpha != alpha) {
+            mPrevAlpha = alpha;
             super.onSetAlpha(alpha);
-            return true;
         }
         return true;
     }
@@ -390,6 +414,7 @@ public class BubbleTextView extends AppCompatTextView {
     @Override
     public void cancelLongPress() {
         super.cancelLongPress();
-        this.mLongPressHelper.cancelLongPress();
+
+        mLongPressHelper.cancelLongPress();
     }
 }

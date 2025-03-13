@@ -19,7 +19,7 @@ public class LauncherFiles {
     public static final String LAUNCHER_DB = "launcher.db";
     public static final String LAUNCHER_PREFERENCES = "launcher.preferences";
     public static final String LAUNCHES_LOG = "launches.log";
-    public static final String SHARED_PREFERENCES_KEY = "com.android.launcher3.prefs";
+    public static final String SHARED_PREFERENCES_KEY = "com.android.launcher66.prefs";
     public static final String STATS_LOG = "stats.log";
     public static final String WALLPAPER_CROP_PREFERENCES_KEY =
             WallpaperCropActivity.class.getName();

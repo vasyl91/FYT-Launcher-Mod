@@ -3,32 +3,30 @@ package com.android.launcher66;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.SystemProperties;
-import android.text.TextUtils;
+import android.graphics.Region;
+import android.graphics.Region.Op;
 import android.util.AttributeSet;
-import android.view.View;
+import android.util.TypedValue;
+import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-
-import com.fyt.skin.SkinUtils;
-import com.fyt.skin.view.SkinAttrParms;
-import com.fyt.skin.view.SkinView;
-import com.syu.util.FytPackage;
-import java.util.ArrayList;
-import java.util.Iterator;
-import share.ResValue;
-
+/**
+ * An icon on a PagedView, specifically for items in the launcher's paged view (with compound
+ * drawables on the top).
+ */
 public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
-    private static final float PRESS_ALPHA = 0.4f;
-    private static final String TAG = "PagedViewIcon";
-    private AttributeSet mAttributeSet;
-    private Bitmap mIcon;
-    private boolean mLockDrawableState;
-    private PressedCallback mPressedCallback;
-
-    public interface PressedCallback {
-        void iconPressed(PagedViewIcon pagedViewIcon);
+    /** A simple callback interface to allow a PagedViewIcon to notify when it has been pressed */
+    public static interface PressedCallback {
+        void iconPressed(PagedViewIcon icon);
     }
+
+    @SuppressWarnings("unused")
+    private static final String TAG = "PagedViewIcon";
+    private static final float PRESS_ALPHA = 0.4f;
+
+    private PagedViewIcon.PressedCallback mPressedCallback;
+    private boolean mLockDrawableState = false;
+
+    private Bitmap mIcon;
 
     public PagedViewIcon(Context context) {
         this(context, null);
@@ -40,143 +38,75 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
 
     public PagedViewIcon(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.mLockDrawableState = false;
-        init(attrs);
     }
 
-    private void init(AttributeSet attrs) {
-        this.mAttributeSet = attrs;
-    }
-
-    @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+
+        // Ensure we are using the right text size
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        setTextSize(0, grid.iconTextSize);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, grid.iconTextSize);
     }
 
-    public void applyFromApplicationInfo(AppInfo info, boolean scaleUp, PressedCallback cb) {
-        this.mIcon = info.iconBitmap;
-        this.mPressedCallback = cb;
-        switch (LauncherApplication.sApp.getResources().getInteger(R.integer.appNameAlign)) {
-            case 0:
-                setCompoundDrawables(Utilities.createIconDrawable(this.mIcon), null, null, null);
-                break;
-            case 1:
-                setCompoundDrawables(null, Utilities.createIconDrawable(this.mIcon), null, null);
-                break;
-            case 2:
-                setCompoundDrawables(null, null, Utilities.createIconDrawable(this.mIcon), null);
-                break;
-            case 3:
-                setCompoundDrawables(null, null, null, Utilities.createIconDrawable(this.mIcon));
-                break;
-        }
-        int padding = LauncherApplication.sApp.getResources().getInteger(R.integer.pagetextview_padding);
-        setCompoundDrawablePadding(padding);
-        if ("com.syu.voice.VoiceLaunch".equals(info.componentName.getClassName()) || "com.syu.voice.Launch".equals(info.componentName.getClassName())) {
-            String voicename = SystemProperties.get("syu.voicename");
-            String voicenewname = SystemProperties.get("persist.syu.voice.newname");
-            if (voicenewname != null && !voicenewname.equals("")) {
-                setText("车助理·" + voicenewname);
-            } else if (voicename != null && !voicename.equals("")) {
-                setText("车助理·" + voicename);
-            } else {
-                setText(info.title);
-            }
-        } else if ("com.syu.music".equals(info.intent.getComponent().getPackageName())) {
-            setText(getResources().getString(R.string.car_music));
-        } else if ("com.syu.video.main.VideoListActivity".equals(info.intent.getComponent().getClassName())) {
-            setText(getResources().getString(R.string.car_video));
-        } else if (FytPackage.eqACTION.equals(info.intent.getComponent().getPackageName())) {
-            String eqName = getStr(ResValue.getInstance().app_eq_name, info.title.toString());
-            setText(eqName);
-        } else {
-            setText(info.title);
-        }
-        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_shortname) && getText().length() > 4) {
-            setText(String.valueOf(getText().toString().substring(0, 3)) + "...");
-        }
+    public void applyFromApplicationInfo(AppInfo info, boolean scaleUp,
+            PagedViewIcon.PressedCallback cb) {
+        mIcon = info.iconBitmap;
+        mPressedCallback = cb;
+        setCompoundDrawables(null, Utilities.createIconDrawable(mIcon),
+                null, null);
+        setText(info.title);
         setTag(info);
-        setTag(R.id.str_tag, info.getPackageName());
-        addResourceId(this, info.getIconResid());
-    }
-
-    private void addResourceId(View view, int resid) {
-        ArrayList<SkinView> skinViews = SkinUtils.getSkinAttr().getSkinViews();
-        Iterator<SkinView> it = skinViews.iterator();
-        while (it.hasNext()) {
-            SkinView skinView = it.next();
-            if (skinView.getView() == view) {
-                for (SkinAttrParms sap : skinView.getParms()) {
-                    if (sap.getAttrName().equals("drawableTop")) {
-                        sap.setId(resid);
-                    }
-                    if (sap.getAttrName().equals("tag")) {
-                        sap.setId(R.id.str_tag);
-                    }
-                }
-                return;
-            }
-        }
-    }
-
-    private String getStr(int resid, String title) {
-        String appName = "";
-        try {
-            appName = getResources().getString(resid);
-        } catch (Exception e) {
-        }
-        if (TextUtils.isEmpty(appName)) {
-            return title;
-        }
-        String title2 = appName;
-        return title2;
     }
 
     public void lockDrawableState() {
-        this.mLockDrawableState = true;
+        mLockDrawableState = true;
     }
 
     public void resetDrawableState() {
-        this.mLockDrawableState = false;
-        post(new Runnable() { 
+        mLockDrawableState = false;
+        post(new Runnable() {
             @Override
             public void run() {
-                PagedViewIcon.this.refreshDrawableState();
+                refreshDrawableState();
             }
         });
     }
 
-    @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
-        setFocusable(false);
+
+        // We keep in the pressed state until resetDrawableState() is called to reset the press
+        // feedback
         if (isPressed()) {
             setAlpha(PRESS_ALPHA);
-            if (this.mPressedCallback != null) {
-                this.mPressedCallback.iconPressed(this);
-                return;
+            if (mPressedCallback != null) {
+                mPressedCallback.iconPressed(this);
             }
-            return;
-        }
-        if (!this.mLockDrawableState) {
-            setAlpha(1.0f);
+        } else if (!mLockDrawableState) {
+            setAlpha(1f);
         }
     }
 
     @Override
     public void draw(Canvas canvas) {
-        if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
+        // If text is transparent, don't draw any shadow
+        if (getCurrentTextColor() == getResources().getColor(android.R.color.transparent)) {
             getPaint().clearShadowLayer();
             super.draw(canvas);
             return;
         }
-        getPaint().setShadowLayer(BubbleTextView.SHADOW_LARGE_RADIUS, 0.0f, 2.0f, -587202560);
+
+        // We enhance the shadow by drawing the shadow twice
+        getPaint().setShadowLayer(BubbleTextView.SHADOW_LARGE_RADIUS, 0.0f,
+                BubbleTextView.SHADOW_Y_OFFSET, BubbleTextView.SHADOW_LARGE_COLOUR);
         super.draw(canvas);
-        canvas.save();
-        getPaint().setShadowLayer(BubbleTextView.SHADOW_SMALL_RADIUS, 0.0f, 0.0f, -872415232);
+        canvas.save(Canvas.CLIP_SAVE_FLAG);
+        canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(),
+                getScrollX() + getWidth(),
+                getScrollY() + getHeight(), Region.Op.INTERSECT);
+        getPaint().setShadowLayer(BubbleTextView.SHADOW_SMALL_RADIUS, 0.0f, 0.0f,
+                BubbleTextView.SHADOW_SMALL_COLOUR);
         super.draw(canvas);
         canvas.restore();
     }

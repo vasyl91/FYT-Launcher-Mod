@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 
 public class FolderEditText extends EditText {
+
     private Folder mFolder;
 
     public FolderEditText(Context context) {
@@ -21,13 +22,14 @@ public class FolderEditText extends EditText {
     }
 
     public void setFolder(Folder folder) {
-        this.mFolder = folder;
+        mFolder = folder;
     }
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (event.getKeyCode() == 4) {
-            this.mFolder.doneEditingFolderName(true);
+        // Catch the back button on the soft keyboard so that we can just close the activity
+        if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_BACK) {
+            mFolder.doneEditingFolderName(true);
         }
         return super.onKeyPreIme(keyCode, event);
     }

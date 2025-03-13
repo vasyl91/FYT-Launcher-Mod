@@ -7,31 +7,33 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.launcher66.R;
+
+/**
+ * The linear layout used strictly for the widget/wallpaper tab of the customization tray
+ */
 public class PagedViewWidget extends LinearLayout {
     static final String TAG = "PagedViewWidgetLayout";
+
     private static boolean sDeletePreviewsWhenDetachedFromWindow = true;
     private static boolean sRecyclePreviewsWhenDetachedFromWindow = true;
-    static PagedViewWidget sShortpressTarget = null;
+
     private String mDimensionsFormatString;
-    private Object mInfo;
+    CheckForShortPress mPendingCheckForShortPress = null;
+    ShortPressListener mShortPressListener = null;
+    boolean mShortPressTriggered = false;
+    static PagedViewWidget sShortpressTarget = null;
     boolean mIsAppWidget;
-    private final Rect mOriginalImagePadding;
-    CheckForShortPress mPendingCheckForShortPress;
-    ShortPressListener mShortPressListener;
-    boolean mShortPressTriggered;
+    private final Rect mOriginalImagePadding = new Rect();
+    private Object mInfo;
     private WidgetPreviewLoader mWidgetPreviewLoader;
-
-    interface ShortPressListener {
-        void cleanUpShortPress(View view);
-
-        void onShortPress(View view);
-    }
 
     public PagedViewWidget(Context context) {
         this(context, null);
@@ -43,12 +45,10 @@ public class PagedViewWidget extends LinearLayout {
 
     public PagedViewWidget(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.mPendingCheckForShortPress = null;
-        this.mShortPressListener = null;
-        this.mShortPressTriggered = false;
-        this.mOriginalImagePadding = new Rect();
-        Resources r = context.getResources();
-        this.mDimensionsFormatString = r.getString(R.string.widget_dims_format);
+
+        final Resources r = context.getResources();
+        mDimensionsFormatString = r.getString(R.string.widget_dims_format);
+
         setWillNotDraw(false);
         setClipToPadding(false);
     }
@@ -56,20 +56,23 @@ public class PagedViewWidget extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        ImageView image = (ImageView) findViewById(R.id.widget_preview);
-        this.mOriginalImagePadding.left = image.getPaddingLeft();
-        this.mOriginalImagePadding.top = image.getPaddingTop();
-        this.mOriginalImagePadding.right = image.getPaddingRight();
-        this.mOriginalImagePadding.bottom = image.getPaddingBottom();
+
+        final ImageView image = (ImageView) findViewById(R.id.widget_preview);
+        mOriginalImagePadding.left = image.getPaddingLeft();
+        mOriginalImagePadding.top = image.getPaddingTop();
+        mOriginalImagePadding.right = image.getPaddingRight();
+        mOriginalImagePadding.bottom = image.getPaddingBottom();
+
+        // Ensure we are using the right text size
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
         TextView name = (TextView) findViewById(R.id.widget_name);
         if (name != null) {
-            name.setTextSize(2, grid.iconTextSize);
+            name.setTextSize(TypedValue.COMPLEX_UNIT_SP, grid.iconTextSize);
         }
         TextView dims = (TextView) findViewById(R.id.widget_dims);
         if (dims != null) {
-            dims.setTextSize(2, grid.iconTextSize);
+            dims.setTextSize(TypedValue.COMPLEX_UNIT_SP, grid.iconTextSize);
         }
     }
 
@@ -83,114 +86,129 @@ public class PagedViewWidget extends LinearLayout {
 
     @Override
     protected void onDetachedFromWindow() {
-        ImageView image;
         super.onDetachedFromWindow();
-        if (sDeletePreviewsWhenDetachedFromWindow && (image = (ImageView) findViewById(R.id.widget_preview)) != null) {
-            FastBitmapDrawable preview = (FastBitmapDrawable) image.getDrawable();
-            if (sRecyclePreviewsWhenDetachedFromWindow && this.mInfo != null && preview != null && preview.getBitmap() != null) {
-                this.mWidgetPreviewLoader.recycleBitmap(this.mInfo, preview.getBitmap());
+
+        if (sDeletePreviewsWhenDetachedFromWindow) {
+            final ImageView image = (ImageView) findViewById(R.id.widget_preview);
+            if (image != null) {
+                FastBitmapDrawable preview = (FastBitmapDrawable) image.getDrawable();
+                if (sRecyclePreviewsWhenDetachedFromWindow &&
+                        mInfo != null && preview != null && preview.getBitmap() != null) {
+                    mWidgetPreviewLoader.recycleBitmap(mInfo, preview.getBitmap());
+                }
+                image.setImageDrawable(null);
             }
-            image.setImageDrawable(null);
         }
     }
 
-    public void applyFromAppWidgetProviderInfo(AppWidgetProviderInfo info, int maxWidth, int[] cellSpan, WidgetPreviewLoader loader) {
+    public void applyFromAppWidgetProviderInfo(AppWidgetProviderInfo info,
+            int maxWidth, int[] cellSpan, WidgetPreviewLoader loader) {
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        this.mIsAppWidget = true;
-        this.mInfo = info;
-        ImageView image = (ImageView) findViewById(R.id.widget_preview);
+
+        mIsAppWidget = true;
+        mInfo = info;
+        final ImageView image = (ImageView) findViewById(R.id.widget_preview);
         if (maxWidth > -1) {
             image.setMaxWidth(maxWidth);
         }
-        PackageManager mPackageManager = getContext().getPackageManager();
-        TextView name = (TextView) findViewById(R.id.widget_name);
-        name.setText(info.loadLabel(mPackageManager));
-        TextView dims = (TextView) findViewById(R.id.widget_dims);
+        final TextView name = (TextView) findViewById(R.id.widget_name);
+        name.setText(info.label);
+        final TextView dims = (TextView) findViewById(R.id.widget_dims);
         if (dims != null) {
             int hSpan = Math.min(cellSpan[0], (int) grid.numColumns);
             int vSpan = Math.min(cellSpan[1], (int) grid.numRows);
-            dims.setText(String.format(this.mDimensionsFormatString, Integer.valueOf(hSpan), Integer.valueOf(vSpan)));
+            dims.setText(String.format(mDimensionsFormatString, hSpan, vSpan));
         }
-        this.mWidgetPreviewLoader = loader;
+        mWidgetPreviewLoader = loader;
     }
 
-    public void applyFromResolveInfo(PackageManager pm, ResolveInfo info, WidgetPreviewLoader loader) {
-        this.mIsAppWidget = false;
-        this.mInfo = info;
+    public void applyFromResolveInfo(
+            PackageManager pm, ResolveInfo info, WidgetPreviewLoader loader) {
+        mIsAppWidget = false;
+        mInfo = info;
         CharSequence label = info.loadLabel(pm);
-        TextView name = (TextView) findViewById(R.id.widget_name);
+        final TextView name = (TextView) findViewById(R.id.widget_name);
         name.setText(label);
-        TextView dims = (TextView) findViewById(R.id.widget_dims);
+        final TextView dims = (TextView) findViewById(R.id.widget_dims);
         if (dims != null) {
-            dims.setText(String.format(this.mDimensionsFormatString, 1, 1));
+            dims.setText(String.format(mDimensionsFormatString, 1, 1));
         }
-        this.mWidgetPreviewLoader = loader;
+        mWidgetPreviewLoader = loader;
     }
 
     public int[] getPreviewSize() {
-        ImageView i = (ImageView) findViewById(R.id.widget_preview);
-        int[] maxSize = {(i.getWidth() - this.mOriginalImagePadding.left) - this.mOriginalImagePadding.right, i.getHeight() - this.mOriginalImagePadding.top};
+        final ImageView i = (ImageView) findViewById(R.id.widget_preview);
+        int[] maxSize = new int[2];
+        maxSize[0] = i.getWidth() - mOriginalImagePadding.left - mOriginalImagePadding.right;
+        maxSize[1] = i.getHeight() - mOriginalImagePadding.top;
         return maxSize;
     }
 
     void applyPreview(FastBitmapDrawable preview, int index) {
-        PagedViewWidgetImageView image = (PagedViewWidgetImageView) findViewById(R.id.widget_preview);
+        final PagedViewWidgetImageView image =
+            (PagedViewWidgetImageView) findViewById(R.id.widget_preview);
         if (preview != null) {
             image.mAllowRequestLayout = false;
             image.setImageDrawable(preview);
-            if (this.mIsAppWidget) {
+            if (mIsAppWidget) {
+                // center horizontally
                 int[] imageSize = getPreviewSize();
                 int centerAmount = (imageSize[0] - preview.getIntrinsicWidth()) / 2;
-                image.setPadding(this.mOriginalImagePadding.left + centerAmount, this.mOriginalImagePadding.top, this.mOriginalImagePadding.right, this.mOriginalImagePadding.bottom);
+                image.setPadding(mOriginalImagePadding.left + centerAmount,
+                        mOriginalImagePadding.top,
+                        mOriginalImagePadding.right,
+                        mOriginalImagePadding.bottom);
             }
-            image.setAlpha(1.0f);
+            image.setAlpha(1f);
             image.mAllowRequestLayout = true;
         }
     }
 
     void setShortPressListener(ShortPressListener listener) {
-        this.mShortPressListener = listener;
+        mShortPressListener = listener;
+    }
+
+    interface ShortPressListener {
+        void onShortPress(View v);
+        void cleanUpShortPress(View v);
     }
 
     class CheckForShortPress implements Runnable {
-        CheckForShortPress() {
-        }
-
-        @Override
         public void run() {
-            if (PagedViewWidget.sShortpressTarget == null) {
-                if (PagedViewWidget.this.mShortPressListener != null) {
-                    PagedViewWidget.this.mShortPressListener.onShortPress(PagedViewWidget.this);
-                    PagedViewWidget.sShortpressTarget = PagedViewWidget.this;
-                }
-                PagedViewWidget.this.mShortPressTriggered = true;
+            if (sShortpressTarget != null) return;
+            if (mShortPressListener != null) {
+                mShortPressListener.onShortPress(PagedViewWidget.this);
+                sShortpressTarget = PagedViewWidget.this;
             }
+            mShortPressTriggered = true;
         }
     }
 
     private void checkForShortPress() {
-        if (sShortpressTarget == null) {
-            if (this.mPendingCheckForShortPress == null) {
-                this.mPendingCheckForShortPress = new CheckForShortPress();
-            }
-            postDelayed(this.mPendingCheckForShortPress, 120L);
+        if (sShortpressTarget != null) return;
+        if (mPendingCheckForShortPress == null) {
+            mPendingCheckForShortPress = new CheckForShortPress();
         }
+        postDelayed(mPendingCheckForShortPress, 120);
     }
 
+    /**
+     * Remove the longpress detection timer.
+     */
     private void removeShortPressCallback() {
-        if (this.mPendingCheckForShortPress != null) {
-            removeCallbacks(this.mPendingCheckForShortPress);
+        if (mPendingCheckForShortPress != null) {
+          removeCallbacks(mPendingCheckForShortPress);
         }
     }
 
     private void cleanUpShortPress() {
         removeShortPressCallback();
-        if (this.mShortPressTriggered) {
-            if (this.mShortPressListener != null) {
-                this.mShortPressListener.cleanUpShortPress(this);
+        if (mShortPressTriggered) {
+            if (mShortPressListener != null) {
+                mShortPressListener.cleanUpShortPress(PagedViewWidget.this);
             }
-            this.mShortPressTriggered = false;
+            mShortPressTriggered = false;
         }
     }
 
@@ -201,17 +219,28 @@ public class PagedViewWidget extends LinearLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
+
         switch (event.getAction()) {
-            case 0:
+            case MotionEvent.ACTION_UP:
+                cleanUpShortPress();
+                break;
+            case MotionEvent.ACTION_DOWN:
                 checkForShortPress();
                 break;
-            case 1:
+            case MotionEvent.ACTION_CANCEL:
                 cleanUpShortPress();
                 break;
-            case 3:
-                cleanUpShortPress();
+            case MotionEvent.ACTION_MOVE:
                 break;
         }
+
+        // We eat up the touch events here, since the PagedView (which uses the same swiping
+        // touch code as Workspace previously) uses onInterceptTouchEvent() to determine when
+        // the user is scrolling between pages.  This means that if the pages themselves don't
+        // handle touch events, it gets forwarded up to PagedView itself, and it's own
+        // onTouchEvent() handling will prevent further intercept touch events from being called
+        // (it's the same view in that case).  This is not ideal, but to prevent more changes,
+        // we just always mark the touch event as handled.
         return true;
     }
 }

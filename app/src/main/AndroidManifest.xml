@@ -87,6 +87,7 @@
 
     <application
         android:hardwareAccelerated="true"
+        android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher_home"
         android:label="@string/application_name"
         android:largeHeap="@bool/config_largeHeap"
@@ -117,6 +118,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY" />
@@ -145,7 +147,7 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.canbus.NullActi"
-            android:screenOrientation="landscape"
+            android:screenOrientation="nosensor"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
@@ -309,7 +311,8 @@
             android:exported="true"
             android:icon="@drawable/fyt_ic_date"
             android:label="@string/dt_music_widget"
-            android:name="com.syu.widget.DateMusicProvider">
+            android:name="com.syu.widget.DateMusicProvider"
+            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -322,7 +325,8 @@
             android:exported="true"
             android:icon="@drawable/fyt_ic_date"
             android:label="@string/dt_time_widget"
-            android:name="com.syu.widget.DateTimeProvider">
+            android:name="com.syu.widget.DateTimeProvider"
+            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -335,7 +339,8 @@
             android:exported="true"
             android:icon="@drawable/fyt_ic_date"
             android:label="@string/dt_radio_widget"
-            android:name="com.syu.widget.DateRadioProvider">
+            android:name="com.syu.widget.DateRadioProvider"
+            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -348,7 +353,8 @@
             android:exported="true"
             android:icon="@drawable/fyt_ic_date"
             android:label="@string/dt_navi_widget"
-            android:name="com.syu.widget.DateNaviProvider">
+            android:name="com.syu.widget.DateNaviProvider"
+            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -379,6 +385,11 @@
             android:name="com.android.launcher66.LauncherProvider"
             android:readPermission="com.android.launcher66.permission.READ_SETTINGS"
             android:writePermission="com.android.launcher66.permission.WRITE_SETTINGS" />
+            
+        <provider
+            android:name="com.android.launcher66.LitePalInitProvider"
+            android:authorities="${applicationId}.litepalinit"
+            android:exported="false" />
 
         <meta-data
             android:name="android.nfc.disable_beam_default"

@@ -304,11 +304,6 @@ public class WeatherManager {
                 this.mCurLocation = location;
                 (new AsyncTask<Location, Void, String>() {
                     @Override
-                    protected String doInBackground(Location location) throws Exception {
-                        return "";
-                    }
-
-                    @Override
                     protected String doInBackground(Location... params) throws Exception {
                         if (params != null && params.length > 0) {
                             String city = "";
@@ -638,11 +633,6 @@ public class WeatherManager {
         if (!this.isGettingWeather && city != null && !city.isEmpty()) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
-                @Override
-                protected WeatherDescription doInBackground(String s) throws Exception {
-                    return null;
-                }
-
                 public WeatherDescription doInBackground(String... params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
@@ -686,11 +676,6 @@ public class WeatherManager {
         if (!this.isGettingWeather && lat != null && lon != null) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
-                @Override
-                protected WeatherDescription doInBackground(String s) throws Exception {
-                    return null;
-                }
-
                 public WeatherDescription doInBackground(String... params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
@@ -773,11 +758,6 @@ public class WeatherManager {
             String url = String.format(Locale.US, "http://apk.carsql.com/Weather/WetherMain?name=%s", this.checkCity(city));
             (new AsyncTask<String, DailyWeather, WeatherManager.RecentWeather>() {
                 int resultCode = -2;
-
-                @Override
-                protected RecentWeather doInBackground(String s) throws Exception {
-                    return null;
-                }
 
                 protected WeatherManager.RecentWeather doInBackground(String... params) {
                     WeatherManager.RecentWeather recentWeather = null;

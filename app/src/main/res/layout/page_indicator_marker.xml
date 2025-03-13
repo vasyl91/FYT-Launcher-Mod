@@ -7,14 +7,14 @@
     xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
 
     <ImageView
-        android:id="@id/inactive"
+        android:id="@+id/inactive"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@drawable/indicator_normalbar"
         android:scaleType="centerInside" />
 
     <ImageView
-        android:id="@id/active"
+        android:id="@+id/active"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@drawable/indicator_lightbar"

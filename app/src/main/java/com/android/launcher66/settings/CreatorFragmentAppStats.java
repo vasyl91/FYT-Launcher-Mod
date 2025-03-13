@@ -16,6 +16,8 @@ import com.android.launcher66.R;
 
 public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnHomePressedListener {
 
+    // Fragment that opens DrawViewAppStats.java where user specifies positon for in-app stats window
+
     private HomeWatcher mHomeWatcher;
     private Context mContext;
     private final Helpers helpers = new Helpers();

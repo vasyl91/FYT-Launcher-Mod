@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="136.0px" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView android:id="@id/cycler_app_icon" android:layout_width="75.0px" android:layout_height="75.0px" />
-    <TextView android:textSize="0.0sp" android:textColor="@android:color/white" android:gravity="center_horizontal" android:id="@id/cycler_app_name" android:paddingLeft="3.0px" android:paddingRight="3.0px" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0px" android:singleLine="true" />
+    <ImageView android:id="@+id/cycler_app_icon" android:layout_width="75.0px" android:layout_height="75.0px" />
+    <TextView android:textSize="0.0sp" android:textColor="@android:color/white" android:gravity="center_horizontal" android:id="@+id/cycler_app_name" android:paddingLeft="3.0px" android:paddingRight="3.0px" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0px" android:singleLine="true" />
 </LinearLayout>

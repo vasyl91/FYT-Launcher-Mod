@@ -15,12 +15,12 @@
         android:layout_marginLeft="14.0px" 
         android:layout_marginRight="270.0px">
         <RelativeLayout 
-            android:id="@id/m_bt_btn" 
+            android:id="@+id/m_bt_btn" 
             android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
-                android:id="@id/ic_hotseat_bt" 
+                android:id="@+id/ic_hotseat_bt" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:src="@drawable/car_bt_icon" 
@@ -37,12 +37,12 @@
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
         <RelativeLayout 
-            android:id="@id/m_eq_btn" 
+            android:id="@+id/m_eq_btn" 
             android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
-                android:id="@id/ic_hotseat_eq" 
+                android:id="@+id/ic_hotseat_eq" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:src="@drawable/car_eq_icon" 
@@ -59,12 +59,12 @@
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
         <RelativeLayout 
-            android:id="@id/m_allapp_btn" 
+            android:id="@+id/m_allapp_btn" 
             android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
-                android:id="@id/ic_hotseat_app" 
+                android:id="@+id/ic_hotseat_app" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:src="@drawable/all_apps_btn_icon" 
@@ -81,12 +81,12 @@
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
         <RelativeLayout 
-            android:id="@id/m_settings_btn" 
+            android:id="@+id/m_settings_btn" 
             android:layout_width="0.0px" 
             android:layout_height="wrap_content" 
             android:layout_weight="1.0">
             <ImageView 
-                android:id="@id/ic_hotseat_settings" 
+                android:id="@+id/ic_hotseat_settings" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:src="@drawable/car_settings_icon" 
@@ -104,13 +104,13 @@
         </RelativeLayout>
     </LinearLayout>
     <RelativeLayout 
-        android:id="@id/m_navi_btn" 
+        android:id="@+id/m_navi_btn" 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_marginRight="14.0px" 
         android:layout_alignParentRight="true">
         <ImageView 
-            android:id="@id/ic_hotseat_navi" 
+            android:id="@+id/ic_hotseat_navi" 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
             android:src="@drawable/car_navi_icon" 
@@ -118,7 +118,7 @@
         <TextView 
             android:textSize="16.0sp" 
             android:textColor="@color/text_color_white" 
-            android:id="@id/tv_app" 
+            android:id="@+id/tv_app" 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
             android:layout_marginBottom="20.0px" 

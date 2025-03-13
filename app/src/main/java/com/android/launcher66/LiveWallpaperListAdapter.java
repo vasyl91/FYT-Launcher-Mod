@@ -123,13 +123,9 @@ public class LiveWallpaperListAdapter extends BaseAdapter implements ListAdapter
             mWallpaperPosition = 0;
         }
 
+        @SafeVarargs
         @Override
-        protected Void doInBackground(List<ResolveInfo> resolveInfos) throws Exception {
-            return null;
-        }
-
-        @Override
-        protected Void doInBackground(List<ResolveInfo>... params) {
+        protected final Void doInBackground(List<ResolveInfo>... params) {
             final PackageManager packageManager = mContext.getPackageManager();
 
             List<ResolveInfo> list = params[0];
@@ -174,7 +170,7 @@ public class LiveWallpaperListAdapter extends BaseAdapter implements ListAdapter
 
         @Override
         protected void onBackgroundError(Exception e) {
-
+            //
         }
 
         @Override

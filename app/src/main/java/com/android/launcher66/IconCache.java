@@ -184,7 +184,7 @@ public class IconCache {
     private Bitmap setIcon(String packageName, CacheEntry entry, ResolveInfo info) {
         SkinUtils.getResources();
         int resid = CustomIcons.getIcon(info.activityInfo);
-        return resid != 0 ? Utilities.createIconBitmap_enlarge(SkinUtils.getDrawable(resid)) : Utilities.createIconBitmap_minify(new BitmapDrawable(this.mContext.getResources(), entry.icon));
+       return resid != 0 ? Utilities.createIconBitmap_enlarge(SkinUtils.getDrawable(resid)) : Utilities.createIconBitmap_minify(new BitmapDrawable(this.mContext.getResources(), entry.icon));
     }
 
     private CacheEntry cacheLocked(ComponentName componentName, ResolveInfo info, HashMap<Object, CharSequence> labelCache) {

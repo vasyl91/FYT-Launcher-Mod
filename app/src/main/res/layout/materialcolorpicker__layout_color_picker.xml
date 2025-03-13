@@ -82,7 +82,7 @@
             android:text="@string/materialcolorpicker__hash"/>
 
         <EditText
-            android:id="@id/hexCode"
+            android:id="@+id/hexCode"
             style="@style/Widget.AppCompat.EditText"
             android:layout_width="wrap_content"
             android:layout_height="48dp"

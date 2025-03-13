@@ -131,11 +131,7 @@ public class WallpaperCropActivity extends Activity {
             final boolean moveToLeft, final Runnable postExecute) {
         final Context context = WallpaperCropActivity.this;
         final View progressView = findViewById(R.id.loading);
-        final AsyncTask<Void, Void, Void> loadBitmapTask = new AsyncTask<>() {
-            @Override
-            protected Void doInBackground(Void unused) {
-                return null;
-            }
+        final AsyncTask<Void, Void, Void> loadBitmapTask = new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... args) {
@@ -794,11 +790,6 @@ public class WallpaperCropActivity extends Activity {
                 }
             }
             return !failure; // True if any of the operations failed
-        }
-
-        @Override
-        protected Boolean doInBackground(Void unused) throws Exception {
-            return null;
         }
 
         @Override

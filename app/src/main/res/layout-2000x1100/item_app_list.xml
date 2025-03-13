@@ -7,14 +7,14 @@
   android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView 
-      android:id="@id/cycler_app_icon" 
+      android:id="@+id/cycler_app_icon" 
       android:layout_width="132.0px" 
       android:layout_height="132.0px" />
     <TextView 
       android:textSize="0.0px" 
       android:textColor="@android:color/white" 
       android:gravity="center_horizontal" 
-      android:id="@id/cycler_app_name" 
+      android:id="@+id/cycler_app_name" 
       android:paddingLeft="2.0px" 
       android:paddingRight="2.0px" 
       android:layout_width="fill_parent" 

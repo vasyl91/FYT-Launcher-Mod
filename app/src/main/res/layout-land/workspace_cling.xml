@@ -2,7 +2,7 @@
 <com.android.launcher66.Cling android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:drawIdentifier="workspace_portrait"
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
-    <FrameLayout android:id="@id/content" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="270.0px" android:layout_marginStart="25.0px" android:layout_marginEnd="25.0px">
+    <FrameLayout android:id="@+id/content" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="270.0px" android:layout_marginStart="25.0px" android:layout_marginEnd="25.0px">
         <LinearLayout android:layout_gravity="top" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
             <ImageView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/cling_arrow_up" />
             <LinearLayout android:orientation="vertical" android:background="@drawable/cling" android:paddingLeft="20.0px" android:paddingTop="20.0px" android:paddingRight="20.0px" android:paddingBottom="20.0px" android:layout_width="fill_parent" android:layout_height="wrap_content">

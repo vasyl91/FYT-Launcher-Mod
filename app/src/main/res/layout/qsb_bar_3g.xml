@@ -6,11 +6,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <include
-        android:id="@id/qsb_search_bar"
+        android:id="@+id/qsb_search_bar"
         layout="@layout/all_apps_btn_3g" />
 
     <LinearLayout
-        android:id="@id/drag_target_bar"
+        android:id="@+id/drag_target_bar"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         style="@style/SearchDropTargetBar">

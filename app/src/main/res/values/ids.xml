@@ -150,6 +150,7 @@
     <item type="id" name="creator" />
     <item type="id" name="launcher_preferences" />
     <item type="id" name="creator_preferences" />
+    <item type="id" name="layout_one" />
     <item type="id" name="user_layout" />
     <item type="id" name="user_layout_left" />    
     <item type="id" name="absolute_time" />   

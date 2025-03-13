@@ -2,11 +2,11 @@
 <AbsoluteLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@id/absolute_music"
+    android:id="@+id/absolute_music"
     android:gravity="center" >
 
     <com.google.android.flexbox.FlexboxLayout
-        android:id="@id/rl_music"
+        android:id="@+id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -16,7 +16,7 @@
         app:justifyContent="space_evenly" >
 
         <ImageView
-            android:id="@id/iv_album_bg"
+            android:id="@+id/iv_album_bg"
             android:tag="@string/skin_ruleless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,11 +30,11 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
-            android:id="@id/tv_musicName"
+            android:id="@+id/tv_musicName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/music_name"
-            android:singleLine="true"
+            android:singleLine="true" 
             android:layout_below="@id/iv_album_bg"
             android:layout_centerHorizontal="true" />
 
@@ -44,7 +44,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:gravity="center_horizontal"
-            android:id="@id/tv_artist"
+            android:id="@+id/tv_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/music_name"
@@ -59,7 +59,7 @@
             app:justifyContent="space_around" >
 
             <ProgressBar
-                android:id="@id/music_progress"
+                android:id="@+id/music_progress"
                 android:tag="@string/skin_ruleless"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             app:justifyContent="space_evenly" >
 
             <Button
-                android:id="@id/music_prev"
+                android:id="@+id/music_prev"
                 android:background="@drawable/btn_ic_prev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                 android:layout_toStartOf="@id/music_playpause" />
 
             <Button
-                android:id="@id/music_playpause"
+                android:id="@+id/music_playpause"
                 android:background="@drawable/music_pause_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 android:layout_centerHorizontal="true" />
 
             <Button
-                android:id="@id/music_next"
+                android:id="@+id/music_next"
                 android:background="@drawable/btn_ic_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

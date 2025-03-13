@@ -28,8 +28,8 @@
     <integer name="config_dragFadeOutAlpha">80</integer>
     <integer name="config_dragFadeOutDuration">250</integer>
     <integer name="config_cameraDistance">8000</integer>
-    <integer name="all_apps_customize_rows">2</integer>
-    <integer name="all_apps_customize_cols">5</integer>
+    <integer name="all_apps_customize_rows">4</integer>
+    <integer name="all_apps_customize_cols">7</integer>
     <integer name="Hotseat_navi_icon_index">0</integer>
     <integer name="Hotseat_bt_icon_index">1</integer>
     <integer name="Hotseat_radio_icon_index">2</integer>

@@ -5,11 +5,11 @@
     <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="10.0px" android:layout_marginBottom="10.0px" android:layout_marginStart="15.0px" android:layout_marginEnd="15.0px">
         <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
             <LinearLayout android:orientation="vertical" android:background="@drawable/cling" android:paddingLeft="20.0px" android:paddingTop="20.0px" android:paddingRight="20.0px" android:paddingBottom="20.0px" android:layout_width="fill_parent" android:layout_height="wrap_content">
-                <TextView android:id="@id/folder_cling_title" android:text="@string/folder_cling_title" style="@style/ClingTitleText" />
-                <TextView android:id="@id/folder_cling_create_folder" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/folder_cling_create_folder" style="@style/ClingText" />
+                <TextView android:id="@+id/folder_cling_title" android:text="@string/folder_cling_title" style="@style/ClingTitleText" />
+                <TextView android:id="@+id/folder_cling_create_folder" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/folder_cling_create_folder" style="@style/ClingText" />
             </LinearLayout>
             <ImageView android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/cling_arrow_down" />
         </LinearLayout>
     </FrameLayout>
-    <Button android:layout_gravity="end|bottom|center" android:id="@id/cling_dismiss" android:layout_marginBottom="15.0px" android:onClick="dismissFolderCling" android:layout_marginEnd="20.0px" style="@style/ClingButton" />
+    <Button android:layout_gravity="end|bottom|center" android:id="@+id/cling_dismiss" android:layout_marginBottom="15.0px" android:onClick="dismissFolderCling" android:layout_marginEnd="20.0px" style="@style/ClingButton" />
 </com.android.launcher66.Cling>

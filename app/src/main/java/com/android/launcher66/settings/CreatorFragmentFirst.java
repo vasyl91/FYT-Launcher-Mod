@@ -35,6 +35,8 @@ import com.android.launcher66.colorpicker.ColorPicker;
 
 public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, HomeWatcher.OnHomePressedListener {
 
+    // Fragment for the second window in the settings - Layout creator
+
     private static final String USER_DATE = "user_date";
     private static final String USER_MUSIC = "user_music";
     private static final String USER_RADIO = "user_radio";    
@@ -371,7 +373,7 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentAppStats()).commit();
                 break;
             case LEFT_BAR:
-                helpers.setLeftBarChanged(sharedPrefs.getBoolean(LEFT_BAR, false));
+                helpers.setLeftBarChanged(true);
                 break;
             case LAYOUT_MARGIN:
                 alertMarginsDialog = displayMarginsDialog().create();
@@ -448,6 +450,10 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
             @Override
             public void handleOnBackPressed() {
                 helpers.setBackFromCreator(true);
+                boolean leftBarBool = sharedPrefs.getBoolean("left_bar", false);                
+                //if (leftBarBool) {
+                    helpers.resetPrefs();
+                //}
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
             }
         };

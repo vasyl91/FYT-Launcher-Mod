@@ -85,8 +85,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String url) throws Exception {
-        getTimes(url);
+    protected String doInBackground(String[] url) throws Exception {
+        getTimes(url[0]);
         boolean nightMode = mPrefs.getBoolean("night_mode", false); 
         if (nightMode) {
             setWallpapers();
@@ -433,11 +433,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
                     .setRequiresCharging(false)
                     .setPersisted(false)
                     .build();
-    }
-
-    @Override
-    protected String doInBackground(String[] input) throws Exception {
-        return "";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.android.launcher66;
 
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemProperties;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -41,9 +43,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.litepal.LitePalApplication;
-
-public class LauncherApplication extends LitePalApplication {
+public class LauncherApplication extends Application {
     public static String bHideUniCar;
     public static String bHideUniCar_New;
     public static String bPlatform;
@@ -113,20 +113,17 @@ public class LauncherApplication extends LitePalApplication {
 
     private void initData() {
         sApp = this;
-        SkinManager.init(this);
         CrashHandler.getInstance(getApplicationContext());
         CustomIcons.loadIcons(this, R.xml.custom_icons);
         W3Utils.initialize(this);
-        LauncherAppState.setApplicationContext(this);
-        LauncherAppState.getInstance();
         CarStates.getCar(this);
         this.apkPath = String.valueOf(sApp.getFilesDir().getAbsolutePath()) + File.separator + "firenze.apk";
         File file = new File(this.apkPath);
         if (!file.exists()) {
             FileUtil.copyFileFromAssets(this, "firenze.apk", this.apkPath);
         }
-        mAppWallPaper = Utils.getSp().getBoolean("mAppWallPaper", true);
-        mWallPaperUpdate = Utils.getSp().getBoolean("mWallPaperUpdate", true);
+        //mAppWallPaper = Utils.getSp().getBoolean("mAppWallPaper", true);
+        //mWallPaperUpdate = Utils.getSp().getBoolean("mWallPaperUpdate", true);
         initGaoDeCoverView();
 
 
@@ -323,7 +320,7 @@ public class LauncherApplication extends LitePalApplication {
     private void initWindow() {
         Configuration config = getResources().getConfiguration();
         int smallestScreenWidth = config.smallestScreenWidthDp;
-        //Log.v("zed", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + smallestScreenWidth);
+        Log.v("zed", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + smallestScreenWidth);
     }
 
     private void connectService() {

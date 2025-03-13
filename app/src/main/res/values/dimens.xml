@@ -49,4 +49,6 @@
 
     <dimen name="materialcolorpicker__activity_horizontal_margin">16dp</dimen>
     <dimen name="materialcolorpicker__activity_vertical_margin">16dp</dimen>
+
+    <dimen name="overview_panel_top_margin">50dp</dimen>
 </resources>

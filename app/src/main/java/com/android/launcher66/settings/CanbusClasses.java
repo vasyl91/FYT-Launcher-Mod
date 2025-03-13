@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.module.canbus.DataCanbus;
@@ -514,13 +515,27 @@ import com.syu.canbus.FuncMain;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-public class CanbusClasses {
+public class CanbusClasses extends AsyncTask<Void, Void, Void> {
+
+	// Runs the canbus service in background
+	
     private final Context mContext;
     private final SharedPreferences mPrefs;
 
     public CanbusClasses(Context context) {
         this.mContext = context;
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @Override
+    protected Void doInBackground(Void... input) throws Exception {
+    	launchCanbus();
+        return null;
+    }
+
+    @Override
+    protected void onBackgroundError(Exception e) {
+    	launchCanbus();
     }
     
     public void launchCanbus() {

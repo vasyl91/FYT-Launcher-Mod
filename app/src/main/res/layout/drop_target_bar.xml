@@ -5,7 +5,7 @@
 
         <com.android.launcher66.DeleteDropTarget
             android:layout_gravity="bottom|center"
-            android:id="@id/delete_target_text"
+            android:id="@+id/delete_target_text"
             android:text="@string/delete_zone_label_workspace"
             style="@style/DropTargetButton" />
     </FrameLayout>

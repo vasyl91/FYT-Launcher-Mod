@@ -25,57 +25,50 @@ import java.util.List;
 
 public class TimeUpdateReceiver extends BroadcastReceiver {
     public static final String SHOW_TIME = "com.syu.show_time";
-    private static final String TAG = "TimeUpdateReceiver";
-    static List<Widget> mWidgets = new ArrayList();
+    static List<Widget> mWidgets = new ArrayList<>();
     private static TimeUpdateReceiver timeUpdate;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         LogPreview.show("onReceive");
-        new Thread(new Runnable() { 
-            @Override
-            public void run() {
-                if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.runOnUiThread(new Runnable() { 
-                        @Override
-                        public void run() {
-                            List<Widget> mList = new ArrayList<>(TimeUpdateReceiver.mWidgets);
-                            for (Widget widget : mList) {
-                                widget.update();
-                            }
-                            if (Clock.getClock() != null) {
-                                Clock.getClock().setTime();
-                            }
-                            if (Date.getDate() != null) {
-                                Date.getDate().setDate();
-                            }
-                            if (Date2.getDate() != null) {
-                                Date2.getDate().setDate();
-                            }
-                            if (Modulation.getModulation() != null) {
-                                Modulation.getModulation().setModulation();
-                            }
-                            if (WeekDay.getWeekDay() != null) {
-                                WeekDay.getWeekDay().setDate();
-                            }
-                            if (WeekDay2.getWeekDay() != null) {
-                                WeekDay2.getWeekDay().setDate();
-                            }
-                            if (WeekDay.getWeekDay() != null) {
-                                WeekDay.getWeekDay().setDate();
-                            }
-                            if (Year.getYear() != null) {
-                                Year.getYear().setDate();
-                            }
-                            if (Month.getMonth() != null) {
-                                Month.getMonth().setDate();
-                            }
-                            if (Day.getDay() != null) {
-                                Day.getDay().setDate();
-                            }
-                        }
-                    });
-                }
+        new Thread(() -> {
+            if (Launcher.mLauncher != null) {
+                Launcher.mLauncher.runOnUiThread(() -> {
+                    List<Widget> mList = new ArrayList<>(TimeUpdateReceiver.mWidgets);
+                    for (Widget widget : mList) {
+                        widget.update();
+                    }
+                    if (Clock.getClock() != null) {
+                        Clock.getClock().setTime();
+                    }
+                    if (Date.getDate() != null) {
+                        Date.getDate().setDate();
+                    }
+                    if (Date2.getDate() != null) {
+                        Date2.getDate().setDate();
+                    }
+                    if (Modulation.getModulation() != null) {
+                        Modulation.getModulation().setModulation();
+                    }
+                    if (WeekDay.getWeekDay() != null) {
+                        WeekDay.getWeekDay().setDate();
+                    }
+                    if (WeekDay2.getWeekDay() != null) {
+                        WeekDay2.getWeekDay().setDate();
+                    }
+                    if (WeekDay.getWeekDay() != null) {
+                        WeekDay.getWeekDay().setDate();
+                    }
+                    if (Year.getYear() != null) {
+                        Year.getYear().setDate();
+                    }
+                    if (Month.getMonth() != null) {
+                        Month.getMonth().setDate();
+                    }
+                    if (Day.getDay() != null) {
+                        Day.getDay().setDate();
+                    }
+                });
             }
         }).start();
     }

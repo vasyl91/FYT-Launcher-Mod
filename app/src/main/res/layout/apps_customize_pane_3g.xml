@@ -7,13 +7,13 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:id="@id/apps_customize_content"
+        android:id="@+id/apps_customize_content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <FrameLayout
             android:layout_gravity="center_horizontal"
-            android:id="@id/tabs_container"
+            android:id="@+id/tabs_container"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/apps_customize_tab_bar_height"
@@ -31,7 +31,7 @@
 
             <include
                 android:layout_gravity="end"
-                android:id="@id/market_button"
+                android:id="@+id/market_button"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 layout="@layout/market_button" />
@@ -43,7 +43,7 @@
             android:layout_height="fill_parent">
 
             <com.android.launcher66.AppsCustomizePagedView
-                android:id="@id/apps_customize_pane_content"
+                android:id="@+id/apps_customize_pane_content"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_marginBottom="@dimen/apps_customize_page_indicator_offset"
@@ -55,7 +55,7 @@
                 launcher:clingFocusedY="@integer/apps_customize_cling_focused_y" />
 
             <FrameLayout
-                android:id="@id/animation_buffer"
+                android:id="@+id/animation_buffer"
                 android:background="#00000000"
                 android:visibility="gone"
                 android:layout_width="fill_parent"
@@ -63,7 +63,7 @@
 
             <include
                 android:layout_gravity="bottom|center"
-                android:id="@id/page_indicator"
+                android:id="@+id/page_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/apps_customize_page_indicator_margin"

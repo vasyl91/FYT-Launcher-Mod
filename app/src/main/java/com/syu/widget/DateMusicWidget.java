@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -16,6 +17,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.widget.RemoteViews;
 
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -24,6 +27,8 @@ import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.util.Id3Info;
 import com.syu.util.Lrc;
+
+import java.io.File;
 
 import share.ResValue;
 
@@ -72,14 +77,21 @@ public class DateMusicWidget extends Widget {
                 this.runAnimation = false;
             }
         }
-        if (MusicService.music_path != null) {
-            if (MusicService.music_path.equals("") || MusicService.music_path.lastIndexOf("/") < 0) {
-                LogPreview.show("MusicService.music_path" + MusicService.music_path);
-                views.setTextViewText(ResValue.getInstance().music_name, this.mContext.getResources().getString(R.string.music_name));
-            } else {
-                String musictitle = MusicService.music_path.substring(MusicService.music_path.lastIndexOf("/") + 1);
-                views.setTextViewText(ResValue.getInstance().music_name, musictitle);
+        if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
+            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            boolean fytData = mPrefs.getBoolean("fyt_data", true);
+            String musictitle;
+            if (fytData) { // from metadata
+                musictitle = MusicService.music_name;
+            } else { // from file title
+                File file = new File(MusicService.music_path);
+                String filename = file.getName();
+                musictitle = filename.substring(0, filename.lastIndexOf("."));
             }
+            views.setTextViewText(ResValue.getInstance().music_name, musictitle);                         
+        } else {
+            LogPreview.show("MusicService.music_path" + MusicService.music_path);
+            views.setTextViewText(ResValue.getInstance().music_name, this.mContext.getResources().getString(R.string.music_name));      
         }
         if (MusicService.music_path != null && !MusicService.music_path.equals(this.music_path_pre)) {
             this.music_path_pre = MusicService.music_path;
@@ -98,13 +110,11 @@ public class DateMusicWidget extends Widget {
                 views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().music_album_def);
             }
         }
-        if (MusicService.author_name != null) {
-            if (MusicService.author_name.equals("")) {
-                views.setTextViewText(ResValue.getInstance().music_art, this.mContext.getResources().getString(R.string.music_author));
-            } else {
-                views.setTextViewText(ResValue.getInstance().music_art, MusicService.author_name);
-            }
-        }
+        if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
+            views.setTextViewText(ResValue.getInstance().music_art, MusicService.author_name);
+        } else {
+            views.setTextViewText(ResValue.getInstance().music_art, this.mContext.getResources().getString(R.string.music_author));
+        }  
         if (MusicService.state.booleanValue()) {
             if (Launcher.sNightMode) {
                 views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_playpause_icon_n);

@@ -1,15 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.Cling android:layout_width="fill_parent" android:layout_height="fill_parent" launcher:drawIdentifier="folder_portrait"
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
-    <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="10.0px" android:layout_marginBottom="10.0px" android:layout_marginStart="15.0px" android:layout_marginEnd="15.0px">
-        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
-            <LinearLayout android:orientation="vertical" android:background="@drawable/cling" android:paddingLeft="20.0px" android:paddingTop="20.0px" android:paddingRight="20.0px" android:paddingBottom="20.0px" android:layout_width="fill_parent" android:layout_height="wrap_content">
-                <TextView android:id="@id/folder_cling_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/folder_cling_title" style="@style/ClingTitleText" />
-                <TextView android:id="@id/folder_cling_create_folder" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/folder_cling_create_folder" style="@style/ClingText" />
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2011 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<com.android.launcher66.Cling xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    launcher:drawIdentifier="folder_portrait">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cling"
+                android:orientation="vertical"
+                android:paddingBottom="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/folder_cling_title"
+                    style="@style/ClingTitleText"
+                    android:text="@string/folder_cling_title" />
+
+                <TextView
+                    android:id="@+id/folder_cling_create_folder"
+                    style="@style/ClingText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/folder_cling_create_folder" />
             </LinearLayout>
-            <ImageView android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/cling_arrow_down" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/cling_arrow_down" />
         </LinearLayout>
     </FrameLayout>
-    <Button android:layout_gravity="end|bottom|center" android:id="@id/cling_dismiss" android:layout_marginBottom="15.0px" android:onClick="dismissFolderCling" android:layout_marginEnd="20.0px" style="@style/ClingButton" />
+
+    <Button
+        android:id="@+id/cling_dismiss"
+        style="@style/ClingButton"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="20dp"
+        android:onClick="dismissFolderCling" />
 </com.android.launcher66.Cling>

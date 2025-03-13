@@ -1,93 +1,117 @@
 package com.android.launcher66;
 
 import android.appwidget.AppWidgetHostView;
-import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
-import com.android.launcher66.DragLayer;
 
-public class LauncherAppWidgetHostView extends AppWidgetHostView implements DragLayer.TouchCompleteListener {
-    private Context mContext;
-    private DragLayer mDragLayer;
-    private LayoutInflater mInflater;
+import androidx.appcompat.view.ContextThemeWrapper;
+
+import com.android.launcher66.DragLayer.TouchCompleteListener;
+
+/**
+ * {@inheritDoc}
+ */
+public class LauncherAppWidgetHostView extends AppWidgetHostView implements TouchCompleteListener {
     private CheckLongPressHelper mLongPressHelper;
+    private LayoutInflater mInflater;
+    private Context mContext;
     private int mPreviousOrientation;
+    private DragLayer mDragLayer;
+    private Launcher mLauncher;
+    private LauncherAppWidgetHost.OnWidgetClickListener listener;
 
-    public LauncherAppWidgetHostView(Context context) {
+    public LauncherAppWidgetHostView(Context context, Launcher launcher) {
         super(context);
-        this.mContext = context;
-        this.mLongPressHelper = new CheckLongPressHelper(this);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mDragLayer = ((Launcher) context).getDragLayer();
+        mContext = context;
+        mLauncher = launcher;
+        mLongPressHelper = new CheckLongPressHelper(this);
+        Context themedContext = new ContextThemeWrapper(context, R.style.WidgetTheme);
+        mInflater = (LayoutInflater) themedContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mDragLayer = ((Launcher) mLauncher).getDragLayer();
+    }    
+
+    public void setOnWidgetClickListener(LauncherAppWidgetHost.OnWidgetClickListener listener) {
+        this.listener = listener;
     }
 
-    @Override 
-    public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
-        super.setAppWidget(appWidgetId, info);
-        setPadding(0, 0, 0, 0);
-    }
-
-    @Override 
+    @Override
     protected View getErrorView() {
-        return this.mInflater.inflate(R.layout.appwidget_error, (ViewGroup) this, false);
+        return mInflater.inflate(R.layout.appwidget_error, this, false);
     }
 
-    @Override 
+    @Override
     public void updateAppWidget(RemoteViews remoteViews) {
-        this.mPreviousOrientation = this.mContext.getResources().getConfiguration().orientation;
+        // Store the orientation in which the widget was inflated
+        mPreviousOrientation = mContext.getResources().getConfiguration().orientation;
         super.updateAppWidget(remoteViews);
     }
 
     public boolean orientationChangedSincedInflation() {
-        int orientation = this.mContext.getResources().getConfiguration().orientation;
-        return this.mPreviousOrientation != orientation;
+        int orientation = mContext.getResources().getConfiguration().orientation;
+        if (mPreviousOrientation != orientation) {
+           return true;
+       }
+       return false;
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (this.mLongPressHelper.hasPerformedLongPress()) {
-            this.mLongPressHelper.cancelLongPress();
+        // Consume any touch events for ourselves after longpress is triggered
+        if (mLongPressHelper.hasPerformedLongPress()) {
+            mLongPressHelper.cancelLongPress();
             return true;
         }
+
+        // Watch for longpress events at this level to make sure
+        // users can always pick up this widget
         switch (ev.getAction()) {
-            case 0:
-                this.mLongPressHelper.postCheckForLongPress();
+            case MotionEvent.ACTION_DOWN: {
+                if (listener != null) {
+                    listener.onWidgetClicked(getAppWidgetId());
+                }
+                mLongPressHelper.postCheckForLongPress();
+                mDragLayer.setTouchCompleteListener(this);
                 break;
-            case 1:
-            case 3:
-                this.mLongPressHelper.cancelLongPress();
+            }
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                mLongPressHelper.cancelLongPress();
                 break;
         }
+
+        // Otherwise continue letting touch events fall through to children
         return false;
     }
 
-    @Override 
     public boolean onTouchEvent(MotionEvent ev) {
+        // If the widget does not handle touch, then cancel
+        // long press when we release the touch
         switch (ev.getAction()) {
-            case 0:
-            case 1:
-                this.mLongPressHelper.cancelLongPress();
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                mLongPressHelper.cancelLongPress();
                 break;
         }
         return false;
     }
 
-    @Override 
+    @Override
     public void cancelLongPress() {
         super.cancelLongPress();
-        this.mLongPressHelper.cancelLongPress();
+        mLongPressHelper.cancelLongPress();
     }
 
-    @Override 
+    @Override
     public void onTouchComplete() {
-        this.mLongPressHelper.cancelLongPress();
+        mLongPressHelper.cancelLongPress();
     }
 
-    @Override 
+    @Override
     public int getDescendantFocusability() {
-        return 393216;
+        return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
     }
 }

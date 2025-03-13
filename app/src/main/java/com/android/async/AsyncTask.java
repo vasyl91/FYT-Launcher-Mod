@@ -1,173 +1,112 @@
 package com.android.async;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
-
-    public enum Status {
-        /**
-         * Indicates that the task has not been executed yet.
-         */
-        PENDING,
-        /**
-         * Indicates that the task is running.
-         */
-        RUNNING,
-        /**
-         * Indicates that has finished.
-         */
-        FINISHED,
-    }
-
+    private final AtomicBoolean cancelled = new AtomicBoolean();
+    private Future<OUTPUT> outputFuture;
     private volatile Status mStatus = Status.PENDING;
 
-    private boolean cancelled = false;
+    public enum Status {
+        PENDING,
+        RUNNING,
+        FINISHED
+    }
 
     public static final Executor THREAD_POOL_EXECUTOR =
             new ThreadPoolExecutor(20, 128, 1,
                     TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
-    public AsyncTask() {
+    public AsyncTask() {}
 
+    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(INPUT... input) {
+        return executeOnExecutor(AsyncWorker.getInstance().getExecutorService(), input);
     }
 
-    /**
-     * @see #execute(Object[])
-     */
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute() {
-        return execute((INPUT) null);
-    }
-
-    /**
-     * Starts is all
-     * @param input Data you want to work with in the background
-     */
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(final INPUT input) {
+    public AsyncTask<INPUT, PROGRESS, OUTPUT> executeOnExecutor(Executor executor, INPUT... params) {
+        if (mStatus != Status.PENDING) {
+            switch (mStatus) {
+                case RUNNING:
+                    throw new IllegalStateException("Task is already running.");
+                case FINISHED:
+                    throw new IllegalStateException("Task has already been executed.");
+                default:
+                    throw new IllegalStateException("Task is in an unknown state.");
+            }
+        }
+        mStatus = Status.RUNNING;
         onPreExecute();
 
-        ExecutorService executorService = AsyncWorker.getInstance().getExecutorService();
-        executorService.execute(() -> {
+        FutureTask<OUTPUT> futureTask = new FutureTask<>(() -> {
             try {
-                final OUTPUT output = doInBackground(input);
-                AsyncWorker.getInstance().getHandler().post(() -> onPostExecute(output));
-            } catch (final Exception e) {
-                e.printStackTrace();
-
-                AsyncWorker.getInstance().getHandler().post(() -> onBackgroundError(e));
+                OUTPUT output = doInBackground(params);
+                AsyncWorker.getInstance().getHandler().post(() -> {
+                    onPostExecute(output);
+                    mStatus = Status.FINISHED;
+                });
+                return output;
+            } catch (Exception e) {
+                AsyncWorker.getInstance().getHandler().post(() -> {
+                    onBackgroundError(e);
+                    mStatus = Status.FINISHED;
+                });
+                throw e;
             }
         });
+
+        executor.execute(futureTask);
+        outputFuture = futureTask;
 
         return this;
     }
 
-    /**
-     * Starts is all
-     * @param input Data you want to work with in the background
-     */
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(final INPUT[] input) {
-        onPreExecute();
-
-        ExecutorService executorService = AsyncWorker.getInstance().getExecutorService();
-        executorService.execute(() -> {
-            try {
-                final OUTPUT output = doInBackground(input);
-                AsyncWorker.getInstance().getHandler().post(() -> onPostExecute(output));
-            } catch (final Exception e) {
-                e.printStackTrace();
-
-                AsyncWorker.getInstance().getHandler().post(() -> onBackgroundError(e));
-            }
-        });
-
-        return this;
+    public OUTPUT get() throws Exception {
+        if (outputFuture == null) {
+            throw new TaskNotExecutedException();
+        } else {
+            return outputFuture.get();
+        }
     }
 
-    /**
-     * Starts is all
-     * @param input Data you want to work with in the background
-     */
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(Executor executor, final INPUT input) {
-        onPreExecute();
-
-        executor.execute(() -> {
-            try {
-                final OUTPUT output = doInBackground(input);
-                AsyncWorker.getInstance().getHandler().post(() -> onPostExecute(output));
-            } catch (final Exception e) {
-                e.printStackTrace();
-
-                AsyncWorker.getInstance().getHandler().post(() -> onBackgroundError(e));
-            }
-        });
-
-        return this;
+    public OUTPUT get(long timeout, TimeUnit timeUnit) throws Exception {
+        if (outputFuture == null) {
+            throw new TaskNotExecutedException();
+        } else {
+            return outputFuture.get(timeout, timeUnit);
+        }
     }
 
-    /**
-     * Starts is all
-     * @param input Data you want to work with in the background
-     */
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(Executor executor, final INPUT[] input) {
-        onPreExecute();
-
-        executor.execute(() -> {
-            try {
-                final OUTPUT output = doInBackground(input);
-                AsyncWorker.getInstance().getHandler().post(() -> onPostExecute(output));
-            } catch (final Exception e) {
-                e.printStackTrace();
-
-                AsyncWorker.getInstance().getHandler().post(() -> onBackgroundError(e));
-            }
-        });
-
-        return this;
-    }
-
-    /**
-     * Call to publish progress from background
-     * @param progress  Progress made
-     */
-    protected void publishProgress(final PROGRESS progress) {
+    // Updated to accept varargs
+    protected void publishProgress(final PROGRESS... progress) {
         AsyncWorker.getInstance().getHandler().post(() -> {
             onProgress(progress);
-
             if (onProgressListener != null) {
                 onProgressListener.onProgress(progress);
             }
         });
     }
 
-    public void onProgress(final PROGRESS progress) {
-        mStatus = Status.RUNNING;
+    // Updated to accept varargs
+    protected void onProgress(final PROGRESS... progress) {}
+
+    public void cancel() {
+        cancelled.set(true);
     }
 
-    public void onProgress(final PROGRESS[] progress) {
-        mStatus = Status.RUNNING;
-    }
-
-    /**
-     * Call to cancel background work
-     */
     public void cancel(boolean bool) {
-        cancelled = bool;
+        cancelled.set(bool);
     }
 
-    /**
-     *
-     * @return Returns true if the background work should be cancelled
-     */
     public boolean isCancelled() {
-        return cancelled;
+        return cancelled.get();
     }
 
-    /**
-     * Call this method after cancelling background work
-     */
     protected void onCancelled() {
         AsyncWorker.getInstance().getHandler().post(() -> {
             if (onCancelledListener != null) {
@@ -176,49 +115,18 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         });
     }
 
-    /**
-     * Work which you want to be done on UI thread before {@link #doInBackground(Object[])}
-     */
-    protected void onPreExecute() {
+    protected void onPreExecute() {}
 
-    }
+    protected abstract OUTPUT doInBackground(INPUT... input) throws Exception;
 
-    /**
-     * Work on background
-     * @param input Input data
-     * @return      Output data
-     * @throws Exception    Any uncought exception which occurred while working in background. If
-     * any occurs, {@link #onBackgroundError(Exception)} will be executed (on the UI thread)
-     */
-    protected abstract OUTPUT doInBackground(INPUT input) throws Exception;
+    protected void onPostExecute(OUTPUT output) {}
 
-    /**
-     * Work on background
-     * @param input Input data
-     * @return      Output data
-     * @throws Exception    Any uncought exception which occurred while working in background. If
-     * any occurs, {@link #onBackgroundError(Exception)} will be executed (on the UI thread)
-     */
-    protected abstract OUTPUT doInBackground(INPUT[] input) throws Exception;
-
-    /**
-     * Work which you want to be done on UI thread after {@link #doInBackground(Object[])}
-     * @param output    Output data from {@link #doInBackground(Object[])}
-     */
-    protected void onPostExecute(OUTPUT output) {
-        mStatus = Status.FINISHED;
-    }
-
-    /**
-     * Triggered on UI thread if any uncought exception occurred while working in background
-     * @param e Exception
-     * @see #doInBackground(Object[])
-     */
     protected abstract void onBackgroundError(Exception e);
 
+    // Updated listener interface
     private OnProgressListener<PROGRESS> onProgressListener;
     public interface OnProgressListener<PROGRESS> {
-        void onProgress(PROGRESS progress);
+        void onProgress(PROGRESS... progress);
     }
 
     public void setOnProgressListener(OnProgressListener<PROGRESS> onProgressListener) {
@@ -234,12 +142,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         this.onCancelledListener = onCancelledListener;
     }
 
-    /**
-     * Returns the current status of this task.
-     *
-     * @return The current status.
-     */
-    public final Status getStatus() {
+    public Status getStatus() {
         return mStatus;
     }
 }

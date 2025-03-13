@@ -7,12 +7,12 @@
     xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
 
     <ScrollView
-        android:id="@id/scroll_view"
+        android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <com.android.launcher66.CellLayout
-            android:id="@id/folder_content"
+            android:id="@+id/folder_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:cacheColorHint="#ff333333"
@@ -24,7 +24,7 @@
         android:textColor="#ff777777"
         android:textColorHighlight="#ffcccccc"
         android:gravity="center_horizontal"
-        android:id="@id/folder_name"
+        android:id="@+id/folder_name"
         android:background="#00000000"
         android:paddingTop="@dimen/folder_name_padding"
         android:paddingBottom="@dimen/folder_name_padding"

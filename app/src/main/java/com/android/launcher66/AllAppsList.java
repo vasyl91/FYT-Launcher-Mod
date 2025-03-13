@@ -178,6 +178,55 @@ public class AllAppsList {
         }
     }
 
+    public boolean updatePackageExt(Context context, String packageName) {
+        final List<ResolveInfo> matches = findActivitiesForPackage(context, packageName);
+        if (matches.size() > 0) {
+            // Find disabled/removed activities and remove them from data and add them
+            // to the removed list.
+            for (int i = data.size() - 1; i >= 0; i--) {
+                final AppInfo applicationInfo = data.get(i);
+                final ComponentName component = applicationInfo.intent.getComponent();
+                if (packageName.equals(component.getPackageName())) {
+                    if (!findActivity(matches, component)) {
+                        removed.add(applicationInfo);
+                        mIconCache.remove(component);
+                        data.remove(i);
+                    }
+                }
+            }
+
+            // Find enabled activities and add them to the adapter
+            // Also updates existing activities with new labels/icons
+            int count = matches.size();
+            for (int i = 0; i < count; i++) {
+                final ResolveInfo info = matches.get(i);
+                AppInfo applicationInfo = findApplicationInfoLocked(
+                        info.activityInfo.applicationInfo.packageName,
+                        info.activityInfo.name);
+                if (applicationInfo == null) {
+                    add(new AppInfo(context.getPackageManager(), info, mIconCache, null));
+                } else {
+                    mIconCache.remove(applicationInfo.componentName);
+                    mIconCache.getTitleAndIcon(applicationInfo, info, null);
+                    modified.add(applicationInfo);
+                }
+            }
+        } else {
+            // Remove all data for this package.
+            for (int i = data.size() - 1; i >= 0; i--) {
+                final AppInfo applicationInfo = data.get(i);
+                final ComponentName component = applicationInfo.intent.getComponent();
+                if (packageName.equals(component.getPackageName())) {
+                    removed.add(applicationInfo);
+                    mIconCache.remove(component);
+                    data.remove(i);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     static List<ResolveInfo> findActivitiesForPackage(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         Intent mainIntent = new Intent("android.intent.action.MAIN", (Uri) null);
@@ -232,5 +281,11 @@ public class AllAppsList {
             Toast.makeText(LauncherApplication.sApp, LauncherApplication.sApp.getString(R.string.init_default_app_error), Toast.LENGTH_LONG).show();
             Log.e("AllAppsList", "Failed to set default navi: " + e.getMessage());
         }
+    }
+
+    static List<ResolveInfo> findActivitysByIntent(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        final List<ResolveInfo> apps = packageManager.queryIntentActivities(intent, PackageManager.GET_INTENT_FILTERS);
+        return apps != null ? apps : new ArrayList<ResolveInfo>();
     }
 }

@@ -61,19 +61,19 @@ public class DayNightMode extends JobService {
             File image = new File(mFile, "Night.png");
             if (allowSetWallpaperFromFile(image)) {
                 Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                new SetWallpaperTask("Night").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmap);
+                new SetWallpaperTask("Night").execute(bitmap);
             } else {
                 Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
-                new SetWallpaperTask("Night").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmapDrawable);
+                new SetWallpaperTask("Night").execute(bitmapDrawable);
             }
         } else if (!helpers.isDay() && mFile.exists() || !helpers.isDay() && defaultWallpapers) {
             File image = new File(mFile, "Day.png");
             if (allowSetWallpaperFromFile(image)) {
                 Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                new SetWallpaperTask("Day").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmap);
+                new SetWallpaperTask("Day").execute(bitmap);
             } else {
                 Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
-                new SetWallpaperTask("Day").execute(AsyncTask.THREAD_POOL_EXECUTOR, bitmapDrawable);
+                new SetWallpaperTask("Day").execute(bitmapDrawable);
             }
         } 
     }
@@ -115,9 +115,9 @@ public class DayNightMode extends JobService {
         }
 
         @Override
-        protected Boolean doInBackground(Bitmap newWallpaperBitmap) throws IOException {
+        protected Boolean doInBackground(Bitmap... newWallpaperBitmap) throws IOException {
             mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-            mWallpaperManager.setBitmap(newWallpaperBitmap);
+            mWallpaperManager.setBitmap(newWallpaperBitmap[0]);
             saveBitmapHash(dayTime);
             return true;
         }
@@ -155,11 +155,6 @@ public class DayNightMode extends JobService {
             Canvas canvas = new Canvas(normalizedBitmap);
             canvas.drawBitmap(bitmap, 0, 0, null);
             return normalizedBitmap;
-        }
-
-        @Override
-        protected Boolean doInBackground(Bitmap[] input) {
-            return true;
         }
 
         @Override

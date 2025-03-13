@@ -1,12 +1,13 @@
 package com.fyt.skin;
 
-import android.app.Application;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import com.android.launcher66.Launcher;
+
 public class SkinUtils {
-    public static Application getCtx() {
+    public static Launcher getCtx() {
         getSkinManager();
         return SkinManager.getContext();
     }

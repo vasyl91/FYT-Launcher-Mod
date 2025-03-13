@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 
 public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
-    private static String TAG = "Launcher3.SavedWallpaperImages";
+    private static String TAG = "SavedWallpaperImages";
     private ImageDb mDb;
     ArrayList<SavedWallpaperTile> mImages;
     Context mContext;

@@ -2,19 +2,20 @@ package com.android.launcher66.settings;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Build;
 
-import com.jakewharton.processphoenix.ProcessPhoenix;
-import com.syu.util.WindowUtil;
-
+import androidx.preference.PreferenceManager;
 
 public class HomeWatcher {
 
+    // This class allows to do specified actions while user presses the home button
+    
+    private static final String USER_LAYOUT = "user_layout";
+    private static final String USER_INIT_LAYOUT = "user_init_layout";
     private final Context mContext;
     private final IntentFilter mFilter;
     private OnHomePressedListener mListener;
@@ -65,13 +66,18 @@ public class HomeWatcher {
                     if (mListener != null) {
                         if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {                         
                             helpers.setBackFromCreator(false);
-                            WindowUtil.restartPipApp();
-                            Intent startMain = new Intent(Intent.ACTION_MAIN);
-                            startMain.addCategory(Intent.CATEGORY_HOME);
-                            startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            context.startActivity(startMain);
-                            ProcessPhoenix.triggerRebirth(context);
+                            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                            boolean initLayout = sharedPrefs.getBoolean(USER_INIT_LAYOUT, false);
+                            boolean userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
+                            if (initLayout != userLayoutBool) {
+                                helpers.setLayoutTypeChanged(true);
+                            }
+                            boolean leftBarBool = sharedPrefs.getBoolean("left_bar", false);                
+                            //if (leftBarBool) {
+                                helpers.resetPrefs();
+                            //}
+                            Intent intentUpdateUserPage = new Intent("update.user.page");
+                            context.sendBroadcast(intentUpdateUserPage);  
                         }
                     }
                 }

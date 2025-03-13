@@ -1,9 +1,13 @@
 package com.android.launcher66;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+
+import androidx.preference.PreferenceManager;
+
 import java.util.ArrayList;
 
 public class DynamicGrid {
@@ -36,16 +40,17 @@ public class DynamicGrid {
         LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseat3G_icon_size);
         int hotseatIcon_wifi = LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseatwifi_icon_size);
         int iHotseatCount = LauncherApplication.sApp.getResources().getInteger(R.integer.nhotseat_count);
-        int iShortCut_textSize = LauncherApplication.sApp.getResources().getInteger(R.integer.shortcut_textSize);
-        deviceProfiles.add(new DeviceProfile("fyt 10", 1024.0f, 600.0f, numRows, numCols, iconSize, iShortCut_textSize, iHotseatCount, hotseatIcon_wifi));
-        deviceProfiles.add(new DeviceProfile("fyt 12", 800.0f, 480.0f, numRows, numCols, iconSize, iShortCut_textSize, iHotseatCount, hotseatIcon_wifi));
-        deviceProfiles.add(new DeviceProfile("fyt 12", 980.0f, 420.0f, numRows, numCols, iconSize, iShortCut_textSize, iHotseatCount, hotseatIcon_wifi));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int iAllAppsTextSize = Integer.parseInt(prefs.getString("all_apps_textSize", String.valueOf(LauncherApplication.sApp.getResources().getInteger(R.integer.all_apps_textSize))));
+        deviceProfiles.add(new DeviceProfile("fyt 10", 1024.0f, 600.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));
+        deviceProfiles.add(new DeviceProfile("fyt 12", 800.0f, 480.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));
+        deviceProfiles.add(new DeviceProfile("fyt 12", 980.0f, 420.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));
         this.mMinWidth = dpiFromPx(minWidthPx, dm);
         this.mMinHeight = dpiFromPx(minHeightPx, dm);
         this.mProfile = new DeviceProfile(context, deviceProfiles, this.mMinWidth, this.mMinHeight, widthPx, heightPx, awPx, ahPx, resources);
     }
 
-    DeviceProfile getDeviceProfile() {
+    public DeviceProfile getDeviceProfile() {
         return this.mProfile;
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.android.launcher66.PagedViewIcon android:textColor="@color/text_color_white"
-    android:id="@id/application_icon"
+    android:id="@+id/application_icon"
     android:tag="@string/skin_ruleless"
     android:background="@drawable/focusable_view_bg"
     android:focusable="true"

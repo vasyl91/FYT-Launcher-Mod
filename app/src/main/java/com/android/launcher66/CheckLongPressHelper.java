@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import android.util.Log;
 import android.view.View;
 
 public class CheckLongPressHelper {
@@ -13,9 +14,16 @@ public class CheckLongPressHelper {
 
         @Override
         public void run() {
-            if (CheckLongPressHelper.this.mView.getParent() != null && CheckLongPressHelper.this.mView.hasWindowFocus() && !CheckLongPressHelper.this.mHasPerformedLongPress && CheckLongPressHelper.this.mView.performLongClick()) {
-                CheckLongPressHelper.this.mView.setPressed(false);
-                CheckLongPressHelper.this.mHasPerformedLongPress = true;
+            if (CheckLongPressHelper.this.mView.getParent() != null) {
+                CheckLongPressHelper.this.mView.requestFocus();
+                Log.i("CheckLongPressHelper", 
+                    "Has window focus: " + String.valueOf(CheckLongPressHelper.this.mView.hasWindowFocus()) + 
+                    ", Performed long click: " +  String.valueOf(CheckLongPressHelper.this.mHasPerformedLongPress) + 
+                    ", performLongClick(): " + String.valueOf(CheckLongPressHelper.this.mView.performLongClick()));
+                if (CheckLongPressHelper.this.mView.hasWindowFocus() && !CheckLongPressHelper.this.mHasPerformedLongPress && CheckLongPressHelper.this.mView.performLongClick()) {
+                    CheckLongPressHelper.this.mView.setPressed(false);
+                    CheckLongPressHelper.this.mHasPerformedLongPress = true;
+                }                
             }
         }
     }
