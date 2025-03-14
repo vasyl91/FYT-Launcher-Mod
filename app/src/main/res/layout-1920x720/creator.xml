@@ -9,14 +9,14 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_second"
         android:layout_width="match_parent"
-        android:layout_height="560.0px" >
+        android:layout_height="550.0px" >
 
     </com.google.android.flexbox.FlexboxLayout>
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/creator_bar"
         android:layout_width="match_parent"
-        android:layout_height="160.0px"
+        android:layout_height="110.0px"
         android:background="@color/colorPrimaryDark"   
         app:alignItems="center"
         app:flexWrap="wrap"
@@ -35,7 +35,7 @@
             <TextView
                 android:text="@string/selected_widget"
                 android:textColor="@color/black"
-                android:textSize="13sp"
+                android:textSize="13sp" 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true" />
@@ -68,8 +68,8 @@
 
                 <Button
                     android:id="@+id/top_up"    
-                    android:layout_width="150.0px"
-                    android:layout_height="50.0px"
+                    android:layout_width="90.0px"
+                    android:layout_height="35.0px"
                     android:background="@drawable/arrow_up"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -77,7 +77,7 @@
                 <TextView
                     android:text="@string/top"
                     android:textColor="@color/black"
-                    android:textSize="10sp"                    
+                    android:textSize="7sp"                    
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,8 +85,8 @@
 
                 <Button
                     android:id="@+id/top_down"    
-                    android:layout_width="150.0px"
-                    android:layout_height="50.0px"
+                    android:layout_width="90.0px"
+                    android:layout_height="35.0px"
                     android:background="@drawable/arrow_down"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -103,8 +103,8 @@
 
                 <Button
                     android:id="@+id/bottom_up"    
-                    android:layout_width="150.0px"
-                    android:layout_height="50.0px"
+                    android:layout_width="90.0px"
+                    android:layout_height="35.0px"
                     android:background="@drawable/arrow_up"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -112,7 +112,7 @@
                 <TextView
                     android:text="@string/bottom"
                     android:textColor="@color/black"
-                    android:textSize="10sp"                    
+                    android:textSize="7sp"                    
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -120,8 +120,8 @@
 
                 <Button
                     android:id="@+id/bottom_down"    
-                    android:layout_width="150.0px"
-                    android:layout_height="50.0px"
+                    android:layout_width="90.0px"
+                    android:layout_height="35.0px"
                     android:background="@drawable/arrow_down"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -138,8 +138,8 @@
 
                 <Button
                     android:id="@+id/left_to_left"    
-                    android:layout_width="50.0px"
-                    android:layout_height="130.0px"
+                    android:layout_width="35.0px"
+                    android:layout_height="90.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -147,7 +147,7 @@
                 <TextView
                     android:text="@string/left"
                     android:textColor="@color/black"
-                    android:textSize="10sp"                    
+                    android:textSize="6sp"                    
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" 
@@ -156,8 +156,8 @@
 
                 <Button
                     android:id="@+id/left_to_right"    
-                    android:layout_width="50.0px"
-                    android:layout_height="130.0px"
+                    android:layout_width="35.0px"
+                    android:layout_height="90.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -174,8 +174,8 @@
 
                 <Button
                     android:id="@+id/right_to_left"    
-                    android:layout_width="50.0px"
-                    android:layout_height="130.0px"
+                    android:layout_width="35.0px"
+                    android:layout_height="90.0px"
                     android:background="@drawable/arrow_left"
                     android:layout_gravity="center"
                     android:gravity="center" />
@@ -183,7 +183,7 @@
                 <TextView
                     android:text="@string/right"
                     android:textColor="@color/black"
-                    android:textSize="9sp"                    
+                    android:textSize="6sp"                    
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" 
@@ -192,8 +192,8 @@
 
                 <Button
                     android:id="@+id/right_to_right"    
-                    android:layout_width="50.0px"
-                    android:layout_height="130.0px"
+                    android:layout_width="35.0px"
+                    android:layout_height="90.0px"
                     android:background="@drawable/arrow_right"
                     android:layout_gravity="center"
                     android:gravity="center" />

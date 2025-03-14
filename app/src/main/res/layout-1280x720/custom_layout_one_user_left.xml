@@ -8,33 +8,33 @@
         android:id="@+id/rl_left_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="110.0px"
-        android:layout_height="530.0px">
+        android:layout_height="550.0px">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/left_recycler_view"
             android:layout_width="110.0px"
-            android:layout_height="530.0px"
+            android:layout_height="550.0px"
             android:layout_marginTop="20.0px" />
     </RelativeLayout>
 
     <RelativeLayout        
         android:layout_width="1280.0px"
-        android:layout_height="160.0px"
+        android:layout_height="110.0px"
         android:layout_x="0px"
-        android:layout_y="510px" >
+        android:layout_y="550px" >
 
         <ImageView
             android:id="@+id/rl_allapps"
             android:layout_width="110.0px"
-            android:layout_height="110.0px"
-            android:layout_marginBottom="20.0px"
+            android:layout_height="90.0px"
+            android:layout_marginBottom="15.0px"
             android:src="@drawable/all_apps_btn_icon"
             android:layout_alignParentBottom="true" />
 
         <ImageView
             android:id="@+id/iv_list_bg"
             android:layout_width="1280.0px"
-            android:layout_height="130.0px"
+            android:layout_height="110.0px"
             android:src="@drawable/app_list_bg"
             android:scaleType="fitXY"
             android:layout_alignParentBottom="true" />
@@ -42,7 +42,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="1125.0px"
-            android:layout_height="130.0px"
+            android:layout_height="110.0px"
             android:layout_marginLeft="16.0px"
             android:layout_toRightOf="@id/rl_allapps"
             android:layout_alignParentBottom="true" />

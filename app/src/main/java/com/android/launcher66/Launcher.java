@@ -464,6 +464,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final String colsePipAction = "com.lsec.tyz.action.voice.launcher";
     private final String camera360Action = "FOURCAMERA2_BROADCAST_SEND";
     private final BroadcastReceiver mCloseSystemDialogsReceiver = new CloseSystemDialogsIntentReceiver(this, null);
+    private boolean closeSystemDialogsIntentReceiverBoolean = false;
     private final ContentObserver mWidgetObserver = new AppWidgetResetObserver();
     public Handler handler = new Handler(Looper.getMainLooper());
     private ItemInfo mPendingAddInfo = new ItemInfo();
@@ -2031,10 +2032,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 SystemProperties.set("sys.lsec.pip_rect", "107 67 756 937");
             }  else if (getResources().getDisplayMetrics().widthPixels == 1280) { // 1280x720 (notification bar 60)
                 SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 554");
+                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 574");
             } else if (getResources().getDisplayMetrics().widthPixels == 1920 && getResources().getDisplayMetrics().heightPixels == 720) { // 1920x720 (notification bar 60)
                 SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 554");
+                SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 574");
             } else {
                 SystemProperties.set("persist.lsec.radius", "14");
                 if (getResources().getDisplayMetrics().heightPixels == 1080) { // 1920x1080 (notification bar 100)
@@ -2907,8 +2908,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override 
     protected void onPause() {
         Log.d("LZP", "---->>> onPause");
-        if (AppUtil.topApp(this, FytPackage.hicarAction)) {
+        if (AppUtil.topApp(this, FytPackage.hicarAction)
+            && !closeSystemDialogsIntentReceiverBoolean) {
             WindowUtil.removePip(pipViews);
+            closeSystemDialogsIntentReceiverBoolean = false;
         }
         InstallShortcutReceiver.enableInstallQueue();
         super.onPause();
@@ -7085,12 +7088,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         @Override 
         public void onReceive(Context context, Intent intent) {
+            closeSystemDialogsIntentReceiverBoolean = true;
             Log.d("LZP", "CloseSystemDialogsIntentReceiver");
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
             if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName())) {
-                if ("com.lsec.tyz.action.voice.launcher".equals(intent.getAction())) {
+                if ("com.lsec.tyz.action.voice.launcher".equals(intent.getAction())
+                    && !Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
+                    Log.d("CloseSystemDialogsIntentReceiver", "removePip");
                     WindowUtil.removePip(null);
                     return;
                 } else {
