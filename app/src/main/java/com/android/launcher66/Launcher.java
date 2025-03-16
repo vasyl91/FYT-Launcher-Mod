@@ -965,42 +965,46 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             String path = "";
 
             // approach to get data from stock player in a direct way
-            if (mediaSource == "fyt" 
-                && !MusicService.music_name.isEmpty()
-                && !MusicService.music_path.isEmpty()
-                && !MusicService.author_name.isEmpty()
-                && !MusicService.album.isEmpty()) {
-                if (fytData) { // from metadata
-                    musictitle = MusicService.music_name;
-                } else { // from file title
-                    File file = new File(MusicService.music_path);
-                    String filename = file.getName();
-                    musictitle = filename.substring(0, filename.lastIndexOf("."));
+            if (mediaSource == "fyt") {
+                if (!MusicService.music_name.isEmpty()
+                    && !MusicService.music_path.isEmpty()
+                    && !MusicService.author_name.isEmpty()
+                    && !MusicService.album.isEmpty()) {
+
+                    if (fytData) { // from metadata
+                        musictitle = MusicService.music_name;
+                    } else { // from file title
+                        File file = new File(MusicService.music_path);
+                        String filename = file.getName();
+                        musictitle = filename.substring(0, filename.lastIndexOf("."));
+                    }
+                    artist = MusicService.author_name;   
+                    if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
+                        artist = MusicService.album;  
+                    }
+                    if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
+                        artist = "\u0020";
+                    }
+                    state = String.valueOf(MusicService.state.booleanValue());
+                    album = MusicService.album;
+                    path = MusicService.music_path;
+                    activeController = "";
+                }                
+            } else if (mediaSource == "mediaController") {
+                if (strs != null && strs.length > 5) {
+                    musictitle = strs[0];
+                    artist = strs[1];   
+                    if (artist == "null") {
+                        artist = strs[3];
+                    }
+                    if (artist == "null") {
+                        artist = "\u0020";
+                    }
+                    state = strs[2];
+                    album = strs[3];
+                    path = strs[4];
+                    activeController = strs[5];
                 }
-                artist = MusicService.author_name;   
-                if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
-                    artist = MusicService.album;  
-                }
-                if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
-                    artist = "\u0020";
-                }
-                state = String.valueOf(MusicService.state.booleanValue());
-                album = MusicService.album;
-                path = MusicService.music_path;
-                activeController = "";
-            } else if (mediaSource == "mediaController" && strs != null && strs.length > 5) {
-                musictitle = strs[0];
-                artist = strs[1];   
-                if (artist == "null") {
-                    artist = strs[3];
-                }
-                if (artist == "null") {
-                    artist = "\u0020";
-                }
-                state = strs[2];
-                album = strs[3];
-                path = strs[4];
-                activeController = strs[5];
             }
 
             // set default values when there is no active music app (app that uses media controller)
