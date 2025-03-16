@@ -44,6 +44,7 @@
             android:layout_width="1765.0px"
             android:layout_height="110.0px"
             android:layout_marginLeft="16.0px"
+            android:layout_marginTop="33.0px"
             android:layout_toRightOf="@id/rl_allapps"
             android:layout_alignParentBottom="true" />
 

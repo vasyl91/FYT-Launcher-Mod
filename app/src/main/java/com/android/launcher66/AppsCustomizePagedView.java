@@ -20,8 +20,9 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -932,13 +933,18 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
         cleanupWidgetPreloading(success);
         mDraggingWidget = false;
-        if (!helpers.isFirstPreferenceWindow() 
-            && !helpers.isWallpaperWindow() 
-            && !helpers.isInOverviewMode()
-            && mLauncher.getWorkspace().getCurrentPage() == mLauncher.getWorkspace().getPageIndexForScreenId(mLauncher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.i("onDropCompleted()", "startMapPip");
-            WindowUtil.startMapPip(null, false, 250);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!helpers.isFirstPreferenceWindow() 
+                    && !helpers.isWallpaperWindow() 
+                    && !helpers.isInOverviewMode()
+                    && mLauncher.getWorkspace().getCurrentPage() == mLauncher.getWorkspace().getPageIndexForScreenId(mLauncher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)) {
+                    Log.i("onDropCompleted()", "startMapPip");
+                    WindowUtil.startMapPip(null, false, 250);
+                }
+            }
+        }, 1000);
     }
 
     @Override

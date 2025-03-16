@@ -15,8 +15,6 @@ import android.app.SearchManager;
 import android.app.WallpaperManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -180,8 +178,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.http.HttpStatus;
 import org.litepal.LitePal;
@@ -513,6 +509,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private LinearLayout bottomButtonsWidgets;
     public static View rootView;
     public static int screenWidth;
+    private boolean temporarilyDisablePlayPauseButton = false;
 
     public static View getRootView() {
         return rootView;
@@ -962,11 +959,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mediaSource == null) {
                 mediaSource = "fyt";
             }
-            state = null;
-            String artist = null;
-            String album = null;
-            String path = null;
-            if (strs != null && strs.length > 5) {
+            state = "false";
+            String artist = "";
+            String album = "";
+            String path = "";
+
+            // approach to get data from stock player in a direct way
+            if (mediaSource == "fyt" 
+                && !MusicService.music_name.isEmpty()
+                && !MusicService.music_path.isEmpty()
+                && !MusicService.author_name.isEmpty()
+                && !MusicService.album.isEmpty()) {
+                if (fytData) { // from metadata
+                    musictitle = MusicService.music_name;
+                } else { // from file title
+                    File file = new File(MusicService.music_path);
+                    String filename = file.getName();
+                    musictitle = filename.substring(0, filename.lastIndexOf("."));
+                }
+                artist = MusicService.author_name;   
+                if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
+                    artist = MusicService.album;  
+                }
+                if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
+                    artist = "\u0020";
+                }
+                state = String.valueOf(MusicService.state.booleanValue());
+                album = MusicService.album;
+                path = MusicService.music_path;
+                activeController = "";
+            } else if (mediaSource == "mediaController" && strs != null && strs.length > 5) {
                 musictitle = strs[0];
                 artist = strs[1];   
                 if (artist == "null") {
@@ -980,6 +1002,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 path = strs[4];
                 activeController = strs[5];
             }
+
+            // set default values when there is no active music app (app that uses media controller)
             if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
                 ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
@@ -1023,26 +1047,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     return;         
                 }
             }
-            if (Launcher.this.music_playpause != null) {
-                if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                    Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                } else {
-                    Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                }
-            }
-            if (Launcher.this.music_playpause_two != null) {
-                if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                    Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                } else {
-                    Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                }
-            }
+
+            setPlayPauseIcon(false);
+
+            // core part of the data displayed on the main screen
             if ("true".equals(state)) {
                 Lrc lrc = new Lrc();
                 Id3Info info = lrc.getId3Info(path);
-                byte[] dataPic =  info.dataPic;
+                byte[] dataPic = info.dataPic;
                 if (dataPic == null) {
-                    dataPic =  byts;
+                    dataPic = byts;
                 }
                 if (dataPic != null && dataPic.length > 0) {
                     Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
@@ -1152,6 +1166,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 return;
             }
+
             if (CarStates.mAppID != 8 && (mediaSource == "fyt" || activeController == null)) {
                 if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                     if (fytData) { // from metadata
@@ -1196,12 +1211,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
             }
-            /*if (Launcher.this.music_playpause != null) {
+            /*
+            if (Launcher.this.music_playpause != null) {
                 Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
             if (Launcher.this.music_playpause_two != null) {
                 Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }*/
+            }
+            */
             if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
                 if (Launcher.this.tvMusicName != null) {
                     if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
@@ -1227,6 +1244,38 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Widget.update(LauncherApplication.sApp);
         }
     };
+
+    // set play/pause icon for stock and other music players
+    public void setPlayPauseIcon(boolean wait) {
+        if (wait) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setPlayPauseIcon();
+                    Widget.update(LauncherApplication.sApp);   
+                }
+            }, 500);
+        } else {
+           setPlayPauseIcon();
+        }
+    }
+
+    public void setPlayPauseIcon() {
+        if (Launcher.this.music_playpause != null && !temporarilyDisablePlayPauseButton) {
+            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+                Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+            } else {
+                Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            }
+        }
+        if (Launcher.this.music_playpause_two != null && !temporarilyDisablePlayPauseButton) {
+            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+                Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+            } else {
+                Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            }
+        }         
+    }
 
     private int radioBand = -1;
     Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
@@ -1495,7 +1544,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
                         if (helpers.hasCorrectionChanged()) {
                             if (!isNightModeRunning) {
-                                nightModeHandler.postDelayed(nightModeRunnable, 5000); // prevents an error when wallpaper is half loaded half black on boot
+                                nightModeHandler.postDelayed(nightModeRunnable, 10000); // prevents an error when wallpaper is half loaded half black on boot
                                 isNightModeRunning = true;
                             }
                             helpers.setCorrectionChanged(false);
@@ -1534,6 +1583,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             bottomButtonsWidgets.setVisibility(android.view.View.GONE);
         }
         mModel.startLoader(true, mWorkspace.getCurrentPage());
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
     }    
 
     private boolean checkIfMapSizeChanged() {
@@ -2032,10 +2082,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 SystemProperties.set("sys.lsec.pip_rect", "107 67 756 937");
             }  else if (getResources().getDisplayMetrics().widthPixels == 1280) { // 1280x720 (notification bar 60)
                 SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 574");
+                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 594");
             } else if (getResources().getDisplayMetrics().widthPixels == 1920 && getResources().getDisplayMetrics().heightPixels == 720) { // 1920x720 (notification bar 60)
                 SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 574");
+                SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 594");
             } else {
                 SystemProperties.set("persist.lsec.radius", "14");
                 if (getResources().getDisplayMetrics().heightPixels == 1080) { // 1920x1080 (notification bar 100)
@@ -2719,13 +2769,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume(); 
-        Log.i("onResume", "onResume----->");      
+        Log.i("onResume", "onResume----->");         
+        helpers = new Helpers();
+        if (!helpers.isAppOpenedByUser()) { 
+            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
+                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
+                isNightModeRunning = true;
+            }
+        }     
         if (mPlayer == null) {
             mPlayer = new MediaPlayer();
-        }
-        helpers = new Helpers();
-        if (!helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-            checkWallpapers();
         }
         fytData = mPrefs.getBoolean("fyt_data", true); 
         preOnResumeTime = System.currentTimeMillis();
@@ -2858,6 +2911,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mKwArtist.setText(R.string.music_author);
             }
         }
+        setPlayPauseIcon(true);
     }
 
     public boolean isJobServiceOn(Context context) {
@@ -4034,52 +4088,63 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             music_playpause.setOnClickListener(new View.OnClickListener() { 
                 @Override
                 public void onClick(View v) {
-                    if (mediaSource == "fyt") {
-                        if (MusicService.state.booleanValue()) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));                        
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));                      
-                        }     
-                        Intent intent = new Intent();
-                        intent.setAction("com.syu.music.playpause");
-                        intent.setPackage("com.syu.music");
-                        Launcher.this.startService(intent);                 
-                    } else if (mediaSource == "mediaController") {
-                        boolean activeControllerAppRunning = false;
-                        ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
-                        for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                            if (appProcess.processName.contains(activeController)) {
-                                activeControllerAppRunning = true;
-                                if (activeController != null && !activeController.isEmpty()) {
-                                    if (mAudioManager.isMusicActive() && !MusicService.state) {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                                        mAudioManager.dispatchMediaKeyEvent(event);
-                                    } else {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                                        mAudioManager.dispatchMediaKeyEvent(event);
-                                    }   
-                                }
-                            } 
-                        }
-                        if (!activeControllerAppRunning) {
-                            WindowUtil.removePip(Launcher.this.pipViews);
-                            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                            try {
-                                ComponentName componentName = launchIntent.getComponent();
-                                PackageManager pm = getPackageManager();
-                                ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                                String appTitle = appInfo.loadLabel(pm).toString();
-                                AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                throw new RuntimeException(e);
+                    if (!temporarilyDisablePlayPauseButton) {
+                        if (mediaSource == "fyt") {
+                            if (MusicService.state.booleanValue()) {
+                                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));                        
+                            } else {
+                                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));                      
+                            }     
+                            Intent intent = new Intent();
+                            intent.setAction("com.syu.music.playpause");
+                            intent.setPackage("com.syu.music");
+                            Launcher.this.startService(intent);                 
+                        } else if (mediaSource == "mediaController") {
+                            boolean activeControllerAppRunning = false;
+                            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+                            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
+                            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                                if (appProcess.processName.contains(activeController)) {
+                                    activeControllerAppRunning = true;
+                                    if (activeController != null && !activeController.isEmpty()) {
+                                        if (mAudioManager.isMusicActive() && !MusicService.state) {
+                                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
+                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                        } else {
+                                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
+                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                        }   
+                                    }
+                                } 
                             }
-                            startActivity(launchIntent);                                    
+                            if (!activeControllerAppRunning) {
+                                WindowUtil.removePip(Launcher.this.pipViews);
+                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                                try {
+                                    ComponentName componentName = launchIntent.getComponent();
+                                    PackageManager pm = getPackageManager();
+                                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                                    String appTitle = appInfo.loadLabel(pm).toString();
+                                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                                    Launcher.this.refreshLeftCycle(bean);
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                startActivity(launchIntent);                                    
+                            }
                         }
                     }
+
+                    temporarilyDisablePlayPauseButton = true;
+
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            temporarilyDisablePlayPauseButton = false;  
+                        }
+                    }, 500);
                 }
             });
         }
@@ -4087,52 +4152,63 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             music_playpause_two.setOnClickListener(new View.OnClickListener() { 
                 @Override
                 public void onClick(View v) {
-                    if (mediaSource == "fyt") { 
-                        if (MusicService.state.booleanValue()) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));                        
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));                      
-                        } 
-                        Intent intent = new Intent();
-                        intent.setAction("com.syu.music.playpause");
-                        intent.setPackage("com.syu.music");
-                        Launcher.this.startService(intent);                               
-                    } else if (mediaSource == "mediaController") {
-                        boolean activeControllerAppRunning = false;
-                        ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
-                        for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                            if (appProcess.processName.contains(activeController)) {
-                                activeControllerAppRunning = true;
-                                if (activeController != null && !activeController.isEmpty()) {
-                                    if (mAudioManager.isMusicActive() && !MusicService.state) {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                                        mAudioManager.dispatchMediaKeyEvent(event);
-                                    } else {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                                        mAudioManager.dispatchMediaKeyEvent(event);
-                                    }   
-                                }
+                    if (!temporarilyDisablePlayPauseButton) {
+                        if (mediaSource == "fyt") { 
+                            if (MusicService.state.booleanValue()) {
+                                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));                        
+                            } else {
+                                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));                      
                             } 
-                        }
-                        if (!activeControllerAppRunning) {
-                            WindowUtil.removePip(Launcher.this.pipViews);
-                            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                            try {
-                                ComponentName componentName = launchIntent.getComponent();
-                                PackageManager pm = getPackageManager();
-                                ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                                String appTitle = appInfo.loadLabel(pm).toString();
-                                AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                throw new RuntimeException(e);
+                            Intent intent = new Intent();
+                            intent.setAction("com.syu.music.playpause");
+                            intent.setPackage("com.syu.music");
+                            Launcher.this.startService(intent);                               
+                        } else if (mediaSource == "mediaController") {
+                            boolean activeControllerAppRunning = false;
+                            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+                            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
+                            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                                if (appProcess.processName.contains(activeController)) {
+                                    activeControllerAppRunning = true;
+                                    if (activeController != null && !activeController.isEmpty()) {
+                                        if (mAudioManager.isMusicActive() && !MusicService.state) {
+                                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
+                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                        } else {
+                                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
+                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                        }   
+                                    }
+                                } 
                             }
-                            startActivity(launchIntent);                                    
+                            if (!activeControllerAppRunning) {
+                                WindowUtil.removePip(Launcher.this.pipViews);
+                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                                try {
+                                    ComponentName componentName = launchIntent.getComponent();
+                                    PackageManager pm = getPackageManager();
+                                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                                    String appTitle = appInfo.loadLabel(pm).toString();
+                                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                                    Launcher.this.refreshLeftCycle(bean);
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                startActivity(launchIntent);                                    
+                            }
                         }
                     }
+
+                    temporarilyDisablePlayPauseButton = true;
+
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            temporarilyDisablePlayPauseButton = false;  
+                        }
+                    }, 500);
                 }
             });
         }
@@ -5042,21 +5118,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onRestart() {
         super.onRestart();
+        helpers = new Helpers();
         if (!helpers.isAppOpenedByUser()) {
             if (!isCheckTimeRunning) {
                 checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device hasn't updated the time
                 isCheckTimeRunning = true;
             }    
-            if (!isNightModeRunning) {
+            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
                 nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
                 isNightModeRunning = true;
             }
-        }        if (mPlayer == null) {
+        }        
+        if (mPlayer == null) {
             mPlayer = new MediaPlayer();
-        }
-        helpers = new Helpers();
-        if (!helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-            checkWallpapers();
         }
         fytData = mPrefs.getBoolean("fyt_data", true); 
         if (helpers.shouldAllAppsBeVisible()) {
