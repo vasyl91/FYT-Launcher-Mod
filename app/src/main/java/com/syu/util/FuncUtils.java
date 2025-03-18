@@ -439,7 +439,7 @@ public class FuncUtils {
             BufferedReader reader2 = null;
             try {
                 try {
-                    isr = new InputStreamReader(is);
+                    isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                     try {
                         reader = new BufferedReader(isr);
                     } catch (Exception e) {
@@ -601,7 +601,7 @@ public class FuncUtils {
             try {
                 proc = runtime.exec("mount");
                 is = proc.getInputStream();
-                InputStreamReader isr2 = new InputStreamReader(is);
+                InputStreamReader isr2 = new InputStreamReader(is, StandardCharsets.UTF_8);
                 try {
                     BufferedReader br2 = new BufferedReader(isr2);
                     while (true) {

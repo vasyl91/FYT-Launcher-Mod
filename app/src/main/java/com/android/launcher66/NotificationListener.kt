@@ -1,6 +1,7 @@
 package com.android.launcher66
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -13,6 +14,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaMetadata
+import android.media.MediaMetadataRetriever
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
@@ -29,6 +31,7 @@ import com.fyt.car.MusicService
 import share.ResValue
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.nio.charset.StandardCharsets
 
 class NotificationListener : NotificationListenerService() {
     
@@ -60,7 +63,6 @@ class NotificationListener : NotificationListenerService() {
     private var authorName: String? = ""
     private var album: String? = ""
     private var fytData: Boolean = true
-    private var fytAllowed: Boolean = true // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.
 
     var musicState: String? = ""
     var musicNamePrev: String = ""
@@ -149,6 +151,7 @@ class NotificationListener : NotificationListenerService() {
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
             }
+            // update widget if the music is already playing
             if (meta != null && mState == PlaybackState.STATE_PLAYING) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (!helpers.returnControllerTimeBool()) {
@@ -170,28 +173,41 @@ class NotificationListener : NotificationListenerService() {
         handler = Handler(Looper.getMainLooper())
         handler.post(runTask)
 
-        val intentFilter = IntentFilter("titlesReceiver")
+        val intentFilter = IntentFilter("titlesInternal")
+        intentFilter.addAction("media.play.play")
+        intentFilter.addAction("media.play.pause")
+        intentFilter.addAction("media.play.next")
+        intentFilter.addAction("media.play.previous")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(fytReceiver, intentFilter, RECEIVER_EXPORTED)
+            registerReceiver(mediaReceiver, intentFilter, RECEIVER_EXPORTED)
         } else {
-            registerReceiver(fytReceiver, intentFilter)
+            registerReceiver(mediaReceiver, intentFilter)
         }
     } 
-
-    private val fytReceiver = object : BroadcastReceiver() {
+   
+    private val mediaReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == "titlesReceiver") {
-                val bundle: Bundle? = intent.extras!!    
-                musicName = bundle?.getString("title")!!
-                authorName = bundle.getString("play_artist")!!
-                fytState = bundle.getBoolean("play_state")
-                fytAlbum = bundle.getString("play_album")!!     
+            /** data from the stock music player (com.syu.music) handled by com.fyt.car.MusicService
+            *   It is essential to use MediaMetadataRetriever because stock music player doesn't process
+            *   cheracters specific to particular language (ö, ó, ü, ß, ñ etc) and sends chinese signs instead.
+            */
+            if (intent.action == "titlesInternal") {
+                val retriever = MediaMetadataRetriever()
+                val bundle: Bundle? = intent.extras!!
+                fytState = bundle?.getBoolean("play_state")!!
                 fytMusicPath = bundle.getString("play_path")!!
                 fytSource = bundle.getString("source")!!
-                fytTotalMinutes = bundle.getLong("play_total")
                 fytCurMinutes = bundle.getLong("play_cur")
 
                 try {
+                    retriever.setDataSource(fytMusicPath)
+                    
+                    musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                    fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                    fytTotalMinutes = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong()
+
+
                     if (musicNamePrev != musicName) {
                         musicNamePrev = musicName.toString()
                         prevCurFyt = 0
@@ -202,10 +218,15 @@ class NotificationListener : NotificationListenerService() {
                     if (filename.isNotEmpty() && filename.contains(".")) {
                         pathName = filename.substring(0, filename.lastIndexOf("."))
                     }
-                    if (musicName!!.isNotEmpty() && musicName != "Unknown"  && musicName != "null" && songFyt != musicName && songFyt != pathName) {
+
+                    if (currentState == PlaybackState.STATE_PLAYING) {
+                        mediaController?.getTransportControls()?.pause()
+                    }
+
+                    if (musicName!!.isNotEmpty() && !musicName!!.contains("Unknown")  && !musicName!!.contains("null")) {
                         fytSet = false
                     } 
-                    if (fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") { 
+                    if (fytState && !fytSet && helpers.isFytMusicAllowed()  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {
                         handlerControllerTime.removeCallbacks(updateControllerTime)  
                         helpers.updateControllerTimeBool(false)
                         fytSet = true
@@ -214,10 +235,53 @@ class NotificationListener : NotificationListenerService() {
                     }  
                 } catch (e: IllegalArgumentException) {
                     e.printStackTrace()
+                } finally {
+                    retriever.release()
                 }
+            // commands for madia players (other than the stock one)
+            } else if (intent.action == "media.play.play") {
+                mediaController?.getTransportControls()?.play()
+            } else if (intent.action == "media.play.pause") {
+                mediaController?.getTransportControls()?.pause()
+            } else if (intent.action == "media.play.next") {
+                mediaController?.getTransportControls()?.skipToNext()
+            } else if (intent.action == "media.play.previous") {
+                mediaController?.getTransportControls()?.skipToPrevious()
             }
         }
     }   
+
+    /** from what I tested, only killing the stock player will guarantee stopping it
+    *   from playing music. Calling "com.syu.music.playpause" or killing just background 
+    *   processes sometimes results in resuming the music and interrupting other players.
+    */ 
+    private fun stopFytMusic() {
+        if (MusicService.state) { 
+            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            //activityManager?.killBackgroundProcesses("com.syu.music")
+            try {
+                val method = activityManager?.javaClass?.getDeclaredMethod(
+                    "forceStopPackage",
+                    String::class.java
+                )
+                method?.invoke(activityManager, "com.syu.music")
+            } catch (e: ReflectiveOperationException) {
+                // Handle exceptions (e.g., method not found, permission denied)
+                e.printStackTrace()
+            } catch (e: SecurityException) {
+                // Handle security exceptions
+                e.printStackTrace()
+            }
+            
+            fytAlbum = ""
+            fytMusicPath = ""
+            pathName = ""
+            fytAlbumCover = null
+            fytSource = ""
+            fytTotalMinutes = 0
+            fytCurMinutes = 0
+        }
+    }
 
     override fun onDestroy() {
         sessionListener.let {
@@ -235,7 +299,7 @@ class NotificationListener : NotificationListenerService() {
             handlerFytTime.removeCallbacks(updateFytTime)
         }
         helpers.updateControllerTimeBool(false)
-        unregisterReceiver(fytReceiver)
+        unregisterReceiver(mediaReceiver)
     }
 
     private val runTask = object : Runnable {
@@ -290,10 +354,9 @@ class NotificationListener : NotificationListenerService() {
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
-            // 2 - PAUSED, 3 - PLAYING
             currentState = state?.state
             prevMinutes = 0
-            if (currentState == 2) {
+            if (currentState == PlaybackState.STATE_PAUSED) {
                 val editor = settings.edit()
                 editor.putInt("prevState", currentState!!)
                 editor.apply()
@@ -303,13 +366,15 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        fun set() {
-            if (currentState == 2 || currentState == 1) {  
+        fun set() {  
+            stopFytMusic()
+            handlerFytTime.removeCallbacks(updateFytTime)
+            if (currentState == PlaybackState.STATE_PAUSED || currentState == PlaybackState.STATE_STOPPED) {  
                 helpers.setCounter(0)
                 handlerControllerTime.removeCallbacks(updateControllerTime)
                 helpers.updateControllerTimeBool(false)
                 musicState = "false"
-            } else if (currentState == 3) {
+            } else if (currentState == PlaybackState.STATE_PLAYING) {
                 // prevents youtube live to add view every ~second
                 var dur = meta?.getLong(MediaMetadata.METADATA_KEY_DURATION)
                 // prevents flickering on adding view
@@ -319,6 +384,7 @@ class NotificationListener : NotificationListenerService() {
                         songCur = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
                     }
                 }
+                // prevState: 1 - STOPPED, 2 - PAUSED, 3 - PLAYING
                 if (!songCur.equals(settings.getString("songPrev", "prev")) || settings.getInt("prevState", 1) == 2) {
                     val editor = settings.edit()
                     editor.putString("songPrev", songCur)
@@ -348,22 +414,27 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
+    // mediaSource: 1 - com.syu.music, 2 - other players that use media controller
     fun setStatus(mediaSource: Int) {
         if (mediaSource == 2) {
             fytState = false
             fytSet = true
         }
 
-        if (songFyt != null && fytState && fytAllowed && mediaSource == 1) {
+        if (songFyt != null && fytState && helpers.isFytMusicAllowed() && mediaSource == 1) {
             fytStatus()
         } 
 
         if (song != null && !fytState && mediaSource == 2)  {
+            helpers.setFytMusicAllowed(false)
+            Handler(Looper.getMainLooper()).postDelayed({
+                helpers.setFytMusicAllowed(true)
+            }, 2500) 
             activeControllerPackage = (mediaController?.getPackageName()).toString()
-            if (activeControllerPackage.contains("com.spotify.music")) {
+            if (activeControllerPackage.contains("com.spotify.music") || activeControllerPackage.contains("youtube.music")) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     mediaControllerStatus()
-                }, 600)
+                }, 700)
             } else {
                 mediaControllerStatus()
             }
@@ -402,12 +473,7 @@ class NotificationListener : NotificationListenerService() {
         )
     }
 
-    fun mediaControllerStatus() {
-        fytAllowed = false
-        Handler(Looper.getMainLooper()).postDelayed({
-            fytAllowed = true
-        }, 2500) 
-
+    fun mediaControllerStatus() {   
         totalMinutes = meta!!.getLong(MediaMetadata.METADATA_KEY_DURATION)
         mediaController!!.playbackState?.let {
             curMinutes = if (totalMinutes == 0.toLong()) {
@@ -416,7 +482,7 @@ class NotificationListener : NotificationListenerService() {
                 it.position
             }
         }
-        song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
+        song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE) 
         artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST) 
         if (artist == null || artist?.isEmpty() == true){
             artist = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
@@ -445,6 +511,7 @@ class NotificationListener : NotificationListenerService() {
         if (bitmap == null) {
             bitmap = meta?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
         }
+        // youtube bitmap is always null
         if (bitmap == null && activeControllerPackage.contains("youtube")) {
             bitmap = drawableToBitmap(ContextCompat.getDrawable(this, ResValue.getInstance().youtube_logo))
         }

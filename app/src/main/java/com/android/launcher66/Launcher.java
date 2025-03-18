@@ -44,6 +44,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -67,6 +68,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -242,7 +244,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static final int WALLPAPER_RRESULT_CODE = 202;
     private String mediaSource = "fyt";
     private AudioManager mAudioManager;
-    private KeyEvent event;
     private String activeController;
     private String state;
     private boolean userLayout;
@@ -959,55 +960,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mediaSource == null) {
                 mediaSource = "fyt";
             }
-            state = "false";
-            String artist = "";
-            String album = "";
-            String path = "";
-
-            // approach to get data from stock player in a direct way
-            if (mediaSource == "fyt") {
-                if (!MusicService.music_name.isEmpty()
-                    && !MusicService.music_path.isEmpty()
-                    && !MusicService.author_name.isEmpty()
-                    && !MusicService.album.isEmpty()) {
-
-                    if (fytData) { // from metadata
-                        musictitle = MusicService.music_name;
-                    } else { // from file title
-                        File file = new File(MusicService.music_path);
-                        String filename = file.getName();
-                        musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    }
-                    artist = MusicService.author_name;   
-                    if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
-                        artist = MusicService.album;  
-                    }
-                    if (artist == null || artist.isEmpty() || artist.contains("Unknown")) {
-                        artist = "\u0020";
-                    }
-                    state = String.valueOf(MusicService.state.booleanValue());
-                    album = MusicService.album;
-                    path = MusicService.music_path;
-                    activeController = "";
-                }                
-            } else if (mediaSource == "mediaController") {
-                if (strs != null && strs.length > 5) {
-                    musictitle = strs[0];
-                    artist = strs[1];   
-                    if (artist == "null") {
-                        artist = strs[3];
-                    }
-                    if (artist == "null") {
-                        artist = "\u0020";
-                    }
-                    state = strs[2];
-                    album = strs[3];
-                    path = strs[4];
-                    activeController = strs[5];
+            state = null;
+            String artist = null;
+            String album = null;
+            String path = null;
+            if (strs != null && strs.length > 5) {
+                musictitle = strs[0];
+                artist = strs[1];   
+                if (artist == "null") {
+                    artist = strs[3];
                 }
+                if (artist == "null") {
+                    artist = "\u0020";
+                }
+                state = strs[2];
+                album = strs[3];
+                path = strs[4];
+                activeController = strs[5];
             }
-
-            // set default values when there is no active music app (app that uses media controller)
             if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
                 ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
@@ -1054,13 +1024,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             setPlayPauseIcon(false);
 
-            // core part of the data displayed on the main screen
             if ("true".equals(state)) {
                 Lrc lrc = new Lrc();
                 Id3Info info = lrc.getId3Info(path);
-                byte[] dataPic = info.dataPic;
+                byte[] dataPic =  info.dataPic;
                 if (dataPic == null) {
-                    dataPic = byts;
+                    dataPic =  byts;
                 }
                 if (dataPic != null && dataPic.length > 0) {
                     Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
@@ -1100,7 +1069,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
                             }                       
                         }
-                        Launcher.this.tvMusicName.setSelected(true);  
+                        Launcher.this.tvMusicName.setSelected(true);
                     }
                     if (Launcher.this.tvMusicNameTwo != null) {
                         if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
@@ -1170,7 +1139,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 return;
             }
-
             if (CarStates.mAppID != 8 && (mediaSource == "fyt" || activeController == null)) {
                 if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                     if (fytData) { // from metadata
@@ -1215,14 +1183,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
             }
-            /*
-            if (Launcher.this.music_playpause != null) {
+            /*if (Launcher.this.music_playpause != null) {
                 Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
             if (Launcher.this.music_playpause_two != null) {
                 Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }
-            */
+            }*/
             if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
                 if (Launcher.this.tvMusicName != null) {
                     if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
@@ -2326,54 +2292,55 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-
-    public void checkForLocaleChange() {
-        boolean localeChanged = false;
+    private void checkForLocaleChange() {
         if (sLocaleConfiguration == null) {
             new AsyncTask<Void, Void, LocaleConfiguration>() {
-
                 @Override
                 protected LocaleConfiguration doInBackground(Void... unused) {
-                    LocaleConfiguration localeConfiguration = new LocaleConfiguration(null);
-                    Launcher.readConfiguration(Launcher.this, localeConfiguration);
+                    LocaleConfiguration localeConfiguration = new LocaleConfiguration();
+                    readConfiguration(Launcher.this, localeConfiguration);
                     return localeConfiguration;
                 }
 
-                public void onPostExecute(LocaleConfiguration result) {
-                    Launcher.sLocaleConfiguration = result;
-                    Launcher.this.checkForLocaleChange();
+                @Override
+                protected void onPostExecute(LocaleConfiguration result) {
+                    sLocaleConfiguration = result;
+                    checkForLocaleChange();  // recursive, but now with a locale configuration
                 }
 
                 @Override
                 protected void onBackgroundError(Exception e) {
-
+                    //
                 }
-            }.execute(new Void[0]);
+            }.execute();
             return;
         }
-        Configuration configuration = getResources().getConfiguration();
-        String previousLocale = sLocaleConfiguration.locale;
-        String locale = configuration.getLocales().get(0).toString();
-        int previousMcc = sLocaleConfiguration.mcc;
-        int mcc = configuration.mcc;
-        int previousMnc = sLocaleConfiguration.mnc;
-        int mnc = configuration.mnc;
-        if (!(locale.equals(previousLocale) && mcc == previousMcc && mnc == previousMnc)) {
-            localeChanged = true;
-        }
+
+        final Configuration configuration = getResources().getConfiguration();
+
+        final String previousLocale = sLocaleConfiguration.locale;
+        final String locale = configuration.locale.toString();
+
+        final int previousMcc = sLocaleConfiguration.mcc;
+        final int mcc = configuration.mcc;
+
+        final int previousMnc = sLocaleConfiguration.mnc;
+        final int mnc = configuration.mnc;
+
+        boolean localeChanged = !locale.equals(previousLocale) || mcc != previousMcc || mnc != previousMnc;
+
         if (localeChanged) {
             sLocaleConfiguration.locale = locale;
             sLocaleConfiguration.mcc = mcc;
             sLocaleConfiguration.mnc = mnc;
+
             mIconCache.flush();
+
             final LocaleConfiguration localeConfiguration = sLocaleConfiguration;
             new Thread("WriteLocaleConfiguration") {
+                @Override
                 public void run() {
-                    try {
-                        Launcher.writeConfiguration(Launcher.this, localeConfiguration);
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
+                    writeConfiguration(Launcher.this, localeConfiguration);
                 }
             }.start();
         }
@@ -2381,119 +2348,53 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private static class LocaleConfiguration {
         public String locale;
-        public int mcc;
-        public int mnc;
-
-        private LocaleConfiguration() {
-            mcc = -1;
-            mnc = -1;
-        }
-
-        /* synthetic */ LocaleConfiguration(LocaleConfiguration localeConfiguration) {
-            this();
-        }
+        public int mcc = -1;
+        public int mnc = -1;
     }
 
-    
-    public static void readConfiguration(Context context, LocaleConfiguration configuration) {
+    private static void readConfiguration(Context context, LocaleConfiguration configuration) {
         DataInputStream in = null;
         try {
-            DataInputStream in2 = new DataInputStream(context.openFileInput(PREFERENCES));
-            try {
-                configuration.locale = in2.readUTF();
-                configuration.mcc = in2.readInt();
-                configuration.mnc = in2.readInt();
-                if (in2 != null) {
-                    try {
-                        in2.close();
-                    } catch (IOException e) {
-                    }
+            in = new DataInputStream(context.openFileInput(PREFERENCES));
+            configuration.locale = in.readUTF();
+            configuration.mcc = in.readInt();
+            configuration.mnc = in.readInt();
+        } catch (FileNotFoundException e) {
+            // Ignore
+        } catch (IOException e) {
+            // Ignore
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // Ignore
                 }
-            } catch (FileNotFoundException e2) {
-                in = in2;
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e3) {
-                    }
-                }
-            } catch (IOException e4) {
-                in = in2;
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e5) {
-                    }
-                }
-            } catch (Throwable th) {
-                th = th;
-                in = in2;
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e6) {
-                    }
-                }
-                throw th;
             }
-        } catch (FileNotFoundException e7) {
-        } catch (IOException e8) {
-        } catch (Throwable th2) {
-            th = th2;
         }
     }
 
-    
-    public static void writeConfiguration(Context context, LocaleConfiguration configuration) throws Throwable {
+    private static void writeConfiguration(Context context, LocaleConfiguration configuration) {
         DataOutputStream out = null;
-        DataOutputStream out2 = null;
         try {
-            out = new DataOutputStream(context.openFileOutput(PREFERENCES, 0));
-        } catch (Throwable th) {
-            th = th;
-        }
-        try {
+            out = new DataOutputStream(context.openFileOutput(PREFERENCES, MODE_PRIVATE));
             out.writeUTF(configuration.locale);
             out.writeInt(configuration.mcc);
             out.writeInt(configuration.mnc);
             out.flush();
+        } catch (FileNotFoundException e) {
+            // Ignore
+        } catch (IOException e) {
+            //noinspection ResultOfMethodCallIgnored
+            context.getFileStreamPath(PREFERENCES).delete();
+        } finally {
             if (out != null) {
                 try {
                     out.close();
-                    out2 = out;
-                } catch (IOException e3) {
-                    out2 = out;
-                }
-            } else {
-                out2 = out;
-            }
-        } catch (FileNotFoundException e4) {
-            out2 = out;
-            if (out2 != null) {
-                try {
-                    out2.close();
-                } catch (IOException e5) {
+                } catch (IOException e) {
+                    // Ignore
                 }
             }
-        } catch (IOException e6) {
-            out2 = out;
-            context.getFileStreamPath(PREFERENCES).delete();
-            if (out2 != null) {
-                try {
-                    out2.close();
-                } catch (IOException e7) {
-                }
-            }
-        } catch (Throwable th2) {
-            th = th2;
-            out2 = out;
-            if (out2 != null) {
-                try {
-                    out2.close();
-                } catch (IOException e8) {
-                }
-            }
-            throw th;
         }
     }
 
@@ -3933,7 +3834,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         intent.setAction("com.syu.music.prev");
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController" && !MusicService.state) {
+                    } else if (mediaSource == "mediaController") {
                         boolean activeControllerAppRunning = false;
                         ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
                         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
@@ -3941,8 +3842,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             if (appProcess.processName.contains(activeController)) {
                                 activeControllerAppRunning = true;
                                 if (activeController != null && !activeController.isEmpty()) {
-                                    event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                                    mAudioManager.dispatchMediaKeyEvent(event);
+                                    sendBroadcast(new Intent("media.play.previous"));
                                 }
                             } 
                         }
@@ -3974,7 +3874,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         intent.setAction("com.syu.music.prev");
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController" && !MusicService.state) {
+                    } else if (mediaSource == "mediaController") {
                         boolean activeControllerAppRunning = false;
                         ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
                         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
@@ -3982,8 +3882,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             if (appProcess.processName.contains(activeController)) {
                                 activeControllerAppRunning = true;
                                 if (activeController != null && !activeController.isEmpty()) {
-                                    event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                                    mAudioManager.dispatchMediaKeyEvent(event);
+                                    sendBroadcast(new Intent("media.play.previous"));
                                 }
                             } 
                         }
@@ -4015,7 +3914,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         intent.setAction("com.syu.music.next");
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController" && !MusicService.state) {
+                    } else if (mediaSource == "mediaController") {
                         boolean activeControllerAppRunning = false;
                         ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
                         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
@@ -4023,8 +3922,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             if (appProcess.processName.contains(activeController)) {
                                 activeControllerAppRunning = true;
                                 if (activeController != null && !activeController.isEmpty()) {
-                                    event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
-                                    mAudioManager.dispatchMediaKeyEvent(event);
+                                    sendBroadcast(new Intent("media.play.next"));
                                 }
                             } 
                         }
@@ -4056,7 +3954,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         intent.setAction("com.syu.music.next");
                         intent.setPackage("com.syu.music");
                         Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController" && !MusicService.state) {
+                    } else if (mediaSource == "mediaController") {
                         boolean activeControllerAppRunning = false;
                         ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
                         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
@@ -4064,8 +3962,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             if (appProcess.processName.contains(activeController)) {
                                 activeControllerAppRunning = true;
                                 if (activeController != null && !activeController.isEmpty()) {
-                                    event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
-                                    mAudioManager.dispatchMediaKeyEvent(event);
+                                    sendBroadcast(new Intent("media.play.next"));
                                 }
                             } 
                         }
@@ -4111,14 +4008,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 if (appProcess.processName.contains(activeController)) {
                                     activeControllerAppRunning = true;
                                     if (activeController != null && !activeController.isEmpty()) {
-                                        if (mAudioManager.isMusicActive() && !MusicService.state) {
+                                        if (mAudioManager.isMusicActive()) {
                                             music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                            sendBroadcast(new Intent("media.play.pause"));
                                         } else {
                                             music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                            sendBroadcast(new Intent("media.play.play"));
                                         }   
                                     }
                                 } 
@@ -4175,14 +4070,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 if (appProcess.processName.contains(activeController)) {
                                     activeControllerAppRunning = true;
                                     if (activeController != null && !activeController.isEmpty()) {
-                                        if (mAudioManager.isMusicActive() && !MusicService.state) {
+                                        if (mAudioManager.isMusicActive()) {
                                             music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                            sendBroadcast(new Intent("media.play.pause"));
                                         } else {
                                             music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                            event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                                            mAudioManager.dispatchMediaKeyEvent(event);
+                                            sendBroadcast(new Intent("media.play.play"));
                                         }   
                                     }
                                 } 

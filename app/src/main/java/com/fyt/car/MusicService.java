@@ -1,17 +1,14 @@
 package com.fyt.car;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.UserHandle;
+import android.util.Log;
 
-import com.android.launcher66.LauncherApplication;
-import com.android.launcher66.R;
-import com.android.launcher66.NotificationListener;
-import com.syu.widget.Widget;
+import com.android.launcher66.Launcher;
+import com.android.launcher66.settings.Helpers;
 
 public class MusicService extends Service {
     public static final String MUSICSERVICE = "com.fyt.launcher.music";
@@ -28,6 +25,7 @@ public class MusicService extends Service {
     public static final String REMOVE_MUSIC = "com.fyt.systemui.remove";
     public static final String TITLE = "title";
     public static final String TITLES_RECEIVER = "titlesReceiver";
+    public static final String TITLES_INTERNAL = "titlesInternal";
     public static final String PLAY_SOURCE = "source";
     public static final String SOURCE = "fyt";
     public static byte[] album_cover;
@@ -38,6 +36,7 @@ public class MusicService extends Service {
     public static String album = "";
     public static long TOTALMINUTES = 0;
     public static long CURMINUTES = 0;
+    private boolean intentSent = false;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -63,11 +62,21 @@ public class MusicService extends Service {
             } else {
                 album = "";
             }
-            sendData();
+
+            if (!music_name.contains("Unknown")) {
+                sendData();
+            }
+
+            Helpers helpers = new Helpers();
+            if (state && !music_name.contains("Unknown") && helpers.isFytMusicAllowed()) {
+                sendInternalData();
+            }
+            
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
+    // data for external apps
     public void sendData() {
         Intent intent = new Intent(TITLES_RECEIVER);
         Bundle bundle = new Bundle();
@@ -78,6 +87,18 @@ public class MusicService extends Service {
         bundle.putString(PLAY_PATH, music_path);
         bundle.putString(PLAY_SOURCE, SOURCE);
         bundle.putLong(PLAY_TOTALMINUTES, TOTALMINUTES);
+        bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
+        intent.putExtras(bundle);
+        sendBroadcastAsUser(intent, UserHandle.ALL);
+    }
+
+    // data broadcasted to NotificationListener.kt for the music widget
+    public void sendInternalData() {
+        Intent intent = new Intent(TITLES_INTERNAL);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(PLAY_STATE, state);
+        bundle.putString(PLAY_PATH, music_path);
+        bundle.putString(PLAY_SOURCE, SOURCE);
         bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
         intent.putExtras(bundle);
         sendBroadcastAsUser(intent, UserHandle.ALL);

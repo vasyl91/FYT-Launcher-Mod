@@ -266,6 +266,18 @@ public class Helpers {
         editor.apply();
     }
 
+    // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.
+    private boolean fytMusicAllowed = true;
+    public boolean isFytMusicAllowed() {
+        fytMusicAllowed = sharedPrefs.getBoolean("fytMusicAllowed", true);
+        return fytMusicAllowed;
+    }
+    public void setFytMusicAllowed(boolean fytMusicAllowed) {
+        this.fytMusicAllowed = fytMusicAllowed;
+        editor.putBoolean("fytMusicAllowed", fytMusicAllowed);
+        editor.apply();
+    }
+
 
     private String mediaSourcePre = "";
     public String returnMediaSourcePre() {
