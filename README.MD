@@ -1,16 +1,17 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-So far the launcher has been tested on 2000x1200 resolution because that is the only device I own.
+So far the launcher has been tested on 2000x1200 resolution because this is the only device I own.
 
 List of modifications:
 - Music widget (requires Notification Listener permission) working with most of the music players.
+- Widgets from external apps, shortcuts on the main screen, folders, extra screens.
 - Launcher creator allowing to adjust launcher layout to user preferences.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct sunset and sunrise times, set the wallpaper and brightness for the day/night mode).
 - Settings fragment with useful tweaks.
-- New icon for the launcher and its settings with settings' icon in the app drawer.
+- New icon for the launcher and it's settings with settings' icon in the app drawer.
 - Replaced part of deprecated code with the new one.
-- Added 1920x720 and 1920x1080 resolutions (need tests).
+- Added 1920x720 resolution (needs tests).
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
 
