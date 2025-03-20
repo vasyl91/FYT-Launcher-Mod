@@ -40,6 +40,7 @@ import java.util.Comparator;
 import android.content.ComponentName;
 import android.content.pm.ResolveInfo;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.AutoScrollHelper;
 
 import java.util.List;
@@ -546,7 +547,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 Utilities.createIconDrawable(item.getIcon(mIconCache)), null, null);
         textView.setText(item.title);
         textView.setTag(item);
-        textView.setTextColor(getResources().getColor(R.color.folder_items_text_color));
+        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.folder_items_text_color));
         textView.setShadowsEnabled(false);
 
         textView.setOnClickListener(this);

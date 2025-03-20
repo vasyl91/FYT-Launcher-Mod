@@ -1,13 +1,14 @@
 package com.android.launcher66;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
 
 public class HolographicViewHelper {
     private int mHighlightColor;
@@ -16,9 +17,8 @@ public class HolographicViewHelper {
     private final Canvas mTempCanvas = new Canvas();
 
     public HolographicViewHelper(Context context) {
-        Resources res = context.getResources();
-        this.mHighlightColor = res.getColor(android.R.color.holo_blue_light);
-        this.mHotwordColor = res.getColor(android.R.color.holo_green_light);
+        this.mHighlightColor = ContextCompat.getColor(context, android.R.color.holo_blue_light);
+        this.mHotwordColor = ContextCompat.getColor(context, android.R.color.holo_green_light);
     }
 
     void generatePressedFocusedStates(ImageView v) {

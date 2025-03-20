@@ -24,10 +24,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.android.async.AsyncTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -487,8 +488,7 @@ public class WidgetPreviewLoader {
             if (cellHSpan < 1) cellHSpan = 1;
             if (cellVSpan < 1) cellVSpan = 1;
 
-            BitmapDrawable previewDrawable = (BitmapDrawable) mContext.getResources()
-                    .getDrawable(R.drawable.widget_tile);
+            BitmapDrawable previewDrawable = (BitmapDrawable) ContextCompat.getDrawable(mContext, R.drawable.widget_tile);
             final int previewDrawableWidth = previewDrawable
                     .getIntrinsicWidth();
             final int previewDrawableHeight = previewDrawable

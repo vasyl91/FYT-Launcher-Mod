@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.R;
 import com.android.launcher66.DropTarget.DragObject;
 import com.android.launcher66.FolderInfo.FolderListener;
@@ -188,9 +190,9 @@ public class FolderIcon extends LinearLayout implements FolderListener {
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
                 sPreviewSize = grid.folderIconSizePx;
                 sPreviewPadding = res.getDimensionPixelSize(R.dimen.folder_preview_padding);
-                sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
-                sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_nolip_holo);
-                sSharedFolderLeaveBehind = res.getDrawable(R.drawable.portal_ring_rest);
+                sSharedOuterRingDrawable = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_outer_holo);
+                sSharedInnerRingDrawable = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_inner_nolip_holo);
+                sSharedFolderLeaveBehind = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_rest);
                 sStaticValuesDirty = false;
             }
         }

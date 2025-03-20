@@ -1253,7 +1253,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0 && ints != null && ints.length > 0) {
                 int band = ints[0];
-                Log.d("LZP", "-------->>> FinalRadio.U_BAND" + band);
+                Log.d(TAG, "-------->>> FinalRadio.U_BAND" + band);
                 if (band == 65536 || band == 65537 || band == 65538) {
                     Launcher.this.radioBand = 0;
                 } else if (band == 0 || band == 1) {
@@ -1533,7 +1533,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
 
                         recreateView(userLayoutBool);
-                        break;                          
+                        break;  
+                    case "pause.button":
+                        setPlayPauseIcon(true);   
+                        break;                  
                 }
             }
         }
@@ -1681,7 +1684,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("onCreate", "onCreate----->");
+        Log.i(TAG, "onCreate----->");
         mContext = this;
         mLauncher = this;
 
@@ -1835,7 +1838,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.post(runnable_register);
 
         initRegisterReceiver();
-        
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!helpers.isInOverviewMode() 
+                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                    && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
+                    Log.d("onCreate", "startMapPip");
+                    WindowUtil.startMapPip(null, false);
+                }
+            }
+        }, 1000);
+
         Widget.update(LauncherApplication.sApp);
 
         /*mCurrWallpaperRes = mSharedPrefs.getString(SP_WALLPAPER, "");
@@ -1895,6 +1910,298 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
             }
         });        
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "---->>> onStart");
+        WindowUtil.initDefaultApp(null, false); 
+        FirstFrameAnimatorHelper.setIsVisible(true);
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        helpers = new Helpers();
+        if (!helpers.isAppOpenedByUser()) {
+            if (!isCheckTimeRunning) {
+                checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device hasn't updated the time
+                isCheckTimeRunning = true;
+            }    
+            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
+                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
+                isNightModeRunning = true;
+            }
+        }        
+        if (mPlayer == null) {
+            mPlayer = new MediaPlayer();
+        }
+        fytData = mPrefs.getBoolean("fyt_data", true); 
+        if (helpers.shouldAllAppsBeVisible()) {
+            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
+            helpers.setAllAppsShouldBVisible(false);
+        }
+        if (isAllAppsVisible()) {
+            Log.d("onRestart", "removePip");
+            WindowUtil.removePip(null);
+        } else {
+            if (!helpers.isFirstPreferenceWindow() 
+                && !helpers.isWallpaperWindow() 
+                && !helpers.isInOverviewMode()
+                && !mDragController.isDragging()
+                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
+                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+                    Log.d("onRestart", "startMapPip");
+                    WindowUtil.startMapPip(null, false, 250);
+            }
+        }
+        helpers.setFirstPreferenceWindow(false);
+        helpers.setWallpaperWindow(false);
+        helpers.setWasInRecents(false); 
+        helpers.setAppOpenedByUser(false);
+        mWorkspace.exitOverviewMode(false);
+        Log.i("onRestart", "onRestart----->");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume(); 
+        Log.i(TAG, "onResume----->");         
+        helpers = new Helpers();
+        if (!helpers.isAppOpenedByUser()) { 
+            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
+                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
+                isNightModeRunning = true;
+            }
+        }     
+        if (mPlayer == null) {
+            mPlayer = new MediaPlayer();
+        }
+        fytData = mPrefs.getBoolean("fyt_data", true); 
+        preOnResumeTime = System.currentTimeMillis();
+        if (helpers.shouldAllAppsBeVisible()) {
+            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
+            helpers.setAllAppsShouldBVisible(false);
+        }
+        if (isAllAppsVisible()) {
+            Log.d("onResume", "removePip");
+            WindowUtil.removePip(null);
+        } else {
+            if (!helpers.isFirstPreferenceWindow() 
+                && !helpers.isWallpaperWindow() 
+                && !helpers.isInOverviewMode()
+                && !mDragController.isDragging()
+                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
+                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+                    Log.d("onResume", "startMapPip");
+                    WindowUtil.startMapPip(null, false, 250);
+            }
+        }
+        helpers.setFirstPreferenceWindow(false);
+        helpers.setWallpaperWindow(false);
+        helpers.setWasInRecents(false); 
+        handleView();
+        if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
+        }
+        if (mOnResumeState == State.WORKSPACE) {
+            LogPreview.show("mOnResumeState == State.WORKSPACE");
+            showWorkspace(true);
+        } else if (mOnResumeState == State.APPS_CUSTOMIZE) {
+            showAllApps(true, AppsCustomizePagedView.ContentType.Applications, false);
+        }
+        mOnResumeState = State.NONE;
+        setWorkspaceBackground(mState == State.WORKSPACE);
+        mPaused = false;
+        sPausedFromUserAction = false;
+        if (mRestoring || mOnResumeNeedsLoad) {
+            mWorkspaceLoading = true;
+            mModel.startLoader(true, -1);
+            mRestoring = false;
+            mOnResumeNeedsLoad = false;
+        }
+        if (mBindOnResumeCallbacks.size() > 0) {
+            if (mAppsCustomizeContent != null) {
+                mAppsCustomizeContent.setBulkBind(true);
+            }
+            for (int i = 0; i < mBindOnResumeCallbacks.size(); i++) {
+                try {
+                    mBindOnResumeCallbacks.get(i).run();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error BindOnResumeCallbacks: " + e.getMessage());
+                }
+            }
+            if (mAppsCustomizeContent != null) {
+                mAppsCustomizeContent.setBulkBind(false);
+            }
+            mBindOnResumeCallbacks.clear();
+        }
+        if (mOnResumeCallbacks.size() > 0) {
+            for (int i2 = 0; i2 < mOnResumeCallbacks.size(); i2++) {
+                mOnResumeCallbacks.get(i2).run();
+            }
+            mOnResumeCallbacks.clear();
+        }
+        if (mWaitingForResume != null) {
+            mWaitingForResume.setStayPressed(false);
+        }
+        if (mAppsCustomizeContent != null) {
+            mAppsCustomizeContent.resetDrawableState();
+        }
+        getWorkspace().reinflateWidgetsIfNecessary();
+        InstallShortcutReceiver.disableAndFlushInstallQueue(this);
+        updateVoiceButtonProxyVisible(false);
+        updateGlobalIcons();
+        if (mWorkspace.getCustomContentCallbacks() != null && mWorkspace.isOnOrMovingToCustomContent()) {
+            mWorkspace.getCustomContentCallbacks().onShow();
+        }
+        mWorkspace.updateInteractionForState();
+        mWorkspace.onResume();
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+        LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
+        LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
+        LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
+        LauncherNotify.NOTIFIER_NAVIVIEW.addUiRefresher(refreshNaviView, false);
+        LauncherNotify.NOTIFIER_NAVISTATE.addUiRefresher(refreshNaviState, false);
+        tools = CarStates.getCar(app).getTools();
+        tools.addRefreshLisenter(1, refreshRadioBand, 0);
+        tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
+        tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
+        tools.addRefreshLisenter(4, refreshMain, 2, 3);
+        tools.addRefreshLisenter(7, refreshMain, 1000);
+        tools.addRefreshLisenter(2, refreshBtInfo, 0, 1, 2, 28, 26, 13, 9, 7);
+        tools.notify(0, 0, 50, 60, 101, 31);
+        tools.notify(1, 0);
+        tools.notify(1, 1);
+        tools.notify(7, 1000);
+        tools.notify(2, 0, 1, 2, 28, 26, 13, 9, 7);
+        if (firstLayout != null && !isfirstlayout) {
+            firstLayout.setVisibility(View.VISIBLE);
+        }
+        isfirstlayout = false;
+        showWeatherInfo();
+        lastpath = null;
+        /*if (CarStates.mAppID != 8 && mediaSource == "fyt") {
+            Utils.setTextId(tvMusicName, R.string.music_name);
+            Utils.setTextId(tvAritst, R.string.music_author);
+            Utils.setTextId(tvMusicNameTwo, R.string.music_name);
+            Utils.setTextId(tvAlbum, R.string.music_author);
+            Utils.setTextStr(tvCurTime, "00:00");
+            Utils.setTextStr(tvTotalTime, "00:00");
+            if (musicProgress != null) {
+                musicProgress.setProgress(0);
+            }
+            if (music_playpause != null) {
+                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            }
+        }*/
+        if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
+            showKuwoContent = false;
+            if (kuwomusic_playpause != null) {
+                kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
+            }
+            if (mKwMusicName != null) {
+                mKwMusicName.setText(R.string.car_kuwo);
+            }
+            if (mKwArtist != null) {
+                mKwArtist.setText(R.string.music_author);
+            }
+        }
+        setPlayPauseIcon(true);
+    }
+
+    @Override 
+    protected void onPause() {
+        Log.d(TAG, "---->>> onPause");
+        if (AppUtil.topApp(this, FytPackage.hicarAction)
+            && !closeSystemDialogsIntentReceiverBoolean) {
+            WindowUtil.removePip(pipViews);
+            closeSystemDialogsIntentReceiverBoolean = false;
+        }
+        InstallShortcutReceiver.enableInstallQueue();
+        super.onPause();
+        mPaused = true;
+        mDragController.cancelDrag();
+        mDragController.resetLastGestureUpTime();
+        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
+        LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
+        LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
+        LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
+        LauncherNotify.NOTIFIER_NAVIVIEW.removeUiRefresher(refreshNaviView);
+        LauncherNotify.NOTIFIER_NAVISTATE.removeUiRefresher(refreshNaviState);
+        clearGaoDeData();
+        if (mWorkspace.getCustomContentCallbacks() != null) {
+            mWorkspace.getCustomContentCallbacks().onHide();
+        }
+        if(mPlayer != null) {
+            if(mPlayer.isPlaying()) {
+                mPlayer.stop();
+            }
+            mPlayer.reset();
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "---->>> onStop");
+        WindowUtil.removePip(pipViews);
+        removeNightRunnables();
+        isfirstlayout = true;
+        FirstFrameAnimatorHelper.setIsVisible(false);
+        if(mPlayer != null) {
+            if(mPlayer.isPlaying()) {
+                mPlayer.stop();
+            }
+            mPlayer.reset();
+            mPlayer.release();
+            mPlayer = null;
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "---->>> onDestroy");
+        WindowUtil.removePip(pipViews);
+        super.onDestroy();
+        tools.removeRefreshLisenter(0, refreshMain);
+        tools.removeRefreshLisenter(4, refreshMain);
+        tools.removeRefreshLisenter(7, refreshMain);
+        tools.removeRefreshLisenter(2, refreshBtInfo);
+        unregisterReceiver(removeMusic);
+        unregisterReceiver(mAutoMap);
+        unregisterReceiver(mTrifficReceiver);
+        mHandler.removeMessages(1);
+        mHandler.removeMessages(0);
+        mWorkspace.removeCallbacks(mBuildLayersRunnable);
+        LauncherAppState app = LauncherAppState.getInstance();
+        mModel.stopLoader();
+        app.setLauncher(null);
+        try {
+            mAppWidgetHost.stopListening();
+        } catch (NullPointerException ex) {
+            Log.w(TAG, "problem while stopping AppWidgetHost during Launcher destruction", ex);
+        }
+        mAppWidgetHost = null;
+        mWidgetsToAdvance.clear();
+        TextKeyListener.getInstance().release();
+        if (mModel != null) {
+            mModel.unbindItemInfosAndClearQueuedBindRunnables();
+        }
+        getContentResolver().unregisterContentObserver(mWidgetObserver);
+        unregisterReceiver(mCloseSystemDialogsReceiver);
+        mDragLayer.clearAllResizeFrames();
+        ((ViewGroup) mWorkspace.getParent()).removeAllViews();
+        mWorkspace.removeAllViews();
+        mWorkspace = null;
+        mDragController = null;
+        LauncherAnimUtils.onDestroyActivity();
     }
 
     // Handle widget click events
@@ -2200,6 +2507,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    // running that is pointless, because apart from consuming memory it does nothing
     public void showWeatherInfo() {
         /*if (mWeatherManager != null) {
             mWeatherManager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() {
@@ -2481,7 +2789,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         int pendingAddWidgetId = mPendingAddWidgetId;
         mPendingAddWidgetId = -1;
 
-        if (requestCode == REQUEST_PICK_WALLPAPER) {
+        // mod uses different approach to handle wallpapers
+        /*if (requestCode == REQUEST_PICK_WALLPAPER) {
             
             if (resultCode == 202 && mWorkspace.isInOverviewMode()) {
                 showHotseat(true);
@@ -2492,14 +2801,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (helpers.isDay()) {
                     mCurrWallpaperRes = data.getStringExtra("wallpaperRes");               
                 }
-                Log.d("LZP", "resultCode == WALLPAPER_RRESULT_CODE");
+                Log.d(TAG, "resultCode == WALLPAPER_RRESULT_CODE");
                 SharedPreferences.Editor editor = mSharedPrefs.edit();
                 editor.putString(SP_WALLPAPER, data.getStringExtra("wallpaperRes"));
                 editor.apply();
                 return;  
             }
             return;
-        }
+        }*/
 
         if (requestCode == REQUEST_BIND_APPWIDGET) {
             Log.i("WIDGET", "REQUEST_BIND_APPWIDGET");
@@ -2634,24 +2943,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    @Override
-    protected void onStop() {
-        Log.d("LZP", "---->>> onStop");
-        WindowUtil.removePip(pipViews);
-        removeNightRunnables();
-        isfirstlayout = true;
-        FirstFrameAnimatorHelper.setIsVisible(false);
-        if(mPlayer != null) {
-            if(mPlayer.isPlaying()) {
-                mPlayer.stop();
-            }
-            mPlayer.reset();
-            mPlayer.release();
-            mPlayer = null;
-        }
-        super.onStop();
-    }
-
     public void removeNightRunnables() {
         if (isCheckTimeRunning) {
             checkTimeHandler.removeCallbacks(checkTimeRunnable);
@@ -2661,162 +2952,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             nightModeHandler.removeCallbacks(nightModeRunnable);
             isNightModeRunning = false; 
         } 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("LZP", "---->>> onStart");
-        WindowUtil.initDefaultApp(null, false); 
-        FirstFrameAnimatorHelper.setIsVisible(true);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume(); 
-        Log.i("onResume", "onResume----->");         
-        helpers = new Helpers();
-        if (!helpers.isAppOpenedByUser()) { 
-            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
-                isNightModeRunning = true;
-            }
-        }     
-        if (mPlayer == null) {
-            mPlayer = new MediaPlayer();
-        }
-        fytData = mPrefs.getBoolean("fyt_data", true); 
-        preOnResumeTime = System.currentTimeMillis();
-        if (helpers.shouldAllAppsBeVisible()) {
-            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
-            helpers.setAllAppsShouldBVisible(false);
-        }
-        if (isAllAppsVisible()) {
-            Log.d("onResume()", "removePip");
-            WindowUtil.removePip(null);
-        } else {
-            if (!helpers.isFirstPreferenceWindow() 
-                && !helpers.isWallpaperWindow() 
-                && !helpers.isInOverviewMode()
-                && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                    Log.d("onResume()", "startMapPip");
-                    WindowUtil.startMapPip(null, false, 250);
-            }
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
-        handleView();
-        if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
-        }
-        if (mOnResumeState == State.WORKSPACE) {
-            LogPreview.show("mOnResumeState == State.WORKSPACE");
-            showWorkspace(true);
-        } else if (mOnResumeState == State.APPS_CUSTOMIZE) {
-            showAllApps(true, AppsCustomizePagedView.ContentType.Applications, false);
-        }
-        mOnResumeState = State.NONE;
-        setWorkspaceBackground(mState == State.WORKSPACE);
-        mPaused = false;
-        sPausedFromUserAction = false;
-        if (mRestoring || mOnResumeNeedsLoad) {
-            mWorkspaceLoading = true;
-            mModel.startLoader(true, -1);
-            mRestoring = false;
-            mOnResumeNeedsLoad = false;
-        }
-        if (mBindOnResumeCallbacks.size() > 0) {
-            if (mAppsCustomizeContent != null) {
-                mAppsCustomizeContent.setBulkBind(true);
-            }
-            for (int i = 0; i < mBindOnResumeCallbacks.size(); i++) {
-                try {
-                    mBindOnResumeCallbacks.get(i).run();
-                } catch (Exception e) {
-                    Log.e(TAG, "Error BindOnResumeCallbacks: " + e.getMessage());
-                }
-            }
-            if (mAppsCustomizeContent != null) {
-                mAppsCustomizeContent.setBulkBind(false);
-            }
-            mBindOnResumeCallbacks.clear();
-        }
-        if (mOnResumeCallbacks.size() > 0) {
-            for (int i2 = 0; i2 < mOnResumeCallbacks.size(); i2++) {
-                mOnResumeCallbacks.get(i2).run();
-            }
-            mOnResumeCallbacks.clear();
-        }
-        if (mWaitingForResume != null) {
-            mWaitingForResume.setStayPressed(false);
-        }
-        if (mAppsCustomizeContent != null) {
-            mAppsCustomizeContent.resetDrawableState();
-        }
-        getWorkspace().reinflateWidgetsIfNecessary();
-        InstallShortcutReceiver.disableAndFlushInstallQueue(this);
-        updateVoiceButtonProxyVisible(false);
-        updateGlobalIcons();
-        if (mWorkspace.getCustomContentCallbacks() != null && mWorkspace.isOnOrMovingToCustomContent()) {
-            mWorkspace.getCustomContentCallbacks().onShow();
-        }
-        mWorkspace.updateInteractionForState();
-        mWorkspace.onResume();
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
-        LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
-        LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
-        LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
-        LauncherNotify.NOTIFIER_NAVIVIEW.addUiRefresher(refreshNaviView, false);
-        LauncherNotify.NOTIFIER_NAVISTATE.addUiRefresher(refreshNaviState, false);
-        tools = CarStates.getCar(app).getTools();
-        tools.addRefreshLisenter(1, refreshRadioBand, 0);
-        tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
-        tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
-        tools.addRefreshLisenter(4, refreshMain, 2, 3);
-        tools.addRefreshLisenter(7, refreshMain, 1000);
-        tools.addRefreshLisenter(2, refreshBtInfo, 0, 1, 2, 28, 26, 13, 9, 7);
-        tools.notify(0, 0, 50, 60, 101, 31);
-        tools.notify(1, 0);
-        tools.notify(1, 1);
-        tools.notify(7, 1000);
-        tools.notify(2, 0, 1, 2, 28, 26, 13, 9, 7);
-        if (firstLayout != null && !isfirstlayout) {
-            firstLayout.setVisibility(View.VISIBLE);
-        }
-        isfirstlayout = false;
-        showWeatherInfo();
-        lastpath = null;
-        /*if (CarStates.mAppID != 8 && mediaSource == "fyt") {
-            Utils.setTextId(tvMusicName, R.string.music_name);
-            Utils.setTextId(tvAritst, R.string.music_author);
-            Utils.setTextId(tvMusicNameTwo, R.string.music_name);
-            Utils.setTextId(tvAlbum, R.string.music_author);
-            Utils.setTextStr(tvCurTime, "00:00");
-            Utils.setTextStr(tvTotalTime, "00:00");
-            if (musicProgress != null) {
-                musicProgress.setProgress(0);
-            }
-            if (music_playpause != null) {
-                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }
-        }*/
-        if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
-            showKuwoContent = false;
-            if (kuwomusic_playpause != null) {
-                kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
-            }
-            if (mKwMusicName != null) {
-                mKwMusicName.setText(R.string.car_kuwo);
-            }
-            if (mKwArtist != null) {
-                mKwArtist.setText(R.string.music_author);
-            }
-        }
-        setPlayPauseIcon(true);
     }
 
     public boolean isJobServiceOn(Context context) {
@@ -2864,39 +2999,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    @Override 
-    protected void onPause() {
-        Log.d("LZP", "---->>> onPause");
-        if (AppUtil.topApp(this, FytPackage.hicarAction)
-            && !closeSystemDialogsIntentReceiverBoolean) {
-            WindowUtil.removePip(pipViews);
-            closeSystemDialogsIntentReceiverBoolean = false;
-        }
-        InstallShortcutReceiver.enableInstallQueue();
-        super.onPause();
-        mPaused = true;
-        mDragController.cancelDrag();
-        mDragController.resetLastGestureUpTime();
-        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
-        LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
-        LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
-        LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
-        LauncherNotify.NOTIFIER_NAVIVIEW.removeUiRefresher(refreshNaviView);
-        LauncherNotify.NOTIFIER_NAVISTATE.removeUiRefresher(refreshNaviState);
-        clearGaoDeData();
-        if (mWorkspace.getCustomContentCallbacks() != null) {
-            mWorkspace.getCustomContentCallbacks().onHide();
-        }
-        if(mPlayer != null) {
-            if(mPlayer.isPlaying()) {
-                mPlayer.stop();
-            }
-            mPlayer.reset();
-            mPlayer.release();
-            mPlayer = null;
-        }
-    }
-
     protected void onFinishBindingItems() {
         if (mWorkspace != null && hasCustomContentToLeft() && mWorkspace.hasCustomContent()) {
             addCustomContentToLeft();
@@ -2920,6 +3022,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mWorkspace.getPaddingTop();
     }
 
+    // remnant of "Activity"
     /*@Override
     public Object onRetainNonConfigurationInstance() {
         int delay = mModel.mFirstUse ? 300000 : 0;
@@ -3677,7 +3780,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         userLayout = mPrefs.getBoolean("user_layout", false);
         leftBar = mPrefs.getBoolean("left_bar", false);
         if (userLayout && leftBar || !userLayout) {
-            Log.d("LZP", "--------------->>>   refreshLeftCycle");
+            Log.d(TAG, "--------------->>>   refreshLeftCycle");
             LeftAppMultiple appMultiple = (LeftAppMultiple) LitePal.where("packageName = ?", bean.packageName).findFirst(LeftAppMultiple.class);
             if (appMultiple != null) {
                 LeftAppMultiple firstData = (LeftAppMultiple) LitePal.findFirst(LeftAppMultiple.class);
@@ -3701,7 +3804,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 for (int i = 0; i < count2; i++) {
                     LeftAppMultiple multiple = leftData.get(i);
-                    Log.d("LZP", "refreshLeftCycle id:" + multiple.id + ",packageName" + multiple.packageName + ",className" + multiple.className);
+                    Log.d(TAG, "refreshLeftCycle id:" + multiple.id + ",packageName" + multiple.packageName + ",className" + multiple.className);
                     ContentValues values = new ContentValues();
                     values.put("name", multiple.name);
                     values.put("packageName", multiple.packageName);
@@ -3714,7 +3817,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (leftAppData != null && !leftAppData.isEmpty()) {
                 for (int i2 = 0; i2 < leftAppData.size(); i2++) {
                     LeftAppMultiple multiple2 = leftAppData.get(i2);
-                    Log.d("LZP", "refreshLeftCycle index111:" + multiple2.index + ",packageName" + multiple2.packageName + ",className" + multiple2.className);
+                    Log.d(TAG, "refreshLeftCycle index111:" + multiple2.index + ",packageName" + multiple2.packageName + ",className" + multiple2.className);
                     Iterator<AppInfo> it = AllAppsList.data.iterator();
                     while (true) {
                         if (!it.hasNext()) {
@@ -3793,7 +3896,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void onClick(View v) {
                     if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
-                        Log.d("LZP", "---------------------->>> mRadioBandButton");
+                        Log.d(TAG, "---------------------->>> mRadioBandButton");
                         Launcher.this.tools.sendInt(1, 11, -1);
                     }
                 }
@@ -4818,6 +4921,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         filter.addAction("android.intent.action.USER_PRESENT");
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(UPDATE_USER_PAGE);
+        filter.addAction("pause.button");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(mReceiver, filter, Context.RECEIVER_EXPORTED);
         } else {
@@ -4940,31 +5044,59 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onNewIntent(Intent intent) {
+        long startTime = 0;
+        if (DEBUG_RESUME_TIME) {
+            startTime = System.currentTimeMillis();
+        }
         super.onNewIntent(intent);
-        if ("android.intent.action.MAIN".equals(intent.getAction())) {
-            boolean alreadyOnHome = mHasFocus && (intent.getFlags() & 4194304) != 4194304;
-            if (mWorkspace != null) {
-                Folder openFolder = mWorkspace.getOpenFolder();
-                mWorkspace.exitWidgetResizeMode();
-                if (alreadyOnHome && mState == State.WORKSPACE && !mWorkspace.isTouchActive() && openFolder == null) {
-                    mWorkspace.moveToDefaultScreen(true);
-                }
-                closeFolder();
-                exitSpringLoadedDragMode();
-                if (alreadyOnHome) {
-                    showWorkspace(true);
-                } else {
-                    mOnResumeState = State.WORKSPACE;
-                }
-                View v = getWindow().peekDecorView();
-                if (v != null && v.getWindowToken() != null) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-                if (mAppsCustomizeTabHost != null) {
-                    mAppsCustomizeTabHost.reset();
-                }
+
+        // Close the menu
+        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+            // also will cancel mWaitingForResult.
+            closeSystemDialogs();
+
+            final boolean alreadyOnHome = mHasFocus && ((intent.getFlags() &
+                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+                    != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+
+            if (mWorkspace == null) {
+                // Can be cases where mWorkspace is null, this prevents a NPE
+                return;
             }
+            Folder openFolder = mWorkspace.getOpenFolder();
+            // In all these cases, only animate if we're already on home
+            mWorkspace.exitWidgetResizeMode();
+            if (alreadyOnHome && mState == State.WORKSPACE && !mWorkspace.isTouchActive() &&
+                    openFolder == null) {
+                mWorkspace.moveToDefaultScreen(true);
+            }
+
+            closeFolder();
+            exitSpringLoadedDragMode();
+
+            // If we are already on home, then just animate back to the workspace,
+            // otherwise, just wait until onResume to set the state back to Workspace
+            if (alreadyOnHome) {
+                showWorkspace(true);
+            } else {
+                mOnResumeState = State.WORKSPACE;
+            }
+
+            final View v = getWindow().peekDecorView();
+            if (v != null && v.getWindowToken() != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(
+                        INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+
+            // Reset the apps customize page
+            if (mAppsCustomizeTabHost != null) {
+                mAppsCustomizeTabHost.reset();
+            }
+        }
+
+        if (DEBUG_RESUME_TIME) {
+            Log.d(TAG, "Time spent in onNewIntent: " + (System.currentTimeMillis() - startTime));
         }
     }
 
@@ -5008,92 +5140,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             int currentIndex = mAppsCustomizeContent.getSaveInstanceStateIndex();
             outState.putInt("apps_customize_currentIndex", currentIndex);
         }
-    }
-
-    
-
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        helpers = new Helpers();
-        if (!helpers.isAppOpenedByUser()) {
-            if (!isCheckTimeRunning) {
-                checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device hasn't updated the time
-                isCheckTimeRunning = true;
-            }    
-            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
-                isNightModeRunning = true;
-            }
-        }        
-        if (mPlayer == null) {
-            mPlayer = new MediaPlayer();
-        }
-        fytData = mPrefs.getBoolean("fyt_data", true); 
-        if (helpers.shouldAllAppsBeVisible()) {
-            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
-            helpers.setAllAppsShouldBVisible(false);
-        }
-        if (isAllAppsVisible()) {
-            Log.d("onRestart()", "removePip");
-            WindowUtil.removePip(null);
-        } else {
-            if (!helpers.isFirstPreferenceWindow() 
-                && !helpers.isWallpaperWindow() 
-                && !helpers.isInOverviewMode()
-                && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                    Log.d("onRestart()", "startMapPip");
-                    WindowUtil.startMapPip(null, false, 250);
-            }
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
-        helpers.setAppOpenedByUser(false);
-        mWorkspace.exitOverviewMode(false);
-        Log.i("onRestart", "onRestart----->");
-    }
-
-    @Override
-    public void onDestroy() {
-        WindowUtil.removePip(pipViews);
-        super.onDestroy();
-        tools.removeRefreshLisenter(0, refreshMain);
-        tools.removeRefreshLisenter(4, refreshMain);
-        tools.removeRefreshLisenter(7, refreshMain);
-        tools.removeRefreshLisenter(2, refreshBtInfo);
-        unregisterReceiver(removeMusic);
-        unregisterReceiver(mAutoMap);
-        unregisterReceiver(mTrifficReceiver);
-        mHandler.removeMessages(1);
-        mHandler.removeMessages(0);
-        mWorkspace.removeCallbacks(mBuildLayersRunnable);
-        LauncherAppState app = LauncherAppState.getInstance();
-        mModel.stopLoader();
-        app.setLauncher(null);
-        try {
-            mAppWidgetHost.stopListening();
-        } catch (NullPointerException ex) {
-            Log.w(TAG, "problem while stopping AppWidgetHost during Launcher destruction", ex);
-        }
-        mAppWidgetHost = null;
-        mWidgetsToAdvance.clear();
-        TextKeyListener.getInstance().release();
-        if (mModel != null) {
-            mModel.unbindItemInfosAndClearQueuedBindRunnables();
-        }
-        getContentResolver().unregisterContentObserver(mWidgetObserver);
-        unregisterReceiver(mCloseSystemDialogsReceiver);
-        mDragLayer.clearAllResizeFrames();
-        ((ViewGroup) mWorkspace.getParent()).removeAllViews();
-        mWorkspace.removeAllViews();
-        mWorkspace = null;
-        mDragController = null;
-        LauncherAnimUtils.onDestroyActivity();
     }
 
     public DragController getDragController() {
@@ -5303,42 +5349,54 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     void processShortcut(Intent intent) {
+        // Handle case where user selected "Applications"
         String applicationName = getResources().getString(R.string.group_applications);
-        String shortcutName = intent.getStringExtra("android.intent.extra.shortcut.NAME");
+        String shortcutName = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
+
         if (applicationName != null && applicationName.equals(shortcutName)) {
-            Intent mainIntent = new Intent("android.intent.action.MAIN", (Uri) null);
-            mainIntent.addCategory("android.intent.category.LAUNCHER");
-            Intent pickIntent = new Intent("android.intent.action.PICK_ACTIVITY");
-            pickIntent.putExtra("android.intent.extra.INTENT", mainIntent);
-            pickIntent.putExtra("android.intent.extra.TITLE", getText(R.string.title_select_application));
-            Utilities.startActivityForResultSafely(this, pickIntent, 6);
-            return;
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+            Intent pickIntent = new Intent(Intent.ACTION_PICK_ACTIVITY);
+            pickIntent.putExtra(Intent.EXTRA_INTENT, mainIntent);
+            pickIntent.putExtra(Intent.EXTRA_TITLE, getText(R.string.title_select_application));
+            Utilities.startActivityForResultSafely(this, pickIntent, REQUEST_PICK_APPLICATION);
+        } else {
+            Utilities.startActivityForResultSafely(this, intent, REQUEST_CREATE_SHORTCUT);
         }
-        Utilities.startActivityForResultSafely(this, intent, 1);
     }
 
     void processWallpaper(Intent intent) {
-        startActivityForResult(intent, 10);
+        startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
     }
 
-    FolderIcon addFolder(CellLayout layout, long container, long screenId, int cellX, int cellY) {
-        FolderInfo folderInfo = new FolderInfo();
+    FolderIcon addFolder(CellLayout layout, long container, final long screenId, int cellX,
+            int cellY) {
+        final FolderInfo folderInfo = new FolderInfo();
         folderInfo.title = getText(R.string.folder_name);
-        LauncherModel.addItemToDatabase(this, folderInfo, container, screenId, cellX, cellY, false);
-        sFolders.put(Long.valueOf(folderInfo.id), folderInfo);
-        FolderIcon newFolder = FolderIcon.fromXml(R.layout.folder_icon, this, layout, folderInfo, mIconCache);
-        mWorkspace.addInScreen(newFolder, container, screenId, cellX, cellY, 1, 1, isWorkspaceLocked());
+
+        // Update the model
+        LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screenId, cellX, cellY,
+                false);
+        sFolders.put(folderInfo.id, folderInfo);
+
+        // Create the view
+        FolderIcon newFolder =
+            FolderIcon.fromXml(R.layout.folder_icon, this, layout, folderInfo, mIconCache);
+        mWorkspace.addInScreen(newFolder, container, screenId, cellX, cellY, 1, 1,
+                isWorkspaceLocked());
+        // Force measure the new folder icon
         CellLayout parent = mWorkspace.getParentCellLayoutForView(newFolder);
         parent.getShortcutsAndWidgets().measureChild(newFolder);
         return newFolder;
     }
 
     void removeFolder(FolderInfo folder) {
-        sFolders.remove(Long.valueOf(folder.id));
+        sFolders.remove(folder.id);
     }
 
     protected void startWallpaper() {
-        Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
         pickWallpaper.setComponent(getWallpaperPickerComponent());
         startActivityForResult(pickWallpaper, REQUEST_PICK_WALLPAPER);
     }
@@ -5347,30 +5405,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return new ComponentName(getPackageName(), WallpaperPickerActivity.class.getName());
     }
 
+    /**
+     * Registers various content observers. The current implementation registers
+     * only a favorites observer to keep track of the favorites applications.
+     */
     private void registerContentObservers() {
         ContentResolver resolver = getContentResolver();
-        resolver.registerContentObserver(LauncherProvider.CONTENT_APPWIDGET_RESET_URI, true, mWidgetObserver);
+        resolver.registerContentObserver(LauncherProvider.CONTENT_APPWIDGET_RESET_URI,
+                true, mWidgetObserver);
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == 0) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
-                case 3:
+                case KeyEvent.KEYCODE_HOME:
                     return true;
-                case 25:
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
                     if (isPropertyEnabled(DUMP_STATE_PROPERTY)) {
                         dumpState();
                         return true;
                     }
                     break;
             }
-        } else if (event.getAction() == 1) {
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
             switch (event.getKeyCode()) {
-                case 3:
+                case KeyEvent.KEYCODE_HOME:
                     return true;
             }
         }
+
         return super.dispatchKeyEvent(event);
     }
 
@@ -7060,7 +7124,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context context, Intent intent) {
             closeSystemDialogsIntentReceiverBoolean = true;
-            Log.d("LZP", "CloseSystemDialogsIntentReceiver");
+            Log.d(TAG, "CloseSystemDialogsIntentReceiver");
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
@@ -7155,7 +7219,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindScreens(ArrayList<Long> orderedScreenIds) {
         bindAddScreens(orderedScreenIds);
-        Log.d("LZP", "bindScreens");
+        Log.d(TAG, "bindScreens");
         if (orderedScreenIds.size() == 0 && LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_add_extarscreen)) {
             mWorkspace.addExtraEmptyScreen();
         }
@@ -7171,7 +7235,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindAddScreens(ArrayList<Long> orderedScreenIds) {
-        Log.d("LZP", "bindAddScreens");
+        Log.d(TAG, "bindAddScreens");
         int count2 = orderedScreenIds.size();
         boolean userLayoutBool = mPrefs.getBoolean("user_layout", false);
         if (userLayoutBool) {
@@ -7202,7 +7266,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindAppsAdded(final ArrayList<Long> newScreens, final ArrayList<ItemInfo> addNotAnimated, final ArrayList<ItemInfo> addAnimated, final ArrayList<AppInfo> addedApps) {
-        Log.d("LZP", "bindAppsAdded");
+        Log.d(TAG, "bindAppsAdded");
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -7227,7 +7291,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindItems(final ArrayList<ItemInfo> shortcuts, final int start, final int end, final boolean forceAnimateIcons) {
         CellLayout cl;
-        Log.d("LZP", "bindItems");
+        Log.d(TAG, "bindItems");
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -7344,7 +7408,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void finishBindingItems(final boolean upgradePath) {
-        Log.d("LZP", "finishBindingItems");
+        Log.d(TAG, "finishBindingItems");
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -7408,7 +7472,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
-        Log.d("LZP", "bindAllApplications");
+        Log.d(TAG, "bindAllApplications");
         initAppData();
         if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
             if (mIntentsOnWorkspaceFromUpgradePath != null) {

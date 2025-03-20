@@ -45,8 +45,8 @@ public class WindowUtil {
             public void run() {
                 try {
                     WindowUtil.intent = new Intent();
-                    Log.d("initDefaultApp()", "removePip");
-                    WindowUtil.removePip(null);
+                    //Log.d("initDefaultApp()", "removePip");
+                    //WindowUtil.removePip(null);
                     WindowUtil.AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
                     PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
                     if (AppPackageName.equals("") || AppPackageName == null) {
@@ -127,6 +127,7 @@ public class WindowUtil {
                 public void run() {
                     try {
                         WindowUtil.intent.putExtra("force_pip", true);
+                        WindowUtil.intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         SystemProperties.set("sys.lsec.force_pip", "true");
                         LauncherApplication.sApp.startActivity(WindowUtil.intent);
                     } catch (ActivityNotFoundException e) {

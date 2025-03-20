@@ -20,6 +20,8 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 
 /**
@@ -71,8 +73,8 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         setChildrenDrawingOrderEnabled(true);
         setOnHierarchyChangeListener(this);
 
-        mLeftHoverDrawable = getResources().getDrawable(R.drawable.page_hover_left_holo);
-        mRightHoverDrawable = getResources().getDrawable(R.drawable.page_hover_right_holo);
+        mLeftHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_left_holo);
+        mRightHoverDrawable = ContextCompat.getDrawable(getContext(), R.drawable.page_hover_right_holo);
     }
 
     public void setup(Launcher launcher, DragController controller) {

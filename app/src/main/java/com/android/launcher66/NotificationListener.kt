@@ -119,13 +119,45 @@ class NotificationListener : NotificationListenerService() {
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         sessionListener.let {
-            mediaSessionManager.removeOnActiveSessionsChangedListener(it)
+            if (this::mediaSessionManager.isInitialized) {
+                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
+            }
         }
-        handler.removeCallbacks(runTask)
+        if (this::handler.isInitialized) {
+            handler.removeCallbacks(runTask)
+        }
+        if (this:: handlerControllerTime.isInitialized) {
+            handlerControllerTime.removeCallbacks(updateControllerTime)
+        }
+        if (this::handlerFytTime.isInitialized) {
+            handlerFytTime.removeCallbacks(updateFytTime)
+        }
+        helpers.updateControllerTimeBool(false)
+        unregisterReceiver(mediaReceiver)
+        
         if (componentName == null) {  
             componentName = ComponentName(this, this::class.java)  
         }  
         componentName?.let { requestRebind(it) }
+    }
+
+    override fun onDestroy() {
+        sessionListener.let {
+            if (this::mediaSessionManager.isInitialized) {
+                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
+            }
+        }
+        if (this::handler.isInitialized) {
+            handler.removeCallbacks(runTask)
+        }
+        if (this:: handlerControllerTime.isInitialized) {
+            handlerControllerTime.removeCallbacks(updateControllerTime)
+        }
+        if (this::handlerFytTime.isInitialized) {
+            handlerFytTime.removeCallbacks(updateFytTime)
+        }
+        helpers.updateControllerTimeBool(false)
+        unregisterReceiver(mediaReceiver)
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -202,11 +234,11 @@ class NotificationListener : NotificationListenerService() {
                 try {
                     retriever.setDataSource(fytMusicPath)
                     
-                    musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                    authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                    fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-                    fytTotalMinutes = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong()
-
+                    musicName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    authorName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                    fytAlbum = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
+                    retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.let { fytTotalMinutes = it.toLong() }
 
                     if (musicNamePrev != musicName) {
                         musicNamePrev = musicName.toString()
@@ -220,7 +252,7 @@ class NotificationListener : NotificationListenerService() {
                     }
 
                     if (currentState == PlaybackState.STATE_PLAYING) {
-                        mediaController?.getTransportControls()?.pause()
+                        mediaController?.transportControls?.pause()
                     }
 
                     if (musicName!!.isNotEmpty() && !musicName!!.contains("Unknown")  && !musicName!!.contains("null")) {
@@ -238,15 +270,15 @@ class NotificationListener : NotificationListenerService() {
                 } finally {
                     retriever.release()
                 }
-            // commands for madia players (other than the stock one)
+            // commands for the media players (other than the stock one)
             } else if (intent.action == "media.play.play") {
-                mediaController?.getTransportControls()?.play()
+                mediaController?.transportControls?.play()
             } else if (intent.action == "media.play.pause") {
-                mediaController?.getTransportControls()?.pause()
+                mediaController?.transportControls?.pause()
             } else if (intent.action == "media.play.next") {
-                mediaController?.getTransportControls()?.skipToNext()
+                mediaController?.transportControls?.skipToNext()
             } else if (intent.action == "media.play.previous") {
-                mediaController?.getTransportControls()?.skipToPrevious()
+                mediaController?.transportControls?.skipToPrevious()
             }
         }
     }   
@@ -258,7 +290,7 @@ class NotificationListener : NotificationListenerService() {
     private fun stopFytMusic() {
         if (MusicService.state) { 
             val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-            //activityManager?.killBackgroundProcesses("com.syu.music")
+            
             try {
                 val method = activityManager?.javaClass?.getDeclaredMethod(
                     "forceStopPackage",
@@ -266,10 +298,8 @@ class NotificationListener : NotificationListenerService() {
                 )
                 method?.invoke(activityManager, "com.syu.music")
             } catch (e: ReflectiveOperationException) {
-                // Handle exceptions (e.g., method not found, permission denied)
                 e.printStackTrace()
             } catch (e: SecurityException) {
-                // Handle security exceptions
                 e.printStackTrace()
             }
             
@@ -281,25 +311,6 @@ class NotificationListener : NotificationListenerService() {
             fytTotalMinutes = 0
             fytCurMinutes = 0
         }
-    }
-
-    override fun onDestroy() {
-        sessionListener.let {
-            if (this::mediaSessionManager.isInitialized) {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
-            }
-        }
-        if (this::handler.isInitialized) {
-            handler.removeCallbacks(runTask)
-        }
-        if (this:: handlerControllerTime.isInitialized) {
-            handlerControllerTime.removeCallbacks(updateControllerTime)
-        }
-        if (this::handlerFytTime.isInitialized) {
-            handlerFytTime.removeCallbacks(updateFytTime)
-        }
-        helpers.updateControllerTimeBool(false)
-        unregisterReceiver(mediaReceiver)
     }
 
     private val runTask = object : Runnable {
@@ -357,6 +368,8 @@ class NotificationListener : NotificationListenerService() {
             currentState = state?.state
             prevMinutes = 0
             if (currentState == PlaybackState.STATE_PAUSED) {
+                val intent = Intent("pause.button")
+                sendBroadcast(intent)
                 val editor = settings.edit()
                 editor.putInt("prevState", currentState!!)
                 editor.apply()

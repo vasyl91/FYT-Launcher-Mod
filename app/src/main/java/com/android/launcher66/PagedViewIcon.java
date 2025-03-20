@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Region;
-import android.graphics.Region.Op;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * An icon on a PagedView, specifically for items in the launcher's paged view (with compound
@@ -91,7 +91,7 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
     @Override
     public void draw(Canvas canvas) {
         // If text is transparent, don't draw any shadow
-        if (getCurrentTextColor() == getResources().getColor(android.R.color.transparent)) {
+        if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
             getPaint().clearShadowLayer();
             super.draw(canvas);
             return;

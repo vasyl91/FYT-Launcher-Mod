@@ -32,6 +32,8 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 
+import androidx.core.content.ContextCompat;
+
 import com.android.launcher66.R;
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 
@@ -202,11 +204,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final Resources res = getResources();
         mHotseatScale = (float) grid.hotseatIconSize / grid.iconSize;
 
-        mNormalBackground = res.getDrawable(R.drawable.screenpanel);
-        mActiveGlowBackground = res.getDrawable(R.drawable.screenpanel_hover);
+        mNormalBackground = ContextCompat.getDrawable(getContext(), R.drawable.screenpanel);
+        mActiveGlowBackground = ContextCompat.getDrawable(getContext(), R.drawable.screenpanel_hover);
 
-        mOverScrollLeft = res.getDrawable(R.drawable.overscroll_glow_left);
-        mOverScrollRight = res.getDrawable(R.drawable.overscroll_glow_right);
+        mOverScrollLeft = ContextCompat.getDrawable(getContext(), R.drawable.overscroll_glow_left);
+        mOverScrollRight = ContextCompat.getDrawable(getContext(), R.drawable.overscroll_glow_right);
         mForegroundPadding =
                 res.getDimensionPixelSize(R.dimen.workspace_overscroll_drawable_padding);
 

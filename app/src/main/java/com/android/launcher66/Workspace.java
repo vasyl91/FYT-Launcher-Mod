@@ -65,6 +65,7 @@ import android.database.Cursor;
 
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceManager;
 
@@ -2622,7 +2623,7 @@ public class Workspace extends SmoothPagedView
      * Responsibility for the bitmap is transferred to the caller.
      */
     private Bitmap createDragOutline(View v, Canvas canvas, int padding) {
-        final int outlineColor = getResources().getColor(R.color.outline_color);
+        final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
         final Bitmap b = Bitmap.createBitmap(
                 v.getWidth() + padding, v.getHeight() + padding, Bitmap.Config.ARGB_8888);
 
@@ -2639,7 +2640,7 @@ public class Workspace extends SmoothPagedView
      */
     private Bitmap createDragOutline(Bitmap orig, Canvas canvas, int padding, int w, int h,
             boolean clipAlpha) {
-        final int outlineColor = getResources().getColor(R.color.outline_color);
+        final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
         final Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         canvas.setBitmap(b);
 

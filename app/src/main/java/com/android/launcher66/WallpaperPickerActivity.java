@@ -53,6 +53,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.android.async.AsyncTask;
 
 import com.android.photos.BitmapRegionTileSource;
@@ -485,7 +487,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             ImageView galleryThumbnailBg =
                     (ImageView) pickImageTile.findViewById(R.id.wallpaper_image);
             galleryThumbnailBg.setImageBitmap(getThumbnailOfLastPhoto());
-            int colorOverlay = getResources().getColor(R.color.wallpaper_picker_translucent_gray);
+            int colorOverlay = ContextCompat.getColor(getApplicationContext(), R.color.wallpaper_picker_translucent_gray);
             galleryThumbnailBg.setColorFilter(colorOverlay, PorterDuff.Mode.SRC_ATOP);
 
         }
@@ -542,7 +544,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                         }
                     }
                 });
-        mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
+        //mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
 
         // CAB for deleting items
         mActionModeCallback = new ActionMode.Callback() {
