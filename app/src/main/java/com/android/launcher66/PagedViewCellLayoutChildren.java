@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.launcher66.PagedViewCellLayout;
 
 public class PagedViewCellLayoutChildren extends ViewGroup {
     static final String TAG = "PagedViewCellLayout";

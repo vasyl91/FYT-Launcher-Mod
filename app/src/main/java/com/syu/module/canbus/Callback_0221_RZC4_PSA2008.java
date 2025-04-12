@@ -3,11 +3,9 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0163_RZC4_PSA14_408;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0221_RZC4_PSA2008 extends CallbackCanbusBase {

@@ -2,11 +2,9 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0308_WC2_15WEILANG;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0308_WC2_GM_WEILANG extends CallbackCanbusBase {

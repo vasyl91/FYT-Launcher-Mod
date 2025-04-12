@@ -2,7 +2,6 @@ package com.syu.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.List;
 

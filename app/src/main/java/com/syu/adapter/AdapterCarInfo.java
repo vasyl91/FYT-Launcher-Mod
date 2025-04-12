@@ -14,10 +14,8 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.entity.CarInfo;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;

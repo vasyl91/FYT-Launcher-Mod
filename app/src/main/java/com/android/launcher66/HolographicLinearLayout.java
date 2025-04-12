@@ -1,6 +1,5 @@
 package com.android.launcher66;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -11,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import androidx.annotation.StyleableRes;
 
 public class HolographicLinearLayout extends LinearLayout {
     private final HolographicViewHelper mHolographicHelper;

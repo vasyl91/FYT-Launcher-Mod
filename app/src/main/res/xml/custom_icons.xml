@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<customicons
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+<customicons xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
     <entry launcher:epkg="com.syu.av" launcher:eclazz="com.syu.av.ActivityLaunch" launcher:eicon="@drawable/com_syu_aux" />
     <entry launcher:epkg="com.android.browser" launcher:eclazz="com.android.browser.BrowserActivity" launcher:eicon="@drawable/com_syu_browser" />
     <entry launcher:epkg="com.android.calculator2" launcher:eclazz="com.android.calculator2.Calculator" launcher:eicon="@drawable/com_syu_calculator2" />

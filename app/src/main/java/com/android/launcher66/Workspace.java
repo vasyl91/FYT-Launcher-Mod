@@ -729,7 +729,8 @@ public class Workspace extends SmoothPagedView
         int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
         setCurrentPage(index);
 
-        new CanbusClasses(this.getContext()).execute();
+        new CanbusClasses(LauncherApplication.sApp).execute();
+
         invalidate();
     } 
 
@@ -1002,7 +1003,10 @@ public class Workspace extends SmoothPagedView
         if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
             if (getScreenWithId(screenId) == null) {
                 if (getScreenWithId(screenId) == null) {
-                    throw new RuntimeException("Screen ID " + screenId + " does not exist!");
+                    Log.e(TAG, "Skipping child, screenId " + screenId + " not found");
+                    // DEBUGGING - Print out the stack trace to see where we are adding from
+                    new Throwable().printStackTrace();
+                    return;
                 }
             }
         }
@@ -4317,7 +4321,7 @@ public class Workspace extends SmoothPagedView
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "ItemInfo error: " + e.getMessage());
             }
         }
     }

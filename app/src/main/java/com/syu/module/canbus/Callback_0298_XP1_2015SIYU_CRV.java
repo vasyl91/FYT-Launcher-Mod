@@ -2,15 +2,11 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.JumpPage;
 import com.syu.carinfo.honda.ActivityAirControl;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0298_BNR_2016GuanDao;
-//import com.syu.ui.air.Air_0298_XP1_2015SIYU_CRV;
-//import com.syu.ui.air.Air_0298_XP1_2016SIYU;
-//import com.syu.ui.air.Air_0298_zx_6606_honda;
 import com.syu.ui.benzair.Air_BenzHelper;
 import com.syu.ui.benzair.Air_RZC_23Yage;
 import com.syu.ui.door.DoorHelper;

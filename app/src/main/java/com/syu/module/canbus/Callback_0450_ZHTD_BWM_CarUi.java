@@ -2,16 +2,14 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar;
 import com.syu.carinfo.zhtd.bmw.ZhtdAudiNewCarinfoAct;
 import com.syu.carinfo.zhtd.bmw.ZhtdBenzNewCarinfoAct;
 import com.syu.carinfo.zhtd.bmw.ZhtdBmwNewCarinfoAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0450_cm_bmw_all;
-//import com.syu.ui.air.Air_0450_zhtd_lexus_all;
 import com.syu.ui.benzair.Air_Benz;
 import com.syu.ui.benzair.Air_BenzHelper;
 import com.syu.ui.benzair.Air_Benz_S;

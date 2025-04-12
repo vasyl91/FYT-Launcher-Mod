@@ -11,7 +11,6 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
-import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
 public class DoorHelper implements IUiNotify, Runnable {

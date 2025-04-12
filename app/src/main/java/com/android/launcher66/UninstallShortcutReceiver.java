@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.widget.Toast;
-import com.android.launcher66.LauncherSettings;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;

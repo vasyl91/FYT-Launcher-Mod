@@ -3,11 +3,10 @@ package com.syu.module.canbus;
 import android.content.Intent;
 import android.os.RemoteException;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0178_FYTA_BYDF3_SuRui_TopHp;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerRemove;
 import com.syu.util.WarnDialgAct;

@@ -56,7 +56,6 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.android.async.AsyncTask;
-
 import com.android.photos.BitmapRegionTileSource;
 import com.android.photos.BitmapRegionTileSource.BitmapSource;
 

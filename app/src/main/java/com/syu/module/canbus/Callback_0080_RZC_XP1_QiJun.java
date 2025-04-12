@@ -2,13 +2,12 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.main.DataMain;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0080_RZC_TianLai;
 import com.syu.ui.door.DoorHelper;
 import com.syu.ui.parking.ParkingHelper;
 import com.syu.ui.parking.Parking_RZC_QiJun;

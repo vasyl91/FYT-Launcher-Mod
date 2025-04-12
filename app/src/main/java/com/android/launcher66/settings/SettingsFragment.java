@@ -37,6 +37,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -133,10 +134,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
         initStatusbar = sharedPrefs.getBoolean(STATUSBAR, false);
-        initLayout = sharedPrefs.getBoolean(USER_LAYOUT, false);
-        editor = sharedPrefs.edit();
-        editor.putBoolean(USER_INIT_LAYOUT, initLayout);
-        editor.apply();
+        initLayout = sharedPrefs.getBoolean(USER_INIT_LAYOUT, false);
         initFyt = sharedPrefs.getBoolean(FYT_DATA, false);
         addPreferencesFromResource(R.xml.launcher_preferences);
         Preference transparentStatusbar = findPreference(STATUSBAR);
@@ -534,12 +532,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (initLayout != userLayoutBool) {
-                    helpers.setLayoutTypeChanged(true);
-                }
                 userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
                 userStatusbarBool = sharedPrefs.getBoolean(STATUSBAR, false);
                 userFytBool = sharedPrefs.getBoolean(FYT_DATA, false);
+                if (initLayout != userLayoutBool) {
+                    helpers.setLayoutTypeChanged(true);
+                }
                 if (restartLauncher()) {
                     helpers.setBackFromCreator(false);
                     helpers.setFirstPreferenceWindow(true);
@@ -564,6 +562,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
         builder.setView(allAppsTextSizeEditText);
         allAppsTextSizeEditText.setText(allAppsTextSize.getSummary());
+        allAppsTextSizeEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveAllAppsTextSize());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
@@ -577,6 +576,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
         builder.setView(workspaceTextSizeEditText);
         workspaceTextSizeEditText.setText(workspaceTextSize.getSummary());
+        workspaceTextSizeEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveWorkspaceTextSize());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;

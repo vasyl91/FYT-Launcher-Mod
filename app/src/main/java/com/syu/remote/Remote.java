@@ -14,13 +14,13 @@ import android.util.SparseArray;
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.IRemoteToolkit;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import org.apache.http.HttpStatus;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.HashMap;
+import java.util.Random;
 
 public class Remote implements ServiceConnection {
     static final HashMap<String, Remote> mTools = new HashMap<>();

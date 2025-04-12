@@ -176,11 +176,16 @@
     </style>
     
     <style name="SettingsTheme" parent="Theme.MaterialComponents.DayNight.Bridge">
-        <item name="android:actionBarTheme">@style/SettingsTheme.ActionBar</item>
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="colorPrimary">@color/dark_surface</item>
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:windowBackground">@color/dark_surface</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray_medium</item>
         <item name="android:statusBarColor">@color/lollipopStatusBar</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
     </style>
     
     <style name="SettingsTheme.ActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">

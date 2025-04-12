@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 
 public class CanbusUpIndexActi extends Activity {
     @Override

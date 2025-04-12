@@ -18,9 +18,10 @@ import android.text.format.Time;
 import com.syu.ipc.ModuleObject;
 import com.syu.ipc.data.FinalCanbus;
 
+import org.apache.http.cookie.ClientCookie;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -37,9 +38,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.apache.http.cookie.ClientCookie;
-import org.apache.http.protocol.HTTP;
 
 public class FuncUtils {
     private static Exception e;

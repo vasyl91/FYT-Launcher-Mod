@@ -1,7 +1,5 @@
 package com.syu.utils;
 
-import com.android.launcher66.R;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -19,13 +17,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import androidx.core.internal.view.SupportMenu;
-import androidx.core.view.ViewCompat;
 
-import com.syu.ipc.data.FinalCanbus;
-
-import org.apache.http.HttpStatus;
+import com.android.launcher66.R;
 
 public class W3DialogUtils {
     private static final int BTN_CANCEL = 2131234561;

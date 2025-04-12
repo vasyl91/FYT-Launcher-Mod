@@ -6,8 +6,6 @@ import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 
-import com.syu.ipc.IModuleCallback;
-
 public interface IRemoteModule extends IInterface {
     void cmd(int i, int[] iArr, float[] fArr, String[] strArr) throws RemoteException;
 

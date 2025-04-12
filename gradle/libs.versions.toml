@@ -3,6 +3,7 @@ agp = "8.7.1"
 commonsCodec = "1.17.1"
 eventbus = "3.3.1"
 flexbox = "3.0.0"
+guava = "31.1-android"
 httpclient = "4.5.14"
 httpcore = "4.4.16"
 kotlin = "1.9.0"
@@ -15,6 +16,7 @@ activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 junitJupiter = "5.8.1"
 appcompat = "1.7.0"
+lifecycleViewmodel = "2.8.7"
 litepal = "8ad8322cc6"
 log4j = "1.2.17"
 lombok = "1.18.34"
@@ -26,6 +28,7 @@ preference = "1.2.1"
 preferenceKtx = "1.2.1"
 preferenceVersion = "1.1.0"
 processPhoenix = "3.0.0"
+profileinstaller = "1.4.1"
 recyclerview = "1.3.2"
 recyclerviewSelection = "1.1.0"
 springContext = "6.2.2"
@@ -35,19 +38,25 @@ navigationUi = "2.8.3"
 espressoDevice = "1.0.1"
 playServicesLocation = "21.3.0"
 lombokVersion = "1.18.30"
+espressoWeb = "3.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 androidx-preference-v110 = { module = "androidx.preference:preference", version.ref = "preferenceVersion" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
 httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -78,6 +87,7 @@ process-phoenix = { module = "com.jakewharton:process-phoenix", version.ref = "p
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "springContext" }
 projectlombok-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombokVersion" }
+androidx-espresso-web = { group = "androidx.test.espresso", name = "espresso-web", version.ref = "espressoWeb" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

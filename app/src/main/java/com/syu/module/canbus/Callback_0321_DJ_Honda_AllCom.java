@@ -3,13 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.honda.Activity17CRVAirControl;
 import com.syu.carinfo.honda.ActivityAirControl;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0192_WC2_15_BinZhi;
-//import com.syu.ui.air.Air_0321_WC2_17_guandao;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0321_DJ_Honda_AllCom extends CallbackCanbusBase {

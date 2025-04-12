@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct;

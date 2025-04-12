@@ -36,6 +36,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
     Paint paint;
     Paint textStatsPaint;
     Paint statsPaint;
+    Paint statsWindowPaint;
     Canvas canvas;  
     boolean isInsideStats = false;
 
@@ -198,20 +199,24 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
     protected void onDraw(Canvas canvas) {
         paint.setAntiAlias(true);
         paint.setDither(true);
-        paint.setColor(Color.parseColor("#55000000"));
+        paint.setColor(Color.parseColor("#8c8b8b"));
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeWidth(5);
 
         canvas.drawPaint(paint);
 
+        statsWindowPaint = new Paint();
+        statsWindowPaint.setColor(Color.parseColor("#0ca7f5"));
+        statsWindowPaint.setAlpha(128);
+
         textStatsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textStatsPaint.setColor(Color.BLACK); 
+        textStatsPaint.setColor(Color.WHITE); 
         textStatsPaint.setTextSize(coordinatesSize - 8); 
         textStatsPaint.setTextAlign(Paint.Align.CENTER);
 
         statsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        statsPaint.setColor(Color.BLACK); 
+        statsPaint.setColor(Color.WHITE); 
         statsPaint.setTextSize(nameTextSize - 8); 
         statsPaint.setTextAlign(Paint.Align.CENTER);
         statsPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -220,7 +225,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
         statsMaxX = Math.max(point[0].x, point[2].x);
         statsMinY = Math.min(point[0].y, point[2].y);
         statsMaxY = Math.max(point[0].y, point[2].y);
-        canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, paint); 
+        canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint); 
         drawStatsCoordinates(canvas, 0, 1, 2, 3, mContext.getString(R.string.stats_category));
     }
 
@@ -254,7 +259,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
                     diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
                     diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
                     moveStatsRect(0, 1, 2, 3);
-                    canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, paint); 
+                    canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint); 
                     invalidate();                    
                 }
                 break;

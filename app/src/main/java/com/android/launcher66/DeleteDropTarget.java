@@ -189,6 +189,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     public void onDragEnd() {
         super.onDragEnd();
         mActive = false;
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
     }
 
     public void onDragEnter(DragObject d) {
@@ -206,6 +207,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
             // Restore the hover color if we are deleting
             d.dragView.setColor(mHoverColor);
         }
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
     }
 
     private void animateToTrashAndCompleteDrop(final DragObject d) {
@@ -338,6 +340,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     public void onDrop(DragObject d) {
         animateToTrashAndCompleteDrop(d);
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
     }
 
     /**

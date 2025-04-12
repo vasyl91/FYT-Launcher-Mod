@@ -72,10 +72,6 @@ public class HomeWatcher {
                             if (initLayout != userLayoutBool) {
                                 helpers.setLayoutTypeChanged(true);
                             }
-                            boolean leftBarBool = sharedPrefs.getBoolean("left_bar", false);                
-                            //if (leftBarBool) {
-                                helpers.resetPrefs();
-                            //}
                             Intent intentUpdateUserPage = new Intent("update.user.page");
                             context.sendBroadcast(intentUpdateUserPage);  
                         }

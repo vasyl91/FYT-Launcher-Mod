@@ -2,7 +2,6 @@ package com.syu.carinfo.bg.ziyouguang;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 

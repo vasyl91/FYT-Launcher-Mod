@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -449,11 +450,7 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                helpers.setBackFromCreator(true);
-                boolean leftBarBool = sharedPrefs.getBoolean("left_bar", false);                
-                //if (leftBarBool) {
-                    helpers.resetPrefs();
-                //}
+                helpers.setBackFromCreator(true);     
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
             }
         };
@@ -494,6 +491,7 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         }
         builder.setView(marginEditText);
         marginEditText.setText(margin.getSummary());
+        marginEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveMargin());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
@@ -517,6 +515,11 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         rangeCodeInt.setText(rangeCodeStr);
         cmdIntCodeInt.setText(cmdIntCodeStr);
         cmdArrCodeInt.setText(cmdArrCodeStr);
+
+        fuelCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        rangeCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        cmdIntCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        cmdArrCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
@@ -567,6 +570,12 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         vehicleMassCodeInt.setText(vehicleMassCodeStr);
         engineVolCodeInt.setText(engineVolCodeStr);
         numberOfCylindersCodeInt.setText(numberOfCylindersCodeStr);
+
+        rpmCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        horsePowerCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        vehicleMassCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        engineVolCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        numberOfCylindersCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {

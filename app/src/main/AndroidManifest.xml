@@ -79,8 +79,9 @@
     <uses-permission android:name="com.android.launcher66.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_TASKS" />
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" 
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 
@@ -139,7 +140,8 @@
             android:theme="@style/SettingsTheme"
             android:icon="@mipmap/ic_settings"
             android:autoRemoveFromRecents="true"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="uiMode" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -259,9 +261,20 @@
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <service android:name="com.android.launcher66.settings.NightModeService"
+            android:enabled="true"
+            android:exported="false" />
+
         <service
             android:enabled="@bool/debug_memory_enabled"
             android:name="com.android.launcher66.MemoryTracker" />
+            
+        <receiver android:name="com.android.launcher66.settings.OnBootReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>  
+        </receiver>
 
         <receiver
             android:name="com.android.launcher66.PreloadReceiver"

@@ -5,11 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;

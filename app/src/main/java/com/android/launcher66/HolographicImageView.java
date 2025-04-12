@@ -1,6 +1,5 @@
 package com.android.launcher66;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -10,8 +9,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-
-import androidx.annotation.StyleableRes;
 
 public class HolographicImageView extends ImageView {
     private final HolographicViewHelper mHolographicHelper;

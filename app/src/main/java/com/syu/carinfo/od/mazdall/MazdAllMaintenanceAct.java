@@ -6,9 +6,9 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

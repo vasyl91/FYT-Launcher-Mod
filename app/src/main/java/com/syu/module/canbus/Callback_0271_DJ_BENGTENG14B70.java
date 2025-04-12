@@ -3,11 +3,9 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0271_DJ_BenTeng14B70;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0271_DJ_BENGTENG14B70 extends CallbackCanbusBase {

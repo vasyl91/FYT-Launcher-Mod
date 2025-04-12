@@ -11,8 +11,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.DragLayer;
+
 import com.syu.ipc.data.FinalCanbus;
 
 public class AppWidgetResizeFrame extends FrameLayout {

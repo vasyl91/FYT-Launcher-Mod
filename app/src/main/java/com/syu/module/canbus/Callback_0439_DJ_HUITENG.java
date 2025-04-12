@@ -3,12 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.huiteng.HuitengCarSet;
 import com.syu.carinfo.huiteng.Huiteng_AirRearCtrl;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0439_LZ_Huiteng;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0439_DJ_HUITENG extends CallbackCanbusBase {

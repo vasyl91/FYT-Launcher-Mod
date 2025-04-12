@@ -1,6 +1,5 @@
 package share;
 
-import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.lang.reflect.Field;

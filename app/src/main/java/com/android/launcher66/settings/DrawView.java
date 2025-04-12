@@ -52,6 +52,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     Paint textStatsPaint;
     Paint namePaint;
     Paint statsPaint;
+    Paint statsWindowPaint;
     Canvas canvas;
     boolean isInsideMap = false;
     boolean isInsideDate = false;
@@ -371,7 +372,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     protected void onDraw(Canvas canvas) {
         paint.setAntiAlias(true);
         paint.setDither(true);
-        paint.setColor(Color.parseColor("#55000000"));
+        paint.setColor(Color.parseColor("#8c8b8b"));
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeWidth(5);
@@ -393,24 +394,28 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         paintRadio.setColor(Color.parseColor(radioColor));
         paintRadio.setAlpha(128);
 
+        statsWindowPaint = new Paint();
+        statsWindowPaint.setColor(Color.parseColor("#0ca7f5"));
+        statsWindowPaint.setAlpha(128);
+
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textPaint.setColor(Color.BLACK); 
+        textPaint.setColor(Color.WHITE); 
         textPaint.setTextSize(coordinatesSize); 
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         textStatsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textStatsPaint.setColor(Color.BLACK); 
+        textStatsPaint.setColor(Color.WHITE); 
         textStatsPaint.setTextSize(coordinatesSize - 8); 
         textStatsPaint.setTextAlign(Paint.Align.CENTER);
 
         namePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        namePaint.setColor(Color.BLACK); 
+        namePaint.setColor(Color.WHITE); 
         namePaint.setTextSize(nameTextSize); 
         namePaint.setTextAlign(Paint.Align.CENTER);
         namePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         statsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        statsPaint.setColor(Color.BLACK); 
+        statsPaint.setColor(Color.WHITE); 
         statsPaint.setTextSize(nameTextSize - 8); 
         statsPaint.setTextAlign(Paint.Align.CENTER);
         statsPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -474,7 +479,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
             statsMaxX = Math.max(point[16].x, point[18].x);
             statsMinY = Math.min(point[16].y, point[18].y);
             statsMaxY = Math.max(point[16].y, point[18].y);
-            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, paint); 
+            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, statsWindowPaint); 
             drawStatsCoordinates(canvas, 16, 17, 18, 19, mContext.getString(R.string.stats_category));
         }
 
@@ -936,7 +941,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                             diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
                             diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
                             moveStatsRect(16, 17, 18, 19);
-                            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, paint); 
+                            canvas.drawRect(point[16].x, point[18].y, point[18].x, point[16].y, statsWindowPaint); 
                         }         
                         invalidate();
                     }

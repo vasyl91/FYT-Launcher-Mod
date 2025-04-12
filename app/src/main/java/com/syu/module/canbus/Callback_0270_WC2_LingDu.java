@@ -2,13 +2,9 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0017_WC2_Golf;
-//import com.syu.ui.air.Air_0270_HSY_TuRui;
-//import com.syu.ui.air.Air_0270_WC_TuRui;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.ToolkitMisc;
 

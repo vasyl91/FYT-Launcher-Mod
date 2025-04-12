@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;

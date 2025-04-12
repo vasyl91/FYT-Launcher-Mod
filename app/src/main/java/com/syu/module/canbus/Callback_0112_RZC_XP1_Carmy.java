@@ -3,14 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarCD;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0112_XP1_Camry;
-//import com.syu.ui.air.Air_0112_zx_6606_toyota;
-//import com.syu.ui.air.Air_0112_zx_6606_yazhoulong;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0112_RZC_XP1_Carmy extends CallbackCanbusBase {

@@ -250,7 +250,7 @@
     <string name="layout_type">Layout type</string> 
     <string name="user_layout">User layout</string> 
     <string name="stock_layout">Stock layout</string> 
-    <string name="layout_creator">Layout creator</string> 
+    <string name="layout_creator">LAYOUT CREATOR</string> 
     <string name="layout_summary">Set your layout</string> 
     <string name="fyt_title_source">Fyt music title source</string> 
     <string name="fyt_metadata">From metadata</string> 
@@ -262,7 +262,7 @@
     <string name="music_widget">Music widget</string> 
     <string name="radio_widget">Radio widget</string> 
     <string name="margins_str">Margins (max. 25)</string> 
-    <string name="open_creator">Open creator</string> 
+    <string name="open_creator">OPEN CREATOR</string> 
     <string name="open_creator_summary">Adjust your widgets</string> 
     <string name="transparent_statusbar">Transparent status bar</string>  
     <string name="notification_str">Notification listener settings</string> 

@@ -3,11 +3,10 @@ package com.syu.canbus.warn;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.module.canbus.Callback_0443_WC2_Benz_Metris;
 
 public class UIWCBenzC200 {

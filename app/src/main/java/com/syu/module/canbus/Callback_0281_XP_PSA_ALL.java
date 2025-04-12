@@ -3,12 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
 import com.syu.carinfo.biaozhi408.PsaC4L_MemSpeedSetActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0118_XP1_BiaoZhi2008;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.ToolkitMisc;
 

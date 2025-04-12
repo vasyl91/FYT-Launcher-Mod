@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import androidx.core.view.ViewCompat;
 
 public class HolographicOutlineHelper {
     private static final int EXTRA_THICK = 2;

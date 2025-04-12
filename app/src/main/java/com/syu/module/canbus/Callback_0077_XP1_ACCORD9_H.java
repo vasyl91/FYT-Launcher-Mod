@@ -3,11 +3,9 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.accord9.xp.XPAccord9BackCarActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0041_XP1_Accord;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0077_XP1_ACCORD9_H extends CallbackCanbusBase {

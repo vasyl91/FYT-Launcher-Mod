@@ -1,19 +1,15 @@
 package com.fyt.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
-
-import androidx.annotation.StyleableRes;
 
 import com.android.launcher66.R;
 

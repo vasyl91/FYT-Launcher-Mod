@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0452_LZ_Audi_A6;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0452_LZ_Audi_Q5_All extends CallbackCanbusBase {

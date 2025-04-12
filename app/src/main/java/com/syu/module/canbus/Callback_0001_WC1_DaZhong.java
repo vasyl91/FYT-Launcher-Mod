@@ -4,12 +4,10 @@ import android.os.RemoteException;
 import android.os.SystemProperties;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.dasauto.AirControlPQDZSJ;
 import com.syu.carinfo.dasauto.VwDashBoard_DZSJ;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0001_WC1_DaZhong;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 

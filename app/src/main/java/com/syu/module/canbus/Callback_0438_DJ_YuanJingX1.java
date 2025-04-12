@@ -2,9 +2,7 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
-//import com.syu.ui.air.Air_0438_DJ_YuanJingX1;
 import com.syu.ui.air.AirHelper;
 
 public class Callback_0438_DJ_YuanJingX1 extends CallbackCanbusBase {

@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.JLog;
+
 import java.util.ArrayList;
 
 public class AppsCustomizeTabHost extends TabHost implements LauncherTransitionable, TabHost.OnTabChangeListener, Insettable {

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;

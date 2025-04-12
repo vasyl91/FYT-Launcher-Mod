@@ -35,14 +35,14 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import android.text.format.DateUtils;
 
@@ -71,6 +71,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private static  final long arcticDayLong = -3600000;
     private long sunriseCorrectionValue;
     private long sunsetCorrectionValue;
+    private static final Object LOCK = new Object();
 
     public SunTask(Context context, double latiude, double longitude) {
         this.mContext = context;
@@ -123,8 +124,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 sunset = stringToLong(sunCalc.getSunset());
             }
         }
-        editor.putString("sunrise", longToHour(sunrise));
-        editor.putString("sunset", longToHour(sunset));
+        editor.putString("sunrise", longToHourZone(sunrise));
+        editor.putString("sunset", longToHourZone(sunset));
         editor.apply();
         sunrise = sunrise + sunriseCorrectionValue;
         sunset = sunset + sunsetCorrectionValue;
@@ -133,12 +134,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private void dayOrNight() {
         if (notArctic()) {
-            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            millisecondOfDay = 
-                TimeUnit.HOURS.toMillis(cal.get(Calendar.HOUR_OF_DAY)) +
-                TimeUnit.MINUTES.toMillis(cal.get(Calendar.MINUTE)) +
-                TimeUnit.SECONDS.toMillis(cal.get(Calendar.SECOND)) +
-                cal.get(Calendar.MILLISECOND);
+            LocalTime currentTime = LocalTime.now();
+            millisecondOfDay = currentTime.toSecondOfDay() * 1000L;
             
             if (nightBool()) {
                 helpers.setDay(false);
@@ -147,13 +144,13 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 } else if (nightBoolPreMidnight()) {
                     timeToJob = (midnight - millisecondOfDay) + sunrise;
                 }           
-                Log.i("NIGHT", "Waiting for sunrise at " + longToHour(sunrise) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
-                 + "; Current time: " + longToHour(millisecondOfDay) + "; Sunset at: " + longToHour(sunset));
+                Log.i("NIGHT", "Waiting for sunrise at " + longToHourZone(sunrise) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
+                 + "; Current time: " + longToHourZone(millisecondOfDay) + "; Sunset at: " + longToHourZone(sunset) + "; day length (in ms): " + dayLength + " (in hours): " + longToHourZone(dayLength));
             } else if (dayBool()) {
                 helpers.setDay(true);
                 timeToJob = sunset - millisecondOfDay;
-                Log.i("DAY", "waiting for sunset at " + longToHour(sunset) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
-                 + "; Current time: " + longToHour(millisecondOfDay) + "; Sunrise at: " + longToHour(sunrise));
+                Log.i("DAY", "waiting for sunset at " + longToHourZone(sunset) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
+                 + "; Current time: " + longToHourZone(millisecondOfDay) + "; Sunrise at: " + longToHourZone(sunrise) + "; day length (in ms): " + dayLength + " (in hours): " + longToHourZone(dayLength));
             }
         }        
     }
@@ -190,23 +187,25 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private void setWallpapers() {
         File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
-        if (allowSetDayWallpaper(mFile)) {
-            File image = new File(mFile, "Day.png");
-            if (allowSetWallpaperFromFile(image)) {
-                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                setWallpaperIfDifferent(bitmap, "Day");                    
-            } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg)));
-                setWallpaperIfDifferent(bitmapDrawable, "Day");  
-            }
-        } else if (allowSetNightWallpaper(mFile)) {
-            File image = new File(mFile, "Night.png");
-            if (allowSetWallpaperFromFile(image)) {
-                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                setWallpaperIfDifferent(bitmap, "Night");                    
-            } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg_n)));
-                setWallpaperIfDifferent(bitmapDrawable, "Night");  
+        synchronized (LOCK) {
+            if (allowSetDayWallpaper(mFile)) {
+                File image = new File(mFile, "Day.png");
+                Bitmap bitmap = decodeBitmapSafely(image);
+                if (bitmap != null && !defaultWallpapers) { 
+                    setWallpaperIfDifferent(bitmap, "Day");                    
+                } else {
+                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg)));
+                    setWallpaperIfDifferent(bitmapDrawable, "Day");  
+                }
+            } else if (allowSetNightWallpaper(mFile)) {
+                File image = new File(mFile, "Night.png");
+                Bitmap bitmap = decodeBitmapSafely(image);
+                if (bitmap != null && !defaultWallpapers) {     
+                    setWallpaperIfDifferent(bitmap, "Night");                    
+                } else {
+                    Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg_n)));
+                    setWallpaperIfDifferent(bitmapDrawable, "Night");  
+                }
             }
         }
     }
@@ -219,15 +218,24 @@ public class SunTask extends AsyncTask<String, Void, String> {
         return mFile.exists() && (!helpers.isDay() || defaultWallpapers  && !helpers.isDay() || helpers.isPerpetualNight());
     }
 
-    private boolean allowSetWallpaperFromFile(File image) {
-        return image.exists() && !defaultWallpapers;
+    private boolean isFileValid(File file) {
+        return file.exists() && file.length() > 0;
+    }
+
+    private Bitmap decodeBitmapSafely(File image) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        try {
+            if (!isFileValid(image)) return null;
+            return BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+        } catch (OutOfMemoryError | Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     private Boolean setWallpaperIfDifferent(Bitmap newWallpaperBitmap, String name) {
         try {
-            Drawable mWallpaper = mWallpaperManager.getDrawable();
-            Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
-
             if (areBitmapsHashEqual(name)) {
                 Log.d(TAG, "Wallpaper is already set. No change needed.");
                 return false;
@@ -295,10 +303,10 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
-            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putString(name + "_hash", hexString.toString());
-            editor.apply();
+            SharedPreferences hashPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+            SharedPreferences.Editor hashEditor = hashPrefs.edit();
+            hashEditor.putString(name + "_hash", hexString.toString());
+            hashEditor.apply();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -349,6 +357,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private long dayStringToLong(String timeStr) {
         SimpleDateFormat format = new SimpleDateFormat(TIME_CONST);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date;
         try {
             date = format.parse(timeStr);
@@ -357,12 +366,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }
         assert date != null;
         return date.getTime();
-    }
-
-    public String longToHour(long time) {
-        Date date = new Date(time);
-        DateFormat formatter = new SimpleDateFormat(TIME_CONST);
-        return formatter.format(date);
     }
 
     public String longToHourZone(long time) {
@@ -526,10 +529,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
             long mSunset = Math.round((solarTransitJ2000 + hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
             long mSunrise = Math.round((solarTransitJ2000 - hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
 
-            DateFormat date = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
-            date.setTimeZone(TimeZone.getTimeZone("UTC"));
-            dateSunrise = date.format(new Date(mSunrise));  
-            dateSunset = date.format(new Date(mSunset));            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a", Locale.ENGLISH);
+            dateSunrise = Instant.ofEpochMilli(mSunrise).atZone(ZoneId.systemDefault()).format(formatter);
+            dateSunset = Instant.ofEpochMilli(mSunset).atZone(ZoneId.systemDefault()).format(formatter);           
         }        
     }
 }

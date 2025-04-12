@@ -3,14 +3,12 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0040_XP_MQB_ALL;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitMisc;

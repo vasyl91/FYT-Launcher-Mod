@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.ModuleObject;
-import com.syu.remote.Callback;
 
 public abstract class Registrar {
     protected Callback mCallback = new Callback();

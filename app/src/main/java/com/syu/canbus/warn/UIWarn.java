@@ -6,8 +6,8 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.loopview.MessageHandler;
 import com.syu.util.TimeLocker;
 

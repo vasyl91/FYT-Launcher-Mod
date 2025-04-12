@@ -5,7 +5,6 @@ import android.view.KeyEvent;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
-import com.syu.canbus.R;
 
 public class IndexAct_Hc_volvo extends BaseActivity {
     public static IndexAct_Hc_volvo mInstance;

@@ -1,14 +1,11 @@
 package com.android.launcher66;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import androidx.annotation.StyleableRes;
 
 public class DrawableStateProxyView extends LinearLayout {
     private View mView;

@@ -3,6 +3,7 @@ package com.android.launcher66;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -311,7 +312,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     public void buildHardwareLayer() {
-        mShortcutsAndWidgets.buildLayer();
+        // causes warnings and imo has no effect
+        //mShortcutsAndWidgets.buildLayer();
     }
 
     public float getChildrenScale() {

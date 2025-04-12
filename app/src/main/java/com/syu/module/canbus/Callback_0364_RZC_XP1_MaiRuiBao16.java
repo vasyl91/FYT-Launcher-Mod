@@ -3,12 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.carinfo.xp.yinglang.XpMrbAirControlAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0359_XP1_16mairuibao;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0364_RZC_XP1_MaiRuiBao16 extends CallbackCanbusBase {

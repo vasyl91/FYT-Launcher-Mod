@@ -2,8 +2,8 @@ package com.syu.carinfo.wc.gs4;
 
 import android.app.Activity;
 import android.os.Bundle;
+
 import com.syu.canbus.FuncMain;
-import com.syu.canbus.R;
 
 public class GS4SOSAct extends Activity {
     public static GS4SOSAct mInstance;

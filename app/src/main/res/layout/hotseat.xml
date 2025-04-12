@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.Hotseat
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+<com.android.launcher66.Hotseat xmlns:android="http://schemas.android.com/apk/res/android">
     <com.android.launcher66.CellLayout
         android:id="@+id/layout"
         android:layout_width="wrap_content"

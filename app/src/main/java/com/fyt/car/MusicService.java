@@ -4,10 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.UserHandle;
-import android.util.Log;
 
-import com.android.launcher66.Launcher;
 import com.android.launcher66.settings.Helpers;
 
 public class MusicService extends Service {
@@ -89,7 +86,7 @@ public class MusicService extends Service {
         bundle.putLong(PLAY_TOTALMINUTES, TOTALMINUTES);
         bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
         intent.putExtras(bundle);
-        sendBroadcastAsUser(intent, UserHandle.ALL);
+        sendBroadcast(intent);
     }
 
     // data broadcasted to NotificationListener.kt for the music widget
@@ -101,6 +98,6 @@ public class MusicService extends Service {
         bundle.putString(PLAY_SOURCE, SOURCE);
         bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
         intent.putExtras(bundle);
-        sendBroadcastAsUser(intent, UserHandle.ALL);
+        sendBroadcast(intent);
     }
 }

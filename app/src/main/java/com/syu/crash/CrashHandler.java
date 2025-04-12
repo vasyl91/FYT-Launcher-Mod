@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.Thread;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

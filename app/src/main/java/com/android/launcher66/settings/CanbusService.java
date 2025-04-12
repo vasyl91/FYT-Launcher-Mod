@@ -116,7 +116,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         mPropertyChangeClass.addObserver(ALLAPPS, this);
         mPropertyChangeClass.addObserver(FUELSTATS, this);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WindowUtil.PIP_STARTED);
+        filter.addAction(Launcher.PIP_STARTED);
         filter.addAction(WindowUtil.PIP_REMOVED);
         filter.addAction(AppListDialogFragment.LIST_OPEN);
         filter.addAction(AppListDialogFragment.LIST_CLOSE);
@@ -215,10 +215,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
             try {
                 if(intent.getAction() != null) {
                     switch (intent.getAction()) {
-                        case WindowUtil.PIP_STARTED:
+                        case Launcher.PIP_STARTED:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
+                            if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
                                 removeView();
                                 addStatsViewMainScreen();                                
                             }
@@ -238,7 +238,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         case AppListDialogFragment.LIST_CLOSE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
+                            if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
                                 removeView();
                                 addStatsViewMainScreen();                                
                             }
@@ -255,7 +255,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null) {
+                                    if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
                                         removeView();
                                         addStatsViewMainScreen();                                
                                     }
@@ -384,13 +384,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
     
     private void addStatsViewMainScreen() {
+        Log.i("huj", String.valueOf(userLayout) + " " + String.valueOf(prefs.getBoolean("main_screen_stats", true)) + " " + String.valueOf(helpers.hasPipStarted()) + " " + String.valueOf(!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) + " " + String.valueOf(Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)));
         userLayout = prefs.getBoolean("user_layout", false);
         if (userLayout 
             && prefs.getBoolean("main_screen_stats", true)
             && helpers.hasPipStarted()
             && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
             && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
-            
+            Log.i("huj", "huj2");
             addStatsView(false);
         }
     }

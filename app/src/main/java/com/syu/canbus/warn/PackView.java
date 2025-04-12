@@ -3,7 +3,6 @@ package com.syu.canbus.warn;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 public class PackView {
     private View view;

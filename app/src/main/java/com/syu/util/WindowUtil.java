@@ -11,8 +11,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.util.Log;
-import android.widget.Toast;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -36,39 +36,31 @@ public class WindowUtil {
     public static String AppPackageName = "";
     public static boolean visible = true;
     public static int delayMillis = 0;
-    public static final String PIP_STARTED = "pip.started";
     public static final String PIP_REMOVED = "pip.removed";
 
-    public static void initDefaultApp(final View v, final boolean show) {
-        ThreadManager.getLongPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    WindowUtil.intent = new Intent();
-                    //Log.d("initDefaultApp()", "removePip");
-                    //WindowUtil.removePip(null);
-                    WindowUtil.AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-                    PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
-                    if (AppPackageName.equals("") || AppPackageName == null) {
-                        if (Helpers.isPackageInstalled(FytPackage.GMAPS, packageManager)) {
-                            SystemProperties.set("persist.launcher.packagename", FytPackage.GMAPS);
-                            WindowUtil.AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-                        } else if (Helpers.isPackageInstalled(FytPackage.WAZE, packageManager)) {
-                            SystemProperties.set("persist.launcher.packagename", FytPackage.WAZE);
-                            WindowUtil.AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-                        } else if (Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
-                            SystemProperties.set("persist.launcher.packagename", FytPackage.GaodeACTION);
-                            WindowUtil.AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-                        }              
-                    }
-                    WindowUtil.openPip(v, show);
-                } catch (Exception e) {
-                    String message = LauncherApplication.sApp.getString(R.string.init_default_app_error);
-                    Toast.makeText(LauncherApplication.sApp, message, Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "Failed to init default app: " + e.getMessage());
-                }
+    public static void initDefaultApp() {
+        try {
+            intent = new Intent();
+            removePip(null);
+            AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+            PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
+            if (AppPackageName.isEmpty() || AppPackageName == null) {
+                if (Helpers.isPackageInstalled(FytPackage.GMAPS, packageManager)) {
+                    SystemProperties.set("persist.launcher.packagename", FytPackage.GMAPS);
+                    AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+                } else if (Helpers.isPackageInstalled(FytPackage.WAZE, packageManager)) {
+                    SystemProperties.set("persist.launcher.packagename", FytPackage.WAZE);
+                    AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+                } else if (Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+                    SystemProperties.set("persist.launcher.packagename", FytPackage.GaodeACTION);
+                    AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+                }              
             }
-        });
+        } catch (Exception e) {
+            String message = LauncherApplication.sApp.getString(R.string.init_default_app_error);
+            Toast.makeText(LauncherApplication.sApp, message, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Failed to init default app: " + e.getMessage());
+        }
     }
 
     public static void startMapPip(final View v, final boolean show) {
@@ -101,58 +93,48 @@ public class WindowUtil {
     }
 
     public static void openPip(View v, boolean show) {
-        LogPreview.show("startMapPip:" + AppPackageName);
-        Helpers helpers = new Helpers();
-        Launcher.getRootView().setTranslationX(-Launcher.screenWidth);
+        try {
+            Helpers helpers = new Helpers();
+            if ((!visible || show) 
+                && Utils.topApp() 
+                && !AppPackageName.isEmpty() 
+                && AppPackageName != null 
+                && !helpers.isInOverviewMode() 
+                && !helpers.isFirstPreferenceWindow()
+                && !helpers.isWallpaperWindow()
+                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Launcher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)
+                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
-        if ((!visible || show) 
-            && Utils.topApp() 
-            && !AppPackageName.isEmpty() 
-            && AppPackageName != null 
-            && !helpers.isInOverviewMode() 
-            && !helpers.isFirstPreferenceWindow()
-            && !helpers.isWallpaperWindow()
-            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-            && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Launcher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)
-            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-            
-            Log.d(TAG, "openPip..");
-            intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
+                Log.d(TAG, "openPip: " + AppPackageName);
+                intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
 
-            if (AppPackageName.equals("com.syu.camera360")) {
-                Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
-            }
-            Launcher.getLauncher().handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        WindowUtil.intent.putExtra("force_pip", true);
-                        WindowUtil.intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        SystemProperties.set("sys.lsec.force_pip", "true");
-                        LauncherApplication.sApp.startActivity(WindowUtil.intent);
-                    } catch (ActivityNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                if (AppPackageName.equals("com.syu.camera360")) {
+                    Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
                 }
-            }, delayMillis);
-            visible = true;
-            delayMillis = 0;
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
-        if (userLayout && userStats) {
-            helpers.setPipStarted(true);
-            helpers.setForegroundAppOpened(false);
-            helpers.setInAllApps(false);
-            helpers.setInRecent(false);
-            helpers.setInOverviewMode(false);
-            Intent intentpip = new Intent(PIP_STARTED);
-            LauncherApplication.sApp.sendBroadcast(intentpip);
+                Launcher.getLauncher().handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Launcher.getLauncher().pipOverview();
+                        WindowUtil.intent.putExtra("force_pip", true);
+                        WindowUtil.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        SystemProperties.set("sys.lsec.force_pip", "true");
+                        if (WindowUtil.intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
+                            LauncherApplication.sApp.startActivity(WindowUtil.intent);
+                        }
+                        
+                    }
+                }, delayMillis);
+                visible = true;
+                delayMillis = 0;
+                helpers.setFirstPreferenceWindow(false);
+                helpers.setWallpaperWindow(false);
+                helpers.setWasInRecents(false); 
+            }
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -170,22 +152,22 @@ public class WindowUtil {
     }
 
     public static void removePip(View v) {
-        Log.d(TAG, "removePip..");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
-        if (userLayout && userStats) {
-            Helpers helpers = new Helpers();
-            if (!helpers.isForegroundAppOpened() && !helpers.isInRecent() && !helpers.isInAllApps()) {
-                helpers.setPipStarted(false);
-                Intent intent = new Intent(PIP_REMOVED);
-                LauncherApplication.sApp.sendBroadcast(intent);
-            } else if (helpers.isInOverviewMode()) {
-                Intent intentOverview = new Intent(Workspace.OVERVIEW_MODE_OPEN);
-                LauncherApplication.sApp.sendBroadcast(intentOverview);
-            }
-        }
         if (visible) {
+            Log.d(TAG, "removePip..");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            boolean userLayout = prefs.getBoolean("user_layout", false);
+            boolean userStats = prefs.getBoolean("user_stats", false);
+            if (userLayout && userStats) {
+                Helpers helpers = new Helpers();
+                if (!helpers.isForegroundAppOpened() && !helpers.isInRecent() && !helpers.isInAllApps()) {
+                    helpers.setPipStarted(false);
+                    Intent intent = new Intent(PIP_REMOVED);
+                    LauncherApplication.sApp.sendBroadcast(intent);
+                } else if (helpers.isInOverviewMode()) {
+                    Intent intentOverview = new Intent(Workspace.OVERVIEW_MODE_OPEN);
+                    LauncherApplication.sApp.sendBroadcast(intentOverview);
+                }
+            }
             mActivityManager = ActivityManager.getService();
             Launcher.getLauncher().handler.postDelayed(new Runnable() {
                 @Override
@@ -208,7 +190,7 @@ public class WindowUtil {
             return;
         }
         LogPreview.show("WindowUtil ------ removePip");
-    }
+    }    
 
     public static void sendBROADCAST(boolean show) {
         Intent intent2 = new Intent();

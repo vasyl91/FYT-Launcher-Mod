@@ -1,9 +1,9 @@
 package com.fyt.adapter;
 
-import androidx.viewpager.widget.PagerAdapter;
-
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.launcher66.Launcher;
 import com.syu.log.LogPreview;

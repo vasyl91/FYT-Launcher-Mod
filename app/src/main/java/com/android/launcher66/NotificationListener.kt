@@ -31,7 +31,7 @@ import com.fyt.car.MusicService
 import share.ResValue
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.nio.charset.StandardCharsets
+import java.io.FileInputStream
 
 class NotificationListener : NotificationListenerService() {
     
@@ -54,7 +54,7 @@ class NotificationListener : NotificationListenerService() {
     private var counter: Int = 0
     private var currentState: Int? = 0
     private var paused: Boolean = false
-    private var componentName: ComponentName? = null
+    private var componentName = ComponentName("com.android.launcher66", "com.android.launcher66.NotificationListener")
     private var helpers: Helpers = Helpers()
 
     private var fytState: Boolean = false
@@ -90,15 +90,11 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {  
         super.onStartCommand(intent, flags, startId)
-        
-        if (componentName == null) {
-            componentName = ComponentName(this, this::class.java)
+
+        componentName.let {
+            requestRebind(it)
+            toggleNotificationListenerService(it)
         }
-        
-        componentName?.let {  
-            requestRebind(it)  
-            toggleNotificationListenerService(it)  
-        }  
         return START_REDELIVER_INTENT  
     }
 
@@ -134,11 +130,8 @@ class NotificationListener : NotificationListenerService() {
         }
         helpers.updateControllerTimeBool(false)
         unregisterReceiver(mediaReceiver)
-        
-        if (componentName == null) {  
-            componentName = ComponentName(this, this::class.java)  
-        }  
-        componentName?.let { requestRebind(it) }
+
+        componentName.let { requestRebind(it) }
     }
 
     override fun onDestroy() {
@@ -230,45 +223,49 @@ class NotificationListener : NotificationListenerService() {
                 fytMusicPath = bundle.getString("play_path")!!
                 fytSource = bundle.getString("source")!!
                 fytCurMinutes = bundle.getLong("play_cur")
+                
+                val file = File(fytMusicPath)
+                if (file.exists()) {
+                    try {
+                        FileInputStream(file).use { fis ->
+                            retriever.setDataSource(fis.fd, 0, file.length())
+                        }    
+                    } catch (e: IllegalArgumentException) {
+                        e.printStackTrace()
+                        retriever.setDataSource(fytMusicPath)
+                    } finally {                   
+                        musicName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                        authorName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                        fytAlbum = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
+                        retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                            ?.let { fytTotalMinutes = it.toLong() }
 
-                try {
-                    retriever.setDataSource(fytMusicPath)
-                    
-                    musicName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                    authorName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                    fytAlbum = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
-                    retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        ?.let { fytTotalMinutes = it.toLong() }
+                        if (musicNamePrev != musicName) {
+                            musicNamePrev = musicName.toString()
+                            prevCurFyt = 0
+                        }
 
-                    if (musicNamePrev != musicName) {
-                        musicNamePrev = musicName.toString()
-                        prevCurFyt = 0
+                        val filename = file.getName()
+                        if (filename.isNotEmpty() && filename.contains(".")) {
+                            pathName = filename.substring(0, filename.lastIndexOf("."))
+                        }
+
+                        if (currentState == PlaybackState.STATE_PLAYING) {
+                            mediaController?.transportControls?.pause()
+                        }
+
+                        if (musicName!!.isNotEmpty() && !musicName!!.contains("Unknown")  && !musicName!!.contains("null")) {
+                            fytSet = false
+                        } 
+                        if (fytState && !fytSet && helpers.isFytMusicAllowed()  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {
+                            handlerControllerTime.removeCallbacks(updateControllerTime)  
+                            helpers.updateControllerTimeBool(false)
+                            fytSet = true
+                            setStatus(1)
+                            handlerFytTime.post(updateFytTime)             
+                        } 
+                        retriever.release()
                     }
-
-                    val file = File(fytMusicPath)
-                    val filename = file.getName()
-                    if (filename.isNotEmpty() && filename.contains(".")) {
-                        pathName = filename.substring(0, filename.lastIndexOf("."))
-                    }
-
-                    if (currentState == PlaybackState.STATE_PLAYING) {
-                        mediaController?.transportControls?.pause()
-                    }
-
-                    if (musicName!!.isNotEmpty() && !musicName!!.contains("Unknown")  && !musicName!!.contains("null")) {
-                        fytSet = false
-                    } 
-                    if (fytState && !fytSet && helpers.isFytMusicAllowed()  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {
-                        handlerControllerTime.removeCallbacks(updateControllerTime)  
-                        helpers.updateControllerTimeBool(false)
-                        fytSet = true
-                        setStatus(1)
-                        handlerFytTime.post(updateFytTime)             
-                    }  
-                } catch (e: IllegalArgumentException) {
-                    e.printStackTrace()
-                } finally {
-                    retriever.release()
                 }
             // commands for the media players (other than the stock one)
             } else if (intent.action == "media.play.play") {

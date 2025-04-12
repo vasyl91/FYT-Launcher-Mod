@@ -18,9 +18,9 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import com.android.async.AsyncTask;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.text.Collator;

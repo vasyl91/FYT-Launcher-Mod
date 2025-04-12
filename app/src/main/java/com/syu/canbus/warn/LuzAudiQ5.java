@@ -3,13 +3,11 @@ package com.syu.canbus.warn;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.module.canbus.Callback_0452_LZ_Audi_Q5_All;
 
 public class LuzAudiQ5 {

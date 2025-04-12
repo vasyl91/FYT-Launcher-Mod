@@ -3,18 +3,12 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.golf7.AirControlMQB_RZC_Front;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0040_XP_MaiTeng17;
-//import com.syu.ui.air.Air_0160_RZC_20TuGuanL;
-//import com.syu.ui.air.Air_0160_RZC_DaZhong;
-//import com.syu.ui.air.Air_0160_RZC_DaZhong_All;
-//import com.syu.ui.air.Air_0160_RZC_TuGuanL;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitMisc;

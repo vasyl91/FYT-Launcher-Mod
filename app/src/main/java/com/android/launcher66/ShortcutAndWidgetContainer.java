@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.launcher66.CellLayout;
 
 public class ShortcutAndWidgetContainer extends ViewGroup {
     static final String TAG = "CellLayoutChildren";

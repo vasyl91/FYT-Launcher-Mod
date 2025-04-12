@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 //import com.syu.ui.air.Air_0176_RZC_DongNanV5;

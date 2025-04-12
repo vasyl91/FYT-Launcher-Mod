@@ -3,13 +3,11 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xbs.yage8.XBS08YageCar6Cd;
 import com.syu.carinfo.xbs.yage8.XBS08YageCarRadioAct;
 import com.syu.carinfo.xbs.yage8.XBS08YageCarUSBAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0439_XBS_Yage8;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0439_XBS_08Yage extends CallbackCanbusBase {

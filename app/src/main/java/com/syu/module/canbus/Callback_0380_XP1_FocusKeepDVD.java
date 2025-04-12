@@ -3,12 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.carinfo.xp.ylford.YLFordCarCD;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0380_XP1_Focus2012;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0380_XP1_FocusKeepDVD extends CallbackCanbusBase {

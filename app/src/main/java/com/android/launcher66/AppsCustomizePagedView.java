@@ -540,6 +540,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             AppListBean bean = new AppListBean(appInfo.title.toString(), appInfo.getPackageName(), appInfo.getClassName());
             if (appInfo.getClassName().equals("com.android.launcher66.settings.SettingsActivity")) {
                 Intent settingsIntent = new Intent(this.mLauncher, SettingsActivity.class);
+                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 this.mLauncher.startActivity(settingsIntent);
             }
             

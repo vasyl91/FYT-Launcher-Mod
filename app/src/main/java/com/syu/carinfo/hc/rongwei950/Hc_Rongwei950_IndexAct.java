@@ -3,7 +3,6 @@ package com.syu.carinfo.hc.rongwei950;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckedTextView;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;

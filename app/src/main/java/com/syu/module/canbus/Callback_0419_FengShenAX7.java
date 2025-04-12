@@ -2,22 +2,12 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wc.jingyix5.JYCarMaintaneceOptions;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0419_BenTengX80;
-//import com.syu.ui.air.Air_0419_WC2_AX7;
-//import com.syu.ui.air.Air_0419_WC2_ChangAnYX;
-//import com.syu.ui.air.Air_0419_WC2_ChangAnYX_M;
-//import com.syu.ui.air.Air_0419_WC2_FuMeiLai2017;
-//import com.syu.ui.air.Air_0419_WC2_HuanSu;
-//import com.syu.ui.air.Air_0419_WC2_Jili_YuanJing;
-//import com.syu.ui.air.Air_0419_WC2_JingyiX5;
-//import com.syu.ui.air.Air_0419_WC2_OuShang_X70A;
-//import com.syu.ui.air.Air_0419_WC2_ZhongHua_H3;
 import com.syu.ui.door.DoorHelper;
 
 import java.text.DateFormat;

@@ -2,10 +2,8 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0453_Oudi_JMC_NewEnergy;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0453_OD_JMC_New_Energy extends CallbackCanbusBase {

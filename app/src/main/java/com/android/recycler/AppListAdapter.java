@@ -2,12 +2,16 @@ package com.android.recycler;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +21,7 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
 import java.util.HashSet;
@@ -59,7 +64,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     public void onBindViewHolder(final AppListHolder appListHolder, int position) {
         final AppListBean appListBean = this.mData.get(position);
         appListHolder.mAppName.setText(appListBean.name);
-        appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
+        if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+            appListHolder.mAppIcon.setImageBitmap(drawableToBitmap(ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings)));
+        } else {
+            appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
+        }
         appListHolder.itemView.setOnClickListener(view -> {
             final String packageName = appListBean.packageName;
                     switch (packageName.hashCode()) {
@@ -84,9 +93,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                     if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
                         AppListAdapter.this.mDialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
                         AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
-                    }
-                    else if (appListBean.packageName.equals("com.android.launcher66")) {
+                    } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                         AppListAdapter.this.mLauncher.onClickAllAppsButton(view);
+                    } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+                        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                        Intent settingsIntent = new Intent(AppListAdapter.this.mLauncher, SettingsActivity.class);
+                        settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        AppListAdapter.this.mLauncher.startActivity(settingsIntent);
                     } else {
                         final Intent intent = new Intent();
                         intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
@@ -94,7 +107,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         
                         helpers.setInOverviewMode(false);
                         helpers.setListOpen(false);
-                        helpers.setAppOpenedByUser(true);
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
                         boolean userLayout = prefs.getBoolean("user_layout", false);
                         boolean userStats = prefs.getBoolean("user_stats", false);
@@ -130,5 +142,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
 
     public AppListHolder onCreateViewHolder(final ViewGroup viewGroup, final int n) {
         return new AppListHolder(LayoutInflater.from(this.mLauncher).inflate(R.layout.item_app_list, viewGroup, false));
+    }
+    
+    public Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

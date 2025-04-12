@@ -2,11 +2,9 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0397_BNR_Camry2013;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0397_BNR_XP1_VScreen_Camry2013 extends CallbackCanbusBase {

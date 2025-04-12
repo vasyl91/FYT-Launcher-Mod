@@ -2,11 +2,8 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0324_BNR_TianLai;
-//import com.syu.ui.air.Air_0327_HC_TianLai;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0324_BNR_XP1_NISSAN_LouLan extends CallbackCanbusBase {

@@ -2,10 +2,8 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0438_Bnr_DaZhong;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0438_BNR_DaZhong extends CallbackCanbusBase {

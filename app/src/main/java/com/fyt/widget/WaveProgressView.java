@@ -1,6 +1,5 @@
 package com.fyt.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -18,8 +17,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-
-import androidx.annotation.StyleableRes;
 
 import com.android.launcher66.R;
 

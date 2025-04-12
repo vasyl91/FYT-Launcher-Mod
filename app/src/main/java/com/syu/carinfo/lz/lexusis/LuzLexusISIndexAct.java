@@ -3,12 +3,11 @@ package com.syu.carinfo.lz.lexusis;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
 import com.syu.module.canbus.DataCanbus;

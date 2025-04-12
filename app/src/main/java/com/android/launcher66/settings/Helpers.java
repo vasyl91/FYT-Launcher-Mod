@@ -255,14 +255,14 @@ public class Helpers {
     }
 
 
-    private boolean appOpenedByUser = false;
-    public boolean isAppOpenedByUser() {
-        appOpenedByUser = sharedPrefs.getBoolean("appOpenedByUser", false);
-        return appOpenedByUser;
+    private boolean onBootBoolean = false;
+    public boolean isOnBootBoolean() {
+        onBootBoolean = sharedPrefs.getBoolean("onBootBoolean", false);
+        return onBootBoolean;
     }
-    public void setAppOpenedByUser(boolean appOpenedByUser) {
-        this.appOpenedByUser = appOpenedByUser;
-        editor.putBoolean("appOpenedByUser", appOpenedByUser);
+    public void setOnBootBoolean(boolean onBootBoolean) {
+        this.onBootBoolean = onBootBoolean;
+        editor.putBoolean("onBootBoolean", onBootBoolean);
         editor.apply();
     }
 
@@ -326,7 +326,7 @@ public class Helpers {
     public void resetPrefs() {
         Log.i("helpers", "resetprefs");
         if ((hasLayoutTypeChanged() || hasLeftBarChanged()) && !hasUserOpenedCreator()) {
-            Log.i("helpers", "resetprefs2");
+            Log.i("helpers", "resetprefs passed if statement");
             SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10")); 
             int mapMinWidth = 561;

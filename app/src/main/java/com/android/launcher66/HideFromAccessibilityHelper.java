@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.view.View;
 import android.view.ViewGroup;
+
 import java.util.HashMap;
 
 public class HideFromAccessibilityHelper implements ViewGroup.OnHierarchyChangeListener {

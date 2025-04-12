@@ -2,22 +2,8 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0395_WC2_BeiQiX25;
-//import com.syu.ui.air.Air_0395_WC2_BeiQi_18BJ20;
-//import com.syu.ui.air.Air_0395_WC2_BenTengB50;
-//import com.syu.ui.air.Air_0395_WC2_FengGuang580;
-//import com.syu.ui.air.Air_0395_WC2_GUOCHAN;
-//import com.syu.ui.air.Air_0395_WC2_HaiMaV70;
-//import com.syu.ui.air.Air_0395_WC2_QiChenD60;
-//import com.syu.ui.air.Air_0395_WC2_QiChenT90;
-//import com.syu.ui.air.Air_0395_WC2_RuiFengS3;
-//import com.syu.ui.air.Air_0395_WC2_RuiFengS5;
-//import com.syu.ui.air.Air_0395_WC2_RuiHu3X;
-//import com.syu.ui.air.Air_0395_WC2_RuiHu5;
-//import com.syu.ui.air.Air_0395_WC2_YeMa_T70;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0395_WC2_GuoChan extends CallbackCanbusBase {

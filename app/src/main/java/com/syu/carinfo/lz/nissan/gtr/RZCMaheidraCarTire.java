@@ -3,9 +3,9 @@ package com.syu.carinfo.lz.nissan.gtr;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

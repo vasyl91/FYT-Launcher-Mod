@@ -9,9 +9,11 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
+import android.app.Service;
 import android.app.WallpaperManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -44,16 +46,12 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.text.DecimalFormat;
-import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.ConnectivityManager;
-import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,11 +63,14 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -116,9 +117,12 @@ import cn.kuwo.autosdk.api.PlayerStatus;
 import cn.kuwo.autosdk.bean.Music;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.settings.CanbusClasses;
+import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.MainViewModel;
+import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SettingsActivity;
-import com.android.launcher66.settings.SunTask;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppMultiple;
@@ -134,9 +138,6 @@ import com.fyt.skin.SkinManager;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.popwindow.PopWindowBright;
@@ -170,8 +171,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -180,6 +179,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.http.HttpStatus;
 import org.litepal.LitePal;
@@ -189,7 +189,6 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
-    private static Throwable th;
     private ViewTreeObserver.OnDrawListener onDrawListener;
     static final String CORRUPTION_EMAIL_SENT_KEY = "corruptionEmailSent";
     static final boolean DEBUG_DUMP_LOG = false;
@@ -495,22 +494,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
     public static final String ALL_APPS = "all.apps";
     private static final String UPDATE_USER_PAGE = "update.user.page";
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private FusedLocationProviderClient fusedLocationClient;
     private Helpers helpers = new Helpers();
-    private ConnectivityManager connectivityManager;
-    private NetworkRequest networkRequest;
     private Context mContext;
-    private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
-    private boolean isNightModeRunning = false;
-    private final Handler checkTimeHandler = new Handler(Looper.getMainLooper());
-    private LocalDateTime lastCheckedDateTime;
-    private boolean isCheckTimeRunning = false;
     private LinearLayout bottomButtons;
     private LinearLayout bottomButtonsWidgets;
     public static View rootView;
     public static int screenWidth;
     private boolean temporarilyDisablePlayPauseButton = false;
+    public boolean defaultAppInit = false;
+    private MainViewModel mViewModel;
+    private AtomicBoolean atomicOnBoot = new AtomicBoolean(true);
+    public static final String PIP_STARTED = "pip.started";
+    private static final String NIGHT_MODE = "night_mode"; 
 
     public static View getRootView() {
         return rootView;
@@ -1490,39 +1485,40 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             }                        
                         }
                         break; 
-                    case UPDATE_USER_PAGE:
-                        boolean userLayoutBool = mPrefs.getBoolean("user_layout", false);  
+                    case UPDATE_USER_PAGE:  
+                        boolean userLayoutBool = mPrefs.getBoolean("user_layout", false); 
+                        Log.i("Recreate page", String.valueOf(helpers.hasLayoutTypeChanged()));
                         if (userLayoutBool && (helpers.hasLayoutTypeChanged() || helpers.hasLeftBarChanged() || helpers.hasUserOpenedCreator())) {
-                            WindowUtil.restartPipApp();
+                            Log.i("Recreate page", "user layout");
                             setWindowLocUser();
-                        } else if (!userLayoutBool && helpers.hasLayoutTypeChanged()) {
                             WindowUtil.restartPipApp();
+                            if (checkIfMapSizeChanged()) {
+                                // save previous values
+                                SharedPreferences.Editor editor = mPrefs.edit();
+                                editor.putInt("prevMapTopLeftX", mPrefs.getInt("mapTopLeftX", 107));  
+                                editor.putInt("prevMapTopLeftY", mPrefs.getInt("mapTopLeftY", 57));  
+                                editor.putInt("prevMapBottomRightX", mPrefs.getInt("mapBottomRightX", 687));   
+                                editor.putInt("prevMapBottomRightY", mPrefs.getInt("mapBottomRightY", 513));
+                                editor.apply();
+                            } 
+                        } else if (!userLayoutBool && helpers.hasLayoutTypeChanged()) {
+                            Log.i("Recreate page", "stock layout");
                             setWindowLocDefault();
+                            WindowUtil.restartPipApp();
                         }   
 
-                        if (checkIfMapSizeChanged()) {
-                            WindowUtil.restartPipApp();
-                            setWindowLocUser();
-                            // save previous values
-                            SharedPreferences.Editor editor = mPrefs.edit();
-                            editor.putInt("prevMapTopLeftX", mPrefs.getInt("mapTopLeftX", 107));  
-                            editor.putInt("prevMapTopLeftY", mPrefs.getInt("mapTopLeftY", 57));  
-                            editor.putInt("prevMapBottomRightX", mPrefs.getInt("mapBottomRightX", 687));   
-                            editor.putInt("prevMapBottomRightY", mPrefs.getInt("mapBottomRightY", 513));
-                            editor.apply();
-                        }  
+                        if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(NIGHT_MODE, false)) {
+                            Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+                            startService(nightModeServiceIntent);
+                        }
 
                         if (helpers.hasCorrectionChanged()) {
-                            if (!isNightModeRunning) {
-                                nightModeHandler.postDelayed(nightModeRunnable, 10000); // prevents an error when wallpaper is half loaded half black on boot
-                                isNightModeRunning = true;
-                            }
+                            sendBroadcast(new Intent("recreate.view"));
                             helpers.setCorrectionChanged(false);
                         }
 
                         helpers.setUserOpenedCreator(false);
                         helpers.setLeftBarChanged(false);
-    
 
                         getWindow().addFlags(Integer.MIN_VALUE);       
                         if (mPrefs.getBoolean("transparent_statusbar", false)) {
@@ -1532,6 +1528,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
                         }
 
+                        new CanbusClasses(LauncherApplication.sApp).execute();
                         recreateView(userLayoutBool);
                         break;  
                     case "pause.button":
@@ -1545,7 +1542,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void recreateView(boolean userLayoutBool) {
         mWorkspace.createUserPage();
         mAppWidgetHost.startListening();
-        initHashMap();
+        setupViews();
         bindOnclickListener();
         restoreState(mSavedState);
         if (userLayoutBool) {
@@ -1555,8 +1552,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             bottomButtons.setVisibility(android.view.View.VISIBLE); 
             bottomButtonsWidgets.setVisibility(android.view.View.GONE);
         }
-        mModel.startLoader(true, mWorkspace.getCurrentPage());
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+        mModel.startLoader(false, mWorkspace.getCurrentPage());
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);  
+        Log.d("recreateView", "removePip");
+        WindowUtil.removePip(null);     
+        WindowUtil.startMapPip(null, false, 250);
+        //helpers.resetPrefs();
     }    
 
     private boolean checkIfMapSizeChanged() {
@@ -1683,7 +1684,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);       
         Log.i(TAG, "onCreate----->");
         mContext = this;
         mLauncher = this;
@@ -1711,14 +1712,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
 
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);    
-        getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this); 
+        if (helpers.isOnBootBoolean()) {
+            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+            helpers.setOnBootBoolean(true);
+        } else {
+            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+        }  
 
         mModel = app.setLauncher(this);
         mIconCache = app.getIconCache();
         mIconCache.flushInvalidIcons(grid);
         mDragController = new DragController(this);
         mInflater = getLayoutInflater();
+
+        mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mViewModel.setFirstUse(mModel.mFirstUse);
 
         if (Stats.ENABLE_STATS) {
             mStats = new Stats(this);
@@ -1733,6 +1742,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // this also ensures that any synchronous binding below doesn't re-trigger another
         // LauncherModel load.
         mPaused = false;
+
+        onActivityResultX();
 
         if (PROFILE_STARTUP) {
             android.os.Debug.startMethodTracing(
@@ -1784,8 +1795,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
         unlockScreenOrientation(true);
-
-        connectivityManager = (ConnectivityManager) getSystemService(ConnectivityManager.class);
         
         helpers = new Helpers();
         helpers.setOnCreateJobInit(true);
@@ -1798,15 +1807,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             setWindowLocUser();
         } else {
             setWindowLocDefault();
-        }
-
-        if (!isCheckTimeRunning) {
-            checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device hasn't updated the time
-            isCheckTimeRunning = true;
-        }    
-        if (!isNightModeRunning) {
-            nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
-            isNightModeRunning = true;
         }
         
         if (mPrefs.getBoolean("transparent_statusbar", false)) {
@@ -1839,18 +1839,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         initRegisterReceiver();
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!helpers.isInOverviewMode() 
-                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                    && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
-                    Log.d("onCreate", "startMapPip");
-                    WindowUtil.startMapPip(null, false);
-                }
-            }
-        }, 1000);
-
         Widget.update(LauncherApplication.sApp);
 
         /*mCurrWallpaperRes = mSharedPrefs.getString(SP_WALLPAPER, "");
@@ -1863,10 +1851,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mWeatherManager = WeatherManager.initialize(this);*/
 
-        onBackPressedCompat();
+        onBackPressedX();
     }  
 
-    private void onBackPressedCompat() {
+    private void onActivityResultX() {
+        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            mWaitingForResult = true;
+                        }
+                    }
+                });
+    }
+
+    private void onBackPressedX() {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -1896,7 +1897,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (ResValue.getInstance().clickapp_cling > 0) {
                     Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
                     cling.setVisibility(android.view.View.GONE);
-                    stopVoice();
+                    Launcher.this.stopVoice();
                     LogPreview.show("onBackPressed----->");
                     if (Launcher.this.mWaitingForResume != null) {
                         Launcher.this.mWaitingForResume.setStayPressed(false);
@@ -1916,54 +1917,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "---->>> onStart");
-        WindowUtil.initDefaultApp(null, false); 
+        defaultAppInit = true;
+        WindowUtil.initDefaultApp(); 
         FirstFrameAnimatorHelper.setIsVisible(true);
-    }
-
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        helpers = new Helpers();
-        if (!helpers.isAppOpenedByUser()) {
-            if (!isCheckTimeRunning) {
-                checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device hasn't updated the time
-                isCheckTimeRunning = true;
-            }    
-            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
-                isNightModeRunning = true;
-            }
-        }        
-        if (mPlayer == null) {
-            mPlayer = new MediaPlayer();
-        }
-        fytData = mPrefs.getBoolean("fyt_data", true); 
-        if (helpers.shouldAllAppsBeVisible()) {
-            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
-            helpers.setAllAppsShouldBVisible(false);
-        }
-        if (isAllAppsVisible()) {
-            Log.d("onRestart", "removePip");
-            WindowUtil.removePip(null);
-        } else {
-            if (!helpers.isFirstPreferenceWindow() 
-                && !helpers.isWallpaperWindow() 
-                && !helpers.isInOverviewMode()
-                && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                    Log.d("onRestart", "startMapPip");
-                    WindowUtil.startMapPip(null, false, 250);
-            }
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
-        helpers.setAppOpenedByUser(false);
-        mWorkspace.exitOverviewMode(false);
-        Log.i("onRestart", "onRestart----->");
     }
 
     @Override
@@ -1971,12 +1927,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onResume(); 
         Log.i(TAG, "onResume----->");         
         helpers = new Helpers();
-        if (!helpers.isAppOpenedByUser()) { 
-            if (!isNightModeRunning && !helpers.onCreateJobInit() && !isJobServiceOn(this)) {
-                nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
-                isNightModeRunning = true;
-            }
-        }     
         if (mPlayer == null) {
             mPlayer = new MediaPlayer();
         }
@@ -1986,25 +1936,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBVisible(false);
         }
-        if (isAllAppsVisible()) {
-            Log.d("onResume", "removePip");
-            WindowUtil.removePip(null);
-        } else {
-            if (!helpers.isFirstPreferenceWindow() 
-                && !helpers.isWallpaperWindow() 
-                && !helpers.isInOverviewMode()
-                && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                    Log.d("onResume", "startMapPip");
-                    WindowUtil.startMapPip(null, false, 250);
-            }
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
         handleView();
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
         }
@@ -2052,7 +1983,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.resetDrawableState();
         }
-        getWorkspace().reinflateWidgetsIfNecessary();
+        try {
+            getWorkspace().reinflateWidgetsIfNecessary();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         InstallShortcutReceiver.disableAndFlushInstallQueue(this);
         updateVoiceButtonProxyVisible(false);
         updateGlobalIcons();
@@ -2083,7 +2019,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             firstLayout.setVisibility(View.VISIBLE);
         }
         isfirstlayout = false;
-        showWeatherInfo();
+        //showWeatherInfo();
         lastpath = null;
         /*if (CarStates.mAppID != 8 && mediaSource == "fyt") {
             Utils.setTextId(tvMusicName, R.string.music_name);
@@ -2114,16 +2050,83 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setPlayPauseIcon(true);
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Log.i(TAG, "onPostResume----->");  
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor = mPrefs.edit();
+        editor.putBoolean("user_init_layout", mPrefs.getBoolean("user_layout", false));
+        editor.apply();
+
+        if (isAllAppsVisible()) {
+            Log.d("onPostResume", "removePip");
+            WindowUtil.removePip(null);
+        } else if (defaultAppInit
+            || !helpers.isFirstPreferenceWindow() 
+            && !helpers.isWallpaperWindow() 
+            && !helpers.isInOverviewMode()
+            && !mDragController.isDragging()
+            && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+            && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
+            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+                Log.d("onPostResume", "startMapPip");
+                WindowUtil.startMapPip(null, false, 250);
+        }
+        helpers.setFirstPreferenceWindow(false);
+        helpers.setWallpaperWindow(false);
+        helpers.setWasInRecents(false);
+
+        if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(NIGHT_MODE, false)) {
+            Intent nightModeServiceIntent = new Intent(this, NightModeService.class);
+            startService(nightModeServiceIntent);
+        }
+
+        if (!isServiceRunning(CanbusService.class)) {
+            new CanbusClasses(LauncherApplication.sApp).execute();
+        }
+
+        // in some cases pip won't start when user wakes the device up after long inactivity
+        // this serves as some sort of checking function to make sure it starts
+        if (helpers.isOnBootBoolean() && atomicOnBoot.get()) {
+            atomicOnBoot.set(false); // prevents running the handler twice
+            Log.e("onPostResume", "on Boot check");
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!Utils.topAppPip(WindowUtil.AppPackageName) 
+                        && !helpers.isFirstPreferenceWindow() 
+                        && !helpers.isWallpaperWindow() 
+                        && !helpers.isInOverviewMode()
+                        && !mDragController.isDragging()
+                        && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+                        && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
+                        || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+                            Log.e("onPostResume", "startMapPip on Boot check");
+                            helpers.setOnBootBoolean(false);
+                            WindowUtil.startMapPip(null, true, 250);
+                    } else {
+                        helpers.setOnBootBoolean(false);
+                    }
+                }
+            }, 8000);
+        }
+    }
+
     @Override 
     protected void onPause() {
+        super.onPause();
         Log.d(TAG, "---->>> onPause");
         if (AppUtil.topApp(this, FytPackage.hicarAction)
             && !closeSystemDialogsIntentReceiverBoolean) {
+            Log.d("onPause", "removePip");
             WindowUtil.removePip(pipViews);
             closeSystemDialogsIntentReceiverBoolean = false;
         }
         InstallShortcutReceiver.enableInstallQueue();
-        super.onPause();
         mPaused = true;
         mDragController.cancelDrag();
         mDragController.resetLastGestureUpTime();
@@ -2149,9 +2152,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onStop() {
+        super.onStop();
         Log.d(TAG, "---->>> onStop");
+        Log.d("onStop", "removePip");
         WindowUtil.removePip(pipViews);
-        removeNightRunnables();
         isfirstlayout = true;
         FirstFrameAnimatorHelper.setIsVisible(false);
         if(mPlayer != null) {
@@ -2162,14 +2166,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer.release();
             mPlayer = null;
         }
-        super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "---->>> onDestroy");
-        WindowUtil.removePip(pipViews);
         super.onDestroy();
+        Log.d(TAG, "---->>> onDestroy");
+        Log.d("onDestroy", "removePip");
+        WindowUtil.removePip(pipViews);
         tools.removeRefreshLisenter(0, refreshMain);
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
@@ -2181,7 +2185,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.removeMessages(0);
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
         LauncherAppState app = LauncherAppState.getInstance();
-        mModel.stopLoader();
+        if (isChangingConfigurations()) {
+            // Check if the loader should be stopped (using ViewModel logic)
+            if (mViewModel.shouldStopLoader()) {
+                mModel.stopLoader();
+            }
+            // Release UI resources
+            if (mAppsCustomizeContent != null) {
+                mAppsCustomizeContent.surrender();
+            }
+        } else {
+            // Activity is permanently destroyed
+            mModel.stopLoader();
+            if (mAppsCustomizeContent != null) {
+                mAppsCustomizeContent.surrender();
+            }
+        }
         app.setLauncher(null);
         try {
             mAppWidgetHost.stopListening();
@@ -2202,6 +2221,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace = null;
         mDragController = null;
         LauncherAnimUtils.onDestroyActivity();
+    }    
+
+    public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        ActivityManager manager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager != null) {
+            List<ActivityManager.RunningServiceInfo> runningServices = manager.getRunningServices(Integer.MAX_VALUE);
+            for (ActivityManager.RunningServiceInfo service : runningServices) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Handle widget click events
@@ -2253,75 +2285,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return ""; 
     }
 
-    private final Runnable checkTimeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (hasTimeChanged()) {
-                checkWallpapers();
-            } 
-            checkTimeHandler.postDelayed(this, 5000);
-        }
-    };
-
-    private final Runnable nightModeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            checkWallpapers();
-        }
-    }; 
-
-    private boolean hasTimeChanged() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        if (lastCheckedDateTime == null) {
-            lastCheckedDateTime = currentDateTime;
-            return false;
-        }
-
-        Duration duration = Duration.between(lastCheckedDateTime, currentDateTime);
-        long minutes = duration.toMinutes();
-
-        if (minutes < 1) {
-            lastCheckedDateTime = currentDateTime; 
-            return false; 
-        } else { 
-            lastCheckedDateTime = currentDateTime; 
-            return true;  
-        }
-    } 
-
-    private void checkWallpapers() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    double lat;
-                    double longt;
-                    if (location != null) {
-                        SharedPreferences.Editor editor = Launcher.this.mPrefs.edit();
-                        lat = location.getLatitude();
-                        longt = location.getLongitude();
-                        editor.putString("latiude", String.valueOf(lat));
-                        editor.putString("longitude", String.valueOf(longt));
-                        editor.apply();
-                    } else {
-                        // in case the head unit has lost both GPS and internet connection on boot
-                        lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
-                        longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
-                    }
-                    final JobScheduler jobScheduler = (JobScheduler) Launcher.this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                    jobScheduler.cancelAll();
-                    String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt + "&date=today";
-                    SunTask sunTask = new SunTask(getApplicationContext(), lat, longt);
-                    sunTask.execute(urlString);
-                }
-            });
-        }
-    }
-
     private void checkNotificationPermission() {
         // Notifications access permission
         String notificationListenerString = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
@@ -2341,7 +2304,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
               result = getResources().getDimensionPixelSize(resourceId);
           } 
           return result;
-    } 
+    }
+
+    public void pipOverview() {
+        if (mWorkspace.isInOverviewMode()) {
+            showHotseat(true, true);
+            mWorkspace.exitOverviewMode(false);
+            updateWallpaperVisibility(true);
+        }
+        screenWidth = getResources().getDisplayMetrics().widthPixels / 500; 
+        rootView.setTranslationX(-screenWidth);
+        boolean userLayout = mPrefs.getBoolean("user_layout", false);
+        boolean userStats = mPrefs.getBoolean("user_stats", false);
+        if (userLayout && userStats) {
+            helpers.setPipStarted(true);
+            helpers.setForegroundAppOpened(false);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
+            helpers.setInOverviewMode(false);
+            Intent intentpip = new Intent(PIP_STARTED);
+            sendBroadcast(intentpip);
+        }
+    }
 
     // top-left x, top left y, bottom right x, bottom right y
     private void setWindowLocDefault() {
@@ -2943,17 +2927,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void removeNightRunnables() {
-        if (isCheckTimeRunning) {
-            checkTimeHandler.removeCallbacks(checkTimeRunnable);
-            isCheckTimeRunning = false; 
-        } 
-        if (isNightModeRunning) {
-            nightModeHandler.removeCallbacks(nightModeRunnable);
-            isNightModeRunning = false; 
-        } 
-    }
-
     public boolean isJobServiceOn(Context context) {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         boolean hasBeenScheduled = false;
@@ -3021,19 +2994,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public int getTopOffsetForCustomContent() {
         return mWorkspace.getPaddingTop();
     }
-
-    // remnant of "Activity"
-    /*@Override
-    public Object onRetainNonConfigurationInstance() {
-        int delay = mModel.mFirstUse ? 300000 : 0;
-        if (SystemClock.elapsedRealtime() > delay) {
-            mModel.stopLoader();
-        }
-        if (mAppsCustomizeContent != null) {
-            mAppsCustomizeContent.surrender();
-        }
-        return Boolean.TRUE;
-    }*/
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -3451,6 +3411,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onClickSettingsButton(View v) {
         if (LOGD) Log.d(TAG, "onClickSettingsButton");
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        try {
+            ComponentName componentName = settingsIntent.getComponent();
+            PackageManager pm = getPackageManager();
+            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+            String appTitle = appInfo.loadLabel(pm).toString();
+            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+            refreshLeftCycle(bean);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(settingsIntent);
     }
 
@@ -3812,7 +3783,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     LitePal.update(LeftAppMultiple.class, values, i + 1);
                 }
             }
-            mLeftAppListData.clear();
+            if (mLeftAppListData != null) {
+                mLeftAppListData.clear();
+            }
             List<LeftAppMultiple> leftAppData = LitePal.findAll(LeftAppMultiple.class, new long[0]);
             if (leftAppData != null && !leftAppData.isEmpty()) {
                 for (int i2 = 0; i2 < leftAppData.size(); i2++) {
@@ -5147,14 +5120,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        if (requestCode >= 0) {
-            mWaitingForResult = true;
-        }
-        super.startActivityForResult(intent, requestCode);
-    }
-
-    @Override
     public void startSearch(String initialQuery, boolean selectInitialQuery, Bundle appSearchData, boolean globalSearch) {
         showWorkspace(true);
         if (initialQuery == null) {
@@ -5537,6 +5502,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     String appTitle = appInfo.loadLabel(pm).toString();
                     AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
                     refreshLeftCycle(bean);
+                    if (componentName.getClassName().equals("com.android.launcher66.settings.SettingsActivity")) {
+                        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                        settingsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(settingsIntent);
+                    }
                 } catch (PackageManager.NameNotFoundException e) {
                     throw new RuntimeException(e);
                 }
@@ -5929,7 +5899,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void onClickAllAppsButton(View v) {
-        showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true);
+        Launcher.this.showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true);
     }
 
     public void onTouchDownAllAppsButton(View v) {
@@ -6474,7 +6444,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void setWorkspaceBackground(boolean workspace) {
     }
 
-    void updateWallpaperVisibility(boolean visible) {
+    public void updateWallpaperVisibility(boolean visible) {
         int wpflags = visible ? WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER : 0;
         int curflags = getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         if (wpflags != curflags) {
@@ -6809,7 +6779,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             helpers.setInOverviewMode(false);
             helpers.setListOpen(false);
             Intent intent = new Intent(ALL_APPS);
-            LauncherApplication.sApp.sendBroadcast(intent);
+            sendBroadcast(intent);
             if (resetPageToZero) {
                 mAppsCustomizeTabHost.reset();
             }
@@ -6821,6 +6791,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mUserPresent = false;
             updateRunning();
             closeFolder();
+            Log.d("showAllApps", "removePip");
             WindowUtil.removePip(pipViews, 0);
             getWindow().getDecorView().sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
         }
@@ -6862,7 +6833,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         showHotseat(animated, false);
     }
 
-    void showHotseat(boolean animated, boolean hide) {
+    public void showHotseat(boolean animated, boolean hide) {
         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_hotseat_hide) || hide) {
             if (!LauncherAppState.getInstance().isScreenLarge()) {
                 if (animated) {
@@ -7139,17 +7110,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         new Thread(new Runnable() {
                             @Override 
                             public void run() {
-                                Intent i2 = FytPackage.getIntent(Launcher.getLauncher(), WindowUtil.AppPackageName);
-                                SystemProperties.set("sys.lsec.force_pip", "true");
-                                i2.putExtra("force_pip", true);
-                                Log.i("mql", "--- com.lsec.pipdie");
-                                Launcher.mLauncher.startActivity(i2);
+                                Log.i("mql", "--- com.lsec.pipdie");    
+                                WindowUtil.startMapPip(null, false, 250);
                                 if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                                     Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
                                 }
                             }
                         }).start();
-                        return;
                     }
                     return;
                 }

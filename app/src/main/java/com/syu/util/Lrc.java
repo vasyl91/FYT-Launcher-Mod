@@ -5,14 +5,14 @@ import android.util.SparseArray;
 
 import com.syu.ipc.data.FinalCanbus;
 
+import org.apache.http.protocol.HTTP;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import org.apache.http.protocol.HTTP;
 
 public class Lrc {
     private static Exception e;

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
 import java.util.HashSet;
@@ -78,9 +79,13 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
                 LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
                 LeftAppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
-            }
-            else if (appListBean.packageName.equals("com.android.launcher66")) {
+            } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 LeftAppListAdapter.this.mLauncher.onClickAllAppsButton(view);
+            } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+                LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                Intent settingsIntent = new Intent(LeftAppListAdapter.this.mLauncher, SettingsActivity.class);
+                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                LeftAppListAdapter.this.mLauncher.startActivity(settingsIntent);
             } else {
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
@@ -88,7 +93,6 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 helpers.setInOverviewMode(false);
                 helpers.setListOpen(false);
-                helpers.setAppOpenedByUser(true);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
                 boolean userLayout = prefs.getBoolean("user_layout", false);
                 boolean userStats = prefs.getBoolean("user_stats", false);

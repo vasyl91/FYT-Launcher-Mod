@@ -139,6 +139,7 @@ public class LauncherModel extends BroadcastReceiver {
     private Bitmap mDefaultIcon;
 
     protected int mPreviousConfigMcc;
+    boolean mFirstUse;
 
     public interface Callbacks {
         public boolean setLoadOnResume();
@@ -172,7 +173,12 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     LauncherModel(LauncherAppState app, IconCache iconCache, AppFilter appFilter) {
+        mFirstUse = true;
         final Context context = app.getContext();
+
+        String spKey = LauncherAppState.getSharedPreferencesKey();
+        SharedPreferences sp = context.getSharedPreferences(spKey, 0);
+        mFirstUse = sp.getBoolean("first_use", true);
 
         mAppsCanBeOnRemoveableStorage = Environment.isExternalStorageRemovable();
         mApp = app;
@@ -1096,11 +1102,24 @@ public class LauncherModel extends BroadcastReceiver {
              // and we would need to clear out the labels in all apps/workspace. Same handling as
              // above for ACTION_LOCALE_CHANGED
              Configuration currentConfig = context.getResources().getConfiguration();
-             if (mPreviousConfigMcc != currentConfig.mcc) {
+             /*if (mPreviousConfigMcc != currentConfig.mcc) {
                    Log.d(TAG, "Reload apps on config change. curr_mcc:"
                        + currentConfig.mcc + " prevmcc:" + mPreviousConfigMcc);
                    forceReload();
-             }
+             }*/
+
+            int delay = mFirstUse ? 300000 : 0;
+            if (SystemClock.elapsedRealtime() > delay && mPreviousConfigMcc != currentConfig.mcc) {
+                Log.d(TAG, "Reload apps on config change. curr_mcc:" + currentConfig.mcc + " prevmcc:" + mPreviousConfigMcc);
+                forceReload();
+            }
+            if (mFirstUse) {
+                String spKey = LauncherAppState.getSharedPreferencesKey();
+                SharedPreferences sp = LauncherApplication.sApp.getSharedPreferences(spKey, 0);
+                sp.edit().putBoolean("first_use", false);
+                mFirstUse = false;
+            }
+            
              // Update previousConfig
              mPreviousConfigMcc = currentConfig.mcc;
         } else if (SearchManager.INTENT_GLOBAL_SEARCH_ACTIVITY_CHANGED.equals(action) ||

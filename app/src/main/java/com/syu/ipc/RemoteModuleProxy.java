@@ -2,8 +2,6 @@ package com.syu.ipc;
 
 import android.os.RemoteException;
 
-import com.syu.ipc.IRemoteModule;
-
 public class RemoteModuleProxy extends IRemoteModule.Stub {
     private IRemoteModule mRemoteModule;
 

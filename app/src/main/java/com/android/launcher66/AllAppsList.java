@@ -34,7 +34,7 @@ public class AllAppsList {
     }
 
     public void add(AppInfo info) {
-        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info)) {
+        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info) || info.componentName.getPackageName().contains("com.syu.canbus")) {
             if (Config.CHIP_UIID != 5 || !info.componentName.getPackageName().equals(FytPackage.sysSetAction)) {
                 if (Config.CUSTOMER_ID != 8 || (!info.componentName.getPackageName().equals(FytPackage.ludashiACTION) && !info.componentName.getPackageName().equals(FytPackage.abenchACTION))) {
                     switch (Config.CHIP_UIID) {

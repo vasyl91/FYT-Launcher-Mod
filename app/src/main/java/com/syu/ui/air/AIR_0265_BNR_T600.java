@@ -2,11 +2,6 @@ package com.syu.ui.air;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.Region;
-
-import com.android.launcher66.LauncherApplication;
 
 public class AIR_0265_BNR_T600 extends AirBase {
     public AIR_0265_BNR_T600(Context context) {

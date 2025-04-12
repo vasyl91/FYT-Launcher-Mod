@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0194_XBS_XP1_BYDTang;
 import com.syu.ui.carvol.CarVolHelper;
 import com.syu.ui.carvol.CarVolView;
 import com.syu.ui.door.DoorHelper;

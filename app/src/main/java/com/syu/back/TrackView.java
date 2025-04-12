@@ -8,15 +8,12 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
-
-import androidx.core.internal.view.SupportMenu;
-import androidx.core.view.InputDeviceCompat;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.syu.back.TrackUtils;
+import androidx.core.internal.view.SupportMenu;
+import androidx.core.view.InputDeviceCompat;
 
 public class TrackView extends View {
     private static /* synthetic */ int[] $SWITCH_TABLE$com$syu$back$TrackUtils$TRACK_TYPE = null;

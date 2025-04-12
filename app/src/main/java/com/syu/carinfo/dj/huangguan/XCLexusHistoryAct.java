@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
 import com.syu.carinfo.wccamry.ConstWcToyota;

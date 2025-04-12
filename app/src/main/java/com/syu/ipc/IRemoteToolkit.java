@@ -6,8 +6,6 @@ import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 
-import com.syu.ipc.IRemoteModule;
-
 public interface IRemoteToolkit extends IInterface {
     IRemoteModule getRemoteModule(int i) throws RemoteException;
 

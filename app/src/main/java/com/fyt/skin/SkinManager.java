@@ -1,6 +1,5 @@
 package com.fyt.skin;
 
-import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;

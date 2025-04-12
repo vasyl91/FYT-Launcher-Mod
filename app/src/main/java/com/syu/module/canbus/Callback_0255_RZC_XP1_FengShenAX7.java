@@ -2,10 +2,8 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0255_rzc_xp1_fengshenax7;
 import com.syu.ui.door.DoorHelper;
 
 import java.lang.reflect.Array;

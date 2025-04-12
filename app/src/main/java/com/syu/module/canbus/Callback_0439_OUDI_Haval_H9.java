@@ -3,16 +3,14 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 
-import com.syu.canbus.JumpPage;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.JumpPage;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.air.Air_Activity_RZC_Prado;
 import com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl;
 import com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0439_OUDI_Haval_H9;
-//import com.syu.ui.air.Air_0439_RZC_Haval_H6_Top;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {

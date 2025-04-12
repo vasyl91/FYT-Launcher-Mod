@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.UiNotifyEvent;
-import com.syu.ui.air.AirHelper;
-import com.syu.ui.door.DoorHelper;
 
 public class DataCanbus {
     public static final boolean DEBUG_AIR = true;

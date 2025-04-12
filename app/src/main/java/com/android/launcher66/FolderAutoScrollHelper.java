@@ -1,7 +1,8 @@
 package com.android.launcher66;
 
-import androidx.core.widget.AutoScrollHelper;
 import android.widget.ScrollView;
+
+import androidx.core.widget.AutoScrollHelper;
 
 public class FolderAutoScrollHelper extends AutoScrollHelper {
     private static final float MAX_SCROLL_VELOCITY = 1500.0f;

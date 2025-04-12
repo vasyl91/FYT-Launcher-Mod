@@ -3,12 +3,10 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xc.gongjue.XCTianLaiGjCdAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.IUiNotify;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0452_XC_TianLai_GJ;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0452_XC_TianLai_GJ extends CallbackCanbusBase {

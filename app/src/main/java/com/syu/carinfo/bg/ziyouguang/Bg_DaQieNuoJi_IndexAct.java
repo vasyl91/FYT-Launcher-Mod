@@ -3,11 +3,10 @@ package com.syu.carinfo.bg.ziyouguang;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 
 public class Bg_DaQieNuoJi_IndexAct extends BaseActivity {
     @Override

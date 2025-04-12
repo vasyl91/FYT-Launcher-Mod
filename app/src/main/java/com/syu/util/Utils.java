@@ -71,6 +71,23 @@ public class Utils {
         return false;
     }
 
+    public static boolean topAppPip(String packageName) {
+        try {
+            ActivityManager activityManager = (ActivityManager) getCtx().getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND 
+                && appProcess.importanceReasonCode == ActivityManager.RunningAppProcessInfo.REASON_UNKNOWN
+                && appProcess.processName.equals(packageName)) { 
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void setTextId(TextView v, int id) {
         if (v != null) {
             v.setText(id);

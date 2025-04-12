@@ -13,11 +13,10 @@ import android.util.SparseArray;
 
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.IRemoteToolkit;
-import com.syu.remote.Callback;
-
-import java.util.Random;
 
 import org.apache.http.HttpStatus;
+
+import java.util.Random;
 
 public class RemoteTools implements ServiceConnection {
     final int CONN_DELAY_TIME_MAX;

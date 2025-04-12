@@ -12,8 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ObjApp;

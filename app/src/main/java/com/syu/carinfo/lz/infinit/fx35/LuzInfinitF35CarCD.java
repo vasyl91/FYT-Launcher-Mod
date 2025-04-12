@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
-import com.syu.canbus.R;
 
 public class LuzInfinitF35CarCD extends BaseActivity {
     @Override

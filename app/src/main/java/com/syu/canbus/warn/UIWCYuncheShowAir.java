@@ -5,12 +5,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.loopview.LoopView;
 import com.syu.loopview.OnItemScrollListener;
 import com.syu.loopview.OnItemSelectedListener;

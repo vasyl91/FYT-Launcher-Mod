@@ -1,6 +1,5 @@
 package com.syu.util;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
@@ -11,12 +10,12 @@ import android.util.Xml;
 
 import com.android.launcher66.R;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 public class CustomIcons {
     static CustomIcons instance = null;

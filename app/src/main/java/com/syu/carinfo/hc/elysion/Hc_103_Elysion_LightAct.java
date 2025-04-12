@@ -1,7 +1,6 @@
 package com.syu.carinfo.hc.elysion;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;

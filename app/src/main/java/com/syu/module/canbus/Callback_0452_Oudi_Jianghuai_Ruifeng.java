@@ -3,11 +3,9 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.ruifengs3.JhRuiFengS7TireAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0452_OUDI_Jianghuai_Ruifeng_all;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0452_Oudi_Jianghuai_Ruifeng extends CallbackCanbusBase {

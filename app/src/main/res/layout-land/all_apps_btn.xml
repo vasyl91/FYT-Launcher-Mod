@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66" android:layout_width="fill_parent" android:layout_height="fill_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
     <Button android:id="@+id/syu_app_button" android:background="@drawable/all_apps_btn_icon" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:adjustViewBounds="true" android:layout_centerHorizontal="true" android:contentDescription="@string/accessibility_search_button" />
 </RelativeLayout>

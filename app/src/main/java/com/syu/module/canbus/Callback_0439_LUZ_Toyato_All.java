@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;

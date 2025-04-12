@@ -20,7 +20,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -29,7 +28,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.async.AsyncTask;
-
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.exif.ExifInterface;
 import com.android.photos.BitmapRegionTileSource;

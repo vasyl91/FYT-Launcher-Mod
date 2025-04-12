@@ -3,12 +3,11 @@ package com.syu.canbus.warn;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 
 public class WarnRZCMQBTire {
     private static WarnRZCMQBTire mInstance;

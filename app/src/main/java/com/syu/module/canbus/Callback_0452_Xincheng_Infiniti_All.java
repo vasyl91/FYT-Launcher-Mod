@@ -3,12 +3,9 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.JumpPage;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0452_Xincheng_Infeinidi_Q70;
-//import com.syu.ui.air.Air_0452_Xincheng_Nissan_Tule;
 import com.syu.ui.door.DoorHelper;
 
 public class Callback_0452_Xincheng_Infiniti_All extends CallbackCanbusBase {

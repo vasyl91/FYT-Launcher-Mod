@@ -3,8 +3,7 @@
     android:background="@drawable/portal_container_holo"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ScrollView
         android:id="@+id/scroll_view"

@@ -6,7 +6,6 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.main.DataMain;
 import com.syu.ui.air.AirHelper;
-//import com.syu.ui.air.Air_0101_WC2_Nissan_All;
 import com.syu.ui.door.DoorHelper;
 import com.syu.ui.parking.ParkingHelper;
 import com.syu.ui.parking.Parking_QiJun;
