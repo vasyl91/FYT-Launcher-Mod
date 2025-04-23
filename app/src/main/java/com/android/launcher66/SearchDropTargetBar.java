@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
-import com.android.launcher66.DragController;
 
 public class SearchDropTargetBar extends FrameLayout implements DragController.DragListener {
     private static final AccelerateInterpolator sAccelerateInterpolator = new AccelerateInterpolator();

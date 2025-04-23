@@ -3,7 +3,6 @@ package com.android.launcher66;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -20,7 +19,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -35,7 +33,6 @@ import android.view.animation.LayoutAnimationController;
 
 import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.R;
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 
 import java.util.ArrayList;
@@ -261,7 +258,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                         }
                     } else {
                         mDragOutlineAlphas[thisIndex] = (Float) animation.getAnimatedValue();
-                        CellLayout.this.invalidate(mDragOutlines[thisIndex]);
+                        CellLayout.this.invalidate();
                     }
                 }
             });
@@ -344,11 +341,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     private void invalidateBubbleTextView(BubbleTextView icon) {
-        final int padding = icon.getPressedOrFocusedBackgroundPadding();
-        invalidate(icon.getLeft() + getPaddingLeft() - padding,
-                icon.getTop() + getPaddingTop() - padding,
-                icon.getRight() + getPaddingLeft() + padding,
-                icon.getBottom() + getPaddingTop() + padding);
+        invalidate();
     }
 
     void setOverScrollAmount(float r, boolean left) {

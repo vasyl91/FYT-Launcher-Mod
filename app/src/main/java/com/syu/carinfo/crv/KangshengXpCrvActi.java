@@ -3,6 +3,7 @@ package com.syu.carinfo.crv;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;

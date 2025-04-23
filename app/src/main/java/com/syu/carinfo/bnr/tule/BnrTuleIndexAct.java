@@ -3,6 +3,7 @@ package com.syu.carinfo.bnr.tule;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.wc.ecosport18.Wc_21FordMDOCarInfo;

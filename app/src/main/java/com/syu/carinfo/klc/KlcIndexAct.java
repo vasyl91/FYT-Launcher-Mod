@@ -11,13 +11,15 @@ import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.xp.yinglang.YLTireAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 
 public class KlcIndexAct extends BaseActivity implements View.OnClickListener {

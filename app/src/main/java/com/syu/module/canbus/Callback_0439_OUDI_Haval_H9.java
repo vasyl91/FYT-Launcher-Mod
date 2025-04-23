@@ -4,7 +4,6 @@ import android.os.RemoteException;
 import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.air.Air_Activity_RZC_Prado;
 import com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl;
@@ -131,7 +130,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                 int CustomerId = SystemProperties.getInt("ro.build.fytmanufacturer", 0);
                 if (CustomerId == 95) {
                     if (value == 1 && !Air_Activity_RZC_Prado.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_RZC_Prado");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_RZC_Prado");
                         return;
                     } else {
                         if (Air_Activity_RZC_Prado.mIsFront && Air_Activity_RZC_Prado.mInstance != null) {
@@ -142,7 +141,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                     }
                 }
                 if (value == 1 && !Rzc_Oudi_0439_AirFrontCtrl.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
                     return;
                 } else {
                     if (Rzc_Oudi_0439_AirFrontCtrl.mIsFront && Rzc_Oudi_0439_AirFrontCtrl.mInstance != null) {
@@ -153,7 +152,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                 }
             }
             if (value == 1 && !Rzc_Oudi_0439_AirFrontCtrl_HP.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP");
             } else if (Rzc_Oudi_0439_AirFrontCtrl_HP.mIsFront && Rzc_Oudi_0439_AirFrontCtrl_HP.mInstance != null) {
                 Rzc_Oudi_0439_AirFrontCtrl_HP.mInstance.finish();
             }
@@ -167,7 +166,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                 int CustomerId = SystemProperties.getInt("ro.build.fytmanufacturer", 0);
                 if (CustomerId == 95) {
                     if (value == 1 && !Air_Activity_RZC_Prado.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_RZC_Prado");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_RZC_Prado");
                         return;
                     } else {
                         if (Air_Activity_RZC_Prado.mIsFront && Air_Activity_RZC_Prado.mInstance != null) {
@@ -178,7 +177,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                     }
                 }
                 if (value == 1 && !Rzc_Oudi_0439_AirFrontCtrl.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
                     return;
                 } else {
                     if (Rzc_Oudi_0439_AirFrontCtrl.mIsFront && Rzc_Oudi_0439_AirFrontCtrl.mInstance != null) {
@@ -189,7 +188,7 @@ public class Callback_0439_OUDI_Haval_H9 extends CallbackCanbusBase {
                 }
             }
             if (value == 1 && !Air_Activity_All_NewAdd_HP.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
             } else if (Air_Activity_All_NewAdd_HP.mIsFront && Air_Activity_All_NewAdd_HP.mInstance != null) {
                 Air_Activity_All_NewAdd_HP.mInstance.finish();
             }

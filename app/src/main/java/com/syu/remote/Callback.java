@@ -7,11 +7,10 @@ import android.os.RemoteException;
 import com.syu.ipc.IModuleCallback;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Callback extends IModuleCallback.Stub {
-    List<Lisenter> mLisenters = new ArrayList();
+    List<Lisenter> mLisenters = new ArrayList<>();
     Handler mHandler = new Handler(Looper.getMainLooper());
 
     public interface OnRefreshLisenter {
@@ -38,16 +37,10 @@ public class Callback extends IModuleCallback.Stub {
     }
 
     void removeOnRefreshLisenter(OnRefreshLisenter mLisenter) {
-        Iterator<Lisenter> iterator = new ArrayList(this.mLisenters).iterator();
-        while (iterator.hasNext()) {
-            Lisenter lisenter = iterator.next();
-            if (lisenter.lisenter.equals(mLisenter)) {
-                this.mLisenters.remove(lisenter);
-            }
-        }
+        this.mLisenters.removeIf(lisenter -> lisenter.lisenter.equals(mLisenter));
     }
 
-    class Lisenter {
+    static class Lisenter {
         int code;
         OnRefreshLisenter lisenter;
 
@@ -68,13 +61,10 @@ public class Callback extends IModuleCallback.Stub {
         int code;
         float[] flts;
         int[] ints;
-        Runnable refesh = new Runnable() { 
-            @Override
-            public void run() {
-                for (Lisenter lisenter : Callback.this.mLisenters) {
-                    if (lisenter.code == Massage.this.code) {
-                        lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints, Massage.this.flts, Massage.this.strs);
-                    }
+        Runnable refesh = () -> {
+            for (Lisenter lisenter : Callback.this.mLisenters) {
+                if (lisenter.code == Massage.this.code) {
+                    lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints, Massage.this.flts, Massage.this.strs);
                 }
             }
         };

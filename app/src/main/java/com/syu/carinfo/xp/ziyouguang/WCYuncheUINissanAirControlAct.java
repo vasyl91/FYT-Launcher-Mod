@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.air.ConstAllAirDara;
 import com.syu.loopview.LoopView;
@@ -14,6 +15,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
+
 import java.util.ArrayList;
 
 public class WCYuncheUINissanAirControlAct extends Activity implements View.OnTouchListener {

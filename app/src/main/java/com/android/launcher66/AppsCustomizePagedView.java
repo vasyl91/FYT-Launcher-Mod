@@ -937,10 +937,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
                 if (!helpers.isFirstPreferenceWindow() 
                     && !helpers.isWallpaperWindow() 
                     && !helpers.isInOverviewMode()
-                    && mLauncher.getWorkspace().getCurrentPage() == mLauncher.getWorkspace().getPageIndexForScreenId(mLauncher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)) {
+                    && mLauncher.getWorkspace().getCurrentPage() == pipScreen) {
+                    
                     Log.i("onDropCompleted()", "startMapPip");
                     WindowUtil.startMapPip(null, false, 250);
                 }

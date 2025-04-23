@@ -25,8 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.BlendModeColorFilterCompat;
+import androidx.core.graphics.BlendModeCompat;
 
-import com.android.launcher66.R;
 import com.android.launcher66.DropTarget.DragObject;
 import com.android.launcher66.FolderInfo.FolderListener;
 
@@ -524,8 +525,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             mOldBounds.set(d.getBounds());
             d.setBounds(0, 0, mIntrinsicIconSize, mIntrinsicIconSize);
             d.setFilterBitmap(true);
-            d.setColorFilter(Color.argb(params.overlayAlpha, 255, 255, 255),
-                    PorterDuff.Mode.SRC_ATOP);
+            int color = Color.argb(params.overlayAlpha, 255, 255, 255);
+            d.setColorFilter(BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP));
             d.draw(canvas);
             d.clearColorFilter();
             d.setFilterBitmap(false);

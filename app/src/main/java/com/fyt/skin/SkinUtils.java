@@ -4,10 +4,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
-import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherApplication;
 
 public class SkinUtils {
-    public static Launcher getCtx() {
+    public static LauncherApplication getCtx() {
         getSkinManager();
         return SkinManager.getContext();
     }

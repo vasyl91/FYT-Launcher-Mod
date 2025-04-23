@@ -15,11 +15,13 @@ import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -45,13 +47,17 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 import com.android.launcher66.Launcher.CustomContentCallbacks;
 import com.android.launcher66.LauncherSettings.Favorites;
-import com.android.launcher66.settings.CanbusClasses;
+import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.Helpers;
 import com.syu.util.WindowUtil;
 
@@ -59,15 +65,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import android.content.ContentResolver;
-import android.database.Cursor;
-
-import android.widget.Toast;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.preference.PreferenceManager;
 
 import share.ResValue;
 
@@ -477,7 +474,7 @@ public class Workspace extends SmoothPagedView
         CellLayout cl = ((CellLayout) child);
         cl.setOnInterceptTouchListener(this);
         cl.setClickable(true);
-        cl.setImportantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        cl.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         super.onChildViewAdded(parent, child);
     }
 
@@ -492,7 +489,7 @@ public class Workspace extends SmoothPagedView
     /**
      * @return The open folder on the current screen, or null if there is none
      */
-    Folder getOpenFolder() {
+    public Folder getOpenFolder() {
         DragLayer dragLayer = mLauncher.getDragLayer();
         int count = dragLayer.getChildCount();
         for (int i = 0; i < count; i++) {
@@ -506,7 +503,7 @@ public class Workspace extends SmoothPagedView
         return null;
     }
 
-    boolean isTouchActive() {
+    public boolean isTouchActive() {
         return mTouchState != TOUCH_STATE_REST;
     }
 
@@ -617,14 +614,14 @@ public class Workspace extends SmoothPagedView
         }
 
         if (userLayout) {
-            int mapTopLeftX, mapTopLeftY, mapTopRightX, mapBottomLeftY, leftBarSize;
+            int leftBarSize;
             int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            boolean userMap = prefs.getBoolean("user_map", true);
             boolean userDate = prefs.getBoolean("user_date", true);
             boolean userMusic = prefs.getBoolean("user_music", true);
             boolean userRadio = prefs.getBoolean("user_radio", true);
             
-            int mapMinWidth = 561;
-            int mapMinHeight = 284;      
+            int mapMinWidth = 561;    
             int dateMinWidth = 561;
             int dateMinHeight = 145;
             int musicMinWidth = 320;
@@ -635,39 +632,22 @@ public class Workspace extends SmoothPagedView
             if (getResources().getDisplayMetrics().widthPixels == 1024
                 || getResources().getDisplayMetrics().heightPixels == 1024) {
                 leftBarSize = 100;
-                mapMinHeight = 284;
                 musicMinHeight = 284;
             } else if (getResources().getDisplayMetrics().heightPixels == 720) {
                 leftBarSize = 110;
-                mapMinHeight = 340;
                 musicMinHeight = 340;
             } else {
                 leftBarSize = 142;
-                mapMinHeight = 340;
                 musicMinHeight = 340;               
             }  
 
             if (leftBar) {
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout_left);
-                mapTopLeftX = prefs.getInt("mapTopLeftX", margin) + leftBarSize;
-                mapTopRightX = prefs.getInt("mapTopRightX", margin + mapMinWidth) + leftBarSize;
             } else {
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout);
-                mapTopLeftX = prefs.getInt("mapTopLeftX", margin);
-                mapTopRightX = prefs.getInt("mapTopRightX", margin + mapMinWidth);
             }    
 
-            mapTopLeftY = prefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);
-            mapBottomLeftY = prefs.getInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
-            
-            int mapHeight = mapBottomLeftY - mapTopLeftY;
-            int mapWidth = mapTopRightX - mapTopLeftX;
-
-            ImageView map = new ImageView(mContext);
-            map.setId(R.id.iv_map1);
-            map.setLayoutParams(new AbsoluteLayout.LayoutParams(mapWidth, mapHeight, mapTopLeftX, mapTopLeftY));
-            absoluteLayout.addView(map); 
-            if (userDate == true)  {
+            if (userDate)  {
                 int dateTopLeftX, dateTopRightX;
                 if (leftBar) {
                     dateTopLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarSize;
@@ -687,7 +667,7 @@ public class Workspace extends SmoothPagedView
                 absoluteLayout.addView(absoluteTime);
 
             } 
-            if (userMusic == true)  {
+            if (userMusic)  {
                 int musicTopLeftX, musicTopRightX;
                 if (leftBar) {
                     musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarSize;
@@ -706,7 +686,7 @@ public class Workspace extends SmoothPagedView
                 absoluteMusic.setLayoutParams(new AbsoluteLayout.LayoutParams(musicWidth, musicHeight, musicTopLeftX, musicTopLeftY)); 
                 absoluteLayout.addView(absoluteMusic);
             }
-            if (userRadio == true)  {
+            if (userRadio)  {
                 int radioTopLeftX, radioTopRightX;
                 if (leftBar) {
                     radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarSize;
@@ -726,10 +706,15 @@ public class Workspace extends SmoothPagedView
                 absoluteLayout.addView(absoluteRadio);
             }
         }
-        int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
-        setCurrentPage(index);
+        int startPage = Integer.parseInt(prefs.getString("start_page", "1"));
+        if (getChildCount() >= startPage) {
+            setCurrentPage(startPage - 1);
+        } else {
+            int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
+            setCurrentPage(index);
+        }
 
-        new CanbusClasses(LauncherApplication.sApp).execute();
+        new CanbusAsyncTask(LauncherApplication.sApp).execute();
 
         invalidate();
     } 
@@ -954,11 +939,13 @@ public class Workspace extends SmoothPagedView
         if (pageShift >= 0) {
             setCurrentPage(currentPage - pageShift);
         }
-
-        if (!helpers.isInOverviewMode() && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.d("stripEmptyScreens", "startMapPip");
-            WindowUtil.startMapPip(null, false);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (!helpers.isInOverviewMode() && getCurrentPage() == pipScreen) {
+                Log.d("stripEmptyScreens", "startMapPip");
+                WindowUtil.startMapPip(null, false);
+            }
+        }, 250);
     }
 
     // See implementation for parameter definition.
@@ -1240,10 +1227,13 @@ public class Workspace extends SmoothPagedView
 
     protected void onPageEndMoving() {
         super.onPageEndMoving();
-        if (!helpers.isInOverviewMode() && getChildCount() > 1 && !mDragController.isDragging() && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.d("onPageEndMoving", "startMapPip");
-            WindowUtil.startMapPip(null, false);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (!helpers.isInOverviewMode() && getChildCount() > 1 && !mDragController.isDragging() && getCurrentPage() == pipScreen) {
+                Log.d("onPageEndMoving", "startMapPip");
+                WindowUtil.startMapPip(null, false);
+            }
+        }, 250);
 
         if (isHardwareAccelerated()) {
             updateChildrenLayersEnabled(false);
@@ -2154,9 +2144,12 @@ public class Workspace extends SmoothPagedView
         overviewHandler.postDelayed(new Runnable() { 
             @Override
             public void run() {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
                 if (!helpers.isInOverviewMode() 
                     && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                    && Workspace.this.getCurrentPage() == Workspace.this.getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
+                    && Workspace.this.getCurrentPage() == pipScreen) {
+
                     Log.d("exitOverviewMode", "startMapPip");
                     WindowUtil.startMapPip(null, false);
                 }
@@ -2234,8 +2227,8 @@ public class Workspace extends SmoothPagedView
 
     private void updateAccessibilityFlags() {
         int accessible = mState == State.NORMAL ?
-                ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES :
-                ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
+                View.IMPORTANT_FOR_ACCESSIBILITY_YES :
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
         setImportantForAccessibility(accessible);
     }
 
@@ -4032,10 +4025,15 @@ public class Workspace extends SmoothPagedView
     public void animateWidgetDrop(ItemInfo info, CellLayout cellLayout, DragView dragView,
             final Runnable onCompleteRunnable, int animationType, final View finalView,
             boolean external) {
-        if (!helpers.isInOverviewMode() && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.d("animateWidgetDrop", "startMapPip");
-            WindowUtil.startMapPip(null, false);
-        }
+
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (!helpers.isInOverviewMode() && getCurrentPage() == pipScreen) {
+                Log.d("animateWidgetDrop", "startMapPip");
+                WindowUtil.startMapPip(null, false);
+            }
+        }, 250);
+
         Rect from = new Rect();
         mLauncher.getDragLayer().getViewRectRelativeToSelf(dragView, from);
 
@@ -4769,8 +4767,14 @@ public class Workspace extends SmoothPagedView
     }
 
     void moveToDefaultScreen(boolean animate) {
-        int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
-        moveToScreen(index, animate);
+        prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        int startPage = Integer.parseInt(prefs.getString("start_page", "1"));
+        if (getChildCount() >= startPage) {
+            moveToScreen(startPage - 1, animate);
+        } else {
+            int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
+            moveToScreen(index, animate);
+        }
     }
 
     void moveToCustomContentScreen(boolean animate) {
@@ -4908,11 +4912,13 @@ public class Workspace extends SmoothPagedView
         if (pageShift >= 0) {
             setCurrentPage(currentPage - pageShift);
         }
-
-        if (!helpers.isInOverviewMode() && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.d("stripEmptyScreensBaseOnDB", "startMapPip");
-            WindowUtil.startMapPip(null, false);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (!helpers.isInOverviewMode() && getCurrentPage() == pipScreen) {
+                Log.d("stripEmptyScreensBaseOnDB", "startMapPip");
+                WindowUtil.startMapPip(null, false);
+            }
+        }, 250);
     }
 
     private void promptFolderFullIfNecessary(CellLayout target, int[] targetCell, ItemInfo dragInfo) {

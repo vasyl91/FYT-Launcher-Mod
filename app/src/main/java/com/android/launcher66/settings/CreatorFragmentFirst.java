@@ -31,13 +31,15 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.colorpicker.ColorPicker;
 
-public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, HomeWatcher.OnHomePressedListener {
+public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
     // Fragment for the second window in the settings - Layout creator
 
+    private static final String USER_MAP = "user_map";
     private static final String USER_DATE = "user_date";
     private static final String USER_MUSIC = "user_music";
     private static final String USER_RADIO = "user_radio";    
@@ -53,22 +55,23 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
     private static final String APP_LIST = "app_list";
     private static final String APP_STATS_COORDINATES = "app_stats_coordinates";
     private static final String LEFT_BAR = "left_bar";
+    private static final String START_PAGE = "start_page";
     private static final String LAYOUT_MARGIN = "layout_margin";
+    private static final String PIP_SCREEN = "pip_screen";
     private static final String CREATOR_SECOND = "launcher_creator_second";
-    private String can;
     private int defaultColorR = 255;
     private int defaultColorG = 255;
     private int defaultColorB = 255;
     private int bgDefaultColorR = 255;
     private int bgDefaultColorG = 255;
-    private int bgDefaultColorB = 255; 
+    private int bgDefaultColorB = 255;
+    private boolean mapBool = true; 
     private boolean userStatsBool = false;
     private boolean backgroundBool = false;
     private boolean drawableBgBool = false;
     private boolean colorBgBool = false;    
     private SharedPreferences sharedPrefs;
     private SharedPreferences.Editor editor;
-    private HomeWatcher mHomeWatcher;
     private final Helpers helpers = new Helpers();
     private SwitchPreferenceCompat userStats;
     private Preference statsCodes;
@@ -94,26 +97,35 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
     private SwitchPreferenceCompat mainScreenStats;
     private SwitchPreferenceCompat bgDrawable;
     private SwitchPreferenceCompat bgColor;
+    private Preference pipScreen;
     private Preference statsBg;
     private Preference colorPickerPref;
     private Preference bgColorPickerPref;
     private Preference appList;
     private Preference appStatsCoordinates;    
     private Preference margin;
+    private EditText pipEditText;
     private EditText marginEditText;
+    private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
     private AlertDialog alertCodesDialog;
     private AlertDialog alertExtraCodesDialog;
+    private Preference startPage;
+    private EditText startPageEditText;
+    private AlertDialog alertStartPageDialog;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        mHomeWatcher = new HomeWatcher(getActivity());
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
         addPreferencesFromResource(R.xml.creator_preferences);
         Preference leftBar = findPreference(LEFT_BAR);
+
+        Preference userMap = findPreference(USER_MAP);
+        pipScreen = findPreference(PIP_SCREEN);
+        String pipScreenStr = sharedPrefs.getString(PIP_SCREEN, "1");
+        pipScreen.setSummary(pipScreenStr);
+
         Preference userDate = findPreference(USER_DATE);
         Preference userMusic = findPreference(USER_MUSIC);
         Preference userRadio = findPreference(USER_RADIO); 
@@ -140,6 +152,11 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         bgColorPickerPref = findPreference(BG_COLOR_PICKER); 
         appList = findPreference(APP_LIST);
         appStatsCoordinates = findPreference(APP_STATS_COORDINATES);
+
+        startPage = findPreference(START_PAGE);
+        String startPageStr = sharedPrefs.getString(START_PAGE, "1");
+        startPage.setSummary(startPageStr);
+
         margin = findPreference(LAYOUT_MARGIN);
         String marginStr = sharedPrefs.getString(LAYOUT_MARGIN, "10");
         margin.setSummary(marginStr);
@@ -151,8 +168,18 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         bgDefaultColorG = sharedPrefs.getInt("bg_green", 255);
         bgDefaultColorB = sharedPrefs.getInt("bg_blue", 255);
 
+        dialogPipEditText();
+        dialogStartPageEditText();
         dialogMarginEditText();
 
+        if (userMap != null) {
+            userMap.setOnPreferenceClickListener(this);
+        } 
+        mapBool = sharedPrefs.getBoolean(USER_MAP, true);
+        if (pipScreen != null) {
+            pipScreen.setVisible(mapBool);
+            pipScreen.setOnPreferenceClickListener(this);
+        }
         if (userDate != null) {
             userDate.setOnPreferenceClickListener(this);
         }
@@ -207,7 +234,10 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         if (appStatsCoordinates != null) {
             appStatsCoordinates.setVisible(userStatsBool);
             appStatsCoordinates.setOnPreferenceClickListener(this);
-        } 
+        }  
+        if (startPage != null) {
+            startPage.setOnPreferenceClickListener(this);
+        }
         if (leftBar != null) {
             leftBar.setOnPreferenceClickListener(this);
         } 
@@ -221,7 +251,8 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
 
     private void initUserStats() {
         if (userStats != null) {
-            can = sharedPrefs.getString("canbus_class", "empty");
+            SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+            String can = mPrefs.getString("canbus_class", "empty");
             if (!can.equals("empty")) {
                 userStats.setVisible(true);
                 String formattedText = getString(R.string.stats_window_summary, can.replace("class ", ""));
@@ -232,6 +263,34 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
                 userStats.setVisible(false);
             }
         }        
+    }
+
+    private void dialogPipEditText() {
+        pipEditText = new EditText(this.getContext());
+        pipEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "99")});
+        pipEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        pipEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        pipEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                savePip();
+                alertPipDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
+    private void dialogStartPageEditText() {
+        startPageEditText = new EditText(this.getContext());
+        startPageEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "99")});
+        startPageEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        startPageEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        startPageEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveStartPage();
+                alertStartPageDialog.dismiss();
+            }
+            return false;
+        });
     }
 
     private void dialogMarginEditText() {
@@ -282,7 +341,26 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         backgroundBool = sharedPrefs.getBoolean(STATS_BG, false);
         drawableBgBool = sharedPrefs.getBoolean(BG_DRAWABLE, false);
         colorBgBool = sharedPrefs.getBoolean(BG_COLOR, false);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 80, 0);
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (preference.getKey()) {
+            case USER_MAP:
+                mapBool = sharedPrefs.getBoolean(USER_MAP, true);
+                pipScreen.setVisible(mapBool);
+                break;
+            case PIP_SCREEN:
+                alertPipDialog = displayPipDialog().create();
+                alertPipDialog.show();
+                Button negativePipButton = alertPipDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativePipButton.setLayoutParams(params);
+                pipEditText.requestFocus();
+                imm.showSoftInput(pipEditText, InputMethodManager.SHOW_IMPLICIT);
+                pipEditText.setSelection(pipEditText.getText().length());
+                break;
             case USER_STATS:
                 userStatsSwitch();
                 break;
@@ -290,30 +368,18 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
                 alertCodesDialog = displayCodesDialog().create();
                 alertCodesDialog.show();
                 Button negativeCodesButton = alertCodesDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                LinearLayout.LayoutParams paramsCodes = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                paramsCodes.setMargins(0, 0, 80, 0);
-                negativeCodesButton.setLayoutParams(paramsCodes);
+                negativeCodesButton.setLayoutParams(params);
                 fuelCodeInt.requestFocus();
-                InputMethodManager immCodes = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                immCodes.showSoftInput(fuelCodeInt, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(fuelCodeInt, InputMethodManager.SHOW_IMPLICIT);
                 fuelCodeInt.setSelection(fuelCodeInt.getText().length());
                 break;
             case EXTRA_STATS_CODES:
                 alertExtraCodesDialog = displayExtraCodesDialog().create();
                 alertExtraCodesDialog.show();
                 Button negativeExtraCodesButton = alertExtraCodesDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                LinearLayout.LayoutParams paramsExtraCodes = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                paramsExtraCodes.setMargins(0, 0, 80, 0);
-                negativeExtraCodesButton.setLayoutParams(paramsExtraCodes);
+                negativeExtraCodesButton.setLayoutParams(params);
                 rpmCodeInt.requestFocus();
-                InputMethodManager immExtraCodes = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                immExtraCodes.showSoftInput(rpmCodeInt, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(rpmCodeInt, InputMethodManager.SHOW_IMPLICIT);
                 rpmCodeInt.setSelection(rpmCodeInt.getText().length());
                 break;
             case COLOR_PICKER:
@@ -373,21 +439,24 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
             case APP_STATS_COORDINATES:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentAppStats()).commit();
                 break;
+            case START_PAGE:
+                alertStartPageDialog = displayStartPageDialog().create();
+                alertStartPageDialog.show();
+                Button negativeButtonPage = alertStartPageDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButtonPage.setLayoutParams(params);
+                startPageEditText.requestFocus();
+                imm.showSoftInput(startPageEditText, InputMethodManager.SHOW_IMPLICIT);
+                startPageEditText.setSelection(startPageEditText.getText().length());
+                break;
             case LEFT_BAR:
                 helpers.setLeftBarChanged(true);
                 break;
             case LAYOUT_MARGIN:
                 alertMarginsDialog = displayMarginsDialog().create();
                 alertMarginsDialog.show();
-                Button negativeButton = alertMarginsDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(0, 0, 80, 0);
-                negativeButton.setLayoutParams(params);
+                Button negativeButtonMargin = alertMarginsDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButtonMargin.setLayoutParams(params);
                 marginEditText.requestFocus();
-                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(marginEditText, InputMethodManager.SHOW_IMPLICIT);
                 marginEditText.setSelection(marginEditText.getText().length());
                 break;
@@ -458,13 +527,6 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
-    }
-
     private boolean checkStatsPermission() {
         try {
             PackageManager packageManager = requireActivity().getPackageManager();
@@ -483,8 +545,36 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         }
     }
 
+    private AlertDialog.Builder displayPipDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.pip_dialog_str);
+        if(pipEditText.getParent() != null) {
+            ((ViewGroup)pipEditText.getParent()).removeView(pipEditText);
+        }
+        builder.setView(pipEditText);
+        pipEditText.setText(pipScreen.getSummary());
+        pipEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> savePip());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
+    private AlertDialog.Builder displayStartPageDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.start_page_str);
+        if(startPageEditText.getParent() != null) {
+            ((ViewGroup)startPageEditText.getParent()).removeView(startPageEditText);
+        }
+        builder.setView(startPageEditText);
+        startPageEditText.setText(startPage.getSummary());
+        startPageEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveStartPage());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
     private AlertDialog.Builder displayMarginsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(R.string.margins_str);
         if(marginEditText.getParent() != null) {
             ((ViewGroup)marginEditText.getParent()).removeView(marginEditText);
@@ -521,7 +611,7 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         cmdIntCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         cmdArrCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
                 fuelCodeStr = fuelCodeInt.getText().toString();
                 rangeCodeStr = rangeCodeInt.getText().toString();
@@ -577,7 +667,7 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
         engineVolCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         numberOfCylindersCodeInt.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
                 rpmCodeStr = rpmCodeInt.getText().toString();
                 horsePowerCodeStr = horsePowerCodeInt.getText().toString();
@@ -608,6 +698,18 @@ public class CreatorFragmentFirst extends PreferenceFragmentCompat implements Pr
                 dialog.dismiss();
             });
         return builder;
+    }
+
+    private void savePip() {
+        pipScreen.setSummary(pipEditText.getText().toString());
+        editor.putString(PIP_SCREEN, pipEditText.getText().toString());
+        editor.apply();
+    }
+
+    private void saveStartPage() {
+        startPage.setSummary(startPageEditText.getText().toString());
+        editor.putString(START_PAGE, startPageEditText.getText().toString());
+        editor.apply();
     }
 
     private void saveMargin() {

@@ -5,15 +5,17 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.adapter.AdapterCarInfo;
 import com.syu.canbus.BaseActivityForFragment;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.byd.hcy.fragment.Fragment_Driving_CarSet_RCW_S7;
 import com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet;
 import com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_CarSet_RCW_S7;
 import com.syu.carinfo.byd.hcy.fragment.Fragment_Surui_Pm25;
 import com.syu.entity.CarInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 

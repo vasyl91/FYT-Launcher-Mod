@@ -21,8 +21,7 @@
             android:summaryOff="@string/stock_layout" />
         <Preference
             android:key="launcher_creator_first"
-            android:title="@string/layout_creator"
-            android:summary="@string/layout_summary" />
+            android:title="@string/layout_creator" />
 
     </PreferenceCategory>
 
@@ -145,11 +144,26 @@
                 android:defaultValue="50" />
             <Preference
                 android:key="empty2"/>
-            <Preference
-                android:key="empty3"/>
             
         </PreferenceCategory>
         
+    </PreferenceCategory>    
+
+    <PreferenceCategory
+        app:key="logcat_category"
+        app:title="@string/logcat_service">
+
+        <SwitchPreference
+            android:key="logcat_service"
+            android:defaultValue="false"
+            android:title="@string/logcat_service" />
+        <Preference
+            android:key="logcat_service_timeout"
+            android:title="@string/logcat_service_timeout"
+            android:summary="30" />
+        <Preference
+            android:key="empty3"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

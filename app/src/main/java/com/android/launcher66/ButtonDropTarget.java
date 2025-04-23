@@ -8,8 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
-import com.android.launcher66.DragController;
-import com.android.launcher66.DropTarget;
 
 public class ButtonDropTarget extends TextView implements DropTarget, DragController.DragListener {
     protected boolean mActive;

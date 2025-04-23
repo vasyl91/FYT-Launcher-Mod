@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseFragment;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+
 import java.lang.ref.WeakReference;
 
 public class fragment_ford_seatset extends BaseFragment implements View.OnClickListener {

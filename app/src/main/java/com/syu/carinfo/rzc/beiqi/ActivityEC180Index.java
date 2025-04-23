@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
+
 import com.syu.canbus.R;
 
 public class ActivityEC180Index extends TabActivity {

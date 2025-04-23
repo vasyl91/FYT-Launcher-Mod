@@ -14,11 +14,10 @@ import androidx.activity.OnBackPressedCallback;
 import com.google.android.flexbox.FlexboxLayout;
 import com.android.launcher66.R;
 
-public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnHomePressedListener {
+public class CreatorFragmentAppStats extends Fragment {
 
     // Fragment that opens DrawViewAppStats.java where user specifies positon for in-app stats window
 
-    private HomeWatcher mHomeWatcher;
     private Context mContext;
     private final Helpers helpers = new Helpers();
 
@@ -41,10 +40,6 @@ public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnH
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        mHomeWatcher = new HomeWatcher(context);
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
-
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -54,12 +49,5 @@ public class CreatorFragmentAppStats extends Fragment implements HomeWatcher.OnH
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
     }
 }

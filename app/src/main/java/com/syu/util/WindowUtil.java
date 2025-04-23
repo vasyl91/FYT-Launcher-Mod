@@ -39,7 +39,7 @@ public class WindowUtil {
     public static final String PIP_REMOVED = "pip.removed";
 
     public static void initDefaultApp() {
-        try {
+        try {           
             intent = new Intent();
             removePip(null);
             AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
@@ -95,16 +95,15 @@ public class WindowUtil {
     public static void openPip(View v, boolean show) {
         try {
             Helpers helpers = new Helpers();
-            if ((!visible || show) 
-                && Utils.topApp() 
-                && !AppPackageName.isEmpty() 
-                && AppPackageName != null 
-                && !helpers.isInOverviewMode() 
+            if (show || (Utils.topApp()
+                && !AppPackageName.isEmpty()
+                && AppPackageName != null
+                && !helpers.isInOverviewMode()
                 && !helpers.isFirstPreferenceWindow()
                 && !helpers.isWallpaperWindow()
-                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Launcher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+                || (!helpers.userWasInRecents() && helpers.isListOpen()))) {
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
 
                 Log.d(TAG, "openPip: " + AppPackageName);
                 intent = FytPackage.getIntent(LauncherApplication.sApp, AppPackageName);
@@ -116,22 +115,26 @@ public class WindowUtil {
                 Launcher.getLauncher().handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
                         Launcher.getLauncher().pipOverview();
-                        WindowUtil.intent.putExtra("force_pip", true);
-                        WindowUtil.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        SystemProperties.set("sys.lsec.force_pip", "true");
-                        if (WindowUtil.intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-                            LauncherApplication.sApp.startActivity(WindowUtil.intent);
-                        }
-                        
+
+                        boolean userLayout = prefs.getBoolean("user_layout", false);
+                        boolean userMap = prefs.getBoolean("user_map", true);
+                        if (userMap || !userLayout) {
+                            WindowUtil.intent.putExtra("force_pip", true);
+                            WindowUtil.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            SystemProperties.set("sys.lsec.force_pip", "true");
+                            if (WindowUtil.intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
+                                LauncherApplication.sApp.startActivity(WindowUtil.intent);
+                            }
+                        }        
                     }
                 }, delayMillis);
+                
                 visible = true;
                 delayMillis = 0;
                 helpers.setFirstPreferenceWindow(false);
                 helpers.setWallpaperWindow(false);
-                helpers.setWasInRecents(false); 
+                helpers.setWasInRecents(false);
             }
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();

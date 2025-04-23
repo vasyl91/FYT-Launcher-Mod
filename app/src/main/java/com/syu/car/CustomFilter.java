@@ -36,7 +36,6 @@ public class CustomFilter extends AppFilter implements Callback.OnRefreshLisente
         mHideApps.put(FytPackage.ipodAction, true);
         mHideApps.put(FytPackage.dvdAction, false);
         mHideApps.put(FytPackage.cdcAction, true);
-        mHideApps.put(FytPackage.carBus, false);
         mHideApps.put(FytPackage.calibrationAction, true);
         mHideApps.put(FytPackage.tvAction, false);
         mHideApps.put(FytPackage.sysSetAction, true);

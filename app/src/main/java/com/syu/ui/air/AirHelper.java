@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.PopupWindow;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.canbus.JumpPage;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.carinfo.air.ConstAllAirDara;
@@ -300,7 +299,7 @@ public class AirHelper implements Runnable {
             if (AirHelper.IsNewAirContl()) {
                 if (!Air_Activity_All_Toyota_prado_HP.mIsFront) {
                     ConstAllAirDara.JumpNewAir = true;
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
                     return;
                 }
                 return;
@@ -325,7 +324,7 @@ public class AirHelper implements Runnable {
                 return;
             }
             if (!KYCLexusFrontAirControlAct.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
             }
         }
     };

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xbs.tule.XBS_TuleDZSJ_AirControlActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -100,7 +99,7 @@ public class Callback_0439_XBS_Nissan_Tul extends CallbackCanbusBase {
     private void showCotrolAir(int updateCode, int[] ints) {
         if (DataCanbus.DATA[1000] == 8716727) {
             if (!XBS_TuleDZSJ_AirControlActi.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tule.XBS_TuleDZSJ_AirControlActi");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tule.XBS_TuleDZSJ_AirControlActi");
             }
             HandlerUI.getInstance().removeCallbacks(this.mDismissAir);
             HandlerUI.getInstance().postDelayed(this.mDismissAir, 3500L);

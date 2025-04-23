@@ -8,11 +8,13 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -36,11 +38,9 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
-import java.util.ArrayList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import android.content.SharedPreferences;
+import java.util.ArrayList;
 
 interface Page {
     public int getPageChildCount();
@@ -702,8 +702,14 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         AccessibilityManager am =
                 (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (am.isEnabled()) {
-            AccessibilityEvent ev =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_SCROLLED);
+            AccessibilityEvent ev;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // For API level 33 and above
+                ev = new AccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SCROLLED);
+            } else {
+                // For API levels below 33
+                ev = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_SCROLLED);
+            }
             ev.setItemCount(getChildCount());
             ev.setFromIndex(mCurrentPage);
 
@@ -2808,7 +2814,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         final float toAlpha = 0f;
 
         // Create and start the complex animation
-        ArrayList<Animator> animations = new ArrayList<Animator>();
+        ArrayList<Animator> animations = new ArrayList<>();
         AnimatorSet motionAnim = new AnimatorSet();
         motionAnim.setInterpolator(new DecelerateInterpolator(2));
         motionAnim.playTogether(
@@ -2828,6 +2834,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         anim.playTogether(animations);
         anim.setDuration(DRAG_TO_DELETE_FADE_OUT_DURATION);
         anim.addListener(new AnimatorListenerAdapter() {
+            @Override
             public void onAnimationEnd(Animator animation) {
                 onAnimationEndRunnable.run();
             }
@@ -2837,16 +2844,15 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         mDeferringForDelete = true;
     }
 
-    /* Accessibility */
     @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setScrollable(getPageCount() > 1);
         if (getCurrentPage() < getPageCount() - 1) {
-            info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD);
         }
         if (getCurrentPage() > 0) {
-            info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD);
         }
     }
 

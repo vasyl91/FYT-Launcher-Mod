@@ -1,6 +1,7 @@
 package com.syu.carinfo.byd.hcy.fragment;
 
 import android.widget.TextView;
+
 import com.syu.canbus.BaseFragment;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

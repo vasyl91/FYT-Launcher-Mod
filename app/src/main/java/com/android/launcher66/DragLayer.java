@@ -8,11 +8,14 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
@@ -225,8 +228,14 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
                 getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (accessibilityManager.isEnabled()) {
             int stringId = isEditingName ? R.string.folder_tap_to_rename : R.string.folder_tap_to_close;
-            AccessibilityEvent event = AccessibilityEvent.obtain(
-                    AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            AccessibilityEvent event;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // For API level 33 and above
+                event = new AccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            } else {
+                // For API levels below 33
+                event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
             onInitializeAccessibilityEvent(event);
             event.getText().add(getContext().getString(stringId));
             accessibilityManager.sendAccessibilityEvent(event);

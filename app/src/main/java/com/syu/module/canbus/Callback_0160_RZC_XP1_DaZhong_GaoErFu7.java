@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.golf7.AirControlMQB_RZC_Front;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
@@ -91,7 +90,7 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
                     HandlerCanbus.update(updateCode, ints);
                     int value = DataCanbus.DATA[80];
                     if (value == 1 && !AirControlMQB_RZC_Front.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControl_TuGuanL_RZC");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControl_TuGuanL_RZC");
                         break;
                     } else if (value == 0 && AirControlMQB_RZC_Front.mIsFront && AirControlMQB_RZC_Front.mInstance != null) {
                         AirControlMQB_RZC_Front.mInstance.finish();
@@ -129,7 +128,7 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value != 0 && !XiandaiSosPage.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
             } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
                 XiandaiSosPage.mInstance.finish();
             }
@@ -142,7 +141,7 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
             int value = ints[0];
             if (value != 0) {
                 if (!Golf7FunctionalDrivingInfo1Acti.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
                 }
                 HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
                 HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 10000L);

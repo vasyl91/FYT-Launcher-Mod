@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.Log;
-import com.android.launcher66.DragController;
 
 public interface DropTarget {
     public static final String TAG = "DropTarget";

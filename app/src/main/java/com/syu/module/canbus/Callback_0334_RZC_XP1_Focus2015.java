@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ford.MustangCarCDAct;
 import com.syu.carinfo.ford.MustangCarRadioAct;
 import com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc;
@@ -241,9 +240,9 @@ public class Callback_0334_RZC_XP1_Focus2015 extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value == 2 && !MustangCarCDAct.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarCDAct");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarCDAct");
             } else if (value == 1 && !MustangCarRadioAct.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarRadioAct");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarRadioAct");
             }
         }
     }
@@ -260,7 +259,7 @@ public class Callback_0334_RZC_XP1_Focus2015 extends CallbackCanbusBase {
                 if (power != ints[0]) {
                     power = ints[0];
                     if (!RuijieAirControlAct_Rzc.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
                         jump = true;
                     }
                 }

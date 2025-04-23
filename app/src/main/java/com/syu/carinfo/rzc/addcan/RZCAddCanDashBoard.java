@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.SystemProperties;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
-import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;

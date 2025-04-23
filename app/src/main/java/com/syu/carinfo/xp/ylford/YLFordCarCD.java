@@ -7,12 +7,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0380_XP1_FocusKeepDVD;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 
 public class YLFordCarCD extends BaseActivity implements View.OnClickListener {

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct;
 import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct;
@@ -99,17 +98,17 @@ public class Callback_0443_WC2_08_12Tianlai extends CallbackCanbusBase {
             switch (value) {
                 case 1:
                     if (!WC08TianlaiCarRadioAct.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct");
                         break;
                     }
                 case 2:
                     if (DataCanbus.DATA[120] == 15) {
                         if (!WC08TianlaiCarCDAct.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct");
                             break;
                         }
                     } else if (!WC08TianlaiCar6Cd.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd");
                         break;
                     }
             }

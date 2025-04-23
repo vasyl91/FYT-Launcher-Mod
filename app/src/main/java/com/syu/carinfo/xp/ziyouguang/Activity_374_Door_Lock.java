@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.adapter.AdapterCarInfo;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.entity.CarInfo;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xc.gongjue.XCTianLaiGjCdAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.IUiNotify;
@@ -92,7 +91,7 @@ public class Callback_0452_XC_TianLai_GJ extends CallbackCanbusBase {
     
     public void isCdVisible(int val) {
         if (!XCTianLaiGjCdAct.mIsFront && val == 1) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xc.gongjue.XCTianLaiGjCdAct");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xc.gongjue.XCTianLaiGjCdAct");
         } else if (XCTianLaiGjCdAct.mIsFront && val == 0) {
             XCTianLaiGjCdAct.mInstance.finish();
         }

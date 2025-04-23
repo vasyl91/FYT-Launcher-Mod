@@ -6,6 +6,7 @@ import android.os.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.rzc.klc.RzcKlcFunc;
 import com.syu.module.IUiNotify;

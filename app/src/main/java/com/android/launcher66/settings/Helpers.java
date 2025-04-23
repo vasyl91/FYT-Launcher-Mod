@@ -219,18 +219,6 @@ public class Helpers {
     }
 
 
-    private boolean jobInitOnCreate = false;
-    public boolean onCreateJobInit() {
-        jobInitOnCreate = sharedPrefs.getBoolean("jobInitOnCreate", false);
-        return jobInitOnCreate;
-    }
-    public void setOnCreateJobInit(boolean jobInitOnCreate) {
-        this.jobInitOnCreate = jobInitOnCreate;
-        editor.putBoolean("jobInitOnCreate", jobInitOnCreate);
-        editor.apply();
-    }
-
-
     private boolean correctionChanged = false;
     public boolean hasCorrectionChanged() {
         correctionChanged = sharedPrefs.getBoolean("correctionChanged", false);
@@ -255,16 +243,41 @@ public class Helpers {
     }
 
 
-    private boolean onBootBoolean = false;
-    public boolean isOnBootBoolean() {
-        onBootBoolean = sharedPrefs.getBoolean("onBootBoolean", false);
-        return onBootBoolean;
+    private boolean displayState = true;
+    public boolean displayStateBoolean() {
+        displayState = sharedPrefs.getBoolean("displayState", true);
+        return displayState;
     }
-    public void setOnBootBoolean(boolean onBootBoolean) {
-        this.onBootBoolean = onBootBoolean;
-        editor.putBoolean("onBootBoolean", onBootBoolean);
+    public void setDisplayStateBoolean(boolean displayState) {
+        this.displayState = displayState;
+        editor.putBoolean("displayState", displayState);
         editor.apply();
     }
+
+
+    private boolean homePressed = false;
+    public boolean homePressedBoolean() {
+        homePressed = sharedPrefs.getBoolean("homePressed", false);
+        return homePressed;
+    }
+    public void setHomePressedBoolean(boolean homePressed) {
+        this.homePressed = homePressed;
+        editor.putBoolean("homePressed", homePressed);
+        editor.apply();
+    }
+
+
+    private boolean settingsOpened = false;
+    public boolean settingsOpenedBoolean() {
+        settingsOpened = sharedPrefs.getBoolean("settingsOpened", false);
+        return settingsOpened;
+    }
+    public void setSettingsOpenedBoolean(boolean settingsOpened) {
+        this.settingsOpened = settingsOpened;
+        editor.putBoolean("settingsOpened", settingsOpened);
+        editor.apply();
+    }
+
 
     // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.
     private boolean fytMusicAllowed = true;
@@ -317,7 +330,7 @@ public class Helpers {
     public boolean allAppsVisibility(int visibility) {
         if (visibility == View.INVISIBLE || visibility == View.GONE) {
             return false;
-        } else if (!isInRecent() && !userWasInRecents()) {
+        } else if ((!isInRecent() && !userWasInRecents()) || visibility == View.VISIBLE) {
             return true;
         }
         return false;

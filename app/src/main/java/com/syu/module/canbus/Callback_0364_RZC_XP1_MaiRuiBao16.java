@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.carinfo.xp.yinglang.XpMrbAirControlAct;
 import com.syu.ipc.IModuleCallback;
@@ -76,7 +75,7 @@ public class Callback_0364_RZC_XP1_MaiRuiBao16 extends CallbackCanbusBase {
             case 190:
                 int value = ints[0];
                 if (value == 1 && !XpMrbAirControlAct.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.XpMrbAirControlAct");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.XpMrbAirControlAct");
                     break;
                 }
             default:

@@ -17,7 +17,7 @@ public class FuncMain {
     public static void tips(String str) {
         toast = new Toast(LauncherApplication.getInstance());
         toast.setGravity(17, 0, 0);
-        toast.setDuration(0);
+        toast.setDuration(Toast.LENGTH_SHORT);
         view = new TextView(LauncherApplication.getInstance());
         view.setText(str);
         view.setWidth(400);

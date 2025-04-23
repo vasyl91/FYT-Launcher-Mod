@@ -9,15 +9,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
-import android.widget.TextView;
 
 import com.android.launcher66.R;
 
-public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayoutListener {
+public class TextIcon extends androidx.appcompat.widget.AppCompatTextView implements ViewTreeObserver.OnGlobalLayoutListener {
     private int iconId;
     private int mHeight;
     private int mWidth;
     private int pressedId;
+    private Resources res;
 
     @SuppressWarnings("ResourceType")
     public TextIcon(Context context, AttributeSet attrs, int defStyle) {
@@ -40,7 +40,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
     }
 
     private void init() {
-        Resources res = getResources();
+        res = getResources();
         int dimension = (int) res.getDimension(R.dimen.app_icon_size);
         this.mWidth = dimension;
         this.mHeight = dimension;
@@ -61,7 +61,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
                 if (wscale <= hscale) {
                     hscale = wscale;
                 }
-                setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), null, null);
+                setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(res, getScaleBitmap(bitmap, hscale)), null, null);
             }
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
         }
@@ -94,7 +94,7 @@ public class TextIcon extends TextView implements ViewTreeObserver.OnGlobalLayou
         if (wscale <= hscale) {
             hscale = wscale;
         }
-        setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getScaleBitmap(bitmap, hscale)), null, null);
+        setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), getScaleBitmap(bitmap, hscale)), null, null);
     }
 
     public Bitmap getScaleBitmap(Bitmap bitmap, float scale) {

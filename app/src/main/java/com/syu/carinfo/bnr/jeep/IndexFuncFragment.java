@@ -4,10 +4,12 @@ import android.app.Fragment;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.syu.adapter.AdapterCarInfo;
 import com.syu.canbus.BaseFragment;
 import com.syu.canbus.R;
 import com.syu.entity.CarInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -69,6 +69,7 @@ public class NightModeService extends Service {
                 if(intent.getAction() != null) {
                     switch (intent.getAction()) {
                         case RECREATE:
+                            Log.i(TAG, "Recreate broadcast received"); 
                             removeNightRunnables(false);
                             nightMode();
                             break;
@@ -84,23 +85,24 @@ public class NightModeService extends Service {
 
     private void checkTime() {
         if (!isCheckTimeRunning) {
-            checkTimeHandler.postDelayed(checkTimeRunnable, 10000); // check if device has updated the time
+            checkTimeHandler.postDelayed(checkTimeRunnable, 14000); // check if device has updated the time
             isCheckTimeRunning = true;
         }  
     }
 
     private void nightMode() { 
         if (!isNightModeRunning) {
-            nightModeHandler.postDelayed(nightModeRunnable, 12000); // prevents an error when wallpaper is half loaded half black on boot
+            nightModeHandler.postDelayed(nightModeRunnable, 20000); // prevents an error when wallpaper is half loaded half black on boot
             isNightModeRunning = true;
         }        
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "Service destroyed");
-        removeNightRunnables(true);
         super.onDestroy();
+        Log.d(TAG, "Service destroyed");
+        unregisterReceiver(recreateReceiver);
+        removeNightRunnables(true);
     }
 
     public void removeNightRunnables(boolean time) {

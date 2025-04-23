@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.carinfo.xp.ylford.YLFordCarCD;
 import com.syu.ipc.IModuleCallback;
@@ -104,11 +103,11 @@ public class Callback_0380_XP1_FocusKeepDVD extends CallbackCanbusBase {
         }
         if (updateCode == 120) {
             if (!YLFordCarCD.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ylford.YLFordCarCD");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ylford.YLFordCarCD");
             }
         } else if (updateCode == 119) {
             if (!FocusSyncBtActi.isFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.focus.FocusSyncBtActi");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.focus.FocusSyncBtActi");
             }
         } else if (updateCode >= 0 && updateCode < 131) {
             HandlerCanbus.update(updateCode, ints);

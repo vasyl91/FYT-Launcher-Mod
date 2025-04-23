@@ -8,7 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.util.Log;
-import com.android.launcher66.LauncherSettings;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 

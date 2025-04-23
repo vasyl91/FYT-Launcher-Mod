@@ -31,9 +31,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import com.android.launcher66.R;
 
-public class DrawView extends View implements View.OnClickListener, HomeWatcher.OnHomePressedListener {
+public class DrawView extends View implements View.OnClickListener {
 
-    private HomeWatcher mHomeWatcher;
     private Context mContext;
 
     Point[] point = new Point[20];
@@ -80,6 +79,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
 
     boolean intersectionMaster = false;
 
+    boolean map = false;
     boolean date = false;
     boolean music = false;
     boolean radio = false;
@@ -161,6 +161,7 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         helpers.setUserOpenedCreator(true);
         helpers.setLeftBarChanged(false);
 
+        map = sharedPrefs.getBoolean("user_map", false);
         date = sharedPrefs.getBoolean("user_date", false);
         music = sharedPrefs.getBoolean("user_music", false);
         radio = sharedPrefs.getBoolean("user_radio", false); 
@@ -297,14 +298,6 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mHomeWatcher = new HomeWatcher(mContext);
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
-    }
-
-    @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         if (visibility == View.VISIBLE) {
@@ -334,12 +327,14 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     }
 
     private void displayDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(mContext.getString(R.string.overlapping));
         builder.setMessage(mContext.getString(R.string.wont_save));
-        builder.setPositiveButton(mContext.getString(R.string.proceed_dont_save), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(mContext.getString(R.string.proceed_and_reset), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Helpers helpers = new Helpers();
+                helpers.resetPrefs();
                 getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
             }
         });
@@ -359,13 +354,6 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         );
         params.setMargins(0, 0, 80, 0);
         negativeButton.setLayoutParams(params);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
-        super.onDetachedFromWindow();
     }
 
     @Override
@@ -399,38 +387,40 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
         statsWindowPaint.setAlpha(128);
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textPaint.setColor(Color.WHITE); 
+        textPaint.setColor(Color.BLACK); 
         textPaint.setTextSize(coordinatesSize); 
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         textStatsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textStatsPaint.setColor(Color.WHITE); 
+        textStatsPaint.setColor(Color.BLACK); 
         textStatsPaint.setTextSize(coordinatesSize - 8); 
         textStatsPaint.setTextAlign(Paint.Align.CENTER);
 
         namePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        namePaint.setColor(Color.WHITE); 
+        namePaint.setColor(Color.BLACK); 
         namePaint.setTextSize(nameTextSize); 
         namePaint.setTextAlign(Paint.Align.CENTER);
         namePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         statsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        statsPaint.setColor(Color.WHITE); 
+        statsPaint.setColor(Color.BLACK); 
         statsPaint.setTextSize(nameTextSize - 8); 
         statsPaint.setTextAlign(Paint.Align.CENTER);
         statsPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
-        mapMinX = Math.min(point[0].x, point[2].x);
-        mapMaxX = Math.max(point[0].x, point[2].x);
-        mapMinY = Math.min(point[0].y, point[2].y);
-        mapMaxY = Math.max(point[0].y, point[2].y);
-        if (groupId == 1) {
-            drawRectFirstGroup(canvas, 0, 2, paintMap);
-        } else {
-            drawRectSecondGroup(canvas, 1, 2, 3, paintMap);
+        if (map) {
+            mapMinX = Math.min(point[0].x, point[2].x);
+            mapMaxX = Math.max(point[0].x, point[2].x);
+            mapMinY = Math.min(point[0].y, point[2].y);
+            mapMaxY = Math.max(point[0].y, point[2].y);
+            if (groupId == 1) {
+                drawRectFirstGroup(canvas, 0, 2, paintMap);
+            } else {
+                drawRectSecondGroup(canvas, 1, 2, 3, paintMap);
+            }
+            drawCoordinates(canvas, 0, 1, 2, 3, mContext.getString(R.string.creator_map));
+            rectMap = new Rectangle(point[0], point[1], point[2], point[3]);            
         }
-        drawCoordinates(canvas, 0, 1, 2, 3, mContext.getString(R.string.creator_map));
-        rectMap = new Rectangle(point[0], point[1], point[2], point[3]);
 
         if (date) {   
             dateMinX = Math.min(point[4].x, point[6].x);
@@ -524,15 +514,17 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
 
                     if (radCircle < ball.getWidthOfBall() * ballDiameter) {
                         balID = ball.getID();
-                        if (balID == 1 || balID == 3) {
-                            groupId = 2;
-                            canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
-                                    paintMap);
-                        } else if (balID == 0 || balID == 2) {
-                            groupId = 1;
-                            canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
-                                    paintMap);
-                        }   
+                        if (map) { 
+                            if (balID == 1 || balID == 3) {
+                                groupId = 2;
+                                canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
+                                        paintMap);
+                            } else if (balID == 0 || balID == 2) {
+                                groupId = 1;
+                                canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
+                                        paintMap);
+                            } 
+                        }  
                         if (date) {                        
                             if (balID == 5 || balID == 7) {
                                 groupId = 4;
@@ -574,21 +566,23 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     }
                     invalidate();
                 }
-                RectF mapTopArea = horizontalArea(point[0], point[1]);
-                if (mapTopArea.contains(event.getX(), event.getY())) {
-                    currentTouch = mapTopTouch;
-                }
-                RectF mapBottomArea = horizontalArea(point[3], point[2]);
-                if (mapBottomArea.contains(event.getX(), event.getY())) {
-                    currentTouch = mapBottomTouch;
-                }
-                RectF mapLeftArea = verticalArea(point[0], point[3]);  
-                if (mapLeftArea.contains(event.getX(), event.getY())) {
-                    currentTouch = mapLeftTouch;
-                }      
-                RectF mapRightArea = verticalArea(point[1], point[2]);
-                if (mapRightArea.contains(event.getX(), event.getY())) {
-                    currentTouch = mapRightTouch;
+                if (map) { 
+                    RectF mapTopArea = horizontalArea(point[0], point[1]);
+                    if (mapTopArea.contains(event.getX(), event.getY())) {
+                        currentTouch = mapTopTouch;
+                    }
+                    RectF mapBottomArea = horizontalArea(point[3], point[2]);
+                    if (mapBottomArea.contains(event.getX(), event.getY())) {
+                        currentTouch = mapBottomTouch;
+                    }
+                    RectF mapLeftArea = verticalArea(point[0], point[3]);  
+                    if (mapLeftArea.contains(event.getX(), event.getY())) {
+                        currentTouch = mapLeftTouch;
+                    }      
+                    RectF mapRightArea = verticalArea(point[1], point[2]);
+                    if (mapRightArea.contains(event.getX(), event.getY())) {
+                        currentTouch = mapRightTouch;
+                    }
                 }
                 if (date) {
                     RectF dateTopArea = horizontalArea(point[4], point[5]);
@@ -670,21 +664,23 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                         }  
                     }
 
-                    if ((mapMinX + sizeOfRect < X && X < mapMaxX - sizeOfRect) && (mapMinY + sizeOfRect < Y && Y < mapMaxY - sizeOfRect)) {
-                        diffX = 0;
-                        diffY = 0;
-                        rectangleName.setText(mContext.getString(R.string.creator_map));
-                        selectedWidget = 1;                        
-                        mTopDown.setAlpha(1.0f);
-                        mTopDown.setClickable(true);
-                        mBottomUp.setAlpha(1.0f);
-                        mBottomUp.setClickable(true);
-                        mLeftToRight.setAlpha(1.0f);
-                        mLeftToRight.setClickable(true);
-                        mRightToLeft.setAlpha(1.0f);
-                        mRightToLeft.setClickable(true);
-                        isInsideMap = true;
-                        break;
+                    if (map) { 
+                        if ((mapMinX + sizeOfRect < X && X < mapMaxX - sizeOfRect) && (mapMinY + sizeOfRect < Y && Y < mapMaxY - sizeOfRect)) {
+                            diffX = 0;
+                            diffY = 0;
+                            rectangleName.setText(mContext.getString(R.string.creator_map));
+                            selectedWidget = 1;                        
+                            mTopDown.setAlpha(1.0f);
+                            mTopDown.setClickable(true);
+                            mBottomUp.setAlpha(1.0f);
+                            mBottomUp.setClickable(true);
+                            mLeftToRight.setAlpha(1.0f);
+                            mLeftToRight.setClickable(true);
+                            mRightToLeft.setAlpha(1.0f);
+                            mRightToLeft.setClickable(true);
+                            isInsideMap = true;
+                            break;
+                        }
                     } 
 
                     if (date) {
@@ -819,18 +815,20 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     colorballs.get(balID).setX(X);
                     colorballs.get(balID).setY(Y);
 
-                    if (groupId == 1 || groupId == 2) {
-                        //diffX = (int) event.getX() - (mapMinX + (mapMaxX - mapMinX) / 2);
-                        //diffY = (int) event.getY() - (mapMinY + (mapMaxY - mapMinY) / 2);
-                        if (groupId == 1) {
-                            moveBallsFirstGroup(0, 1, 2, 3, mapMinWidth, mapMinHeight);
-                            canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
-                                    paintMap);
-                        } else if (groupId == 2) {
-                            moveBallsSecondGroup(0, 1, 2, 3, mapMinWidth, mapMinHeight);                            
-                            canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
-                                    paintMap);
-                        }                        
+                    if (map) { 
+                        if (groupId == 1 || groupId == 2) {
+                            //diffX = (int) event.getX() - (mapMinX + (mapMaxX - mapMinX) / 2);
+                            //diffY = (int) event.getY() - (mapMinY + (mapMaxY - mapMinY) / 2);
+                            if (groupId == 1) {
+                                moveBallsFirstGroup(0, 1, 2, 3, mapMinWidth, mapMinHeight);
+                                canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
+                                        paintMap);
+                            } else if (groupId == 2) {
+                                moveBallsSecondGroup(0, 1, 2, 3, mapMinWidth, mapMinHeight);                            
+                                canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
+                                        paintMap);
+                            }                        
+                        }
                     }
 
                     if (date) {
@@ -883,15 +881,17 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
                     invalidate();
                 }else{
                     if (isInsideMap) {
-                        diffX = (int) event.getX() - (mapMinX + (mapMaxX - mapMinX) / 2);
-                        diffY = (int) event.getY() - (mapMinY + (mapMaxY - mapMinY) / 2);
-                        moveRect(0, 1, 2, 3);
-                        if (groupId == 1) {
-                            canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
-                                    paintMap);
-                        } else {
-                            canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
-                                    paintMap);
+                        if (map) { 
+                            diffX = (int) event.getX() - (mapMinX + (mapMaxX - mapMinX) / 2);
+                            diffY = (int) event.getY() - (mapMinY + (mapMaxY - mapMinY) / 2);
+                            moveRect(0, 1, 2, 3);
+                            if (groupId == 1) {
+                                canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y,
+                                        paintMap);
+                            } else {
+                                canvas.drawRect(point[1].x, point[3].y, point[3].x, point[1].y,
+                                        paintMap);
+                            }
                         }
                         invalidate();
                     } else if (isInsideDate) {
@@ -1263,14 +1263,16 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
 
     private void savePrefs() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putInt("mapTopLeftX", colorballs.get(0).getX());  
-        editor.putInt("mapTopLeftY", colorballs.get(0).getY()); 
-        editor.putInt("mapTopRightX", colorballs.get(1).getX());    
-        editor.putInt("mapTopRightY", colorballs.get(1).getY()); 
-        editor.putInt("mapBottomRightX", colorballs.get(2).getX());   
-        editor.putInt("mapBottomRightY", colorballs.get(2).getY());  
-        editor.putInt("mapBottomLeftX", colorballs.get(3).getX());  
-        editor.putInt("mapBottomLeftY", colorballs.get(3).getY());
+        if (map) { 
+            editor.putInt("mapTopLeftX", colorballs.get(0).getX());  
+            editor.putInt("mapTopLeftY", colorballs.get(0).getY()); 
+            editor.putInt("mapTopRightX", colorballs.get(1).getX());    
+            editor.putInt("mapTopRightY", colorballs.get(1).getY()); 
+            editor.putInt("mapBottomRightX", colorballs.get(2).getX());   
+            editor.putInt("mapBottomRightY", colorballs.get(2).getY());  
+            editor.putInt("mapBottomLeftX", colorballs.get(3).getX());  
+            editor.putInt("mapBottomLeftY", colorballs.get(3).getY());
+        }
         if (date) {
             editor.putInt("dateTopLeftX", colorballs.get(4).getX());  
             editor.putInt("dateTopLeftY", colorballs.get(4).getY());          
@@ -1660,17 +1662,21 @@ public class DrawView extends View implements View.OnClickListener, HomeWatcher.
     }
 
     private void checkIntersection() {
-        if (date) {
-            intersectionMapDate = rectMap.intersect(rectDate);
-            intersectionDateMap = rectDate.intersect(rectMap);
-        }
-        if (music) {
-            intersectionMapMusic = rectMap.intersect(rectMusic);
-            intersectionMusicMap = rectMusic.intersect(rectMap);
-        }
-        if (radio) {
-            intersectionMapRadio = rectMap.intersect(rectRadio);
-            intersectionRadioMap = rectRadio.intersect(rectMap);
+        int pipScreen = Integer.parseInt(sharedPrefs.getString("pip_screen", "1")) - 1;
+        // pip won't intersect if user chooses it to display on different screen
+        if (pipScreen == 0) {
+            if (date && map) {
+                intersectionMapDate = rectMap.intersect(rectDate);
+                intersectionDateMap = rectDate.intersect(rectMap);
+            }
+            if (music && map) {
+                intersectionMapMusic = rectMap.intersect(rectMusic);
+                intersectionMusicMap = rectMusic.intersect(rectMap);
+            }
+            if (radio && map) {
+                intersectionMapRadio = rectMap.intersect(rectRadio);
+                intersectionRadioMap = rectRadio.intersect(rectMap);
+            }            
         }
         if (date && music) {
             intersectionDateMusic = rectDate.intersect(rectMusic);

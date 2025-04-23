@@ -1,19 +1,11 @@
 package com.android.launcher66.settings;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
-import com.syu.module.canbus.DataCanbus;
-
-import java.io.File;
-
 import com.syu.carinfo.accord.ActivityAccord7Index;
 import com.syu.carinfo.accord9.wc.Accord9HIndexAct;
 import com.syu.carinfo.accord9.wc.Accord9LowIndexAct;
@@ -509,36 +501,32 @@ import com.syu.carinfo.ztt600.IndexAct_Luz;
 import com.syu.carinfo.ztt600.IndexAct_RZC;
 import com.syu.carinfo.ztt600.ZTTireAct_Wc;
 import com.syu.carinfo.zx6606.ZX6606HondaIndexActi;
+import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
-import com.syu.module.main.FinalShare;
-import com.syu.canbus.FuncMain;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 
 public class CanbusClasses extends AsyncTask<Void, Void, Void> {
 
-	// Runs the canbus service in background
-	
-    private final Context mContext;
-    private final SharedPreferences mPrefs;
+	// Checks if there is an existing class for user's car model
 
-    public CanbusClasses(Context context) {
-        this.mContext = context;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public CanbusClasses() {
     }
 
     @Override
     protected Void doInBackground(Void... input) throws Exception {
-    	launchCanbus();
+    	determineClassName();
         return null;
     }
 
     @Override
     protected void onBackgroundError(Exception e) {
-    	launchCanbus();
+    	determineClassName();
     }
     
-    public void launchCanbus() {
+    public void determineClassName() {
         Class<?> cls = null;
         switch (DataCanbus.DATA[1000]) {
             case 1:
@@ -5558,38 +5546,15 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
                 cls = ODBMWCarInfo.class;
                 break;
         }
-            
-        if (cls != null) {
-            boolean userStats = mPrefs.getBoolean("user_stats", false);
-            boolean userLayout = mPrefs.getBoolean("user_layout", false);
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putString("canbus_class", String.valueOf(cls));
-            editor.apply();
-            if (userLayout && userStats) {
-                if (DataCanbus.DATA[1000] == 76 || DataCanbus.DATA[1000] == 67) {
-                    if (DataCanbus.DATA[11] != 13 && DataCanbus.DATA[11] != 14 && FinalShare.CUSTOMER_ID != 31) {
-                        FuncMain.tips(this.mContext.getString(R.string.vehicle_not_exist));
-                        return;
-                    } else {
-                        startCanbusService();
-                        return;
-                    }
-                }
-                startCanbusService();
-            }
-        }
-    }
 
-    public void startCanbusService() {
-        Intent intent = new Intent(this.mContext, CanbusService.class);
-        Bundle extras = new Bundle();
-        extras.putInt("fuel", Integer.parseInt(mPrefs.getString("fuel_code_int", "0")));
-        extras.putInt("range", Integer.parseInt(mPrefs.getString("range_code_int", "0")));
-        extras.putInt("rpm", Integer.parseInt(mPrefs.getString("rpm_code_int", "0")));
-        extras.putInt("cmdInt", Integer.parseInt(mPrefs.getString("cmdInt_code_int", "0")));
-        extras.putInt("cmdArr", Integer.parseInt(mPrefs.getString("cmdArr_code_int", "0")));
-        intent.putExtras(extras);
-        this.mContext.startService(intent);
+    	SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPrefs.edit();  
+        if (cls != null) {
+            editor.putString("canbus_class", String.valueOf(cls));     
+        } else {
+        	editor.putString("canbus_class", LauncherApplication.sApp.getString(R.string.vehicle_not_exist));    
+        }
+        editor.apply();
     }
     
     private String readFile(String path) {

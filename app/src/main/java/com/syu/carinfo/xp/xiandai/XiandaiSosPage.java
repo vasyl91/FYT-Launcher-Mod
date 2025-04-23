@@ -1,8 +1,8 @@
 package com.syu.carinfo.xp.xiandai;
 
 import android.os.Bundle;
+
 import com.syu.canbus.BaseActivity;
-import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
 public class XiandaiSosPage extends BaseActivity {

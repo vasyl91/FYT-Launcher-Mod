@@ -1307,7 +1307,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC2_Proton_X90_24 /* 16581051 */:
                 case FinalCanbus.CAR_443_WC2_Proton_X90_24_H /* 16646587 */:
                     if (!Air_Activity_All_Toyota_prado_HP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
                         break;
                     } else if (Air_Activity_All_Toyota_prado_HP.mInstance != null) {
                         Air_Activity_All_Toyota_prado_HP.mInstance.finish();
@@ -1803,7 +1803,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_H /* 16384443 */:
                 case FinalCanbus.CAR_454_LZ_Honda_AoDeSai_04 /* 16449990 */:
                     if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                         break;
                     } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                         Air_Activity_All_NewAdd_HP.mInstance.finish();
@@ -1817,7 +1817,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_408_14_H /* 131194 */:
                 case FinalCanbus.CAR_XP1_PsaAll_AutoPark /* 262425 */:
                     if (!BZ408AirControlActi.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408AirControlActi");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408AirControlActi");
                         break;
                     }
                 case 151:
@@ -1825,7 +1825,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RCW_BYD_6 /* 524439 */:
                 case FinalCanbus.CAR_RCW_BYD_12_18Surui /* 589975 */:
                     if (!Activity_DaojunAirCrtrlBydS6.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.Activity_DaojunAirCrtrlBydS6");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.Activity_DaojunAirCrtrlBydS6");
                         break;
                     }
                 case 160:
@@ -1879,7 +1879,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_MQB_Caddy_22 /* 3735712 */:
                 case FinalCanbus.CAR_RZC_MaiTeng_20_H_EC /* 3801248 */:
                     if (!AirControlMQB_RZC_Front.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMQB_RZC_Front");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMQB_RZC_Front");
                         break;
                     }
                 case 263:
@@ -1894,7 +1894,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_21YingLang_CD /* 721159 */:
                 case FinalCanbus.CAR_RZC_21YingLang /* 786695 */:
                     if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                         break;
                     } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                         Air_Activity_All_NewAdd_HP.mInstance.finish();
@@ -1902,17 +1902,17 @@ public class Receiver extends BroadcastReceiver {
                     }
                 case 265:
                     if (!RzcChanganAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.zhongtai.RzcChanganAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.zhongtai.RzcChanganAirControlAct");
                         break;
                     }
                 case 300:
                     if (!RJ_GC_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RJ_GC_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RJ_GC_AirControlAct");
                         break;
                     }
                 case 313:
                     if (!Sbd_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd_electric.Sbd_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd_electric.Sbd_AirControlAct");
                         break;
                     }
                 case 317:
@@ -1921,12 +1921,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WeiChi2_18XTS /* 393533 */:
                 case FinalCanbus.CAR_WeiChi2_18ATS /* 459069 */:
                     if (!WcATSAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.WcATSAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.WcATSAirControlAct");
                         break;
                     }
                 case 332:
                     if (!SO3AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.saiou3.SO3AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.saiou3.SO3AirControlAct");
                         break;
                     }
                 case 348:
@@ -1935,19 +1935,19 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_DAOJUN_OD_ATS /* 852316 */:
                     if (LauncherApplication.getConfiguration() != 1) {
                         if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                             break;
                         } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                             Air_Activity_All_NewAdd_HP.mInstance.finish();
                             break;
                         }
                     } else if (!djATSAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.djATSAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.djATSAirControlAct");
                         break;
                     }
                 case 357:
                     if (!MrbAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.klc.MrbAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.klc.MrbAirControlAct");
                         break;
                     }
                 case 359:
@@ -1956,21 +1956,21 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_XP1_MaiRuiBao16_XL_L /* 196967 */:
                 case FinalCanbus.CAR_XP1_MaiRuiBao16_XL_H /* 262503 */:
                     if (!XpMrbAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.XpMrbAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.XpMrbAirControlAct");
                         break;
                     }
                 case 365:
                 case FinalCanbus.CAR_AY1_JeepZiYouGuang_M /* 65901 */:
                 case FinalCanbus.CAR_AY1_JeepZiYouGuang_H /* 131437 */:
                     if (!JeepCarAirSet.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.aiying.ziyouguang.JeepCarAirSet");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.aiying.ziyouguang.JeepCarAirSet");
                         break;
                     }
                 case 371:
                 case FinalCanbus.CAR_BoGoo_XP1_Jeep15ZiYouGuang_M /* 65907 */:
                 case FinalCanbus.CAR_BoGoo_XP1_Jeep15ZiYouGuang_H /* 131443 */:
                     if (!Bg_ZiYouGuangAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.bg.ziyouguang.Bg_ZiYouGuangAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.bg.ziyouguang.Bg_ZiYouGuangAirControlAct");
                         break;
                     }
                 case 379:
@@ -2004,7 +2004,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_BNR_RZC_Mairuibao_H /* 2425211 */:
                 case FinalCanbus.CAR_BNR_RZC_Mairuibao_Top /* 2490747 */:
                     if (!YLAirControlAct_BNR.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.YLAirControlAct_BNR");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.YLAirControlAct_BNR");
                         break;
                     }
                 case 395:
@@ -2013,7 +2013,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_AiRuiZ_GX /* 1835403 */:
                 case FinalCanbus.CAR_WC2_GUOCHAN_Ruihu5X /* 2097547 */:
                     if (!ActivityRuiHu7.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.qirui.ActivityRuiHu7");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.qirui.ActivityRuiHu7");
                         break;
                     }
                 case 420:
@@ -2030,7 +2030,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_ToYoTa_Lexus_06LS460 /* 786852 */:
                 case FinalCanbus.CAR_WC2_ToYoTa_Lexus_NX_SCREEN /* 852388 */:
                     if (!wc_420_crown_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.crown.wc_420_crown_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.crown.wc_420_crown_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_WC2_17MaiTeng /* 65553 */:
@@ -2074,18 +2074,18 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_MQB_Tayron_GTE_20 /* 2752529 */:
                 case FinalCanbus.CAR_WC2_MQB_Golf8_21 /* 2818065 */:
                     if (!AirControlMQB_WC_Front.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMQB_WC_Front");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMQB_WC_Front");
                         break;
                     }
                 case FinalCanbus.CAR_DJ_ChuanQiGA6_M /* 65793 */:
                 case FinalCanbus.CAR_DJ_ChuanQiGA6_H /* 131329 */:
                     if (!GA6AirSeatControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dongjian.ga6.GA6AirSeatControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dongjian.ga6.GA6AirSeatControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_SBD_WC1_24vW3 /* 65849 */:
                     if (!Sbd_24vW3AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd_electric.Sbd_24vW3AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd_electric.Sbd_24vW3AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_DAOJUN_XP1_ATS_M /* 65884 */:
@@ -2100,36 +2100,36 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_DAOJUN_XT4 /* 1114460 */:
                     if (LauncherApplication.getConfiguration() != 1) {
                         if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                             break;
                         } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                             Air_Activity_All_NewAdd_HP.mInstance.finish();
                             break;
                         }
                     } else if (!djXTSAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.djXTSAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.djXTSAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_DJ_SHA_BUS /* 65944 */:
                     if (!ActivityBusAirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.bus.ActivityBusAirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.bus.ActivityBusAirControl");
                         break;
                     }
                 case FinalCanbus.CAR_452_XC_Tianlai_GJ /* 65988 */:
                 case FinalCanbus.CAR_453_XC_Tianlai_GJ /* 1442245 */:
                 case FinalCanbus.CAR_439_HC_Nissan_GuiShi /* 7799223 */:
                     if (!ActivityTianLaiFrontAirSetting.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hc.tianlai.ActivityTianLaiFrontAirSetting");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hc.tianlai.ActivityTianLaiFrontAirSetting");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_XP1_YuanJingX6 /* 131211 */:
                     if (LauncherApplication.getConfiguration() != 1) {
                         if (!Air_Activity_All_Toyota_prado_HP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
                             break;
                         }
                     } else if (!YuanJingX1AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.YuanJingX1AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.YuanJingX1AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_WC2_DaZhong_TuRui /* 131342 */:
@@ -2137,20 +2137,20 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_LZ_WC2_DaZhong_TuRui /* 262414 */:
                 case FinalCanbus.CAR_XC_WC2_DaZhong_TuRui /* 327950 */:
                     if (!TuRui_AirActi.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.TuRui_AirActi");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.TuRui_AirActi");
                         break;
                     }
                 case FinalCanbus.CAR_WeiChi2_XTS_SEATHEAT /* 131389 */:
                 case FinalCanbus.CAR_WeiChi2_SRX /* 262461 */:
                 case FinalCanbus.CAR_WeiChi2_15SRX /* 327997 */:
                     if (!WcXTSAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.WcXTSAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.WcXTSAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_455_LZ_Toyota_Alpha_DH_2 /* 131527 */:
                 case FinalCanbus.CAR_455_LZ_Toyota_Alpha_DH_3 /* 197063 */:
                     if (!LuzDaoHangToyotaAlphaAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAlphaAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAlphaAirControlAct");
                         break;
                     } else if (LuzDaoHangToyotaAlphaAirControlAct.mInstance != null) {
                         LuzDaoHangToyotaAlphaAirControlAct.mInstance.finish();
@@ -2159,14 +2159,14 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_DJ_ShuPing_BYD_G6 /* 196759 */:
                 case FinalCanbus.CAR_DJ_ShuPing_BYD_G6_H /* 262295 */:
                     if (!Activity_DaojunAirCrtrlBydG6.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.Activity_DaojunAirCrtrlBydG6");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.Activity_DaojunAirCrtrlBydG6");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_16BoYue /* 196873 */:
                 case FinalCanbus.CAR_BNR_BoYue /* 459017 */:
                 case FinalCanbus.CAR_BNR_BoYue_H /* 786697 */:
                     if (!BoyueAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.BoyueAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.BoyueAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_XP1_2016SIYU /* 196906 */:
@@ -2205,7 +2205,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV /* 6881578 */:
                 case FinalCanbus.CAR_RZC_HONDA_22Haoying_CEV_H /* 6947114 */:
                     if (!ActivityAirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityAirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityAirControl");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_15Ruijie /* 196942 */:
@@ -2227,11 +2227,11 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_Jinniu2019_H /* 4784462 */:
                     if (LauncherApplication.getConfiguration() == 1) {
                         if (!RZCRuijieFrontAirControlAct_SP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RZCRuijieFrontAirControlAct_SP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RZCRuijieFrontAirControlAct_SP");
                             break;
                         }
                     } else if (!RuijieAirControlAct_Rzc.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
                         break;
                     }
                 case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_Auto /* 197052 */:
@@ -2248,7 +2248,7 @@ public class Receiver extends BroadcastReceiver {
                     if (!WCYuncheNissanAirControlAct.mIsFront) {
                         ConstAllAirDara.JumpNewAir = true;
                         ConstAllAirDara.JumpNewAircnt = 8;
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct");
                         break;
                     } else if (WCYuncheNissanAirControlAct.mInstance != null) {
                         WCYuncheNissanAirControlAct.mInstance.finish();
@@ -2261,12 +2261,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_ChuanQiGS8_20 /* 1835288 */:
                 case FinalCanbus.CAR_RZC_XP1_ChuanQiM8_21 /* 2162968 */:
                     if (!Rzc_Gs8_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.gs4.Rzc_Gs8_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.gs4.Rzc_Gs8_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_ZhiSheng_Old /* 262478 */:
                     if (!ActivityAirCrtrRZCFordMengdiou.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.ActivityAirCrtrRZCFordMengdiou");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.ActivityAirCrtrRZCFordMengdiou");
                         break;
                     }
                 case FinalCanbus.CAR_OD_GaoErFu7 /* 327720 */:
@@ -2274,12 +2274,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_OD_TuAnL /* 393256 */:
                 case FinalCanbus.CAR_WC2_17MaiTeng_SOS_DZSJ /* 458769 */:
                     if (!AirControlMaiTengDZSJ.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMaiTengDZSJ");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMaiTengDZSJ");
                         break;
                     }
                 case FinalCanbus.CAR_LUZ_ZhongTaiT600 /* 327945 */:
                     if (!ZTAirAct_Luz.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ztt600.ZTAirAct_Luz");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ztt600.ZTAirAct_Luz");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_XP1_QiChenT90 /* 327970 */:
@@ -2291,28 +2291,28 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_CZH_RZC_QiChenD60 /* 852258 */:
                 case FinalCanbus.CAR_CZH_RZC_QiChen18T70 /* 917794 */:
                     if (!AirRzcQiChenT90.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.t70.AirRzcQiChenT90");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.t70.AirRzcQiChenT90");
                         break;
                     }
                 case FinalCanbus.CAR_XP1_KeLeiAo_L /* 328054 */:
                 case FinalCanbus.CAR_XP1_Meiganna4_TR_HAND /* 1245558 */:
                     if (!Act_Keleijia_Airset.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.leinuo.Act_Keleijia_Airset");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.leinuo.Act_Keleijia_Airset");
                         break;
                     }
                 case FinalCanbus.CAR_SBD_Ford_LieYing /* 328078 */:
                     if (!AirSBDFordLieYing.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing");
                         break;
                     }
                 case FinalCanbus.CAR_438_DJ_YuanJingX1 /* 328118 */:
                     if (!YuanJingX1_AirControlAct_DJ.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.YuanJingX1_AirControlAct_DJ");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.jili.YuanJingX1_AirControlAct_DJ");
                         break;
                     }
                 case FinalCanbus.CAR_WC2_GM_GL8 /* 393252 */:
                     if (!KlcGl8AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.klc.KlcGl8AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.klc.KlcGl8AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_BNR_16CS75_L /* 393286 */:
@@ -2321,29 +2321,29 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_BNR_16CS75_H_FullView /* 589894 */:
                 case FinalCanbus.CAR_BNR_17CS75 /* 655430 */:
                     if (!BnrChanganCS75AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.BnrChanganCS75AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.kaidilake.BnrChanganCS75AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_BNR_ZhongTaiT600 /* 393481 */:
                     if (!ZTAirAct_Bnr.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ztt600.ZTAirAct_Bnr");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ztt600.ZTAirAct_Bnr");
                         break;
                     }
                 case FinalCanbus.CAR_XP1_KeLeiAo_H /* 393590 */:
                 case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO /* 1311094 */:
                 case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO_H /* 1769846 */:
                     if (!Act_Keleijia_Airset_high.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.leinuo.Act_Keleijia_Airset_high");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.leinuo.Act_Keleijia_Airset_high");
                         break;
                     }
                 case FinalCanbus.CAR_439_DJ_XP1_HuiTeng /* 393655 */:
                     if (LauncherApplication.getConfiguration() == 1) {
                         if (!Huiteng_AirRearCtrl.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirRearCtrl");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirRearCtrl");
                             break;
                         }
                     } else if (!Huiteng_AirFrontCtrl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirFrontCtrl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirFrontCtrl");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_XP1_ChuanQiGS3 /* 459032 */:
@@ -2364,7 +2364,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
                 case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_TF /* 2294040 */:
                     if (!Rzc_Gs3_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.gs4.Rzc_Gs3_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.gs4.Rzc_Gs3_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_WC2_Honda_17CRV /* 459073 */:
@@ -2409,23 +2409,23 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_Honda_19INSPIRE_H /* 5374273 */:
                 case FinalCanbus.CAR_WC2_Honda_22Accord_H /* 5439809 */:
                     if (!ActivityAirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.Activity17CRVAirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.Activity17CRVAirControl");
                         break;
                     }
                 case FinalCanbus.CAR_WC2_GUOCHAN_7 /* 459147 */:
                     if (!ActivityHaiMaV70AirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.ActivityHaiMaV70AirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.ActivityHaiMaV70AirControl");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_Explorer /* 590158 */:
                 case FinalCanbus.CAR_RZC_Explorer_13 /* 3014990 */:
                     if (LauncherApplication.getConfiguration() == 1) {
                         if (!RZCRuijieFrontAirControlAct_SP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RZCRuijieFrontAirControlAct_SP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RZCRuijieFrontAirControlAct_SP");
                             break;
                         }
                     } else if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                         break;
                     } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                         Air_Activity_All_NewAdd_HP.mInstance.finish();
@@ -2436,7 +2436,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_BNR_ShuPing_12LandCruise_AMP /* 1507725 */:
                 case FinalCanbus.CAR_BNR_ShuPing_16LandCruise_AMP /* 1573261 */:
                     if (!BnrToyatoKuluzAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.cxw.k50.BnrToyatoKuluzAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.cxw.k50.BnrToyatoKuluzAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_453_PA_Ford_F150_10_CD /* 721349 */:
@@ -2444,7 +2444,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_453_PA_Ford_Mustang_10 /* 5767621 */:
                 case FinalCanbus.CAR_452_PA_Ford_F150_10 /* 15598020 */:
                     if (!PAFordF150AirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAFordF150AirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAFordF150AirControlAct_SP");
                         break;
                     } else if (PAFordF150AirControlAct_SP.mInstance != null) {
                         PAFordF150AirControlAct_SP.mInstance.finish();
@@ -2452,7 +2452,7 @@ public class Receiver extends BroadcastReceiver {
                     }
                 case FinalCanbus.CAR_WC2_GUOCHAN_13 /* 852363 */:
                     if (!ActivityBenTengB50.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.ActivityBenTengB50");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.ActivityBenTengB50");
                         break;
                     }
                 case FinalCanbus.CAR_452_LZ_Toyota_Lexus_Rx /* 917956 */:
@@ -2471,14 +2471,14 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_453_LZ_Toyota_markII_H /* 9699781 */:
                     if (LauncherApplication.getConfiguration() != 1) {
                         if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                             break;
                         } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                             Air_Activity_All_NewAdd_HP.mInstance.finish();
                             break;
                         }
                     } else if (!LuzLexusLSFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzLexusLSFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzLexusLSFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Hand1 /* 1245628 */:
@@ -2486,7 +2486,7 @@ public class Receiver extends BroadcastReceiver {
                     if (!WCYuncheNissanAirControlAct_HP.mIsFront) {
                         ConstAllAirDara.JumpNewAir = true;
                         ConstAllAirDara.JumpNewAircnt = 8;
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheNissanAirControlAct_HP");
                         break;
                     } else if (WCYuncheNissanAirControlAct_HP.mInstance != null) {
                         WCYuncheNissanAirControlAct_HP.mInstance.finish();
@@ -2495,7 +2495,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_OD_Toyota_Lexus /* 1245636 */:
                 case FinalCanbus.CAR_439_RZC_TOYATO_13HuangGuan /* 6947255 */:
                     if (!rzc_439_Huangguan_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.rzc_439_Huangguan_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.rzc_439_Huangguan_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_PA_dorango_13_18_Low /* 1376630 */:
@@ -2557,7 +2557,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_PA_Gladiator_20_23 /* 5374326 */:
                 case FinalCanbus.CAR_PA_Gladiator_20_23_Amp /* 5439862 */:
                     if (!PAJeepAirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAJeepAirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAJeepAirControlAct_SP");
                         break;
                     } else if (PAJeepAirControlAct_SP.mInstance != null) {
                         PAJeepAirControlAct_SP.mInstance.finish();
@@ -2566,7 +2566,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_WC2_QiChen_T90 /* 1376651 */:
                 case FinalCanbus.CAR_WC2_QiChen_D60 /* 1507723 */:
                     if (!AirQiChenT90.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.AirQiChenT90");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.guochan.AirQiChenT90");
                         break;
                     }
                 case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
@@ -2586,7 +2586,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
                 case FinalCanbus.CAR_452_OD_Haval_VV7_H /* 16449988 */:
                     if (!Rzc_Oudi_0439_AirFrontCtrl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
                         break;
                     }
                 case FinalCanbus.CAR_443_WC2_YingFeiNiDi_GX50 /* 1507771 */:
@@ -2600,12 +2600,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC_12Cedric /* 7209403 */:
                 case FinalCanbus.CAR_443_WC2_YingFeiNiDi_20QX60 /* 15204795 */:
                     if (!WcInfeinidiFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfeinidiFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfeinidiFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_ESQ /* 1573316 */:
                     if (!Infiniti_XinCheng_ESQAirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_ESQAirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_ESQAirControl");
                         break;
                     }
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_06FX /* 1638852 */:
@@ -2619,7 +2619,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_15Q50L /* 4063684 */:
                 case FinalCanbus.CAR_452_XinCheng_Infiniti_12JX35 /* 4129220 */:
                     if (!Infiniti_XinCheng_ESQAirControl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_ESQAirControl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_ESQAirControl");
                         break;
                     }
                 case FinalCanbus.CAR_443_WC2_18Ruijie /* 1769915 */:
@@ -2627,12 +2627,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC2_Ford_FIESTA_13 /* 15532475 */:
                 case FinalCanbus.CAR_443_WC2_Ford_Tourneo_21 /* 15598011 */:
                     if (!WcRuiJieFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcRuiJieFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcRuiJieFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
                     if (!NavigatorAirControlAct_Rzc.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.NavigatorAirControlAct_Rzc");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.NavigatorAirControlAct_Rzc");
                         break;
                     }
                 case FinalCanbus.CAR_454_LUZ_KAYAN_MACAN_CD_HP_LOW /* 1900998 */:
@@ -2641,34 +2641,34 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD_HP /* 6422967 */:
                     if (LauncherApplication.getConfiguration() == 1) {
                         if (!LZBinliTianyueAirControlAct.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct");
                             break;
                         }
                     } else if (!LZBinliTianyueAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZBinliTianyueAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_DJ_XP1_ParkAvenue /* 2162713 */:
                     if (!YLAirControlAct_LYDD.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.YLAirControlAct_LYDD");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.YLAirControlAct_LYDD");
                         break;
                     }
                 case FinalCanbus.CAR_455_OUDI_Aiying_BYD_ALL /* 2556359 */:
                     if (!BYDAiyingIndexAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.BYDAiyingIndexAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.BYDAiyingIndexAct");
                         break;
                     }
                 case FinalCanbus.CAR_455_LUZ_Nissan_GTR_EN /* 2621895 */:
                 case FinalCanbus.CAR_439_LUZ_Nissan_GTR /* 13566391 */:
                     if (!LZ_0439_Nissan_GTR_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.LZ_0439_Nissan_GTR_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.LZ_0439_Nissan_GTR_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7 /* 2752956 */:
                     if (!WCYuncheUINissanAirControlAct.mIsFront) {
                         ConstAllAirDara.JumpNewAir = true;
                         ConstAllAirDara.JumpNewAircnt = 8;
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheUINissanAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.WCYuncheUINissanAirControlAct");
                         break;
                     } else if (WCYuncheUINissanAirControlAct.mInstance != null) {
                         WCYuncheUINissanAirControlAct.mInstance.finish();
@@ -2676,7 +2676,7 @@ public class Receiver extends BroadcastReceiver {
                     }
                 case FinalCanbus.CAR_452_LZ_Jaguar_XK /* 3670468 */:
                     if (!JaguarAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.jaguar.JaguarAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.jaguar.JaguarAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_ZX_6606_XP1_19Yazhoulong /* 3735664 */:
@@ -2684,12 +2684,12 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_ZX_6606_XP1_Bz4x /* 4915312 */:
                 case FinalCanbus.CAR_ZX_6606_XP1_24Camry /* 7274608 */:
                     if (!rzc_6606_112_Toyota_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.rzc_6606_112_Toyota_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.rzc_6606_112_Toyota_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14QX60_SP /* 4260283 */:
                     if (!WcInfeinidiFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfeinidiFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfeinidiFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_443_WC2_Ford_18Everest_L /* 4391355 */:
@@ -2704,28 +2704,28 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC2_Ford_12Focus_Overseas /* 15139259 */:
                     if (LauncherApplication.getConfiguration() == 1) {
                         if (!WcEverestFrontAirControlAct_SP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcEverestFrontAirControlAct_SP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcEverestFrontAirControlAct_SP");
                             break;
                         }
                     } else if (!WcRuiJieFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcRuiJieFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.WcRuiJieFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_443_WC2_Huaicai /* 4653499 */:
                     if (!WC2WeiChaiAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc2.weichai.WC2WeiChaiAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc2.weichai.WC2WeiChaiAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_452_LZ_Jaguar_XF /* 4915652 */:
                 case FinalCanbus.CAR_452_LZ_Jaguar_XF_09 /* 6029764 */:
                     if (!LuzJaguar09XFAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.LuzJaguar09XFAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.LuzJaguar09XFAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_452_XinCheng_Nissan_Tule_L /* 5046724 */:
                 case FinalCanbus.CAR_452_XinCheng_Nissan_Tule_H /* 5112260 */:
                     if (!Xincheng_Nissan_Tule_AirControlActi.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi");
                         break;
                     }
                 case FinalCanbus.CAR_BNR_Toyota_14Tundra /* 5177741 */:
@@ -2743,7 +2743,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_AMP_19 /* 6619533 */:
                 case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_10_AMP /* 6685069 */:
                     if (!PAToyotaAirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyotaAirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyotaAirControlAct_SP");
                         break;
                     } else if (PAToyotaAirControlAct_SP.mInstance != null) {
                         PAToyotaAirControlAct_SP.mInstance.finish();
@@ -2754,7 +2754,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_443_WC2_TATA_Tiago /* 11993531 */:
                 case FinalCanbus.CAR_443_WC2_TATA_harrier /* 12059067 */:
                     if (!WC2TataAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc2.tata.WC2TataAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc2.tata.WC2TataAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra /* 5898637 */:
@@ -2763,7 +2763,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra_AMP /* 6750605 */:
                 case FinalCanbus.CAR_PA_BNR_Toyota_Sequoia_AMP /* 6816141 */:
                     if (!PAToyota10TundraAirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyota10TundraAirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyota10TundraAirControlAct_SP");
                         break;
                     } else if (PAToyota10TundraAirControlAct_SP.mInstance != null) {
                         PAToyota10TundraAirControlAct_SP.mInstance.finish();
@@ -2775,7 +2775,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_PA_BNR_Toyota_ES_06 /* 6291853 */:
                 case FinalCanbus.CAR_PA_BNR_Toyota_GX460_10 /* 6357389 */:
                     if (!PAToyotaLexusLS460AirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyotaLexusLS460AirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PAToyotaLexusLS460AirControlAct_SP");
                         break;
                     } else if (PAToyotaLexusLS460AirControlAct_SP.mInstance != null) {
                         PAToyotaLexusLS460AirControlAct_SP.mInstance.finish();
@@ -2783,7 +2783,7 @@ public class Receiver extends BroadcastReceiver {
                     }
                 case FinalCanbus.CAR_453_OD_WeiMa_EX5 /* 6226373 */:
                     if (!ODWeiEX5AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.ODWeiEX5AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.ODWeiEX5AirControlAct");
                         break;
                     } else if (ODWeiEX5AirControlAct.mInstance != null) {
                         ODWeiEX5AirControlAct.mInstance.finish();
@@ -2798,7 +2798,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_453_KYC_Toyota_Lexus_GX_14_MO /* 6750661 */:
                 case FinalCanbus.CAR_453_KYC_Toyota_Lexus_GX_14_TX /* 6816197 */:
                     if (!KYCLexusFrontAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_439_AY_BYD_Sirui /* 6619575 */:
@@ -2814,7 +2814,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_439_OUDI_BYD_ALL /* 12976567 */:
                 case FinalCanbus.CAR_453_RCW_BYD_10_13G6 /* 13042117 */:
                     if (!ActivityAirCrtrlBydSirui.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.ActivityAirCrtrlBydSirui");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.ActivityAirCrtrlBydSirui");
                         break;
                     }
                 case FinalCanbus.CAR_452_LZ_Jaguar_F_TYPE /* 6881732 */:
@@ -2822,17 +2822,17 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_LZ_Jaguar_XFL_PACE /* 12779972 */:
                 case FinalCanbus.CAR_452_LZ_Jaguar_XFL_PACE_H /* 13238724 */:
                     if (!LZJaguarXJLFrontAirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZJaguarXJLFrontAirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.LZJaguarXJLFrontAirControlAct_SP");
                         break;
                     }
                 case FinalCanbus.CAR_439_HC_Nissan_Toread /* 7012791 */:
                     if (!ActivityToread_AirRearCtrl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hc.tianlai.ActivityToread_AirRearCtrl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hc.tianlai.ActivityToread_AirRearCtrl");
                         break;
                     }
                 case FinalCanbus.CAR_454_LZ_Chrysler_300C_15_Daohang /* 7078342 */:
                     if (!Air_Activity_Daohang_Only_HP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_Daohang_Only_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_Daohang_Only_HP");
                         break;
                     }
                 case FinalCanbus.CAR_LUZ_Toyato_All /* 7274935 */:
@@ -2843,24 +2843,24 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_LZ_Toyato_RX270 /* 12714436 */:
                     if (LauncherApplication.getConfiguration() != 1) {
                         if (!Air_Activity_All_NewAdd_HP.mIsFront) {
-                            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                             break;
                         } else if (Air_Activity_All_NewAdd_HP.mInstance != null) {
                             Air_Activity_All_NewAdd_HP.mInstance.finish();
                             break;
                         }
                     } else if (!LZ_0439_Toyota_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.LZ_0439_Toyota_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.LZ_0439_Toyota_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_439_XBS_BYD_Song /* 8782263 */:
                     if (!XBS_439_BYD_Song_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.XBS_439_BYD_Song_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.XBS_439_BYD_Song_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_439_CXW_Kairui_K50 /* 8847799 */:
                     if (!CxwK50AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.cxw.k50.CxwK50AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.cxw.k50.CxwK50AirControlAct");
                         break;
                     } else if (CxwK50AirControlAct.mInstance != null) {
                         CxwK50AirControlAct.mInstance.finish();
@@ -2874,7 +2874,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_439_DJ_Haval_VV6 /* 15991236 */:
                 case FinalCanbus.CAR_439_DJ_Haval_VV7 /* 16056772 */:
                     if (!Dj_0439_AirFrontCtrl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.havalh8.Dj_0439_AirFrontCtrl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.havalh8.Dj_0439_AirFrontCtrl");
                         break;
                     }
                 case FinalCanbus.CAR_452_PA_Nissan_XTrail_21 /* 11731396 */:
@@ -2883,7 +2883,7 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_PA_Nissan_TITAN /* 11928004 */:
                 case FinalCanbus.CAR_452_PA_Infiniti_G37 /* 13894084 */:
                     if (!PANissanAirControlAct_SP.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PANissanAirControlAct_SP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.ziyouguang.PANissanAirControlAct_SP");
                         break;
                     } else if (PANissanAirControlAct_SP.mInstance != null) {
                         PANissanAirControlAct_SP.mInstance.finish();
@@ -2892,20 +2892,20 @@ public class Receiver extends BroadcastReceiver {
                 case FinalCanbus.CAR_452_OD_Hongqi_H7 /* 12124612 */:
                 case FinalCanbus.CAR_454_CZH_OD_Hongqi_EQM5 /* 16515526 */:
                     if (!Oudi_0452_Hongqi_AirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.oudi.hantengx5.Oudi_0452_Hongqi_AirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.oudi.hantengx5.Oudi_0452_Hongqi_AirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_452_KYC_Toyota_Landekuluze /* 14221764 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
                 case FinalCanbus.CAR_452_KYC_Toyota_Alpha /* 14352836 */:
                     if (!KYCToyotaAllAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.KYCToyotaAllAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.sanlin.KYCToyotaAllAirControlAct");
                         break;
                     }
                 case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH /* 16581062 */:
                 case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH_H /* 16646598 */:
                     if (!LuzDaoHangToyotaAirControlAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAirControlAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.LuzDaoHangToyotaAirControlAct");
                         break;
                     } else if (LuzDaoHangToyotaAirControlAct.mInstance != null) {
                         LuzDaoHangToyotaAirControlAct.mInstance.finish();

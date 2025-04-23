@@ -3,6 +3,7 @@ package com.syu.carinfo.wc.ziyouguang;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

@@ -15,7 +15,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.1.2"
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -79,6 +79,8 @@ android {
     /*tasks.withType<JavaCompile>().configureEach {
         options.compilerArgs.add("-Xlint:unchecked")
         options.compilerArgs.add("-Xlint:deprecation")
+        options.compilerArgs.add("-Xmaxwarns")
+        options.compilerArgs.add("1000")
     }*/
 }
 
@@ -113,6 +115,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata)
     implementation(libs.androidx.lifecycle.common.java8)
+    implementation(libs.play.services.instantapps)
 
     testImplementation(libs.junit)
 

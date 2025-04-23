@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -59,13 +60,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, HomeWatcher.OnHomePressedListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
     // Fragment for the first window in the settings
 
     private SharedPreferences sharedPrefs;
     private SharedPreferences.Editor editor;
-    private HomeWatcher mHomeWatcher;
     private Context mContext;
     private final Helpers helpers = new Helpers();
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -90,6 +90,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private static final String NIGHT_SEEK_BAR = "night_seek_bar";
     private static final String SUNRISE_CORRECTION = "sunrise_correction";
     private static final String SUNSET_CORRECTION = "sunset_correction";
+    private static final String LOGCAT_SERVICE = "logcat_service";
+    private static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
     private boolean initLayout;
     private boolean userLayoutBool;
     private boolean initStatusbar;
@@ -99,7 +101,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private boolean nightModeBool;
     private boolean defaultWallpapersBool;
     private boolean wallpaperSet = false;
-    private boolean brightnessBool;    
+    private boolean brightnessBool;  
+    private boolean logcatServiceBool;  
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
     private AlertDialog alertAllAppsTextSizeDialog;
@@ -123,14 +126,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private CorrectionSeekBarPreference sunriseCorrectionSeekBar;
     private CorrectionSeekBarPreference sunsetCorrectionSeekBar;
     private static Dialog loadingDialog;
+    private Preference logcatService;
+    private Preference logcatServiceTimeout;
+    private AlertDialog alertLogcatServiceTimeoutDialog;
+    private EditText logcatServiceTimeoutEditText;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         this.mContext = this.getContext();
         helpers.setLayoutTypeChanged(false);
-        mHomeWatcher = new HomeWatcher(getActivity());
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
         initStatusbar = sharedPrefs.getBoolean(STATUSBAR, false);
@@ -174,6 +178,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         sunriseCorrectionSeekBar = findPreference(SUNRISE_CORRECTION);
         sunsetCorrectionSeekBar = findPreference(SUNSET_CORRECTION);
 
+        logcatService = findPreference(LOGCAT_SERVICE);
+        logcatServiceTimeout = findPreference(LOGCAT_SERVICE_TIMEOUT);
+        String logcatServiceTimeoutStr = sharedPrefs.getString(LOGCAT_SERVICE_TIMEOUT, "30");
+        logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
+        logcatServiceTimeoutEditText();
+
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
         }
@@ -181,6 +191,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             launcherCreatorFirst.setOnPreferenceClickListener(this);
             userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
             getPreferenceScreen().findPreference(CREATOR_FIRST).setEnabled(userLayoutBool);
+            if (userLayoutBool) {
+                String summaryText = getString(R.string.layout_summary_enabled);
+                getPreferenceScreen().findPreference(CREATOR_FIRST).setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                String summaryText = getString(R.string.layout_summary_disabled);
+                getPreferenceScreen().findPreference(CREATOR_FIRST).setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+            }
         }
         if (transparentStatusbar != null) {
             transparentStatusbar.setOnPreferenceClickListener(this);
@@ -207,6 +224,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             workspaceTextSize.setOnPreferenceClickListener(this);
         }
         nightMode();
+        logcatServiceBool = sharedPrefs.getBoolean(LOGCAT_SERVICE, false);
+        if (logcatService != null) {
+            logcatService.setOnPreferenceClickListener(this);
+            if (logcatServiceBool) {
+                String summaryText = getString(R.string.logcat_service_summary);
+                logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                logcatService.setSummary(null);
+            }
+        }
+        if (logcatServiceTimeout != null) {
+            logcatServiceTimeout.setOnPreferenceClickListener(this);
+            logcatServiceTimeout.setVisible(logcatServiceBool);
+        }
     }
 
     @NonNull
@@ -215,8 +246,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         rootView = super.onCreateView(inflater, container, savedInstanceState);
 
         loadingDialog = new Dialog(requireContext());
-        loadingDialog.setContentView(R.layout.dialog_loading); // Create this layout (see below)
-        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // Make background transparent
+        loadingDialog.setContentView(R.layout.dialog_loading); 
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         loadingDialog.setCancelable(false); // Prevent dismissing by touching outside
 
         return rootView;
@@ -287,6 +318,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 saveWorkspaceTextSize();
                 alertWorkspaceTextSizeDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
+    private void logcatServiceTimeoutEditText() {
+        logcatServiceTimeoutEditText = new EditText(this.getContext());
+        logcatServiceTimeoutEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        logcatServiceTimeoutEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        logcatServiceTimeoutEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveLogcatServiceTimeout();
+                alertLogcatServiceTimeoutDialog.dismiss();
             }
             return false;
         });
@@ -406,8 +450,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public boolean onPreferenceClick(@NonNull Preference preference) {
         switch (preference.getKey()) {
             case USER_LAYOUT:
-                userLayoutBool = sharedPrefs.getBoolean(preference.getKey(), false);
+                userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
                 getPreferenceScreen().findPreference(CREATOR_FIRST).setEnabled(userLayoutBool);
+                if (userLayoutBool) {
+                    String summaryText = getString(R.string.layout_summary_enabled);
+                    getPreferenceScreen().findPreference(CREATOR_FIRST).setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    String summaryText = getString(R.string.layout_summary_disabled);
+                    getPreferenceScreen().findPreference(CREATOR_FIRST).setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putString("start_page", "1");
+                    editor.putString("pip_screen", "1");
+                    editor.apply(); 
+                }
                 break;
             case CREATOR_FIRST:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
@@ -467,7 +522,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 workspaceTextSizeEditText.setSelection(workspaceTextSizeEditText.getText().length());
                 break;
             case NIGHT_MODE:
-                helpers.setOnCreateJobInit(false);
                 nightModeBool = sharedPrefs.getBoolean(NIGHT_MODE, false);
                 handler.post(updateSummary);
                 correctionCategory.setVisible(nightModeBool);
@@ -505,10 +559,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 }
                 break;
             case SAVE_DAY_WALLPAPER:
+                helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
                 new SaveWallpaperTask(this.mContext).execute("Day");
                 break;
             case SAVE_NIGHT_WALLPAPER:
+                helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
                 new SaveWallpaperTask(this.mContext).execute("Night");
                 break;
@@ -518,6 +574,31 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 nightTitle.setVisible(brightnessBool);
                 daySeekBar.setVisible(brightnessBool);
                 nightSeekBar.setVisible(brightnessBool);
+                break;
+            case LOGCAT_SERVICE:
+                logcatServiceBool = sharedPrefs.getBoolean(LOGCAT_SERVICE, false);
+                logcatServiceTimeout.setVisible(logcatServiceBool);
+                if (logcatServiceBool) {
+                    String summaryText = getString(R.string.logcat_service_summary);
+                    logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    logcatService.setSummary(null);
+                }
+                break;
+            case LOGCAT_SERVICE_TIMEOUT:
+                alertLogcatServiceTimeoutDialog = displayLogcatServiceTimeoutDialog().create();
+                alertLogcatServiceTimeoutDialog.show();
+                Button negativeButtonL = alertLogcatServiceTimeoutDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                LinearLayout.LayoutParams paramsL = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsL.setMargins(0, 0, 80, 0);
+                negativeButtonL.setLayoutParams(paramsL);
+                logcatServiceTimeoutEditText.requestFocus();
+                InputMethodManager immL = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                immL.showSoftInput(logcatServiceTimeoutEditText, InputMethodManager.SHOW_IMPLICIT);
+                logcatServiceTimeoutEditText.setSelection(logcatServiceTimeoutEditText.getText().length());
                 break;
             default:
                 break;
@@ -545,6 +626,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                     helpers.setFirstPreferenceWindow(true);
                     setBrightness();
                 }
+                helpers.setSettingsOpenedBoolean(false);
                 requireActivity().finish();
                 Intent intentUpdateUserPage = new Intent("update.user.page");
                 mContext.sendBroadcast(intentUpdateUserPage);
@@ -555,7 +637,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     private AlertDialog.Builder displayAllAppsTextSizeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(R.string.all_apps_textSize_str);
         if (allAppsTextSizeEditText.getParent() != null) {
             ((ViewGroup)allAppsTextSizeEditText.getParent()).removeView(allAppsTextSizeEditText);
@@ -569,7 +651,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     private AlertDialog.Builder displayWorkspaceTextSizeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(R.string.workspace_textSize_str);
         if (workspaceTextSizeEditText.getParent() != null) {
             ((ViewGroup)workspaceTextSizeEditText.getParent()).removeView(workspaceTextSizeEditText);
@@ -578,6 +660,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         workspaceTextSizeEditText.setText(workspaceTextSize.getSummary());
         workspaceTextSizeEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveWorkspaceTextSize());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
+    private AlertDialog.Builder displayLogcatServiceTimeoutDialog () {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.logcat_service_timeout_str);
+        if (logcatServiceTimeoutEditText.getParent() != null) {
+            ((ViewGroup)logcatServiceTimeoutEditText.getParent()).removeView(logcatServiceTimeoutEditText);
+        }
+        builder.setView(logcatServiceTimeoutEditText);
+        logcatServiceTimeoutEditText.setText(logcatServiceTimeout.getSummary());
+        logcatServiceTimeoutEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveLogcatServiceTimeout());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
     }
@@ -594,6 +690,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private void saveWorkspaceTextSize() {
         workspaceTextSize.setSummary(workspaceTextSizeEditText.getText().toString());
         editor.putString(WORKSPACE_TEXT_SIZE, workspaceTextSizeEditText.getText().toString());
+        editor.apply();
+    }
+
+    private void saveLogcatServiceTimeout() {
+        logcatServiceTimeout.setSummary(logcatServiceTimeoutEditText.getText().toString());
+        editor.putString(LOGCAT_SERVICE_TIMEOUT, logcatServiceTimeoutEditText.getText().toString());
         editor.apply();
     }
 
@@ -644,15 +746,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
-    }
-
-    public static void showLoading() {
+    public static void showLoading(String state) {
         if (!loadingDialog.isShowing()) {
+            TextView loadingDialogTextView = loadingDialog.findViewById(R.id.dialog_loading_text);
+            loadingDialogTextView.setText(state); 
             loadingDialog.show();
         }
     }
@@ -681,7 +778,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
 
         private void saveWallpaper(String name) {
-            requireActivity().runOnUiThread(() -> showLoading());
+            requireActivity().runOnUiThread(() -> showLoading(name));
             Drawable mWallpaper = mWallpaperManager.getDrawable();
             Bitmap mBitmap = drawableToBitmap(mWallpaper);
             File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img

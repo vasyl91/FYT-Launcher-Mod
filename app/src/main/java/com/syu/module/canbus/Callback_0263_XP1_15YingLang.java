@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.klc.KlcGl8AirControlAct;
 import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.carinfo.xp.yinglang.KlcGl8_263_AirControlAct;
@@ -73,7 +72,7 @@ public class Callback_0263_XP1_15YingLang extends CallbackCanbusBase {
                 }
             case 196:
                 if (ints[0] > 0 && !KlcGl8_263_AirControlAct.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.KlcGl8_263_AirControlAct");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.yinglang.KlcGl8_263_AirControlAct");
                     break;
                 } else if (ints[0] == 0 && KlcGl8AirControlAct.mIsFront && KlcGl8_263_AirControlAct.mInstance != null) {
                     KlcGl8_263_AirControlAct.mInstance.finish();

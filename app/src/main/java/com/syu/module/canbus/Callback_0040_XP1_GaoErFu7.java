@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.golf7.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
@@ -121,7 +120,7 @@ public class Callback_0040_XP1_GaoErFu7 extends CallbackCanbusBase {
                     int value = DataCanbus.DATA[80];
                     if (value == 1 && !Air_Activity_All_NewAdd_HP.mIsFront) {
                         AirHelper.disableAirWindowLocal(true);
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                         break;
                     } else if (value == 0 && Air_Activity_All_NewAdd_HP.mIsFront && Air_Activity_All_NewAdd_HP.mInstance != null) {
                         Air_Activity_All_NewAdd_HP.mInstance.finish();
@@ -159,7 +158,7 @@ public class Callback_0040_XP1_GaoErFu7 extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value == 1 && !Golf7_XP_FunctionalDrivingInfo1Acti.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti");
             }
             HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
             HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 100000L);

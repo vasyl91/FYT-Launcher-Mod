@@ -15,8 +15,6 @@ import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.app.Service;
 import android.app.WallpaperManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -52,29 +50,16 @@ import android.graphics.drawable.Drawable;
 import android.icu.text.DecimalFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.provider.Settings;
 import android.text.Selection;
 import android.text.SpannableString;
@@ -110,19 +95,28 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import cn.kuwo.autosdk.api.KWAPI;
-import cn.kuwo.autosdk.api.OnPlayerStatusListener;
-import cn.kuwo.autosdk.api.PlayState;
-import cn.kuwo.autosdk.api.PlayerStatus;
-import cn.kuwo.autosdk.bean.Music;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
-import com.android.launcher66.settings.CanbusClasses;
+import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SettingsActivity;
+import com.android.launcher66.settings.WakeDetectionService;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppMultiple;
@@ -134,10 +128,10 @@ import com.fyt.car.LauncherNotify;
 import com.fyt.car.MapConfig;
 import com.fyt.car.MusicService;
 import com.fyt.flow.TrifficReceiver;
-import com.fyt.skin.SkinManager;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.popwindow.PopWindowBright;
@@ -157,6 +151,9 @@ import com.syu.widget.DateMusicProvider;
 import com.syu.widget.DateTimeProvider;
 import com.syu.widget.TimeUpdateReceiver;
 import com.syu.widget.Widget;
+
+import org.apache.http.HttpStatus;
+import org.litepal.LitePal;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -181,9 +178,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.http.HttpStatus;
-import org.litepal.LitePal;
-
+import cn.kuwo.autosdk.api.KWAPI;
+import cn.kuwo.autosdk.api.OnPlayerStatusListener;
+import cn.kuwo.autosdk.api.PlayState;
+import cn.kuwo.autosdk.api.PlayerStatus;
+import cn.kuwo.autosdk.bean.Music;
 import share.Config;
 import share.ResValue;
 import share.ShareHandler;
@@ -279,7 +278,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private List<AppListBean> mAppListData;
     private LauncherAppWidgetHost mAppWidgetHost;
     private AppWidgetManager mAppWidgetManager;
-    public AppsCustomizePagedView mAppsCustomizeContent;
+    private AppsCustomizePagedView mAppsCustomizeContent;
     public static AppsCustomizeTabHost mAppsCustomizeTabHost;
     private long mAutoAdvanceSentTime;
     private MyAutoMapReceiver mAutoMap;
@@ -323,6 +322,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mLauncherView;
     private LeftAppListAdapter mLeftAppListAdapter;
     private List<AppListBean> mLeftAppListData;
+    private RecyclerView mLeftRecyclerView;
     private ImageView mMapbgUnitView;
     private TextView mMiuDrive;
     private View mMusicIcon;
@@ -341,7 +341,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mPageRadio;
     private View mPageTime;
     private ArrayList<View> mPagerList;
-    private boolean mPaused = true;
+    private boolean mPaused;
     private AppWidgetProviderInfo mPendingAddWidgetInfo;    
     private int mPendingAddWidgetId = -1;
     private MediaPlayer mPlayer;
@@ -351,6 +351,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button mRadioNextButton;
     private Button mRadioPauseButton;
     private Button mRadioPrevButton;
+    private RecyclerView mRecyclerView;
     private boolean mRestoring;
     private Bundle mSavedInstanceState;
     private Bundle mSavedState;
@@ -390,7 +391,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    public WeatherManager mWeatherManager;
+    public WeatherManager manager;
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button music_playpause;
@@ -460,7 +461,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final String colsePipAction = "com.lsec.tyz.action.voice.launcher";
     private final String camera360Action = "FOURCAMERA2_BROADCAST_SEND";
     private final BroadcastReceiver mCloseSystemDialogsReceiver = new CloseSystemDialogsIntentReceiver(this, null);
-    private boolean closeSystemDialogsIntentReceiverBoolean = false;
     private final ContentObserver mWidgetObserver = new AppWidgetResetObserver();
     public Handler handler = new Handler(Looper.getMainLooper());
     private ItemInfo mPendingAddInfo = new ItemInfo();
@@ -475,7 +475,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ArrayList<Runnable> mOnResumeCallbacks = new ArrayList<>();
     private boolean mUserPresent = true;
     private boolean mVisible = false;
-    private boolean mHasFocus = false;
+    public boolean mHasFocus = false;
     private boolean mAttached = false;
     private final int ADVANCE_MSG = 1;
     private final int mAdvanceInterval = 20000;
@@ -488,12 +488,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     private SharedPreferences mPrefs;
-    private boolean fytData = true;  
+	private boolean fytData = true;  
     private final String SYSTEM_DIALOG_REASON_KEY = "reason";
     private final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
     private final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
     public static final String ALL_APPS = "all.apps";
     private static final String UPDATE_USER_PAGE = "update.user.page";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private FusedLocationProviderClient fusedLocationClient;
     private Helpers helpers = new Helpers();
     private Context mContext;
     private LinearLayout bottomButtons;
@@ -501,11 +503,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static View rootView;
     public static int screenWidth;
     private boolean temporarilyDisablePlayPauseButton = false;
-    public boolean defaultAppInit = false;
     private MainViewModel mViewModel;
-    private AtomicBoolean atomicOnBoot = new AtomicBoolean(true);
+    private ConnectivityManager connectivityManager;
+    private NetworkRequest networkRequest;
+    private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
+    private final Handler connectionHandler = new Handler(Looper.getMainLooper());
     public static final String PIP_STARTED = "pip.started";
     private static final String NIGHT_MODE = "night_mode"; 
+    final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
 
     public static View getRootView() {
         return rootView;
@@ -1459,7 +1464,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             Launcher.this.showWorkspace(true);
                         }
                         break;  
-                    case "android.intent.action.USER_PRESENT":
+                    case Intent.ACTION_USER_PRESENT:
                         Launcher.this.mUserPresent = true;
                         Launcher.this.updateRunning();
                         break;                     
@@ -1487,8 +1492,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         break; 
                     case UPDATE_USER_PAGE:  
                         boolean userLayoutBool = mPrefs.getBoolean("user_layout", false); 
-                        Log.i("Recreate page", String.valueOf(helpers.hasLayoutTypeChanged()));
-                        if (userLayoutBool && (helpers.hasLayoutTypeChanged() || helpers.hasLeftBarChanged() || helpers.hasUserOpenedCreator())) {
+                        boolean userMap = mPrefs.getBoolean("user_map", true);
+                        if (userLayoutBool && userMap && (helpers.hasLayoutTypeChanged() || helpers.hasLeftBarChanged() || helpers.hasUserOpenedCreator())) {
                             Log.i("Recreate page", "user layout");
                             setWindowLocUser();
                             WindowUtil.restartPipApp();
@@ -1528,12 +1533,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
                         }
 
-                        new CanbusClasses(LauncherApplication.sApp).execute();
                         recreateView(userLayoutBool);
                         break;  
                     case "pause.button":
                         setPlayPauseIcon(true);   
-                        break;                  
+                        break;          
                 }
             }
         }
@@ -1554,10 +1558,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mModel.startLoader(false, mWorkspace.getCurrentPage());
         LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);  
-        Log.d("recreateView", "removePip");
-        WindowUtil.removePip(null);     
-        WindowUtil.startMapPip(null, false, 250);
-        //helpers.resetPrefs();
+        Log.d("recreateView", "remove and open Pip");
+        WindowUtil.removePip(null);
+        int pipScreen = Integer.parseInt(mPrefs.getString("pip_screen", "1")) - 1;
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            if (mWorkspace.getCurrentPage() == pipScreen) {
+                WindowUtil.startMapPip(null, false);
+            }
+            helpers.setFirstPreferenceWindow(false);
+            helpers.setWallpaperWindow(false);
+            helpers.setWasInRecents(false);
+            helpers.setHomePressedBoolean(false);
+        }, 250);
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit(); 
+        }, 350);  
     }    
 
     private boolean checkIfMapSizeChanged() {
@@ -1684,14 +1699,102 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);       
-        Log.i(TAG, "onCreate----->");
+        super.onCreate(savedInstanceState);
+        Log.i("onCreate", "onCreate----->");
+        atomicOnCreate.set(true);
         mContext = this;
+
+        getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+        helpers = new Helpers();
+        helpers.setWindowHeight(getResources().getDisplayMetrics().heightPixels);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);         
+
+        if (mPrefs.getBoolean("transparent_statusbar", false)) {
+            getWindow().addFlags(Integer.MIN_VALUE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
+        checkNotificationPermission();      
+
+        fytData = mPrefs.getBoolean("fyt_data", true);   
+        userLayout = mPrefs.getBoolean("user_layout", false);
+        leftBar = mPrefs.getBoolean("left_bar", false); 
+        if (userLayout) {
+            setWindowLocUser();
+        } else {
+            setWindowLocDefault();
+        }
+
+        getWindow().addFlags(Integer.MIN_VALUE);
+
+        float density = getResources().getDisplayMetrics().density;
+        LogPreview.show("------------------->>> density:" + density);
+
+        checkForLocaleChange();
+
+        initVariable();
+
+        registerContentObservers();
+
+        mSavedState = savedInstanceState;
+        restoreState(mSavedState);
+
+        // Update customization drawer _after_ restoring the states
+        if (mAppsCustomizeContent != null) {
+            mAppsCustomizeContent.onPackagesUpdated(
+                LauncherModel.getSortedWidgetsAndShortcuts(this));
+        }
+
+        if (!mRestoring) {
+            if (sPausedFromUserAction) {
+                // If the user leaves launcher, then we should just load items asynchronously when
+                // they return.
+                mModel.startLoader(true, -1);
+            } else {
+                // We only load the page synchronously if the user rotates (or triggers a
+                // configuration change) while launcher is in the foreground
+                mModel.startLoader(true, mWorkspace.getCurrentPage());
+            }
+        }
+
+        // For handling default keys
+        mDefaultKeySsb = new SpannableStringBuilder();
+        Selection.setSelection(mDefaultKeySsb, 0);
+        
+        mHandler.post(this.runnable_register);
+        
+        updateGlobalIcons();
+        
+        // On large interfaces, we want the screen to auto-rotate based on the current orientation
+        unlockScreenOrientation(true);
+        
+        initRegisterReceiver();
+        
+        Widget.update(LauncherApplication.sApp);
+
+        onActivityResultX();
+		
+        onBackPressedX();
+    }
+
+    private void initVariable() {
         mLauncher = this;
+        app = LauncherApplication.sApp;
+        
+        mInflater = getLayoutInflater();
+        
+        W3Utils.addFilterApp(FytPackage.browserAction);
 
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
 
+        ContentResolver resolver = getApplicationContext().getContentResolver();       
+        Config.PLATFORM_ID = ShareHandler.getInt(resolver, 10, 0);
+        Config.CUSTOMER_ID = ShareHandler.getInt(resolver, 9, 0);
+        Config.USER_UIID = ShareHandler.getInt(resolver, 11, 0);
+        Config.CHIP_UIID = ShareHandler.getInt(resolver, 13, 0);
+        
         // Determine the dynamic grid properties
         Point smallestSize = new Point();
         Point largestSize = new Point();
@@ -1712,147 +1815,46 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
 
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this); 
-        if (helpers.isOnBootBoolean()) {
-            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
-            helpers.setOnBootBoolean(true);
-        } else {
-            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
-        }  
-
         mModel = app.setLauncher(this);
         mIconCache = app.getIconCache();
         mIconCache.flushInvalidIcons(grid);
         mDragController = new DragController(this);
-        mInflater = getLayoutInflater();
 
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mViewModel.setFirstUse(mModel.mFirstUse);
-
-        if (Stats.ENABLE_STATS) {
-            mStats = new Stats(this);
-        }
-
-        mAppWidgetManager = AppWidgetManager.getInstance(LauncherApplication.sApp);
-        mAppWidgetHost = new LauncherAppWidgetHost(LauncherApplication.sApp, this, APPWIDGET_HOST_ID);
-        mAppWidgetHost.setOnWidgetClickListener(this);
-        mAppWidgetHost.startListening();
-
-        // If we are getting an onCreate, we can actually preempt onResume and unset mPaused here,
-        // this also ensures that any synchronous binding below doesn't re-trigger another
-        // LauncherModel load.
-        mPaused = false;
-
-        onActivityResultX();
-
-        if (PROFILE_STARTUP) {
-            android.os.Debug.startMethodTracing(
-                    Environment.getExternalStorageDirectory() + "/launcher");
-        }
-
-        checkForLocaleChange();
+        
         setContentView(R.layout.launcher);
         rootView = findViewById(R.id.launcher);
         // prevent layout shift to the left
         screenWidth = getResources().getDisplayMetrics().widthPixels / 500; 
         rootView.setTranslationX(-screenWidth);
-
+        
         setupViews();
         grid.layout(this);
 
-        registerContentObservers();
-
-        mSavedState = savedInstanceState;
-        restoreState(mSavedState);
-
-        // Update customization drawer _after_ restoring the states
-        if (mAppsCustomizeContent != null) {
-            mAppsCustomizeContent.onPackagesUpdated(
-                LauncherModel.getSortedWidgetsAndShortcuts(this));
-        }
-
-        if (PROFILE_STARTUP) {
-            android.os.Debug.stopMethodTracing();
-        }
-
-        if (!mRestoring) {
-            if (sPausedFromUserAction) {
-                // If the user leaves launcher, then we should just load items asynchronously when
-                // they return.
-                mModel.startLoader(true, -1);
+        mStats = new Stats(this);
+        
+        /*mCurrWallpaperRes = this.mSharedPrefs.getString(SP_WALLPAPER, "");       
+        if (TextUtils.isEmpty(this.mCurrWallpaperRes)) {
+            if (helpers.isDay()) {
+                this.mCurrWallpaperRes = "def_bg";
             } else {
-                // We only load the page synchronously if the user rotates (or triggers a
-                // configuration change) while launcher is in the foreground
-                mModel.startLoader(true, mWorkspace.getCurrentPage());
+                this.mCurrWallpaperRes = "def_bg_n";
             }
-        }
+        }*/
 
-        // For handling default keys
-        mDefaultKeySsb = new SpannableStringBuilder();
-        Selection.setSelection(mDefaultKeySsb, 0);
-
-        updateGlobalIcons();
-
-        // On large interfaces, we want the screen to auto-rotate based on the current orientation
-        unlockScreenOrientation(true);
+        mAppWidgetManager = AppWidgetManager.getInstance(LauncherApplication.sApp);
+        mAppWidgetHost = new LauncherAppWidgetHost(LauncherApplication.sApp, this, APPWIDGET_HOST_ID);
+        mAppWidgetHost.setOnWidgetClickListener(this);
+        mAppWidgetHost.startListening();
         
-        helpers = new Helpers();
-        helpers.setOnCreateJobInit(true);
-        helpers.setWindowHeight(getResources().getDisplayMetrics().heightPixels);
+        //this.manager = WeatherManager.initialize(this);
         
-        fytData = mPrefs.getBoolean("fyt_data", true);
-        userLayout = mPrefs.getBoolean("user_layout", false);
-        leftBar = mPrefs.getBoolean("left_bar", false); 
-        if (userLayout) {
-            setWindowLocUser();
-        } else {
-            setWindowLocDefault();
-        }
-        
-        if (mPrefs.getBoolean("transparent_statusbar", false)) {
-            getWindow().addFlags(Integer.MIN_VALUE);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
-        
-        checkNotificationPermission();        
-
-        getWindow().addFlags(Integer.MIN_VALUE);
-        float density = getResources().getDisplayMetrics().density;
-        LogPreview.show("------------------->>> density:" + density);
-        
-        SkinManager.init(this);
-        
-        W3Utils.addFilterApp(FytPackage.browserAction);
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        Config.PLATFORM_ID = ShareHandler.getInt(resolver, 10, 0);
-        Config.CUSTOMER_ID = ShareHandler.getInt(resolver, 9, 0);
-        Config.USER_UIID = ShareHandler.getInt(resolver, 11, 0);
-        Config.CHIP_UIID = ShareHandler.getInt(resolver, 13, 0);
-
         kwAPi = KWAPI.createKWAPI(this, "fangyitong");
         if (kwAPi != null) {
             kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
         }
-
-        mHandler.post(runnable_register);
-
-        initRegisterReceiver();
-
-        Widget.update(LauncherApplication.sApp);
-
-        /*mCurrWallpaperRes = mSharedPrefs.getString(SP_WALLPAPER, "");
-        if (TextUtils.isEmpty(mCurrWallpaperRes)) {
-            if (helpers.isDay()) {
-                mCurrWallpaperRes = "def_bg";
-            } else {
-                mCurrWallpaperRes = "def_bg_n";
-            }
-        }
-        mWeatherManager = WeatherManager.initialize(this);*/
-
-        onBackPressedX();
-    }  
+    }
 
     private void onActivityResultX() {
         ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
@@ -1917,7 +1919,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "---->>> onStart");
-        defaultAppInit = true;
         WindowUtil.initDefaultApp(); 
         FirstFrameAnimatorHelper.setIsVisible(true);
     }
@@ -1925,17 +1926,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume(); 
-        Log.i(TAG, "onResume----->");         
+        Log.d(TAG, "onResume----->");
         helpers = new Helpers();
-        if (mPlayer == null) {
-            mPlayer = new MediaPlayer();
-        }
         fytData = mPrefs.getBoolean("fyt_data", true); 
         preOnResumeTime = System.currentTimeMillis();
         if (helpers.shouldAllAppsBeVisible()) {
             Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBVisible(false);
         }
+
+        if (isAllAppsVisible()) {
+            WindowUtil.removePip(null);
+        } else {
+            if (atomicOnCreate.get() && shouldPipStart()) {
+                Log.d("onResume", "startMapPip after onCreate");
+                atomicOnCreate.set(false);
+                WindowUtil.startMapPip(null, false, 250);
+            } else {
+                initPip("onResume", null);
+            }
+        }
+        
         handleView();
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
         }
@@ -2047,85 +2058,85 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mKwArtist.setText(R.string.music_author);
             }
         }
+        if (mPlayer == null) {
+            mPlayer = new MediaPlayer();
+        }
+
         setPlayPauseIcon(true);
+    }
+
+    private void initPip(String whereInitiated, View view) {
+        // mWorkspace.getCurrentPage() is determined with slight delay
+        int pipScreen = Integer.parseInt(mPrefs.getString("pip_screen", "1")) - 1;
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            if (helpers.displayStateBoolean()
+                && !helpers.isFirstPreferenceWindow() 
+                && !helpers.isWallpaperWindow() 
+                && !helpers.isInOverviewMode()
+                && !mDragController.isDragging()
+                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+                && mWorkspace.getCurrentPage() == pipScreen
+                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+                    Log.d(whereInitiated, "startMapPip");
+                    WindowUtil.startMapPip(view, false, 100);
+
+            }
+            helpers.setFirstPreferenceWindow(false);
+            helpers.setWallpaperWindow(false);
+            helpers.setWasInRecents(false);
+        }, 150);
+    }
+
+    private boolean shouldPipStart() {
+        int pipScreen = Integer.parseInt(mPrefs.getString("pip_screen", "1"));
+        int startPage = Integer.parseInt(mPrefs.getString("start_page", "1"));
+        return pipScreen == startPage;
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        Log.i(TAG, "onPostResume----->");  
+        Log.i(TAG, "onPostResume----->");
 
         SharedPreferences.Editor editor = mPrefs.edit();
         editor = mPrefs.edit();
         editor.putBoolean("user_init_layout", mPrefs.getBoolean("user_layout", false));
         editor.apply();
 
-        if (isAllAppsVisible()) {
-            Log.d("onPostResume", "removePip");
-            WindowUtil.removePip(null);
-        } else if (defaultAppInit
-            || !helpers.isFirstPreferenceWindow() 
-            && !helpers.isWallpaperWindow() 
-            && !helpers.isInOverviewMode()
-            && !mDragController.isDragging()
-            && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-            && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                Log.d("onPostResume", "startMapPip");
-                WindowUtil.startMapPip(null, false, 250);
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false);
-
-        if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(NIGHT_MODE, false)) {
-            Intent nightModeServiceIntent = new Intent(this, NightModeService.class);
+        if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(NIGHT_MODE, false) && helpers.displayStateBoolean()) {
+            Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
             startService(nightModeServiceIntent);
         }
 
         if (!isServiceRunning(CanbusService.class)) {
-            new CanbusClasses(LauncherApplication.sApp).execute();
+            new CanbusAsyncTask(LauncherApplication.sApp).execute();
         }
+        final boolean alreadyOnHome = mHasFocus;
 
-        // in some cases pip won't start when user wakes the device up after long inactivity
-        // this serves as some sort of checking function to make sure it starts
-        if (helpers.isOnBootBoolean() && atomicOnBoot.get()) {
-            atomicOnBoot.set(false); // prevents running the handler twice
-            Log.e("onPostResume", "on Boot check");
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!Utils.topAppPip(WindowUtil.AppPackageName) 
-                        && !helpers.isFirstPreferenceWindow() 
-                        && !helpers.isWallpaperWindow() 
-                        && !helpers.isInOverviewMode()
-                        && !mDragController.isDragging()
-                        && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                        && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-                        || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                            Log.e("onPostResume", "startMapPip on Boot check");
-                            helpers.setOnBootBoolean(false);
-                            WindowUtil.startMapPip(null, true, 250);
-                    } else {
-                        helpers.setOnBootBoolean(false);
-                    }
-                }
-            }, 8000);
+        if (mWorkspace == null) {
+            // Can be cases where mWorkspace is null, this prevents a NPE
+            return;
+        }
+        Folder openFolder = mWorkspace.getOpenFolder();
+        // In all these cases, only animate if we're already on home
+        mWorkspace.exitWidgetResizeMode();
+        if (alreadyOnHome && mState == State.WORKSPACE && !mWorkspace.isTouchActive() &&
+                openFolder == null) {
+            mWorkspace.moveToDefaultScreen(true);
         }
     }
 
     @Override 
     protected void onPause() {
-        super.onPause();
         Log.d(TAG, "---->>> onPause");
-        if (AppUtil.topApp(this, FytPackage.hicarAction)
-            && !closeSystemDialogsIntentReceiverBoolean) {
-            Log.d("onPause", "removePip");
-            WindowUtil.removePip(pipViews);
-            closeSystemDialogsIntentReceiverBoolean = false;
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            if (Utils.topApp(FytPackage.hicarAction)
+                || Utils.topApp(FytPackage.fourcamera2Action)) {
+                WindowUtil.removePip(this.pipViews);
+            }
+        }, 100);
+        super.onPause();
         InstallShortcutReceiver.enableInstallQueue();
         mPaused = true;
         mDragController.cancelDrag();
@@ -2221,6 +2232,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace = null;
         mDragController = null;
         LauncherAnimUtils.onDestroyActivity();
+        stopServicesOnDestroy();
     }    
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
@@ -2234,6 +2246,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         return false;
+    }
+
+    private void stopServicesOnDestroy() {
+        stopService(new Intent(LauncherApplication.sApp, WakeDetectionService.class));
+        stopService(new Intent(LauncherApplication.sApp, NightModeService.class));  
+        stopService(new Intent(LauncherApplication.sApp, CanbusService.class));   
     }
 
     // Handle widget click events
@@ -2287,7 +2305,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void checkNotificationPermission() {
         // Notifications access permission
-        String notificationListenerString = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
+        String notificationListenerString = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
         if (notificationListenerString == null || !notificationListenerString.contains(getPackageName())) {
             Intent intentNoti = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             intentNoti.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -2409,22 +2427,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         filter.addAction("FOURCAMERA2_BROADCAST_SEND");
         IntentFilter musicFilter = new IntentFilter();
         musicFilter.addAction("com.fyt.systemui.remove");
-        mAutoMap = new MyAutoMapReceiver();
+        this.mAutoMap = new MyAutoMapReceiver();
         IntentFilter amapFilter = new IntentFilter();
         amapFilter.addAction("AUTONAVI_STANDARD_BROADCAST_SEND");
-        mTrifficReceiver = new TrifficReceiver();
+        this.mTrifficReceiver = new TrifficReceiver();
         IntentFilter trifficFilter = new IntentFilter();
         trifficFilter.addAction("intent.action.mapgoo.simtool.info.triffic.v2");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mCloseSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED);
-            registerReceiver(removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
-            registerReceiver(mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
-            registerReceiver(mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
+            registerReceiver(this.mCloseSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED);
+            registerReceiver(this.removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
+            registerReceiver(this.mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
+            registerReceiver(this.mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
         } else {
-            registerReceiver(mCloseSystemDialogsReceiver, filter);
-            registerReceiver(removeMusic, musicFilter);
-            registerReceiver(mAutoMap, amapFilter);
-            registerReceiver(mTrifficReceiver, trifficFilter);
+            registerReceiver(this.mCloseSystemDialogsReceiver, filter);
+            registerReceiver(this.removeMusic, musicFilter);
+            registerReceiver(this.mAutoMap, amapFilter);
+            registerReceiver(this.mTrifficReceiver, trifficFilter);
         }
     }
 
@@ -2925,21 +2943,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 r.run();
             }
         }
-    }
-
-    public boolean isJobServiceOn(Context context) {
-        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        boolean hasBeenScheduled = false;
-        for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
-            if (jobInfo.getId() == 123) {
-                hasBeenScheduled = true;
-                break;
-            }
-        }
-        if (helpers.onCreateJobInit()) {
-            hasBeenScheduled = true;
-        }
-        return hasBeenScheduled;
     }
 
     public void setSoundBtn() {
@@ -4891,7 +4894,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.intent.action.SCREEN_OFF");
-        filter.addAction("android.intent.action.USER_PRESENT");
+        filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(UPDATE_USER_PAGE);
         filter.addAction("pause.button");
@@ -6389,7 +6392,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (!(itemUnderLongClick instanceof Folder)) {
                     // User long pressed on an item
                     mWorkspace.startDrag(longClickCellInfo);
-                    //WindowUtil.removePip(pipViews);
                     hideHotseat(true, true);
                 }
             }
@@ -6718,20 +6720,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         showWorkspace(animated, null);
         showHotseat(true, true);
         updateWallpaperVisibility(true);
-        if (!helpers.isFirstPreferenceWindow() 
-            && !helpers.isWallpaperWindow() 
-            && !helpers.isInOverviewMode()
-            && !mDragController.isDragging()
-            && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-            && mWorkspace.getCurrentPage() == mWorkspace.getPageIndexForScreenId(mWorkspace.CUSTOM_CONTENT_SCREEN_ID1)
-            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                Log.d("showWorkspace()", "startMapPip");
-                WindowUtil.startMapPip(null, false, 250);
-        }
-        helpers.setFirstPreferenceWindow(false);
-        helpers.setWallpaperWindow(false);
-        helpers.setWasInRecents(false); 
     }
 
     protected void showWorkspace() {
@@ -6758,6 +6746,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mState = State.WORKSPACE;
         mUserPresent = true;
         updateRunning();
+
         getWindow().getDecorView().sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
         onWorkspaceShown(animated);
     }
@@ -6769,7 +6758,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         onWorkspaceShown(animated);
     }
 
-    public void onWorkspaceShown(boolean animated) {
+    public void onWorkspaceShown(boolean animated) {   
+        initPip("onWorkspaceShown()", null);
     }
 
     void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) {
@@ -7094,29 +7084,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         @Override 
         public void onReceive(Context context, Intent intent) {
-            closeSystemDialogsIntentReceiverBoolean = true;
             Log.d(TAG, "CloseSystemDialogsIntentReceiver");
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
-            if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName())) {
-                if ("com.lsec.tyz.action.voice.launcher".equals(intent.getAction())
-                    && !Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
-                    Log.d("CloseSystemDialogsIntentReceiver", "removePip");
+            if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName()) && !helpers.settingsOpenedBoolean()) {
+                if ("com.lsec.tyz.action.voice.launcher".equals(intent.getAction())) {
                     WindowUtil.removePip(null);
                     return;
                 } else {
-                    if (!"FOURCAMERA2_BROADCAST_SEND".equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && WindowUtil.visible && CarStates.mAccState == 1) {
-                        new Thread(new Runnable() {
+                    if (!"FOURCAMERA2_BROADCAST_SEND".equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && CarStates.mAccState == 1) {
+                        new Thread(new Runnable() { 
                             @Override 
                             public void run() {
-                                Log.i("mql", "--- com.lsec.pipdie");    
-                                WindowUtil.startMapPip(null, false, 250);
+                                initPip("CloseSystemDialogsIntentReceiver", null);
+                                Log.i("mql", "--- com.lsec.pipdie");
                                 if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                                     Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
                                 }
                             }
                         }).start();
+                        return;
                     }
                     return;
                 }

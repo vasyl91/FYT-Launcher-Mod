@@ -3,6 +3,7 @@ package com.syu.carinfo.xc.gm;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.rzc.klc.RzcKlcOnStarAct;

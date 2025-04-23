@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.daojun.tianlai.djTianlaiCd;
 import com.syu.carinfo.daojun.tianlai.djTianlaiRadio;
 import com.syu.ipc.IModuleCallback;
@@ -79,10 +78,10 @@ public class Callback_0439_Daojun_XP1_TianLai extends CallbackCanbusBase {
                 case 119:
                     HandlerCanbus.update(updateCode, ints);
                     if (ints[0] == 2 && !djTianlaiCd.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiCd");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiCd");
                         break;
                     } else if (ints[0] == 1 && !djTianlaiRadio.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiRadio");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiRadio");
                         break;
                     } else if (ints[0] == 0) {
                         if (djTianlaiRadio.isFront && djTianlaiRadio.mInit != null) {

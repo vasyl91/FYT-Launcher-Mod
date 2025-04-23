@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.honda.ActivityAirControl;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -284,7 +283,7 @@ public class Callback_0298_XP1_2015SIYU_CRV extends CallbackCanbusBase {
             int value = ints[0];
             if (value == 1) {
                 if (!ActivityAirControl.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityAirControl");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityAirControl");
                     return;
                 } else {
                     if (ActivityAirControl.mIsFront && ActivityAirControl.mInstance != null) {

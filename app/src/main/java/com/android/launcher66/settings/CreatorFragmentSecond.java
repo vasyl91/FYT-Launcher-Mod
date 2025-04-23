@@ -16,11 +16,10 @@ import androidx.preference.PreferenceManager;
 import com.google.android.flexbox.FlexboxLayout;
 import com.android.launcher66.R;
 
-public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHomePressedListener {
+public class CreatorFragmentSecond extends Fragment {
 
     // Fragment that opens DrawView.java where user can create the layout
 
-    private HomeWatcher mHomeWatcher;
     private final Helpers helpers = new Helpers();
     private Context mContext;
     private View rooView;
@@ -40,7 +39,7 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     int musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY;
     int radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY;
 
-    boolean date, music, radio, stats; 
+    boolean map, date, music, radio, stats; 
     boolean overlappingMargins = false;
 
     public CreatorFragmentSecond() {
@@ -61,6 +60,7 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
         } 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
+        map = sharedPrefs.getBoolean("user_map", false);
         date = sharedPrefs.getBoolean("user_date", true);
         music = sharedPrefs.getBoolean("user_music", true);
         radio = sharedPrefs.getBoolean("user_radio", true); 
@@ -87,10 +87,6 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        mHomeWatcher = new HomeWatcher(context);
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
-
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -102,27 +98,22 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
-    }
-
     private void resetPrefs() {
         margin = Integer.valueOf(sharedPrefs.getString("layout_margin", "10")); 
         if (margin < 0) {
             margin = 10;
         }
         SharedPreferences.Editor editor = sharedPrefs.edit(); 
-        editor.putInt("mapTopLeftX", margin);  
-        editor.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
-        editor.putInt("mapTopRightX", margin + mapMinWidth);    
-        editor.putInt("mapTopRightY", margin + dateMinHeight + margin); 
-        editor.putInt("mapBottomRightX", margin + mapMinWidth);   
-        editor.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
-        editor.putInt("mapBottomLeftX", margin);  
-        editor.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
+        if (map) {
+            editor.putInt("mapTopLeftX", margin);  
+            editor.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
+            editor.putInt("mapTopRightX", margin + mapMinWidth);    
+            editor.putInt("mapTopRightY", margin + dateMinHeight + margin); 
+            editor.putInt("mapBottomRightX", margin + mapMinWidth);   
+            editor.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
+            editor.putInt("mapBottomLeftX", margin);  
+            editor.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
+        }
         if (date) {
             editor.putInt("dateTopLeftX", margin);  
             editor.putInt("dateTopLeftY", margin);          
@@ -163,22 +154,25 @@ public class CreatorFragmentSecond extends Fragment implements HomeWatcher.OnHom
     private void checkIfOverlappingMargins() {
         int height = getResources().getDisplayMetrics().heightPixels;
         int width = getResources().getDisplayMetrics().widthPixels;
-        margin = Integer.valueOf(sharedPrefs.getString("layout_margin", "10"));    
-        mapTopLeftX = sharedPrefs.getInt("mapTopLeftX", margin);
-        mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);        
-        mapTopRightX = sharedPrefs.getInt("mapTopRightX", mapTopLeftX + mapMinWidth);    
-        mapTopRightY = sharedPrefs.getInt("mapTopRightY", mapTopLeftY);
-        mapBottomRightX = sharedPrefs.getInt("mapBottomRightX", mapTopRightX);
-        mapBottomRightY = sharedPrefs.getInt("mapBottomRightY", mapTopRightY + mapMinHeight);
-        mapBottomLeftX = sharedPrefs.getInt("mapBottomLeftX", mapTopLeftX);
-        mapBottomLeftY = sharedPrefs.getInt("mapBottomLeftY", mapTopLeftY + mapMinHeight);
+        int pipScreen = Integer.parseInt(sharedPrefs.getString("pip_screen", "1")) - 1;
+        margin = Integer.valueOf(sharedPrefs.getString("layout_margin", "10"));   
+            if (map && pipScreen == 0) { 
+            mapTopLeftX = sharedPrefs.getInt("mapTopLeftX", margin);
+            mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);        
+            mapTopRightX = sharedPrefs.getInt("mapTopRightX", mapTopLeftX + mapMinWidth);    
+            mapTopRightY = sharedPrefs.getInt("mapTopRightY", mapTopLeftY);
+            mapBottomRightX = sharedPrefs.getInt("mapBottomRightX", mapTopRightX);
+            mapBottomRightY = sharedPrefs.getInt("mapBottomRightY", mapTopRightY + mapMinHeight);
+            mapBottomLeftX = sharedPrefs.getInt("mapBottomLeftX", mapTopLeftX);
+            mapBottomLeftY = sharedPrefs.getInt("mapBottomLeftY", mapTopLeftY + mapMinHeight);
 
-        if (mapTopLeftX < margin || mapTopLeftY < margin 
-            || mapTopRightX > (width - margin) || mapTopRightY < margin 
-            || mapBottomRightX > (width - margin) || mapBottomRightY > (height - margin) 
-            || mapBottomLeftX < margin || mapBottomLeftY > (height - margin)) {
-            overlappingMargins = true;
-        } 
+            if (mapTopLeftX < margin || mapTopLeftY < margin 
+                || mapTopRightX > (width - margin) || mapTopRightY < margin 
+                || mapBottomRightX > (width - margin) || mapBottomRightY > (height - margin) 
+                || mapBottomLeftX < margin || mapBottomLeftY > (height - margin)) {
+                overlappingMargins = true;
+            } 
+        }
 
         if (date) {
             dateTopLeftX = sharedPrefs.getInt("dateTopLeftX", margin);  

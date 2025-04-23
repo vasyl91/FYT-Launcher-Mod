@@ -251,16 +251,22 @@
     <string name="user_layout">User layout</string> 
     <string name="stock_layout">Stock layout</string> 
     <string name="layout_creator">LAYOUT CREATOR</string> 
-    <string name="layout_summary">Set your layout</string> 
+    <string name="layout_summary_disabled"><![CDATA[Set layout type to <b>"User Layout"</b> to enable creator]]></string> 
+    <string name="layout_summary_enabled">Set your layout</string> 
     <string name="fyt_title_source">Fyt music title source</string> 
     <string name="fyt_metadata">From metadata</string> 
     <string name="fyt_file">From file path</string> 
     <string name="left_bar">Use left bar</string> 
     <string name="left_bar_on">Left bar + bottom bar</string> 
-    <string name="left_bar_off">Only bottom bar</string> 
+    <string name="left_bar_off">Only bottom bar</string>
+    <string name="map_widget">Navi widget</string>
+    <string name="pip_dialog">Set the screen that will display navi app</string>   
+    <string name="pip_dialog_str">Display navi on the screen (1 is default):</string>  
     <string name="date_widget">Date and time widget</string> 
     <string name="music_widget">Music widget</string> 
-    <string name="radio_widget">Radio widget</string> 
+    <string name="radio_widget">Radio widget</string>
+    <string name="start_page">Set the start page</string> 
+    <string name="start_page_str">Set the start page (1 is default):</string> 
     <string name="margins_str">Margins (max. 25)</string> 
     <string name="open_creator">OPEN CREATOR</string> 
     <string name="open_creator_summary">Adjust your widgets</string> 
@@ -284,15 +290,15 @@
     <string name="creator_radio">Radio</string>
     <string name="stats_name">In-app stats</string>
     <string name="overlapping">Widgets are overlapping!</string>
-    <string name="wont_save">Current layout will not be saved.</string>
-    <string name="proceed_dont_save">Proceed and do not save</string>
+    <string name="wont_save">Current layout will not be saved. Proceeding will reset the layout.</string>
+    <string name="proceed_and_reset">Proceed and reset</string>
     <string name="dismiss">Dismiss</string>
 
 
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>
-    <string name="instantaneous_consumption_val">0.0 L/100km\u0020</string>
-    <string name="driving_mileage_val">-.- km\u0020</string>
+    <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
+    <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
     <string name="stats_window_summary"><![CDATA[Look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
@@ -337,9 +343,9 @@
     <string name="user_sunset">Sunset time: %1$s</string>
     <string name="default_wallpapers">Use the default wallpapers</string>
     <string name="save_day_wallpaper">Save the day wallpaper</string>
-    <string name="save_day_wallpaper_summary">Press this preference to save the current wallpaper for the day mode otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
+    <string name="save_day_wallpaper_summary">Set the wallpaper you want to display for the day mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
     <string name="save_night_wallpaper">Save the night wallpaper</string>
-    <string name="save_night_wallpaper_summary">Press this preference to save the current wallpaper for the night mode otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
+    <string name="save_night_wallpaper_summary">Set the wallpaper you want to display for the night mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
     <string name="wallpaper_set">%1$s mode wallpaper has been set!</string>
     <string name="wallpaper_not_set">Something went wrong, %1$s mode wallpaper has not been set!</string>
     <string name="wallpaper_error">Error, %1$s mode wallpaper has not been set:\u0020</string>
@@ -347,6 +353,10 @@
     <string name="day_seek_bar">Set brightness for day mode</string>
     <string name="night_seek_bar">Set brightness for night mode</string>
     <string name="init_default_app_error">Please set the navi/front app in the device settings.</string>
+    <string name="logcat_service">Logcat service</string>
+    <string name="logcat_service_summary"><![CDATA[Logcat will start logging on application start. Reset the device and check the logs located in <b>Download/launcher_logs</b>]]></string>
+    <string name="logcat_service_timeout">Logcat timeout</string>
+    <string name="logcat_service_timeout_str">Set the logcat timeout (in seconds):</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__inputColor">Color: </string>

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -68,7 +67,7 @@ public class Callback_0452_XBS_Nissan_cedric extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value != 0 && !XiandaiSosPage.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
             } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
                 XiandaiSosPage.mInstance.finish();
             }

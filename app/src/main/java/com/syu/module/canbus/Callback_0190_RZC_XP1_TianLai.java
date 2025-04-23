@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct;
 import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct;
 import com.syu.ipc.IModuleCallback;
@@ -161,10 +160,10 @@ public class Callback_0190_RZC_XP1_TianLai extends CallbackCanbusBase {
                     break;
                 case 145:
                     if (ints[0] == 2 && !XBS09TianlaiCarCDAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct");
                         break;
                     } else if (ints[0] == 1 && !XBS09TianlaiCarRadioAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct");
                         break;
                     } else if (ints[0] == 3) {
                         if (XBS09TianlaiCarRadioAct.mIsFront && XBS09TianlaiCarRadioAct.mInstance != null) {

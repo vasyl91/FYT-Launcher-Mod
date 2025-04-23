@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar;
 import com.syu.carinfo.zhtd.bmw.ZhtdAudiNewCarinfoAct;
 import com.syu.carinfo.zhtd.bmw.ZhtdBenzNewCarinfoAct;
@@ -169,7 +168,7 @@ public class Callback_0450_ZHTD_BWM_CarUi extends CallbackCanbusBase {
     private void showDashBoard(int updateCode, int[] ints) {
         int value = ints[0];
         if (value == 1 && !KswAudiQ5Backcar.mIsFront) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
         } else if (KswAudiQ5Backcar.mInstance != null) {
             KswAudiQ5Backcar.mInstance.finish();
         }
@@ -185,19 +184,19 @@ public class Callback_0450_ZHTD_BWM_CarUi extends CallbackCanbusBase {
             case FinalCanbus.CAR_450_ZHTD_Lexus_L /* 590274 */:
             case FinalCanbus.CAR_450_ZHTD_Porsche /* 655810 */:
                 if (value == 1 && !ZhtdBmwNewCarinfoAct.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdBmwNewCarinfoAct");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdBmwNewCarinfoAct");
                     break;
                 }
             case FinalCanbus.CAR_450_ZHTD_Benz /* 65986 */:
             case FinalCanbus.CAR_450_ZHTD_Benz_S /* 197058 */:
             case FinalCanbus.CAR_450_ZHTD_Volvo /* 524738 */:
                 if (value == 1 && !ZhtdBenzNewCarinfoAct.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdBenzNewCarinfoAct");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdBenzNewCarinfoAct");
                     break;
                 }
             case FinalCanbus.CAR_450_ZHTD_Audi /* 131522 */:
                 if (value == 1 && !ZhtdAudiNewCarinfoAct.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdAudiNewCarinfoAct");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.zhtd.bmw.ZhtdAudiNewCarinfoAct");
                     break;
                 }
         }

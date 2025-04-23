@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
@@ -21,6 +22,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
+
 import java.util.ArrayList;
 
 public class PAJeepRearSpeakers extends BaseActivity implements View.OnTouchListener {

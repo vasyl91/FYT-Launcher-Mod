@@ -23,9 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import com.android.launcher66.R;
 
-public class DrawViewAppStats extends View implements View.OnClickListener, HomeWatcher.OnHomePressedListener {
+public class DrawViewAppStats extends View implements View.OnClickListener {
 
-    private HomeWatcher mHomeWatcher;
     private Context mContext;
     private final Helpers helpers = new Helpers();
     private View barTop;
@@ -156,14 +155,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mHomeWatcher = new HomeWatcher(mContext);
-        mHomeWatcher.setOnHomePressedListener(this);
-        mHomeWatcher.startWatch();
-    }
-
-    @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         if (visibility == View.VISIBLE) {
@@ -186,13 +177,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener, Home
         else {
             //onPause() called
         } 
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        mHomeWatcher.setOnHomePressedListener(null);
-        mHomeWatcher.stopWatch();
-        super.onDetachedFromWindow();
     }
 
     @Override

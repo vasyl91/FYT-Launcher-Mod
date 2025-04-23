@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar;
 import com.syu.carinfo.ksw.audiq5.LZBmwCarinfoAct;
 import com.syu.ipc.IModuleCallback;
@@ -88,7 +87,7 @@ public class Callback_0448_LZ_BWM_CarUi extends CallbackCanbusBase {
     private void showDashBoard(int updateCode, int[] ints) {
         int value = ints[0];
         if (value == 1 && !KswAudiQ5Backcar.mIsFront) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
         } else if (KswAudiQ5Backcar.mIsFront && value == 0 && KswAudiQ5Backcar.mIsFront && KswAudiQ5Backcar.mInstance != null) {
             KswAudiQ5Backcar.mInstance.finish();
         }
@@ -97,7 +96,7 @@ public class Callback_0448_LZ_BWM_CarUi extends CallbackCanbusBase {
     private void showDashBoardYage10(int updateCode, int[] ints) {
         int value = ints[0];
         if (value == 1 && !LZBmwCarinfoAct.mIsFront) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.LZBmwCarinfoAct");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.LZBmwCarinfoAct");
         } else if (LZBmwCarinfoAct.mIsFront && value == 0 && LZBmwCarinfoAct.mIsFront && LZBmwCarinfoAct.mInstance != null) {
             LZBmwCarinfoAct.mInstance.finish();
         }

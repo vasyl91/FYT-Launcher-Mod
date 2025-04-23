@@ -104,7 +104,7 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
         canvas.save(Canvas.CLIP_SAVE_FLAG);
         canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(),
                 getScrollX() + getWidth(),
-                getScrollY() + getHeight(), Region.Op.INTERSECT);
+                getScrollY() + getHeight());
         getPaint().setShadowLayer(BubbleTextView.SHADOW_SMALL_RADIUS, 0.0f, 0.0f,
                 BubbleTextView.SHADOW_SMALL_COLOUR);
         super.draw(canvas);

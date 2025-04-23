@@ -1,7 +1,6 @@
 package com.syu.module.canbus;
 
 import com.syu.canbus.CarBtActi;
-import com.syu.canbus.JumpPage;
 import com.syu.module.IUiNotify;
 
 public class HandlerCanbus {
@@ -45,7 +44,7 @@ public class HandlerCanbus {
     public static void updateCarBt(int value) {
         if (value == 1) {
             if (!CarBtActi.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.canbus.CarBtActi");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.canbus.CarBtActi");
             }
         } else if (value == 0 && CarBtActi.mIsFront && CarBtActi.mInstance != null) {
             CarBtActi.mInstance.finish();

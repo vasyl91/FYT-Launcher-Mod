@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.syu.canbus.R;
 
 public class InfoView extends View {

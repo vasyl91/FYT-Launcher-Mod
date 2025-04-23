@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -22,15 +21,16 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
-import androidx.core.internal.view.SupportMenu;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
+
 import com.fyt.skin.SkinUtils;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.Utils;
+
 import java.util.ArrayList;
 
 public final class Utilities {

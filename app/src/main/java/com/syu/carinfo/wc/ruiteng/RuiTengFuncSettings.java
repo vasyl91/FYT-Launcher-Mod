@@ -7,6 +7,7 @@ import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;

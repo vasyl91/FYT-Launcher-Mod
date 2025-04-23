@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.HandlerCanbus;
 import com.syu.ui.door.DoorHelper;

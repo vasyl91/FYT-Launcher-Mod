@@ -71,7 +71,7 @@ public class Utils {
         return false;
     }
 
-    public static boolean topAppPip(String packageName) {
+    public static boolean topApp(String packageName) {
         try {
             ActivityManager activityManager = (ActivityManager) getCtx().getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();

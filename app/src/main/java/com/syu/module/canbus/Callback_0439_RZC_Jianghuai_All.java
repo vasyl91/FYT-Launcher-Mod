@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.honda.ActivityHondaNullBackCar;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -122,7 +121,7 @@ public class Callback_0439_RZC_Jianghuai_All extends CallbackCanbusBase {
                 int value = ints[0];
                 if (value == 1) {
                     if (!ActivityHondaNullBackCar.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityHondaNullBackCar");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityHondaNullBackCar");
                     }
                 } else if (ActivityHondaNullBackCar.mIsFront && ActivityHondaNullBackCar.mInstance != null) {
                     ActivityHondaNullBackCar.mInstance.finish();

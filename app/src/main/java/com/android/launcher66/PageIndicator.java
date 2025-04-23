@@ -1,7 +1,6 @@
 package com.android.launcher66;
 
 import android.animation.LayoutTransition;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -10,9 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.StyleableRes;
-
 import java.util.ArrayList;
+
 import share.ResValue;
 
 public class PageIndicator extends LinearLayout {

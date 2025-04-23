@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.dasauto.AirControlPQDZSJ;
 import com.syu.carinfo.dasauto.VwDashBoard_DZSJ;
 import com.syu.ipc.IModuleCallback;
@@ -126,7 +125,7 @@ public class Callback_0001_WC1_DaZhong extends CallbackCanbusBase {
         if (AirHelper.sAirWindowEnable == 1) {
             HandlerCanbus.update(updateCode, ints);
             if (!AirControlPQDZSJ.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.AirControlPQDZSJ");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.AirControlPQDZSJ");
                 jump = true;
             }
             if (jump) {
@@ -142,7 +141,7 @@ public class Callback_0001_WC1_DaZhong extends CallbackCanbusBase {
                 HandlerCanbus.update(updateCode, ints);
                 int value = ints[0];
                 if (value == 1 && !VwDashBoard_DZSJ.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.VwDashBoard_DZSJ");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.VwDashBoard_DZSJ");
                     HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);
                 } else if (VwDashBoard_DZSJ.mIsFront && value == 0) {
                     HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);

@@ -33,6 +33,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private boolean showAddAppView;
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
+    private static final String RECYCLER_APP_MAP = "recycler.app.map";
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mData = data;
@@ -86,29 +87,37 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 Intent settingsIntent = new Intent(LeftAppListAdapter.this.mLauncher, SettingsActivity.class);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 LeftAppListAdapter.this.mLauncher.startActivity(settingsIntent);
+                onClickIcon(appListBean);
             } else {
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                 LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                helpers.setInOverviewMode(false);
-                helpers.setListOpen(false);
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-                boolean userLayout = prefs.getBoolean("user_layout", false);
-                boolean userStats = prefs.getBoolean("user_stats", false);
-                if (userLayout && userStats)  {  
-                    SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-                    Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
-                    if (apps.contains(appListBean.packageName)) {
-                        helpers.setForegroundAppOpened(true);
-                        helpers.setInAllApps(false);
-                        helpers.setInRecent(false);
-                        Intent intentLeftApps = new Intent(RECYCLER_APP);
-                        LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApps);
-                    }  
-                }              
+                onClickIcon(appListBean);
             }
         });
+    }
+
+    private void onClickIcon(AppListBean appListBean) {
+        helpers.setInOverviewMode(false);
+        helpers.setListOpen(false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        if (userLayout && userStats)  {  
+            SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+            helpers.setForegroundAppOpened(true);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
+            if (apps.contains(appListBean.packageName)) {
+                Intent intentLeftAppMap = new Intent(RECYCLER_APP_MAP);
+                LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftAppMap);
+            } else {
+                Intent intentLeftApp = new Intent(RECYCLER_APP);
+                LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApp);
+            }   
+        }   
     }
 
     @Override

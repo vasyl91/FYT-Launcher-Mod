@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.crv.XpCrvActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
@@ -54,7 +53,7 @@ public class Callback_0024_XP1_SIYU2012 extends CallbackCanbusBase {
         if (updateCode == 98) {
             int value = DataCanbus.DATA[98];
             if (value == 3 && !XpCrvActi.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.crv.XpCrvActi");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.crv.XpCrvActi");
             } else if (value == 2 && XpCrvActi.mIsFront && XpCrvActi.mInstance != null) {
                 XpCrvActi.mInstance.finish();
             }

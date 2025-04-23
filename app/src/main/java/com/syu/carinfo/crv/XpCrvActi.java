@@ -5,9 +5,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
-import com.syu.canbus.JumpPage;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
@@ -81,7 +81,7 @@ public class XpCrvActi extends BaseActivity {
         findViewById(R.id.xp_crv_compass).setOnClickListener(new View.OnClickListener() { 
             @Override
             public void onClick(View v) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.crv.XpCompassActi");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.crv.XpCompassActi");
             }
         });
     }

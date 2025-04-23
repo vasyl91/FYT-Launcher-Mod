@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -19,6 +20,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.preference.PreferenceManager;
+
+import com.android.launcher66.settings.LogcatService;
+import com.android.launcher66.settings.WakeDetectionService;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
 import com.syu.canbus.ZipCompare;
@@ -36,6 +42,7 @@ import com.syu.util.FytPackage;
 import com.syu.util.ObjApp;
 import com.syu.util.Utils;
 import com.syu.utils.W3Utils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -84,6 +91,15 @@ public class LauncherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        startService(new Intent(this, WakeDetectionService.class));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("logcat_service", true)) {
+            startService(new Intent(this, LogcatService.class));
+            long logcatServiceTimeout = Integer.parseInt(prefs.getString("logcat_service_timeout", "30")) * 1000;
+            new Handler(Looper.getMainLooper()).postDelayed(()-> {
+                stopService(new Intent(this, LogcatService.class));
+            }, logcatServiceTimeout);
+        }
         initData();
         initProperties();
         sHandler = new Handler(Looper.getMainLooper());
@@ -113,6 +129,7 @@ public class LauncherApplication extends Application {
 
     private void initData() {
         sApp = this;
+        SkinManager.init(this);
         CrashHandler.getInstance(getApplicationContext());
         CustomIcons.loadIcons(this, R.xml.custom_icons);
         W3Utils.initialize(this);
@@ -295,7 +312,7 @@ public class LauncherApplication extends Application {
         lp.height = -1;
         lp.width = -1;
         lp.format = 1;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
+        lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         sRootViewLp = lp;
         sRootView = new View(this);

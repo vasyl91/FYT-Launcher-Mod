@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemProperties;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,9 +15,11 @@ import android.widget.Toast;
 import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import share.Config;
 
 public class AllAppsList {
@@ -34,7 +37,7 @@ public class AllAppsList {
     }
 
     public void add(AppInfo info) {
-        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info) || info.componentName.getPackageName().contains("com.syu.canbus")) {
+        if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info)) {
             if (Config.CHIP_UIID != 5 || !info.componentName.getPackageName().equals(FytPackage.sysSetAction)) {
                 if (Config.CUSTOMER_ID != 8 || (!info.componentName.getPackageName().equals(FytPackage.ludashiACTION) && !info.componentName.getPackageName().equals(FytPackage.abenchACTION))) {
                     switch (Config.CHIP_UIID) {
@@ -285,7 +288,15 @@ public class AllAppsList {
 
     static List<ResolveInfo> findActivitysByIntent(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
-        final List<ResolveInfo> apps = packageManager.queryIntentActivities(intent, PackageManager.GET_INTENT_FILTERS);
+        List<ResolveInfo> apps;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            apps = packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.GET_RESOLVED_FILTER));
+        } else {
+            // For API levels below 33
+            @SuppressWarnings("deprecation")
+            List<ResolveInfo> deprecatedApps = packageManager.queryIntentActivities(intent, PackageManager.GET_INTENT_FILTERS);
+            apps = deprecatedApps;
+        }
         return apps != null ? apps : new ArrayList<ResolveInfo>();
     }
 }

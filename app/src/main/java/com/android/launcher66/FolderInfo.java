@@ -1,6 +1,7 @@
 package com.android.launcher66;
 
 import android.content.ContentValues;
+
 import java.util.ArrayList;
 
 class FolderInfo extends ItemInfo {

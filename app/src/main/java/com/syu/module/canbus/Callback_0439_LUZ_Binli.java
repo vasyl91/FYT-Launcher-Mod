@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.luz.binli.BinliCarSet;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -122,7 +121,7 @@ public class Callback_0439_LUZ_Binli extends CallbackCanbusBase {
                     }
                 case 1:
                     if (!BinliCarSet.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.luz.binli.BinliCarSet");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.luz.binli.BinliCarSet");
                         break;
                     }
             }

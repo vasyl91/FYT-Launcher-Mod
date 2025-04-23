@@ -2,9 +2,9 @@ package com.syu.carinfo.ksw.audiq5;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
-import com.syu.canbus.R;
 
 public class IndexAct_lz_bmw extends BaseActivity {
     public static IndexAct_lz_bmw mInstance;

@@ -39,6 +39,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private boolean showAddAppView;
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
+    private static final String RECYCLER_APP_MAP = "recycler.app.map";
 
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
         this.mMaxCount = 8;
@@ -100,28 +101,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         Intent settingsIntent = new Intent(AppListAdapter.this.mLauncher, SettingsActivity.class);
                         settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         AppListAdapter.this.mLauncher.startActivity(settingsIntent);
+                        onClickIcon(appListBean);
                     } else {
                         final Intent intent = new Intent();
                         intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                         AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                        
-                        helpers.setInOverviewMode(false);
-                        helpers.setListOpen(false);
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-                        boolean userLayout = prefs.getBoolean("user_layout", false);
-                        boolean userStats = prefs.getBoolean("user_stats", false);
-                        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                        if (userLayout && userStats)  {  
-                            SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-                            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
-                            if (apps.contains(appListBean.packageName)) {
-                                helpers.setForegroundAppOpened(true);
-                                helpers.setInAllApps(false);
-                                helpers.setInRecent(false);
-                                Intent intentApps = new Intent(RECYCLER_APP);
-                                AppListAdapter.this.mLauncher.sendBroadcast(intentApps);
-                            }
-                        }
+                        onClickIcon(appListBean);
                     }
         });
         appListHolder.itemView.setOnLongClickListener(view -> {
@@ -129,6 +114,29 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             return true;
         });
+    }
+
+    private void onClickIcon(AppListBean appListBean) {
+        helpers.setInOverviewMode(false);
+        helpers.setListOpen(false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = prefs.getBoolean("user_layout", false);
+        boolean userStats = prefs.getBoolean("user_stats", false);
+        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+        if (userLayout && userStats)  {  
+            SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+            helpers.setForegroundAppOpened(true);
+            helpers.setInAllApps(false);
+            helpers.setInRecent(false);
+            if (apps.contains(appListBean.packageName)) {
+                Intent intentAppMap = new Intent(RECYCLER_APP_MAP);
+                AppListAdapter.this.mLauncher.sendBroadcast(intentAppMap);
+            } else {
+                Intent intentApp = new Intent(RECYCLER_APP);
+                AppListAdapter.this.mLauncher.sendBroadcast(intentApp);
+            }
+        }        
     }
 
     @Override

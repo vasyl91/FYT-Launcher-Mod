@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing;
 import com.syu.carinfo.sbd.fordlieying.InfoSBDFordLieYing;
 import com.syu.ipc.IModuleCallback;
@@ -93,7 +92,7 @@ public class Callback_0398_SBD_FORD_LIEYING extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value == 1 && !AirSBDFordLieYing.mIsFront && !InfoSBDFordLieYing.mIsFront && !delay) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing");
                 jump = true;
             }
             ObjApp.getMsgView().msg2("jump1 " + jump);

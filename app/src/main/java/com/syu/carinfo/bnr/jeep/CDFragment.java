@@ -2,6 +2,7 @@ package com.syu.carinfo.bnr.jeep;
 
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseFragment;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

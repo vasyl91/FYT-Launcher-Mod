@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import com.fyt.skin.SkinUtils;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.CustomIcons;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

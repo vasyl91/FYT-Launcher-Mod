@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class SkinAttribute {
-    public static final List<String> list = new ArrayList();
+    public static final List<String> list = new ArrayList<>();
     private final ArrayList<SkinView> skinViews = new ArrayList<>();
 
     static {

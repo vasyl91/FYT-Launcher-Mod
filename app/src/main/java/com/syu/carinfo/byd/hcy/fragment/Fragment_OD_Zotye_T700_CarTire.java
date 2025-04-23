@@ -2,11 +2,13 @@ package com.syu.carinfo.byd.hcy.fragment;
 
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseFragment;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+
 import java.text.DecimalFormat;
 
 public class Fragment_OD_Zotye_T700_CarTire extends BaseFragment implements View.OnClickListener {

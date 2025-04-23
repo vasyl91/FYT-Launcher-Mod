@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 public class SkinResources {
     private final Resources appResources;
     protected boolean isDefaultSkin = true;
@@ -34,8 +36,7 @@ public class SkinResources {
         if (!this.isDefaultSkin) {
             String resName = this.appResources.getResourceEntryName(resid);
             String resType = this.appResources.getResourceTypeName(resid);
-            int skinid = this.skinResources.getIdentifier(resName, resType, this.mSkinPkgName);
-            return skinid;
+            return this.skinResources.getIdentifier(resName, resType, this.mSkinPkgName);
         }
         return resid;
     }
@@ -48,13 +49,13 @@ public class SkinResources {
 
     public int getColor(int resid) {
         if (this.isDefaultSkin) {
-            return this.appResources.getColor(resid);
+            return ContextCompat.getColor(mContext, resid);
         }
         int skinid = getIdentifier(resid);
         if (skinid == 0) {
-            return this.appResources.getColor(resid);
+            return ContextCompat.getColor(mContext, resid);
         }
-        return this.skinResources.getColor(skinid);
+        return ContextCompat.getColor(mContext, skinid);
     }
 
     public ColorStateList getColorStateList(int resid) {
@@ -70,15 +71,15 @@ public class SkinResources {
 
     public Drawable getDrawable(int resid) {
         if (this.isDefaultSkin) {
-            return mContext.getDrawable(resid);
+            return ContextCompat.getDrawable(mContext, resid);
         }
         int skinid = getIdentifier(resid);
         if (skinid == 0) {
-            return mContext.getDrawable(resid);
+            return ContextCompat.getDrawable(mContext, resid);
         }
         String r = getResources().getResourceEntryName(resid);
         Log.i("inf", r);
-        return mContext.getDrawable(skinid);
+        return ContextCompat.getDrawable(mContext, skinid);
     }
 
     public Bitmap getBitmap(int resid) {

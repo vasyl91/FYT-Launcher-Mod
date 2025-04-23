@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.DropTarget;
-
 public class InfoDropTarget extends ButtonDropTarget {
     private TransitionDrawable mDrawable;
     private ColorStateList mOriginalTextColor;

@@ -10,6 +10,14 @@
         app:title="@string/widgets_category">
 
         <SwitchPreference
+            android:key="user_map"
+            android:defaultValue="true"
+            android:title="@string/map_widget" />        
+        <Preference
+            android:key="pip_screen"
+            android:title="@string/pip_dialog"
+            android:summary="1" />
+        <SwitchPreference
             android:key="user_date"
             android:defaultValue="true"
             android:title="@string/date_widget" />
@@ -76,7 +84,11 @@
     <PreferenceCategory
         app:key="creator_category"
         app:title="@string/creator_category">
-        
+
+        <Preference
+            android:key="start_page"
+            android:title="@string/start_page_str"
+            android:summary="1" />       
         <SwitchPreference
             android:key="left_bar"
             android:defaultValue="false"

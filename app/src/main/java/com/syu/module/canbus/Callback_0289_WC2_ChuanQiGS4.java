@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.wc.gs4.GS4SOSAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -91,7 +90,7 @@ public class Callback_0289_WC2_ChuanQiGS4 extends CallbackCanbusBase {
         HandlerCanbus.update(updateCode, ints);
         int value = ints[0];
         if ((value == 1 || value == 2) && !GS4SOSAct.mIsFront) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.gs4.GS4SOSAct");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.gs4.GS4SOSAct");
         } else if (GS4SOSAct.mIsFront && value == 0 && GS4SOSAct.mIsFront && GS4SOSAct.mInstance != null) {
             GS4SOSAct.mInstance.finish();
         }

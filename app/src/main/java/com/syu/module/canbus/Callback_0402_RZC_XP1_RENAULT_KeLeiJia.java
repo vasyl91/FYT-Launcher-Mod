@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.rzc.keleijia.KeleiaoCarCD;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
@@ -160,7 +159,7 @@ public class Callback_0402_RZC_XP1_RENAULT_KeLeiJia extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value != 0 && !XiandaiSosPage.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
             } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
                 XiandaiSosPage.mInstance.finish();
             }
@@ -173,7 +172,7 @@ public class Callback_0402_RZC_XP1_RENAULT_KeLeiJia extends CallbackCanbusBase {
             int value = ints[0] & 7;
             int power = (ints[0] >> 7) & 1;
             if (value != 3 && power == 1 && !KeleiaoCarCD.mIsFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.keleijia.KeleiaoCarCD");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.keleijia.KeleiaoCarCD");
             }
         }
     }

@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherApplication;
 import com.fyt.skin.data.SkinPathDataSource;
 
 import java.beans.PropertyChangeListener;
@@ -19,18 +19,18 @@ import java.lang.reflect.Method;
 
 public class SkinManager {
     private static SkinResources mSkinRes;
-    private static Launcher sApp;
+    private static LauncherApplication sApp;
     private String mPackageName;
     private Resources mResources;
     private SkinFactory mSkinFactory;
     private String property = "initial";
     private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
-    public static Launcher getContext() {
+    public static LauncherApplication getContext() {
         return sApp;
     }
 
-    public static void init(Launcher application) {
+    public static void init(LauncherApplication application) {
         sApp = application;
         application.registerActivityLifecycleCallbacks(new SkinActivityLifecycleCallbacks());
         SkinPathDataSource.init(application);

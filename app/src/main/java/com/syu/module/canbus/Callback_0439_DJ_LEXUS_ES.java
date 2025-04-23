@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.daojun.lexus.djLexusCd;
 import com.syu.carinfo.daojun.lexus.djLexusRadio;
 import com.syu.ipc.IModuleCallback;
@@ -87,12 +86,12 @@ public class Callback_0439_DJ_LEXUS_ES extends CallbackCanbusBase {
             switch (updateCode) {
                 case 124:
                     if (value == 1 && !djLexusCd.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusCd");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusCd");
                         break;
                     }
                 case 125:
                     if (value == 1 && !djLexusRadio.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusRadio");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusRadio");
                         break;
                     }
                 default:

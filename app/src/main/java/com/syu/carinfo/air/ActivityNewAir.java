@@ -3,6 +3,7 @@ package com.syu.carinfo.air;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;

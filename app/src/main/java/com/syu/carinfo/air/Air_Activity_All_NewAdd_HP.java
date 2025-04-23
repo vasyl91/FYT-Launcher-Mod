@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;

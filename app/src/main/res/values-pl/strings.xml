@@ -106,20 +106,26 @@
     <string name="right">P\n R\nA\nW\nO </string>  
     <string name="confirm_layout">Potwierdź</string> 
 
-    <string name="layout_type">Rodzaj layoutu</string> 
+    <string name="layout_type">Typ layoutu</string> 
     <string name="user_layout">Layout użytkownika</string> 
     <string name="stock_layout">Domyślny layout</string> 
-    <string name="layout_creator">Kreator layoutu</string> 
-    <string name="layout_summary">Ustaw layout</string> 
+    <string name="layout_creator">Kreator layoutu</string>  
+    <string name="layout_summary_disabled"><![CDATA[Zmień typ layoutu na <b>"Layout użytkownika"</b>, aby odblokować kreator]]></string> 
+    <string name="layout_summary_enabled">Ustaw layout</string> 
     <string name="fyt_title_source">Źródło dla danych z odtwarzacza FYT</string> 
     <string name="fyt_metadata">Metadata</string> 
     <string name="fyt_file">Nazwa pliku</string> 
     <string name="left_bar">Używaj lewego menu</string> 
     <string name="left_bar_on">Mwnu po lewej stronie + pasek dolny</string> 
     <string name="left_bar_off">Tylko dolny pasek</string> 
+    <string name="map_widget">Widget nawigacji</string>  
+    <string name="pip_dialog">Wybierz ekran, na którym zostanie wyświetlony widget nawigacji</string>   
+    <string name="pip_dialog_str">Wyświetl widget nawigacji na ekranie (1 domyślny):</string>  
     <string name="date_widget">Widget daty i czasu</string> 
     <string name="music_widget">Widget muzyczny</string> 
     <string name="radio_widget">Radio widget</string> 
+    <string name="start_page">Ustaw ekran startowy</string> 
+    <string name="start_page_str">Ustaw ekran startowy (1 domyślny):</string> 
     <string name="margins_str">Marginesy (max. 25)</string> 
     <string name="open_creator">Otwórz kreator</string> 
     <string name="open_creator_summary">Utwórz swój layout</string> 
@@ -141,15 +147,15 @@
     <string name="creator_radio">Radio</string>
     <string name="stats_name">In-app stats</string>
     <string name="overlapping">Widgety nachodzą na siebie!</string>
-    <string name="wont_save">Obecny layout nie zostanie zapisany.</string>
-    <string name="proceed_dont_save">Kontynuuj i nie zapisuj</string>
+    <string name="wont_save">Obecny layout nie zostanie zapisany. Kontunuowanie zresetuje layout.</string>
+    <string name="proceed_and_reset">Kontynuuj i resetuj</string>
     <string name="dismiss">Odrzuć</string>
 
 
     <string name="instantaneous_consumption">\u0020Zużycie:</string>
     <string name="driving_mileage">\u0020Zasięg:</string>
-    <string name="instantaneous_consumption_val">--.--</string>
-    <string name="driving_mileage_val">-.-</string>
+    <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
+    <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="stats_window">Statystyki paliwa</string>
     <string name="stats_codes">Kody canbus</string>
     <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
@@ -194,9 +200,9 @@
     <string name="user_sunset">Zachód: %1$s</string>
     <string name="default_wallpapers">Używaj domyślnych tapet</string>
     <string name="save_day_wallpaper">Zapisz tapetę dla trybu dziennego</string>
-    <string name="save_day_wallpaper_summary">Naciśnij aby zapisać tapetę dla trybu dziennego, w innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
+    <string name="save_day_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu dziennego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="save_night_wallpaper">Zapisz tapetę dla trybu nocnego</string>
-    <string name="save_night_wallpaper_summary">Naciśnij aby zapisać tapetę dla trybu nocnego, w innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
+    <string name="save_night_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu nocnego i następnie naciśnij tutaj, aby ją zapisać. W  innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="wallpaper_set">Zapisano tapetę dla trybu: "%1$s mode"</string>
     <string name="wallpaper_not_set">Coś poszło nie tak, Tapeta "%1$s mode" nie została zapisana!</string>
     <string name="wallpaper_error">Błąd, Tapeta "%1$s mode" nie została zapisana:\u0020</string>
@@ -204,8 +210,12 @@
     <string name="day_seek_bar">Ustaw jasność dla trybu dziennego</string>
     <string name="night_seek_bar">Ustaw jasność dla trybu nocnego</string>
     <string name="init_default_app_error">Ustaw domyślną nawigację w ustawieniach urządzenia.</string>
+    <string name="logcat_service">Funkcja Logcat</string>
+    <string name="logcat_service_summary"><![CDATA[Logcat zaczyna zapis podczas startu aplikacji. Uruchom ponownie urzadzenie i sprawdź logi zapisane w <b>Download/launcher_logs</b>]]></string>
+    <string name="logcat_service_timeout">Czas zapisu</string>
+    <string name="logcat_service_timeout_str">Ustaw czas zapisu (sekundy):</string>
 
-    <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
+    <string name="materialcolorpicker__errHex">nieprawidłowy Hex Code Format</string>
     <string name="materialcolorpicker__inputColor">Kolor: </string>
     <string name="materialcolorpicker__btnSelectColor">Zaznacz</string>
     <string name="materialcolorpicker__hash" translatable="false">#</string>

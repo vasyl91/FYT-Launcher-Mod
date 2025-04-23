@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
@@ -79,7 +78,7 @@ public class Callback_0442_KSW_AUDI_Q5 extends CallbackCanbusBase {
     private void showDashBoard(int updateCode, int[] ints) {
         int value = ints[0];
         if (value == 1 && !KswAudiQ5Backcar.mIsFront) {
-            JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ksw.audiq5.KswAudiQ5Backcar");
         } else if (KswAudiQ5Backcar.mIsFront && value == 0 && KswAudiQ5Backcar.mIsFront && KswAudiQ5Backcar.mInstance != null) {
             KswAudiQ5Backcar.mInstance.finish();
         }

@@ -2,15 +2,15 @@ package com.fyt.skin.data;
 
 import android.content.SharedPreferences;
 
-import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherApplication;
 
 public class SkinPathDataSource {
     private static final String KEY_SKIN_PATH = "skin-path";
     private static final String SKIN_SHARED = "skin-peeler-lib";
-    private static Launcher mApplication;
+    private static LauncherApplication mApplication;
     private final SharedPreferences mPref;
 
-    public static void init(Launcher application) {
+    public static void init(LauncherApplication application) {
         mApplication = application;
     }
 

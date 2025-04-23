@@ -3,9 +3,10 @@ package com.syu.carinfo.wc.ruijie15;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.carinfo.ford.FordCarSet;
 import com.syu.module.canbus.DataCanbus;

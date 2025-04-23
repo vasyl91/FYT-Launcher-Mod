@@ -3,6 +3,7 @@ package com.syu.carinfo.klc;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import com.syu.module.canbus.DataCanbus;
 
 public class KlcRecevier extends BroadcastReceiver {

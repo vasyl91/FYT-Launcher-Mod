@@ -3,6 +3,7 @@ package com.syu.carinfo.xp.ziyouguang;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;

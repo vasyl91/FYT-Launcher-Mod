@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.air.ConstAllAirDara;
 import com.syu.loopview.LoopView;
@@ -17,6 +18,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
+
 import java.util.ArrayList;
 
 public class WCYuncheNissanAirControlAct_HP extends Activity implements View.OnTouchListener {

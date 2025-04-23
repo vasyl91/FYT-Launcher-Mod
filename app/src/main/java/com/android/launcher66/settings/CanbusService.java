@@ -2,28 +2,26 @@ package com.android.launcher66.settings;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import android.provider.Settings;
-import android.util.Log;
-import java.util.List;
-
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemProperties;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +30,11 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.AppsCustomizePagedView;
+import com.android.launcher66.Folder;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -50,13 +48,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
-import com.syu.util.ServiceRestarter;
 import com.syu.util.WindowUtil;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -70,19 +70,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private Helpers helpers = new Helpers();
     private IBinder binder;
     private View absoluteStats;
+    private TextView consumptionTextView;
+    private TextView mileageTextView;
     private WindowManager wm;  
     private String textColor = "#FFFFFFFF"; 
     private String curForegroundApp = "";
-    private Set<String> apps = new HashSet<String>();  
     private static final String SYSTEM_DIALOG_REASON_KEY = "reason";
     private static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
     private static final String RECYCLER_APP = "recycler.app";
+    private static final String RECYCLER_APP_MAP = "recycler.app.map";
     private static final String ACCESIBILITY_SERVICE = "accesibility.service";
     private static final String ALLAPPS = "allapps";
     private static final String FUELSTATS = "fuelStats";
-    private PropertyChangeClass mPropertyChangeClass = new PropertyChangeClass();
-    private String curApp = "init";
-    private boolean viewAdded = false;
+    private static final String USER_LAYOUT = "user_layout";
+    private final PropertyChangeClass mPropertyChangeClass = new PropertyChangeClass();
     private boolean userLayout = false;
     private boolean userStats = false;
     private boolean estimateOil = false;
@@ -102,7 +103,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         super.onCreate();
         Log.d(TAG, "Service created");
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());    
-        userLayout = prefs.getBoolean("user_layout", false);
+        userLayout = prefs.getBoolean(USER_LAYOUT, false);
         userStats = prefs.getBoolean("user_stats", false);
         horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
         vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
@@ -126,6 +127,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         filter.addAction(Launcher.ALL_APPS);
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(RECYCLER_APP);
+        filter.addAction(RECYCLER_APP_MAP);
         filter.addAction(ACCESIBILITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(pipReceiver, filter, Context.RECEIVER_EXPORTED);
@@ -199,7 +201,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
     
-    private IUiNotify mNotifyCanbus = (updateCode, ints, flts, strs) -> {
+    private final IUiNotify mNotifyCanbus = (updateCode, ints, flts, strs) -> {
         if (updateCode == fuel) {
             mUpdaterOilExpend();
         } else if (updateCode == range) {
@@ -219,18 +221,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                             if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
-                                removeView();
-                                addStatsViewMainScreen();                                
+                                removeView();  
+                                addStatsViewMainScreen();                          
+                            } else {
+                                addStatsViewMainScreen();
                             }
                             break;
-                        case WindowUtil.PIP_REMOVED: 
+                        case WindowUtil.PIP_REMOVED, RECYCLER_APP: 
                             removeView();
                             break;
-                        case RECYCLER_APP:
+                        case RECYCLER_APP_MAP, AppsCustomizePagedView.STATS_APP_FOREGROUND:
                             removeView();
                             addStatsView(true);
                             break;
-                        case AppListDialogFragment.LIST_OPEN:
+                        case AppListDialogFragment.LIST_OPEN, Workspace.OVERVIEW_MODE_OPEN:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                             removeView();
@@ -243,28 +247,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 addStatsViewMainScreen();                                
                             }
                             break;
-                        case Workspace.OVERVIEW_MODE_OPEN:
-                            curForegroundApp = "com.android.launcher66";
-                            mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                            removeView();
-                            break;
                         case Workspace.OVERVIEW_MODE_CLOSE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                             // needs a while to properly return current page id
-                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
-                                        removeView();
-                                        addStatsViewMainScreen();                                
-                                    }
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
+                                    removeView();
+                                    addStatsViewMainScreen();
                                 }
                             }, 1000);
-                            break;
-                        case AppsCustomizePagedView.STATS_APP_FOREGROUND:
-                            removeView();
-                            addStatsView(true);
                             break;
                         case Launcher.ALL_APPS:
                             curForegroundApp = "com.android.launcher66";
@@ -276,9 +268,21 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
                             if (reason != null) {
                                 if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
-                                    curForegroundApp = "com.android.launcher66";
-                                    mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-                                }                       
+                                    final boolean alreadyOnHome = Launcher.getLauncher().mHasFocus;
+
+                                    if (Launcher.mWorkspace == null) {
+                                        // Can be cases where mWorkspace is null, this prevents a NPE
+                                        return;
+                                    }
+                                    Folder openFolder = Launcher.getWorkspace().getOpenFolder();
+                                    // In all these cases, only animate if we're already on home
+                                    Launcher.mWorkspace.exitWidgetResizeMode();
+                                    if (alreadyOnHome && Launcher.getLauncher().mState == Launcher.State.WORKSPACE && !Launcher.mWorkspace.isTouchActive() &&
+                                            openFolder == null) {
+                                        curForegroundApp = "com.android.launcher66";
+                                        mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
+                                    }
+                                }                    
                             }
                             break;
                         case ACCESIBILITY_SERVICE:
@@ -303,34 +307,34 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 Log.e(TAG, "Error receiving broadcast: " + e.getMessage());
             }
         }
+
+        private void currentForegroundApplication(String packageName) {
+            SharedPreferences statsPrefs = getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<>()));
+            String appPackageName = SystemProperties.get("persist.launcher.packagename", "");
+            if (packageName.contains(":")) {
+                packageName = packageName.substring(0, packageName.indexOf(":"));
+            }
+            if (packageName.contains("com.android.launcher66") && !helpers.isForegroundAppOpened()) {
+                curForegroundApp = "com.android.launcher66";
+            } 
+            if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent()) && !helpers.isForegroundAppOpened()) {
+                curForegroundApp = "com.android.launcher66";
+            }
+            if (apps.contains(packageName)) {
+                if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent() || helpers.isInOverviewMode()) && !helpers.isForegroundAppOpened()) {
+                    curForegroundApp = "com.android.launcher66";
+                } else if (!helpers.isInOverviewMode() || !helpers.isListOpen() || !helpers.isInRecent()) {
+                    curForegroundApp = packageName;
+                }
+            }
+            mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
+            if (Launcher.mAppsCustomizeTabHost != null) {
+                mPropertyChangeClass.setBoolean(ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
+            }      
+        }
     };
 
-    private void currentForegroundApplication(String packageName) {
-        SharedPreferences statsPrefs = getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-        apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
-        String appPackageName = SystemProperties.get("persist.launcher.packagename", "");
-        if (packageName.contains(":")) {
-            packageName = packageName.substring(0, packageName.indexOf(":"));
-        }
-        if ((packageName.contains("com.android.launcher66") || packageName.contains("com.android.launcher66")) && !helpers.isForegroundAppOpened()) {
-            curForegroundApp = "com.android.launcher66";
-        } 
-        if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent()) && !helpers.isForegroundAppOpened()) {
-            curForegroundApp = "com.android.launcher66";
-        }
-        if (apps.contains(packageName)) {
-            if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent() || helpers.isInOverviewMode()) && !helpers.isForegroundAppOpened()) {
-                curForegroundApp = "com.android.launcher66";
-            } else if (!helpers.isInOverviewMode() || !helpers.isListOpen() || !helpers.isInRecent()) {
-                curForegroundApp = packageName;
-            }
-        }
-        mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
-        if (Launcher.mAppsCustomizeTabHost != null) {
-            mPropertyChangeClass.setBoolean(ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
-        }      
-    }
-    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -339,14 +343,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 String val = String.valueOf(evt.getNewValue());
                 if (val.contains("true") || val.contains("false")) {
                     Log.i("val", val);
-                    helpers.setInAllApps(Boolean.valueOf(val));
-                    if (Boolean.valueOf(val) && !curForegroundApp.contains("com.android.launcher")) {
+                    helpers.setInAllApps(Boolean.parseBoolean(val));
+                    if (Boolean.parseBoolean(val) && !curForegroundApp.contains("com.android.launcher")) {
                         removeView();
                     }                
                 }
                 break;
             case FUELSTATS:
-                curApp = String.valueOf(evt.getNewValue());
                 Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")" + " CurrentActivityName: " + getCurrentActivityName());
                 if (String.valueOf(evt.getNewValue()).contains("com.android.launcher")) {
                     helpers.setForegroundAppOpened(false);
@@ -363,6 +366,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     removeView();
                 }
                 break;
+            default:
+                break;
         } 
     }   
 
@@ -371,34 +376,47 @@ public class CanbusService extends Service implements PropertyChangeListener {
         UsageStatsManager usm = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();
         List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
-        if (appList != null && appList.size() > 0) {
+        if (appList != null && !appList.isEmpty()) {
             SortedMap<Long, UsageStats> mySortedMap = new TreeMap<>();
             for (UsageStats usageStats : appList) {
                 mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
             }
             if (!mySortedMap.isEmpty()) {
-                currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+                currentApp = Objects.requireNonNull(mySortedMap.get(mySortedMap.lastKey())).getPackageName();
             }
         }
         return currentApp;
     }
     
     private void addStatsViewMainScreen() {
-        Log.i("huj", String.valueOf(userLayout) + " " + String.valueOf(prefs.getBoolean("main_screen_stats", true)) + " " + String.valueOf(helpers.hasPipStarted()) + " " + String.valueOf(!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) + " " + String.valueOf(Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)));
-        userLayout = prefs.getBoolean("user_layout", false);
-        if (userLayout 
-            && prefs.getBoolean("main_screen_stats", true)
-            && helpers.hasPipStarted()
-            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-            && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Workspace.CUSTOM_CONTENT_SCREEN_ID1)) {
-            Log.i("huj", "huj2");
-            addStatsView(false);
+        int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+        userLayout = prefs.getBoolean(USER_LAYOUT, false);
+        if (pipScreen == 0) {
+            if (userLayout 
+                && prefs.getBoolean("main_screen_stats", true)
+                && helpers.hasPipStarted()
+                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                && Launcher.getWorkspace().getCurrentPage() == pipScreen) {
+
+                addStatsView(false);
+            }
+        } else {
+            new Handler(Looper.getMainLooper()).postDelayed(()-> {
+                if (userLayout 
+                    && prefs.getBoolean("main_screen_stats", true)
+                    && helpers.hasPipStarted()
+                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                    && Launcher.getWorkspace().getCurrentPage() == pipScreen) {
+
+                    addStatsView(false);
+                }
+            }, 200);
         }
     }
 
     private void addStatsView(boolean mapApp) {
         removeView();
-        userLayout = prefs.getBoolean("user_layout", false);
+        userLayout = prefs.getBoolean(USER_LAYOUT, false);
         userStats = prefs.getBoolean("user_stats", false);
         if (userLayout && userStats) {
             textColor = prefs.getString("stats_color", "#FFFFFFFF");
@@ -409,7 +427,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             boolean colorBg = prefs.getBoolean("bg_color", false);
             int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
             int radius;
-            int flagParam = 0;
+
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int statsTopLeftX, statsTopLeftY, statsWidth, statsHeight, leftBarSize;
@@ -445,6 +463,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
             }
             
             absoluteStats = li.inflate(R.layout.absolute_stats, null); 
+            consumptionTextView = absoluteStats.findViewById(R.id.instantaneous_consumption_val);
+            mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
+            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+            mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-")); 
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.stats_bg));
@@ -513,17 +535,17 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void mUpdaterOilExpend() {
         if (userLayout && userStats && absoluteStats != null) {
             int value = DataCanbus.DATA[fuel];
-            if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
+            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
                 if (value > 0 && value < 3001) {
                     estimateOil = false;
-                    ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%d.%d", value / 10, value % 10) + " L/100km\u0020");
+                    consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
                 } else {
                     if (horsePower > 0 && vehicleMass > 0 && engineVolume > 0 && numberOfCylinders > 0) {
                         estimateOil = true;
                     } else {
-                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
+                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
                     }
                 }
             }         
@@ -537,9 +559,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setTextColor(Color.parseColor(textColor));
                 if (value > -1 && value < 2001) {
-                    ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setText(value + " km\u0020");
+                    mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, String.valueOf(value)));
                 } else {
-                    ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setText("-.- km\u0020");
+                    mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-")); 
                 }
             }
         }
@@ -563,7 +585,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                 .build();
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
 
                 @Override
@@ -575,15 +597,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         float speed = location.getSpeed(); // m/s
                         velocity = speed * 3.6f; // in km/h
                         if (estimateOil && userLayout && userStats && absoluteStats != null) {
-                            if (((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)) != null) {
+                            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
                                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
                                 if (revolutionsPerMinute > -1) {
                                     if (velocity > 0.5) {
                                         double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass, engineVolume, numberOfCylinders);
-                                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText(String.format("%.1f", fuelConsumption) + " L/100km\u0020");
+                                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
                                     } else {
-                                        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setText("0.0 L/100km\u0020");
+                                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
                                     }
                                 } 
                             }
@@ -644,12 +666,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         double adjustedFuelConsumptionKgPerHour = fuelConsumptionKgPerHour * (1 + (totalPowerNeeded / (calculatedhorsePowerVal * 745.7))); // 745.7 is the conversion from HP to HP to Watts
 
         // Convert fuel consumption to L/100km
-        double finalFuelConsumption = (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) * (100 / speedVal);
-        
-        return finalFuelConsumption;
+        return (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) * (100 / speedVal);
     }
 
-    public class PropertyChangeClass {
+    public static class PropertyChangeClass {
         private String pString = "initial";
         private boolean pBoolean;
         private final PropertyChangeSupport mPropertyChangeSupport = new  PropertyChangeSupport(this);

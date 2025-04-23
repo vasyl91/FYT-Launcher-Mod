@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
 import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi;
@@ -47,7 +46,7 @@ public class Callback_0123_RZC4_PSA301 extends CallbackCanbusBase {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[115];
                 if (value == 1 && !BZ408OilMileIndexActi.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
                     return;
                 } else {
                     if (value == 0 && BZ408OilMileIndexActi.mIsFront && PSAOilMileIndexActi.mInstance != null) {
@@ -61,7 +60,7 @@ public class Callback_0123_RZC4_PSA301 extends CallbackCanbusBase {
                 HandlerCanbus.update(updateCode, ints);
                 int value2 = DataCanbus.DATA[116];
                 if (value2 != 0 && !RZC_BZ408AlarmRecordActi.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi");
                     return;
                 } else {
                     if (value2 == 0 && RZC_BZ408AlarmRecordActi.mIsFront && RZC_BZ408AlarmRecordActi.mInstance != null) {

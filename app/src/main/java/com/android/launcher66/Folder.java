@@ -5,10 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.text.InputType;
 import android.text.Selection;
@@ -42,6 +46,7 @@ import android.content.pm.ResolveInfo;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.AutoScrollHelper;
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -283,17 +288,25 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mIsEditingName = false;  
 
         Helpers helpers = new Helpers();
-        if (!helpers.isFirstPreferenceWindow() 
-            && !helpers.isWallpaperWindow() 
-            && !helpers.isInOverviewMode()
-            && !mDragController.isDragging()
-            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-            && Launcher.getWorkspace().getCurrentPage() == Launcher.getWorkspace().getPageIndexForScreenId(Launcher.getWorkspace().CUSTOM_CONTENT_SCREEN_ID1)
-            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            if (!helpers.isFirstPreferenceWindow() 
+                && !helpers.isWallpaperWindow() 
+                && !helpers.isInOverviewMode()
+                && !mDragController.isDragging()
+                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                && Launcher.getWorkspace().getCurrentPage() == pipScreen
+                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
-                Log.d("closeFolder()", "startMapPip");
-                WindowUtil.startMapPip(null, false, 250);
-        }
+                    Log.d("closeFolder()", "startMapPip");
+                    WindowUtil.startMapPip(null, false);
+
+            }
+            helpers.setFirstPreferenceWindow(false);
+            helpers.setWallpaperWindow(false);
+            helpers.setWasInRecents(false);
+        }, 250);
     }
 
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -480,7 +493,14 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         AccessibilityManager accessibilityManager = (AccessibilityManager)
                 getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (accessibilityManager.isEnabled()) {
-            AccessibilityEvent event = AccessibilityEvent.obtain(type);
+            AccessibilityEvent event;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // For API level 33 and above
+                event = new AccessibilityEvent(type);
+            } else {
+                // For API levels below 33
+                event = AccessibilityEvent.obtain(type);
+            }
             onInitializeAccessibilityEvent(event);
             event.getText().add(text);
             accessibilityManager.sendAccessibilityEvent(event);

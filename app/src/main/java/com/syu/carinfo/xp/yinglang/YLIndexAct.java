@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckedTextView;
-import com.syu.canbus.R;
+
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.rzc.klc.RzcKlcOnstatWifiAct;
 import com.syu.module.canbus.DataCanbus;

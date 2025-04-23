@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.accord9.wc.Accord9HBackCamera;
 import com.syu.ipc.IModuleCallback;
 
@@ -32,7 +31,7 @@ public class Callback_0037_WC2_Accord9 extends CallbackCanbusBase {
         if (updateCode == 1021) {
             int value = ints[0];
             if (value == 1 && !Accord9HBackCamera.isFront) {
-                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.accord9.wc.Accord9HBackCamera");
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.accord9.wc.Accord9HBackCamera");
                 return;
             } else {
                 if (value == 0 && Accord9HBackCamera.isFront && Accord9HBackCamera.mInstance != null) {

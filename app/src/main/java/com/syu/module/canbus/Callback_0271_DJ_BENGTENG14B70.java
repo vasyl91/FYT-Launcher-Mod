@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -61,7 +60,7 @@ public class Callback_0271_DJ_BENGTENG14B70 extends CallbackCanbusBase {
                 }
             case 101:
                 if (ints[0] == 1 && !Air_Activity_All_NewAdd_HP.mIsFront) {
-                    JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
                     break;
                 } else if (ints[0] == 1 && Air_Activity_All_NewAdd_HP.mIsFront && Air_Activity_All_NewAdd_HP.mInstance != null) {
                     Air_Activity_All_NewAdd_HP.mInstance.finish();

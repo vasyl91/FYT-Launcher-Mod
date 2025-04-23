@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.xbs.yage8.XBS08YageCar6Cd;
 import com.syu.carinfo.xbs.yage8.XBS08YageCarRadioAct;
 import com.syu.carinfo.xbs.yage8.XBS08YageCarUSBAct;
@@ -110,17 +109,17 @@ public class Callback_0439_XBS_08Yage extends CallbackCanbusBase {
             switch (value) {
                 case 1:
                     if (!XBS08YageCarRadioAct.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCarRadioAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCarRadioAct");
                         break;
                     }
                 case 2:
                     if (!XBS08YageCar6Cd.isFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCar6Cd");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCar6Cd");
                         break;
                     }
                 case 4:
                     if (!XBS08YageCarUSBAct.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCarUSBAct");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.yage8.XBS08YageCarUSBAct");
                         break;
                     }
             }

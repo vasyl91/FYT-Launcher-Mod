@@ -39,6 +39,7 @@ espressoDevice = "1.0.1"
 playServicesLocation = "21.3.0"
 lombokVersion = "1.18.30"
 espressoWeb = "3.6.1"
+playServicesInstantapps = "18.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -88,6 +89,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 spring-context = { module = "org.springframework:spring-context", version.ref = "springContext" }
 projectlombok-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombokVersion" }
 androidx-espresso-web = { group = "androidx.test.espresso", name = "espresso-web", version.ref = "espressoWeb" }
+play-services-instantapps = { group = "com.google.android.gms", name = "play-services-instantapps", version.ref = "playServicesInstantapps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.canbus.JumpPage;
 import com.syu.carinfo.huiteng.HuitengCarSet;
 import com.syu.carinfo.huiteng.Huiteng_AirRearCtrl;
 import com.syu.ipc.IModuleCallback;
@@ -72,12 +71,12 @@ public class Callback_0439_DJ_HUITENG extends CallbackCanbusBase {
             switch (updateCode) {
                 case 108:
                     if (ints[0] == 1 && !Huiteng_AirRearCtrl.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirRearCtrl");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.Huiteng_AirRearCtrl");
                         break;
                     }
                 case 115:
                     if (ints[0] == 1 && !HuitengCarSet.mIsFront) {
-                        JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.HuitengCarSet");
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.huiteng.HuitengCarSet");
                         break;
                     }
                 default:

@@ -15,12 +15,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_LZ_Audi_Q5_All;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 
 public class LZAudiQ5CarSet extends BaseActivity implements View.OnClickListener {

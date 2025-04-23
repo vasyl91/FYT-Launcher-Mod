@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.syu.adapter.AdapterCarInfo;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
@@ -12,6 +13,7 @@ import com.syu.entity.CarInfo;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
+
 import java.util.ArrayList;
 import java.util.List;
 

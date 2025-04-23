@@ -1,6 +1,7 @@
 package com.fyt.skin.view;
 
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.Utilities;
 import com.fyt.skin.SkinManager;
@@ -40,6 +42,7 @@ public class SkinView {
 
     public void applySkin() {
         SkinResources skinResources = SkinUtils.getSkinResources();
+        Resources res = LauncherApplication.sApp.getResources();
         for (SkinAttrParms parms : this.parms) {
             Drawable left = null;
             Drawable top = null;
@@ -93,7 +96,7 @@ public class SkinView {
                     if (attrName.equals("drawableTop")) {
                         Bitmap bitmap = null;
                         if (parms.getId() != 0) {
-                            top = new BitmapDrawable(Utilities.createIconBitmap_enlarge(skinResources.getDrawable(parms.getId())));
+                            top = new BitmapDrawable(res, Utilities.createIconBitmap_enlarge(skinResources.getDrawable(parms.getId())));
                             break;
                         } else {
                             PackageManager pm = SkinManager.getContext().getPackageManager();
@@ -105,7 +108,7 @@ public class SkinView {
                             } catch (PackageManager.NameNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            top = new BitmapDrawable(bitmap);
+                            top = new BitmapDrawable(res, bitmap);
                             break;
                         }
                     }

@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
@@ -20,6 +21,7 @@ import com.syu.module.canbus.Callback_0448_LZ_BWM_CarUi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.module.main.DataMain;
+
 import java.util.ArrayList;
 
 public class ZXMZDSetFunc extends BaseActivity {
