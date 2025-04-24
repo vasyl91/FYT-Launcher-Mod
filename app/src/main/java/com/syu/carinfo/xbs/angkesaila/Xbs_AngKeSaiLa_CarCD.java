@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0418_XBS_XP1_AnKeSela_Cx4_Atenza;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xbs_AngKeSaiLa_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static Xbs_AngKeSaiLa_CarCD mInstance;
     public static boolean mIsFront = false;

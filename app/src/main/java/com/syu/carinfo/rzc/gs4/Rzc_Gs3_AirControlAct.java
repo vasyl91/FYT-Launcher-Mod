@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_Gs3_AirControlAct extends Activity {
     public static boolean mIsFront = false;
     protected Handler mHandler;

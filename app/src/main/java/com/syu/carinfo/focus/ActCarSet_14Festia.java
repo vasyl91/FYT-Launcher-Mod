@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActCarSet_14Festia extends BaseActivity {
     int[] ids = {101, 102, 103, 104, 105};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AirControl_TuAng_ClearAir extends Activity implements View.OnClickListener {
     IUiNotify mCanbusNotify = new IUiNotify() { 
         int value = 0;

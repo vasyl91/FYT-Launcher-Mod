@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_Oudi_Beiqi_diandong extends AirBase {
     public Air_0439_Oudi_Beiqi_diandong(Context context) {
         super(context);

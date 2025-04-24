@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_Benz extends Air_BenzBase {
     public Air_Benz(Context context) {
         super(context);

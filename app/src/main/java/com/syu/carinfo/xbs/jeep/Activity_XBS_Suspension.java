@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_XBS_Suspension extends Activity {
     AdapterCarInfo adapter;
     ListView mListView;

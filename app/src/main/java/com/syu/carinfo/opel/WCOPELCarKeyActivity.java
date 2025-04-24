@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCOPELCarKeyActivity extends BaseActivity {
     boolean isPress = false;
     private View.OnTouchListener mTouch = new View.OnTouchListener() { 

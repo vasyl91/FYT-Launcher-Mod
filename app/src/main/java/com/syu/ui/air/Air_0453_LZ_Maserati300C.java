@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_LZ_Maserati300C extends AirBase {
     public Air_0453_LZ_Maserati300C(Context context) {
         super(context);

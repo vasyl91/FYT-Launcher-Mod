@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0298_XP1_2015SIYU_CRV extends AirBase {
     public Air_0298_XP1_2015SIYU_CRV(Context context) {
         super(context);

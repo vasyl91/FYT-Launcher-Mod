@@ -6,6 +6,7 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityHondaNullBackCar extends Activity {
     public static ActivityHondaNullBackCar mInstance;
     public static boolean mIsFront = false;

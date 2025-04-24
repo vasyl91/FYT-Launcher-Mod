@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0163_RZC4_PSA14_408 extends AirBase {
     public Air_0163_RZC4_PSA14_408(Context context) {
         super(context);

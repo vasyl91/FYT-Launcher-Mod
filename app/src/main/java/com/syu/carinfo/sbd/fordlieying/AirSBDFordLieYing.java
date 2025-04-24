@@ -14,6 +14,7 @@ import com.syu.module.canbus.Callback_0398_SBD_FORD_LIEYING;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AirSBDFordLieYing extends BaseActivity implements View.OnTouchListener {
     public static AirSBDFordLieYing mInstance;
     public static boolean mIsFront = false;

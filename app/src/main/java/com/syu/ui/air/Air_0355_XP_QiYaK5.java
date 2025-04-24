@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0355_XP_QiYaK5 extends AirBase {
     public Air_0355_XP_QiYaK5(Context context) {
         super(context);

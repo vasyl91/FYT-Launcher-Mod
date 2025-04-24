@@ -11,6 +11,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcChanganCX70IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

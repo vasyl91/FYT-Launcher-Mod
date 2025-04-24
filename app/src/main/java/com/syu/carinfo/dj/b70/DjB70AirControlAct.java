@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DjB70AirControlAct extends Activity implements View.OnClickListener {
     public static DjB70AirControlAct mInstance;
     public static boolean mIsFront = false;

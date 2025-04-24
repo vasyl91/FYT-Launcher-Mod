@@ -31,7 +31,7 @@ public class W3Utils implements Callback.OnRefreshLisenter {
 
     static {
         mFilterApps = null;
-        mFilterApps = new ArrayList();
+        mFilterApps = new ArrayList<>();
         addFilterApp(FytPackage.carAction);
         addFilterApp("com.syu.radio");
         addFilterApp("cn.com.tiros.android.navidog");
@@ -80,7 +80,7 @@ public class W3Utils implements Callback.OnRefreshLisenter {
     public static void addFilterApp(String pkg) {
         if (pkg != null && pkg.length() > 0) {
             if (mFilterApps == null) {
-                mFilterApps = new ArrayList();
+                mFilterApps = new ArrayList<>();
             }
             if (!mFilterApps.contains(pkg)) {
                 mFilterApps.add(pkg);

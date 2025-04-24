@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7AirActi extends BaseActivity {
     public static Golf7AirActi mInstance;
     public static boolean mIsFront = false;

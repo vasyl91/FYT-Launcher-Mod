@@ -13,6 +13,7 @@ import com.syu.carinfo.accord9.wc.AccordConfig;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GuandaoSettingsAct extends BaseActivity implements View.OnClickListener {
     private int[] mInt2 = {0, 1};
     private int[] mInt3 = {0, 1, 2};

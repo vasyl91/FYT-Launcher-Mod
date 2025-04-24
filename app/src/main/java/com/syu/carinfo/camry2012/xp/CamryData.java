@@ -2,6 +2,7 @@ package com.syu.carinfo.camry2012.xp;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryData {
     public static final String MILEAGE_UNIT_KM = "KM";
     public static final String MILEAGE_UNIT_MILE = "MILE";

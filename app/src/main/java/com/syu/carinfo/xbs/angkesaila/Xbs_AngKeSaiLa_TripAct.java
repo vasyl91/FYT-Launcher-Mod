@@ -15,6 +15,7 @@ import com.syu.carinfo.wccamry.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xbs_AngKeSaiLa_TripAct extends BaseActivity {
     private Button mBtnClear;
     private Button mBtnGo2HisOil;

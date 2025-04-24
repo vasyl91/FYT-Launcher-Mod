@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.util.Print;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0379_BNR_GM extends AirBase {
     public Air_0379_BNR_GM(Context context) {
         super(context);

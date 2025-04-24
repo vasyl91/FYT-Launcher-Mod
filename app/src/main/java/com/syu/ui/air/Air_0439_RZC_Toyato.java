@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_RZC_Toyato extends AirBase {
     public Air_0439_RZC_Toyato(Context context) {
         super(context);

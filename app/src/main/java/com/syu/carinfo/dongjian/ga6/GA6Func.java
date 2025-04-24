@@ -2,6 +2,7 @@ package com.syu.carinfo.dongjian.ga6;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GA6Func {
     public static void C_CAR_CARINFO_CMD(int val1, int val2, int val3) {
         DataCanbus.PROXY.cmd(1, new int[]{val1, val2, val3}, null, null);

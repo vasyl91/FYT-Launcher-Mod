@@ -17,6 +17,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLFordCarCD extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private FileAdapter adapter;

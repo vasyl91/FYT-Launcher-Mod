@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XpPsa301Acti extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

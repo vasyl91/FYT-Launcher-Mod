@@ -4,6 +4,8 @@ import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.syu.canbus.R;
 
 public class MyToast {
@@ -14,7 +16,7 @@ public class MyToast {
 
     public MyToast(Context context) {
         this.textView = new TextView(context);
-        this.textView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toast_bg));
+        this.textView.setBackground(ContextCompat.getDrawable(context, R.drawable.toast_bg));
         this.textView.setMaxWidth(600);
         this.textView.setMaxHeight(360);
         this.textView.setGravity(17);
@@ -25,7 +27,7 @@ public class MyToast {
 
     public MyToast(Context context, CharSequence text, int duration, int textColor, int textSize) {
         this.textView = new TextView(context);
-        this.textView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toast_bg));
+        this.textView.setBackground(ContextCompat.getDrawable(context, R.drawable.toast_bg));
         this.textView.setMaxWidth(600);
         this.textView.setMaxHeight(360);
         this.textView.setGravity(17);

@@ -19,6 +19,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dj_0439_HavalH8SetAct extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

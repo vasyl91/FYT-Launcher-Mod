@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_XBS_09Tianlai;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBS09TianlaiCarRadioAct extends BaseActivity {
     public static XBS09TianlaiCarRadioAct mInstance;
     public static boolean mIsFront = false;

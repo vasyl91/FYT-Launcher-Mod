@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC2FordLincoinRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

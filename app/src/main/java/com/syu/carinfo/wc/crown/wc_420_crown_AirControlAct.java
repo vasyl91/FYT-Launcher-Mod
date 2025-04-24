@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class wc_420_crown_AirControlAct extends Activity implements View.OnClickListener {
     public static wc_420_crown_AirControlAct mInstance;
     public static boolean mIsFront = false;

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0290_RZC_Qichen_21_T90 extends AirBase {
     public Air_0290_RZC_Qichen_21_T90(Context context) {
         super(context);

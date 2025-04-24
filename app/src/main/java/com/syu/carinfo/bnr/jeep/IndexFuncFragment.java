@@ -13,6 +13,7 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class IndexFuncFragment extends BaseFragment {
     AdapterCarInfo adapter;
     ListView mListView;

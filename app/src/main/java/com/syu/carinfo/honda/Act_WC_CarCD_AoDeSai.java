@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_12ELYSION;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act_WC_CarCD_AoDeSai extends Activity {
     public static boolean mIsFront = false;
     IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RJ_GC_AirControlAct extends Activity implements View.OnTouchListener {
     public static RJ_GC_AirControlAct mInstance;
     public static boolean mIsFront = false;

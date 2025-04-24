@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0196_XBS_OD_Changcheng_C30 extends AirBase {
     public Air_0196_XBS_OD_Changcheng_C30(Context context) {
         super(context);

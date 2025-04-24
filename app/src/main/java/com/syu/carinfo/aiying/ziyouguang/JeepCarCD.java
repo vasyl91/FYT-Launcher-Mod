@@ -12,6 +12,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JeepCarCD extends BaseActivity {
     public static JeepCarCD mInstance;
     public static boolean mIsFront = false;

@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0031_Xp2_XianDaiIx3545 extends AirBase {
     public Air_0031_Xp2_XianDaiIx3545(Context context) {
         super(context);

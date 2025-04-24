@@ -357,6 +357,7 @@
     <string name="logcat_service_summary"><![CDATA[Logcat will start logging on application start. Reset the device and check the logs located in <b>Download/launcher_logs</b>]]></string>
     <string name="logcat_service_timeout">Logcat timeout</string>
     <string name="logcat_service_timeout_str">Set the logcat timeout (in seconds):</string>
+    <string name="app_version">Version: %1$s</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__inputColor">Color: </string>

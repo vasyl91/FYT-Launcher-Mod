@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity439Hava18H6SetAct extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

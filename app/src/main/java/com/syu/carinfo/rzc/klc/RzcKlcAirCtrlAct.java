@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcKlcAirCtrlAct extends Activity implements View.OnTouchListener {
     public static RzcKlcAirCtrlAct mInstance;
     public static boolean mIsFront = false;

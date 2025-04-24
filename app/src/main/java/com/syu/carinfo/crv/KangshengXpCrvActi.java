@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.dasauto.DasAutoXpAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KangshengXpCrvActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

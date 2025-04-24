@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -163,30 +164,50 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent data) {
-        Intent intent;
-        if (ACTION_INSTALL_SHORTCUT.equals(data.getAction()) && (intent = (Intent) data.getParcelableExtra("android.intent.extra.shortcut.INTENT")) != null) {
-            String name = data.getStringExtra("android.intent.extra.shortcut.NAME");
-            if (name == null) {
-                try {
-                    PackageManager pm = context.getPackageManager();
-                    name = pm.getActivityInfo(intent.getComponent(), 0).loadLabel(pm).toString();
-                } catch (PackageManager.NameNotFoundException e) {
-                    return;
-                }
+        if (ACTION_INSTALL_SHORTCUT.equals(data.getAction())) {
+            Intent intent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent = data.getParcelableExtra("android.intent.extra.shortcut.INTENT", Intent.class);
+            } else {
+                intent = data.getParcelableExtra("android.intent.extra.shortcut.INTENT");
             }
-            Bitmap icon = (Bitmap) data.getParcelableExtra("android.intent.extra.shortcut.ICON");
-            Intent.ShortcutIconResource iconResource = (Intent.ShortcutIconResource) data.getParcelableExtra("android.intent.extra.shortcut.ICON_RESOURCE");
-            LauncherAppState.setApplicationContext(context.getApplicationContext());
-            LauncherAppState app = LauncherAppState.getInstance();
-            boolean launcherNotLoaded = app.getDynamicGrid() == null;
-            PendingInstallShortcutInfo info = new PendingInstallShortcutInfo(data, name, intent);
-            info.icon = icon;
-            info.iconResource = iconResource;
-            String spKey = LauncherAppState.getSharedPreferencesKey();
-            SharedPreferences sp = context.getSharedPreferences(spKey, 0);
-            addToInstallQueue(sp, info);
-            if (!mUseInstallQueue && !launcherNotLoaded) {
-                flushInstallQueue(context);
+
+            if (intent != null) {
+                String name = data.getStringExtra("android.intent.extra.shortcut.NAME");
+                if (name == null) {
+                    try {
+                        PackageManager pm = context.getPackageManager();
+                        name = pm.getActivityInfo(intent.getComponent(), 0).loadLabel(pm).toString();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        return;
+                    }
+                }
+                Bitmap icon;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    icon = data.getParcelableExtra("android.intent.extra.shortcut.ICON", Bitmap.class);
+                } else {
+                    icon = data.getParcelableExtra("android.intent.extra.shortcut.ICON");
+                }
+
+                Intent.ShortcutIconResource iconResource;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    iconResource = data.getParcelableExtra("android.intent.extra.shortcut.ICON_RESOURCE", Intent.ShortcutIconResource.class);
+                } else {
+                    iconResource = (Intent.ShortcutIconResource) data.getParcelableExtra("android.intent.extra.shortcut.ICON_RESOURCE");
+                }
+
+                LauncherAppState.setApplicationContext(context.getApplicationContext());
+                LauncherAppState app = LauncherAppState.getInstance();
+                boolean launcherNotLoaded = app.getDynamicGrid() == null;
+                PendingInstallShortcutInfo info = new PendingInstallShortcutInfo(data, name, intent);
+                info.icon = icon;
+                info.iconResource = iconResource;
+                String spKey = LauncherAppState.getSharedPreferencesKey();
+                SharedPreferences sp = context.getSharedPreferences(spKey, 0);
+                addToInstallQueue(sp, info);
+                if (!mUseInstallQueue && !launcherNotLoaded) {
+                    flushInstallQueue(context);
+                }
             }
         }
     }

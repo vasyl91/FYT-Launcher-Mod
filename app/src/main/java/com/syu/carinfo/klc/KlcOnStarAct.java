@@ -19,6 +19,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KlcOnStarAct extends Activity {
     StringBuffer buffer;
     int hour;

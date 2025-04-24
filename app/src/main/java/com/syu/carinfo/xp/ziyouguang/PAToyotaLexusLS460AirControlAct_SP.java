@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAToyotaLexusLS460AirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAToyotaLexusLS460AirControlAct_SP mInstance;
     public static boolean mIsFront = false;

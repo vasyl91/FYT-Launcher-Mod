@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClickListener {
     private Date dsetDate;
     private int iChecked;

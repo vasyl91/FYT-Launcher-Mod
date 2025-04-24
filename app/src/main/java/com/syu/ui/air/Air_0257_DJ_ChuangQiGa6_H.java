@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0257_DJ_ChuangQiGa6_H extends AirBase {
     public Air_0257_DJ_ChuangQiGa6_H(Context context) {
         super(context);

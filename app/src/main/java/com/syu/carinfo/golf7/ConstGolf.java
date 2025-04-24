@@ -3,6 +3,7 @@ package com.syu.carinfo.golf7;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstGolf {
     public static final int CONV_CONSUMER_MAX = 7;
     public static final int START_STOP_MAX = 7;

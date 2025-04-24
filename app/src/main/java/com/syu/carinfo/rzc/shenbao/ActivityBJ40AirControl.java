@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityBJ40AirControl extends Activity implements View.OnClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

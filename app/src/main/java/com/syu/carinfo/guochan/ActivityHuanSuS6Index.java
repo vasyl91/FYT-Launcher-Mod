@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityHuanSuS6Index extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

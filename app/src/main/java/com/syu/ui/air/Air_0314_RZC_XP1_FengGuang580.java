@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0314_RZC_XP1_FengGuang580 extends AirBase {
     public Air_0314_RZC_XP1_FengGuang580(Context context) {
         super(context);

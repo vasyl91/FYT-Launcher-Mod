@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.Print;
 
 @SuppressLint({"CutPasteId"})
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7Functional_OffRoadCustom_Wc_Acti extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

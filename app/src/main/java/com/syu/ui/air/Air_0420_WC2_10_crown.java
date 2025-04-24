@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0420_WC2_10_crown extends AirBase {
     public Air_0420_WC2_10_crown(Context context) {
         super(context);

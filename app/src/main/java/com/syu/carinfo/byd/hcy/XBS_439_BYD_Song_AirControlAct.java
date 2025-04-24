@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBS_439_BYD_Song_AirControlAct extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

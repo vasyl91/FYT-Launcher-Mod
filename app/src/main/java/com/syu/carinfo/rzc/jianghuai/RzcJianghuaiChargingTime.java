@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcJianghuaiChargingTime extends BaseActivity {
     int mode = 0;
     int value1_1 = 0;

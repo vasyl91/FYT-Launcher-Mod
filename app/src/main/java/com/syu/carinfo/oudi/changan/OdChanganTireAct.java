@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class OdChanganTireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */

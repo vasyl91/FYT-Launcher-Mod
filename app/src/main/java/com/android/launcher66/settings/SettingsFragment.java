@@ -49,6 +49,7 @@ import com.android.async.AsyncTask;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherAppState;
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.io.ByteArrayOutputStream;
@@ -184,6 +185,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
         logcatServiceTimeoutEditText();
 
+        PreferenceCategory appVersion = findPreference("app_version");
+
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
         }
@@ -237,6 +240,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         if (logcatServiceTimeout != null) {
             logcatServiceTimeout.setOnPreferenceClickListener(this);
             logcatServiceTimeout.setVisible(logcatServiceBool);
+        }
+        if (appVersion != null) {
+            String version = helpers.getAppVersion(LauncherApplication.sApp);
+            appVersion.setTitle(getString(R.string.app_version, version));
         }
     }
 

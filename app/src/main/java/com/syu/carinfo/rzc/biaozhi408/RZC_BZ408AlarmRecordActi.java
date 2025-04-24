@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408AlarmRecordActi extends BaseActivity {
     public static RZC_BZ408AlarmRecordActi mInstance;
     public static boolean mIsFront = false;

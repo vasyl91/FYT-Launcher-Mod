@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BMWX1CarSetActi extends BaseActivity implements View.OnClickListener {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

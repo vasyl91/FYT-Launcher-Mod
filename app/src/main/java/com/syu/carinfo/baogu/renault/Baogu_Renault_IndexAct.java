@@ -7,6 +7,7 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Baogu_Renault_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

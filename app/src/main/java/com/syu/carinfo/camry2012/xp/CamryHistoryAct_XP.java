@@ -10,6 +10,7 @@ import com.syu.carinfo.wccamry.ConstWcToyota;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryHistoryAct_XP extends BaseActivity {
     public static CamryHistoryAct_XP mInit;
     private TextView[] mTvHisOil = new TextView[4];

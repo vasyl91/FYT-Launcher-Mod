@@ -132,7 +132,7 @@ public class WallpaperCropActivity extends Activity {
         final AsyncTask<Void, Void, Void> loadBitmapTask = new AsyncTask<Void, Void, Void>() {
 
             @Override
-            protected Void doInBackground(Void... args) {
+            protected Void doInBackground(Void[] args) {
                 if (!isCancelled()) {
                     try {
                         bitmapSource.loadInBackground();
@@ -791,7 +791,7 @@ public class WallpaperCropActivity extends Activity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Void[] params) {
             return cropBitmap();
         }
 

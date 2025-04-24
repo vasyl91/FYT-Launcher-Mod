@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_OUDI_Jianghuai_Ruifeng_all extends AirBase {
     public Air_0452_OUDI_Jianghuai_Ruifeng_all(Context context) {
         super(context);

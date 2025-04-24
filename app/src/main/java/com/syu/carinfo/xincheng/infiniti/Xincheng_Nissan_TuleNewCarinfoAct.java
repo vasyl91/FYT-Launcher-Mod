@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xincheng_Nissan_TuleNewCarinfoAct extends Activity {
     public static boolean mIsFront = false;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

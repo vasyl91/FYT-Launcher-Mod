@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class IndexAct_Hc_volvo extends BaseActivity {
     public static IndexAct_Hc_volvo mInstance;
     public static boolean mIsFront = false;

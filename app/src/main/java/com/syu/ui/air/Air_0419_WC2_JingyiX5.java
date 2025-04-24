@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0419_WC2_JingyiX5 extends AirBase {
     public Air_0419_WC2_JingyiX5(Context context) {
         super(context);

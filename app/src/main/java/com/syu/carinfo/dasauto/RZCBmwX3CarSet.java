@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCBmwX3CarSet extends BaseActivity implements View.OnClickListener {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

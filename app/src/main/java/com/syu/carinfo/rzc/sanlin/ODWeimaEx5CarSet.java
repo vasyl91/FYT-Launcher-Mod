@@ -13,6 +13,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ODWeimaEx5CarSet extends BaseActivity {
     private SeekBar.OnSeekBarChangeListener mseekbarClick = new SeekBar.OnSeekBarChangeListener() { 
         @Override

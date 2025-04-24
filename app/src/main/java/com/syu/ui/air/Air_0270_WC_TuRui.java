@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0270_WC_TuRui extends AirBase {
     public Air_0270_WC_TuRui(Context context) {
         super(context);

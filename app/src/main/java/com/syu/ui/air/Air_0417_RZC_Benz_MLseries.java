@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0417_RZC_Benz_MLseries extends AirBase {
     public Air_0417_RZC_Benz_MLseries(Context context) {
         super(context);

@@ -2,6 +2,7 @@ package com.syu.carinfo.dongjian.wc2.ds5;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DS5Func {
     public static void C_CAR_COMPUTER_SET(int val1, int val2) {
         DataCanbus.PROXY.cmd(0, new int[]{val1, val2}, null, null);

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0176_RZC_DongNanV5 extends AirBase {
     public Air_0176_RZC_DongNanV5(Context context) {
         super(context);

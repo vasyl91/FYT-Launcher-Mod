@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_08_12Tianlai;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC08TianlaiCar6Cd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static WC08TianlaiCar6Cd mInit;

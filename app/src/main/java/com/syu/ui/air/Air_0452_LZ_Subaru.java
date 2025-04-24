@@ -9,6 +9,7 @@ import android.os.SystemProperties;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_LZ_Subaru extends AirBase {
     public Air_0452_LZ_Subaru(Context context) {
         super(context);

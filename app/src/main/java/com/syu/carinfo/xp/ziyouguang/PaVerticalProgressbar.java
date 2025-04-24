@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PaVerticalProgressbar extends ProgressBar {
     private int viewHeight;
     private int viewWidth;

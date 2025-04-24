@@ -21,6 +21,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC_0320_HavalH9SetAct extends BaseActivity implements View.OnClickListener {
     protected Handler mHandler;
     private PopupWindow mLauStyle;

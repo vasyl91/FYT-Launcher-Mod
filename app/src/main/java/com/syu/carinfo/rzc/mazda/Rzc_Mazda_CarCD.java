@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_RZC_MZD_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_Mazda_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static Rzc_Mazda_CarCD mInstance;
     public static boolean mIsFront = false;

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0342_RZC_XP1_RoeWe360 extends AirBase {
     public Air_0342_RZC_XP1_RoeWe360(Context context) {
         super(context);

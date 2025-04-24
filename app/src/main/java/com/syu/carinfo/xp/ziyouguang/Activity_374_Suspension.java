@@ -16,6 +16,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_374_Suspension extends Activity {
     AdapterCarInfo adapter;
     List<CarInfo> mList = new ArrayList();

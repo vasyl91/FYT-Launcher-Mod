@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity17CRVAirControl extends Activity implements View.OnTouchListener {
     public static Activity17CRVAirControl mInstance;
     public static boolean mIsFront = false;

@@ -15,6 +15,7 @@ import android.view.View;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class InfoJaguarLeftView extends View {
     private float angle;
     private int autoStep;

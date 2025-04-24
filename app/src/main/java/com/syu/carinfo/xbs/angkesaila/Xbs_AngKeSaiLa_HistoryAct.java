@@ -15,6 +15,7 @@ import com.syu.carinfo.wccamry.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xbs_AngKeSaiLa_HistoryAct extends BaseActivity {
     private Button mBtnDelete;
     private Button mBtnGo2Minute;

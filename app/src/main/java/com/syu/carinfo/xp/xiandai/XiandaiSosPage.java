@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.syu.canbus.BaseActivity;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XiandaiSosPage extends BaseActivity {
     public static XiandaiSosPage mInstance;
     public static boolean mIsFront = false;

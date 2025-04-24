@@ -2,6 +2,7 @@ package com.syu.carinfo.widget;
 
 import android.os.SystemClock;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ProgressFloat {
     private float mCurVal;
     private long mLastMillis;

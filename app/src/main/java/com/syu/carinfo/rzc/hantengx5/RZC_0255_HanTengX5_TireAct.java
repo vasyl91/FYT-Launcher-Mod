@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_0255_HanTengX5_TireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

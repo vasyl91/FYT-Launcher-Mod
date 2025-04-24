@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class fragment_ford_seatset extends BaseFragment implements View.OnClickListener {
     private int cmd;
     int l0;

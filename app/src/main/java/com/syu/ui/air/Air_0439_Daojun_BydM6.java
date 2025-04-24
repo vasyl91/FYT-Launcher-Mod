@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_Daojun_BydM6 extends AirBase {
     public Air_0439_Daojun_BydM6(Context context) {
         super(context);

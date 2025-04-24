@@ -23,13 +23,15 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
             new ThreadPoolExecutor(20, 128, 1,
                     TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
-    public AsyncTask() {}
+    protected AsyncTask() {}
 
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> execute(INPUT... input) {
+    @SafeVarargs
+    public final AsyncTask<INPUT, PROGRESS, OUTPUT> execute(INPUT... input) {
         return executeOnExecutor(AsyncWorker.getInstance().getExecutorService(), input);
     }
 
-    public AsyncTask<INPUT, PROGRESS, OUTPUT> executeOnExecutor(Executor executor, INPUT... params) {
+    @SafeVarargs
+    public final AsyncTask<INPUT, PROGRESS, OUTPUT> executeOnExecutor(Executor executor, INPUT... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
@@ -82,8 +84,8 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         }
     }
 
-    // Updated to accept varargs
-    protected void publishProgress(final PROGRESS... progress) {
+    @SafeVarargs
+    protected final void publishProgress(final PROGRESS... progress) {
         AsyncWorker.getInstance().getHandler().post(() -> {
             onProgress(progress);
             if (onProgressListener != null) {
@@ -92,8 +94,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         });
     }
 
-    // Updated to accept varargs
-    protected void onProgress(final PROGRESS... progress) {}
+    protected void onProgress(final PROGRESS[] progress) {}
 
     public void cancel() {
         cancelled.set(true);
@@ -117,7 +118,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
 
     protected void onPreExecute() {}
 
-    protected abstract OUTPUT doInBackground(INPUT... input) throws Exception;
+    protected abstract OUTPUT doInBackground(INPUT[] input) throws Exception;
 
     protected void onPostExecute(OUTPUT output) {}
 
@@ -126,7 +127,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
     // Updated listener interface
     private OnProgressListener<PROGRESS> onProgressListener;
     public interface OnProgressListener<PROGRESS> {
-        void onProgress(PROGRESS... progress);
+        void onProgress(PROGRESS[] progress);
     }
 
     public void setOnProgressListener(OnProgressListener<PROGRESS> onProgressListener) {

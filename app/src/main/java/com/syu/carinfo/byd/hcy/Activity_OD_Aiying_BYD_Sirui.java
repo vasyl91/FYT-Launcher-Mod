@@ -17,6 +17,7 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_OD_Aiying_BYD_Sirui extends BaseActivityForFragment {
     AdapterCarInfo adapter;
     ListView mListView;

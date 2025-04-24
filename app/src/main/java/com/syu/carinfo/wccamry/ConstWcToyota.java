@@ -2,6 +2,7 @@ package com.syu.carinfo.wccamry;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstWcToyota {
     public static final int MINUTEOILEXPENDMAX = 30;
     public static final int TRIPOILEXPENDMAX = 5;

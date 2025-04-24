@@ -9,6 +9,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryHistoryAct_ZH extends BaseActivity {
     public static CamryHistoryAct_ZH mInit;
     private TextView[] mTvHisOil = new TextView[4];

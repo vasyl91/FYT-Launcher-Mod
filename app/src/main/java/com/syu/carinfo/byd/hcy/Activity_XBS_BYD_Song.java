@@ -20,6 +20,7 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_XBS_BYD_Song extends BaseActivityForFragment {
     AdapterCarInfo adapter;
     ListView mListView;

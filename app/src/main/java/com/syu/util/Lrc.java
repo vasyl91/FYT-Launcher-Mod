@@ -9,6 +9,7 @@ import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,8 +28,8 @@ public class Lrc {
     public static final int MODE_UNICODE = 1;
     public static final int MODE_UTF8 = 3;
     public static String strLrcSavePath;
-    public List<SparseArray<String>> mLrcTimeSave1 = new ArrayList();
-    public List<SparseArray<String>> mLrcTimeSave2 = new ArrayList();
+    public List<SparseArray<String>> mLrcTimeSave1 = new ArrayList<>();
+    public List<SparseArray<String>> mLrcTimeSave2 = new ArrayList<>();
 
     public Id3Info getId3Info(String strFile) {
         Id3Info id3Info = new Id3Info();
@@ -225,63 +226,33 @@ public class Lrc {
             case 2:
                 return "UTF-16BE";
             case 3:
-                return HTTP.UTF_8;
+                return StandardCharsets.UTF_8.name();
             default:
                 String encoding = FuncUtils.getCharset(Locale.getDefault());
                 return encoding;
         }
     }
 
-    boolean GetId3v1Info(String strFile, Id3Info id3Info) throws Throwable {
+    boolean GetId3v1Info(String strFile, Id3Info id3Info) {
         RandomAccessFile randomFile = null;
-        boolean bSucc = false;
-        RandomAccessFile randomFile2 = null;
+        boolean success = false;
         try {
-            try {
-                randomFile = new RandomAccessFile(strFile, "r");
-            } catch (Throwable th) {
-                th = th;
-            }
-        } catch (Exception e) {
-            e = e;
-        }
-        try {
-            bSucc = ReadID3v1(randomFile, id3Info);
-        } catch (Exception e2) {
-            e = e2;
-            randomFile2 = randomFile;
+            randomFile = new RandomAccessFile(strFile, "r");
+            success = ReadID3v1(randomFile, id3Info);
+        } catch (java.io.IOException e) {
+            System.err.println("Error accessing or reading the file: " + strFile);
             e.printStackTrace();
-            if (randomFile2 != null) {
+        } finally {
+            if (randomFile != null) {
                 try {
-                    randomFile2.close();
-                } catch (Exception e3) {
-                    e3.printStackTrace();
+                    randomFile.close();
+                } catch (java.io.IOException e) {
+                    System.err.println("Error closing the file: " + strFile);
+                    e.printStackTrace();
                 }
             }
-            return bSucc;
-        } catch (Throwable th2) {
-            th = th2;
-            randomFile2 = randomFile;
-            if (randomFile2 != null) {
-                try {
-                    randomFile2.close();
-                } catch (Exception e4) {
-                    e4.printStackTrace();
-                }
-            }
-            throw th;
         }
-        if (randomFile != null) {
-            try {
-                randomFile.close();
-                randomFile2 = randomFile;
-            } catch (Exception e5) {
-                e5.printStackTrace();
-            }
-            return bSucc;
-        }
-        randomFile2 = randomFile;
-        return bSucc;
+        return success;
     }
 
     boolean ReadAPEv2(RandomAccessFile randomFile, Id3Info id3Info) throws IOException {
@@ -309,108 +280,48 @@ public class Lrc {
         return !TextUtils.isEmpty(id3Info.strArtist);
     }
 
-    public boolean GetAPEv2Info(String strFile, Id3Info id3Info) throws Throwable {
+    public boolean GetAPEv2Info(String strFile, Id3Info id3Info) {
         RandomAccessFile randomFile = null;
-        boolean bSucc = false;
-        RandomAccessFile randomFile2 = null;
+        boolean success = false;
         try {
-            try {
-                randomFile = new RandomAccessFile(strFile, "r");
-            } catch (Throwable th) {
-                th = th;
-            }
-        } catch (Exception e) {
-            e = e;
-        }
-        try {
-            bSucc = ReadAPEv2(randomFile, id3Info);
-        } catch (Exception e2) {
-            e = e2;
-            randomFile2 = randomFile;
+            randomFile = new RandomAccessFile(strFile, "r");
+            success = ReadAPEv2(randomFile, id3Info);
+        } catch (java.io.IOException e) {
+            System.err.println("Error accessing or reading the file for APEv2 info: " + strFile);
             e.printStackTrace();
-            if (randomFile2 != null) {
+        } finally {
+            if (randomFile != null) {
                 try {
-                    randomFile2.close();
-                } catch (Exception e3) {
-                    e3.printStackTrace();
+                    randomFile.close();
+                } catch (java.io.IOException e) {
+                    System.err.println("Error closing the file for APEv2 info: " + strFile);
+                    e.printStackTrace();
                 }
             }
-            return bSucc;
-        } catch (Throwable th2) {
-            th = th2;
-            randomFile2 = randomFile;
-            if (randomFile2 != null) {
-                try {
-                    randomFile2.close();
-                } catch (Exception e4) {
-                    e4.printStackTrace();
-                }
-            }
-            throw th;
         }
-        if (randomFile != null) {
-            try {
-                randomFile.close();
-                randomFile2 = randomFile;
-            } catch (Exception e5) {
-                e5.printStackTrace();
-            }
-            return bSucc;
-        }
-        randomFile2 = randomFile;
-        return bSucc;
+        return success;
     }
 
-    boolean GetId3v2Info(String strFile, Id3Info id3Info) throws Throwable {
+    boolean GetId3v2Info(String strFile, Id3Info id3Info) {
         RandomAccessFile randomFile = null;
-        boolean bSucc = false;
-        RandomAccessFile randomFile2 = null;
+        boolean success = false;
         try {
-            try {
-                randomFile = new RandomAccessFile(strFile, "r");
-            } catch (Throwable th) {
-                th = th;
-            }
-        } catch (Exception e) {
-            e = e;
-        }
-        try {
-            bSucc = ReadID3v2(randomFile, id3Info);
-        } catch (Exception e2) {
-            e = e2;
-            randomFile2 = randomFile;
+            randomFile = new RandomAccessFile(strFile, "r");
+            success = ReadID3v2(randomFile, id3Info);
+        } catch (java.io.IOException e) {
+            System.err.println("Error accessing or reading the file for ID3v2 info: " + strFile);
             e.printStackTrace();
-            if (randomFile2 != null) {
+        } finally {
+            if (randomFile != null) {
                 try {
-                    randomFile2.close();
-                } catch (Exception e3) {
-                    e3.printStackTrace();
+                    randomFile.close();
+                } catch (java.io.IOException e) {
+                    System.err.println("Error closing the file for ID3v2 info: " + strFile);
+                    e.printStackTrace();
                 }
             }
-            return bSucc;
-        } catch (Throwable th2) {
-            th = th2;
-            randomFile2 = randomFile;
-            if (randomFile2 != null) {
-                try {
-                    randomFile2.close();
-                } catch (Exception e4) {
-                    e4.printStackTrace();
-                }
-            }
-            throw th;
         }
-        if (randomFile != null) {
-            try {
-                randomFile.close();
-                randomFile2 = randomFile;
-            } catch (Exception e5) {
-                e5.printStackTrace();
-            }
-            return bSucc;
-        }
-        randomFile2 = randomFile;
-        return bSucc;
+        return success;
     }
 
     public int getInt_way2(byte[] buf, int offset) {

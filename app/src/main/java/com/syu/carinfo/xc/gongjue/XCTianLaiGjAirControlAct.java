@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XCTianLaiGjAirControlAct extends BaseActivity implements View.OnTouchListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

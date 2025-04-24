@@ -19,6 +19,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCSuzukiAllCarSet extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

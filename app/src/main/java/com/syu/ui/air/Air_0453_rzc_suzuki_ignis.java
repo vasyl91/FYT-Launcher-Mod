@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_rzc_suzuki_ignis extends AirBase {
     public Air_0453_rzc_suzuki_ignis(Context context) {
         super(context);

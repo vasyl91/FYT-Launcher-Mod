@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordDoornumSetAct extends Activity implements View.OnTouchListener {
     public static StringBuffer mTvCurrPasswordBuffer = new StringBuffer();
     private PAFordDoornumWindow mPaFordDoorNumWindow;

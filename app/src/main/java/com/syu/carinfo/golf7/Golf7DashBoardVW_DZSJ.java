@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7DashBoardVW_DZSJ extends Activity {
     public static Golf7DashBoardVW_DZSJ mInstance;
     public static boolean mIsFront = false;

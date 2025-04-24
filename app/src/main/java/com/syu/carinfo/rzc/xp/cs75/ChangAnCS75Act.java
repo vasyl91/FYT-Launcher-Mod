@@ -14,6 +14,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ChangAnCS75Act extends BaseActivity {
     int C_SET = 131;
     int C_REMOTE_UNLOCK = 3;

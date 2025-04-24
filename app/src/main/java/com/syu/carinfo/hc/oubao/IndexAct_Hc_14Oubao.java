@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.hc.tianlai.ActivityTianLaiCarCD;
 import com.syu.carinfo.hc.tianlai.ActivityTianLaiCarInfo;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class IndexAct_Hc_14Oubao extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

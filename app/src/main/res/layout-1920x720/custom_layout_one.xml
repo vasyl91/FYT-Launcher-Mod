@@ -69,7 +69,7 @@
         android:id="@+id/rl_music"
         android:background="@drawable/music_bg"
         android:layout_width="400.0px"
-        android:layout_height="390.0px"
+        android:layout_height="386.0px"
         android:layout_marginLeft="15.0px"
         android:layout_marginTop="15.0px"
         android:gravity="center"
@@ -176,7 +176,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="1765.0px"
-        android:layout_height="110.0px"
+        android:layout_height="92.0px"
         android:layout_marginLeft="16.0px"
         android:layout_marginTop="16.0px"
         android:layout_alignLeft="@id/iv_map1"

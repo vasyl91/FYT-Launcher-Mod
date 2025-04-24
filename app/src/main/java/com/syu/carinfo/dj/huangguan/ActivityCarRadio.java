@@ -15,6 +15,7 @@ import com.syu.module.canbus.Callback_0439_RZC_TOYOTA_HuangGuan;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityCarRadio extends Activity implements View.OnTouchListener {
     public static ActivityCarRadio mInst;
     public static boolean mIsFront = false;

@@ -9,6 +9,7 @@ import android.os.SystemProperties;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0294_WC2_Toyota_All extends AirBase {
     public Air_0294_WC2_Toyota_All(Context context) {
         super(context);

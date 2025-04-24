@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0319_WC3_15Fucos extends AirBase {
     public Air_0319_WC3_15Fucos(Context context) {
         super(context);

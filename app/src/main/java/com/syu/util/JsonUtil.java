@@ -30,7 +30,7 @@ public class JsonUtil {
             httpConn.setUseCaches(false);
             httpConn.setRequestMethod(HttpPost.METHOD_NAME);
             httpConn.setRequestProperty(HTTP.CONTENT_TYPE, "application/json");
-            httpConn.setRequestProperty("Charset", HTTP.UTF_8);
+            httpConn.setRequestProperty("Charset", StandardCharsets.UTF_8.name());
             httpConn.setReadTimeout(10000);
             httpConn.setConnectTimeout(10000);
             httpConn.connect();
@@ -64,7 +64,7 @@ public class JsonUtil {
     public static String doPostStr(List<NameValuePair> params, String str_http) {
         HttpPost httpPost = new HttpPost(str_http);
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8.name()));
             HttpClient httpclient = HttpClientBuilder.create().build();
             HttpResponse httpResponse = httpclient.execute(httpPost);
             if (httpResponse.getStatusLine().getStatusCode() != 200) {

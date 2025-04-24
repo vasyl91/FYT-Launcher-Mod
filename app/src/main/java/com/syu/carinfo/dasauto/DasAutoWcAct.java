@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DasAutoWcAct extends BaseActivity {
     public Callback_0001_WC1_DaZhong mCallback = null;
     private IUiNotify notifyCanbus = new IUiNotify() { 

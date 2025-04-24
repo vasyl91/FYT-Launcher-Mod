@@ -8,6 +8,7 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xp_374_IndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

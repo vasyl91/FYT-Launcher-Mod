@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TDLandRoverEcoDataIndexActi2 extends TabActivity {
     public static TDLandRoverEcoDataIndexActi2 mInstance;
     public static boolean mIsFront = false;

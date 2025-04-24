@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0036_WC2_GM extends AirBase {
     public Air_0036_WC2_GM(Context context) {
         super(context);

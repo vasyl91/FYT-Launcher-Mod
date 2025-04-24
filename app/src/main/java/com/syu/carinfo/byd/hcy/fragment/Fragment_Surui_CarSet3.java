@@ -10,6 +10,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_Surui_CarSet3 extends BaseFragment implements View.OnClickListener {
     int[] ids = {123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

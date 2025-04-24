@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AIR_0438_DJ_YuanJingX1 extends AirBase {
     public AIR_0438_DJ_YuanJingX1(Context context) {
         super(context);

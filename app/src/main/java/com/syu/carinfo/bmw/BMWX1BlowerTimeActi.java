@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0230_WC1_BMWX1;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BMWX1BlowerTimeActi extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

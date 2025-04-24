@@ -9,6 +9,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTripAct_ZH extends BaseActivity {
     private VerticalProgressbar_ZH[] mProgressbar = new VerticalProgressbar_ZH[15];
     private TextView[] mOilTv = new TextView[4];

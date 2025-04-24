@@ -8,6 +8,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTireAct_ZH extends BaseActivity {
     public static CamryTireAct_ZH mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

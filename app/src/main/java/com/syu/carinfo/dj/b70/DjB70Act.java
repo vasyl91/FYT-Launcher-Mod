@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DjB70Act extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

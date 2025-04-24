@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0397_BNR_Camry2013 extends AirBase {
     public Air_0397_BNR_Camry2013(Context context) {
         super(context);

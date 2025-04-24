@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTireActWC extends BaseActivity {
     public static CamryTireActWC mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

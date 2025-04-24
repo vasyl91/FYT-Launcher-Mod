@@ -7,6 +7,7 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCFordExplorerPanelAct extends Activity implements View.OnTouchListener {
     public static RZCFordExplorerPanelAct mInstance;
     public static boolean mIsFront = false;

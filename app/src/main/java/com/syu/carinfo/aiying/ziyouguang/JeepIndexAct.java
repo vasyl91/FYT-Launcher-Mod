@@ -7,6 +7,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JeepIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

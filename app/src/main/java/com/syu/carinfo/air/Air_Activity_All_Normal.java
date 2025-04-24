@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_Activity_All_Normal extends Activity implements View.OnTouchListener {
     public static Air_Activity_All_Normal mInstance;
     public static boolean mIsFront = false;

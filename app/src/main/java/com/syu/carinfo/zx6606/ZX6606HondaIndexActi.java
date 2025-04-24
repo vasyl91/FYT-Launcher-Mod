@@ -11,6 +11,7 @@ import com.syu.carinfo.honda.HondaIndexActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ZX6606HondaIndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,6 +10,7 @@ import com.syu.carinfo.oudi.hantengx5.Oudi_0453_JMC_EV3_CarSettingAct;
 import com.syu.carinfo.oudi.hantengx5.Oudi_0453_JMC_YZHI_EV3_TireAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BnrGuanzhiIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,6 +10,7 @@ import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MazdAllHistoryAct extends BaseActivity {
     public VerticalProgressbar mProgressbarHisCur;
     private TextView mTvCurAverageOil;

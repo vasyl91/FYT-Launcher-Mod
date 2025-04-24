@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.xp.yinglang.YLOnStarAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AtsIndexAct extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

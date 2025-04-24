@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MyProgressBar extends ProgressBar {
     Paint mPaint;
     String text;

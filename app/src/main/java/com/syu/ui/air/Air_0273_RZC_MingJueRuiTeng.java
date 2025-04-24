@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0273_RZC_MingJueRuiTeng extends AirBase {
     public Air_0273_RZC_MingJueRuiTeng(Context context) {
         super(context);

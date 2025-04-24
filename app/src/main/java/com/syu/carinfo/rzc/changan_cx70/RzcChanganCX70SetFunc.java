@@ -22,6 +22,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcChanganCX70SetFunc extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

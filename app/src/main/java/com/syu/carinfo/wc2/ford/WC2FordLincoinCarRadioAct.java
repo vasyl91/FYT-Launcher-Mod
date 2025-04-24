@@ -18,6 +18,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC2FordLincoinCarRadioAct extends BaseActivity implements View.OnLongClickListener, View.OnClickListener {
     public static boolean WC2FordLincoinCarRadioAct = false;
     private AlertDialog.Builder builder;

@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBS08YageCar6Cd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static XBS08YageCar6Cd mInit;

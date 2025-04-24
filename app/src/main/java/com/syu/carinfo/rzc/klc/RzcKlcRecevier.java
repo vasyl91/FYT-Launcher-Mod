@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcKlcRecevier extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

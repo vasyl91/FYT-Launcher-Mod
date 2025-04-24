@@ -18,6 +18,7 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_16Civic_FunctionalActi extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;

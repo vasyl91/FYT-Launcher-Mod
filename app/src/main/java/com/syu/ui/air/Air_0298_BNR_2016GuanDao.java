@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0298_BNR_2016GuanDao extends AirBase {
     public Air_0298_BNR_2016GuanDao(Context context) {
         super(context);

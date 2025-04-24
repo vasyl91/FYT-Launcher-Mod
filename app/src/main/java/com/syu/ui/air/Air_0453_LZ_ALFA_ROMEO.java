@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_LZ_ALFA_ROMEO extends AirBase {
     public Air_0453_LZ_ALFA_ROMEO(Context context) {
         super(context);

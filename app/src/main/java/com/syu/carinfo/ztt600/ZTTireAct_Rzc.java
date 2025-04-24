@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ZTTireAct_Rzc extends BaseActivity {
     AlertDialog dialog;
     private String PressUnit = "Kpa";

@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FaultCodeWindow extends BaseActivity implements View.OnClickListener {
     private int mFaultCount;
     private PopupWindow mWindow;

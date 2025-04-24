@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_OD_BMW_NBT_EVO extends AirBase {
     public Air_0439_OD_BMW_NBT_EVO(Context context) {
         super(context);

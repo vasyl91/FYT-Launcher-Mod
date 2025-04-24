@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityDaMaiX7 extends Activity implements View.OnClickListener {
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 
         int value;

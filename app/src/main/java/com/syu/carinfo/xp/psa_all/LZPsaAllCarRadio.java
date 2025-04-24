@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0281_XP_PSA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZPsaAllCarRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LZPsaAllCarRadio mInit;

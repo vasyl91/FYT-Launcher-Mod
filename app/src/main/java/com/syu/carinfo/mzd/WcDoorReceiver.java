@@ -9,6 +9,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.HandlerCanbus;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcDoorReceiver extends BroadcastReceiver {
     private final String ACTION_DOOR = "com.youzi.intent.action.doorinfo";
     private final String ACTION_DOOR_PACK = "doorInfo";

@@ -9,6 +9,7 @@ import com.syu.carinfo.hava.BNRActivityHavaH6SetAct;
 import com.syu.carinfo.hava.BNRActivityHavaH8EQSetAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_Oudi_0439_HavalH9_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

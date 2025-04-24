@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_LZ_Ferrani_430 extends AirBase {
     public Air_0453_LZ_Ferrani_430(Context context) {
         super(context);

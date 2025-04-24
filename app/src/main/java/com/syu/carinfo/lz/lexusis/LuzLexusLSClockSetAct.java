@@ -9,6 +9,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuzLexusLSClockSetAct extends BaseActivity {
     private final int delay = 200;
 

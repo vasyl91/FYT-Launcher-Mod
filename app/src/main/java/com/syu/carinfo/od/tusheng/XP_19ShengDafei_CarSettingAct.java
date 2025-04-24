@@ -23,6 +23,7 @@ import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XP_19ShengDafei_CarSettingAct extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

@@ -7,6 +7,7 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class djTianlaiCarKeyActivity extends Activity implements View.OnTouchListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

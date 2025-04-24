@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_ford_index extends BaseActivity implements View.OnClickListener {
     private ArrayList<String> mFragmentlist;
 

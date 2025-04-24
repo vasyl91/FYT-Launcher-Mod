@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FacetypeTextView extends TextView {
     public FacetypeTextView(Context context) {
         this(context, null);

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0178_FYTA_BYDF3_SuRui_TopHp extends AirBase {
     public Air_0178_FYTA_BYDF3_SuRui_TopHp(Context context) {
         super(context);

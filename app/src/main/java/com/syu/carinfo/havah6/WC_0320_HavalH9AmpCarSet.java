@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC_0320_HavalH9AmpCarSet extends BaseActivity implements View.OnClickListener {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

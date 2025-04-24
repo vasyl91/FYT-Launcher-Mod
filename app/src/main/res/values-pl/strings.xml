@@ -214,6 +214,7 @@
     <string name="logcat_service_summary"><![CDATA[Logcat zaczyna zapis podczas startu aplikacji. Uruchom ponownie urzadzenie i sprawdź logi zapisane w <b>Download/launcher_logs</b>]]></string>
     <string name="logcat_service_timeout">Czas zapisu</string>
     <string name="logcat_service_timeout_str">Ustaw czas zapisu (sekundy):</string>
+    <string name="app_version">Wersja: %1$s</string>
 
     <string name="materialcolorpicker__errHex">nieprawidłowy Hex Code Format</string>
     <string name="materialcolorpicker__inputColor">Kolor: </string>

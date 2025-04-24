@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0380_XP1_Focus2012 extends AirBase {
     public Air_0380_XP1_Focus2012(Context context) {
         super(context);

@@ -27,6 +27,7 @@ import com.syu.module.sound.FFuncSound;
 import com.syu.util.HandlerUI;
 import java.util.Calendar;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FocusSyncBtActi extends BaseActivity implements View.OnClickListener {
     public static final int U_HIDE_TIME = 1;
     public static final int U_SYSTEM_TIME = 0;

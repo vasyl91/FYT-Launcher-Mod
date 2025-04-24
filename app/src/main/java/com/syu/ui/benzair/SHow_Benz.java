@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SHow_Benz extends Show_BenzBase {
     private final Rect config;
     boolean touch;

@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCLandRoverNewCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int bkNum = 0;

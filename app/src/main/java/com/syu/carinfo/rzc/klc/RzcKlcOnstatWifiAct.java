@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0364_RZC_XP1_MaiRuiBao16;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcKlcOnstatWifiAct extends Activity implements View.OnClickListener {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

@@ -214,8 +214,7 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
                 if (mPreviewSize != 0) {
                     int previewSize = Math.min(mPreviewSize, MAX_PREVIEW_SIZE);
                     BitmapFactory.Options opts = new BitmapFactory.Options();
-                    opts.inPreferredConfig = Config.ARGB_8888;
-                    opts.inPreferQualityOverSpeed = true;
+                    opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
                     float scale = (float) previewSize / Math.max(width, height);
                     opts.inSampleSize = BitmapUtils.computeSampleSizeLarger(scale);
@@ -429,8 +428,7 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
             mWidth = mDecoder.getWidth();
             mHeight = mDecoder.getHeight();
             mOptions = new BitmapFactory.Options();
-            mOptions.inPreferredConfig = Config.ARGB_8888;
-            mOptions.inPreferQualityOverSpeed = true;
+            mOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             mOptions.inTempStorage = new byte[16 * 1024];
             int previewSize = source.getPreviewSize();
             if (previewSize != 0) {

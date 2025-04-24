@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
 @SuppressLint({"CutPasteId"})
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7FunctionalDrivingInfo2Acti extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

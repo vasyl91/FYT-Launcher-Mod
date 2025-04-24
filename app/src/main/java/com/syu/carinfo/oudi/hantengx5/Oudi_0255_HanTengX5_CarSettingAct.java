@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Oudi_0255_HanTengX5_CarSettingAct extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

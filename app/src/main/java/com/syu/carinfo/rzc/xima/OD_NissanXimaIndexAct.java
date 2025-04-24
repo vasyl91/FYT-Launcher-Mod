@@ -13,6 +13,7 @@ import com.syu.carinfo.rzc.sanlin.ODNissanTeanaCarSet;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class OD_NissanXimaIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

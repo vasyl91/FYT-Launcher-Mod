@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0402_RZC_Leinuo_Kabin extends AirBase {
     public Air_0402_RZC_Leinuo_Kabin(Context context) {
         super(context);

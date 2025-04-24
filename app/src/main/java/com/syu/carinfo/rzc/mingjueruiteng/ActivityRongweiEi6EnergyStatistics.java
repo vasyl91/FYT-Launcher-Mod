@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0273_RZC_XP1_MingJueRuiTeng;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityRongweiEi6EnergyStatistics extends Activity {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcHaval17and18H6Acti extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

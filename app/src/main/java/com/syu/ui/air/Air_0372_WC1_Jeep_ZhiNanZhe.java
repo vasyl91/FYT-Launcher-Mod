@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0372_WC1_Jeep_ZhiNanZhe extends AirBase {
     public Air_0372_WC1_Jeep_ZhiNanZhe(Context context) {
         super(context);

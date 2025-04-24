@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xp_374_CarCD extends Activity implements View.OnTouchListener {
     public static Xp_374_CarCD mInstance;
     public static boolean mIsFront = false;

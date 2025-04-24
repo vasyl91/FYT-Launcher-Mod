@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCYuncheVerticalSeekbar extends SeekBar {
     private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener;
     private Drawable mThumb;

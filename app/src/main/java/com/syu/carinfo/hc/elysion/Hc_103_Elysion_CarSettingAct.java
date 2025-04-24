@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Hc_103_Elysion_CarSettingAct extends BaseActivity {
     private char DIS_CONTROL_BIT = 'A';
     private int DisplayBit5 = 0;

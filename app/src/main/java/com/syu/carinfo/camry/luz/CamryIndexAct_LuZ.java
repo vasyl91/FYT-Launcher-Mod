@@ -8,6 +8,7 @@ import android.widget.RadioGroup;
 import android.widget.TabHost;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryIndexAct_LuZ extends TabActivity {
     private TabHost mTabHost;
 

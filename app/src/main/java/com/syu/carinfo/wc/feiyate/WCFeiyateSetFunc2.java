@@ -13,6 +13,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCFeiyateSetFunc2 extends BaseActivity implements View.OnClickListener {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

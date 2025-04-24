@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_OD_Zotye_T700_Pm25 extends BaseFragment implements View.OnClickListener {
     public static Fragment_OD_Zotye_T700_Pm25 mInstance;
     public static boolean mIsFront = false;

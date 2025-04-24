@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class wc_420_lexus_RearAirControlAct extends Activity implements View.OnClickListener {
     public static wc_420_lexus_RearAirControlAct mInstance;
     public static boolean mIsFront = false;

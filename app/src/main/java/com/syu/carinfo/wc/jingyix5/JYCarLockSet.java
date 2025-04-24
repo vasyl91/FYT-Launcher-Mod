@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JYCarLockSet extends BaseActivity implements View.OnClickListener {
     static int[] strIds = {R.string.klc_Parking_with_trailer_Off, R.string.klc_Parking_with_trailer_ON};
     int id66d0b0;

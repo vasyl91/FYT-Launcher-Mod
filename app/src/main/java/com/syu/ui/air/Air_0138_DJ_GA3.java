@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0138_DJ_GA3 extends AirBase {
     public Air_0138_DJ_GA3(Context context) {
         super(context);

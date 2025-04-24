@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0170_XP1_AnKeSela;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class M3CarCD extends BaseActivity {
     public static M3CarCD mInstance;
     public static boolean mIsFront = false;

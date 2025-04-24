@@ -24,6 +24,7 @@ import com.syu.module.main.DataMain;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ZXMZDSetFunc extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

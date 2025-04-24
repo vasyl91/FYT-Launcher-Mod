@@ -115,7 +115,7 @@ public class DayNightMode extends JobService {
         }
 
         @Override
-        protected Boolean doInBackground(Bitmap... newWallpaperBitmap) throws IOException {
+        protected Boolean doInBackground(Bitmap[] newWallpaperBitmap) throws IOException {
             mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
             mWallpaperManager.setBitmap(newWallpaperBitmap[0]);
             saveBitmapHash(dayTime);

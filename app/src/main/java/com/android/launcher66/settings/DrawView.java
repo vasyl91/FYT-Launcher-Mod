@@ -175,39 +175,42 @@ public class DrawView extends View implements View.OnClickListener {
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
-        mapMinWidth = 561;      
+
+        ballDiameter = 75.0f;
+        coordinatesSize = 50;
+        nameTextSize = 40;
+        statsWidth = 435;
+        statsHeight = 100;
+        mapMinHeight = 340;
+        mapMinWidth = 561;
+        dateMinHeight = 145; 
         dateMinWidth = 561;
-        dateMinHeight = 145;
+        musicMinHeight = 340;
         musicMinWidth = 320;
-        radioMinWidth = 320;
         radioMinHeight = 145;
+        radioMinWidth = 320;
 
         if (getResources().getDisplayMetrics().widthPixels == 1024
-            || getResources().getDisplayMetrics().heightPixels == 1024) {           
+            || getResources().getDisplayMetrics().heightPixels == 1024) {  // 1024x600 && 768x1024         
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;
             statsWidth = 245;
             statsHeight = 55;
             mapMinHeight = 284;
+            dateMinWidth = 320;
             musicMinHeight = 284;
-        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
+        } else if (getResources().getDisplayMetrics().heightPixels == 720) { // 1280x720 && 1920x720
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
             statsWidth = 245;
             statsHeight = 55;
             mapMinHeight = 340;
+            dateMinWidth = 320;
             musicMinHeight = 340;
-        } else {
-            ballDiameter = 75.0f;
-            coordinatesSize = 50;
-            nameTextSize = 40;
-            statsWidth = 435;
-            statsHeight = 100;
-            mapMinHeight = 340;
-            musicMinHeight = 340;
-        }     
+        } 
+
         sizeOfRect = ballDiameter / 2.0f;
 
         colorballs = new ArrayList<>();

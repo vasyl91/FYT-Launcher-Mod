@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_LZ_TATA_ALL extends AirBase {
     public Air_0452_LZ_TATA_ALL(Context context) {
         super(context);

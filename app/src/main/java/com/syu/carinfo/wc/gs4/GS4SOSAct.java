@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.syu.canbus.FuncMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GS4SOSAct extends Activity {
     public static GS4SOSAct mInstance;
     public static boolean mIsFront = false;

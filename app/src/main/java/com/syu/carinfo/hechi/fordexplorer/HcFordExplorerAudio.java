@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class HcFordExplorerAudio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static HcFordExplorerRadio mInit;

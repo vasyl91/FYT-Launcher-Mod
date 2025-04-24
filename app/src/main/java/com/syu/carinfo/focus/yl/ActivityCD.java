@@ -17,6 +17,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToastInfo;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityCD extends Activity implements View.OnClickListener {
     private static final int msg_update_list = 0;
     FileAdapter adapter;

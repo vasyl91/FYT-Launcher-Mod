@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0151_ANSHENG_XP1_BYDYUAN extends AirBase {
     public Air_0151_ANSHENG_XP1_BYDYUAN(Context context) {
         super(context);

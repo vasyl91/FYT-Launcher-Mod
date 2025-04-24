@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dihao19GLECarSettingsAct extends BaseActivity implements View.OnClickListener {
     private int[] eventIds = {158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 215};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -1568,7 +1568,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             helpers.setFirstPreferenceWindow(false);
             helpers.setWallpaperWindow(false);
             helpers.setWasInRecents(false);
-            helpers.setHomePressedBoolean(false);
         }, 250);
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             getSharedPreferences("HelpersPrefs", 0).edit().clear().commit(); 
@@ -1772,8 +1771,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         initRegisterReceiver();
         
         Widget.update(LauncherApplication.sApp);
-
-        onActivityResultX();
 		
         onBackPressedX();
     }
@@ -1854,19 +1851,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (kwAPi != null) {
             kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
         }
-    }
-
-    private void onActivityResultX() {
-        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            mWaitingForResult = true;
-                        }
-                    }
-                });
     }
 
     private void onBackPressedX() {
@@ -2606,7 +2590,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (sLocaleConfiguration == null) {
             new AsyncTask<Void, Void, LocaleConfiguration>() {
                 @Override
-                protected LocaleConfiguration doInBackground(Void... unused) {
+                protected LocaleConfiguration doInBackground(Void[] unused) {
                     LocaleConfiguration localeConfiguration = new LocaleConfiguration();
                     readConfiguration(Launcher.this, localeConfiguration);
                     return localeConfiguration;
@@ -7097,7 +7081,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         new Thread(new Runnable() { 
                             @Override 
                             public void run() {
-                                initPip("CloseSystemDialogsIntentReceiver", null);
+                                Intent intentPip = FytPackage.getIntent(Launcher.getLauncher(), WindowUtil.AppPackageName);
+                                SystemProperties.set("sys.lsec.force_pip", "true");
+                                intentPip.putExtra("force_pip", true);
+                                Log.i("mql", "--- com.lsec.pipdie");
+                                Launcher.mLauncher.startActivity(intentPip);
                                 Log.i("mql", "--- com.lsec.pipdie");
                                 if (WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                                     Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));

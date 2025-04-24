@@ -9,6 +9,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dongfeng_FullView_SBDAct extends BaseActivity implements View.OnClickListener {
     private int f;
     private int l;

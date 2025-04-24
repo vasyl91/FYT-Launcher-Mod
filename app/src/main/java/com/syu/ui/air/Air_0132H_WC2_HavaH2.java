@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0132H_WC2_HavaH2 extends AirBase {
     public Air_0132H_WC2_HavaH2(Context context) {
         super(context);

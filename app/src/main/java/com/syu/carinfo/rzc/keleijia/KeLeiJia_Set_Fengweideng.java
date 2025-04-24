@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KeLeiJia_Set_Fengweideng extends BaseActivity {
     private int[] eventsIDs = {119, 120, 121, 122, 123};
     private int[] colorString = {R.string.str_background_green, R.string.str_background_red, R.string.str_background_blue, R.string.color_pueple_str, R.string.color_orange_str};

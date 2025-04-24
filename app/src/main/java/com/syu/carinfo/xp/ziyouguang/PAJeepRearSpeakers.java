@@ -25,6 +25,7 @@ import com.syu.util.HandlerUI;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAJeepRearSpeakers extends BaseActivity implements View.OnTouchListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

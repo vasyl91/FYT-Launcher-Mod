@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0294_WC2_TOYOTA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc09LexusESCarCDActi extends BaseActivity implements View.OnClickListener {
     public static Wc09LexusESCarCDActi mInst;
     public static boolean mIsFront = false;

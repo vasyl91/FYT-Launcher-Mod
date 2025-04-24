@@ -113,7 +113,7 @@ class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTas
         dataType = ty;
     }
     @Override
-    protected AsyncTaskPageData doInBackground(AsyncTaskPageData... params) {
+    protected AsyncTaskPageData doInBackground(AsyncTaskPageData[] params) {
         if (params.length != 1) return null;
         // Load each of the widget previews in the background
         params[0].doInBackgroundCallback.run(this, params[0]);

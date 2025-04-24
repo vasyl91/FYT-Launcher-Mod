@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AIR_0453_LZ_Honda_06Civic extends AirBase {
     public AIR_0453_LZ_Honda_06Civic(Context context) {
         super(context);

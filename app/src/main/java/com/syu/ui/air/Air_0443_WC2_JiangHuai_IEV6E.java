@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0443_WC2_JiangHuai_IEV6E extends AirBase {
     public Air_0443_WC2_JiangHuai_IEV6E(Context context) {
         super(context);

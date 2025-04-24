@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0203_Oudi_08AodeSai extends AirBase {
     public Air_0203_Oudi_08AodeSai(Context context) {
         super(context);

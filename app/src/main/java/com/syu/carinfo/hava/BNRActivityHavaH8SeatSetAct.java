@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BNRActivityHavaH8SeatSetAct extends BaseActivity {
     public static BNRActivityHavaH8SeatSetAct mInstance;
     public static boolean mIsFront = false;

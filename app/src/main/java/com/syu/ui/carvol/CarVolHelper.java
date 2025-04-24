@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CarVolHelper implements Runnable {
     public static boolean sDisableAirWindowLocal;
     private int mTick;

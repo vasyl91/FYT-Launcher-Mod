@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JaguarNewCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int bkNum = 0;

@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_Ford_Lincoin_All;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC2FordLincoinCdAct extends BaseActivity implements View.OnTouchListener {
     public static WC2FordLincoinCdAct mInstance;
     public static boolean mIsFront = false;

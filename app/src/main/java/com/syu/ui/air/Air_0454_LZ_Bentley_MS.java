@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0454_LZ_Bentley_MS extends AirBase {
     public Air_0454_LZ_Bentley_MS(Context context) {
         super(context);

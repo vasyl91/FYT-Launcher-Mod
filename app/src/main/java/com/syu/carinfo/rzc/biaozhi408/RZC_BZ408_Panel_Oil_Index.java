@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408_Panel_Oil_Index extends TabActivity {
     public static RZC_BZ408_Panel_Oil_Index mInstance;
     public static boolean mIsFront = false;

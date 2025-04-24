@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class InfoBmwViewSpeedNew1 extends View {
     private float angle;
     private int autoStep;

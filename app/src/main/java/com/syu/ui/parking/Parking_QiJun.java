@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Parking_QiJun extends ParkingBase {
     private final String[] StrMsg;
     private final float X_TxtMsg;

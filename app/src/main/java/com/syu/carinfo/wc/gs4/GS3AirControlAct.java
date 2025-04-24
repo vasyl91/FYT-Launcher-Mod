@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GS3AirControlAct extends BaseActivity {
     public static GS3AirControlAct mInstance;
     public static boolean mIsFront = false;

@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActRongweiRX8AirSet extends Activity implements View.OnTouchListener {
     public static ActRongweiRX8AirSet mInstance;
     public static boolean mIsFront = false;

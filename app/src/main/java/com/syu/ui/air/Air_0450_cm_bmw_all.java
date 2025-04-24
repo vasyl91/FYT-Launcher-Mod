@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0450_cm_bmw_all extends AirBase {
     public Air_0450_cm_bmw_all(Context context) {
         super(context);

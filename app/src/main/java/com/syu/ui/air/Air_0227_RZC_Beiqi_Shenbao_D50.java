@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0227_RZC_Beiqi_Shenbao_D50 extends AirBase {
     public Air_0227_RZC_Beiqi_Shenbao_D50(Context context) {
         super(context);

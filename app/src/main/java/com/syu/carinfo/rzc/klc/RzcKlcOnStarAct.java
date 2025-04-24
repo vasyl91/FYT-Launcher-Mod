@@ -13,6 +13,7 @@ import com.syu.carinfo.xp.yinglang.GmConstData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcKlcOnStarAct extends BaseActivity {
     Button BtnMute;
     StringBuffer buffer;

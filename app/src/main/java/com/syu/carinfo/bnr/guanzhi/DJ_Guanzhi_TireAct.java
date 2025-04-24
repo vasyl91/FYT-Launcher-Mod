@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DJ_Guanzhi_TireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

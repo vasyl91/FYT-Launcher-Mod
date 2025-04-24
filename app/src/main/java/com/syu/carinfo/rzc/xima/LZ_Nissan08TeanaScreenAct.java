@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0453_LZ_Nissan_Teana_08;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZ_Nissan08TeanaScreenAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

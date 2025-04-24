@@ -9,6 +9,7 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GS4CarSettingsAct extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

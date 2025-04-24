@@ -8,6 +8,7 @@ import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcLandRoverCDAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

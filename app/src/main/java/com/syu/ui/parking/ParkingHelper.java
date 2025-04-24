@@ -14,6 +14,7 @@ import com.syu.module.main.DataMain;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ParkingHelper implements IUiNotify, Runnable {
     private static final ParkingHelper INSTANCE = new ParkingHelper();
     private PopupWindow mWindow;

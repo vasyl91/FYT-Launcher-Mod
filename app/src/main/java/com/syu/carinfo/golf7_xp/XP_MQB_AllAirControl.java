@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XP_MQB_AllAirControl extends Activity implements View.OnTouchListener {
     public static XP_MQB_AllAirControl mInstance;
     public static boolean mIsFront = false;

@@ -16,6 +16,7 @@ import com.syu.carinfo.biaozhi408.PsaC4L_MemSpeedActi;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XpPsaAllIndexActi extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

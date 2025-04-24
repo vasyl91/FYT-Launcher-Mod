@@ -14,6 +14,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RuiTengFuncSettings extends BaseActivity {
     public static RuiTengFuncSettings mInstFuncIndexActi;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

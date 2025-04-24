@@ -11,6 +11,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JhRuiFengS7TireAct extends BaseActivity {
     public static boolean bFront = false;
     public static boolean bNotShowingWarning = false;

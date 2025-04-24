@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ToyotaLexusIndexActi extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

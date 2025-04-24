@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_XP1_Bnr_YueshengS350 extends AirBase {
     public Air_0439_XP1_Bnr_YueshengS350(Context context) {
         super(context);

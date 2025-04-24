@@ -19,6 +19,7 @@ import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZLexusISCarSet extends BaseActivity implements View.OnClickListener {
     public static boolean isFront = false;
     private PopupWindow mLauStyle;

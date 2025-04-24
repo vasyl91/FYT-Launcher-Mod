@@ -12,6 +12,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZFordDoornumSetAct extends Activity implements View.OnTouchListener {
     public static StringBuffer mTvCurrPasswordBuffer = new StringBuffer();
     private LZFordDoornumWindow mPaFordDoorNumWindow;

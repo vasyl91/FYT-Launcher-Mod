@@ -6,6 +6,7 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC_0320_HavalH9_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

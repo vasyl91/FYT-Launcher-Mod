@@ -1,20 +1,20 @@
 package com.android.launcher66;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.widget.Toast;
 
-import java.net.URISyntaxException;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class UninstallShortcutReceiver extends BroadcastReceiver {
     private static final String ACTION_UNINSTALL_SHORTCUT = "com.android.launcher.action.UNINSTALL_SHORTCUT";
-    private static ArrayList<PendingUninstallShortcutInfo> mUninstallQueue = new ArrayList<>();
+    private static final ArrayList<PendingUninstallShortcutInfo> mUninstallQueue = new ArrayList<>();
     private static boolean mUseUninstallQueue = false;
 
     private static class PendingUninstallShortcutInfo {
@@ -59,40 +59,31 @@ public class UninstallShortcutReceiver extends BroadcastReceiver {
         }
     }
 
-    private static void removeShortcut(Context context, Intent data) {
-        Intent intent = (Intent) data.getParcelableExtra("android.intent.extra.shortcut.INTENT");
-        String name = data.getStringExtra("android.intent.extra.shortcut.NAME");
-        boolean duplicate = data.getBooleanExtra("duplicate", true);
-        if (intent != null && name != null) {
-            ContentResolver cr = context.getContentResolver();
-            Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, new String[]{"_id", "intent"}, "title=?", new String[]{name}, null);
-            int intentIndex = c.getColumnIndexOrThrow("intent");
-            int idIndex = c.getColumnIndexOrThrow("_id");
-            boolean changed = false;
-            while (c.moveToNext()) {
-                try {
-                    try {
-                        if (intent.filterEquals(Intent.parseUri(c.getString(intentIndex), 0))) {
-                            long id = c.getLong(idIndex);
-                            Uri uri = LauncherSettings.Favorites.getContentUri(id, false);
-                            cr.delete(uri, null, null);
-                            changed = true;
-                            if (!duplicate) {
-                                break;
-                            }
-                        } else {
-                            continue;
-                        }
-                    } catch (URISyntaxException e) {
-                    }
-                } finally {
-                    c.close();
+    private static void removeShortcut(Context context, Intent targetIntent) {
+        List<ShortcutInfoCompat> dynamicShortcuts = ShortcutManagerCompat.getDynamicShortcuts(context);
+        String targetName = targetIntent.getStringExtra("android.intent.extra.shortcut.NAME");
+        boolean duplicate = targetIntent.getBooleanExtra("duplicate", true);
+        boolean removed = false;
+
+        for (ShortcutInfoCompat shortcut : dynamicShortcuts) {
+            // Compare the intent and short label (name) to identify the shortcut
+            if (targetName.contentEquals(shortcut.getShortLabel()) &&
+                    targetIntent.filterEquals(shortcut.getIntent())) {
+                // Remove the shortcut by its ID
+                ShortcutManagerCompat.removeDynamicShortcuts(context, List.of(shortcut.getId()));
+                removed = true;
+                if (!duplicate) {
+                    break;
                 }
             }
-            if (changed) {
-                cr.notifyChange(LauncherSettings.Favorites.CONTENT_URI, null);
-                Toast.makeText(context, context.getString(R.string.shortcut_uninstalled, name), Toast.LENGTH_SHORT).show();
-            }
+        }
+
+        if (removed) {
+            Toast.makeText(
+                    context,
+                    context.getString(R.string.shortcut_uninstalled, targetName),
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 }

@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0014_WC2_Focus extends AirBase {
     public Air_0014_WC2_Focus(Context context) {
         super(context);

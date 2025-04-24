@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZBmwCarinfoAct extends Activity {
     public static LZBmwCarinfoAct mInstance;
     public static boolean mIsFront = false;

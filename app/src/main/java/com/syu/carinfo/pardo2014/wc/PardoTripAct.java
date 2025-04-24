@@ -14,6 +14,7 @@ import com.syu.module.canbus.Callback_0121_WC2_14Prado;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PardoTripAct extends BaseActivity {
     private VerticalProgressbar mProgressbarCur;
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[30];

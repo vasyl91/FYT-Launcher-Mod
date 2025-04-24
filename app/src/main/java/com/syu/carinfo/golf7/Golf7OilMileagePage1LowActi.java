@@ -9,6 +9,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7OilMileagePage1LowActi extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

@@ -3,6 +3,7 @@ package com.syu.carinfo.focus.yl;
 import android.os.Handler;
 import android.os.Message;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class HandlerAnim extends Handler {
     public static final HandlerAnim mInst = new HandlerAnim();
     private static final int msg_rulerview_anim = 0;

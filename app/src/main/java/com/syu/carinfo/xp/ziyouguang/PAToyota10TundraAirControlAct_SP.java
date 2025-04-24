@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAToyota10TundraAirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAToyota10TundraAirControlAct_SP mInstance;
     public static boolean mIsFront = false;

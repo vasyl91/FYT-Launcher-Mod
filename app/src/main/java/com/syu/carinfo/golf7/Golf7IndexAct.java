@@ -17,6 +17,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7IndexAct extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;

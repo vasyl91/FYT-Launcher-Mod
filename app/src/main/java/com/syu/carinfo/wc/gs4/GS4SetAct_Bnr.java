@@ -24,6 +24,7 @@ import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GS4SetAct_Bnr extends BaseActivity {
     protected Handler mHandler;
     private PopupWindow mLauStyle;

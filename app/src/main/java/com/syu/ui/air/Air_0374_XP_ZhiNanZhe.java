@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0374_XP_ZhiNanZhe extends AirBase {
     public Air_0374_XP_ZhiNanZhe(Context context) {
         super(context);

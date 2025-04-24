@@ -9,6 +9,7 @@ import android.widget.TabHost;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BYDAiyingIndexAct extends TabActivity {
     public static boolean mIsFront = false;
     private TabHost mTabHost;

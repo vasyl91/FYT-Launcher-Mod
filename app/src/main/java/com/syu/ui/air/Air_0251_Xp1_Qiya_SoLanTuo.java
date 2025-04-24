@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0251_Xp1_Qiya_SoLanTuo extends AirBase {
     public Air_0251_Xp1_Qiya_SoLanTuo(Context context) {
         super(context);

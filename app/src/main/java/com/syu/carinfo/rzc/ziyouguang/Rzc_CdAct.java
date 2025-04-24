@@ -15,6 +15,7 @@ import com.syu.module.canbus.Callback_0373_RZC_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_CdAct extends BaseActivity implements View.OnClickListener {
     private com.syu.carinfo.wc.ziyouguang.FileAdapter adapter;
     private ArrayList<com.syu.carinfo.wc.ziyouguang.CDInfo> cdInfos;

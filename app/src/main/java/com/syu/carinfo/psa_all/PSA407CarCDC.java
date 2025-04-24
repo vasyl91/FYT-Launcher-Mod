@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSA407CarCDC extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static PSA407CarCDC mInit;

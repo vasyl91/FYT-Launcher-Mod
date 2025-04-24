@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_Opel_Old;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCOPELCarListActivity extends BaseActivity implements View.OnClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

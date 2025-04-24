@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XpZHFordRearAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

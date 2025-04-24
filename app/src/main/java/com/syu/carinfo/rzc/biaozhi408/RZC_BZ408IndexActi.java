@@ -10,6 +10,7 @@ import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408IndexActi extends BaseActivity {
     private boolean flag = false;
     private int past = -1;

@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_OD_Zotye_T700_CarSet extends BaseFragment implements View.OnClickListener {
     int[] ids = {106, 107, 108, 109, 126, 127, 128, 129, 130};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

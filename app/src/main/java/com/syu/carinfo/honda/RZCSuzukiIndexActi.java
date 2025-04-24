@@ -7,6 +7,7 @@ import android.widget.RadioGroup;
 import android.widget.TabHost;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCSuzukiIndexActi extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

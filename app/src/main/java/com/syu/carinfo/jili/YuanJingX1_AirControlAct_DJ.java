@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YuanJingX1_AirControlAct_DJ extends BaseActivity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     public int cmd_p = 0;

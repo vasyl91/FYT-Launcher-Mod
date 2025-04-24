@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcHavalH6Acti extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PardoIndexAct extends TabActivity {
     private TabHost mTabHost;
 

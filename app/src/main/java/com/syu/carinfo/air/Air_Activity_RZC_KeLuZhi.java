@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_Activity_RZC_KeLuZhi extends Activity implements View.OnTouchListener {
     public static Air_Activity_RZC_KeLuZhi mInstance;
     public static boolean mIsFront = false;

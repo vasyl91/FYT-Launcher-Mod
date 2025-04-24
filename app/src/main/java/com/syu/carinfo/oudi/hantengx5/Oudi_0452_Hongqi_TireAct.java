@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Oudi_0452_Hongqi_TireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

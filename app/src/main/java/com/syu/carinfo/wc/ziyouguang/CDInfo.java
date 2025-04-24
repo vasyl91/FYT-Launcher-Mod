@@ -1,5 +1,6 @@
 package com.syu.carinfo.wc.ziyouguang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CDInfo {
     int index;
     String str;

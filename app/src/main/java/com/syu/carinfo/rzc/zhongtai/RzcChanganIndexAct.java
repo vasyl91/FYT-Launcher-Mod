@@ -11,6 +11,7 @@ import com.syu.carinfo.guochan.Activity_RZC_SettingT60;
 import com.syu.carinfo.ztt600.ZTTireAct_Rzc;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcChanganIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

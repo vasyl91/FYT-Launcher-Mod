@@ -14,6 +14,7 @@ import com.syu.carinfo.camry2012.xp.CamryicPetrolElectricActi;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rav4TripAct extends BaseActivity {
     private VerticalProgressbar mProgressbarCur;
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[30];

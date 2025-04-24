@@ -11,6 +11,7 @@ import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0001_WC1_DaZhong extends AirBase {
     private int nWindLevelLeft;
     private int nWindLevelRight;

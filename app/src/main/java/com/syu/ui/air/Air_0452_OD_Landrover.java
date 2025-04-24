@@ -9,6 +9,7 @@ import android.os.SystemProperties;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_OD_Landrover extends AirBase {
     public Air_0452_OD_Landrover(Context context) {
         super(context);

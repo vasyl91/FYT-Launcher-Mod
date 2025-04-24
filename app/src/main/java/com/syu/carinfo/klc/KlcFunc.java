@@ -3,6 +3,7 @@ package com.syu.carinfo.klc;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KlcFunc {
     public static void SWITCH_MAIN_STATE(int val) {
         int channel = DataMain.sAppIdRequest;

@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_PA_Ford_F150;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordCarSyncActi extends BaseActivity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     int totaltrack = 0;

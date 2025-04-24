@@ -79,26 +79,26 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
+        coordinatesSize = 50;
+        nameTextSize = 40;
+        statsWidth = 435;
+        statsHeight = 100;
+        barHeight = 220;
+
         if (getResources().getDisplayMetrics().widthPixels == 1024
-            || getResources().getDisplayMetrics().heightPixels == 1024) { 
+            || getResources().getDisplayMetrics().heightPixels == 1024) {  // 1024x600 && 768x1024
             coordinatesSize = 40;
             nameTextSize = 30;
             statsWidth = 245;
             statsHeight = 55;
             barHeight = 128;
-        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
+        } else if (getResources().getDisplayMetrics().heightPixels == 720) { // 1280x720 && 1920x720
             coordinatesSize = 45;
             nameTextSize = 35;
             statsWidth = 245;
             statsHeight = 55;
             barHeight = 160;
-        } else {
-            coordinatesSize = 50;
-            nameTextSize = 40;
-            statsWidth = 435;
-            statsHeight = 100;
-            barHeight = 220;
-        }    
+        }   
         
         barTop = rootView.findViewById(R.id.creator_bar_top);
         barBottom = rootView.findViewById(R.id.creator_bar_bottom);

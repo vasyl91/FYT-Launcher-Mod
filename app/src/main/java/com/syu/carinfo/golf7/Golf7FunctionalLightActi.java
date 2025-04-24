@@ -12,6 +12,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7FunctionalLightActi extends BaseActivity {
     int cartype = 1;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

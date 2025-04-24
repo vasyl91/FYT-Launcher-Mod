@@ -14,6 +14,7 @@ import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KYCLexusCd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LuzLexusISRadio mInit;

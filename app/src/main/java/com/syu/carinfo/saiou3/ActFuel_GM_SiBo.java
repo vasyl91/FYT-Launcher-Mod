@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActFuel_GM_SiBo extends BaseActivity {
     int[] resids = {144, 145, 146, 147};
     private IUiNotify notifyCanbus = new IUiNotify() { 

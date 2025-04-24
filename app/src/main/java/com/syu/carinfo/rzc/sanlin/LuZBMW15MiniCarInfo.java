@@ -16,6 +16,7 @@ import com.syu.carinfo.wc2.tata.LZBMWMiniFenweiLightAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuZBMW15MiniCarInfo extends BaseActivity implements View.OnClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

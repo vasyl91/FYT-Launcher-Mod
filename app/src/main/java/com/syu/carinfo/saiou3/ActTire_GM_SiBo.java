@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActTire_GM_SiBo extends BaseActivity {
     int[] resId = {140, 141, 142, 143};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

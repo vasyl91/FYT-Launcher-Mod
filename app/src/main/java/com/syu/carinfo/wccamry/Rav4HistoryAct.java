@@ -12,6 +12,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rav4HistoryAct extends BaseActivity {
     private VerticalProgressbar mProgressbarHisCur;
     private TextView[] mTvHisOil = new TextView[4];

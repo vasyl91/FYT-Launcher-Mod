@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_XC_GM_Rongwei_All extends AirBase {
     public Air_0452_XC_GM_Rongwei_All(Context context) {
         super(context);

@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Sbd_Settings_Battery_Status extends BaseActivity {
     public int[] lang_id = {R.string.str_313_single_voltage_difference, R.string.str_313_SOC_transition, R.string.str_313_SOC_too_high, R.string.str_313_temperature_difference_too_large, R.string.str_313_total_pressure_too_low, R.string.str_313_total_pressure_too_high, R.string.str_313_temperature_difference_alarm, R.string.str_313_battery_pack_high_temperature_alarm, R.string.str_313_energy_storage_device_overvoltage_alarm, R.string.str_313_energy_storage_devic_undervoltage_alarm, R.string.str_313_SOC_low_alarm, R.string.str_313_single_battery_overvoltage_alarm, R.string.str_313_single_battery_undervoltage_alarm, R.string.str_313_SOC_too_high_alarm, R.string.str_313_SOC_jump_alarm, R.string.str_313_rechargeable_energy_storage_not_match_alarm_level, R.string.str_313_poor_battery_uniformity_alarm, R.string.str_313_insulation_alarm, R.string.str_313_high_voltage_interlocking_state, R.string.str_313_rechargeable_energy_storage_not_match_alarm, R.string.str_313_battery_low_temperature_alarm, R.string.str_313_positive_to_ground_insulation_resistance, R.string.str_313_negative_end_to_ground_insulation_resistance, R.string.str_313Battery_charge_status};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

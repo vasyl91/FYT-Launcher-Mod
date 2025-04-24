@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dj_0439_HavalH8CarCDAct extends Activity implements View.OnTouchListener {
     public static Dj_0439_HavalH8CarCDAct mInstance;
     public static boolean mIsFront = false;

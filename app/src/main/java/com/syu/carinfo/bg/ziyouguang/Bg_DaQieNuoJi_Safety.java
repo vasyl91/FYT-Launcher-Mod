@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Bg_DaQieNuoJi_Safety extends BaseActivity {
     int[] ids = {135, 136, 137, 138, 139, 140, 141, 154};
     int val = 0;

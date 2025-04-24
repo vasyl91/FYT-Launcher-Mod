@@ -10,6 +10,7 @@ import com.syu.carinfo.klc.KlcFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZGmAllOnstar extends Activity {
     StringBuffer buffer;
     int[] showints;

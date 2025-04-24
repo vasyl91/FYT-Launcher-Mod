@@ -15,6 +15,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ZH2PilotcarCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int touchnum = 0;

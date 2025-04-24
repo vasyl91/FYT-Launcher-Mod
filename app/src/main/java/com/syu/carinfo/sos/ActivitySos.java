@@ -7,6 +7,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivitySos extends Activity {
     int Old_App_Id;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

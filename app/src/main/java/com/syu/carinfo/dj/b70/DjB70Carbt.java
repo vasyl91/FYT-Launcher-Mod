@@ -12,6 +12,7 @@ import com.syu.module.canbus.Callback_0271_DJ_BENGTENG14B70;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DjB70Carbt extends Activity {
     StringBuffer buffer;
     public TextView connect_state;

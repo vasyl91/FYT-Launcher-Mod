@@ -18,6 +18,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityWCQiruiJietuX70 extends Activity implements View.OnClickListener {
     int language_set = 255;
     IUiNotify mCanbusNotify = new IUiNotify() { 

@@ -4,6 +4,7 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.camry2012.xp.CamryData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7Data {
     public static String[] mDistanceUnitXp = {"km", "mi"};
     public static String[] mDistanceUnitWc = {"mi", "km"};

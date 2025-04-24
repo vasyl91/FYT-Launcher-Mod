@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0244_RZC2_Hava17H2S_HongBiao extends AirBase {
     public Air_0244_RZC2_Hava17H2S_HongBiao(Context context) {
         super(context);

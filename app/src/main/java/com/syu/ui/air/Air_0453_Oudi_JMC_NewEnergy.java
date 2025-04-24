@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_Oudi_JMC_NewEnergy extends AirBase {
     public Air_0453_Oudi_JMC_NewEnergy(Context context) {
         super(context);

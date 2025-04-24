@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BYDAiyingOtherSetAct extends BaseActivity implements View.OnClickListener {
     int[] ids = {124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 169, 170, 171, 172, 173, 174};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

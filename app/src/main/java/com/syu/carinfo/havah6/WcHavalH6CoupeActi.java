@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcHavalH6CoupeActi extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

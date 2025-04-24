@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0443_WC2_Infeinidi extends AirBase {
     public Air_0443_WC2_Infeinidi(Context context) {
         super(context);

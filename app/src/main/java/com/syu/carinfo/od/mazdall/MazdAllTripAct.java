@@ -9,6 +9,7 @@ import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MazdAllTripAct extends BaseActivity {
     private TextView mTvWaterTemp;
     private final VerticalProgressbar[] mProgressbar = new VerticalProgressbar[15];

@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.jili.ODModerninSettingsAct;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ODModerninIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

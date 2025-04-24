@@ -161,9 +161,16 @@
             android:key="logcat_service_timeout"
             android:title="@string/logcat_service_timeout"
             android:summary="30" />
+
+    </PreferenceCategory>    
+
+    <PreferenceCategory
+        app:key="app_version"
+        app:title="@string/app_version">
+
         <Preference
             android:key="empty3"/>
-
+            
     </PreferenceCategory>
 
 </PreferenceScreen>

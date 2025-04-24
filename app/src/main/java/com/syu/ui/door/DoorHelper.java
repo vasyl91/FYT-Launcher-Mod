@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DoorHelper implements IUiNotify, Runnable {
     public static boolean sDisableDoorWindowLocal;
     private int mTick;

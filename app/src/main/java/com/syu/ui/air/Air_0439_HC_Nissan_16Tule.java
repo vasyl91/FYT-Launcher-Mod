@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_HC_Nissan_16Tule extends AirBase {
     public Air_0439_HC_Nissan_16Tule(Context context) {
         super(context);

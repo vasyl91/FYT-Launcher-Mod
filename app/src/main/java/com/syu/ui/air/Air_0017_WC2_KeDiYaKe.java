@@ -9,6 +9,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0017_WC2_KeDiYaKe extends AirBase {
     public Air_0017_WC2_KeDiYaKe(Context context) {
         super(context);

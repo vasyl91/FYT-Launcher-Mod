@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class V11MDOAirControlActi extends BaseActivity {
     public static V11MDOAirControlActi mInstance;
     public static boolean mIsFront = false;

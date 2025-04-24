@@ -123,9 +123,8 @@ public class LiveWallpaperListAdapter extends BaseAdapter implements ListAdapter
             mWallpaperPosition = 0;
         }
 
-        @SafeVarargs
         @Override
-        protected final Void doInBackground(List<ResolveInfo>... params) {
+        protected final Void doInBackground(List<ResolveInfo>[] params) {
             final PackageManager packageManager = mContext.getPackageManager();
 
             List<ResolveInfo> list = params[0];
@@ -179,9 +178,6 @@ public class LiveWallpaperListAdapter extends BaseAdapter implements ListAdapter
                 if (info == null) {
                     LiveWallpaperListAdapter.this.notifyDataSetChanged();
                     break;
-                }
-                if (info.mThumbnail != null) {
-                    info.mThumbnail.setDither(true);
                 }
                 if (mWallpaperPosition < mWallpapers.size()) {
                     mWallpapers.set(mWallpaperPosition, info);

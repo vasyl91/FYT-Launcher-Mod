@@ -8,6 +8,7 @@ import android.widget.CheckedTextView;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityAccord7Index extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

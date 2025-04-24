@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0347_YINGLONG_Ruijie extends AirBase {
     public Air_0347_YINGLONG_Ruijie(Context context) {
         super(context);

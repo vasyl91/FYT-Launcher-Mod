@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordF150AirControlAct_SP extends Activity implements View.OnTouchListener {
     public static PAFordF150AirControlAct_SP mInstance;
     public static boolean mIsFront = false;

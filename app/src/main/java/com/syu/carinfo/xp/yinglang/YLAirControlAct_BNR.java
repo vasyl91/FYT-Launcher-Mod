@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLAirControlAct_BNR extends Activity implements View.OnClickListener {
     public static YLAirControlAct_BNR mInstance;
     public static boolean mIsFront = false;

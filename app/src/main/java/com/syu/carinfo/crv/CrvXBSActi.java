@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0188_XBS_XP1_CRV2012;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CrvXBSActi extends BaseActivity {
     public static CrvXBSActi mInstance;
     public static boolean mIsFront = false;

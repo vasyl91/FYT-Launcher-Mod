@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408OilMileIndexActi extends TabActivity {
     public RadioButton btnPage1;
     public RadioButton btnPage2;

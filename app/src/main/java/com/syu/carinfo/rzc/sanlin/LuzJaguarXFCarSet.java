@@ -22,6 +22,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuzJaguarXFCarSet extends BaseActivity implements View.OnClickListener {
     protected Handler mHandler;
     private PopupWindow mLauStyle;

@@ -9,6 +9,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_Surui_CarSet extends BaseFragment implements View.OnClickListener {
     int iPressDownvalue;
     int iPressUpvalue;

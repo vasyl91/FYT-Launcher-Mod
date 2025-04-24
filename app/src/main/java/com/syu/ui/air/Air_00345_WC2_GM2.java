@@ -9,6 +9,7 @@ import android.os.SystemProperties;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_00345_WC2_GM2 extends AirBase {
     public Air_00345_WC2_GM2(Context context) {
         super(context);

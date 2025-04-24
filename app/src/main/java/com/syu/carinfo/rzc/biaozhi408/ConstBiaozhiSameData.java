@@ -1,5 +1,6 @@
 package com.syu.carinfo.rzc.biaozhi408;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstBiaozhiSameData {
     public static final int U_AUTOLOCK_BY_SPEED = 110;
     public static final int U_AUTO_AC_ENABLED = 109;

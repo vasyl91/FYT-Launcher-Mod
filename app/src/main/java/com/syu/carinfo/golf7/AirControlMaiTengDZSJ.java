@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListener {
     public static AirControlMaiTengDZSJ mInstance;
     public static boolean mIsFront = false;

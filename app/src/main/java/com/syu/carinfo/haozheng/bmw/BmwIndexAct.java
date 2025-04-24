@@ -6,6 +6,7 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BmwIndexAct extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

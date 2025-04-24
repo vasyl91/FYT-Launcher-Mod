@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7AlarmRecordAct extends BaseActivity {
     private TextView[] mTvWarning = new TextView[18];
     private TextView[] mTvWarningLine = new TextView[18];

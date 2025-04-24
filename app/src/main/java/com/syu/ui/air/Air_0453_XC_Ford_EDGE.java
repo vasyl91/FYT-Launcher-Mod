@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_XC_Ford_EDGE extends AirBase {
     public Air_0453_XC_Ford_EDGE(Context context) {
         super(context);

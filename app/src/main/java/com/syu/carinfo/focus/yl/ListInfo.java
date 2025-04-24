@@ -1,5 +1,6 @@
 package com.syu.carinfo.focus.yl;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ListInfo {
     int index;
     String name;

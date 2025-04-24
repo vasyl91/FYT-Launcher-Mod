@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordAmbLightSetAct extends Activity implements View.OnTouchListener {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

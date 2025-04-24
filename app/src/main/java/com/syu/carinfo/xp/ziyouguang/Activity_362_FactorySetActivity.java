@@ -12,6 +12,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_362_FactorySetActivity extends BaseActivity {
     public static Activity_362_FactorySetActivity mist;
     private StringBuffer mTvCurrPasswordBuffer = new StringBuffer();

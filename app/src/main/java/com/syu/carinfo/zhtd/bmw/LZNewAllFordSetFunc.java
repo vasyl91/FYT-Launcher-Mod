@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZNewAllFordSetFunc extends BaseActivity implements View.OnClickListener {
     private IUiNotify sNotify = new IUiNotify() { 
         @Override

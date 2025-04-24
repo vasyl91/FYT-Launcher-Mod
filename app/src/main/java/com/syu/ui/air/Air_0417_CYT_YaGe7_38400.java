@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0417_CYT_YaGe7_38400 extends AirBase {
     public Air_0417_CYT_YaGe7_38400(Context context) {
         super(context);

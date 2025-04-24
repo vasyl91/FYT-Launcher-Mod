@@ -9,6 +9,7 @@ import android.os.SystemProperties;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_OD_Cadillac_Escalade extends AirBase {
     public Air_0452_OD_Cadillac_Escalade(Context context) {
         super(context);

@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0244_RZC_XP1_HavalH2;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSA407CarSingleCD extends Activity implements View.OnTouchListener {
     public static PSA407CarSingleCD mInstance;
     public static boolean mIsFront = false;

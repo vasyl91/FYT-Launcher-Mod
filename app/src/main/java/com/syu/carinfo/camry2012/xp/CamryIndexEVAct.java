@@ -10,6 +10,7 @@ import android.widget.TabHost;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryIndexEVAct extends TabActivity {
     private TabHost mTabHost;
 

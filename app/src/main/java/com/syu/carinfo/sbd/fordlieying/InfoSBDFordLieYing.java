@@ -13,6 +13,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class InfoSBDFordLieYing extends BaseActivity {
     public static boolean mIsFront = false;
     Handler mHandler;

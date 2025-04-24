@@ -15,6 +15,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityQiRuiAiRuiZe extends Activity implements View.OnClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

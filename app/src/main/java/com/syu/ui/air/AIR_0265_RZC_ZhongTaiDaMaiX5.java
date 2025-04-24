@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AIR_0265_RZC_ZhongTaiDaMaiX5 extends AirBase {
     public AIR_0265_RZC_ZhongTaiDaMaiX5(Context context) {
         super(context);

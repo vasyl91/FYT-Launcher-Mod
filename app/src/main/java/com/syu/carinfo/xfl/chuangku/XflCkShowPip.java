@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XflCkShowPip {
     static StringBuffer buffer;
     static WindowManager manager;

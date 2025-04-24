@@ -1,6 +1,5 @@
 package com.syu.weather;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -304,7 +303,7 @@ public class WeatherManager {
                 this.mCurLocation = location;
                 (new AsyncTask<Location, Void, String>() {
                     @Override
-                    protected String doInBackground(Location... params) throws Exception {
+                    protected String doInBackground(Location[] params) throws Exception {
                         if (params != null && params.length > 0) {
                             String city = "";
                             if (city == null || "".equals(city)) {
@@ -633,7 +632,7 @@ public class WeatherManager {
         if (!this.isGettingWeather && city != null && !city.isEmpty()) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
-                public WeatherDescription doInBackground(String... params) {
+                public WeatherDescription doInBackground(String[] params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
                         String url = china ? "http://apk.carsql.com/Weather/CurrentDay?city=" + city : "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=4a87b2f097e39a2cb9c75916073e75a7";
@@ -676,7 +675,7 @@ public class WeatherManager {
         if (!this.isGettingWeather && lat != null && lon != null) {
             this.isGettingWeather = true;
             (new AsyncTask<String, Void, WeatherDescription>() {
-                public WeatherDescription doInBackground(String... params) {
+                public WeatherDescription doInBackground(String[] params) {
                     if (params != null && params.length > 0) {
                         boolean debug = false;
                         Locale locale = WeatherManager.this.mContext.getResources().getConfiguration().locale;
@@ -759,7 +758,7 @@ public class WeatherManager {
             (new AsyncTask<String, DailyWeather, WeatherManager.RecentWeather>() {
                 int resultCode = -2;
 
-                protected WeatherManager.RecentWeather doInBackground(String... params) {
+                protected WeatherManager.RecentWeather doInBackground(String[] params) {
                     WeatherManager.RecentWeather recentWeather = null;
                     if (params != null && params.length > 0) {
                         String url = params[0];

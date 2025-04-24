@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0443_WC_nissan_ruiqi extends AirBase {
     public Air_0443_WC_nissan_ruiqi(Context context) {
         super(context);

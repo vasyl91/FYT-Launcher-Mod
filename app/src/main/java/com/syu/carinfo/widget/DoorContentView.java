@@ -16,6 +16,7 @@ import com.syu.module.main.FinalShare;
 import com.syu.ui.door.DoorHelper;
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DoorContentView extends View {
     private final Rect RECT_BACK;
     protected final Rect RECT_DRAWABLE;

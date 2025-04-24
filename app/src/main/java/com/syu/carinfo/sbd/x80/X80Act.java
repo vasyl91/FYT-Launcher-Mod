@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0375_SBD_WC1_ReservedCdBenTengX80;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class X80Act extends BaseActivity {
     private MyButton[] myButtons = new MyButton[6];
     ImageView[] image = new ImageView[6];

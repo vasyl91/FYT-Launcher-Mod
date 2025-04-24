@@ -21,6 +21,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityWCXianDaiAllSet extends Activity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

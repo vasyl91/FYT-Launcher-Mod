@@ -16,10 +16,9 @@ public class Tools {
         return null;
     }
 
-    public static final Method getMethod(Class clazz, String methodName, Class<?>... clsArr) {
+    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... clsArr) {
         try {
-            Method method = clazz.getMethod(methodName, clsArr);
-            return method;
+            return clazz.getDeclaredMethod(methodName, clsArr);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             return null;

@@ -11,6 +11,7 @@ import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.carinfo.ford.FordCarSet;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RJIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

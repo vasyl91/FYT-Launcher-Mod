@@ -9,6 +9,7 @@ import com.syu.carinfo.ford.FordCarSet_XP;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityIndex_14Festia extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

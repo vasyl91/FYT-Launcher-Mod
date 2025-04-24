@@ -13,6 +13,7 @@ import com.syu.module.canbus.Callback_0452_LZ_Ford_Mustang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZMustangCarRadioAct extends Activity implements View.OnTouchListener {
     public static LZMustangCarRadioAct mInstance;
     public static boolean mIsFront = false;

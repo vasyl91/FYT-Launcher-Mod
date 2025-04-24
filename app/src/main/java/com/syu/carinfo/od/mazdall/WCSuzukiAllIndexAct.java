@@ -10,6 +10,7 @@ import com.syu.carinfo.wc2.tata.WC2TataCarSet;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCSuzukiAllIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

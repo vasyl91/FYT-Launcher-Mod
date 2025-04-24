@@ -21,6 +21,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_0439_HavalH9SetAct extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

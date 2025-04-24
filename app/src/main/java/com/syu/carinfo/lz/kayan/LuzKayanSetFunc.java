@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuzKayanSetFunc extends BaseActivity {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

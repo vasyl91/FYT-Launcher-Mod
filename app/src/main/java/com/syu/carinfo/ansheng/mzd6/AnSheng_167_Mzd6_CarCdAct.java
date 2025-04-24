@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0167_XBS_XP1_OLD_MZD6;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AnSheng_167_Mzd6_CarCdAct extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

@@ -13,6 +13,7 @@ import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JaguarNewCarinfoAct_SP extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int bkNum = 0;

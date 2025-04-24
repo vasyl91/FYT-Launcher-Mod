@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLTireAct_BNR extends Activity {
     public static YLTireAct_BNR mInit;
     int[] ids = {203, 204, 205, 138, 139, 140, 141, 206};

@@ -10,6 +10,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0002_XP1_DaZhong extends AirBase {
     public Air_0002_XP1_DaZhong(Context context) {
         super(context);

@@ -10,6 +10,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ODFordProTireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

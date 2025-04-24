@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_420_crown_CarCD extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     public static boolean mIsFront = false;
     static int sHasDisc = 0;

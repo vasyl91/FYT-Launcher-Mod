@@ -3,6 +3,7 @@ package com.syu.carinfo.xfl.chuangku;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XflCkFunc {
     public static int G_ONSTART_STATUS() {
         return 0;

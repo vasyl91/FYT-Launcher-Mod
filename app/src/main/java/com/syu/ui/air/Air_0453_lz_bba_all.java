@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0453_lz_bba_all extends AirBase {
     public Air_0453_lz_bba_all(Context context) {
         super(context);

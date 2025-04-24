@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZ_0439_Toyota_AirControlAct extends Activity implements View.OnTouchListener {
     public static LZ_0439_Toyota_AirControlAct mInstance;
     public static boolean mIsFront = false;

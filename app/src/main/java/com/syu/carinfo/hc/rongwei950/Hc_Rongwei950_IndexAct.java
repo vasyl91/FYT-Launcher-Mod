@@ -7,6 +7,7 @@ import android.view.View;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Hc_Rongwei950_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

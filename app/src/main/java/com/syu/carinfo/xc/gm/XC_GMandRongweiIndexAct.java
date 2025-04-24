@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.rzc.klc.RzcKlcOnStarAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XC_GMandRongweiIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

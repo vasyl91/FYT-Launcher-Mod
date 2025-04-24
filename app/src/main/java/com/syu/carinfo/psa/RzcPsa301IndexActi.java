@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcPsa301IndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

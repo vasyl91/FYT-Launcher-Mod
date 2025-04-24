@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JaguarOilMilePage1Acti extends BaseActivity {
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

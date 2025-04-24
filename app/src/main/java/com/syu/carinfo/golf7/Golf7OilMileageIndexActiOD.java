@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7OilMileageIndexActiOD extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

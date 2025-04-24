@@ -16,6 +16,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcJianghuaiIEV6ETireAct extends BaseActivity {
     AlertDialog dialog;
     private IUiNotify notifyCanbus = new IUiNotify() { 

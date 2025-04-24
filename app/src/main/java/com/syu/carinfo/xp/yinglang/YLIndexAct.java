@@ -14,6 +14,7 @@ import com.syu.carinfo.rzc.klc.RzcKlcOnstatWifiAct;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLIndexAct extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

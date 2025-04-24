@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordSeatSetAct extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static PAFordSeatSetAct mInit;

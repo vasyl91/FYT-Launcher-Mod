@@ -7,6 +7,7 @@ import android.widget.RadioGroup;
 import android.widget.TabHost;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSAOilMileIndexActi extends TabActivity {
     public static PSAOilMileIndexActi mInstance;
     public static boolean mIsFront = false;

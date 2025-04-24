@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0061_RZC_XP1_GM;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GmAndraActivityCarCD extends Activity implements View.OnTouchListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

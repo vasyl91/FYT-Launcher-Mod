@@ -16,6 +16,7 @@ import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AirHelper implements Runnable {
     public static boolean sDisableAirWindowLocal;
     private int mTick;

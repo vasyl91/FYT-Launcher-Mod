@@ -2,6 +2,7 @@ package com.syu.carinfo.focus;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FocusFun {
     public static void C_SET_BUTTON_TOUCH(int type, int value) {
         DataCanbus.PROXY.cmd(0, new int[]{type, value}, null, null);

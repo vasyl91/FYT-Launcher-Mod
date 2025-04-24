@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Oudi_0453_JMC_YZHI_EV3_TireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

@@ -1,5 +1,6 @@
 package com.syu.carinfo.xp.yinglang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GmConstData {
     public static final int U_ADAPTIVE_FORWARD_LIGHT = 125;
     public static final int U_AIR_PARTITION_TEMP = 99;

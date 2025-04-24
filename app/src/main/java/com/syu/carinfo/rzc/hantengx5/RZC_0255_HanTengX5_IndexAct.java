@@ -7,6 +7,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_0255_HanTengX5_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

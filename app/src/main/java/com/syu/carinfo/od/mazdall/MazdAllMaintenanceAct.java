@@ -12,6 +12,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MazdAllMaintenanceAct extends BaseActivity implements View.OnClickListener {
     private Button mBtnOilChangeMinus;
     private Button mBtnOilChangePlus;

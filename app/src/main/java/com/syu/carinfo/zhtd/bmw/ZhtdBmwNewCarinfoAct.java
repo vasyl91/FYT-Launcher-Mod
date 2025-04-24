@@ -16,6 +16,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ZhtdBmwNewCarinfoAct extends Activity {
     public static boolean mIsFront = false;
     int touchnum = 0;

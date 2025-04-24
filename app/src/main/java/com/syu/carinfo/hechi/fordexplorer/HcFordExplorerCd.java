@@ -12,6 +12,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class HcFordExplorerCd extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static HcFordExplorerCd mInit;

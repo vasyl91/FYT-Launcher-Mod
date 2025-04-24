@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_ZiYouguang_Suspension extends Activity implements View.OnClickListener {
     IUiNotify mCanbusNotify = new IUiNotify() { 
         @Override

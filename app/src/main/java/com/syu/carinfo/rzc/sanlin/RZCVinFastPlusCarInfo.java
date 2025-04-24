@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCVinFastPlusCarInfo extends BaseActivity implements View.OnClickListener {
     Runnable mCalTime = new Runnable() { 
         @Override

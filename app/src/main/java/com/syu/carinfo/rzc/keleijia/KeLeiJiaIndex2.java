@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KeLeiJiaIndex2 extends BaseActivity {
     View.OnClickListener mClickListener = new View.OnClickListener() { 
         @Override

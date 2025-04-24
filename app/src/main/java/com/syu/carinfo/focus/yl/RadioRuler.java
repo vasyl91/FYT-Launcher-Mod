@@ -13,6 +13,7 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RadioRuler extends View {
     public static int MAX_ALL_RULER;
     public static int MAX_ALL_RULER_REAL;

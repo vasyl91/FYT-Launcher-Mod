@@ -2,6 +2,7 @@ package com.syu.carinfo.focus.yl;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FFuncYLFocus {
     public static void C_SET_CONTROT(int modeType, int modeCmd) {
         DataCanbus.PROXY.cmd(3, modeType, modeCmd);

@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JeepCarAirSet extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

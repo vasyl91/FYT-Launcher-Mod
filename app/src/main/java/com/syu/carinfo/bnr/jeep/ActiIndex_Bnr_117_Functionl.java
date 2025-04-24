@@ -14,6 +14,7 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActiIndex_Bnr_117_Functionl extends BaseActivityForFragment {
     List<CarInfo> mList = new ArrayList();
     List<Fragment> mFrags = new ArrayList();

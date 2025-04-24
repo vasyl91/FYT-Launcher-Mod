@@ -13,6 +13,7 @@ import com.syu.module.canbus.Callback_0334_RZC_XP1_Focus2015;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MustangCarRadioAct extends Activity implements View.OnTouchListener {
     public static MustangCarRadioAct mInstance;
     public static boolean mIsFront = false;

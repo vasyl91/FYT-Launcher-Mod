@@ -9,6 +9,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_Driving_CarSet_RCW_S7 extends BaseFragment implements View.OnClickListener {
     int[] ids = {142, 143, 144, 145};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

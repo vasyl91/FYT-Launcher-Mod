@@ -17,6 +17,7 @@ import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7_XP_IndexAct extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;

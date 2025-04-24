@@ -20,6 +20,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YL6606NewVinFanAllSetFunc extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

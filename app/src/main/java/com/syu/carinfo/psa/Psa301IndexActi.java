@@ -9,6 +9,7 @@ import android.widget.Button;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Psa301IndexActi extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

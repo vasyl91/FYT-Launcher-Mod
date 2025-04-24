@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act_Keleijia_set extends BaseActivity implements View.OnClickListener {
     private int[] eventIds = {153, 195, 196, 197, 348};
     IUiNotify mCanbusNotify = new IUiNotify() { 

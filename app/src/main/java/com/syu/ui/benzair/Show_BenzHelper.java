@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Show_BenzHelper implements Runnable {
     private static final Show_BenzHelper INSTANCE = new Show_BenzHelper();
     public static final IUiNotify SHOW_AND_REFRESH_BENZ = new IUiNotify() { 

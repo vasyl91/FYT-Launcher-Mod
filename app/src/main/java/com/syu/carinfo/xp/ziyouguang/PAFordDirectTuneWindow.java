@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFordDirectTuneWindow extends BaseActivity implements View.OnClickListener {
     private View mRootView;
     private PopupWindow mWindow;

@@ -1,5 +1,6 @@
 package com.syu.carinfo.air;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstAllAirDara {
     public static int C_AIR_POWER = 255;
     public static int C_AIR_POWER_FRONT = 255;

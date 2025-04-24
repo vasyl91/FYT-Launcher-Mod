@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0241_WC1_RuiJie extends AirBase {
     public Air_0241_WC1_RuiJie(Context context) {
         super(context);

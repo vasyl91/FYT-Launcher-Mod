@@ -20,6 +20,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_ZiYouguang_FactorySetActivity extends BaseActivity {
     public static Rzc_ZiYouguang_FactorySetActivity mist;
     private SharedPreferences.Editor editor;

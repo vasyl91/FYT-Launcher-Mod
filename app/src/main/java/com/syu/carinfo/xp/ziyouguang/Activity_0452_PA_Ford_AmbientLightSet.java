@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_0452_PA_Ford_AmbientLightSet extends Activity {
     AdapterCarInfo adapter;
     List<CarInfo> mList = new ArrayList();

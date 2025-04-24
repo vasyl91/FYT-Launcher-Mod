@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0174_XP_MengDiOu extends AirBase {
     public Air_0174_XP_MengDiOu(Context context) {
         super(context);

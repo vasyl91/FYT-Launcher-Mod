@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0013_WC2_XinJunWei2013 extends AirBase {
     public Air_0013_WC2_XinJunWei2013(Context context) {
         super(context);

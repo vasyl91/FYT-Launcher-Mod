@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0009_WC1_BenTengB50 extends AirBase {
     public Air_0009_WC1_BenTengB50(Context context) {
         super(context);

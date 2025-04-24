@@ -11,6 +11,7 @@ import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_OD_Volvo extends AirBase {
     public Air_0452_OD_Volvo(Context context) {
         super(context);

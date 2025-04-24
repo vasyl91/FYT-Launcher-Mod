@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GA6AirSeatControlAct extends BaseActivity {
     public static boolean mIsFront = false;
     private IUiNotify notifyCanbus = new IUiNotify() { 

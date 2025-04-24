@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_Tangdu_Toyota_All;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ToyotaTangduTripAct extends BaseActivity {
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[15];
     private TextView[] mOilTv = new TextView[4];

@@ -17,6 +17,7 @@ import com.syu.module.canbus.FinalCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_374_AUXSettings extends Activity {
     AdapterCarInfo adapter;
     List<CarInfo> mList = new ArrayList();

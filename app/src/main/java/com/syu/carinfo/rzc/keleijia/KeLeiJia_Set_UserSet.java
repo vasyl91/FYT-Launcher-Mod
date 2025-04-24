@@ -13,6 +13,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KeLeiJia_Set_UserSet extends BaseActivity {
     private Handler handler;
     private int[] airTempAdjString = {R.string.bsd_klj_str20, R.string.bsd_klj_str21, R.string.bsd_klj_str22};

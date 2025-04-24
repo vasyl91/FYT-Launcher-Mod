@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7OilMileagePage1Acti extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

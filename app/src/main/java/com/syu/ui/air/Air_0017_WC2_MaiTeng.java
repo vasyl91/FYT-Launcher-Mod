@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0017_WC2_MaiTeng extends AirBase {
     public Air_0017_WC2_MaiTeng(Context context) {
         super(context);

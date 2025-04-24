@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dongnanv5CarinfoActi extends BaseActivity {
     private ProgressBar mProgressBarAvgOilUsed;
     private ProgressBar mProgressBarRemOil;

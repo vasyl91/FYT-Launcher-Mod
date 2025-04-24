@@ -17,6 +17,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_0452_PA_Ford_Language extends BaseActivity {
     int language_set = 255;
     private PopupWindow mLauStyle;

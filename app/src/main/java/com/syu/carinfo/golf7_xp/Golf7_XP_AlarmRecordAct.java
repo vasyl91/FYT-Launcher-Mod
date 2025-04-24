@@ -9,6 +9,7 @@ import com.syu.carinfo.golf7.Golf7Data;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7_XP_AlarmRecordAct extends BaseActivity {
     private TextView[] mTvWarning = new TextView[7];
     private TextView[] mTvWarningLine = new TextView[7];

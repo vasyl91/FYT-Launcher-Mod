@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZFerrariF12CarInfo extends BaseActivity implements View.OnClickListener {
     int unit = 0;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityTireRuiFengS5 extends BaseActivity {
     String mWarnStrs;
     private IUiNotify notifyCanbus = new IUiNotify() { 

@@ -429,9 +429,8 @@ public class Workspace extends SmoothPagedView
         setMinScale(mOverviewModeShrinkFactor - 0.2f);
         setupLayoutTransition();
 
-        final Resources res = getResources();
         try {
-            mBackground = res.getDrawable(R.drawable.apps_customize_bg);
+            mBackground = ContextCompat.getDrawable(context, R.drawable.apps_customize_bg);
         } catch (Resources.NotFoundException e) {
             // In this case, we will skip drawing background protection
         }
@@ -941,7 +940,7 @@ public class Workspace extends SmoothPagedView
         }
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
-            if (!helpers.isInOverviewMode() && getCurrentPage() == pipScreen) {
+            if (!helpers.isInOverviewMode() && getCurrentPage() == pipScreen && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
                 Log.d("stripEmptyScreens", "startMapPip");
                 WindowUtil.startMapPip(null, false);
             }

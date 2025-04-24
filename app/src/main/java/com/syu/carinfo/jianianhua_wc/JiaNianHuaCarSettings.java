@@ -13,6 +13,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JiaNianHuaCarSettings extends BaseActivity {
     public static final int FRESH_TEXTVIEW_STATUS = 100;
     SharedPreferences.Editor editor;

@@ -28,7 +28,7 @@ public class CanbusAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... input) throws Exception {
+    protected Void doInBackground(Void[] input) throws Exception {
     	launchCanbus();
         return null;
     }

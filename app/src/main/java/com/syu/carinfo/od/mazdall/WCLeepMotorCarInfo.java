@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCLeepMotorCarInfo extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

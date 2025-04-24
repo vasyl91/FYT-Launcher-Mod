@@ -12,6 +12,7 @@ import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MustangIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

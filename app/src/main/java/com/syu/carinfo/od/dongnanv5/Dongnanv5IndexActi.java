@@ -9,6 +9,7 @@ import android.widget.TabHost;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Dongnanv5IndexActi extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

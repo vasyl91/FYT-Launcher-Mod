@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TuRui_OilActi extends BaseActivity {
     public static TuRui_OilActi mInstance;
     public static boolean mIsFront = false;

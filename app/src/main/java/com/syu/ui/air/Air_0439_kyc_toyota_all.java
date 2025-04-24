@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_kyc_toyota_all extends AirBase {
     public Air_0439_kyc_toyota_all(Context context) {
         super(context);

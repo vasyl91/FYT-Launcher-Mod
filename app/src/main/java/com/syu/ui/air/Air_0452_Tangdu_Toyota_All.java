@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_Tangdu_Toyota_All extends AirBase {
     public Air_0452_Tangdu_Toyota_All(Context context) {
         super(context);

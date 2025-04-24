@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Xincheng_Nissan_Tule_AirControlActi extends Activity implements View.OnTouchListener {
     public static Xincheng_Nissan_Tule_AirControlActi mInstance;
     public static boolean mIsFront = false;

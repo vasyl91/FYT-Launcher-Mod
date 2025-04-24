@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0237_RZC_XP1_HAIMAM55 extends AirBase {
     public Air_0237_RZC_XP1_HAIMAM55(Context context) {
         super(context);

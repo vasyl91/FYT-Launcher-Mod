@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7FunctionalEscSystemActiVW_DZSJ extends BaseActivity {
     public static Golf7FunctionalEscSystemActiVW_DZSJ mInstance;
     public static boolean mIsFront = false;

@@ -10,6 +10,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.Locale;
 
 /* renamed from: com.syu.carinfo.wccamry.CamryTireActWC_备份, reason: invalid class name */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTireActWC_ extends BaseActivity {
     public static CamryTireActWC_ mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

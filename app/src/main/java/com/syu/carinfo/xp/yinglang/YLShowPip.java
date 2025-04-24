@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLShowPip {
     static StringBuffer buffer;
     static WindowManager manager;

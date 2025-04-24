@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0361_RZC_XP1_MaiRuiBao16 extends AirBase {
     private int nWindLevelLeft;
 

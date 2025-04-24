@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class OD_NissanXimaCarinfoAct extends BaseActivity {
     int tempunit = 0;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCChanganAllTireAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

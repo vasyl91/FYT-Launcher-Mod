@@ -13,6 +13,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSA4008CarSetActi extends BaseActivity implements View.OnClickListener {
     private int[] eventIds = {177, 178, 179, 180, 181, 182, 183, 184, 196, 185, 186, 187, 188, 189, 190, 191, 192, 193, 197, 198, 199, 208, 209, 210, 211, 212, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

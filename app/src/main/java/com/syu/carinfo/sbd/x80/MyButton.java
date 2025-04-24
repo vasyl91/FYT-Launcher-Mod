@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MyButton extends LinearLayout {
     private TextView mFreq;
     private TextView mFreqTitle;

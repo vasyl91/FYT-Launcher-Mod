@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_OD_Opel_adan;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ODOpelAdanCarCD extends Activity implements View.OnTouchListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

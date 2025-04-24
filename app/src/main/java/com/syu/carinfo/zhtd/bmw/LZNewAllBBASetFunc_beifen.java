@@ -22,6 +22,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZNewAllBBASetFunc_beifen extends BaseActivity implements View.OnClickListener {
     private PopupWindow mLauStyle;
     public ArrayList<String> mLauStylelist;

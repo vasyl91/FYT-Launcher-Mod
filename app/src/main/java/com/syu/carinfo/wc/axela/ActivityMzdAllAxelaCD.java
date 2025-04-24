@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0443_WC2_MAZD_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityMzdAllAxelaCD extends BaseActivity implements View.OnClickListener {
     public static ActivityMzdAllAxelaCD mInstance;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

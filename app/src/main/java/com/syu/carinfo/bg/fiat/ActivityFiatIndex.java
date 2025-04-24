@@ -8,6 +8,7 @@ import android.view.View;
 import com.syu.canbus.R;
 import com.syu.carinfo.xp.ziyouguang.Activity_374_FactorySetActivity;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityFiatIndex extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

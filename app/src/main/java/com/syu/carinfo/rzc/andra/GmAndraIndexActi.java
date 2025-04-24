@@ -12,6 +12,7 @@ import com.syu.carinfo.opel.OPELCarKeyActivity;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GmAndraIndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

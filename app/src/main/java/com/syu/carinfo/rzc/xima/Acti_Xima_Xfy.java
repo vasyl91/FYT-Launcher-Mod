@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Acti_Xima_Xfy extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

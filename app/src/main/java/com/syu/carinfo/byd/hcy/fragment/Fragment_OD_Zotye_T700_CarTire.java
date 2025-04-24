@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Fragment_OD_Zotye_T700_CarTire extends BaseFragment implements View.OnClickListener {
     int[] ids = {98, 99, 100, 101, 102, 103, 104, 105, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

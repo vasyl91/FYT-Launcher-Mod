@@ -9,6 +9,7 @@ import android.util.Log;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0022_XP1_Focus2012 extends AirBase {
     public Air_0022_XP1_Focus2012(Context context) {
         super(context);

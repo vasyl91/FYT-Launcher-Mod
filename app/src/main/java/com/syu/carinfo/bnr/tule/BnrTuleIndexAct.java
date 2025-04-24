@@ -10,6 +10,7 @@ import com.syu.carinfo.wc.ecosport18.Wc_21FordMDOCarInfo;
 import com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BnrTuleIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

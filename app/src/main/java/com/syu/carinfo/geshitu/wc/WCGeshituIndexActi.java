@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.honda.HondaIndexActi;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCGeshituIndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

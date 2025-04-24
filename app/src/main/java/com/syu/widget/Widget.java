@@ -15,6 +15,7 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -231,9 +232,13 @@ public abstract class Widget {
 
     protected void saveBitmap(Bitmap bitmap, String bitmapName) throws Exception {
         this.mContext.deleteFile(bitmapName);
-        FileOutputStream fos = this.mContext.openFileOutput(bitmapName, Context.MODE_WORLD_READABLE);
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        fos.flush();
-        fos.close();
+        try (FileOutputStream fos = this.mContext.openFileOutput(bitmapName, Context.MODE_PRIVATE)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

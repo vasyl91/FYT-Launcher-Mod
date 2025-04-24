@@ -12,6 +12,7 @@ import com.syu.carinfo.rzc.biaozhi408.RZC_BZ407CarRadio;
 import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZPsaAllIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

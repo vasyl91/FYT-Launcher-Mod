@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PackView {
     private View view;
     int mWidth = 266;

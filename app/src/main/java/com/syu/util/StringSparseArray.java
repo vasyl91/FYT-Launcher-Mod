@@ -1,5 +1,8 @@
 package com.syu.util;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class StringSparseArray<E> implements Cloneable {
     private boolean mGarbage;
     private String[] mKeys;
@@ -39,26 +42,35 @@ public class StringSparseArray<E> implements Cloneable {
         return idealByteArraySize(need << 2) >> 2;
     }
 
-    /* renamed from: clone, reason: merged with bridge method [inline-methods] */
-    public StringSparseArray<E> m4clone() {
-        StringSparseArray<E> clone = null;
+    @NonNull
+    @Override
+    public StringSparseArray<E> clone() {
         try {
-            clone = (StringSparseArray) super.clone();
-            clone.mKeys = this.mKeys.clone();
-            clone.mValues = this.mValues.clone();
-            return clone;
+            @SuppressWarnings("unchecked")
+            StringSparseArray<E> cloned = (StringSparseArray<E>) super.clone();
+            cloned.mKeys = this.mKeys.clone();
+            cloned.mValues = this.mValues.clone();
+            return cloned;
         } catch (CloneNotSupportedException e) {
-            return clone;
+            // This should not happen as StringSparseArray implements Cloneable
+            throw new AssertionError(e);
         }
     }
 
+    @Nullable
     public E get(String key) {
         return get(key, null);
     }
 
-    public E get(String str, E e) {
+    @Nullable
+    public E get(String str, @Nullable E e) {
         int binarySearch = binarySearch(this.mKeys, this.mSize, str);
-        return (binarySearch < 0 || this.mValues[binarySearch] == DELETED) ? e : (E) this.mValues[binarySearch];
+        if (binarySearch < 0 || this.mValues[binarySearch] == DELETED) {
+            return e;
+        }
+        @SuppressWarnings("unchecked")
+        E value = (E) this.mValues[binarySearch];
+        return value;
     }
 
     private int binarySearch(String[] array, int size, String value) {
@@ -96,7 +108,7 @@ public class StringSparseArray<E> implements Cloneable {
     }
 
     public void removeAt(int index) {
-        if (this.mValues[index] != DELETED) {
+        if (index >= 0 && index < this.mSize && this.mValues[index] != DELETED) {
             this.mValues[index] = DELETED;
             this.mGarbage = true;
         }
@@ -174,19 +186,30 @@ public class StringSparseArray<E> implements Cloneable {
         if (this.mGarbage) {
             gc();
         }
+        if (index < 0 || index >= this.mSize) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
         return this.mKeys[index];
     }
 
-    public E valueAt(int i) {
+    public E valueAt(int index) {
         if (this.mGarbage) {
             gc();
         }
-        return (E) this.mValues[i];
+        if (index < 0 || index >= this.mSize) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+        @SuppressWarnings("unchecked")
+        E value = (E) this.mValues[index];
+        return value;
     }
 
     public void setValueAt(int index, E value) {
         if (this.mGarbage) {
             gc();
+        }
+        if (index < 0 || index >= this.mSize) {
+            throw new ArrayIndexOutOfBoundsException(index);
         }
         this.mValues[index] = value;
     }
@@ -203,7 +226,7 @@ public class StringSparseArray<E> implements Cloneable {
             gc();
         }
         for (int i = 0; i < this.mSize; i++) {
-            if (this.mValues[i] == value) {
+            if (this.mValues[i] == value) { // Intentional identity comparison as in original
                 return i;
             }
         }
@@ -247,13 +270,16 @@ public class StringSparseArray<E> implements Cloneable {
         this.mSize = pos + 1;
     }
 
+    @NonNull
+    @Override
     public String toString() {
-        if (size() <= 0) {
+        int size = size(); // Call size() to ensure garbage collection if needed
+        if (size <= 0) {
             return "{}";
         }
-        StringBuilder buffer = new StringBuilder(this.mSize * 28);
+        StringBuilder buffer = new StringBuilder(size * 28);
         buffer.append('{');
-        for (int i = 0; i < this.mSize; i++) {
+        for (int i = 0; i < size; i++) {
             if (i > 0) {
                 buffer.append(", ");
             }

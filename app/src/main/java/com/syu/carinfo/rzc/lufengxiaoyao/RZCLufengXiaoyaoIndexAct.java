@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCLufengXiaoyaoIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

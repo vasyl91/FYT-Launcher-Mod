@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCMaheidraCarTire extends BaseActivity {
     private final IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

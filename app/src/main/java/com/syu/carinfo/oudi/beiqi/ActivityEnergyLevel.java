@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityEnergyLevel extends Activity {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

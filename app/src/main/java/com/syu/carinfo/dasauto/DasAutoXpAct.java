@@ -14,6 +14,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.door.DoorHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DasAutoXpAct extends BaseActivity {
     int tempunit = 0;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

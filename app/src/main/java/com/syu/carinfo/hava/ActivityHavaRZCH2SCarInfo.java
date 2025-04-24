@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityHavaRZCH2SCarInfo extends Activity {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         int b1;

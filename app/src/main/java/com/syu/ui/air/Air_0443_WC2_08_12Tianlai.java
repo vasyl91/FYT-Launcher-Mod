@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0443_WC2_08_12Tianlai extends AirBase {
     public Air_0443_WC2_08_12Tianlai(Context context) {
         super(context);

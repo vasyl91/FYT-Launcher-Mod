@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_OD_Guanzhi2019 extends AirBase {
     public Air_0439_OD_Guanzhi2019(Context context) {
         super(context);

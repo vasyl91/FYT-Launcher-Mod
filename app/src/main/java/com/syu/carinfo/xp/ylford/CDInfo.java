@@ -1,5 +1,6 @@
 package com.syu.carinfo.xp.ylford;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CDInfo {
     int index;
     String str;

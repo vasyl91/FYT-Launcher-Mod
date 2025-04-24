@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_DaojunAirCrtrlBydG6 extends Activity implements View.OnTouchListener {
     public static Activity_DaojunAirCrtrlBydG6 mInstance;
     public static boolean mIsFront = false;

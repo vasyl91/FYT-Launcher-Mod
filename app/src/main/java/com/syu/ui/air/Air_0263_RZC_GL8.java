@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0263_RZC_GL8 extends AirBase {
     public Air_0263_RZC_GL8(Context context) {
         super(context);

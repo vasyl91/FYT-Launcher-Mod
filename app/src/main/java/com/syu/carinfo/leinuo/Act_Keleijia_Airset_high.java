@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act_Keleijia_Airset_high extends Activity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private int[] eventIds = {13, 12, 16, 11, 27, 19, 20, 18, 21, 28, 10, 37, 62, 36, 15};

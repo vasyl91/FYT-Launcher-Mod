@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0429_DJ_XP1_TOYOTA_12Crown_Low extends AirBase {
     public Air_0429_DJ_XP1_TOYOTA_12Crown_Low(Context context) {
         super(context);

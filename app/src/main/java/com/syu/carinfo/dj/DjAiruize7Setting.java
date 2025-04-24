@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DjAiruize7Setting extends BaseActivity {
     int[] strs = {R.string.dj_airuize7_prompt_close, R.string.dj_airuize7_prompt_light, R.string.dj_airuize7_prompt_sounds, R.string.dj_airuize7_prompt_lightsounds};
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 

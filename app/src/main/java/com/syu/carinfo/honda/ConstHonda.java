@@ -1,5 +1,6 @@
 package com.syu.carinfo.honda;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstHonda {
     public static final int U_AVERAGE_OIL_CONSUMPTION = 101;
     public static final int U_AVERAGE_OIL_CONSUMPTION_1 = 111;

@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_RZC_SettingT60 extends BaseActivity {
     private int[] eventIds = {158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 171, 172};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

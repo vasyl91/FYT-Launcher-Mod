@@ -10,6 +10,7 @@ import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTripAct_Luz extends BaseActivity {
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[15];
     private TextView[] mOilTv = new TextView[4];

@@ -319,7 +319,7 @@ public class NetworkState extends BroadcastReceiver {
 
     public void registerLisenter(OnNetworkStateChangeLisenter lisenter) {
         if (this.lisenters == null) {
-            this.lisenters = new ArrayList();
+            this.lisenters = new ArrayList<>();
         }
         if (lisenter != null && !this.lisenters.contains(lisenter)) {
             this.lisenters.add(lisenter);

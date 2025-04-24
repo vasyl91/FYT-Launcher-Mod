@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_OUDI_Changan extends AirBase {
     public Air_0439_OUDI_Changan(Context context) {
         super(context);

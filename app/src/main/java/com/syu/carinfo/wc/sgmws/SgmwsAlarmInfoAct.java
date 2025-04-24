@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SgmwsAlarmInfoAct extends BaseActivity {
     public static int[] mStrAlarmWarningInfo = {R.string.str_sgmws_str0, R.string.str_sgmws_str1, R.string.str_sgmws_str2, R.string.str_sgmws_str3, R.string.str_sgmws_str4, R.string.str_sgmws_str5, R.string.str_sgmws_str6};
     private TextView titleview;

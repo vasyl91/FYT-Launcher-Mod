@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TdTuleCarInfo extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

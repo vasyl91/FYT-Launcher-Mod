@@ -227,7 +227,7 @@ public class WidgetPreviewLoader {
             // write to db on a thread pool... this can be done lazily and improves the performance
             // of the first time widget previews are loaded
             new AsyncTask<Void, Void, Void>() {
-                public Void doInBackground(Void ... args) {
+                public Void doInBackground(Void[] args) {
                     writeToDb(o, generatedPreview);
                     return null;
                 }
@@ -355,7 +355,7 @@ public class WidgetPreviewLoader {
             sInvalidPackages.add(packageName);
         }
         new AsyncTask<Void, Void, Void>() {
-            public Void doInBackground(Void ... args) {
+            public Void doInBackground(Void[] args) {
                 SQLiteDatabase db = cacheDb.getWritableDatabase();
                 db.delete(CacheDb.TABLE_NAME,
                         CacheDb.COLUMN_NAME + " LIKE ? OR " +
@@ -379,7 +379,7 @@ public class WidgetPreviewLoader {
 
     public static void removeItemFromDb(final CacheDb cacheDb, final String objectName) {
         new AsyncTask<Void, Void, Void>() {
-            public Void doInBackground(Void ... args) {
+            public Void doInBackground(Void[] args) {
                 SQLiteDatabase db = cacheDb.getWritableDatabase();
                 db.delete(CacheDb.TABLE_NAME,
                         CacheDb.COLUMN_NAME + " = ? ", // SELECT query

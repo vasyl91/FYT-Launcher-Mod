@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class fragment_ford_carset extends BaseFragment implements View.OnClickListener {
     int[] callids = {115, 116, 117, 118, 119, 120, 121, 129, 130, 37};
     int[] warnSoundCtrl = {R.string.klc_onstar_close, R.string.klc_onstar_close, R.string.xp_ylford_set_voice_mode1, R.string.xp_ylford_set_voice_mode2, R.string.xp_ylford_set_voice_mode3, R.string.klc_air_auto};

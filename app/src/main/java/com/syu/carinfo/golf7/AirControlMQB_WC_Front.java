@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class AirControlMQB_WC_Front extends Activity implements View.OnClickListener {
     public static AirControlMQB_WC_Front mInstance;
     public static boolean mIsFront = false;

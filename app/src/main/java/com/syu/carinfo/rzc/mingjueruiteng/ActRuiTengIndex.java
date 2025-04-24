@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActRuiTengIndex extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

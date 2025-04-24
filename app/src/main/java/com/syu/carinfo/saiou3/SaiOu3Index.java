@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SaiOu3Index extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle arg0) {

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_OD_Ford_PRO extends AirBase {
     public Air_0452_OD_Ford_PRO(Context context) {
         super(context);

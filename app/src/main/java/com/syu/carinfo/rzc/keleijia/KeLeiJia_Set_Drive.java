@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KeLeiJia_Set_Drive extends BaseActivity {
     private int[] eventsIDs = {124, 125, 126, 127, 128, 129, 130, 152, 153, 154, 155, 156, 101, 145, 159, 162, 163, 186, 187};
     private int[] sensorString = {R.string.klc_air_low, R.string.klc_air_middle, R.string.klc_air_high};

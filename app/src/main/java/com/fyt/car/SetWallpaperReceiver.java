@@ -45,12 +45,12 @@ public class SetWallpaperReceiver extends BroadcastReceiver {
             LauncherApplication.mWallPaperUpdate = false;
             SharedPreferences.Editor editor2 = Utils.getSp().edit();
             editor2.putBoolean("mWallPaperUpdate", LauncherApplication.mWallPaperUpdate);
-            editor2.commit();
+            editor2.apply();
             return;
         }
         this.name = intent.getAction();
         if (intent.getExtras() != null) {
-            this.pak = (String) intent.getExtras().get("msg");
+            this.pak = intent.getStringExtra("msg");
         }
         int a = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_launcher_packagename);
         String launcherpackagename = "com.android.launcher" + a;

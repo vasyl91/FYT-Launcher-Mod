@@ -10,6 +10,7 @@ import com.syu.module.canbus.Callback_0298_XP1_2015SIYU_CRV;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityAirControl extends Activity implements View.OnClickListener {
     public static ActivityAirControl mInstance;
     public static boolean mIsFront = false;

@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act_Keleijia_Index extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

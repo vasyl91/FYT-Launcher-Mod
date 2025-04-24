@@ -12,6 +12,7 @@ import com.syu.carinfo.air.ConstAllAirDara;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KYCLexusFrontAirControlAct extends Activity implements View.OnTouchListener {
     public static KYCLexusFrontAirControlAct mInstance;
     public static boolean mIsFront = false;

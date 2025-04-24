@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0252_WC2_PSAALL extends AirBase {
     public Air_0252_WC2_PSAALL(Context context) {
         super(context);

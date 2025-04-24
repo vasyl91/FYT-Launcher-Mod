@@ -15,7 +15,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.1.3"
+        versionName = "1.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -70,17 +70,14 @@ android {
     packaging {
         resources.excludes.add("META-INF/**")
     }
-    
+
     lint {
         //lintConfig = file("lint.xml")
         checkReleaseBuilds = false
     }
 
     /*tasks.withType<JavaCompile>().configureEach {
-        options.compilerArgs.add("-Xlint:unchecked")
-        options.compilerArgs.add("-Xlint:deprecation")
-        options.compilerArgs.add("-Xmaxwarns")
-        options.compilerArgs.add("1000")
+        options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation", "-Xmaxwarns", "10000"))
     }*/
 }
 
@@ -116,6 +113,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata)
     implementation(libs.androidx.lifecycle.common.java8)
     implementation(libs.play.services.instantapps)
+    implementation(libs.androidx.core.google.shortcuts)
 
     testImplementation(libs.junit)
 

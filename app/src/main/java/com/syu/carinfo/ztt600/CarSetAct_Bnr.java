@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CarSetAct_Bnr extends BaseActivity {
     private int[] ids = {37};
     private IUiNotify notifyCanbus = new IUiNotify() { 

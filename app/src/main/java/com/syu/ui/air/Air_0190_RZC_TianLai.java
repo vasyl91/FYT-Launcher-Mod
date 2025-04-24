@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0190_RZC_TianLai extends AirBase {
     public Air_0190_RZC_TianLai(Context context) {
         super(context);

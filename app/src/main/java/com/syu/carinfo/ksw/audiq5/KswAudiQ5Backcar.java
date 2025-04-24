@@ -7,6 +7,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KswAudiQ5Backcar extends BaseActivity {
     public static KswAudiQ5Backcar mInstance;
     public static boolean mIsFront = false;

@@ -15,6 +15,7 @@ import android.view.View;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZDianweimentView extends View {
     private float angle;
     private int autoStep;

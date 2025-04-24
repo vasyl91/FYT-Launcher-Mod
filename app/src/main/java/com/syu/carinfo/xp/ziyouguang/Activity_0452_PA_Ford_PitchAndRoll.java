@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_0452_PA_Ford_PitchAndRoll extends Activity implements View.OnTouchListener {
     int num = 0;
     Runnable mCalTime = new Runnable() { 

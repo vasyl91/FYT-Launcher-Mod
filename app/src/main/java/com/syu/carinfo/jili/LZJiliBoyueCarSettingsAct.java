@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZJiliBoyueCarSettingsAct extends BaseActivity implements View.OnClickListener {
     private int[] eventIds = {98, 99, 100, 101, 102, 103, 104, 105, 106};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -11,6 +11,7 @@ import com.syu.module.canbus.Callback_0278_XP1_BiaoZhi301;
 import com.syu.module.canbus.Callback_0281_XP_PSA_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BZ408AlarmRecordActi extends BaseActivity {
     private static StringBuffer mStringBuffer = new StringBuffer(1000);
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

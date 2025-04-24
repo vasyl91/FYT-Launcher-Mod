@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MDOAirControlActi extends BaseActivity {
     public static MDOAirControlActi mInstance;
     public static boolean mIsFront = false;

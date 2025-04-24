@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0128_WC2_ChangAnCs75 extends AirBase {
     public Air_0128_WC2_ChangAnCs75(Context context) {
         super(context);

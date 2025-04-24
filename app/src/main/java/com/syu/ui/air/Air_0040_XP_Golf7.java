@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0040_XP_Golf7 extends AirBase {
     public Air_0040_XP_Golf7(Context context) {
         super(context);

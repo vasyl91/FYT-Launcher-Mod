@@ -10,6 +10,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BenTeng14B70ClockSet extends BaseActivity implements View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
     private Handler handler;
     private boolean is24Clock = true;

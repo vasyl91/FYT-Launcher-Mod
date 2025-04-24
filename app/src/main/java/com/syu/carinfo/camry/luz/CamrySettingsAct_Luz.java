@@ -13,6 +13,7 @@ import com.syu.carinfo.zhtd.bmw.LZToyotaLexRX450LightAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamrySettingsAct_Luz extends BaseActivity implements View.OnClickListener {
     public static CamrySettingsAct_Luz mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

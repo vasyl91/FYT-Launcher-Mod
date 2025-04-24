@@ -7,6 +7,7 @@ import android.widget.CheckedTextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408_Panel_IndexActi extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BengTengRzc17B70QCAirActi extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private Handler mHandler = new Handler(LauncherApplication.getInstance().getMainLooper());

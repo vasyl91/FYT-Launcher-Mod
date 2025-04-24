@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0109_WC2_Corolla extends AirBase {
     public Air_0109_WC2_Corolla(Context context) {
         super(context);

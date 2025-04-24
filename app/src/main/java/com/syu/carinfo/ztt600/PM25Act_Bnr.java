@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PM25Act_Bnr extends BaseActivity {
     private int[] ids = {148, 149};
     private IUiNotify notifyCanbus = new IUiNotify() { 

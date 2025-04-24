@@ -13,6 +13,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActiAMP_Bnr extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

@@ -21,6 +21,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamrySettingsAct_RZC6606 extends BaseActivity {
     public static CamrySettingsAct_RZC6606 mInit;
     protected Handler mHandler;

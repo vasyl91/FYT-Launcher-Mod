@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.honda.HondaHistoryActi;
 import com.syu.carinfo.honda.HondaTripActi;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Accord9LowIndexAct extends TabActivity {
     private TabHost mTabHost;
 

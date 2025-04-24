@@ -16,6 +16,7 @@ import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RuijieAirControlAct_Rzc extends Activity implements View.OnTouchListener {
     public static RuijieAirControlAct_Rzc mInstance;
     public static boolean mIsFront = false;

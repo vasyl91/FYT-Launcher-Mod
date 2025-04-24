@@ -14,6 +14,7 @@ import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_Oudi_0439_AirFrontCtrl extends Activity implements View.OnTouchListener {
     public static Rzc_Oudi_0439_AirFrontCtrl mInstance;
     public static boolean mIsFront = false;

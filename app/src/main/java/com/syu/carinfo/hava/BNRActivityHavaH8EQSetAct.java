@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BNRActivityHavaH8EQSetAct extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

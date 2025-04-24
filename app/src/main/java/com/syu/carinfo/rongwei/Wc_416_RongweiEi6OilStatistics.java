@@ -8,6 +8,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0416_WC2_RongWeiRX5;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_416_RongweiEi6OilStatistics extends Activity {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

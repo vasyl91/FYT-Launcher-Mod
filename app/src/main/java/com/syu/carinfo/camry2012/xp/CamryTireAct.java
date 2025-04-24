@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTireAct extends BaseActivity {
     public static CamryTireAct mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

@@ -11,6 +11,7 @@ import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Door_Default extends DoorBase {
     private Rect back;
     private Rect engine;

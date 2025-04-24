@@ -4,6 +4,7 @@ import android.os.Bundle;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBSTuleCarInfoDZSJ extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

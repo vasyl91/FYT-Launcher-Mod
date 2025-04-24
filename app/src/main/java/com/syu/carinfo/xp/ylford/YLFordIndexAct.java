@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLFordIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

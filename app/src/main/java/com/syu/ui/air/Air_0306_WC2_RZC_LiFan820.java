@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0306_WC2_RZC_LiFan820 extends AirBase {
     public Air_0306_WC2_RZC_LiFan820(Context context) {
         super(context);

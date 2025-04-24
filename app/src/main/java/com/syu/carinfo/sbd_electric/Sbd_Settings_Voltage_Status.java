@@ -9,6 +9,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Sbd_Settings_Voltage_Status extends BaseActivity {
     List<TextView> list = new ArrayList();
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

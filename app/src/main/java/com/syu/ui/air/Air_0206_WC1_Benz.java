@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.Print;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0206_WC1_Benz extends AirBase {
     public Air_0206_WC1_Benz(Context context) {
         super(context);

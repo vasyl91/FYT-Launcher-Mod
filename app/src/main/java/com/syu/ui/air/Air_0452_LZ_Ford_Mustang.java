@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_LZ_Ford_Mustang extends AirBase {
     public Air_0452_LZ_Ford_Mustang(Context context) {
         super(context);

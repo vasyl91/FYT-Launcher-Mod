@@ -10,6 +10,7 @@ import com.syu.carinfo.crv.WcCrvActiAll;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivitySiYuIndex extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

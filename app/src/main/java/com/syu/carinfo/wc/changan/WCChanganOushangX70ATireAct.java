@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCChanganOushangX70ATireAct extends BaseActivity implements View.OnClickListener {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

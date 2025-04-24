@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0096_RZC1_FML_M3_S7 extends AirBase {
     public Air_0096_RZC1_FML_M3_S7(Context context) {
         super(context);

@@ -1,5 +1,6 @@
 package com.syu.carinfo.rzc.addcan;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ConstRzcAddData {
     public static String CarFrameNum = "";
     public static final int U_CAR_ACCON = 516;

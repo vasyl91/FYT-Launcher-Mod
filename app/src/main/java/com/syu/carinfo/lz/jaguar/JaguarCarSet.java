@@ -19,6 +19,7 @@ import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class JaguarCarSet extends BaseActivity implements View.OnClickListener {
     protected Handler mHandler;
     private PopupWindow mLauStyle;

@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Parking_YFND_QX60 extends ParkingBase {
     private final float X_TxtMsg;
     private final float Y_TxtMsg;

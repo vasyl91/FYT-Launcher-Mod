@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0347_YingLong_Ruijie;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityRadio extends Activity implements DialogInterface.OnClickListener, View.OnLongClickListener {
     public static ActivityRadio mInst;
     public static ActivityRadio mInstance;

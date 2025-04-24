@@ -2,6 +2,7 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
@@ -255,18 +256,6 @@ public class Helpers {
     }
 
 
-    private boolean homePressed = false;
-    public boolean homePressedBoolean() {
-        homePressed = sharedPrefs.getBoolean("homePressed", false);
-        return homePressed;
-    }
-    public void setHomePressedBoolean(boolean homePressed) {
-        this.homePressed = homePressed;
-        editor.putBoolean("homePressed", homePressed);
-        editor.apply();
-    }
-
-
     private boolean settingsOpened = false;
     public boolean settingsOpenedBoolean() {
         settingsOpened = sharedPrefs.getBoolean("settingsOpened", false);
@@ -334,6 +323,17 @@ public class Helpers {
             return true;
         }
         return false;
+    }    
+
+    public static String getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "N/A";
+        }
     }
 
     public void resetPrefs() {

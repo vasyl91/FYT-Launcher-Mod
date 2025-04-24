@@ -13,6 +13,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GE3ChargingSetAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int mEnergyBack = 0;

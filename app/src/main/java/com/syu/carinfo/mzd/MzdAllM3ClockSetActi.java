@@ -13,6 +13,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerHelper;
 import com.syu.util.HandlerRemove;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MzdAllM3ClockSetActi extends BaseActivity {
     private boolean mBooleanHour;
     private Handler mHandler;

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0424_XP_Renault_Dacia extends AirBase {
     public Air_0424_XP_Renault_Dacia(Context context) {
         super(context);

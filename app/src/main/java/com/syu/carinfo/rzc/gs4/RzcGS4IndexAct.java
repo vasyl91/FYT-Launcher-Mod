@@ -9,6 +9,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.wc.gs4.GS4SetAct_Bnr;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RzcGS4IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

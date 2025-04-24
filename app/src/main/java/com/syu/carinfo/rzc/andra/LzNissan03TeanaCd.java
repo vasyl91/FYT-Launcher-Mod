@@ -12,6 +12,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LzNissan03TeanaCd extends Activity implements View.OnTouchListener {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.syu.util.ToolkitRes;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_RZC_23Yage extends Air_BenzBase {
     public Air_RZC_23Yage(Context context) {
         super(context);

@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class rzc_112_Toyota_AirRearControlAct extends Activity implements View.OnTouchListener {
     public static rzc_112_Toyota_AirRearControlAct mInstance;
     public static boolean mIsFront = false;

@@ -8,6 +8,7 @@ import android.widget.CheckedTextView;
 import com.syu.canbus.R;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class YLFocusIndex extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

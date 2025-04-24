@@ -13,6 +13,7 @@ import com.syu.module.canbus.Callback_0112_RZC_XP1_Carmy;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ToyotaLexusActivityCarRadio extends Activity implements View.OnTouchListener {
     public static ToyotaLexusActivityCarRadio mInst;
     public static boolean mIsFront = false;

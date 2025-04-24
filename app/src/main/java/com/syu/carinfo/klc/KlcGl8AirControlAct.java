@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KlcGl8AirControlAct extends Activity implements View.OnClickListener {
     public static KlcGl8AirControlAct mInstance;
     public static boolean mIsFront = false;

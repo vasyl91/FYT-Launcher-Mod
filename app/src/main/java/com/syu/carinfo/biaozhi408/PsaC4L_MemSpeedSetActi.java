@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PsaC4L_MemSpeedSetActi extends BaseActivity implements View.OnClickListener {
     public static PsaC4L_MemSpeedSetActi mInstance;
     public static boolean mIsFront;

@@ -13,6 +13,7 @@ import com.syu.entity.CarInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAFord_FunctionlActi extends Activity {
     List<CarInfo> mList = new ArrayList();
     int[] titles = {R.string.rzc_others_language_setting, R.string.wc_273_unit, R.string.wc_372_amblight, R.string.str_mic_set, R.string.str_guandao_amp, R.string.str_pitch_and_roll};

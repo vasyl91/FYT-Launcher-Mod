@@ -12,6 +12,7 @@ import com.syu.module.canbus.Callback_0121_WC2_14Prado;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PardoBaseAct extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

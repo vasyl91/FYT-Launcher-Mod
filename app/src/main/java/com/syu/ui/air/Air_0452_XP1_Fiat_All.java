@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_XP1_Fiat_All extends AirBase {
     public Air_0452_XP1_Fiat_All(Context context) {
         super(context);

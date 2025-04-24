@@ -20,6 +20,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSAFactorySetActivity extends BaseActivity {
     public static PSAFactorySetActivity mist;
     private SharedPreferences.Editor editor;

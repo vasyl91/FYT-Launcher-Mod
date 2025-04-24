@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class OD_Zotye_T700_Pm25 extends BaseActivity {
     int[] ids = {110, 111, 112, 113};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

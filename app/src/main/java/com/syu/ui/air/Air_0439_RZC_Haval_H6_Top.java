@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_RZC_Haval_H6_Top extends AirBase {
     public Air_0439_RZC_Haval_H6_Top(Context context) {
         super(context);

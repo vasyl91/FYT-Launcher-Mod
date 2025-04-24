@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0274_DJ_XP1_ACCORD7 extends AirBase {
     public Air_0274_DJ_XP1_ACCORD7(Context context) {
         super(context);

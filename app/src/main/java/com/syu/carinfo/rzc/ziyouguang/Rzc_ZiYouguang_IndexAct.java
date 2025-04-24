@@ -10,6 +10,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Rzc_ZiYouguang_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

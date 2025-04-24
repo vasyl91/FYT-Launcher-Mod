@@ -10,6 +10,7 @@ import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_Xiandai_E_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

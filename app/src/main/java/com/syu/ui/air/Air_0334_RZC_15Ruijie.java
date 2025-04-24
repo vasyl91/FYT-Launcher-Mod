@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0334_RZC_15Ruijie extends AirBase {
     private int nWindLevelLeft;
 

@@ -22,15 +22,15 @@
             android:id="@+id/iv_list_bg"
             android:layout_width="1280.0px"
             android:layout_height="110.0px"
-            android:src="@drawable/app_list_bg"
+            android:layout_alignParentBottom="true"
             android:scaleType="fitXY"
-            android:layout_alignParentBottom="true" />
+            android:src="@drawable/app_list_bg" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="1125.0px"
             android:layout_height="110.0px"
-            android:layout_marginLeft="16.0px"
+            android:layout_marginLeft="32.0px"
             android:layout_marginTop="16.0px"
             android:layout_toRightOf="@id/rl_allapps"
             android:layout_alignParentBottom="true" />

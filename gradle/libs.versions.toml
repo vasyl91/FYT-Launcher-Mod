@@ -1,6 +1,8 @@
 [versions]
 agp = "8.7.1"
 commonsCodec = "1.17.1"
+coreGoogleShortcut = "1.2.0"
+coreGoogleShortcuts = "1.1.0"
 eventbus = "3.3.1"
 flexbox = "3.0.0"
 guava = "31.1-android"
@@ -42,6 +44,8 @@ espressoWeb = "3.6.1"
 playServicesInstantapps = "18.1.0"
 
 [libraries]
+androidx-core-google-shortcut = { module = "androidx.core:core-google-shortcut", version.ref = "coreGoogleShortcut" }
+androidx-core-google-shortcuts = { module = "androidx.core:core-google-shortcuts", version.ref = "coreGoogleShortcuts" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycleViewmodel" }
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycleViewmodel" }

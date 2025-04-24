@@ -9,6 +9,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KeLeiJia_Set_Park extends BaseActivity {
     private int[] eventsIDs = {131, 144};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

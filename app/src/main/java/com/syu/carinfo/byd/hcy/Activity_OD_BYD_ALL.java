@@ -21,6 +21,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_OD_BYD_ALL extends BaseActivityForFragment {
     AdapterCarInfo adapter;
     ListView mListView;

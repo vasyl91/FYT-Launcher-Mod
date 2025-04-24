@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_LZ_Maserati extends AirBase {
     public Air_0452_LZ_Maserati(Context context) {
         super(context);

@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivitySR7Setting_Bnr extends BaseActivity implements View.OnClickListener {
     IUiNotify mCanbusNotify = new IUiNotify() { 
         @Override

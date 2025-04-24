@@ -11,6 +11,7 @@ import android.widget.TabHost;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PAJeepEHybirdIndexAct extends TabActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

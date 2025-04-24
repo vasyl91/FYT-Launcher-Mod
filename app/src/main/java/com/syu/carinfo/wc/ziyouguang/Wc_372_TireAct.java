@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_372_TireAct extends BaseActivity {
     public static Wc_372_TireAct mInit;
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

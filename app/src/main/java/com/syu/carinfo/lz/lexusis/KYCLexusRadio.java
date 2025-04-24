@@ -15,6 +15,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KYCLexusRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static KYCLexusRadio mInit;

@@ -7,6 +7,7 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBS_AngKeSaiLa_Cx4_IndexAct extends BaseActivity {
     private Button xbs_418_CarCD;
     private Button xbs_418_CarOilInfo;

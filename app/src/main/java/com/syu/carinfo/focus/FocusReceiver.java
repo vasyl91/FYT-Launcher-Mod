@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FocusReceiver extends BroadcastReceiver {
     private static final int msg_handle_back = 0;
     Handler handler = new Handler(Looper.getMainLooper()) { 

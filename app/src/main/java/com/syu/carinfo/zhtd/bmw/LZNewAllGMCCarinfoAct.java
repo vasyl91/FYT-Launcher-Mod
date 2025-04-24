@@ -7,6 +7,7 @@ import android.widget.Button;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZNewAllGMCCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     int pagenum = 0;

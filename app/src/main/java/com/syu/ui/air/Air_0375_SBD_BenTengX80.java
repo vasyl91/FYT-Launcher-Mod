@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0375_SBD_BenTengX80 extends AirBase {
     public Air_0375_SBD_BenTengX80(Context context) {
         super(context);

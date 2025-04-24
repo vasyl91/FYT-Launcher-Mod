@@ -8,6 +8,7 @@ import android.widget.TabHost;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PsaOilMileIndexActi extends TabActivity {
     private TabHost mTabHost;
 

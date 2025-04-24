@@ -11,6 +11,7 @@ import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act_LEDScreen_AoDeSai_wc extends Activity {
     public static boolean mIsFront = false;
     ArrayList<View> bignum1;

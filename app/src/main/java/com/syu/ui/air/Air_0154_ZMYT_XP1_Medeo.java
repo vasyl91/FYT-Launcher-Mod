@@ -8,6 +8,7 @@ import android.graphics.Region;
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0154_ZMYT_XP1_Medeo extends AirBase {
     public Air_0154_ZMYT_XP1_Medeo(Context context) {
         super(context);

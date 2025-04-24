@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KYCLexusFrontAirControlAct_beifen extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 

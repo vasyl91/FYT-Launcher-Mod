@@ -9,6 +9,7 @@ import com.syu.carinfo.rongwei.Wc_416_RongWei_CarSetAct;
 import com.syu.carinfo.rongwei.Wc_416_RongweiEi6CarInfo;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Act20ZSIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

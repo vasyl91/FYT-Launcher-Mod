@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
 @SuppressLint({"CutPasteId"})
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TuAn_YueYe_Set_Acti extends BaseActivity {
     private View.OnClickListener mClick = new View.OnClickListener() { 
         @Override

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.RadioGroup;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BZ408OilMileIndexActi extends TabActivity {
     public static BZ408OilMileIndexActi mInstance;
     public static boolean mIsFront = false;

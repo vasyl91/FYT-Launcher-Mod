@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TianLai09Act extends BaseActivity {
     public static boolean mIsFront = false;
     static int sHasDisc = 0;

@@ -14,6 +14,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0439_OD_MZD_ALL;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MazdAllCarCD extends BaseActivity implements View.OnClickListener {
     public static MazdAllCarCD mInstance;
     private Button mBtnFF;

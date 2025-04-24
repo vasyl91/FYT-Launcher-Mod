@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityToread_AirRearCtrl extends Activity implements View.OnTouchListener {
     public static ActivityToread_AirRearCtrl mInstance;
     public static boolean mIsFront = false;

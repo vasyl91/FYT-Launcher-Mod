@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0385_HC_XP1_PartComHonda;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Hc_385_CarCdAct extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

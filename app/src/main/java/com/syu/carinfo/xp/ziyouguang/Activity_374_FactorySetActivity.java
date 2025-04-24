@@ -21,6 +21,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Activity_374_FactorySetActivity extends BaseActivity {
     public static Activity_374_FactorySetActivity mist;
     private SharedPreferences.Editor editor;

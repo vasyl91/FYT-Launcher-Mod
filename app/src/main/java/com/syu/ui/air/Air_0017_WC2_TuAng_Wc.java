@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0017_WC2_TuAng_Wc extends AirBase {
     public Air_0017_WC2_TuAng_Wc(Context context) {
         super(context);

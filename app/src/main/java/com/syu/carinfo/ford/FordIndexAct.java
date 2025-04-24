@@ -11,6 +11,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FordIndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

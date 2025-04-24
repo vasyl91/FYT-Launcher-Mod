@@ -13,6 +13,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BinliCarSet extends BaseActivity implements View.OnClickListener {
     public static BinliCarSet mInstance;
     public static boolean mIsFront = false;

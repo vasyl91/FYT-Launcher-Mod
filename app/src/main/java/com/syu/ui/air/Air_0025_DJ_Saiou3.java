@@ -9,6 +9,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.util.ToolkitMath;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0025_DJ_Saiou3 extends AirBase {
     private int nWindLevelLeft;
 

@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_Activity_Daohang_Only_HP extends Activity implements View.OnTouchListener {
     public static Air_Activity_Daohang_Only_HP mInstance;
     public static boolean mIsFront = false;

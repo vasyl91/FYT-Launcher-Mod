@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BZ408AirControlActi extends BaseActivity {
     public static BZ408AirControlActi mInstance;
     public static boolean mIsFront = false;

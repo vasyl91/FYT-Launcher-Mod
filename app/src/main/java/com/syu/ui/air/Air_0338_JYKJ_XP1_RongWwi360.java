@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0338_JYKJ_XP1_RongWwi360 extends AirBase {
     public Air_0338_JYKJ_XP1_RongWwi360(Context context) {
         super(context);

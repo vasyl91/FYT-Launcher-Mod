@@ -15,6 +15,7 @@ import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityWCLandRover extends Activity implements View.OnTouchListener {
     int touchState;
     int x;

@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuzLexusLSFrontAirControlAct extends Activity implements View.OnTouchListener {
     public static boolean mIsFront = false;
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 

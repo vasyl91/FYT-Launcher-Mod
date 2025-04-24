@@ -18,6 +18,7 @@ import com.syu.util.HandlerUI;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WCYuncheUINissanAirControlAct extends Activity implements View.OnTouchListener {
     public static WCYuncheUINissanAirControlAct mInstance;
     public static boolean mIsFront = false;

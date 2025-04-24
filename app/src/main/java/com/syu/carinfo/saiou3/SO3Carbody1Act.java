@@ -12,6 +12,7 @@ import com.syu.carinfo.xp.yinglang.YLFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SO3Carbody1Act extends Activity implements View.OnClickListener {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

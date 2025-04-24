@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_0314_Dongfeng_Ev3_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

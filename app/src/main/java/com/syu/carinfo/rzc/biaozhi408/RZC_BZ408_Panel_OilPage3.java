@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ408_Panel_OilPage3 extends BaseActivity {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

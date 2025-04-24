@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.carinfo.wc.axela.ActivityMzdAllMaintainanceCarSet;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class MazdAllCarInfo extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

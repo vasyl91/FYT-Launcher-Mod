@@ -21,6 +21,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Accord9LowSettingsAct extends BaseActivity implements View.OnClickListener {
     int iEnableBackVideo;
     private PopupWindow mLauStyle;

@@ -823,7 +823,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         final Context context = this;
         new AsyncTask<Void, Bitmap, Bitmap>() {
             @Override
-            protected Bitmap doInBackground(Void...args) {
+            protected Bitmap doInBackground(Void[] args) {
                 try {
                     int rotation = WallpaperCropActivity.getRotationFromExif(context, uri);
                     return createThumbnail(defaultSize, context, uri, null, null, 0, rotation,
@@ -846,8 +846,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             protected void onPostExecute(Bitmap thumb) {
                 if (!isCancelled() && thumb != null) {
                     image.setImageBitmap(thumb);
-                    Drawable thumbDrawable = image.getDrawable();
-                    thumbDrawable.setDither(true);
                     pickedImageThumbnail.setVisibility(View.VISIBLE);
                 } else {
                     Log.e(TAG, "Error loading thumbnail for uri=" + uri);
@@ -944,7 +942,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                     File thumbnail = new File(systemDir, name + "_small" + extension);
                     Bitmap thumb = BitmapFactory.decodeFile(thumbnail.getAbsolutePath());
                     if (thumb != null) {
-                        bundled.add(new FileWallpaperInfo(file, new BitmapDrawable(thumb)));
+                        bundled.add(new FileWallpaperInfo(file, new BitmapDrawable(getApplicationContext().getResources(), thumb)));
                     }
                 }
             }
@@ -1024,7 +1022,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             }
         }
         if (defaultWallpaperExists) {
-            return new ResourceWallpaperInfo(sysRes, resId, new BitmapDrawable(thumb));
+            return new ResourceWallpaperInfo(sysRes, resId, new BitmapDrawable(getApplicationContext().getResources(), thumb));
         }
         return null;
     }
@@ -1055,7 +1053,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             }
         }
         if (defaultWallpaperExists) {
-            return new DefaultWallpaperInfo(new BitmapDrawable(thumb));
+            return new DefaultWallpaperInfo(new BitmapDrawable(getApplicationContext().getResources(), thumb));
         }
         return null;
     }
@@ -1084,7 +1082,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
                 if (thumbRes != 0) {
                     ResourceWallpaperInfo wallpaperInfo =
-                            new ResourceWallpaperInfo(res, resId, res.getDrawable(thumbRes));
+                            new ResourceWallpaperInfo(res, resId, ContextCompat.getDrawable(getApplicationContext(), thumbRes));
                     known.add(wallpaperInfo);
                     // Log.d(TAG, "add: [" + packageName + "]: " + extra + " (" + res + ")");
                 }
@@ -1154,7 +1152,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
         if (thumb != null) {
             image.setImageDrawable(thumb);
-            thumb.setDither(true);
         }
 
         return view;

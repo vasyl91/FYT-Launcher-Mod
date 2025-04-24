@@ -12,6 +12,7 @@ import com.syu.canbus.warn.DataPack;
 import com.syu.util.HandlerUI;
 import com.syu.util.TimeLocker;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class UIRuiTengWarn {
     public static ImageView mImageView;
     public static TextView mTextView;

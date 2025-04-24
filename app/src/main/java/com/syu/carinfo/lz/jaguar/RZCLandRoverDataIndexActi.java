@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCLandRoverDataIndexActi extends TabActivity {
     public static RZCLandRoverDataIndexActi mInstance;
     public static boolean mIsFront = false;

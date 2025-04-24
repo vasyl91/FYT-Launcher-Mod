@@ -10,6 +10,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0040_XP_MQB_ALL extends AirBase {
     public Air_0040_XP_MQB_ALL(Context context) {
         super(context);

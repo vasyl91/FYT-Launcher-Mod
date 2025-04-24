@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RZCAddCanDashBoard_HP extends Activity {
     public static boolean mIsFront = false;
     int unit = 0;

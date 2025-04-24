@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import com.syu.canbus.BaseActivity;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WC2WeiChaiAct extends BaseActivity {
     private CheckedTextView mBtnSettings;
     private CheckedTextView mBtnShowLight;

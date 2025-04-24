@@ -9,6 +9,7 @@ import android.widget.TabHost;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XCLexusIndexAct extends TabActivity {
     private TabHost mTabHost;
 

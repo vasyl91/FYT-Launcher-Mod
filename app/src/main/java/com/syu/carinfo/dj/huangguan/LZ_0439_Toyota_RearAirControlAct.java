@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LZ_0439_Toyota_RearAirControlAct extends Activity implements View.OnTouchListener {
     public static LZ_0439_Toyota_RearAirControlAct mInstance;
     public static boolean mIsFront = false;

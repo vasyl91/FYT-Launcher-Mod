@@ -13,6 +13,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcCrvActi extends BaseActivity {
     public static WcCrvActi mInstance;
     public static boolean mIsFront = false;

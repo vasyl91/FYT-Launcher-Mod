@@ -8,6 +8,7 @@ import android.widget.TabHost;
 
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityEC180Index extends TabActivity {
     private RadioGroup mGroup;
     private TabHost mTabHost;

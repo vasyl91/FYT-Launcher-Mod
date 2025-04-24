@@ -13,6 +13,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7_XP_FunctionalDrivingInfo1Acti extends BaseActivity {
     public static Golf7_XP_FunctionalDrivingInfo1Acti mInstance;
     public static boolean mIsFront = false;

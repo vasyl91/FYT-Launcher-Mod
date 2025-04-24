@@ -9,6 +9,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import java.util.Locale;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Infiniti_XinCheng_CarTire extends BaseActivity {
     private IUiNotify notifyCanbus = new IUiNotify() { 
         @Override

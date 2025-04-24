@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FileAdapter extends BaseAdapter {
     ArrayList<ListInfo> list;
     Context mContext;

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0439_HC_Volvo extends AirBase {
     public Air_0439_HC_Volvo(Context context) {
         super(context);

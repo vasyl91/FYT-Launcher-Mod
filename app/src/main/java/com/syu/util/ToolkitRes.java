@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ToolkitRes {
     public static Drawable loadDrawable(String fileName) {
         try {
-            return new BitmapDrawable(BitmapFactory.decodeStream(LauncherApplication.getAssetManager().open(fileName)));
+            return new BitmapDrawable(LauncherApplication.sApp.getResources(), BitmapFactory.decodeStream(LauncherApplication.getAssetManager().open(fileName)));
         } catch (IOException e) {
             e.printStackTrace();
             return new ColorDrawable(0);

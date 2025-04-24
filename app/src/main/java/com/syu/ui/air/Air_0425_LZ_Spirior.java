@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0425_LZ_Spirior extends AirBase {
     public Air_0425_LZ_Spirior(Context context) {
         super(context);

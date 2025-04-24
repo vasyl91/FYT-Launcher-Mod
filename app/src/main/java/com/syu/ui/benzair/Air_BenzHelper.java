@@ -10,6 +10,7 @@ import com.syu.module.IUiNotify;
 import com.syu.util.HandlerUI;
 import com.syu.util.SecondTickThread;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_BenzHelper implements Runnable {
     private static final Air_BenzHelper INSTANCE = new Air_BenzHelper();
     public static final IUiNotify SHOW_AND_REFRESH = new IUiNotify() { 

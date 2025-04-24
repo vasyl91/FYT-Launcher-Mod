@@ -15,6 +15,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuzLexusISRadio extends Activity implements View.OnTouchListener {
     public static boolean isFront = false;
     public static LuzLexusISRadio mInit;

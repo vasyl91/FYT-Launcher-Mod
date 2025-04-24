@@ -12,6 +12,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 import com.syu.util.HandlerUI;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_320_AirControlAct_newH6 extends Activity implements View.OnTouchListener {
     public static Wc_320_AirControlAct_newH6 mInstance;
     public static boolean mIsFront = false;

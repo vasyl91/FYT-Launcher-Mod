@@ -91,7 +91,7 @@ public class FytPackage {
 
     static {
         LOADED_LIST = null;
-        LOADED_LIST = new ArrayList();
+        LOADED_LIST = new ArrayList<>();
         LOADED_LIST.add("com.syu.music");
         LOADED_LIST.add(dvdAction);
         LOADED_LIST.add(auxAction);

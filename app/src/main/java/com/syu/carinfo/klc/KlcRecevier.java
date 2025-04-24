@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KlcRecevier extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

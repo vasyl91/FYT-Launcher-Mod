@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_LZ_Oubao_Andela;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Luz_Oubao_CarCD extends BaseActivity implements View.OnClickListener {
     public static Luz_Oubao_CarCD mInstance;
     public static boolean mIsFront = false;

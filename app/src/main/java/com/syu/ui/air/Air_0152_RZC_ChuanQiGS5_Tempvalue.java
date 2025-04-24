@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0152_RZC_ChuanQiGS5_Tempvalue extends AirBase {
     public Air_0152_RZC_ChuanQiGS5_Tempvalue(Context context) {
         super(context);

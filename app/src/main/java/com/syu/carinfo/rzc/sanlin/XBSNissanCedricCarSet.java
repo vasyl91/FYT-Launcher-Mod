@@ -11,6 +11,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class XBSNissanCedricCarSet extends BaseActivity implements View.OnClickListener {
     int unit = 0;
     IUiNotify mNotifyCanbus = new IUiNotify() { 

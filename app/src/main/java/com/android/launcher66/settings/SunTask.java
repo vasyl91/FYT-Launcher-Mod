@@ -190,26 +190,50 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private void setWallpapers() {
-        File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
+        File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img");
         if (allowSetDayWallpaper(mFile)) {
             File image = new File(mFile, "Day.png");
-            Bitmap bitmap = decodeBitmapSafely(image);
-            if (bitmap != null && !defaultWallpapers) { 
-                setWallpaperIfDifferent(bitmap, "Day", 0, INITIAL_DELAY_MS);                    
+            if (isFileValid(image)) {
+                setWallpaperFromFile(image, "Day", 0, INITIAL_DELAY_MS);
             } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg)));
-                setWallpaperIfDifferent(bitmapDrawable, "Day", 0, INITIAL_DELAY_MS);   
+                setDefaultWallpaper("Day");
             }
         } else if (allowSetNightWallpaper(mFile)) {
             File image = new File(mFile, "Night.png");
-            Bitmap bitmap = decodeBitmapSafely(image);
-            if (bitmap != null && !defaultWallpapers) {     
-                setWallpaperIfDifferent(bitmap, "Night", 0, INITIAL_DELAY_MS);                   
+            if (isFileValid(image)) {
+                setWallpaperFromFile(image, "Night", 0, INITIAL_DELAY_MS);
             } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(this.mContext, ResValue.getInstance().def_bg_n)));
-                setWallpaperIfDifferent(bitmapDrawable, "Night", 0, INITIAL_DELAY_MS);   
+                setDefaultWallpaper("Night");
             }
         }
+    }
+
+    private void setWallpaperFromFile(File imageFile, String name, int retryCount, long delayMs) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            synchronized (LOCK) {
+                try {
+                    Bitmap newWallpaperBitmap = decodeBitmapSafely(imageFile);
+                    if (newWallpaperBitmap == null || newWallpaperBitmap.getWidth() <= 0 || newWallpaperBitmap.getHeight() <= 0) {
+                        Log.e(TAG, "Failed to decode bitmap from file");
+                        if (retryCount < MAX_RETRIES) {
+                            long nextDelay = delayMs == 0 ? 2000 : delayMs * 2;
+                            setWallpaperFromFile(imageFile, name, retryCount + 1, nextDelay);
+                        }
+                        return;
+                    }
+                    setWallpaperIfDifferent(newWallpaperBitmap, name, retryCount, delayMs);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error setting wallpaper from file", e);
+                }
+            }
+        }, delayMs);
+    }
+
+    private void setDefaultWallpaper(String name) {
+        int drawableId = name.equals("Day") ? ResValue.getInstance().def_bg : ResValue.getInstance().def_bg_n;
+        Drawable drawable = ContextCompat.getDrawable(mContext, drawableId);
+        Bitmap bitmapDrawable = drawableToBitmap(drawable);
+        setWallpaperIfDifferent(bitmapDrawable, name, 0, INITIAL_DELAY_MS);
     }
 
     private boolean allowSetDayWallpaper(File mFile) {
@@ -226,11 +250,18 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private Bitmap decodeBitmapSafely(File image) {
         synchronized (LOCK) {
+            if (!isFileValid(image)) return null;
+            
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inSampleSize = 2; // Adjust based on image size
+            
             try {
-                if (!isFileValid(image)) return null;
-                return BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
+                    return null;
+                }
+                return bitmap;
             } catch (OutOfMemoryError | Exception e) {
                 e.printStackTrace();
                 return null;
@@ -242,28 +273,26 @@ public class SunTask extends AsyncTask<String, Void, String> {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             synchronized (LOCK) {
                 try {
+                    if (newWallpaperBitmap == null || newWallpaperBitmap.getWidth() <= 0 || newWallpaperBitmap.getHeight() <= 0) {
+                        throw new IllegalStateException("Invalid bitmap");
+                    }
+                    
                     if (areBitmapsHashEqual(name)) {
-                        Log.d(TAG, "Wallpaper is already set. No change needed.");
+                        Log.d(TAG, "Wallpaper already set.");
                         return;
                     }
-                            
+                    
                     newWallpaperBitmap.prepareToDraw();
                     mWallpaperManager.setBitmap(newWallpaperBitmap, null, true, WallpaperManager.FLAG_SYSTEM);
                     saveBitmapHash(name);
                     Log.d(TAG, "Wallpaper set successfully.");
                 } catch (IOException | IllegalStateException e) {
                     if (retryCount < MAX_RETRIES) {
-                        long delay;
-                        if (delayMs == 0) {
-                            delay = 2000;
-                        } else {
-                            delay = delayMs;
-                        }
-                        long nextDelay = delay * 2; // Exponential backoff
-                        Log.d("Wallpaper", "Retry " + (retryCount + 1) + " after " + nextDelay + "ms");
+                        long nextDelay = delayMs == 0 ? 2000 : delayMs * 2;
+                        Log.d(TAG, "Retry " + (retryCount + 1) + " after " + nextDelay + "ms");
                         setWallpaperIfDifferent(newWallpaperBitmap, name, retryCount + 1, nextDelay);
                     } else {
-                        Log.e(TAG, "Failed to set wallpaper after " + MAX_RETRIES + " retries. Error message: " + e.getMessage());
+                        Log.e(TAG, "Failed after " + MAX_RETRIES + " retries: " + e.getMessage());
                     }
                 }
             }
@@ -457,7 +486,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onBackgroundError(Exception e) {
-        Log.d("SunTask", "Background error: " + e.getMessage());
+        Log.d(TAG, "Background error: " + e.getMessage());
     }
 
     public static class TwilightCalculator {

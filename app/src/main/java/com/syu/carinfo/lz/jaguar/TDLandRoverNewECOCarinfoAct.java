@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TDLandRoverNewECOCarinfoAct extends BaseActivity implements View.OnClickListener {
     public static boolean mIsFront = false;
     private final IUiNotify mNotifyCanbus = new IUiNotify() { 

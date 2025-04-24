@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7Electric_management_d1_Acti_RZC extends BaseActivity implements View.OnClickListener {
     int value1_WC = 0;
     int value2_WC = 0;

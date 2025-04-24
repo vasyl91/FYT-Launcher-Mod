@@ -8,6 +8,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class TuRui_IndexAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

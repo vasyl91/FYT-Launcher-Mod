@@ -8,6 +8,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import com.syu.canbus.R;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PSA3008OilMileIndexActi extends TabActivity {
     public static PSA3008OilMileIndexActi mInstance;
     public static boolean mIsFront = false;

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0374_XP_Megane_Hand extends AirBase {
     public Air_0374_XP_Megane_Hand(Context context) {
         super(context);

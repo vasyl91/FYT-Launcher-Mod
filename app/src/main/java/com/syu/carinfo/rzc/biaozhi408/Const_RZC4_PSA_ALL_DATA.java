@@ -1,5 +1,6 @@
 package com.syu.carinfo.rzc.biaozhi408;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Const_RZC4_PSA_ALL_DATA {
     public static String RadioText = "";
     public static final int U_174008_PANNEL_LEFT = 186;

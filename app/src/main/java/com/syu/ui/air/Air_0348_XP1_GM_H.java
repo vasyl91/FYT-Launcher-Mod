@@ -8,6 +8,7 @@ import android.os.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0348_XP1_GM_H extends AirBase {
     public Air_0348_XP1_GM_H(Context context) {
         super(context);

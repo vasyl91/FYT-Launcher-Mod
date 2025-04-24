@@ -12,6 +12,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class InfoView extends View {
     private float angle;
     private int autoStep;

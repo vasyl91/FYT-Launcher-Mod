@@ -7,6 +7,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Sbd_Settings_Basic_info extends BaseActivity {
     private static int[] WarID = {R.string.crv_source_null, R.string.setting_313_basic61str, R.string.setting_313_basic62str, R.string.setting_313_basic63str, R.string.setting_313_basic64str, R.string.setting_313_basic65str, R.string.setting_313_basic66str, R.string.crv_source_null, R.string.setting_313_basic67str, R.string.setting_313_basic68str, R.string.setting_313_basic69str, R.string.setting_313_basic6astr, R.string.crv_source_null, R.string.setting_313_basic6bstr};
     private IUiNotify mNotifyCanbus = new IUiNotify() { 

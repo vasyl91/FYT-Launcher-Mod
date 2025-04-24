@@ -7,6 +7,7 @@ import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class DjB70TimeSettingAct extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

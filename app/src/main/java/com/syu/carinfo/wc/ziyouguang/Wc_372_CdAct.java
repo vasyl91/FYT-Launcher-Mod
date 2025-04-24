@@ -17,6 +17,7 @@ import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Wc_372_CdAct extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
     private FileAdapter adapter;
     private ArrayList<CDInfo> cdInfos;

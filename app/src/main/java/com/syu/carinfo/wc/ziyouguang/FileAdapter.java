@@ -11,6 +11,7 @@ import com.syu.canbus.R;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FileAdapter extends BaseAdapter {
     ArrayList<CDInfo> list;
     Context mContext;

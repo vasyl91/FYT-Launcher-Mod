@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0077_XP1_AccordH extends AirBase {
     public Air_0077_XP1_AccordH(Context context) {
         super(context);

@@ -10,6 +10,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityBatteryDoor extends Activity {
     IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override

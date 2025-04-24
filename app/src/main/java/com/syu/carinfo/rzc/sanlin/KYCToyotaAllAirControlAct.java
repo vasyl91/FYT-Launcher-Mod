@@ -11,6 +11,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class KYCToyotaAllAirControlAct extends Activity implements View.OnTouchListener {
     public static KYCToyotaAllAirControlAct mInstance;
     public static boolean mIsFront = false;

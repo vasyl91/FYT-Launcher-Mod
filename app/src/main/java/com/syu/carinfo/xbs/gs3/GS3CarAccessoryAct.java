@@ -11,6 +11,7 @@ import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class GS3CarAccessoryAct extends BaseActivity implements View.OnClickListener {
     CheckedTextView mAutoLockCheck;
     CheckedTextView mAutoRearCheck;

@@ -2,6 +2,7 @@ package com.syu.carinfo.haozheng.bmw;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class BmwFunc {
     public static void CAR_SYSTEM_SET(int val1, int val2, int val3, int val4, int val5) {
         DataCanbus.PROXY.cmd(0, new int[]{val1, val2, val3, val4, val5}, null, null);

@@ -7,6 +7,7 @@ import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0409_HeChi_RuiHu5 extends AirBase {
     public Air_0409_HeChi_RuiHu5(Context context) {
         super(context);

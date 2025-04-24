@@ -9,6 +9,7 @@ import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActivityHavaH2SIndex extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

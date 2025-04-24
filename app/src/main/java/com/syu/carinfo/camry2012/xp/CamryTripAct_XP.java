@@ -8,6 +8,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class CamryTripAct_XP extends BaseActivity {
     private VerticalProgressbar[] mProgressbar = new VerticalProgressbar[15];
     private TextView[] mOilTv = new TextView[4];

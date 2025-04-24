@@ -27,6 +27,7 @@ import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class WcInfeinidiCarSet extends BaseActivity implements View.OnClickListener {
     protected Handler mHandler;
     private PopupWindow mLauStyle;

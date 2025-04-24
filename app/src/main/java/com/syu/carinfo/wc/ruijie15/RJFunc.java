@@ -2,6 +2,7 @@ package com.syu.carinfo.wc.ruijie15;
 
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class RJFunc {
     public static void C_REQUEST_CAR_INFO(int val1, int val2) {
         DataCanbus.PROXY.cmd(0, new int[]{val1, val2}, null, null);

@@ -11,6 +11,7 @@ import com.syu.carinfo.xfl.chuangku.XflCkFunc;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
+@SuppressWarnings({"deprecation", "unchecked"})
 public class ActAirSet_GM_SiBo extends Activity implements View.OnClickListener {
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
         @Override
