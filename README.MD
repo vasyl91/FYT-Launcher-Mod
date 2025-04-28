@@ -1,19 +1,22 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-So far the launcher has been tested on Android 10 with 2000x1200 resolution because this is the only device I own.
+So far the launcher has been tested on Android 10 with 2000x1200 resolution because this is the only device I own. I do not intend to add other resolutions because without proper debugging it is mostly a guesswork.
+
+Resolutions that should work: 1024x600, 1280x720, 1920x720, 2000x1100, 2000x1200.
+FYT brands sometimes have minor differences in the code which despite supported resolution might make this launcher incompatible. Adjusting it needs debugging on physical device. If you encounter an error on the launcher start, please check Download/launcher_logs for any logs. If the folder is not there or is empty then it means that your case needs debugging having the device connected to PC.
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
 List of modifications:
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
-- Widgets, shortcuts and folders on the main screen. Extra screens as well.
+- Widgets, shortcuts and folders on the main screen. Extra screens as well. User can define which page should be a main screen.
 - Launcher creator allowing to adjust launcher layout to user preferences.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with specified by user position on the screen.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
 - New icon for the launcher and it's settings with settings' icon in the app drawer.
 - Replaced part of deprecated code with the new one.
-- Added 1920x720 resolution (not tested).
+- Logcat that runs by default and keeps saving logs for 30 seconds counting from launcher start (won't start if there is an error ocurring before it's initiation). User can disable it in settings and/or change timeout. This function might be useful for debugging the launcher on the devices that are not connected to the PC.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
 
