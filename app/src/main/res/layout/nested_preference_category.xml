@@ -4,9 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:orientation="vertical"
-    android:paddingStart="130dp"
-    android:paddingEnd="16dp" > 
+    android:orientation="vertical" > 
 
     <!-- Title TextView -->
     <TextView

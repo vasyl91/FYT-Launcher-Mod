@@ -4,27 +4,35 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.LauncherGlideBitmapLoader;
 
 public class Helpers {
 
+    // These prefs are reseted on each onCreate or on recreateView in Launcher.java
     private final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
     private final SharedPreferences.Editor editor = sharedPrefs.edit();
+    // These prefs remain
+    private final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);
+    private final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
 
     private boolean day = false;
     public boolean isDay() {
-        day = sharedPrefs.getBoolean("day", false);
+        day = sharedPrefsSus.getBoolean("day", false);
         return day;
     }
     public void setDay(boolean day) {
         this.day = day;
-        editor.putBoolean("day", day);
-        editor.apply();
+        editorSus.putBoolean("day", day);
+        editorSus.apply();
     }
 
 
@@ -42,25 +50,25 @@ public class Helpers {
 
     private boolean polarDay = false;    
     public boolean isPolarDay() {
-        polarDay = sharedPrefs.getBoolean("polarDay", false);
+        polarDay = sharedPrefsSus.getBoolean("polarDay", false);
         return polarDay;
     }
     public void setPolarDay(boolean polarDay) {
         this.polarDay = polarDay;
-        editor.putBoolean("polarDay", polarDay);
-        editor.apply();
+        editorSus.putBoolean("polarDay", polarDay);
+        editorSus.apply();
     }
 
 
     private boolean perpetualNight = false;
     public boolean isPerpetualNight() {
-        perpetualNight = sharedPrefs.getBoolean("perpetualNight", false);
+        perpetualNight = sharedPrefsSus.getBoolean("perpetualNight", false);
         return perpetualNight;
     }
     public void setPerpetualNight(boolean perpetualNight) {
         this.perpetualNight = perpetualNight;
-        editor.putBoolean("perpetualNight", perpetualNight);
-        editor.apply();
+        editorSus.putBoolean("perpetualNight", perpetualNight);
+        editorSus.apply();
     }
 
 
@@ -213,7 +221,7 @@ public class Helpers {
         allAppsShouldBVisible = sharedPrefs.getBoolean("allAppsShouldBVisible", false);
         return allAppsShouldBVisible;
     }
-    public void setAllAppsShouldBVisible(boolean allAppsShouldBVisible) {
+    public void setAllAppsShouldBeVisible(boolean allAppsShouldBVisible) {
         this.allAppsShouldBVisible = allAppsShouldBVisible;
         editor.putBoolean("allAppsShouldBVisible", allAppsShouldBVisible);
         editor.apply();
@@ -268,6 +276,90 @@ public class Helpers {
     }
 
 
+    private boolean openedFromOverview = false;
+    public boolean openedFromOverviewBoolean() {
+        openedFromOverview = sharedPrefs.getBoolean("openedFromOverview", false);
+        return openedFromOverview;
+    }
+    public void setOpenedFromOverviewBoolean(boolean openedFromOverview) {
+        this.openedFromOverview = openedFromOverview;
+        editor.putBoolean("openedFromOverview", openedFromOverview);
+        editor.apply();
+    }
+
+
+    private boolean isWidgetClicked = false;
+    public boolean isWidgetClickedBool() {
+        isWidgetClicked = sharedPrefs.getBoolean("isWidgetClicked", false);
+        return isWidgetClicked;
+    }
+    public void setWidgetClicked(boolean isWidgetClicked) {
+        this.isWidgetClicked = isWidgetClicked;
+        editor.putBoolean("isWidgetClicked", isWidgetClicked);
+        editor.apply();
+    }
+
+
+    private boolean codeInspector = false;
+    public boolean codeInspectorBoolean() {
+        codeInspector = sharedPrefsSus.getBoolean("codeInspector", false);
+        return codeInspector;
+    }
+    public void setCodeInspectorBoolean(boolean codeInspector) {
+        this.codeInspector = codeInspector;
+        editorSus.putBoolean("codeInspector", codeInspector);
+        editorSus.apply();
+    }
+    
+
+    private boolean codeLogger = false;
+    public boolean codeLoggerBoolean() {
+        codeLogger = sharedPrefsSus.getBoolean("codeLogger", false);
+        return codeLogger;
+    }
+    public void setCodeLoggerBoolean(boolean codeLogger) {
+        this.codeLogger = codeLogger;
+        editorSus.putBoolean("codeLogger", codeLogger);
+        editorSus.apply();
+    }
+
+
+    private boolean logcatRun = false;
+    public boolean logcatRunBoolean() {
+        logcatRun = sharedPrefsSus.getBoolean("logcatRun", false);
+        return logcatRun;
+    }
+    public void setLogcatRunBoolean(boolean logcatRun) {
+        this.logcatRun = logcatRun;
+        editorSus.putBoolean("logcatRun", logcatRun);
+        editorSus.apply();
+    }
+
+
+    private boolean allAppsTextSize = false;
+    public boolean allAppsTextSizeBoolean() {
+        allAppsTextSize = sharedPrefsSus.getBoolean("allAppsTextSize", false);
+        return allAppsTextSize;
+    }
+    public void allAppsTextSizeChanged(boolean allAppsTextSize) {
+        this.allAppsTextSize = allAppsTextSize;
+        editorSus.putBoolean("allAppsTextSize", allAppsTextSize);
+        editorSus.apply();
+    }
+    
+
+    private boolean workspaceTextSize = false;
+    public boolean workspaceTextSizeBoolean() {
+        workspaceTextSize = sharedPrefsSus.getBoolean("workspaceTextSize", false);
+        return workspaceTextSize;
+    }
+    public void workspaceTextSizeChanged(boolean workspaceTextSize) {
+        this.workspaceTextSize = workspaceTextSize;
+        editorSus.putBoolean("workspaceTextSize", workspaceTextSize);
+        editorSus.apply();
+    }
+
+
     // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.
     private boolean fytMusicAllowed = true;
     public boolean isFytMusicAllowed() {
@@ -302,6 +394,42 @@ public class Helpers {
         this.counter = counter;
         editor.putInt("counter", counter);
         editor.apply();
+    }
+
+
+    private int countDownInspector = 0;
+    public int returnCountDownInspector() {
+        countDownInspector = sharedPrefsSus.getInt("countDownInspector", 0);
+        return countDownInspector;
+    }
+    public void setCountDownInspector(int countDownInspector) {
+        this.countDownInspector = countDownInspector;
+        editorSus.putInt("countDownInspector", countDownInspector);
+        editorSus.apply();
+    }
+
+
+    private int countDownLogger = 0;
+    public int returnCountDownLogger() {
+        countDownLogger = sharedPrefsSus.getInt("countDownLogger", 0);
+        return countDownLogger;
+    }
+    public void setCountDownLogger(int countDownLogger) {
+        this.countDownLogger = countDownLogger;
+        editorSus.putInt("countDownLogger", countDownLogger);
+        editorSus.apply();
+    }
+
+
+    private int countDownLogcat = 0;
+    public int returnCountDownLogcat() {
+        countDownLogcat = sharedPrefsSus.getInt("countDownLogcat", 0);
+        return countDownLogcat;
+    }
+    public void setCountDownLogcat(int countDownLogcat) {
+        this.countDownLogcat = countDownLogcat;
+        editorSus.putInt("countDownLogcat", countDownLogcat);
+        editorSus.apply();
     }
 
 
@@ -350,8 +478,8 @@ public class Helpers {
             int musicMinHeight;
             int radioMinWidth = 320;
             int radioMinHeight = 145;
-            if (LauncherApplication.sApp.getResources().getDisplayMetrics().widthPixels == 1024
-                || LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels == 1024) {
+            if (LauncherApplication.sApp.getResources().getDisplayMetrics().widthPixels <= 1024
+                || (LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels <= 1024 && LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels != 720)) {
                 mapMinHeight = 284;
                 musicMinHeight = 284;
             } else {
@@ -361,42 +489,43 @@ public class Helpers {
             if (margin < 0) {
                 margin = 10;
             }
-            SharedPreferences.Editor editor = mPrefs.edit(); 
-            editor.putInt("mapTopLeftX", margin);  
-            editor.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
-            editor.putInt("mapTopRightX", margin + mapMinWidth);    
-            editor.putInt("mapTopRightY", margin + dateMinHeight + margin); 
-            editor.putInt("mapBottomRightX", margin + mapMinWidth);   
-            editor.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
-            editor.putInt("mapBottomLeftX", margin);  
-            editor.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
-            editor.putInt("dateTopLeftX", margin);  
-            editor.putInt("dateTopLeftY", margin);          
-            editor.putInt("dateTopRightX", margin + dateMinWidth);    
-            editor.putInt("dateTopRightY", margin); 
-            editor.putInt("dateBottomRightX", margin + dateMinWidth);  
-            editor.putInt("dateBottomRightY", margin + dateMinHeight); 
-            editor.putInt("dateBottomLeftX", margin);  
-            editor.putInt("dateBottomLeftY", margin + dateMinHeight);
-            editor.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
-            editor.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
-            editor.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editor.putInt("musicTopRightY", margin + radioMinHeight + margin); 
-            editor.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editor.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
-            editor.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
-            editor.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
-            editor.putInt("radioTopLeftX", margin + dateMinWidth + margin);
-            editor.putInt("radioTopLeftY", margin);
-            editor.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
-            editor.putInt("radioTopRightY", margin); 
-            editor.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
-            editor.putInt("radioBottomRightY", margin + radioMinHeight); 
-            editor.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
-            editor.putInt("radioBottomLeftY", margin + radioMinHeight);         
-            editor.putInt("statsTopLeftX", 20);
-            editor.putInt("statsTopLeftY", 20);         
-            editor.apply();
+            
+            SharedPreferences.Editor editorReset = mPrefs.edit();
+            editorReset.putInt("mapTopLeftX", margin);  
+            editorReset.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
+            editorReset.putInt("mapTopRightX", margin + mapMinWidth);    
+            editorReset.putInt("mapTopRightY", margin + dateMinHeight + margin); 
+            editorReset.putInt("mapBottomRightX", margin + mapMinWidth);   
+            editorReset.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
+            editorReset.putInt("mapBottomLeftX", margin);  
+            editorReset.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
+            editorReset.putInt("dateTopLeftX", margin);  
+            editorReset.putInt("dateTopLeftY", margin);          
+            editorReset.putInt("dateTopRightX", margin + dateMinWidth);    
+            editorReset.putInt("dateTopRightY", margin); 
+            editorReset.putInt("dateBottomRightX", margin + dateMinWidth);  
+            editorReset.putInt("dateBottomRightY", margin + dateMinHeight); 
+            editorReset.putInt("dateBottomLeftX", margin);  
+            editorReset.putInt("dateBottomLeftY", margin + dateMinHeight);
+            editorReset.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
+            editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
+            editorReset.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin); 
+            editorReset.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+            editorReset.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+            editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
+            editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
+            editorReset.putInt("radioTopLeftY", margin);
+            editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
+            editorReset.putInt("radioTopRightY", margin); 
+            editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+            editorReset.putInt("radioBottomRightY", margin + radioMinHeight); 
+            editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+            editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);         
+            editorReset.putInt("statsTopLeftX", 20);
+            editorReset.putInt("statsTopLeftY", 20);         
+            editorReset.apply();
         }
     }
     
@@ -407,5 +536,22 @@ public class Helpers {
         catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    public static Bitmap glideLoader(int drawable) {
+        final Bitmap[] iconBitmap = new Bitmap[1];
+        LauncherGlideBitmapLoader.loadBitmapAsync(drawable, new LauncherGlideBitmapLoader.BitmapLoadListener() {
+            @Override
+            public void onBitmapLoaded(@NonNull Bitmap bitmap) {
+                iconBitmap[0] = bitmap;
+            }
+
+            @Override
+            public void onLoadFailed() {
+                Log.i("glideLoader", "load failed for drawable: " + drawable);
+                iconBitmap[0] = BitmapFactory.decodeResource(LauncherApplication.sApp.getResources(), drawable);
+            }
+        });
+        return iconBitmap[0];
     }
 }

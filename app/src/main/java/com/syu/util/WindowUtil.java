@@ -93,11 +93,22 @@ public class WindowUtil {
     }
 
     public static void openPip(View v, boolean show) {
+        if (AppPackageName == null) {
+            return;
+        }
         try {
             Helpers helpers = new Helpers();
+            /*Log.i(TAG, "2: " + "Utils.topApp() " + String.valueOf(Utils.topApp()) 
+                + " visible " + String.valueOf(visible) 
+                + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty()) 
+                + " helpers.isInOverviewMode() " + String.valueOf(helpers.isInOverviewMode()) 
+                + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
+                + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow()) 
+                + " helpers.userWasInRecents() " + String.valueOf(helpers.userWasInRecents()) 
+                + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));*/
             if (show || (Utils.topApp()
+                && !visible
                 && !AppPackageName.isEmpty()
-                && AppPackageName != null
                 && !helpers.isInOverviewMode()
                 && !helpers.isFirstPreferenceWindow()
                 && !helpers.isWallpaperWindow()
@@ -119,7 +130,7 @@ public class WindowUtil {
 
                         boolean userLayout = prefs.getBoolean("user_layout", false);
                         boolean userMap = prefs.getBoolean("user_map", true);
-                        if (userMap || !userLayout) {
+                        if (userMap && userLayout) {
                             WindowUtil.intent.putExtra("force_pip", true);
                             WindowUtil.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             SystemProperties.set("sys.lsec.force_pip", "true");
@@ -214,19 +225,5 @@ public class WindowUtil {
         }
         intent2.putExtras(bundle);
         LauncherApplication.sApp.sendBroadcast(intent2);
-    }
-
-    private static boolean checkAppInstalled(String packageName) {
-        PackageInfo packageInfo;
-        if (packageName == null || packageName.isEmpty()) {
-            return false;
-        }
-        try {
-            packageInfo = LauncherApplication.sApp.getPackageManager().getPackageInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            packageInfo = null;
-            e.printStackTrace();
-        }
-        return packageInfo != null;
     }
 }

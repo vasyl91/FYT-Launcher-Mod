@@ -112,6 +112,7 @@ class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTas
         threadPriority = Process.THREAD_PRIORITY_DEFAULT;
         dataType = ty;
     }
+
     @Override
     protected AsyncTaskPageData doInBackground(AsyncTaskPageData[] params) {
         if (params.length != 1) return null;
@@ -119,6 +120,12 @@ class AppsCustomizeAsyncTask extends AsyncTask<AsyncTaskPageData, Void, AsyncTas
         params[0].doInBackgroundCallback.run(this, params[0]);
         return params[0];
     }
+
+    @Override
+    protected void onProgress(Void[] progress) {
+        //
+    }
+
     @Override
     protected void onPostExecute(AsyncTaskPageData result) {
         // All the widget previews are loaded, so we can just callback to inflate the page
@@ -453,10 +460,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         // Get the list of widgets and shortcuts
         mWidgets.clear();
         for (Object o : widgetsAndShortcuts) {
-            if (o instanceof AppWidgetProviderInfo) {
-                AppWidgetProviderInfo widget = (AppWidgetProviderInfo) o;
+            if (o instanceof AppWidgetProviderInfo widget) {
                 if (app.shouldShowAppOrWidgetProvider(widget.provider) && !isFilterWidgets(widget.provider.getClassName()) && (Config.CUSTOMER_ID != 8 || (!widget.provider.getPackageName().contains("antutu") && !widget.provider.getPackageName().contains("ludashi"))))  {
-                    widget.label = widget.label.trim();
                     if (widget.minWidth > 0 && widget.minHeight > 0) {
                         // Ensure that all widgets we show can be added on a workspace of this size
                         int[] spanXY = Launcher.getSpanForWidget(mLauncher, widget);
@@ -507,7 +512,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
-    private void updatePageCountsAndInvalidateData() {
+    public void updatePageCountsAndInvalidateData() {
         if (mInBulkBind) {
             mNeedToUpdatePageCountsAndInvalidateData = true;
         } else {
@@ -543,6 +548,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 this.mLauncher.startActivity(settingsIntent);
             }
+
+            if (appInfo.getClassName().contains("com.syu.radio")) {
+                this.mLauncher.stopMusic();
+            } 
             
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             boolean userLayout = prefs.getBoolean("user_layout", false);
@@ -553,7 +562,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appInfo.getPackageName())) {
                     Launcher.mAppsCustomizeTabHost.setVisibility(View.GONE);
-                    helpers.setAllAppsShouldBVisible(true);
+                    helpers.setAllAppsShouldBeVisible(true);
                     helpers.setForegroundAppOpened(true);
                     helpers.setInAllApps(false);
                     helpers.setInRecent(false);
@@ -598,7 +607,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     private void beginDraggingApplication(View v) {
         mLauncher.getWorkspace().onDragStartedWithItem(v);
-        mLauncher.getWorkspace().beginDragShared(v, this);
+        mLauncher.getWorkspace().beginDragShared(v, this, 1.0f);
     }
 
     Bundle getDefaultOptionsForWidget(Launcher launcher, PendingAddWidgetInfo info) {
@@ -1684,7 +1693,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         for (Object i: list) {
             if (i instanceof AppWidgetProviderInfo) {
                 AppWidgetProviderInfo info = (AppWidgetProviderInfo) i;
-                Log.d(tag, "   label=\"" + info.label + "\" previewImage=" + info.previewImage
+                Log.d(tag, "   label=\"" + info.loadLabel(mPackageManager) + "\" previewImage=" + info.previewImage
                         + " resizeMode=" + info.resizeMode + " configure=" + info.configure
                         + " initialLayout=" + info.initialLayout
                         + " minWidth=" + info.minWidth + " minHeight=" + info.minHeight);

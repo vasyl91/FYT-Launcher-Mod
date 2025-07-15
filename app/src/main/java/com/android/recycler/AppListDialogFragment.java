@@ -28,6 +28,8 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.fyt.skin.SkinAttribute;
+import com.fyt.skin.SkinUtils;
 
 import java.util.ArrayList;
 
@@ -72,7 +74,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             AppListDialogFragment.this.dismiss(); 
             helpers.setListOpen(false);
             Intent intentClose = new Intent(LIST_CLOSE);
-            LauncherApplication.sApp.sendBroadcast(intentClose);            
+            LauncherApplication.sApp.sendBroadcast(intentClose);        
         });
         getDialog().getWindow().requestFeature(1);
         return view;
@@ -118,6 +120,26 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mGridView != null) {
+            mGridView.setAdapter(null);
+        }
+        currentAppIcon = null;
+        currentAppName = null;
+        mGridView = null;
+        mAdapter = null;
+        SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
+        if (skinAttribute != null) {
+            skinAttribute.clear();
+        }
+    }
+
+    public void clearReferences() {
+        
     }
 
     class AppSelectAdapter extends BaseAdapter {

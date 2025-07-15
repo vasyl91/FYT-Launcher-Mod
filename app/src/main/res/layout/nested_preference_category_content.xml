@@ -4,9 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:orientation="vertical"
-    android:paddingStart="130dp"
-    android:paddingEnd="16dp" > 
+    android:orientation="vertical" > 
 
     <!-- Title TextView -->
     <TextView
@@ -16,8 +14,7 @@
         android:textAppearance="?attr/textAppearanceListItem"
         android:textColor="?android:attr/textColorPrimary"
         android:ellipsize="end"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+        android:paddingTop="16dp" />
 
     <!-- Summary TextView -->
     <TextView
@@ -28,6 +25,5 @@
         android:textColor="?android:attr/textColorSecondary"
         android:ellipsize="end"
         android:maxLines="5"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+        android:paddingBottom="16dp" />
 </LinearLayout>

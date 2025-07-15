@@ -470,6 +470,7 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
 
         addView(resizeFrame, lp);
         mResizeFrames.add(resizeFrame);
+        mLauncher.getWorkspace().exitOverviewMode(false);
 
         resizeFrame.snapToWidget(false);
     }

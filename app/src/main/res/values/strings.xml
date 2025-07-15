@@ -240,11 +240,12 @@
     <string name="menu_help">Help</string>
 
     <string name="launcher_settings">Launcher settings</string>  
+    <string name="launcher_creator">Launcher creator</string> 
     <string name="selected_widget">Selected:\u0020</string>       
     <string name="top">TOP </string>       
     <string name="bottom">BOTTOM </string>         
-    <string name="left">L\nE\nF\nT </string>
-    <string name="right">R\n I\nG\nH\nT </string>  
+    <string name="left">\u0020L\u0020\n\u0020E\u0020\n\u0020F\u0020\n\u0020T\u0020</string>
+    <string name="right">\u0020R\u0020\n\u0020\u0020I\u0020\n\u0020G\u0020\n\u0020H\u0020\n\u0020T\u0020 </string>  
     <string name="confirm_layout">Confirm</string> 
 
     <string name="layout_type">Layout type</string> 
@@ -260,7 +261,7 @@
     <string name="left_bar_on">Left bar + bottom bar</string> 
     <string name="left_bar_off">Only bottom bar</string>
     <string name="map_widget">Navi widget</string>
-    <string name="pip_dialog">Set the screen that will display navi app</string>   
+    <string name="pip_dialog">Set the screen that will display the navi app</string>   
     <string name="pip_dialog_str">Display navi on the screen (1 is default):</string>  
     <string name="date_widget">Date and time widget</string> 
     <string name="music_widget">Music widget</string> 
@@ -274,6 +275,9 @@
     <string name="notification_str">Notification listener settings</string> 
     <string name="accessibility_str">Accessibility service settings</string> 
     <string name="wallpaper_picker">Wallpaper picker</string>  
+    <string name="wallpaper_picker_source">Wallpaper picker source</string> 
+    <string name="wallpaper_picker_system">System wallpaper picker</string> 
+    <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
     <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
     <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>      
     <string name="device_settings">Device settings</string> 
@@ -301,7 +305,7 @@
     <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
-    <string name="stats_window_summary"><![CDATA[Look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
+    <string name="stats_window_summary"><![CDATA[Use canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
     <string name="stats_codes_summary">Press this preference to set the canbus codes. \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
     <string name="extra_stats_codes_summary">Press this preference to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s, Engine volume: %4$s, Number of cylinders: %5$s</string>
@@ -327,6 +331,49 @@
     <string name="app_list_stats_summary">Select the apps that will display the window with fuel statistics</string>
     <string name="app_list_dialog">Selected apps will display the stats window</string>
     <string name="stats_coordinates_string">Set in-app stats window position</string>
+
+    <string name="canbus_reader_category">Canbus reader</string>
+    <string name="display_canbus_reader">Display canbus reader</string> 
+    <string name="codes_guide">Canbus guide</string> 
+    <string name="codes_guide_initial_reading_title">Codes logger - initial reading</string> 
+    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data - cmdInt, cmdArr (these are less important, most of the random combinations should work) and the canbus codes (these are important to determine).</string>
+    <string name="codes_guide_initial_reading_two">Running the \'Initial reading\' should create the txt file containing logs that look like above. Crucial part is to determine codes representing a current fuel consumption and a mileage. \n\nFor the current fuel consumption please look for the code that contains rather few outputs - on the attached screenshot it is the code 91. \n\nFor the mileage it should be the code that usually holds single output that rather doesn\'t change so fast or changes in specific intervals - on the attached screenshot it is the code 92. \n\nThe rest of the codes are negligible unless you are looking for something else.</string>
+    <string name="codes_guide_initial_reading_three">\'Time window\' - this is the time (in secods) during which the \'Codes logger\' will save the outputs for each cmdInt and cmdArr loop. \n\n\'Omit single figures\' - this aims to ignore the outputs that are single figures because the current fuel consumption and the mileage are usually represented by more than one digit. Selecting this option might greatly speed up the process because the loop won\'t dwell on the irrelevant outputs. \n\nUseful hint - to efficiently start examining the canbus codes use the narrow scope of starting-max cmdInt and cmdArr. You can set them as you wish provided that they are not greater than maximal values (info provided in the input dialog) and the starting point is not greater than the max value, however the wider range and the longer time window the longer the process lasts.</string> 
+    <string name="codes_guide_detailed_reading_title">Code inspector - detailed reading</string> 
+    <string name="codes_guide_detailed_reading">This part is meant to test specific cmdInt and cmdArr combination to reveal the codes they hold. As I said before cmdInt and cmdArr are less important and most of the random combinations should work, however that is something I learned after I had created this module. Anyway it may be of use for specific tests.</string> 
+    <string name="codes_guide_miscellaneous_title">Miscellaneous</string> 
+    <string name="codes_guide_miscellaneous">Skip codes - as the name tells this section aims to ignore the reading of the given codes. It works for both the \'Codes logger\' and the \'Code inspector\'. It probably won\'t speed up the proces but the logs won\'t contain the output you\'re not interested in.</string> 
+    <string name="skip_codes">Skip codes</string>
+    <string name="skip_codes_summary">Following codes will be skipped: %1$s</string>
+    <string name="skip_codes_empty_summary">Data will be read from the whole codes set.</string>
+    <string name="skip_codes_dialog_str">Type the codes to skip (separated by a comma):</string>
+    <string name="logger_category">Codes logger</string>
+    <string name="code_logger_string">Initial reading</string>    
+    <string name="code_logger_summary">Press to start the process</string>
+    <string name="code_logger_summary_working">Working... %1$s Press here to cancel</string>
+    <string name="code_logger_data">Initial reading data</string>
+    <string name="code_logger_data_summary">Press this preference to set the initial reading data. \nStarting cmdInt: %1$s, Starting cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, Time window: %5$s</string>
+    <string name="starting_cmd_int_text">Starting cmdInt (max. 1198):</string>
+    <string name="starting_cmd_arr_text">Starting cmdArr (max. 1198):</string>
+    <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
+    <string name="max_cmd_arr_text">Max cmdArr (max. 1199):</string>
+    <string name="code_logger_timeout_text">Time window:</string>
+    <string name="omit_digits">Omit single figures</string>
+    <string name="omit_digits_summary">Fuel consumption and range usually contain more than one digit. Selecting this option might greatly speed up the process.</string>
+    <string name="code_logger_dialog_toast">Starting value can not be greater than max value</string>
+    <string name="code_logger_toast">Finished logging the codes. Check the results in Download/Launcher66_Canbus</string> 
+    
+    <string name="inspector_category">Code inspector</string>
+    <string name="code_inspector_string">Detailed reading</string>
+    <string name="code_inspector_summary">Press to start the process</string>
+    <string name="code_inspector_summary_working">Working... %1$s Press here to cancel</string>
+    <string name="code_inspector_data">Detailed reading data</string>
+    <string name="code_inspector_data_summary">Press this preference to set the detailed reading data. \ncmdInt: %1$s, cmdArr: %2$s, Timeout: %3$s</string>
+    <string name="inspector_cmd_int_text">cmdInt (max. 1198):</string>
+    <string name="inspector_cmd_arr_text">cmdArr (max. 1199):</string>
+    <string name="code_inspector_timeout_text">Timeout:</string>
+    <string name="code_inspector_toast">Finished inspecting the codes. Check the results in Download/Launcher66_Canbus</string> 
+
     <string name="cancel_btn">CANCEL</string>
     <string name="set_btn">SUBMIT</string>
     <string name="vehicle_not_exist">Original vehicle equipment does not exist</string>
@@ -343,8 +390,10 @@
     <string name="user_sunset">Sunset time: %1$s</string>
     <string name="default_wallpapers">Use the default wallpapers</string>
     <string name="save_day_wallpaper">Save the day wallpaper</string>
+    <string name="save_day_wallpaper_dialog">Saving the day wallpaper</string>
     <string name="save_day_wallpaper_summary">Set the wallpaper you want to display for the day mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
     <string name="save_night_wallpaper">Save the night wallpaper</string>
+    <string name="save_night_wallpaper_dialog">Saving the night wallpaper</string>
     <string name="save_night_wallpaper_summary">Set the wallpaper you want to display for the night mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
     <string name="wallpaper_set">%1$s mode wallpaper has been set!</string>
     <string name="wallpaper_not_set">Something went wrong, %1$s mode wallpaper has not been set!</string>
@@ -352,12 +401,25 @@
     <string name="brightness">Dynamic brightness</string>
     <string name="day_seek_bar">Set brightness for day mode</string>
     <string name="night_seek_bar">Set brightness for night mode</string>
+    <string name="reset_night_mode_category">Reset</string>
+    <string name="reset_night_mode">Set the default values for the night mode</string>
     <string name="init_default_app_error">Please set the navi/front app in the device settings.</string>
-    <string name="logcat_service">Logcat service</string>
-    <string name="logcat_service_summary"><![CDATA[Logcat will start logging on application start. Reset the device and check the logs located in <b>Download/launcher_logs</b>]]></string>
-    <string name="logcat_service_timeout">Logcat timeout</string>
+    <string name="logcat_service">Logcat service on startup</string>
+    <string name="logcat_service_summary"><![CDATA[Logcat will start logging on application start. Reset the device or app and check the logs located in <b>Download/Launcher66_Logs</b>]]></string>
+    <string name="logcat_service_run">Logcat service</string>
+    <string name="logcat_service_run_summary">Press to start logging</string>
+    <string name="logcat_service_run_working">Working... %1$s Press here to cancel</string>
+    <string name="logcat_service_run_toast">Finished logging. Check the results in Download/Launcher66_Logs</string>
+    <string name="logcat_service_timeout">Timeout</string>
     <string name="logcat_service_timeout_str">Set the logcat timeout (in seconds):</string>
     <string name="app_version">Version: %1$s</string>
+    <string name="app_version_update">Version: %1$s (Available newer version: %2$s)</string>
+    <string name="update_version_button">Press here to download and update the app</string>
+    <string name="confirmation_dialog">Do you want to update to the %1$s version?</string>
+    <string name="update_btn">UPDATE</string>
+    <string name="progress_dialog_str">Downloading %1$s</string>
+    <string name="download_in_progress">Download in progress...</string>
+    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nSome FYT brands do not support the Picture-in-Picture feature. It means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher however you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop every time you\'ll try to open the home page - if it happens, wipe the launcher\'s data or reinstall it).</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__inputColor">Color: </string>
@@ -365,5 +427,6 @@
     <string name="materialcolorpicker__hash" translatable="false">#</string>
 
     <string name="prompt_folder_full">The folder is full.</string>
+    <string name="prompt_gallery_disable">The gallery process is not started!</string>
     <string name="circular_sliding_screen">Desktop cycle</string>
 </resources>

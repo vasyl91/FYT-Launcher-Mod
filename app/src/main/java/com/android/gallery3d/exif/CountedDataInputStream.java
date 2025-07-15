@@ -131,4 +131,12 @@ class CountedDataInputStream extends FilterInputStream {
         readOrThrow(buf);
         return new String(buf, charset);
     }
+
+    public void readFully(byte[] b) throws IOException {
+        readOrThrow(b, 0, b.length);
+    }
+
+    public void readFully(byte[] b, int off, int len) throws IOException {
+        readOrThrow(b, off, len);
+    }
 }

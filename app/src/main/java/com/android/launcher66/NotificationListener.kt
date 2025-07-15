@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -19,28 +20,33 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.service.notification.NotificationListenerService
-import androidx.core.content.ContextCompat
+import android.util.Log
+import androidx.annotation.CallSuper
+import androidx.core.content.edit
+import androidx.core.graphics.createBitmap
 import androidx.preference.PreferenceManager
 import com.android.launcher66.settings.Helpers
 import com.fyt.car.LauncherNotify
 import com.fyt.car.MusicService
-import share.ResValue
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.lang.ref.WeakReference
+import java.util.concurrent.atomic.AtomicBoolean
 
 class NotificationListener : NotificationListenerService() {
     
-    private lateinit var context: Context
-    private lateinit var handler: Handler
-    private lateinit var handlerControllerTime: Handler
-    private lateinit var handlerFytTime: Handler
-    private lateinit var mediaSessionManager: MediaSessionManager
-    private lateinit var settings: SharedPreferences
+    private lateinit var sessionListener: SessionListener
+    private var contextRef = WeakReference<Context>(null)
+    private var handler: Handler? = null
+    private var handlerControllerTime: Handler? = null
+    private var handlerFytTime: Handler? = null
+    private var mediaSessionManager: MediaSessionManager? = null
+    private var settings: SharedPreferences? = null
+    private var audioManager: AudioManager? = null
 
     private var song: String? = ""
     private var songCur: String? = ""
@@ -63,6 +69,11 @@ class NotificationListener : NotificationListenerService() {
     private var authorName: String? = ""
     private var album: String? = ""
     private var fytData: Boolean = true
+    private var isReceiverRegistered = false
+    private var isSessionListenerRegistered = false
+    private var isCleanedUp = false
+    private var verifyIfLive = false
+    private val destroyed = AtomicBoolean(false)
 
     var musicState: String? = ""
     var musicNamePrev: String = ""
@@ -88,86 +99,32 @@ class NotificationListener : NotificationListenerService() {
         super.onCreate()   
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {  
-        super.onStartCommand(intent, flags, startId)
-
-        componentName.let {
-            requestRebind(it)
-            toggleNotificationListenerService(it)
-        }
-        return START_REDELIVER_INTENT  
-    }
-
-    private fun toggleNotificationListenerService(componentName: ComponentName) {  
-        val pm = packageManager  
-        pm.setComponentEnabledSetting(
-            componentName,  
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP   
-        )  
-        pm.setComponentEnabledSetting(
-            componentName,  
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP  
-        )  
-    }
-
-    override fun onListenerDisconnected() {
-        super.onListenerDisconnected()
-        sessionListener.let {
-            if (this::mediaSessionManager.isInitialized) {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
-            }
-        }
-        if (this::handler.isInitialized) {
-            handler.removeCallbacks(runTask)
-        }
-        if (this:: handlerControllerTime.isInitialized) {
-            handlerControllerTime.removeCallbacks(updateControllerTime)
-        }
-        if (this::handlerFytTime.isInitialized) {
-            handlerFytTime.removeCallbacks(updateFytTime)
-        }
-        helpers.updateControllerTimeBool(false)
-        unregisterReceiver(mediaReceiver)
-
-        componentName.let { requestRebind(it) }
-    }
-
-    override fun onDestroy() {
-        sessionListener.let {
-            if (this::mediaSessionManager.isInitialized) {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(it)
-            }
-        }
-        if (this::handler.isInitialized) {
-            handler.removeCallbacks(runTask)
-        }
-        if (this:: handlerControllerTime.isInitialized) {
-            handlerControllerTime.removeCallbacks(updateControllerTime)
-        }
-        if (this::handlerFytTime.isInitialized) {
-            handlerFytTime.removeCallbacks(updateFytTime)
-        }
-        helpers.updateControllerTimeBool(false)
-        unregisterReceiver(mediaReceiver)
-    }
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onListenerConnected() {    
-        super.onListenerConnected()  
-        this.context = this
+        super.onListenerConnected() 
+        isCleanedUp = false
+        contextRef = WeakReference(this)
         paused = false
+
+        audioManager = getSystemService(AUDIO_SERVICE) as? AudioManager
 
         settings = PreferenceManager.getDefaultSharedPreferences(this)
 
         handlerControllerTime = Handler(Looper.getMainLooper())
         handlerFytTime = Handler(Looper.getMainLooper())
 
-        mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSessionManager.addOnActiveSessionsChangedListener(sessionListener, componentName)
-        controllers = mediaSessionManager.getActiveSessions(componentName)
-        mediaController = pickController(controllers!!)
+        mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as? MediaSessionManager
+        sessionListener = SessionListener(this)
+        if (!destroyed.get() && !isSessionListenerRegistered) {
+            try {
+                mediaSessionManager?.addOnActiveSessionsChangedListener(sessionListener, componentName)
+                isSessionListenerRegistered = true
+            } catch (e: Exception) {
+                Log.e("NotificationListener", "Error registering session listener: ${e.message}")
+            }
+        }
+        controllers = mediaSessionManager?.getActiveSessions(componentName)
+        mediaController = pickController(controllers)
         mediaController?.let {
             it.registerCallback(callback)
             meta = it.metadata
@@ -181,32 +138,117 @@ class NotificationListener : NotificationListenerService() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (!helpers.returnControllerTimeBool()) {
                         helpers.updateControllerTimeBool(true)
-                        handlerControllerTime.post(updateControllerTime)
+                        handlerControllerTime?.post(updateControllerTime)
                     }
                     setStatus(2)
                 }, 2000)
             }
             if (MusicService.state && MusicService.music_name != "" && MusicService.music_name != "Unknown") {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    handlerFytTime.post(updateFytTime)
+                    handlerFytTime?.post(updateFytTime)
                     setStatus(1)
                 }, 2000)
             }
-            
         }
 
         handler = Handler(Looper.getMainLooper())
-        handler.post(runTask)
+        handler?.post(runTask)
 
-        val intentFilter = IntentFilter("titlesInternal")
-        intentFilter.addAction("media.play.play")
-        intentFilter.addAction("media.play.pause")
-        intentFilter.addAction("media.play.next")
-        intentFilter.addAction("media.play.previous")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mediaReceiver, intentFilter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(mediaReceiver, intentFilter)
+        if (!isReceiverRegistered) {
+            val intentFilter = IntentFilter().apply {
+                addAction("titlesInternal")
+                addAction("media.play.play")
+                addAction("media.play.pause")
+                addAction("media.play.next")
+                addAction("media.play.previous")
+            }
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    registerReceiver(mediaReceiver, intentFilter, RECEIVER_EXPORTED)
+                } else {
+                    registerReceiver(mediaReceiver, intentFilter)
+                }
+                isReceiverRegistered = true
+            } catch (e: Exception) {
+                Log.e("NotificationListener", "Error registering receiver: ${e.message}")
+            }
+        }
+    }  
+
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        cleanupResources()
+    }
+
+    @CallSuper
+    override fun onDestroy() {  
+        destroyed.set(true)
+        cleanupResources()  
+        super.onDestroy()
+    }
+
+    private fun cleanupResources() { 
+        if (isCleanedUp) return
+        isCleanedUp = true
+
+        safeUnregisterReceiver()
+        safeUnregisterSessionListener()
+
+        mediaController?.unregisterCallback(callback)
+        mediaController = null
+
+        handler?.removeCallbacksAndMessages(null)
+        handlerControllerTime?.removeCallbacksAndMessages(null)
+        handlerFytTime?.removeCallbacksAndMessages(null)
+
+        handler = null
+        handlerControllerTime = null
+        handlerFytTime = null
+
+        controllers?.clear()
+        controllers = null
+
+        helpers.updateControllerTimeBool(false)
+        contextRef.clear()
+
+        meta = null
+        musicState = null
+        musicName = null
+        authorName = null
+        album = null
+        song = null
+        songCur = null
+        songFyt = null
+        artist = null
+        albumCover = null
+        fytAlbumCover = null
+
+        audioManager = null
+        mediaSessionManager = null
+        settings = null
+    }
+
+    private fun safeUnregisterReceiver() {
+        if (isReceiverRegistered) {
+            try {
+                unregisterReceiver(mediaReceiver)
+                isReceiverRegistered = false
+            } catch (e: IllegalArgumentException) {
+                Log.w("NotificationListener", "Receiver already unregistered: ${e.message}")
+            }
+        }
+    } 
+
+    private fun safeUnregisterSessionListener() {
+        if (isSessionListenerRegistered) {
+            try {
+                mediaSessionManager?.removeOnActiveSessionsChangedListener(sessionListener)
+                isSessionListenerRegistered = false
+            } catch (e: IllegalArgumentException) {
+                Log.w("NotificationListener", "Session listener already removed or not registered: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("NotificationListener", "Error removing session listener: ${e.message}")
+            }
         }
     } 
    
@@ -218,11 +260,11 @@ class NotificationListener : NotificationListenerService() {
             */
             if (intent.action == "titlesInternal") {
                 val retriever = MediaMetadataRetriever()
-                val bundle: Bundle? = intent.extras!!
-                fytState = bundle?.getBoolean("play_state")!!
-                fytMusicPath = bundle.getString("play_path")!!
-                fytSource = bundle.getString("source")!!
-                fytCurMinutes = bundle.getLong("play_cur")
+                val bundle = intent.extras ?: return
+                fytState = bundle.getBoolean("play_state", false) 
+                fytMusicPath = bundle.getString("play_path") ?: ""
+                fytSource = bundle.getString("source") ?: ""
+                fytCurMinutes = bundle.getLong("play_cur", 0L)
                 
                 val file = File(fytMusicPath)
                 if (file.exists()) {
@@ -234,10 +276,11 @@ class NotificationListener : NotificationListenerService() {
                         e.printStackTrace()
                         retriever.setDataSource(fytMusicPath)
                     } finally {                   
-                        musicName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                        authorName = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        fytAlbum = retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
-                        retriever?.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                        authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                        fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                            .toString()
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                             ?.let { fytTotalMinutes = it.toLong() }
 
                         if (musicNamePrev != musicName) {
@@ -258,11 +301,11 @@ class NotificationListener : NotificationListenerService() {
                             fytSet = false
                         } 
                         if (fytState && !fytSet && helpers.isFytMusicAllowed()  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {
-                            handlerControllerTime.removeCallbacks(updateControllerTime)  
+                            handlerControllerTime?.removeCallbacks(updateControllerTime)  
                             helpers.updateControllerTimeBool(false)
                             fytSet = true
                             setStatus(1)
-                            handlerFytTime.post(updateFytTime)             
+                            handlerFytTime?.post(updateFytTime)             
                         } 
                         retriever.release()
                     }
@@ -286,7 +329,8 @@ class NotificationListener : NotificationListenerService() {
     */ 
     private fun stopFytMusic() {
         if (MusicService.state) { 
-            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            val context = contextRef.get()
+            val activityManager = context?.getSystemService(ACTIVITY_SERVICE) as? ActivityManager
             
             try {
                 val method = activityManager?.javaClass?.getDeclaredMethod(
@@ -310,119 +354,172 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    private val runTask = object : Runnable {
+    // Stopping the radio is necessary for music apps that use media controller to gain the audio focus back
+    private fun stopRadio(): Boolean {
+        val context = contextRef.get() ?: return false
+        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as? ActivityManager ?: return false
+        
+        // Check if radio app is actually running
+        val isRadioRunning = activityManager.runningAppProcesses?.any {
+            it.processName == "com.syu.radio"
+        } == true
+        
+        if (!isRadioRunning) return false
+
+        try {
+            val method = activityManager.javaClass.getDeclaredMethod(
+                "forceStopPackage",
+                String::class.java
+            )
+            method.invoke(activityManager, "com.syu.radio")
+            
+            return true
+        } catch (e: Exception) {
+            Log.e("NotificationListener", "Error stopping radio: ${e.message}")
+            return false
+        }
+    }
+
+    private val runTask = RunTaskRunnable(this)
+    private val updateControllerTime = UpdateControllerTimeRunnable(this)
+    private val updateFytTime = UpdateFytTimeRunnable(this)
+
+    private class RunTaskRunnable(service: NotificationListener) : Runnable {
+        private val serviceRef = WeakReference(service)
         override fun run() {
-            val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get()) return
+            val context = service.contextRef.get() ?: return
+            val am = context.getSystemService(AUDIO_SERVICE) as? AudioManager ?: return
             if (am.isMusicActive) {
-                // onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
-                // it doesn't switch when user has paused the track from previous music source before playing the new one
-                checkActiveSessions()
+                service.checkActiveSessions()
             }
-            handler.postDelayed(this, 10)
+            service.handler?.postDelayed(this, 10)
         }
     }
 
-    private val updateControllerTime = object : Runnable {
+    private class UpdateControllerTimeRunnable(service: NotificationListener) : Runnable {
+        private val serviceRef = WeakReference(service)
         override fun run() {
-            val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
-            if (am.isMusicActive && musicState == "true") {
-                if (curMinutes != prevMinutes) {
-                    prevMinutes = curMinutes
-                    setStatus(2)
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get()) return
+            val context = service.contextRef.get() ?: return
+            val am = context.getSystemService(AUDIO_SERVICE) as? AudioManager ?: return
+            if (am.isMusicActive && service.musicState == "true") {
+                if (service.curMinutes != service.prevMinutes) {
+                    service.prevMinutes = service.curMinutes
+                    service.setStatus(2)
                 }
             }
-            handlerControllerTime.postDelayed(this, 1000)
+            service.handlerControllerTime?.postDelayed(this, 1000)
         }
     }
 
-    private val updateFytTime = object : Runnable {
+    private class UpdateFytTimeRunnable(service: NotificationListener) : Runnable {
+        private val serviceRef = WeakReference(service)
         override fun run() {
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get()) return
             if (MusicService.state) {
-                if (fytCurMinutes != prevCurFyt) {
-                    prevCurFyt = fytCurMinutes
-                    setStatus(1)
+                if (service.fytCurMinutes != service.prevCurFyt) {
+                    service.prevCurFyt = service.fytCurMinutes
+                    service.setStatus(1)
                 }
             }
-            handlerFytTime.postDelayed(this, 500)
+            service.handlerFytTime?.postDelayed(this, 500)
         }
     }
 
-    private var callback: MediaController.Callback = object : MediaController.Callback() {
+    class StaticMediaControllerCallback(listenerRef: WeakReference<NotificationListener>) : MediaController.Callback() {
+        private val serviceRef = listenerRef
+        
         override fun onSessionDestroyed() {
             super.onSessionDestroyed()
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get()) return
             super.onMetadataChanged(metadata)
-            prevMinutes = 0
-            helpers.setCounter(0)
-            meta = metadata
+            service.prevMinutes = 0
+            service.helpers.setCounter(0)
+            service.meta = metadata
             set()
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get()) return
             super.onPlaybackStateChanged(state)
-            currentState = state?.state
-            prevMinutes = 0
-            if (currentState == PlaybackState.STATE_PAUSED) {
+            service.currentState = state?.state
+            service.prevMinutes = 0
+            if (service.currentState == PlaybackState.STATE_PAUSED) {
                 val intent = Intent("pause.button")
-                sendBroadcast(intent)
-                val editor = settings.edit()
-                editor.putInt("prevState", currentState!!)
-                editor.apply()
-                helpers.setCounter(0)
+                service.sendBroadcast(intent)
+                service.settings?.edit {
+                    this.putInt("prevState", service.currentState!!)
+                }
+                service.helpers.setCounter(0)
             } else {
                 set()
             }
         }
 
         fun set() {  
-            stopFytMusic()
-            handlerFytTime.removeCallbacks(updateFytTime)
-            if (currentState == PlaybackState.STATE_PAUSED || currentState == PlaybackState.STATE_STOPPED) {  
-                helpers.setCounter(0)
-                handlerControllerTime.removeCallbacks(updateControllerTime)
-                helpers.updateControllerTimeBool(false)
-                musicState = "false"
-            } else if (currentState == PlaybackState.STATE_PLAYING) {
-                // prevents youtube live to add view every ~second
-                var dur = meta?.getLong(MediaMetadata.METADATA_KEY_DURATION)
-                // prevents flickering on adding view
-                var songTest = meta?.getString(MediaMetadata.METADATA_KEY_TITLE) 
-                if (songTest != null) {
-                    if (songTest.isNotEmpty()) {
-                        songCur = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    }
-                }
-                // prevState: 1 - STOPPED, 2 - PAUSED, 3 - PLAYING
-                if (!songCur.equals(settings.getString("songPrev", "prev")) || settings.getInt("prevState", 1) == 2) {
-                    val editor = settings.edit()
-                    editor.putString("songPrev", songCur)
-                    editor.putInt("prevState", currentState!!)
-                    editor.apply()
-                    if (dur != 0.toLong()) { // not live
-                        musicState = "true"
-                        setStatus(2)   
-                        if (!helpers.returnControllerTimeBool()) {
-                            helpers.updateControllerTimeBool(true)
-                            handlerControllerTime.post(updateControllerTime)
-                        }  
-                    } else { // live
-                        if (helpers.returnCounter() == count) {
-                            helpers.setCounter(counter++)
-                            musicState = "true"
-                            curMinutes = 0
-                            setStatus(2)   
-                            if (!helpers.returnControllerTimeBool()) {
-                                helpers.updateControllerTimeBool(true)
-                                handlerControllerTime.post(updateControllerTime)
-                            }             
+            val service = serviceRef.get() ?: return
+            service.stopFytMusic()
+            service.stopRadio()
+            service.handlerFytTime?.removeCallbacks(service.updateFytTime)
+
+            if (service.currentState == PlaybackState.STATE_PAUSED || service.currentState == PlaybackState.STATE_STOPPED) {  
+                service.helpers.setCounter(0)
+                service.handlerControllerTime?.removeCallbacks(service.updateControllerTime)
+                service.helpers.updateControllerTimeBool(false)
+                service.musicState = "false"
+            } else if (service.currentState == PlaybackState.STATE_PLAYING) {
+                // YoutubeMusic or Spotify (and probably some other music apps) need some delay to load the album art
+                Handler(Looper.getMainLooper()).postDelayed({
+                    // prevents youtube live to add view every ~second
+                    var dur = service.meta?.getLong(MediaMetadata.METADATA_KEY_DURATION)
+                    // prevents flickering on adding view
+                    var songTest = service.meta?.getString(MediaMetadata.METADATA_KEY_TITLE) 
+                    if (songTest != null) {
+                        if (songTest.isNotEmpty()) {
+                            service.songCur = service.meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
                         }
                     }
-                }
+                    // prevState: 1 - STOPPED, 2 - PAUSED, 3 - PLAYING
+                    if (!service.songCur.equals(service.settings?.getString("songPrev", "prev")) || service.settings?.getInt("prevState", 1) == 2) {
+                        service.settings?.edit {
+                            this.putString("songPrev", service.songCur)
+                            this.putInt("prevState", service.currentState!!)
+                        }
+                        if (dur != 0.toLong()) { // not live
+                            service.musicState = "true"
+                            service.setStatus(2)   
+                            if (!service.helpers.returnControllerTimeBool()) {
+                                service.helpers.updateControllerTimeBool(true)
+                                service.handlerControllerTime?.post(service.updateControllerTime)
+                            }  
+                        } else { // live
+                            if (service.helpers.returnCounter() == service.count) {
+                                service.helpers.setCounter(service.counter++)
+                                service.musicState = "true"
+                                service.curMinutes = 0
+                                service.setStatus(2)   
+                                if (!service.helpers.returnControllerTimeBool()) {
+                                    service.helpers.updateControllerTimeBool(true)
+                                    service.handlerControllerTime?.post(service.updateControllerTime)
+                                }             
+                            }
+                        }
+                    }
+                }, 700)
             }
         }
     }
+
+    val callback = StaticMediaControllerCallback(WeakReference(this))
 
     // mediaSource: 1 - com.syu.music, 2 - other players that use media controller
     fun setStatus(mediaSource: Int) {
@@ -439,21 +536,14 @@ class NotificationListener : NotificationListenerService() {
             helpers.setFytMusicAllowed(false)
             Handler(Looper.getMainLooper()).postDelayed({
                 helpers.setFytMusicAllowed(true)
-            }, 2500) 
+            }, 1800) 
             activeControllerPackage = (mediaController?.getPackageName()).toString()
-            if (activeControllerPackage.contains("com.spotify.music") || activeControllerPackage.contains("youtube.music")) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    mediaControllerStatus()
-                }, 700)
-            } else {
-                mediaControllerStatus()
-            }
-            
+            mediaControllerStatus()
         }  
     }
 
     fun fytStatus() {
-        fytData = settings.getBoolean("fyt_data", true)
+        fytData = settings?.getBoolean("fyt_data", true) != false
 
         if (fytData) { // from metadata
             songFyt = musicName
@@ -483,68 +573,117 @@ class NotificationListener : NotificationListenerService() {
         )
     }
 
-    fun mediaControllerStatus() {   
-        totalMinutes = meta!!.getLong(MediaMetadata.METADATA_KEY_DURATION)
-        mediaController!!.playbackState?.let {
-            curMinutes = if (totalMinutes == 0.toLong()) {
-                0.toLong()
-            } else {
-                it.position
-            }
+    fun mediaControllerStatus() {
+        val controller = mediaController ?: run {
+            Log.e("NotificationListener", "mediaController is null in mediaControllerStatus")
+            return
         }
-        song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE) 
-        artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST) 
-        if (artist == null || artist?.isEmpty() == true){
-            artist = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+        val currentMeta = meta ?: run {
+            Log.e("NotificationListener", "meta is null in mediaControllerStatus")
+            return
         }
-        if (artist == null || artist?.isEmpty() == true) {
-            artist = meta?.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+
+        totalMinutes = currentMeta.getLong(MediaMetadata.METADATA_KEY_DURATION)
+
+        controller.playbackState?.let { state ->
+            curMinutes = if (totalMinutes == 0L) 0L else state.position
+        } ?: run { curMinutes = 0 }
+
+        song = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
+        artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         }
-        if (artist == null || artist?.isEmpty() == true) {
-            artist = meta?.getString(MediaMetadata.METADATA_KEY_WRITER)
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_AUTHOR)
         }
-        if (artist == null || artist?.isEmpty() == true) {
-            artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_WRITER)
         }
-        if (artist == null || artist?.isEmpty() == true) {
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+        }
+        if (artist == null || artist!!.isEmpty()) {
             artist = "\u0020"
         }
-        musicState = "true"   
-        album = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+        musicState = "true"
+        album = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
         musicPath = ""
-        activeControllerPackage = (mediaController?.getPackageName()).toString()
-      
-        var bitmap = meta?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+        activeControllerPackage = controller.packageName ?: ""
+
+        var bitmap: Bitmap? = currentMeta.getBitmap(MediaMetadata.METADATA_KEY_ART)
         if (bitmap == null) {
-            bitmap = meta?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+            bitmap = currentMeta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
         }
         if (bitmap == null) {
-            bitmap = meta?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
+            bitmap = currentMeta.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
         }
-        // youtube bitmap is always null
         if (bitmap == null && activeControllerPackage.contains("youtube")) {
-            bitmap = drawableToBitmap(ContextCompat.getDrawable(this, ResValue.getInstance().youtube_logo))
+            val context = contextRef.get()
+            if (context != null) {
+                bitmap = getHighResAppIcon(context, activeControllerPackage)
+            }
         }
 
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
         albumCover = stream.toByteArray()
-        
+
         source = "mediaController"
 
         LauncherNotify.NOTIFIER_MUSIC.set(
             null,
             longArrayOf(totalMinutes, curMinutes),
             null,
-            arrayOf((song).toString(), (artist).toString(), musicState, album, musicPath, activeControllerPackage),
+            arrayOf(song, artist, musicState, album, musicPath, activeControllerPackage),
             albumCover,
             source
         )
         paused = false
+
+        if (totalMinutes == 0.toLong() && !verifyIfLive) {
+            verifyIfLive = true
+            Handler(Looper.getMainLooper()).postDelayed({
+                mediaControllerStatus()
+            }, 500)      
+            Handler(Looper.getMainLooper()).postDelayed({
+                verifyIfLive = false
+            }, 700)    
+        }
+    }
+
+    @Throws(PackageManager.NameNotFoundException::class)
+    fun getHighResAppIcon(context: Context, packageName: String): Bitmap {
+        val pm = context.packageManager
+        val appInfo = pm.getApplicationInfo(packageName, 0)
+        var iconDrawable: Drawable? = null
+
+        if (appInfo.icon != 0) {
+            try {
+                val resources = pm.getResourcesForApplication(appInfo)
+                val densities = intArrayOf(640, 480, 320, 240, 160)  // From XXXHIGH to MEDIUM
+
+                for (density in densities) {
+                    iconDrawable = try {
+                        resources.getDrawableForDensity(appInfo.icon, density, context.theme)
+                    } catch (e: Resources.NotFoundException) {
+                        null
+                    }
+                    if (iconDrawable != null) break
+                }
+            } catch (e: Exception) {
+                Log.e("NotificationListener", "Error getting high res icon: ${e.message}")
+            }
+        }
+
+        // Fallback to default icon if there's no hugh res icon
+        iconDrawable = iconDrawable ?: pm.getApplicationIcon(packageName)
+
+        return drawableToBitmap(iconDrawable)
     }
     
     fun drawableToBitmap(drawable: Drawable?): Bitmap {
-        val bitmap = Bitmap.createBitmap(drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(drawable!!.intrinsicWidth, drawable.intrinsicHeight)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
@@ -552,12 +691,13 @@ class NotificationListener : NotificationListenerService() {
     }
 
     fun checkActiveSessions() {
-        val ctrlrs: MutableList<MediaController> = mediaSessionManager.getActiveSessions(componentName)
+        val ctrlrs: MutableList<MediaController>? = mediaSessionManager?.getActiveSessions(componentName)
         sessionListener.onActiveSessionsChanged(ctrlrs)
     }
 
     private fun pickController(controllers: MutableList<MediaController>?): MediaController? {
-        for (mc in controllers!!) {
+        if (controllers == null) return null
+        for (mc in controllers) {
             if (mc.playbackState != null && mc.playbackState?.state == PlaybackState.STATE_PLAYING) {
                 return mc
             }
@@ -565,20 +705,26 @@ class NotificationListener : NotificationListenerService() {
         return if (controllers.isNotEmpty()) controllers[0] else null
     }
 
-    private val sessionListener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
-        if (controllers!!.isNotEmpty()) {
-            if (mediaController != null && controllers[0].sessionToken != mediaController?.sessionToken) {
-                // Detach current controller
-                mediaController?.unregisterCallback(callback)
-                mediaController = null
-            }
+    class SessionListener(service: NotificationListener) : MediaSessionManager.OnActiveSessionsChangedListener {
+        private val serviceRef = WeakReference(service)
 
-            if (mediaController == null) {
-                // Attach new controller
-                mediaController = pickController(controllers)
-                mediaController?.registerCallback(callback)
-                callback.onMetadataChanged(mediaController?.metadata)
-                mediaController?.playbackState?.let { callback.onPlaybackStateChanged(it) }
+        override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
+            val service = serviceRef.get() ?: return
+            if (service.destroyed.get() || service.isCleanedUp) return
+            if (!controllers.isNullOrEmpty()) {
+                if (service.mediaController != null && controllers[0].sessionToken != service.mediaController?.sessionToken) {
+                    // Detach current controller
+                    service.mediaController?.unregisterCallback(service.callback)
+                    service.mediaController = null
+                }
+
+                if (service.mediaController == null) {
+                    // Attach new controller
+                    service.mediaController = service.pickController(controllers)
+                    service.mediaController?.registerCallback(service.callback)
+                    service.mediaController?.metadata?.let { service.callback.onMetadataChanged(it) }
+                    service.mediaController?.playbackState?.let { service.callback.onPlaybackStateChanged(it) }
+                }
             }
         }
     }

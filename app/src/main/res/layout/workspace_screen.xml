@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.CellLayout android:paddingLeft="@dimen/apps_workspace_screen_padding_left"
-    android:paddingTop="@dimen/apps_workspace_screen_padding_top"
-    android:paddingRight="@dimen/apps_workspace_screen_padding_right"
-    android:paddingBottom="@dimen/apps_workspace_screen_padding_bottom"
+<com.android.launcher66.CellLayout 
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:hapticFeedbackEnabled="false"

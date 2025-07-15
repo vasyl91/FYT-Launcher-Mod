@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.launcher66;
 
 import android.content.Context;
@@ -119,6 +135,10 @@ public class CropView extends TiledImageView implements OnScaleGestureListener {
     }
 
     public void setTileSource(TileSource source, Runnable isReadyCallback) {
+        setTileSourceExt(source, isReadyCallback, true);
+    }
+
+    public void setTileSourceExt(TileSource source, Runnable isReadyCallback, boolean resetScale) {
         super.setTileSource(source, isReadyCallback);
         mCenterX = mRenderer.centerX;
         mCenterY = mRenderer.centerY;
@@ -126,7 +146,7 @@ public class CropView extends TiledImageView implements OnScaleGestureListener {
         mRotateMatrix.setRotate(mRenderer.rotation);
         mInverseRotateMatrix.reset();
         mInverseRotateMatrix.setRotate(-mRenderer.rotation);
-        updateMinScale(getWidth(), getHeight(), source, true);
+        updateMinScale(getWidth(), getHeight(), source, resetScale);
     }
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -149,8 +169,7 @@ public class CropView extends TiledImageView implements OnScaleGestureListener {
                 final float imageWidth = imageDims[0];
                 final float imageHeight = imageDims[1];
                 mMinScale = Math.max(w / imageWidth, h / imageHeight);
-                mRenderer.scale =
-                        Math.max(mMinScale, resetScale ? Float.MIN_VALUE : mRenderer.scale);
+                mRenderer.scale = Math.max(mMinScale, mRenderer.scale);
             }
         }
     }
@@ -284,12 +303,12 @@ public class CropView extends TiledImageView implements OnScaleGestureListener {
                     adjustment[0] = (edges.right - getWidth()) / scale;
                 }
                 if (edges.top > 0) {
-                    adjustment[1] = FloatMath.ceil(edges.top / scale);
+                    adjustment[1] = (float) Math.ceil(edges.top / scale);
                 } else if (edges.bottom < getHeight()) {
                     adjustment[1] = (edges.bottom - getHeight()) / scale;
                 }
                 for (int dim = 0; dim <= 1; dim++) {
-                    if (coef[dim] > 0) adjustment[dim] = FloatMath.ceil(adjustment[dim]);
+                    if (coef[dim] > 0) adjustment[dim] = (float) Math.ceil(adjustment[dim]);
                 }
 
                 mInverseRotateMatrix.mapPoints(adjustment);

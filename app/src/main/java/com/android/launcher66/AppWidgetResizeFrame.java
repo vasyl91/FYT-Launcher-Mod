@@ -8,7 +8,7 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.graphics.Rect;
-import android.view.View;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -45,7 +45,6 @@ public class AppWidgetResizeFrame extends FrameLayout {
     private ImageView mLeftHandle;
     private int mMinHSpan;
     private int mMinVSpan;
-    private int mResizeMode;
     private boolean mRightBorderActive;
     private ImageView mRightHandle;
     private int mRunningHInc;
@@ -75,10 +74,9 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mLauncher = (Launcher) context;
         this.mCellLayout = cellLayout;
         this.mWidgetView = widgetView;
-        this.mResizeMode = widgetView.getAppWidgetInfo().resizeMode;
         this.mDragLayer = dragLayer;
         AppWidgetProviderInfo info = widgetView.getAppWidgetInfo();
-        int[] result = Launcher.getMinSpanForWidget(this.mLauncher, info);
+        int[] result = Launcher.getSpanForWidget(this.mLauncher, info);
         this.mMinHSpan = result[0];
         this.mMinVSpan = result[1];
         setBackgroundResource(R.drawable.widget_resize_frame_holo);
@@ -104,13 +102,6 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mWidgetPaddingTop = p.top;
         this.mWidgetPaddingRight = p.right;
         this.mWidgetPaddingBottom = p.bottom;
-        if (this.mResizeMode == 1) {
-            this.mTopHandle.setVisibility(View.GONE);
-            this.mBottomHandle.setVisibility(android.view.View.GONE);
-        } else if (this.mResizeMode == 2) {
-            this.mLeftHandle.setVisibility(View.GONE);
-            this.mRightHandle.setVisibility(android.view.View.GONE);
-        }
         float density = this.mLauncher.getResources().getDisplayMetrics().density;
         this.mBackgroundPadding = (int) Math.ceil(24.0f * density);
         this.mTouchTargetWidth = this.mBackgroundPadding * 2;
@@ -118,12 +109,10 @@ public class AppWidgetResizeFrame extends FrameLayout {
     }
 
     public boolean beginResizeIfPointInRegion(int x, int y) {
-        boolean horizontalActive = (this.mResizeMode & 1) != 0;
-        boolean verticalActive = (this.mResizeMode & 2) != 0;
-        this.mLeftBorderActive = x < this.mTouchTargetWidth && horizontalActive;
-        this.mRightBorderActive = x > getWidth() - this.mTouchTargetWidth && horizontalActive;
-        this.mTopBorderActive = y < this.mTouchTargetWidth + this.mTopTouchRegionAdjustment && verticalActive;
-        this.mBottomBorderActive = y > (getHeight() - this.mTouchTargetWidth) + this.mBottomTouchRegionAdjustment && verticalActive;
+        this.mLeftBorderActive = x < this.mTouchTargetWidth; 
+        this.mRightBorderActive = x > getWidth() - this.mTouchTargetWidth;
+        this.mTopBorderActive = y < this.mTouchTargetWidth + this.mTopTouchRegionAdjustment;
+        this.mBottomBorderActive = y > (getHeight() - this.mTouchTargetWidth) + this.mBottomTouchRegionAdjustment;
         boolean anyBordersActive = this.mLeftBorderActive || this.mRightBorderActive || this.mTopBorderActive || this.mBottomBorderActive;
         this.mBaselineWidth = getMeasuredWidth();
         this.mBaselineHeight = getMeasuredHeight();
@@ -311,58 +300,94 @@ public class AppWidgetResizeFrame extends FrameLayout {
 
     public void snapToWidget(boolean animate) {
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
-        int newWidth = ((this.mWidgetView.getWidth() + (this.mBackgroundPadding * 2)) - this.mWidgetPaddingLeft) - this.mWidgetPaddingRight;
-        int newHeight = ((this.mWidgetView.getHeight() + (this.mBackgroundPadding * 2)) - this.mWidgetPaddingTop) - this.mWidgetPaddingBottom;
-        this.mTmpPt[0] = this.mWidgetView.getLeft();
-        this.mTmpPt[1] = this.mWidgetView.getTop();
-        this.mDragLayer.getDescendantCoordRelativeToSelf(this.mCellLayout.getShortcutsAndWidgets(), this.mTmpPt);
-        int newX = (this.mTmpPt[0] - this.mBackgroundPadding) + this.mWidgetPaddingLeft;
-        int newY = (this.mTmpPt[1] - this.mBackgroundPadding) + this.mWidgetPaddingTop;
+        int newWidth;
+        int newHeight;
+        int newX;
+        int newY;
+
+        if (mWidgetView instanceof LauncherAppWidgetHostView) {
+            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) mWidgetView;
+            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+            if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                float scale = hostView.getScaleToFit();
+                
+                // Get actual scaled dimensions of the widget
+                int scaledWidth = (int) (mWidgetView.getWidth() * scale);
+                int scaledHeight = (int) (mWidgetView.getHeight() * scale);
+                
+                // Use the same coordinate calculation method as non-resizable widgets
+                mTmpPt[0] = mWidgetView.getLeft();
+                mTmpPt[1] = mWidgetView.getTop();
+                mDragLayer.getDescendantCoordRelativeToSelf(mCellLayout.getShortcutsAndWidgets(), mTmpPt);
+                
+                // Position frame to match the widget position exactly
+                newX = mTmpPt[0] - mBackgroundPadding;
+                newY = mTmpPt[1] - mBackgroundPadding;
+                newWidth = scaledWidth + 2 * mBackgroundPadding;
+                newHeight = scaledHeight + 2 * mBackgroundPadding;              
+            } else {
+                newWidth = ((mWidgetView.getWidth() + (mBackgroundPadding * 2)) - mWidgetPaddingLeft - mWidgetPaddingRight);
+                newHeight = ((mWidgetView.getHeight() + (mBackgroundPadding * 2)) - mWidgetPaddingTop - mWidgetPaddingBottom);
+
+                mTmpPt[0] = mWidgetView.getLeft();
+                mTmpPt[1] = mWidgetView.getTop();
+                mDragLayer.getDescendantCoordRelativeToSelf(mCellLayout.getShortcutsAndWidgets(), mTmpPt);
+                newX = (mTmpPt[0] - mBackgroundPadding) + mWidgetPaddingLeft;
+                newY = (mTmpPt[1] - mBackgroundPadding) + mWidgetPaddingTop;                
+            }
+        } else {
+            newWidth = ((mWidgetView.getWidth() + (mBackgroundPadding * 2)) - mWidgetPaddingLeft - mWidgetPaddingRight);
+            newHeight = ((mWidgetView.getHeight() + (mBackgroundPadding * 2)) - mWidgetPaddingTop - mWidgetPaddingBottom);
+
+            mTmpPt[0] = mWidgetView.getLeft();
+            mTmpPt[1] = mWidgetView.getTop();
+            mDragLayer.getDescendantCoordRelativeToSelf(mCellLayout.getShortcutsAndWidgets(), mTmpPt);
+            newX = (mTmpPt[0] - mBackgroundPadding) + mWidgetPaddingLeft;
+            newY = (mTmpPt[1] - mBackgroundPadding) + mWidgetPaddingTop;
+        }
+
+        // Adjust touch regions if near edges
         if (newY < 0) {
-            this.mTopTouchRegionAdjustment = -newY;
+            mTopTouchRegionAdjustment = -newY;
         } else {
-            this.mTopTouchRegionAdjustment = 0;
+            mTopTouchRegionAdjustment = 0;
         }
-        if (newY + newHeight > this.mDragLayer.getHeight()) {
-            this.mBottomTouchRegionAdjustment = -((newY + newHeight) - this.mDragLayer.getHeight());
+        if (newY + newHeight > mDragLayer.getHeight()) {
+            mBottomTouchRegionAdjustment = -((newY + newHeight) - mDragLayer.getHeight());
         } else {
-            this.mBottomTouchRegionAdjustment = 0;
+            mBottomTouchRegionAdjustment = 0;
         }
+
         if (!animate) {
             lp.width = newWidth;
             lp.height = newHeight;
             lp.x = newX;
             lp.y = newY;
-            this.mLeftHandle.setAlpha(1.0f);
-            this.mRightHandle.setAlpha(1.0f);
-            this.mTopHandle.setAlpha(1.0f);
-            this.mBottomHandle.setAlpha(1.0f);
+            mLeftHandle.setAlpha(1.0f);
+            mRightHandle.setAlpha(1.0f);
+            mTopHandle.setAlpha(1.0f);
+            mBottomHandle.setAlpha(1.0f);
             requestLayout();
             return;
         }
+
         PropertyValuesHolder width = PropertyValuesHolder.ofInt("width", lp.width, newWidth);
         PropertyValuesHolder height = PropertyValuesHolder.ofInt("height", lp.height, newHeight);
         PropertyValuesHolder x = PropertyValuesHolder.ofInt("x", lp.x, newX);
         PropertyValuesHolder y = PropertyValuesHolder.ofInt("y", lp.y, newY);
         ObjectAnimator oa = LauncherAnimUtils.ofPropertyValuesHolder(lp, this, width, height, x, y);
-        ObjectAnimator leftOa = LauncherAnimUtils.ofFloat(this.mLeftHandle, "alpha", 1.0f);
-        ObjectAnimator rightOa = LauncherAnimUtils.ofFloat(this.mRightHandle, "alpha", 1.0f);
-        ObjectAnimator topOa = LauncherAnimUtils.ofFloat(this.mTopHandle, "alpha", 1.0f);
-        ObjectAnimator bottomOa = LauncherAnimUtils.ofFloat(this.mBottomHandle, "alpha", 1.0f);
-        oa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { 
+        ObjectAnimator leftOa = LauncherAnimUtils.ofFloat(mLeftHandle, "alpha", 1.0f);
+        ObjectAnimator rightOa = LauncherAnimUtils.ofFloat(mRightHandle, "alpha", 1.0f);
+        ObjectAnimator topOa = LauncherAnimUtils.ofFloat(mTopHandle, "alpha", 1.0f);
+        ObjectAnimator bottomOa = LauncherAnimUtils.ofFloat(mBottomHandle, "alpha", 1.0f);
+        oa.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                AppWidgetResizeFrame.this.requestLayout();
+                requestLayout();
             }
         });
         AnimatorSet set = LauncherAnimUtils.createAnimatorSet();
-        if (this.mResizeMode == 2) {
-            set.playTogether(oa, topOa, bottomOa);
-        } else if (this.mResizeMode == 1) {
-            set.playTogether(oa, leftOa, rightOa);
-        } else {
-            set.playTogether(oa, leftOa, rightOa, topOa, bottomOa);
-        }
+        set.playTogether(oa, leftOa, rightOa, topOa, bottomOa);
         set.setDuration(150L);
         set.start();
     }

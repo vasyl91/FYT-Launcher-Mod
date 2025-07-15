@@ -11,21 +11,21 @@ public class HandlerCanbus {
         ModuleCallbackCanbusProxy.getInstance().setCallbackCanbus(callbackCanbus);
     };
 
-    public static void update(int updateCode, int[] ints) {
+    public synchronized static void update(int updateCode, int[] ints) {
         if (ints != null && ints.length != 0 && DataCanbus.DATA[updateCode] != ints[0]) {
             DataCanbus.DATA[updateCode] = ints[0];
             DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
         }
     }
 
-    public static void update(int updateCode, int value) {
+    public synchronized static void update(int updateCode, int value) {
         if (DataCanbus.DATA[updateCode] != value) {
             DataCanbus.DATA[updateCode] = value;
             DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
         }
     }
 
-    public static void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+    public synchronized static void update(int updateCode, int[] ints, float[] flts, String[] strs) {
         if ((ints != null && ints.length != 0) || (strs != null && strs.length != 0)) {
             if (ints != null && DataCanbus.DATA[updateCode] != ints[0]) {
                 DataCanbus.DATA[updateCode] = ints[0];

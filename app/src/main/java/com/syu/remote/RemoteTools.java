@@ -14,8 +14,7 @@ import android.util.SparseArray;
 import com.syu.ipc.IRemoteModule;
 import com.syu.ipc.IRemoteToolkit;
 
-import org.apache.http.HttpStatus;
-
+import java.net.HttpURLConnection;
 import java.util.Random;
 
 public class RemoteTools implements ServiceConnection {
@@ -32,7 +31,7 @@ public class RemoteTools implements ServiceConnection {
 
     public RemoteTools(Context context, String action, String pkgName) {
         this.CONN_DELAY_TIME_MAX = 1500;
-        this.CONN_DELAY_TIME_MIN = HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        this.CONN_DELAY_TIME_MIN = HttpURLConnection.HTTP_INTERNAL_ERROR;
         this.mModules = new SparseArray<>();
         this.workThread = new HandlerThread("remote connection");
         this.autoConn = true;
@@ -67,7 +66,7 @@ public class RemoteTools implements ServiceConnection {
                 }
                 handler.removeCallbacks(this);
             }
-        }, new Random().nextInt(1500) + HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }, new Random().nextInt(1500) + HttpURLConnection.HTTP_INTERNAL_ERROR);
     }
 
     public void unBind() {

@@ -286,7 +286,19 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
     private void enableAndBuildHardwareLayer() {
         if (isHardwareAccelerated()) {
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            buildLayer();
+            
+            // Build layer after view is properly laid out
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    if (getWindowToken() != null && 
+                        getVisibility() == View.VISIBLE && 
+                        getWidth() > 0 && 
+                        getHeight() > 0) {
+                        buildLayer();
+                    }
+                }
+            });
         }
     }
 

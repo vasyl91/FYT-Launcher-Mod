@@ -10,7 +10,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 
+import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 
 public class TextIcon extends androidx.appcompat.widget.AppCompatTextView implements ViewTreeObserver.OnGlobalLayoutListener {
     private int iconId;
@@ -41,7 +43,7 @@ public class TextIcon extends androidx.appcompat.widget.AppCompatTextView implem
 
     private void init() {
         res = getResources();
-        int dimension = (int) res.getDimension(R.dimen.app_icon_size);
+        int dimension = Launcher.app_icon_size;
         this.mWidth = dimension;
         this.mHeight = dimension;
         getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -53,7 +55,7 @@ public class TextIcon extends androidx.appcompat.widget.AppCompatTextView implem
         int height = getHeight();
         if (width > 0 && height > 0) {
             if (this.iconId > 0) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), this.iconId);
+                Bitmap bitmap = Helpers.glideLoader(this.iconId);
                 int bwith = bitmap.getWidth();
                 int bheight = bitmap.getHeight();
                 float wscale = this.mWidth / bwith;
@@ -86,7 +88,7 @@ public class TextIcon extends androidx.appcompat.widget.AppCompatTextView implem
     }
 
     public void setIcon(int res) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), res);
+        Bitmap bitmap = Helpers.glideLoader(res);
         int bwith = bitmap.getWidth();
         int bheight = bitmap.getHeight();
         float wscale = this.mWidth / bwith;

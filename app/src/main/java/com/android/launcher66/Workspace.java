@@ -19,11 +19,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -37,6 +41,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -47,11 +52,11 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
@@ -65,8 +70,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import share.ResValue;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -277,6 +280,8 @@ public class Workspace extends SmoothPagedView
     public static final String OVERVIEW_MODE_OPEN = "overview.mode.open";
     public static final String OVERVIEW_MODE_CLOSE = "overview.mode.close";
     private View workspaceView;
+    private boolean isDebug;
+    private float widgetScaleFactor = 1.75f;
 
     private final Runnable mBindPages = new Runnable() {
         @Override
@@ -337,6 +342,7 @@ public class Workspace extends SmoothPagedView
         // Disable multitouch across the workspace/all apps/customize tray
         setMotionEventSplittingEnabled(true);
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        isDebug = BuildConfig.DEBUG;
     }
 
     @Override
@@ -587,13 +593,19 @@ public class Workspace extends SmoothPagedView
         } else {
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
+
+            TextView naviTextSize = (TextView) workspaceView.findViewById(R.id.tv_map);
+            naviTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle);
+            TextView dateTextSize = (TextView) workspaceView.findViewById(R.id.date);
+            dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeBasic);
+            TextView weekTextSize = (TextView) workspaceView.findViewById(R.id.curWeek);
+            weekTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeBasic);
+            TextView titleTextSize = (TextView) workspaceView.findViewById(R.id.tv_musicName);
+            titleTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle);
+            TextView artistTextSize = (TextView) workspaceView.findViewById(R.id.tv_artist);
+            artistTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeArtist);
         }
-        if (customScreen.length > 1 && customScreen[1] == null && ResValue.getInstance().workspace_custom1 != 0) {
-            customScreen[1] = (CellLayout) this.mLauncher.getLayoutInflater().inflate(ResValue.getInstance().workspace_custom1, (ViewGroup) null);
-        }
-        if (customScreen.length > 2 && customScreen[2] == null && ResValue.getInstance().workspace_custom1 != 0) {
-            customScreen[2] = (CellLayout) this.mLauncher.getLayoutInflater().inflate(ResValue.getInstance().workspace_custom2, (ViewGroup) null);
-        }
+
         for (int i = 0; i < LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count); i++) {
             mWorkspaceScreens.put(Long.valueOf(CUSTOM_CONTENT_SCREEN_ID1 - i), customScreen[i]);
             mScreenOrder.add(i, Long.valueOf(CUSTOM_CONTENT_SCREEN_ID1 - i));
@@ -613,9 +625,8 @@ public class Workspace extends SmoothPagedView
         }
 
         if (userLayout) {
-            int leftBarSize;
+            int leftBarSize = this.mLauncher.calculatedLeftBarWidth;
             int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
-            boolean userMap = prefs.getBoolean("user_map", true);
             boolean userDate = prefs.getBoolean("user_date", true);
             boolean userMusic = prefs.getBoolean("user_music", true);
             boolean userRadio = prefs.getBoolean("user_radio", true);
@@ -624,19 +635,13 @@ public class Workspace extends SmoothPagedView
             int dateMinWidth = 561;
             int dateMinHeight = 145;
             int musicMinWidth = 320;
-            int musicMinHeight = 284;
+            int musicMinHeight;
             int radioMinWidth = 320;
             int radioMinHeight = 145;
 
-            if (getResources().getDisplayMetrics().widthPixels == 1024
-                || getResources().getDisplayMetrics().heightPixels == 1024) {
-                leftBarSize = 100;
+            if (getResources().getDisplayMetrics().widthPixels <= 1024) {
                 musicMinHeight = 284;
-            } else if (getResources().getDisplayMetrics().heightPixels == 720) {
-                leftBarSize = 110;
-                musicMinHeight = 340;
             } else {
-                leftBarSize = 142;
                 musicMinHeight = 340;               
             }  
 
@@ -665,6 +670,8 @@ public class Workspace extends SmoothPagedView
                 absoluteTime.setLayoutParams(new AbsoluteLayout.LayoutParams(dateWidth, dateHeight, dateTopLeftX, dateTopLeftY)); 
                 absoluteLayout.addView(absoluteTime);
 
+                setCalculatedTextSize(absoluteTime, R.id.date, this.mLauncher.textSizeBasic);
+                setCalculatedTextSize(absoluteTime, R.id.curWeek, this.mLauncher.textSizeBasic);
             } 
             if (userMusic)  {
                 int musicTopLeftX, musicTopRightX;
@@ -684,6 +691,9 @@ public class Workspace extends SmoothPagedView
                 View absoluteMusic = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, (ViewGroup) null);
                 absoluteMusic.setLayoutParams(new AbsoluteLayout.LayoutParams(musicWidth, musicHeight, musicTopLeftX, musicTopLeftY)); 
                 absoluteLayout.addView(absoluteMusic);
+
+                setCalculatedTextSize(absoluteMusic, R.id.tv_musicName, this.mLauncher.textSizeTitle);
+                setCalculatedTextSize(absoluteMusic, R.id.tv_artist, this.mLauncher.textSizeArtist);
             }
             if (userRadio)  {
                 int radioTopLeftX, radioTopRightX;
@@ -703,6 +713,13 @@ public class Workspace extends SmoothPagedView
                 View absoluteRadio = this.mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, (ViewGroup) null);
                 absoluteRadio.setLayoutParams(new AbsoluteLayout.LayoutParams(radioWidth, radioHeight, radioTopLeftX, radioTopLeftY)); 
                 absoluteLayout.addView(absoluteRadio);
+
+                
+                setCalculatedTextSize(absoluteRadio, R.id.tv_unit, this.mLauncher.textSizeBasic);
+                setCalculatedTextSize(absoluteRadio, R.id.tv_band, this.mLauncher.textSizeBasic);
+                setCalculatedTextSize(absoluteRadio, R.id.tv_freq, this.mLauncher.radioTextFrequency);
+                setCalculatedButtonSizes(absoluteRadio, R.id.radio_btn_prev, this.mLauncher.radioButtonWidth, this.mLauncher.radioButtonHeight);
+                setCalculatedButtonSizes(absoluteRadio, R.id.radio_btn_next, this.mLauncher.radioButtonWidth, this.mLauncher.radioButtonHeight);
             }
         }
         int startPage = Integer.parseInt(prefs.getString("start_page", "1"));
@@ -716,7 +733,31 @@ public class Workspace extends SmoothPagedView
         new CanbusAsyncTask(LauncherApplication.sApp).execute();
 
         invalidate();
-    } 
+    }
+
+    private void setCalculatedTextSize(View view, int dateId, int textSize) {
+        TextView textView = (TextView) view.findViewById(dateId);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+    }
+
+    private void setCalculatedButtonSizes(View view, int dateId, int width, int height) {
+        Button button = (Button) view.findViewById(dateId);
+
+        // Get the current LayoutParams
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+
+        // Check if the LayoutParams is an instance of MarginLayoutParams
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+            marginParams.width = width;
+            marginParams.height = height;
+            button.setLayoutParams(marginParams);
+        } else {
+            // Handle cases where MarginLayoutParams aren't supported and create new LayoutParams if necessary
+            ViewGroup.MarginLayoutParams newParams = new ViewGroup.MarginLayoutParams(width, height);
+            button.setLayoutParams(newParams);
+        }
+    }
 
     public void createCustomContentPage() {
         Log.i("PAGE", "createCustomContentPage()");
@@ -725,9 +766,6 @@ public class Workspace extends SmoothPagedView
 
         mWorkspaceScreens.put(CUSTOM_CONTENT_SCREEN_ID, customScreen);
         mScreenOrder.add(0, CUSTOM_CONTENT_SCREEN_ID);
-
-        // We want no padding on the custom content
-        customScreen.setPadding(0, 0, 0, 0);
 
         addFullScreenPage(customScreen);
 
@@ -1123,15 +1161,16 @@ public class Workspace extends SmoothPagedView
             final int itemCount = swc.getChildCount();
             for (int j = 0; j < itemCount; j++) {
                 View v = swc.getChildAt(j);
-
-                if (v.getTag() instanceof LauncherAppWidgetInfo) {
-                    LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) v.getTag();
-                    LauncherAppWidgetHostView lahv = (LauncherAppWidgetHostView) info.hostView;
-                    if (lahv != null && lahv.orientationChangedSincedInflation()) {
-                        mLauncher.removeAppWidget(info);
-                        // Remove the current widget which is inflated with the wrong orientation
-                        cl.removeView(lahv);
-                        mLauncher.bindAppWidget(info);
+                if (v != null) {
+                    if (v.getTag() instanceof LauncherAppWidgetInfo) {
+                        LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) v.getTag();
+                        LauncherAppWidgetHostView lahv = (LauncherAppWidgetHostView) info.hostView;
+                        if (lahv != null) {
+                            mLauncher.removeAppWidget(info);
+                            // Remove the current widget which is inflated with the wrong orientation
+                            cl.removeView(lahv);
+                            mLauncher.bindAppWidget(info);
+                        }
                     }
                 }
             }
@@ -1168,10 +1207,10 @@ public class Workspace extends SmoothPagedView
         if (swipeInIgnoreDirection && getScreenIdForPageIndex(getCurrentPage()) ==
                 CUSTOM_CONTENT_SCREEN_ID1 && passRightSwipesToCustomContent) {
             // Pass swipes to the right to the custom content page.
-            mLauncher.getRootView().setTranslationX(-mLauncher.screenWidth);
+            mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
             return;
         } else {
-            mLauncher.getRootView().setTranslationX(-mLauncher.screenWidth);
+            mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
         }
 
         if (theta > MAX_SWIPE_ANGLE) {
@@ -1194,6 +1233,10 @@ public class Workspace extends SmoothPagedView
 
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
+        Log.i(TAG, "onPageBeginMoving()");
+        if (isInOverviewMode()) {
+            mLauncher.getRootView().setTranslationX(0);
+        }
         if (getChildCount() > 1) {
             WindowUtil.removePip(null);
         }
@@ -1228,11 +1271,21 @@ public class Workspace extends SmoothPagedView
         super.onPageEndMoving();
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
-            if (!helpers.isInOverviewMode() && getChildCount() > 1 && !mDragController.isDragging() && getCurrentPage() == pipScreen) {
+            if (!helpers.isInOverviewMode() 
+                && !helpers.openedFromOverviewBoolean() 
+                && getChildCount() > 1 
+                && !mDragController.isDragging()
+                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()) 
+                && getCurrentPage() == pipScreen) {
+                
                 Log.d("onPageEndMoving", "startMapPip");
                 WindowUtil.startMapPip(null, false);
             }
         }, 250);
+
+        if (isInOverviewMode()) {
+            mLauncher.getRootView().setTranslationX(0);
+        }
 
         if (isHardwareAccelerated()) {
             updateChildrenLayersEnabled(false);
@@ -1266,6 +1319,16 @@ public class Workspace extends SmoothPagedView
             stripEmptyScreens();
             mStripScreensOnPageStopMoving = false;
         }
+        // removes an error where pip shows up when user quickly changes to she screen where it shouldn't appear
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (getChildCount() > 1 
+                && getCurrentPage() != pipScreen
+                && WindowUtil.visible) {
+                
+                WindowUtil.removePip(null);
+            }
+        }, 350);
     }
 
     @Override
@@ -1300,7 +1363,8 @@ public class Workspace extends SmoothPagedView
     protected void setWallpaperDimension() {
         String spKey = WallpaperCropActivity.getSharedPreferencesKey();
         SharedPreferences sp = mLauncher.getSharedPreferences(spKey, Context.MODE_MULTI_PROCESS);
-        WallpaperPickerActivity.suggestWallpaperDimension(this.mLauncher.getResources(), sp, this.mLauncher.getWindowManager(), this.mWallpaperManager, true);
+        WallpaperPickerActivity.suggestWallpaperDimension(mLauncher.getResources(),
+                sp, mLauncher.getWindowManager(), mWallpaperManager);
     }
 
     protected void snapToPage(int whichPage, Runnable r) {
@@ -2025,7 +2089,7 @@ public class Workspace extends SmoothPagedView
         final Canvas canvas = new Canvas();
 
         // The outline is used to visualize where the item will land if dropped
-        mDragOutline = createDragOutline(v, canvas, DRAG_BITMAP_PADDING);
+        mDragOutline = createDragOutline(v, canvas, DRAG_BITMAP_PADDING, 1.0f);
     }
 
     public void onDragStartedWithItem(PendingAddItemInfo info, Bitmap b, boolean clipAlpha) {
@@ -2095,6 +2159,9 @@ public class Workspace extends SmoothPagedView
     }
 
     public boolean enterOverviewMode() {
+        // Do not allow to enter if widget has been long clicked
+        if (helpers.isWidgetClickedBool()) return false;
+        
         mLauncher.getRootView().setTranslationX(0);
         helpers.setInOverviewMode(true);
         helpers.setListOpen(false);
@@ -2125,7 +2192,7 @@ public class Workspace extends SmoothPagedView
     }
 
     public void exitOverviewMode(int snapPage, boolean animated) {
-        mLauncher.getRootView().setTranslationX(-mLauncher.screenWidth);
+        mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -2138,22 +2205,14 @@ public class Workspace extends SmoothPagedView
             Intent intentOverviewMode = new Intent(OVERVIEW_MODE_CLOSE);
             LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
         }
-        // needs some time to get proper current page
-        Handler overviewHandler = new Handler(Looper.getMainLooper());
-        overviewHandler.postDelayed(new Runnable() { 
-            @Override
-            public void run() {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
-                if (!helpers.isInOverviewMode() 
-                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                    && Workspace.this.getCurrentPage() == pipScreen) {
 
-                    Log.d("exitOverviewMode", "startMapPip");
-                    WindowUtil.startMapPip(null, false);
-                }
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
+            if (getCurrentPage() == pipScreen) {
+                Log.d("exitOverviewMode", "startMapPip");
+                WindowUtil.startMapPip(null, false);
             }
-        }, 1000);
+        }, 250);
 
         enableOverviewMode(false, snapPage, animated);
     } 
@@ -2614,86 +2673,69 @@ public class Workspace extends SmoothPagedView
         return b;
     }
 
-    /**
-     * Returns a new bitmap to be used as the object outline, e.g. to visualize the drop location.
-     * Responsibility for the bitmap is transferred to the caller.
-     */
-    private Bitmap createDragOutline(View v, Canvas canvas, int padding) {
-        final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
-        final Bitmap b = Bitmap.createBitmap(
-                v.getWidth() + padding, v.getHeight() + padding, Bitmap.Config.ARGB_8888);
-
-        canvas.setBitmap(b);
-        drawDragView(v, canvas, padding, true);
-        mOutlineHelper.applyMediumExpensiveOutlineWithBlur(b, canvas, outlineColor, outlineColor);
-        canvas.setBitmap(null);
-        return b;
-    }
-
-    /**
-     * Returns a new bitmap to be used as the object outline, e.g. to visualize the drop location.
-     * Responsibility for the bitmap is transferred to the caller.
-     */
-    private Bitmap createDragOutline(Bitmap orig, Canvas canvas, int padding, int w, int h,
-            boolean clipAlpha) {
-        final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
-        final Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(b);
-
-        Rect src = new Rect(0, 0, orig.getWidth(), orig.getHeight());
-        float scaleFactor = Math.min((w - padding) / (float) orig.getWidth(),
-                (h - padding) / (float) orig.getHeight());
-        int scaledWidth = (int) (scaleFactor * orig.getWidth());
-        int scaledHeight = (int) (scaleFactor * orig.getHeight());
-        Rect dst = new Rect(0, 0, scaledWidth, scaledHeight);
-
-        // center the image
-        dst.offset((w - scaledWidth) / 2, (h - scaledHeight) / 2);
-
-        canvas.drawBitmap(orig, src, dst, null);
-        mOutlineHelper.applyMediumExpensiveOutlineWithBlur(b, canvas, outlineColor, outlineColor,
-                clipAlpha);
-        canvas.setBitmap(null);
-
-        return b;
-    }
-
     void startDrag(CellLayout.CellInfo cellInfo) {
         View child = cellInfo.cell;
-
-        // Make sure the drag was started by a long press as opposed to a long click.
         if (!child.isInTouchMode()) {
             return;
         }
-
         mDragInfo = cellInfo;
         child.setVisibility(INVISIBLE);
         CellLayout layout = (CellLayout) child.getParent().getParent();
         layout.prepareChildForDrag(child);
-
         child.clearFocus();
         child.setPressed(false);
-
         final Canvas canvas = new Canvas();
-
-        // The outline is used to visualize where the item will land if dropped
-        mDragOutline = createDragOutline(child, canvas, DRAG_BITMAP_PADDING);
-        beginDragShared(child, this);
+        
+        // Identify view type for scaling
+        boolean isWidget = false;
+        if (child instanceof LauncherAppWidgetHostView) {
+            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+            if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                isWidget = true;
+            }
+        }
+        
+        float widgetScale = isWidget ? widgetScaleFactor : 1.0f;
+        
+        // Create scaled drag outline
+        mDragOutline = createDragOutline(child, canvas, DRAG_BITMAP_PADDING, widgetScale);
+        
+        beginDragShared(child, this, widgetScale);
     }
 
-    public void beginDragShared(View child, DragSource source) {
-        // The drag bitmap follows the touch point around on the screen
-        final Bitmap b = createDragBitmap(child, new Canvas(), DRAG_BITMAP_PADDING);
+    public void beginDragShared(View child, DragSource source, float widgetScale) {
+        // Create original drag bitmap
+        Bitmap originalBitmap = createDragBitmap(child, new Canvas(), DRAG_BITMAP_PADDING);
+        Bitmap finalBitmap = originalBitmap;
 
-        final int bmpWidth = b.getWidth();
-        final int bmpHeight = b.getHeight();
+        final int bmpWidth = originalBitmap.getWidth();
+        final int bmpHeight = originalBitmap.getHeight();
 
-        float scale = mLauncher.getDragLayer().getLocationInDragLayer(child, mTempXY);
-        int dragLayerX =
-                Math.round(mTempXY[0] - (bmpWidth - scale * child.getWidth()) / 2);
-        int dragLayerY =
-                Math.round(mTempXY[1] - (bmpHeight - scale * bmpHeight) / 2
-                        - DRAG_BITMAP_PADDING / 2);
+        // Apply scaling only to widgets
+        if (widgetScale != 1.0f) {
+            int newWidth = (int)(originalBitmap.getWidth() * widgetScale);
+            int newHeight = (int)(originalBitmap.getHeight() * widgetScale);
+            Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(scaledBitmap);
+            canvas.scale(widgetScale, widgetScale);
+            canvas.drawBitmap(originalBitmap, 0, 0, null);
+            originalBitmap.recycle();
+            finalBitmap = scaledBitmap;
+        }
+
+        // Calculate position for the widgets
+        float baseScale = mLauncher.getDragLayer().getLocationInDragLayer(child, mTempXY);
+        int dragLayerX, dragLayerY;
+        if (widgetScale != 1.0f) {
+            float childCenterX = mTempXY[0] + (child.getWidth() * baseScale) / 2;
+            float childCenterY = mTempXY[1] + (child.getHeight() * baseScale) / 2;
+            dragLayerX = Math.round(childCenterX - finalBitmap.getWidth() / 2);
+            dragLayerY = Math.round(childCenterY - finalBitmap.getHeight() / 2);
+        } else {
+            dragLayerX = Math.round(mTempXY[0] - (finalBitmap.getWidth() - baseScale * child.getWidth()) / 2);
+            dragLayerY = Math.round(mTempXY[1] - (finalBitmap.getHeight() - baseScale * child.getHeight()) / 2 - DRAG_BITMAP_PADDING / 2);
+        }
 
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
@@ -2721,14 +2763,78 @@ public class Workspace extends SmoothPagedView
             icon.clearPressedOrFocusedBackground();
         }
 
-        mDragController.startDrag(b, dragLayerX, dragLayerY, source, child.getTag(),
-                DragController.DRAG_ACTION_MOVE, dragVisualizeOffset, dragRect, scale);
+        // Start drag operation
+        mDragController.startDrag(
+            finalBitmap, 
+            dragLayerX, 
+            dragLayerY, 
+            source, 
+            child.getTag(),
+            DragController.DRAG_ACTION_MOVE, 
+            dragVisualizeOffset, 
+            dragRect,
+            1.0f
+        );
 
         if (child.getParent() instanceof ShortcutAndWidgetContainer) {
             mDragSourceInternal = (ShortcutAndWidgetContainer) child.getParent();
         }
+    }
 
-        b.recycle();
+    /**
+     * Returns a new bitmap to be used as the object outline, e.g. to visualize the drop location.
+     * Responsibility for the bitmap is transferred to the caller.
+     */   
+    private Bitmap createDragOutline(View v, Canvas canvas, int padding, float scale) {
+        // Calculate scaled dimensions
+        int width = (int)((v.getWidth() + padding) * scale);
+        int height = (int)((v.getHeight() + padding) * scale);
+        final Bitmap b = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        
+        if (isDebug) {
+            // Fill with a background color to see the bitmap bounds
+            b.eraseColor(Color.RED);            
+        }
+        
+        canvas.setBitmap(b);
+        canvas.save();
+        canvas.scale(scale, scale);
+        drawDragView(v, canvas, padding, true);
+        canvas.restore();
+
+        if (!isDebug) {
+        // Apply outline effect
+            final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
+            mOutlineHelper.applyMediumExpensiveOutlineWithBlur(b, canvas, outlineColor, outlineColor);
+        }
+        canvas.setBitmap(null);
+        return b;
+    }
+     
+     /**
+     * Returns a new bitmap to be used as the object outline, e.g. to visualize the drop location.
+     * Responsibility for the bitmap is transferred to the caller.
+     */
+    private Bitmap createDragOutline(Bitmap orig, Canvas canvas, int padding, int w, int h, boolean clipAlpha) {
+        final int outlineColor = ContextCompat.getColor(getContext(), R.color.outline_color);
+        final Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(b);
+
+        Rect src = new Rect(0, 0, orig.getWidth(), orig.getHeight());
+        float scaleFactor = Math.min((w - padding) / (float) orig.getWidth(),
+                (h - padding) / (float) orig.getHeight());
+        int scaledWidth = (int) (scaleFactor * orig.getWidth());
+        int scaledHeight = (int) (scaleFactor * orig.getHeight());
+        Rect dst = new Rect(0, 0, scaledWidth, scaledHeight);
+
+        // Center the image
+        dst.offset((w - scaledWidth) / 2, (h - scaledHeight) / 2);
+
+        canvas.drawBitmap(orig, src, dst, null);
+        mOutlineHelper.applyMediumExpensiveOutlineWithBlur(b, canvas, outlineColor, outlineColor, clipAlpha);
+        canvas.setBitmap(null);
+
+        return b;
     }
 
     void addApplicationShortcut(ShortcutInfo info, CellLayout target, long container, long screenId,
@@ -2967,11 +3073,29 @@ public class Workspace extends SmoothPagedView
     }
 
     public void onDrop(final DragObject d) {
-        mLauncher.getRootView().setTranslationX(-mLauncher.screenWidth);
+        mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
         mDragViewVisualCenter = getDragViewVisualCenter(d.x, d.y, d.xOffset, d.yOffset, d.dragView,
                 mDragViewVisualCenter);
 
         CellLayout dropTargetLayout = mDropToLayout;
+
+        if (d.dragInfo instanceof Intent) {
+            Intent intent = (Intent) d.dragInfo;
+            PackageManager pm = mLauncher.getPackageManager();
+            ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);
+            
+            if (resolveInfo != null) {
+                AppInfo appInfo = new AppInfo(pm, resolveInfo, mIconCache, new HashMap<>());
+                ShortcutInfo shortcutInfo = new ShortcutInfo(appInfo);
+                shortcutInfo.setIcon(mIconCache.getIcon(intent));
+                shortcutInfo.spanX = 1;
+                shortcutInfo.spanY = 1;
+                d.dragInfo = shortcutInfo;
+            } else {
+                Log.e(TAG, "Failed to resolve intent: " + intent);
+                return;
+            }
+        }
 
         // We want the point to be mapped to the dragTarget.
         if (dropTargetLayout != null) {
@@ -2986,13 +3110,13 @@ public class Workspace extends SmoothPagedView
         int snapScreen = -1;
         boolean resizeOnDrop = false;
         if (d.dragSource != this) {
-            Log.d(TAG,"onDrop()  d.dragSource = "+d.dragSource);
+            Log.d(TAG,"onDrop()  d.dragSource = " + d.dragSource);
             final int[] touchXY = new int[] { (int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1] };
             onDropExternal(touchXY, d.dragInfo, dropTargetLayout, false, d);
         } else if (mDragInfo != null) {
             final View cell = mDragInfo.cell;
-            Log.d(TAG,"onDrop()  mDragInfo = "+mDragInfo);
+            Log.d(TAG,"onDrop()  mDragInfo = " + mDragInfo);
 
             Runnable resizeRunnable = null;
             if (dropTargetLayout != null && !d.cancelled) {
@@ -3094,8 +3218,7 @@ public class Workspace extends SmoothPagedView
 
                         final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) cell;
                         AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                        if (pinfo != null &&
-                                pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                        if (pinfo != null) {
                             final Runnable addResizeFrame = new Runnable() {
                                 public void run() {
                                     DragLayer dragLayer = mLauncher.getDragLayer();
@@ -3539,7 +3662,6 @@ public class Workspace extends SmoothPagedView
             mDragController.cancelDrag();
             return;
         }
-        /* @} */
 
         // Ensure that we have proper spans for the item that we are dropping
         if (item.spanX < 0 || item.spanY < 0) throw new RuntimeException("Improper spans found");
@@ -3798,7 +3920,32 @@ public class Workspace extends SmoothPagedView
             }
         };
 
-        ItemInfo info = (ItemInfo) dragInfo;
+        ItemInfo info = null;
+        if (dragInfo instanceof Intent) {
+            // Convert Intent to ShortcutInfo via ResolveInfo and AppInfo
+            Intent intent = (Intent) dragInfo;
+            PackageManager pm = mLauncher.getPackageManager();
+            ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);
+            if (resolveInfo != null) {
+                // Create AppInfo using ResolveInfo
+                AppInfo appInfo = new AppInfo(pm, resolveInfo, mIconCache, new HashMap<>());
+                // Create ShortcutInfo from AppInfo
+                ShortcutInfo shortcutInfo = new ShortcutInfo(appInfo);
+                // Set the icon using IconCache
+                Bitmap icon = mIconCache.getIcon(intent);
+                shortcutInfo.setIcon(icon);
+                info = shortcutInfo;
+            } else {
+                Log.e(TAG, "Could not resolve intent: " + intent);
+                return;
+            }
+        } else if (dragInfo instanceof ItemInfo) {
+            info = (ItemInfo) dragInfo;
+        } else {
+            Log.e(TAG, "Invalid dragInfo type: " + dragInfo.getClass().getSimpleName());
+            return;
+        }
+
         int spanX = info.spanX;
         int spanY = info.spanY;
         if (mDragInfo != null) {
@@ -3905,8 +4052,9 @@ public class Workspace extends SmoothPagedView
                     // Came from all apps -- make a copy
                     info = new ShortcutInfo((AppInfo) info);
                 }
-                view = mLauncher.createShortcut(R.layout.application, cellLayout,
-                        (ShortcutInfo) info);
+                // Ensure we're using the converted ShortcutInfo for Intent case
+                view = mLauncher.createShortcut(R.layout.application, cellLayout, (ShortcutInfo) info);
+                view.setTag(info); // Explicitly set the correct tag
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
                 view = FolderIcon.fromXml(R.layout.folder_icon, mLauncher, cellLayout,
@@ -3950,8 +4098,12 @@ public class Workspace extends SmoothPagedView
             CellLayout.LayoutParams lp = (CellLayout.LayoutParams) view.getLayoutParams();
             cellLayout.getShortcutsAndWidgets().measureChild(view);
 
-            LauncherModel.addOrMoveItemInDatabase(mLauncher, info, container, screenId,
-                    lp.cellX, lp.cellY);
+            if (info instanceof ItemInfo) {
+                LauncherModel.addOrMoveItemInDatabase(mLauncher, info, container, screenId,
+                        lp.cellX, lp.cellY);
+            } else {
+                Log.e(TAG, "Attempted to save invalid item to database: " + info.getClass());
+            }
 
             if (d.dragView != null) {
                 // We wrap the animation call in the temporary set and reset of the current
@@ -3963,6 +4115,14 @@ public class Workspace extends SmoothPagedView
                 resetTransitionTransform(cellLayout);
             }
         }
+    }
+
+    private String resolveTitle(Intent intent) {
+        PackageManager pm = mLauncher.getPackageManager();
+        ActivityInfo activityInfo = intent.resolveActivityInfo(pm, 0);
+        return activityInfo != null ?
+                activityInfo.loadLabel(pm).toString() :
+                intent.getComponent().getClassName();
     }
 
     public Bitmap createWidgetBitmap(ItemInfo widgetInfo, View layout) {

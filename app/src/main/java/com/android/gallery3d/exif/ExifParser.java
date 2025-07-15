@@ -16,8 +16,10 @@ package com.android.gallery3d.exif;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -671,36 +673,101 @@ class ExifParser {
 
     private boolean seekTiffData(InputStream inputStream) throws IOException, ExifInvalidFormatException {
         CountedDataInputStream dataStream = new CountedDataInputStream(inputStream);
-        if (dataStream.readShort() != JpegHeader.SOI) {
-            throw new ExifInvalidFormatException("Invalid JPEG format");
-        }
+        short firstShort = dataStream.readShort();
 
-        short marker = dataStream.readShort();
-        while (marker != JpegHeader.EOI && !JpegHeader.isSofMarker(marker)) {
-            int length = dataStream.readUnsignedShort();
-            // Some invalid formatted image contains multiple APP1,
-            // try to find the one with Exif data.
-            if (marker == JpegHeader.APP1) {
-                int header = 0;
-                short headerTail = 0;
-                if (length >= 8) {
-                    header = dataStream.readInt();
-                    headerTail = dataStream.readShort();
-                    length -= 6;
-                    if (header == EXIF_HEADER && headerTail == EXIF_HEADER_TAIL) {
-                        mTiffStartPosition = dataStream.getReadByteCount();
-                        mApp1End = length;
-                        mOffsetToApp1EndFromSOF = mTiffStartPosition + mApp1End;
-                        return true;
+        if (firstShort == JpegHeader.SOI) {
+            // Handle JPEG
+            short marker = dataStream.readShort();
+            while (marker != JpegHeader.EOI && !JpegHeader.isSofMarker(marker)) {
+                int length = dataStream.readUnsignedShort();
+                if (marker == JpegHeader.APP1) {
+                    if (length >= 8) {
+                        int header = dataStream.readInt();
+                        short headerTail = dataStream.readShort();
+                        length -= 6;
+                        if (header == EXIF_HEADER && headerTail == EXIF_HEADER_TAIL) {
+                            mTiffStartPosition = dataStream.getReadByteCount();
+                            mApp1End = length;
+                            mOffsetToApp1EndFromSOF = mTiffStartPosition + mApp1End;
+                            return true;
+                        }
+                    }
+                }
+                if (length < 2 || dataStream.skip(length - 2) != (length - 2)) {
+                    Log.w(TAG, "Invalid JPEG format.");
+                    return false;
+                }
+                marker = dataStream.readShort();
+            }
+            return false;
+        } else if (firstShort == (short) 0x5249) { // Check for "RI" in "RIFF"
+            short secondShort = dataStream.readShort();
+            if (secondShort == (short) 0x4646) { // Check for "FF" in "RIFF"
+                // Handle WebP
+                int riffSize = Integer.reverseBytes(dataStream.readInt()); // Little-endian
+                int remainingBytes = riffSize - 4; // Subtract 4 bytes ("WEBP" identifier)
+                byte[] webpCheck = new byte[4];
+                dataStream.readFully(webpCheck);
+                remainingBytes -= 4;
+                if (new String(webpCheck, "ASCII").equals("WEBP")) {
+                    // Iterate through chunks using riffSize
+                    while (remainingBytes > 0) {
+                        byte[] chunkIdBytes = new byte[4];
+                        dataStream.readFully(chunkIdBytes);
+                        remainingBytes -= 4;
+                        String chunkId = new String(chunkIdBytes, "ASCII");
+                        int chunkSize = Integer.reverseBytes(dataStream.readInt()); // Little-endian
+                        remainingBytes -= 4;
+                        if (chunkId.equals("EXIF")) {
+                            mTiffStartPosition = dataStream.getReadByteCount();
+                            mApp1End = chunkSize;
+                            mOffsetToApp1EndFromSOF = mTiffStartPosition + mApp1End;
+                            return true;
+                        } else {
+                            // Skip chunk data and padding
+                            long toSkip = chunkSize + (chunkSize % 2);
+                            if (toSkip > remainingBytes) toSkip = remainingBytes; // Prevent over-skipping
+                            dataStream.skip(toSkip);
+                            remainingBytes -= toSkip;
+                        }
                     }
                 }
             }
-            if (length < 2 || (length - 2) != dataStream.skip(length - 2)) {
-                Log.w(TAG, "Invalid JPEG format.");
-                return false;
-            }
-            marker = dataStream.readShort();
+            return false;
         }
+
+        // Handle PNG
+        byte[] pngSignature = new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+        byte[] firstTwoBytes = ByteBuffer.allocate(2).putShort(firstShort).array();
+        byte[] remainingBytes = new byte[6];
+        dataStream.readFully(remainingBytes);
+
+        // Create a full 8-byte header array
+        byte[] header = new byte[8];
+        System.arraycopy(firstTwoBytes, 0, header, 0, 2); 
+        System.arraycopy(remainingBytes, 0, header, 2, 6);
+        if (Arrays.equals(header, pngSignature)) {
+            // Search for eXIf chunk in PNG
+            while (dataStream.available() > 0) {
+                int chunkLength = dataStream.readInt();
+                byte[] chunkTypeBytes = new byte[4];
+                dataStream.readFully(chunkTypeBytes);
+                String chunkType = new String(chunkTypeBytes, "ASCII");
+                if (chunkType.equals("eXIf")) {
+                    mTiffStartPosition = dataStream.getReadByteCount();
+                    mApp1End = chunkLength;
+                    mOffsetToApp1EndFromSOF = mTiffStartPosition + mApp1End;
+                    return true;
+                } else {
+                    // Skip chunk data and CRC
+                    long toSkip = chunkLength + 4L; // Data + CRC
+                    if (dataStream.skip(toSkip) != toSkip) {
+                        break;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 

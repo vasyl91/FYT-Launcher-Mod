@@ -18,8 +18,6 @@ import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL11;
 
-import org.junit.jupiter.api.Assertions;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLUtils;
@@ -137,7 +135,7 @@ public abstract class UploadedTexture extends BasicTexture {
     }
 
     private void freeBitmap() {
-        Assertions.assertTrue(mBitmap != null);
+        if (mBitmap == null) return;
         onFreeBitmap(mBitmap);
         mBitmap = null;
     }
@@ -212,8 +210,6 @@ public abstract class UploadedTexture extends BasicTexture {
                 int height = bHeight + mBorder * 2;
                 int texWidth = getTextureWidth();
                 int texHeight = getTextureHeight();
-
-                Assertions.assertTrue(bWidth <= texWidth && bHeight <= texHeight);
 
                 // Upload the bitmap to a new texture.
                 mId = canvas.getGLId().generateTexture();

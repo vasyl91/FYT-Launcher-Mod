@@ -13,12 +13,13 @@ import android.content.Context;
 public class LauncherAppWidgetHost extends AppWidgetHost {
 
     private Launcher mLauncher;
-
+    private Context mContext;
     private OnWidgetClickListener listener;
 
     public LauncherAppWidgetHost(Context context, Launcher launcher, int hostId) {
         super(context, hostId);
         mLauncher = launcher;
+        mContext = context;
     }
 
     public void setOnWidgetClickListener(OnWidgetClickListener listener) {
@@ -35,15 +36,16 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
     }
 
     @Override
-    public void stopListening() {
-        super.stopListening();
-        clearViews();
+    public void clearViews() {
+        super.clearViews();
     }
 
+    @Override
     protected void onProvidersChanged() {
+        super.onProvidersChanged();
         // Once we get the message that widget packages are updated, we need to rebind items
         // in AppsCustomize accordingly.
-        mLauncher.bindPackagesUpdated(LauncherModel.getSortedWidgetsAndShortcuts(mLauncher));
+        mLauncher.bindPackagesUpdated(LauncherModel.getSortedWidgetsAndShortcuts(mContext));
     }
 
     public interface OnWidgetClickListener {

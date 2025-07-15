@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -13,12 +14,12 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.LauncherApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,10 +46,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.text.format.DateUtils;
 
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import share.ResValue;
@@ -76,11 +79,14 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private static final Object LOCK = new Object();
     private static final int MAX_RETRIES = 5;
     private static final long INITIAL_DELAY_MS = 0;
+    private boolean mOnlyGetTimes;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public SunTask(Context context, double latiude, double longitude) {
+    public SunTask(Context context, double latiude, double longitude, boolean onlyGetTimes) {
         this.mContext = context;
         this.mLatiude = latiude;
         this.mLongitude = longitude;
+        this.mOnlyGetTimes = onlyGetTimes;
         mWallpaperManager = WallpaperManager.getInstance(context);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         sunriseCorrectionValue = mPrefs.getInt("sunrise_correction", 0) * 60000L;
@@ -93,7 +99,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     protected String doInBackground(String[] url) throws Exception {
         getTimes(url[0]);
         boolean nightMode = mPrefs.getBoolean("night_mode", false); 
-        if (nightMode) {
+        if (nightMode && !mOnlyGetTimes) {
             setWallpapers();
             boolean brightnessBool = mPrefs.getBoolean("brightness", false);
             if (brightnessBool) {
@@ -104,6 +110,11 @@ public class SunTask extends AsyncTask<String, Void, String> {
             }
         }
         return "";
+    }
+
+    @Override
+    protected void onProgress(Void[] progress) {
+        //
     }
 
     private void getTimes(String url) {        
@@ -191,61 +202,88 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private void setWallpapers() {
         File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img");
-        if (allowSetDayWallpaper(mFile)) {
-            File image = new File(mFile, "Day.png");
-            if (isFileValid(image)) {
-                setWallpaperFromFile(image, "Day", 0, INITIAL_DELAY_MS);
-            } else {
-                setDefaultWallpaper("Day");
-            }
-        } else if (allowSetNightWallpaper(mFile)) {
-            File image = new File(mFile, "Night.png");
-            if (isFileValid(image)) {
-                setWallpaperFromFile(image, "Night", 0, INITIAL_DELAY_MS);
-            } else {
-                setDefaultWallpaper("Night");
-            }
+        if (mFile.exists() && !defaultWallpapers) {
+            if (allowSetDayWallpaper()) {
+                File image = new File(mFile, "Day.webp");
+                if (isFileValid(image)) {
+                    setWallpaperFromFile(image, "Day", 0, INITIAL_DELAY_MS);
+                } else {
+                    setDefaultWallpapers();
+                }
+            } else if (allowSetNightWallpaper()) {
+                File image = new File(mFile, "Night.webp");
+                if (isFileValid(image)) {
+                    setWallpaperFromFile(image, "Night", 0, INITIAL_DELAY_MS);
+                } else {
+                    setDefaultWallpapers();
+                }
+            }            
+        } else {
+            setDefaultWallpapers();
         }
     }
 
+    private void setDefaultWallpapers() {
+        if (allowSetDayWallpaper()) {
+            setDefaultWallpaper("Day");
+        } else if (allowSetNightWallpaper()) {
+            setDefaultWallpaper("Night");
+        }   
+    }
+
     private void setWallpaperFromFile(File imageFile, String name, int retryCount, long delayMs) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        scheduler.schedule(() -> {
             synchronized (LOCK) {
                 try {
                     Bitmap newWallpaperBitmap = decodeBitmapSafely(imageFile);
-                    if (newWallpaperBitmap == null || newWallpaperBitmap.getWidth() <= 0 || newWallpaperBitmap.getHeight() <= 0) {
-                        Log.e(TAG, "Failed to decode bitmap from file");
+                    if (newWallpaperBitmap == null) {
                         if (retryCount < MAX_RETRIES) {
-                            long nextDelay = delayMs == 0 ? 2000 : delayMs * 2;
+                            long nextDelay = (delayMs == 0) ? 2000 : delayMs * 2;
                             setWallpaperFromFile(imageFile, name, retryCount + 1, nextDelay);
                         }
                         return;
                     }
-                    setWallpaperIfDifferent(newWallpaperBitmap, name, retryCount, delayMs);
+                    SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+                    SharedPreferences.Editor idEditor = idPrefs.edit();
+                    idEditor.putInt("previousDrawableId", 0);
+                    idEditor.apply();
+                    setWallpaperIfDifferent(newWallpaperBitmap, name, 0, INITIAL_DELAY_MS);
                 } catch (Exception e) {
-                    Log.e(TAG, "Error setting wallpaper from file", e);
+                    Log.e(TAG, "Error decoding bitmap", e);
                 }
             }
-        }, delayMs);
+        }, delayMs, TimeUnit.MILLISECONDS);
     }
 
     private void setDefaultWallpaper(String name) {
+        SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        int previousDrawableId = idPrefs.getInt("previousDrawableId", 0);
         int drawableId = name.equals("Day") ? ResValue.getInstance().def_bg : ResValue.getInstance().def_bg_n;
-        Drawable drawable = ContextCompat.getDrawable(mContext, drawableId);
-        Bitmap bitmapDrawable = drawableToBitmap(drawable);
-        setWallpaperIfDifferent(bitmapDrawable, name, 0, INITIAL_DELAY_MS);
+        if (previousDrawableId != drawableId) {
+            try {
+                mWallpaperManager.setResource(drawableId);           
+                SharedPreferences.Editor idEditor = idPrefs.edit();
+                idEditor.putInt("previousDrawableId", drawableId);
+                idEditor.apply();
+                Log.d(TAG, "Default wallpaper set successfully.");
+            } catch (IOException e) {
+                Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
+            }
+        } else {
+            Log.d(TAG, "Default wallpaper already set.");
+        }
     }
 
-    private boolean allowSetDayWallpaper(File mFile) {
-        return mFile.exists() && (helpers.isDay() || defaultWallpapers  && helpers.isDay() || helpers.isPolarDay());
+    private boolean allowSetDayWallpaper() {
+        return helpers.isDay() || helpers.isPolarDay();
     }
 
-    private boolean allowSetNightWallpaper(File mFile) {
-        return mFile.exists() && (!helpers.isDay() || defaultWallpapers  && !helpers.isDay() || helpers.isPerpetualNight());
+    private boolean allowSetNightWallpaper() {
+        return !helpers.isDay() || helpers.isPerpetualNight();
     }
 
     private boolean isFileValid(File file) {
-        return file.exists() && file.length() > 0;
+        return file.exists() && file.length() > 0  && !defaultWallpapers;
     }
 
     private Bitmap decodeBitmapSafely(File image) {
@@ -254,7 +292,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
             
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            options.inSampleSize = 2; // Adjust based on image size
+            options.inSampleSize = 2; 
             
             try {
                 Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), options);
@@ -268,35 +306,33 @@ public class SunTask extends AsyncTask<String, Void, String> {
             }
         }
     }
-    
-    private void setWallpaperIfDifferent(Bitmap newWallpaperBitmap, String name, int retryCount, final long delayMs) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+    private void setWallpaperIfDifferent(Bitmap newWallpaperBitmap, String name, int retryCount, long delayMs) {
+        scheduler.schedule(() -> {
             synchronized (LOCK) {
                 try {
-                    if (newWallpaperBitmap == null || newWallpaperBitmap.getWidth() <= 0 || newWallpaperBitmap.getHeight() <= 0) {
+                    if (newWallpaperBitmap == null || newWallpaperBitmap.isRecycled()) {
                         throw new IllegalStateException("Invalid bitmap");
                     }
-                    
+
                     if (areBitmapsHashEqual(name)) {
                         Log.d(TAG, "Wallpaper already set.");
                         return;
                     }
-                    
+
                     newWallpaperBitmap.prepareToDraw();
                     mWallpaperManager.setBitmap(newWallpaperBitmap, null, true, WallpaperManager.FLAG_SYSTEM);
                     saveBitmapHash(name);
                     Log.d(TAG, "Wallpaper set successfully.");
                 } catch (IOException | IllegalStateException e) {
+                    Log.e(TAG, "Retry " + (retryCount + 1) + " failed: " + e.getMessage());
                     if (retryCount < MAX_RETRIES) {
-                        long nextDelay = delayMs == 0 ? 2000 : delayMs * 2;
-                        Log.d(TAG, "Retry " + (retryCount + 1) + " after " + nextDelay + "ms");
+                        long nextDelay = (delayMs == 0) ? 2000 : delayMs * 2; 
                         setWallpaperIfDifferent(newWallpaperBitmap, name, retryCount + 1, nextDelay);
-                    } else {
-                        Log.e(TAG, "Failed after " + MAX_RETRIES + " retries: " + e.getMessage());
                     }
                 }
             }
-        }, delayMs);
+        }, delayMs, TimeUnit.MILLISECONDS); 
     }
 
     private boolean areBitmapsHashEqual(String name) {
@@ -308,7 +344,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
         Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         try {
@@ -337,7 +373,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
         Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
         
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         try {
@@ -359,14 +395,39 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    public void setBrightness() { 
-        int brightness = 70;
-        if (helpers.isDay() || helpers.isPolarDay()) {
-            brightness = mPrefs.getInt("day_seek_bar", 70);    
-        } else if (!helpers.isDay() || helpers.isPerpetualNight()) {
-            brightness = mPrefs.getInt("night_seek_bar", 0);
+    @SuppressLint("NewApi")
+    private Bitmap.CompressFormat getWebPFormat() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Bitmap.CompressFormat.WEBP_LOSSLESS;
+        } else {
+            return Bitmap.CompressFormat.WEBP;
         }
-        Settings.System.putInt(this.mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
+    }
+
+    private void setBrightness() {
+        final int dayBrightness = mPrefs.getInt("day_seek_bar", 70);
+        final int nightBrightness = mPrefs.getInt("night_seek_bar", 0);
+        final boolean isDay = helpers.isDay();
+        final boolean isPolarDay = helpers.isPolarDay();
+        final boolean isPerpetualNight = helpers.isPerpetualNight();
+
+        new Thread(() -> {
+            int brightness = 70;
+            if (isDay || isPolarDay) {
+                brightness = dayBrightness;
+            } else if (!isDay || isPerpetualNight) {
+                brightness = nightBrightness;
+            }
+            try {
+                Settings.System.putInt(
+                    LauncherApplication.sApp.getContentResolver(),
+                    Settings.System.SCREEN_BRIGHTNESS,
+                    brightness
+                );
+            } catch (Exception e) {
+                Log.e(TAG, "Error setting brightness", e);
+            }
+        }).start();
     }
     
     public Bitmap drawableToBitmap(Drawable drawable) {
@@ -390,7 +451,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
         LocalTime time = LocalTime.parse(timeStr, parser);
         String formattedTime = time.format(formatter);
 
-        SimpleDateFormat format = new SimpleDateFormat(TIME_CONST);
+        SimpleDateFormat format = new SimpleDateFormat(TIME_CONST, Locale.US);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date;
         try {
@@ -403,7 +464,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private long dayStringToLong(String timeStr) {
-        SimpleDateFormat format = new SimpleDateFormat(TIME_CONST);
+        SimpleDateFormat format = new SimpleDateFormat(TIME_CONST, Locale.US);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date;
         try {
@@ -417,7 +478,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     public String longToHourZone(long time) {
         Date date = new Date(time);
-        DateFormat formatter = new SimpleDateFormat(TIME_CONST);
+        DateFormat formatter = new SimpleDateFormat(TIME_CONST, Locale.US);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatter.format(date);
     }

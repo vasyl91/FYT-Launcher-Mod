@@ -2,7 +2,6 @@ package com.fyt.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -12,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 import com.syu.ipc.data.FinalCanbus;
 
 public class TurntableView3 extends View {
@@ -144,9 +144,9 @@ public class TurntableView3 extends View {
     }
 
     private void init(Context context) {
-        this.mDialbg = BitmapFactory.decodeResource(getResources(), R.drawable.rate_dial_speed);
+        this.mDialbg = Helpers.glideLoader(R.drawable.rate_dial_speed);
         this.mDial = new BitmapDrawable(getResources(), this.mDialbg);
-        this.pointerbg = BitmapFactory.decodeResource(getResources(), R.drawable.rotate_pionter);
+        this.pointerbg = Helpers.glideLoader(R.drawable.rotate_pionter);
         this.pointer = new BitmapDrawable(getResources(), this.pointerbg);
         setRange(0, 24000);
         setAngleRange(-120, FinalCanbus.CAR_FYT_XP1_14Prado_L);

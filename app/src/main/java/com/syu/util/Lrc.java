@@ -5,8 +5,6 @@ import android.util.SparseArray;
 
 import com.syu.ipc.data.FinalCanbus;
 
-import org.apache.http.protocol.HTTP;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;

@@ -9,12 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.fyt.skin.SkinUtils;
-import com.syu.util.WeatherUtils;
-import com.syu.weather.WeatherDescription;
 import com.syu.widget.util.TimeUtil;
 
 import share.ResValue;
@@ -84,22 +81,6 @@ public class DateTimeWidget extends Widget {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bmp;
-    }
-
-    private void updateWeather(RemoteViews views) {
-        if (Launcher.getLauncher() != null) {
-            refreshData(views, Launcher.getLauncher().mCurDescription);
-        }
-    }
-
-    private void refreshData(RemoteViews views, WeatherDescription weather) {
-        if (weather != null && weather.vaild()) {
-            views.setTextViewText(ResValue.getInstance().weather_city, weather.getCity());
-            views.setTextViewText(ResValue.getInstance().weather_temp_range, weather.getTemDescription());
-            views.setTextViewText(ResValue.getInstance().weather_temp, weather.getCurTem());
-            views.setTextViewText(ResValue.getInstance().weather_weather, weather.getWeather());
-            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(weather.getWeather()));
-        }
     }
 
     @Override

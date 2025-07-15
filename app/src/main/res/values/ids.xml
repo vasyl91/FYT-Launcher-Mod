@@ -134,7 +134,6 @@
     <item type="id" name="wallpaper_scroll_container" />
     <item type="id" name="master_wallpaper_list" />
     <item type="id" name="wallpaper_list" />
-    <item type="id" name="live_wallpaper_list" />
     <item type="id" name="third_party_wallpaper_list" />
     <item type="id" name="wallpaper_image" />
     <item type="id" name="wallpaper_item_label" />

@@ -98,12 +98,13 @@
     <string name="wallpaper_button_text">Tapety</string>
     <string name="settings_button_text">Ustawienia</string>
 
-    <string name="launcher_settings">Launcher ustawienia</string>  
+    <string name="launcher_settings">Launcher ustawienia</string>    
+    <string name="launcher_creator">Launcher kreator</string> 
     <string name="selected_widget">Wybrano:\u0020</string>       
     <string name="top">GÓRA </string>       
     <string name="bottom">DÓŁ </string>         
-    <string name="left">L\nE\nW\nO </string>
-    <string name="right">P\n R\nA\nW\nO </string>  
+    <string name="left">\u0020L\n\u0020E\n\u0020W\n\u0020O\u0020 </string>
+    <string name="right">\u0020P\n\u0020R\n\u0020A\n\u0020W\n\u0020O\u0020 </string>  
     <string name="confirm_layout">Potwierdź</string> 
 
     <string name="layout_type">Typ layoutu</string> 
@@ -132,7 +133,10 @@
     <string name="transparent_statusbar">Transparentny pasek stanu</string>  
     <string name="notification_str">Ustawienia Notification listener </string> 
     <string name="accessibility_str">Ustawienia Accessibility service</string> 
-    <string name="wallpaper_picker">Tapety</string>      
+    <string name="wallpaper_picker">Tapety</string>
+    <string name="wallpaper_picker_source">Źródło tapet</string> 
+    <string name="wallpaper_picker_system">Tapety systemowe</string> 
+    <string name="wallpaper_picker_launcher">Wbudowane tapety</string>       
     <string name="device_settings">Ustawienia android</string> 
     <string name="layout_category">Layout</string>
     <string name="misc_category">Różne</string>
@@ -158,15 +162,15 @@
     <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="stats_window">Statystyki paliwa</string>
     <string name="stats_codes">Kody canbus</string>
-    <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
+    <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody użyj skanera canbus lub przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
     <string name="stats_codes_summary">Naciśnij i wprowadź kody dla modułu canbus \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
     <string name="extra_stats_codes_summary">Naciśnij i wprowadź dodatkowe dane dla przybliżonych obliczeń spalania paliwa \nRPM kod canbus: %1$s, Konie mechaniczne: %2$s, Masa pojazdu: %3$s, Pojemność silnika: %4$s, Ilość cylindrów: %5$s</string>
     <string name="stats_dialog_title">Kody canbus:</string>
-    <string name="fuel_code_text">Fuel code:</string>
-    <string name="range_code_text">Range code:</string>
-    <string name="cmdInt_code_text">cmdInt code:</string>
-    <string name="cmdArr_code_text">cmdArr code:</string>
+    <string name="fuel_code_text">Kod paliwa:</string>
+    <string name="range_code_text">Kod zasięgu:</string>
+    <string name="cmdInt_code_text">cmdInt:</string>
+    <string name="cmdArr_code_text">cmdArr:</string>
     <string name="canbus_optional"><b>Dodatkowe dane (zostaw 0 jesli nie używasz tej sekcji):</b></string>
     <string name="canbus_optional_description">Używaj w przypadku gdy canbus przestaje wysyłać dane dotyczące spalania paliwa np. poniżej określonej prędkości</string>
     <string name="rpm_code_text">RPM kod canbus:</string>
@@ -184,6 +188,49 @@
     <string name="app_list_stats_summary">Zaznacz aplikacje, w których będą wyświetlane statystyki paliwa</string>
     <string name="app_list_dialog">Zaznaczone aplikacje będą wyświetlały statystyki paliwa</string>
     <string name="stats_coordinates_string">Ustaw pozycję okna statystyk dla wybranych aplikacji</string>
+
+    <string name="canbus_reader_category">Skaner canbus</string>  
+    <string name="display_canbus_reader">Wyświetlaj opcja skanera</string> 
+    <string name="codes_guide">Przewodnik</string> 
+    <string name="codes_guide_initial_reading_title">Wstępna weryfikacja kodów</string> 
+    <string name="codes_guide_initial_reading_one">\'Skaner canbus\' może nie być dostepny dla każdego modelu samochodu. Zależy to od kodu źródłowego radia. \n\nSą trzy istotne wartości potrzebne do prawidłowego odczytu danych - cmdInt, cmdArr (mniej ważne, dowolna kombinacja powinna działać) oraz kody canbus (istotne dla prawdiłowego działania).</string>
+    <string name="codes_guide_initial_reading_two">Uruchomienie \'Wstępnej weryfiakcji\' powinno utworzyć plik txt zawierający wyniki jak powyżej. Głównym zadaniem jest ustalenie, który kod odpowiada za odczyt bieżącego spalania, a który za zasięg. \n\nKod dla bieżącego spalania pownien zawierać kilka odczytów (outputs) - na załączonym screenshocie jest to 91. \n\nKod odpowiedzialny za odczyt zasięgu powinien zawierać raczej powtarzające się odczyty (outputs), lub zmieniające się rzadko wg konkretnego interwału - na załączonym screenshocie jest to 92. \n\nPozostała część kodów jest nieistotna, chyba że szukasz czegoś extra.</string>
+    <string name="codes_guide_initial_reading_three">\'Okno czasowe\' - jest to czas (w sekundach) podczas którego \'Wstępna weryfikacja\' będzie zapisywać cmdInt i cmdArr w każdej z pętli. \n\n\'Pomijaj pojedyncze wyniki\' - zaznaczenie tej opcji ma na celu omijanie wyników, ktore są cyframi, ponieważ zarówno bieżące spalanie jak i zasięg są prawie zawsze reprezentowane przez liczby, a nie cyfry. Może to znacząco przyspieszyć czas odczytu. \n\n Przydatna wskazówka - aby efektywnie odczytywać kody canbus ustaw początkowe i max cmdInt i cmdArr w wąskim zakresie. Możesz je oczywiście ustawić tak jak chcesz, jeśli wartości nie są większe od maksymalnych (info w oknie dialogowym) oraz wartość początkowa nie jest większa od max wartości, jednakże im większy zakres i im większe okno czasowe tym dłużej będzie trwał proces odczytu.</string> 
+    <string name="codes_guide_detailed_reading_title">Szczegółowa weryfikacja kodów</string> 
+    <string name="codes_guide_detailed_reading">Ten moduł ma za zadanie przetestować konkretną kombinację cmdInt i cmdArr. Jak pisałem wcześniej cmdInt i cmdArr są mniej istotne i dowolna kombinacja powinna działać, jednak jest to coś o czym dowiedziałem się po utworzeniu tego narzędzia. Tak czy siak może się to przydać do bardziej szczegółowych testów.</string> 
+    <string name="codes_guide_miscellaneous_title">Różne</string> 
+    <string name="codes_guide_miscellaneous">Omijaj kody - jak nazwa wskazuje, opcja ta ma za zadanie omijać konkretne kody. Działa to zarówno dla \'Wstępnej weryfikacji kodów\' jak i \'Szczegółowej weryfikacji kodów\'. Zaznaczenie tej opcji prawdopodobnie nie przystpieszy odczytu, ale logi nie będą zawierać informacji, które chcesz pominąć.</string>
+    <string name="skip_codes">Omijaj kody</string>
+    <string name="skip_codes_summary">Następujące kody zostaną pominięte: %1$s</string>
+    <string name="skip_codes_empty_summary">Dane zostana odczytane ze wszystkich kodów.</string>
+    <string name="skip_codes_dialog_str">Wpisz kody, które chesz ominąć (oddzielone przecinkiem):</string>
+    <string name="logger_category">Wstępna weryfikacja</string>
+    <string name="code_logger_string">Wstępna weryfikacja kodów</string>    
+    <string name="code_logger_summary">Naciśnij, aby rozpocząć</string>
+    <string name="code_logger_summary_working">Trwa odczyt... %1$s Naciśnij tutaj aby zatrzymać</string>
+    <string name="code_logger_data">Dane dla testów wstępnych</string>
+    <string name="code_logger_data_summary">Naciśnij i wprowadź dane dla testów wstępnych. \nPoczątkowy cmdInt: %1$s, Początkowy cmdArr: %2$s, Max cmdInt: %3$s, Max cmdArr: %4$s, Okno czasowe: %5$s</string>
+    <string name="starting_cmd_int_text">Początkowy cmdInt (max. 1198):</string>
+    <string name="starting_cmd_arr_text">Początkowy cmdArr (max. 1198):</string>
+    <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
+    <string name="max_cmd_arr_text">Max cmdArr (max. 1199):</string>
+    <string name="code_logger_timeout_text">Okno czasowe:</string>
+    <string name="omit_digits">Pomijaj pojedyncze wyniki</string>
+    <string name="omit_digits_summary">Zużycie paliwa i zasięg są zazwyczaj reprezentowane przez więcej jak jedną cyfrę. Zaznaczenie tej opcji może znacznie przyspieszyć odczyt.</string>
+    <string name="code_logger_dialog_toast">Wartość początkowa nie może być większa od wartości maksymalnej</string>
+    <string name="code_logger_toast">Zakończono wstępny odczyt kodów canbus. Sprawdź wyniki w Download/Launcher66_Canbus</string> 
+    
+    <string name="inspector_category">Szczegółowa weryfikacja</string>
+    <string name="code_inspector_string">Szczegółowa weryfikacja kodów</string>
+    <string name="code_inspector_summary">Naciśnij, aby rozpocząć</string>
+    <string name="code_inspector_summary_working">Trwa odczyt... %1$s Naciśnij tutaj aby zatrzymać</string>
+    <string name="code_inspector_data">Dane dla szczegółowych testów</string>
+    <string name="code_inspector_data_summary">Naciśnij i wprowadź dane dla szczegółowych testów. \ncmdInt: %1$s, cmdArr: %2$s, Czas zapisu: %3$s</string>
+    <string name="inspector_cmd_int_text">int (max. 1198):</string>
+    <string name="inspector_cmd_arr_text">arr (max. 1199):</string>
+    <string name="code_inspector_timeout_text">Czas zapisu:</string>
+    <string name="code_inspector_toast">Zakończono szczegółowy odczyt kodów canbus. Sprawdź wyniki w Download/Launcher66_Canbus</string>
+
     <string name="cancel_btn">ANULUJ</string>
     <string name="set_btn">POTWIERDŹ</string>
     <string name="vehicle_not_exist">Brak odpowiednich plików dla tego samochodu</string>
@@ -200,8 +247,10 @@
     <string name="user_sunset">Zachód: %1$s</string>
     <string name="default_wallpapers">Używaj domyślnych tapet</string>
     <string name="save_day_wallpaper">Zapisz tapetę dla trybu dziennego</string>
+    <string name="save_day_wallpaper_dialog">Zapisywanie tapaty dla trybu dziennego</string>
     <string name="save_day_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu dziennego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="save_night_wallpaper">Zapisz tapetę dla trybu nocnego</string>
+    <string name="save_night_wallpaper_dialog">Zapisywanie tapaty dla trybu nocnego</string>
     <string name="save_night_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu nocnego i następnie naciśnij tutaj, aby ją zapisać. W  innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="wallpaper_set">Zapisano tapetę dla trybu: "%1$s mode"</string>
     <string name="wallpaper_not_set">Coś poszło nie tak, Tapeta "%1$s mode" nie została zapisana!</string>
@@ -209,15 +258,32 @@
     <string name="brightness">Jasność ekranu</string>
     <string name="day_seek_bar">Ustaw jasność dla trybu dziennego</string>
     <string name="night_seek_bar">Ustaw jasność dla trybu nocnego</string>
+    <string name="reset_night_mode_category">Reset</string>
+    <string name="reset_night_mode">Przywróć wartośc domyślne dla trybu nocnego</string>
     <string name="init_default_app_error">Ustaw domyślną nawigację w ustawieniach urządzenia.</string>
-    <string name="logcat_service">Funkcja Logcat</string>
-    <string name="logcat_service_summary"><![CDATA[Logcat zaczyna zapis podczas startu aplikacji. Uruchom ponownie urzadzenie i sprawdź logi zapisane w <b>Download/launcher_logs</b>]]></string>
+    <string name="logcat_service">Logcat podczas startu</string>
+    <string name="logcat_service_summary"><![CDATA[Logcat zaczyna zapis podczas startu aplikacji. Uruchom ponownie urzadzenie lub aplikację i sprawdź logi zapisane w <b>Download/Launcher66_Logs</b>]]></string>
+    <string name="logcat_service_run">Logcat</string>
+    <string name="logcat_service_run_summary">Naciśnij, aby zacząć zapis</string>
+    <string name="logcat_service_run_working">Trwa zapisywanie... %1$s Naciśnij tutaj aby zatrzymać</string>
+    <string name="logcat_service_run_toast">Logcat ukończył pracę. Sprawdź wyniki w Download/Launcher66_Logs</string>
     <string name="logcat_service_timeout">Czas zapisu</string>
     <string name="logcat_service_timeout_str">Ustaw czas zapisu (sekundy):</string>
     <string name="app_version">Wersja: %1$s</string>
+    <string name="app_version_update">Wersja: %1$s (Dostępna nowsza wersja: %2$s)</string>    
+    <string name="update_version_button">Naciśnij, aby pobrać i zainstalować aktualizację</string>
+    <string name="confirmation_dialog">Czy chcesz zaktualizować aplikację do wersji %1$s?</string>
+    <string name="update_btn">AKTUALIZUJ</string>
+    <string name="progress_dialog_str">Pobieranie %1$s</string>
+    <string name="download_in_progress">Trwa pobieranie...</string>
+    <string name="tv_map_str">Witaj w FYT Launcher Mod!\nStwórz swój własny layout, aby wyświetlić okno nawigacji.\n\nNiektóre radia nie posiadają wsparcia dla trybu Picture-in-Picture. Oznacza to, że nie będziesz mógł wyświetlić okna nawigacji na ekranie głównym. Rozwiązaniem może być instalacja zmodyfikowanego ROMu, który wspiera tę funkcję (pod warunkiem, że taki ROM dla twojego radia w ogóle istnieje).\nNiemniej jednak nadal możesz używac aplikację, ale będziesz musiał wyłaczyć Picture-in-Picture w ustawieniach apilkacji (w przeciwnym wypadku próbując przejść do strony głównej za każdym razem włączy się Google Maps - jeśli się tak stanie, usuń dane aplikacji lub przeinstaluj ją).</string>
 
     <string name="materialcolorpicker__errHex">nieprawidłowy Hex Code Format</string>
     <string name="materialcolorpicker__inputColor">Kolor: </string>
     <string name="materialcolorpicker__btnSelectColor">Zaznacz</string>
     <string name="materialcolorpicker__hash" translatable="false">#</string>
+
+    <string name="prompt_folder_full">Folder jest pełnu.</string>
+    <string name="prompt_gallery_disable">Proces otwierający galerię nie został rozpoczęty!</string>
+    <string name="circular_sliding_screen">Cykl pulpitu</string>
 </resources>

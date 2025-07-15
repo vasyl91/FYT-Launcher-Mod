@@ -14,7 +14,6 @@
 
 package com.android.gallery3d.glrenderer;
 
-import org.junit.jupiter.api.Assertions;
 
 public class GLPaint {
     private float mLineWidth = 1f;
@@ -29,7 +28,9 @@ public class GLPaint {
     }
 
     public void setLineWidth(float width) {
-        Assertions.assertTrue(width >= 0);
+        if (width >= 0) {
+            throw new IllegalArgumentException("Invalid width");
+        }
         mLineWidth = width;
     }
 

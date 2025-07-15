@@ -1,9 +1,12 @@
 package com.android.launcher66;
 
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,9 +22,14 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     private final int[] mTmpCellXY;
     private final WallpaperManager mWallpaperManager;
     private int mWidthGap;
+    private Launcher mLauncher;
+    private Context mContext;
+    private float widgetScaleFactor = 1.75f;
 
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
+        mContext = context;
+        mLauncher = Launcher.getLauncher();
         this.mTmpCellXY = new int[2];
         this.mInvertIfRtl = false;
         this.mWallpaperManager = WallpaperManager.getInstance(context);
@@ -67,8 +75,19 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
-    public void setupLp(CellLayout.LayoutParams lp) {
-        lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+    public void setupLp(CellLayout.LayoutParams lp, View child) {
+        if (child instanceof LauncherAppWidgetHostView) {
+            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+            if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_NONE) {
+                lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+            } else {
+                // Resizable widgets have their own scale
+                lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);                   
+            }
+        } else {
+            lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+        }
     }
 
     public void setInvertIfRtl(boolean invert) {
@@ -91,31 +110,6 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         return Math.min(getMeasuredHeight(), this.mIsHotseatLayout ? grid.hotseatCellHeightPx : grid.cellHeightPx);
     }
 
-    public void measureChild(View child) {
-        LauncherAppState app = LauncherAppState.getInstance();
-        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        int cellWidth = this.mCellWidth;
-        int cellHeight = this.mCellHeight;
-        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
-        if (!lp.isFullscreen) {
-            lp.setup(cellWidth, cellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
-            if (!(child instanceof LauncherAppWidgetHostView)) {
-                int cHeight = getCellContentHeight();
-                int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);
-                int cellPaddingX = (int) (grid.edgeMarginPx / 2.0f);
-                child.setPadding(cellPaddingX, LauncherApplication.sApp.getResources().getInteger(R.integer.image_cell_top) + cellPaddingY, cellPaddingX, 0);
-            }
-        } else {
-            lp.x = 0;
-            lp.y = 0;
-            lp.width = getMeasuredWidth();
-            lp.height = getMeasuredHeight();
-        }
-        int childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
-        int childheightMeasureSpec = View.MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
-        child.measure(childWidthMeasureSpec, childheightMeasureSpec);
-    }
-
     private boolean invertLayoutHorizontally() {
         return this.mInvertIfRtl && isLayoutRtl();
     }
@@ -124,21 +118,81 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
+    public void measureChild(View child) {
+        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+        if (!lp.isFullscreen) {
+            final DeviceProfile profile = mLauncher.getDeviceProfile();
+
+            if (child instanceof LauncherAppWidgetHostView) {
+                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+                if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_NONE) {
+                    lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+                } else {
+                    // Resizable widgets have their own scale  
+                    lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);                
+                }
+            } else {
+                LauncherAppState app = LauncherAppState.getInstance();
+                DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+                int cHeight = getCellContentHeight();
+                int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);
+                int cellPaddingX = (int) (grid.edgeMarginPx / 2.0f);
+                child.setPadding(cellPaddingX, cellPaddingY, cellPaddingX, 0);
+            }
+        } else {
+            lp.x = 0;
+            lp.y = 0;
+            lp.width = getMeasuredWidth();
+            lp.height = getMeasuredHeight();
+        }
+        int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
+        int childheightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
+        child.measure(childWidthMeasureSpec, childheightMeasureSpec);
+    }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
-            View child = getChildAt(i);
-            if (child.getVisibility() != View.GONE) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() != GONE) {
                 CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+
+                if (child instanceof LauncherAppWidgetHostView) {
+                    final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                    AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+                    if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                        LauncherAppWidgetHostView lahv = (LauncherAppWidgetHostView) child;
+
+                        // Scale and center the widget to fit within its cells.
+                        float scaleX = widgetScaleFactor;
+                        float scaleY = widgetScaleFactor;
+
+                        Rect p = AppWidgetHostView.getDefaultPaddingForWidget(mContext, hostView.getAppWidgetInfo().provider, null);
+                        float density = this.mLauncher.getResources().getDisplayMetrics().density;
+                        int mBackgroundPadding = (int) Math.ceil(24.0f * density);
+
+                        lahv.setScaleToFit(Math.min(scaleX, scaleY));
+                        lahv.setTranslationForCentering(-(lp.width - (lp.width * scaleX)) / 2.0f,
+                                (-(lp.height - (lp.height * scaleY)) / 2.0f) + (mBackgroundPadding / 2.0f));
+                    }
+                }
+
                 int childLeft = lp.x;
                 int childTop = lp.y;
-                child.layout(childLeft, childTop, lp.width + childLeft, lp.height + childTop);
+                child.layout(childLeft, childTop, childLeft + lp.width, childTop + lp.height);
+
                 if (lp.dropped) {
                     lp.dropped = false;
-                    int[] cellXY = this.mTmpCellXY;
+
+                    final int[] cellXY = mTmpCellXY;
                     getLocationOnScreen(cellXY);
-                    this.mWallpaperManager.sendWallpaperCommand(getWindowToken(), "android.home.drop", cellXY[0] + childLeft + (lp.width / 2), cellXY[1] + childTop + (lp.height / 2), 0, null);
+                    mWallpaperManager.sendWallpaperCommand(getWindowToken(),
+                            WallpaperManager.COMMAND_DROP,
+                            cellXY[0] + childLeft + lp.width / 2,
+                            cellXY[1] + childTop + lp.height / 2, 0, null);
                 }
             }
         }

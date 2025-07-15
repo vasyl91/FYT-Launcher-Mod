@@ -1279,7 +1279,7 @@ public class DataPack {
         }
     };
 
-    public static void init(Context context) {
+    public static void init(Context context) {        
         addUpdate();
     }
 

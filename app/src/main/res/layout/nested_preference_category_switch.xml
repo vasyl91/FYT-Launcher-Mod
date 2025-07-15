@@ -4,16 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:orientation="horizontal"
-    android:paddingStart="130dp"
-    android:paddingEnd="16dp" > 
+    android:orientation="horizontal"> 
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="1"
-        android:paddingEnd="16dp">
+        android:layout_weight="1">
 
         <!-- Title TextView -->
         <TextView
@@ -23,8 +20,7 @@
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="?android:attr/textColorPrimary"
             android:ellipsize="end"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp" />
+            android:paddingTop="16dp" />
 
         <!-- Summary TextView -->
         <TextView
@@ -35,17 +31,17 @@
             android:textColor="?android:attr/textColorSecondary"
             android:ellipsize="end"
             android:maxLines="5"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="16dp" />
 
     </LinearLayout>
 
     <!-- Switch -->
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchWidget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:focusable="false"
-        android:clickable="false" />
+        android:clickable="false"
+        android:paddingEnd="16dp"  />
 </LinearLayout>

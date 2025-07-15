@@ -103,19 +103,17 @@
     <style name="DropTargetButton" parent="Theme.MaterialComponents.DayNight.Bridge">
         <item name="android:textSize">16.0sp</item>
         <item name="android:textColor">#ffffffff</item>
-        <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">fill_parent</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:shadowColor">#ff000000</item>
+        <item name="android:shadowColor">#ff393939</item>
         <item name="android:shadowDx">0.0</item>
-        <item name="android:shadowDy">1.0</item>
-        <item name="android:shadowRadius">4.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:shadowRadius">2.0</item>
         <item name="android:drawablePadding">7.5dip</item>
-        <item name="android:paddingStart">25.0px</item>
-        <item name="android:paddingEnd">25.0px</item>
+        <item name="android:paddingStart">60.0px</item>
+        <item name="android:paddingEnd">60.0px</item>
     </style>
     
     <style name="TabIndicator" parent="Theme.MaterialComponents.DayNight.Bridge">
@@ -132,8 +130,13 @@
         <item name="android:paddingStart">20.0px</item>
         <item name="android:paddingEnd">20.0px</item>
     </style>
-    
-    <style name="TabIndicator.AppsCustomize" parent="@style/TabIndicator" />
+
+    <style name="TabIndicator.AppsCustomize" parent="@style/TabIndicator">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:maxWidth">240.0px</item>
+        <item name="android:paddingStart">32.0px</item>
+        <item name="android:paddingEnd">32.0px</item>
+    </style>
         
     <style name="MarketButton">
         <item name="android:textSize">18.0sp</item>
@@ -216,11 +219,12 @@
         <item name="android:windowActionBarOverlay">true</item>
     </style>
     
-
     <style name="Theme.WallpaperPicker" parent="Theme.WallpaperCropper">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
     </style>
     
 
@@ -228,12 +232,13 @@
         <item name="android:displayOptions">showCustom</item>
         <item name="android:background">#88000000</item>
     </style>
-    
 
     <style name="ActionBarSetWallpaperStyle" parent="Theme.MaterialComponents.DayNight.Bridge">
         <item name="android:textColor">#ffffffff</item>
     </style>
 
     <style name="WidgetTheme" parent="Theme.MaterialComponents.DayNight.Bridge" />
-    
+
+    <style name="ProgressDialogTheme"></style>
+
 </resources>

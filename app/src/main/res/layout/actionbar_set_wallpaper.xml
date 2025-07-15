@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher66.AlphaDisableableButton
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ActionBarSetWallpaperStyle"
-    android:id="@+id/set_wallpaper_button"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?android:actionButtonStyle"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingRight="20dp"
-    android:drawableLeft="@drawable/ic_actionbar_accept"
-    android:drawablePadding="8dp"
-    android:gravity="start|center_vertical"
-    android:text="@string/wallpaper_instructions">
-</com.android.launcher66.AlphaDisableableButton>
+    android:layout_height="match_parent" >
+    <TextView style="?android:actionBarTabTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:paddingRight="20dp"
+        android:drawableLeft="@drawable/ic_actionbar_accept"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:text="@string/wallpaper_instructions" />
+</FrameLayout>

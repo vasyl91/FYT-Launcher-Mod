@@ -41,6 +41,7 @@ import java.util.TimeZone;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.util.SparseIntArray;
 
 public class ExifInterface {
@@ -454,7 +455,15 @@ public class ExifInterface {
         try {
             d = new ExifReader(this).read(inStream);
         } catch (ExifInvalidFormatException e) {
-            throw new IOException("Invalid exif format : " + e);
+            // Check if the exception is due to missing EXIF (valid image but no metadata)
+            if (e.getMessage().contains("Unsupported file format")) {
+                // Valid image format but no EXIF data
+                d = new ExifData(DEFAULT_BYTE_ORDER);
+            } else {
+                // Genuine invalid format (log only real issues)
+                Log.w("ExifInterface", "Invalid EXIF format: " + e.getMessage());
+                d = new ExifData(DEFAULT_BYTE_ORDER);
+            }
         }
         mData = d;
     }

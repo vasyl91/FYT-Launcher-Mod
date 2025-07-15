@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.appwidget.AppWidgetHostView;
 import android.content.Context;
+import android.graphics.PointF;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,16 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
     private DragLayer mDragLayer;
     private Launcher mLauncher;
     private LauncherAppWidgetHost.OnWidgetClickListener listener;
+
+    /**
+     * The scaleX and scaleY value such that the widget fits within its cellspans, scaleX = scaleY.
+     */
+    private float mScaleToFit = 1.0f;
+
+    /**
+     * The translation values to center the widget within its cellspans.
+     */
+    private final PointF mTranslationForCentering = new PointF(0, 0);
 
     public LauncherAppWidgetHostView(Context context, Launcher launcher) {
         super(context);
@@ -113,5 +124,29 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
     @Override
     public int getDescendantFocusability() {
         return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
+    }
+
+    public void setScaleToFit(float scale) {
+        mScaleToFit = scale;
+        setScaleX(scale);
+        setScaleY(scale);
+    }
+
+    public void setTranslationForCentering(float x, float y) {
+        mTranslationForCentering.set(x, y);
+        setTranslationX(x);
+        setTranslationY(y);
+    }
+
+    public float getScaleToFit() {
+        return mScaleToFit;
+    }
+
+    public float getTranslationXForCentering() {
+        return mTranslationForCentering.x;
+    }
+
+    public float getTranslationYForCentering() {
+        return mTranslationForCentering.y;
     }
 }

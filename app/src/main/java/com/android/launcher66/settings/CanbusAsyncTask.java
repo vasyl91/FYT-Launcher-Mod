@@ -34,6 +34,11 @@ public class CanbusAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
+    protected void onProgress(Void[] progress) {
+        //
+    }
+
+    @Override
     protected void onBackgroundError(Exception e) {
     	launchCanbus();
     }

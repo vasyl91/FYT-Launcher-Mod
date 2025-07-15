@@ -14,8 +14,6 @@
 
 package com.android.gallery3d.glrenderer;
 
-import org.junit.jupiter.api.Assertions;
-
 import android.graphics.Bitmap;
 
 // BitmapTexture is a texture whose content is specified by a fixed Bitmap.
@@ -32,7 +30,9 @@ public class BitmapTexture extends UploadedTexture {
 
     public BitmapTexture(Bitmap bitmap, boolean hasBorder) {
         super(hasBorder);
-        Assertions.assertTrue(bitmap != null && !bitmap.isRecycled());
+        if (bitmap == null || bitmap.isRecycled()) {
+            throw new IllegalArgumentException("Invalid bitmap: null or recycled");
+        }
         mContentBitmap = bitmap;
     }
 

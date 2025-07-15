@@ -12,6 +12,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
     private final AtomicBoolean cancelled = new AtomicBoolean();
     private Future<OUTPUT> outputFuture;
     private volatile Status mStatus = Status.PENDING;
+    private FutureTask<OUTPUT> futureTask;
 
     public enum Status {
         PENDING,
@@ -45,7 +46,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         mStatus = Status.RUNNING;
         onPreExecute();
 
-        FutureTask<OUTPUT> futureTask = new FutureTask<>(() -> {
+        futureTask = new FutureTask<>(() -> {
             try {
                 OUTPUT output = doInBackground(params);
                 AsyncWorker.getInstance().getHandler().post(() -> {
@@ -85,7 +86,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
     }
 
     @SafeVarargs
-    protected final void publishProgress(final PROGRESS... progress) {
+    public final void publishProgress(final PROGRESS... progress) {
         AsyncWorker.getInstance().getHandler().post(() -> {
             onProgress(progress);
             if (onProgressListener != null) {
@@ -94,14 +95,16 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         });
     }
 
-    protected void onProgress(final PROGRESS[] progress) {}
+    protected abstract  void onProgress(final PROGRESS[] progress);
 
     public void cancel() {
         cancelled.set(true);
+        futureTask.cancel(true);
     }
 
     public void cancel(boolean bool) {
         cancelled.set(bool);
+        futureTask.cancel(bool);
     }
 
     public boolean isCancelled() {

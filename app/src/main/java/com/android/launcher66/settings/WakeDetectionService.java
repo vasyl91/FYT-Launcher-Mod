@@ -96,8 +96,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if (prefs.getBoolean("night_mode", false)) {
-                    Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                    LauncherApplication.sApp.startService(nightModeServiceIntent);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+                        LauncherApplication.sApp.startService(nightModeServiceIntent);
+                    }, 10000);
                 }
 
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);

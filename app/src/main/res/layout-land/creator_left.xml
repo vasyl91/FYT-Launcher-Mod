@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Left Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rl_left_bar"
+        android:background="@drawable/hotseat_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.071"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/creator_bar"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <!-- Workspace -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/creator_second"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.929"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/creator_bar"
+        app:layout_constraintRight_toRightOf="parent" />    
+
+    <!-- Bottom Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/creator_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1638"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="fitXY"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintHorizontal_chainStyle="spread" >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"            
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.02" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/creator_selection"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.2"
+            app:layout_constraintLeft_toLeftOf="@id/guideline"
+            app:alignItems="center" > 
+
+            <TextView
+                android:id="@+id/selected_widget_string"
+                android:text="@string/selected_widget"
+                android:textColor="@color/black"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/rectangle_name"
+                android:textColor="@color/black"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/creator_buttons"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.6"
+            app:layout_constraintLeft_toRightOf="@id/creator_selection"
+            app:layout_constraintRight_toLeftOf="@id/confirm_layout"
+            app:layout_constraintHorizontal_chainStyle="spread" >
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttons_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="column"
+                app:justifyContent="flex_start"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/buttons_bottom"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" >
+
+                <Button
+                    android:id="@+id/top_up"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_up"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/top_button_string"
+                    android:text="@string/top"
+                    android:textColor="@color/black"
+                    android:textSize="0sp"                    
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/top_down"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_down"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttons_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="column"
+                app:justifyContent="flex_start"
+                app:layout_constraintStart_toEndOf="@id/buttons_top"
+                app:layout_constraintEnd_toStartOf="@id/buttons_left"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" >
+
+                <Button
+                    android:id="@+id/bottom_up"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_up"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/bottom_button_string"
+                    android:text="@string/bottom"
+                    android:textColor="@color/black"
+                    android:textSize="0sp"                    
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/bottom_down"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_down"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttons_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="row"
+                app:justifyContent="flex_start"
+                app:layout_constraintStart_toEndOf="@id/buttons_bottom"
+                app:layout_constraintEnd_toStartOf="@id/buttons_right"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" >
+
+                <Button
+                    android:id="@+id/left_to_left"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_left"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/left_button_string"
+                    android:text="@string/left"
+                    android:textColor="@color/black"
+                    android:textSize="0sp"                    
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"  />
+
+                <Button
+                    android:id="@+id/left_to_right"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_right"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttons_right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:flexDirection="row"
+                app:justifyContent="flex_start"
+                app:layout_constraintStart_toEndOf="@id/buttons_left"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" >
+
+                <Button
+                    android:id="@+id/right_to_left"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_left"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/right_button_string" 
+                    android:text="@string/right"
+                    android:textColor="@color/black"
+                    android:textSize="0sp"                    
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/right_to_right"    
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/arrow_right"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/confirm_layout"  
+            android:text="@string/confirm_layout"
+            android:textColor="@color/white"
+            android:background="@color/colorAccent"
+            android:textSize="0sp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.15"
+            app:layout_constraintHeight_percent="0.80"
+            app:layout_constraintLeft_toRightOf="@id/creator_buttons"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_gravity="center"
+            android:gravity="center" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

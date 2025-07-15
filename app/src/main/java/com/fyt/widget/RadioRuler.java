@@ -2,7 +2,6 @@ package com.fyt.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +12,8 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.android.launcher66.settings.Helpers;
 
 import share.ResValue;
 
@@ -120,7 +121,7 @@ public class RadioRuler extends View {
     }
 
     private void init(Context context) {
-        this.mBitmapPointer = BitmapFactory.decodeResource(getResources(), ResValue.getInstance().radio_pointer);
+        this.mBitmapPointer = Helpers.glideLoader(ResValue.getInstance().radio_pointer);
         this.mRPoint = this.mBitmapPointer.getWidth() / 2;
         this.mPaint.setTextAlign(Paint.Align.CENTER);
         this.mPaint.setColor(Color.parseColor("#000001"));

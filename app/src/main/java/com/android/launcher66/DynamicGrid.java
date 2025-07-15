@@ -34,14 +34,14 @@ public class DynamicGrid {
         ArrayList<DeviceProfile> deviceProfiles = new ArrayList<>();
         if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
         }
-        int iconSize = LauncherApplication.sApp.getResources().getInteger(R.integer.shortcut_icon_size);
+        int iconSize = Launcher.workspaceIconAndFolderSize;
         int numRows = LauncherApplication.sApp.getResources().getInteger(R.integer.numRows_size);
         int numCols = LauncherApplication.sApp.getResources().getInteger(R.integer.numCols_size);
         LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseat3G_icon_size);
         int hotseatIcon_wifi = LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseatwifi_icon_size);
         int iHotseatCount = LauncherApplication.sApp.getResources().getInteger(R.integer.nhotseat_count);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int iAllAppsTextSize = Integer.parseInt(prefs.getString("all_apps_textSize", String.valueOf(LauncherApplication.sApp.getResources().getInteger(R.integer.all_apps_textSize))));
+        int iAllAppsTextSize = Integer.parseInt(prefs.getString("all_apps_textSize", String.valueOf(Launcher.textSizeBasic)));
         deviceProfiles.add(new DeviceProfile("fyt 10", 1024.0f, 600.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));
         deviceProfiles.add(new DeviceProfile("fyt 12", 800.0f, 480.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));
         deviceProfiles.add(new DeviceProfile("fyt 12", 980.0f, 420.0f, numRows, numCols, iconSize, iAllAppsTextSize, iHotseatCount, hotseatIcon_wifi));

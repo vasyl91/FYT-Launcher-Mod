@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Left Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rl_left_bar"
+        android:background="@drawable/hotseat_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.071"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/iv_list_bg"
+        app:layout_constraintLeft_toLeftOf="parent" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/left_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Map Bar -->
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/iv_map1"
+        android:background="@drawable/ic_map_corner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.57"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/iv_list_bg"
+        app:layout_constraintLeft_toRightOf="@id/rl_left_bar"
+        app:layout_constraintRight_toLeftOf="@id/ll_time"
+        app:justifyContent="space_around"
+        app:alignItems="center" >
+
+        <TextView
+            android:id="@+id/tv_map"
+            android:textSize="0sp"
+            android:textColor="@android:color/white"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_map_str"
+            android:layout_centerHorizontal="true" />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <!-- Date Widget -->
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/ll_time"
+        android:background="@drawable/time_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.33"
+        app:layout_constraintHeight_percent="0.2273"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rl_music"
+        app:layout_constraintLeft_toRightOf="@id/iv_map1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:flexWrap="wrap"
+        app:flexDirection="row"
+        app:justifyContent="space_around"
+        app:alignItems="center" >
+
+        <com.fyt.widget.DigitClock
+            android:id="@+id/digit_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
+
+        <com.google.android.flexbox.FlexboxLayout     
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:flexDirection="column"
+            app:justifyContent="space_evenly" >
+
+            <com.fyt.widget.Date
+                android:id="@+id/date"
+                android:textSize="0sp"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:singleLine="true" />
+
+            <com.fyt.widget.WeekDay
+                android:id="@+id/curWeek"
+                android:textSize="0sp"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:singleLine="true"/>
+
+        </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <!-- Music Widget -->
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/rl_music"
+        android:background="@drawable/music_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.33"
+        app:layout_constraintHeight_percent="0.5545"
+        app:layout_constraintTop_toBottomOf="@id/ll_time"
+        app:layout_constraintBottom_toTopOf="@id/iv_list_bg"
+        app:layout_constraintLeft_toRightOf="@id/iv_map1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:alignItems="center"
+        app:flexWrap="wrap"
+        app:flexDirection="column"
+        app:justifyContent="space_evenly" >
+
+        <ImageView
+            android:id="@+id/iv_album_bg"
+            android:tag="@string/skin_ruleless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/music_album_def"
+            android:layout_centerHorizontal="true"
+            app:layout_flexBasisPercent="25%" />
+
+        <TextView
+            android:id="@+id/tv_musicName"
+            android:textSize="0sp"
+            android:textColor="@android:color/white"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/music_name"
+            android:singleLine="true"
+            android:layout_below="@id/iv_album_bg"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/tv_artist"
+            android:textSize="0sp"
+            android:textColor="#aaffffff"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/music_name"
+            android:singleLine="true"
+            android:layout_below="@id/tv_musicName"
+            android:layout_centerHorizontal="true" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="space_around" >
+
+            <ProgressBar
+                android:id="@+id/music_progress"
+                android:tag="@string/skin_ruleless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/progressbar_bg"
+                android:layout_below="@id/tv_artist"
+                android:layout_centerHorizontal="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                app:layout_flexBasisPercent="80%" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="space_evenly" >
+
+            <Button
+                android:id="@+id/music_prev"
+                android:background="@drawable/btn_ic_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/music_playpause"
+                android:layout_toStartOf="@id/music_playpause" />
+
+            <Button
+                android:id="@+id/music_playpause"
+                android:background="@drawable/music_pause_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_artist"
+                android:layout_centerHorizontal="true" />
+
+            <Button
+                android:id="@+id/music_next"
+                android:background="@drawable/btn_ic_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/music_playpause"
+                android:layout_toEndOf="@id/music_playpause" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <!-- Bottom Bar -->
+    <ImageView
+        android:id="@+id/iv_list_bg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1638"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/app_list_bg" />
+        
+    <ImageView
+        android:id="@+id/rl_allapps"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.11"
+        app:layout_constraintWidth_percent="0.11"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_list_bg"
+        app:layout_constraintTop_toTopOf="@+id/iv_list_bg"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:src="@drawable/all_apps_btn_icon" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1638"
+        app:layout_constraintWidth_percent="0.8795"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

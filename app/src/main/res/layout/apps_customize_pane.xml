@@ -46,10 +46,6 @@
                 android:id="@+id/apps_customize_pane_content"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="@dimen/apps_customize_page_view_margin_left"
-                android:layout_marginTop="@dimen/apps_customize_page_view_margin_top"
-                android:layout_marginRight="@dimen/apps_customize_page_view_margin_right"
-                android:layout_marginBottom="@dimen/apps_customize_page_view_margin_bottom"
                 launcher:maxGap="@dimen/workspace_max_gap"
                 launcher:pageIndicator="@id/page_indicator"
                 launcher:widgetCountX="@integer/apps_customize_widget_cell_count_x"
@@ -70,7 +66,7 @@
                 android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/apps_customize_page_indicator_margin_bottom"
+                android:layout_marginBottom="@dimen/pageindicator_mariginBottom"
                 layout="@layout/page_indicator" />
         </FrameLayout>
     </LinearLayout>

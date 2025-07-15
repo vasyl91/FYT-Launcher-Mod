@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<appwidget-provider android:minWidth="@dimen/DT1minWidth" android:minHeight="@dimen/DT1minHeight" android:updatePeriodMillis="150000" android:initialLayout="@layout/fyt_xml_dt_time_widget" android:previewImage="@drawable/fyt_dtwidget_preview2"
-  xmlns:android="http://schemas.android.com/apk/res/android" />

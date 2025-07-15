@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>   
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/absolute_stats" >
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        app:flexWrap="wrap"
+        app:flexDirection="column"
+        app:justifyContent="center"
+        app:alignItems="flex_start" >
+
+        <com.google.android.flexbox.FlexboxLayout     
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:flexDirection="row"
+            app:justifyContent="space_between" >
+
+            <TextView
+                android:text="@string/instantaneous_consumption"             
+                android:id="@+id/instantaneous_consumption_str"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+            <TextView
+                android:text="@string/instantaneous_consumption_val"
+                android:id="@+id/instantaneous_consumption_val"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <com.google.android.flexbox.FlexboxLayout     
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:flexDirection="row"
+            app:justifyContent="space_between" >
+
+            <TextView
+                android:text="@string/driving_mileage"
+                android:id="@+id/driving_mileage_str"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+            <TextView
+                android:text="@string/driving_mileage_val"
+                android:id="@+id/driving_mileage_val"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="0sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+</LinearLayout>

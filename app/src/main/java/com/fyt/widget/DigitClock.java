@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.launcher66.Launcher;
 import com.syu.util.TimeUtil;
 import com.syu.util.Utils;
 
@@ -142,10 +143,10 @@ public class DigitClock extends RelativeLayout {
         this.tv3.setId(View.generateViewId());
         this.tv4.setId(View.generateViewId());
         this.tv5.setId(View.generateViewId());
-        this.mDotWidth = Utils.getNameToInteger("dot_clock_width");
-        this.mDotHeight = Utils.getNameToInteger("dot_clock_height");
-        this.mViewWidth = Utils.getNameToInteger("digit_clock_width");
-        this.mViewHeight = Utils.getNameToInteger("digit_clock_height");
+        this.mDotWidth = Launcher.dot_clock_width;
+        this.mDotHeight = Launcher.dot_clock_height;
+        this.mViewWidth = Launcher.digit_clock_width;
+        this.mViewHeight = Launcher.digit_clock_height;
         Log.d("LZP", "mViewWidth:" + this.mViewWidth);
         if (this.mViewWidth == 0 || this.mViewHeight == 0) {
             this.mViewWidth = -2;

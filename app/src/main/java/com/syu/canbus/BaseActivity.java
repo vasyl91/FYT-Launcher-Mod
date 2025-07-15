@@ -64,13 +64,13 @@ public class BaseActivity extends Activity {
 
     public void setViewVisible(View v, boolean on) {
         if (v != null) {
-            v.setVisibility(on ? 0 : 8);
+            v.setVisibility(on ? View.VISIBLE : View.GONE);
         }
     }
 
     public void setViewVisible(View v, int state) {
         if (v != null) {
-            v.setVisibility(state == 1 ? 0 : 8);
+            v.setVisibility(state == 1 ? View.VISIBLE : View.GONE);
         }
     }
 

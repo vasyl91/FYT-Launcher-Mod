@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.Settings;
@@ -17,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.LauncherApplication;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,6 +36,7 @@ public class DayNightMode extends JobService {
     private SharedPreferences mPrefs;
     private boolean defaultWallpapers;
     private final Helpers helpers = new Helpers();
+    private static final Object LOCK = new Object();
 
     @Override
     public boolean onStartJob(final JobParameters params) {
@@ -46,7 +50,7 @@ public class DayNightMode extends JobService {
             setWallpapers();
             boolean brightnessBool = mPrefs.getBoolean("brightness", false);
             if (brightnessBool) {
-                setBrightness(helpers.isDay());
+                setBrightness();
             }
             jobFinished(params, false);
         });
@@ -57,29 +61,68 @@ public class DayNightMode extends JobService {
     private void setWallpapers() {
         defaultWallpapers = mPrefs.getBoolean("default_wallpapers", true); 
         File mFile = new File(getApplicationContext().getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
-        if (helpers.isDay() && mFile.exists() || helpers.isDay() && defaultWallpapers) {
-            File image = new File(mFile, "Night.png");
-            if (allowSetWallpaperFromFile(image)) {
-                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                new SetWallpaperTask("Night").execute(bitmap);
-            } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
-                new SetWallpaperTask("Night").execute(bitmapDrawable);
-            }
-        } else if (!helpers.isDay() && mFile.exists() || !helpers.isDay() && defaultWallpapers) {
-            File image = new File(mFile, "Day.png");
-            if (allowSetWallpaperFromFile(image)) {
-                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                new SetWallpaperTask("Day").execute(bitmap);
-            } else {
-                Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
-                new SetWallpaperTask("Day").execute(bitmapDrawable);
-            }
-        } 
+        if (mFile.exists() && !defaultWallpapers) {
+            if (allowSetDayWallpaper()) {
+                File image = new File(mFile, "Day.webp");
+                if (isFileValid(image)) {
+                    Bitmap bitmap = decodeBitmapSafely(image);
+                    new SetWallpaperTask("Day").execute(bitmap);
+                } else {
+                    setDefaultWallpapers();
+                }
+            } else if (allowSetNightWallpaper()) {
+                File image = new File(mFile, "Night.webp");
+                if (isFileValid(image)) {
+                    Bitmap bitmap = decodeBitmapSafely(image);
+                    new SetWallpaperTask("Night").execute(bitmap);
+                } else {
+                    setDefaultWallpapers();
+                }
+            }            
+        } else {
+            setDefaultWallpapers();
+        }
     }
 
-    private boolean allowSetWallpaperFromFile(File image) {
-        return image.exists() && !defaultWallpapers;
+    private void setDefaultWallpapers() {
+        if (allowSetDayWallpaper()) {
+            Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
+            new SetWallpaperTask("Day").execute(bitmapDrawable);
+        } else if (allowSetNightWallpaper()) {
+            Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
+            new SetWallpaperTask("Night").execute(bitmapDrawable);
+        }   
+    }
+
+    private boolean allowSetDayWallpaper() {
+        return !helpers.isDay() || helpers.isPolarDay();
+    }
+
+    private boolean allowSetNightWallpaper() {
+        return helpers.isDay() || helpers.isPerpetualNight();
+    }
+
+    private boolean isFileValid(File file) {
+        return file.exists() && file.length() > 0  && !defaultWallpapers;
+    }
+
+    private Bitmap decodeBitmapSafely(File image) {
+        synchronized (LOCK) {            
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inSampleSize = 2; 
+            
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
+                    return null;
+                }
+                return bitmap;
+            } catch (OutOfMemoryError | Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 
     @Override
@@ -88,14 +131,30 @@ public class DayNightMode extends JobService {
         return true;
     }
 
-    public void setBrightness(boolean day) { 
-        int brightness;
-        if (day) {
-            brightness = mPrefs.getInt("day_seek_bar", 70);    
-        } else {
-            brightness = mPrefs.getInt("night_seek_bar", 0);
-        }
-        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
+    private void setBrightness() {
+        final int dayBrightness = mPrefs.getInt("day_seek_bar", 70);
+        final int nightBrightness = mPrefs.getInt("night_seek_bar", 0);
+        final boolean isDay = helpers.isDay();
+        final boolean isPolarDay = helpers.isPolarDay();
+        final boolean isPerpetualNight = helpers.isPerpetualNight();
+
+        new Thread(() -> {
+            int brightness = 70;
+            if (isDay || isPolarDay) {
+                brightness = dayBrightness;
+            } else if (!isDay || isPerpetualNight) {
+                brightness = nightBrightness;
+            }
+            try {
+                Settings.System.putInt(
+                    LauncherApplication.sApp.getContentResolver(),
+                    Settings.System.SCREEN_BRIGHTNESS,
+                    brightness
+                );
+            } catch (Exception e) {
+                Log.e(TAG, "Error setting brightness", e);
+            }
+        }).start();
     }
 
     public Bitmap drawableToBitmap(Drawable drawable) {
@@ -122,6 +181,11 @@ public class DayNightMode extends JobService {
             return true;
         }
 
+        @Override
+        protected void onProgress(Void[] progress) {
+            //
+        }
+
         public void saveBitmapHash(String name) {
             Drawable mWallpaper = mWallpaperManager.getDrawable();
             Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
@@ -129,7 +193,7 @@ public class DayNightMode extends JobService {
             Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
             
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            normalizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
 
             try {
@@ -147,6 +211,15 @@ public class DayNightMode extends JobService {
                 editor.apply();
             } catch (NoSuchAlgorithmException e) {
                 Log.e(TAG, "Hash error: " + e.getMessage());
+            }
+        }
+
+        @SuppressLint("NewApi")
+        private Bitmap.CompressFormat getWebPFormat() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                return Bitmap.CompressFormat.WEBP_LOSSLESS;
+            } else {
+                return Bitmap.CompressFormat.WEBP;
             }
         }
 

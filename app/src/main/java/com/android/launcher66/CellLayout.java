@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class CellLayout extends ViewGroup implements View.OnLongClickListener {
@@ -158,6 +160,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private final static PorterDuffXfermode sAddBlendMode =
             new PorterDuffXfermode(PorterDuff.Mode.ADD);
     private final static Paint sPaint = new Paint();
+
+    private int excludeLastRow = 1; // do not allow to place the object where the bottom bar is
+    private float widgetScaleFactor = 1.75f;
 
     public CellLayout(Context context) {
         this(context, null);
@@ -716,14 +721,22 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
                 float scale = child.getScaleX();
                 frame = new Rect(child.getLeft(), child.getTop(), child.getRight(),
-                        child.getBottom());
+                        child.getBottom());  
+
                 // The child hit rect is relative to the CellLayoutChildren parent, so we need to
                 // offset that by this CellLayout's padding to test an (x,y) point that is relative
-                // to this view.
-                frame.offset(getPaddingLeft(), getPaddingTop());
+                // to this view.     
+                if (child instanceof LauncherAppWidgetHostView) {
+                    final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                    AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+                    if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                        frame.offsetTo(child.getLeft() + (int) (frame.width() / (scale * scale)), child.getTop() + (int) (frame.height() / (scale * scale)));
+                    }
+                } else {
+                    frame.offset(getPaddingLeft(), getPaddingTop());
+                }
                 frame.inset((int) (frame.width() * (1f - scale) / 2),
-                        (int) (frame.height() * (1f - scale) / 2));
-
+                        (int) (frame.height() * (1f - scale) / 2));  
                 if (frame.contains(x, y)) {
                     cellInfo.cell = child;
                     cellInfo.cellX = lp.cellX;
@@ -832,7 +845,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final int vStartPadding = getPaddingTop();
 
         result[0] = hStartPadding + cellX * (mCellWidth + mWidthGap);
-        result[1] = vStartPadding + cellY * (mCellHeight + mHeightGap);
+        // Apply extra padding only to the first row
+        if (cellY == 0) {
+            result[1] = vStartPadding + 20 + cellY * (mCellHeight + mHeightGap);
+        } else {
+            result[1] = vStartPadding + cellY * (mCellHeight + mHeightGap);
+        }
     }
 
     /**
@@ -1113,7 +1131,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 lp.tmpCellX = cellX;
                 lp.tmpCellY = cellY;
             }
-            clc.setupLp(lp);
+            clc.setupLp(lp, child);
             lp.isLockedToGrid = false;
             final int newX = lp.x;
             final int newY = lp.y;
@@ -1214,17 +1232,30 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             int left = topLeft[0];
             int top = topLeft[1];
 
+            float density = this.mLauncher.getResources().getDisplayMetrics().density;
+            int mBackgroundPadding = (int) Math.ceil(24.0f * density);
+
+            if (v != null && v instanceof LauncherAppWidgetHostView) {
+                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) v;
+                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                    top = topLeft[1] + (mBackgroundPadding / 2);
+                } else if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_BOTH) {
+                    top = topLeft[1] + mBackgroundPadding;
+                }
+            }
+
             if (v != null && dragOffset == null) {
                 // When drawing the drag outline, it did not account for margin offsets
                 // added by the view's parent.
                 MarginLayoutParams lp = (MarginLayoutParams) v.getLayoutParams();
                 left += lp.leftMargin;
-                top += lp.topMargin;
+                //top += lp.topMargin;
 
                 // Offsets due to the size difference between the View and the dragOutline.
                 // There is a size difference to account for the outer blur, which may lie
                 // outside the bounds of the view.
-                top += (v.getHeight() - dragOutline.getHeight()) / 2;
+                //top += (v.getHeight() - dragOutline.getHeight()) / 2;
                 // We center about the x axis
                 left += ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
                         - dragOutline.getWidth()) / 2;
@@ -1236,13 +1267,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                              - dragRegion.width()) / 2;
                     int cHeight = getShortcutsAndWidgets().getCellContentHeight();
                     int cellPaddingY = (int) Math.max(0, ((mCellHeight - cHeight) / 2f));
-                    top += dragOffset.y + cellPaddingY;
+                    //top += dragOffset.y + cellPaddingY;
                 } else {
                     // Center the drag outline in the cell
                     left += ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
                             - dragOutline.getWidth()) / 2;
-                    top += ((mCellHeight * spanY) + ((spanY - 1) * mHeightGap)
-                            - dragOutline.getHeight()) / 2;
+                    //top += ((mCellHeight * spanY) + ((spanY - 1) * mHeightGap)
+                            //- dragOutline.getHeight()) / 2;
                 }
             }
             final int oldIndex = mDragOutlineCurrent;
@@ -1375,7 +1406,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final Stack<Rect> validRegions = new Stack<Rect>();
 
         final int countX = mCountX;
-        final int countY = mCountY;
+        final int countY;
+        // Apply only for the first page that contains the bottom bar
+        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+            countY = mCountY - excludeLastRow;
+        } else {
+            countY = mCountY;
+        }
 
         if (minSpanX <= 0 || minSpanY <= 0 || spanX <= 0 || spanY <= 0 ||
                 spanX < minSpanX || spanY < minSpanY) {
@@ -1508,7 +1545,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int bestDirectionScore = Integer.MIN_VALUE;
 
         final int countX = mCountX;
-        final int countY = mCountY;
+        final int countY;
+        // apply only for the first page that contains the bottom bar
+        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+            countY = mCountY - excludeLastRow;
+        } else {
+            countY = mCountY;
+        }
 
         for (int y = 0; y < countY - (spanY - 1); y++) {
             inner:
@@ -1882,10 +1925,19 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         boolean foundSolution = false;
         clusterRect = cluster.getBoundingRect();
 
+        // Do not allow to reorder objects to the last row of the first screen
+        // where the bottom bar has it's place
+        int fixedCountY;
+        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+            fixedCountY = mCountY - excludeLastRow;
+        } else {
+            fixedCountY = mCountY;
+        }
+
         // Due to the nature of the algorithm, the only check required to verify a valid solution
         // is to ensure that completed shifted cluster lies completely within the cell layout.
         if (!fail && clusterRect.left >= 0 && clusterRect.right <= mCountX && clusterRect.top >= 0 &&
-                clusterRect.bottom <= mCountY) {
+                clusterRect.bottom <= fixedCountY) {
             foundSolution = true;
         } else {
             currentState.restore();
@@ -2272,6 +2324,10 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         float initScale;
         private static final int DURATION = 300;
         Animator a;
+        private boolean mIsWidget;
+        // Add compensation variables for widget scaling
+        private float mCompensationX;
+        private float mCompensationY;
 
         public ReorderHintAnimation(View child, int cellX0, int cellY0, int cellX1, int cellY1,
                 int spanX, int spanY) {
@@ -2299,11 +2355,34 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                             Math.abs(Math.sin(angle) * mReorderHintAnimationMagnitude));
                 }
             }
-            initDeltaX = child.getTranslationX();
-            initDeltaY = child.getTranslationY();
-            finalScale = getChildrenScale() - 4.0f / child.getWidth();
+            // Store view type
+            mIsWidget = false;
+            if (child instanceof LauncherAppWidgetHostView) {
+                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
+                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+                    mIsWidget = true;
+                }
+            }
+
+            // Calculate compensation for widget scaling
+            if (mIsWidget) {
+                finalScale = widgetScaleFactor;
+                float density = mLauncher.getResources().getDisplayMetrics().density;
+                int mBackgroundPadding = (int) Math.ceil(24.0f * density);
+                // Calculate compensation to maintain position during scale
+                mCompensationX = (child.getWidth() * (finalScale - 1.0f)) / 2.0f;
+                mCompensationY = (child.getHeight() * (finalScale - 1.0f)) / 2.0f + (mBackgroundPadding / 2.0f);
+                // Adjust initial translation to include compensation
+                initDeltaX = child.getTranslationX() - mCompensationX;
+                initDeltaY = child.getTranslationY() - mCompensationY;
+            } else {
+                finalScale = getChildrenScale() - 4.0f / child.getWidth();
+                initDeltaX = child.getTranslationX();
+                initDeltaY = child.getTranslationY();
+            }
             initScale = child.getScaleX();
-            this.child = child;
+            this.child = child;     
         }
 
         void animate() {
@@ -2331,9 +2410,17 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     float r = ((Float) animation.getAnimatedValue()).floatValue();
                     float x = r * finalDeltaX + (1 - r) * initDeltaX;
                     float y = r * finalDeltaY + (1 - r) * initDeltaY;
+                    float s = mIsWidget ? finalScale : 
+                        (r * finalScale + (1 - r) * initScale);
+                    
+                    // Apply compensation for widgets
+                    if (mIsWidget) {
+                        x += mCompensationX;
+                        y += mCompensationY;
+                    }
+                    
                     child.setTranslationX(x);
                     child.setTranslationY(y);
-                    float s = r * finalScale + (1 - r) * initScale;
                     child.setScaleX(s);
                     child.setScaleY(s);
                 }
@@ -2344,6 +2431,19 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     initDeltaX = 0;
                     initDeltaY = 0;
                     initScale = getChildrenScale();
+                }
+            });
+            va.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // For widgets, maintain widgetScaleFactor scale after animation ends
+                    if (mIsWidget) {
+                        child.setScaleX(widgetScaleFactor);
+                        child.setScaleY(widgetScaleFactor);
+                        // Apply final compensation
+                        child.setTranslationX(mCompensationX);
+                        child.setTranslationY(mCompensationY);
+                    }
                 }
             });
             mShakeAnimators.put(child, this);
@@ -2361,17 +2461,26 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 a.cancel();
             }
 
-            AnimatorSet s = LauncherAnimUtils.createAnimatorSet();
-            a = s;
-            s.playTogether(
-                LauncherAnimUtils.ofFloat(child, "scaleX", getChildrenScale()),
-                LauncherAnimUtils.ofFloat(child, "scaleY", getChildrenScale()),
-                LauncherAnimUtils.ofFloat(child, "translationX", 0f),
-                LauncherAnimUtils.ofFloat(child, "translationY", 0f)
-            );
-            s.setDuration(REORDER_ANIMATION_DURATION);
-            s.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
-            s.start();
+            if (mIsWidget) {
+                // For widgets: Reset to widgetScaleFactor scale with compensation
+                child.setScaleX(widgetScaleFactor);
+                child.setScaleY(widgetScaleFactor);
+                child.setTranslationX(mCompensationX);
+                child.setTranslationY(mCompensationY);
+            } else {
+                // For non-widgets: Animate back to original scale
+                AnimatorSet s = LauncherAnimUtils.createAnimatorSet();
+                a = s;
+                s.playTogether(
+                    LauncherAnimUtils.ofFloat(child, "scaleX", initScale),
+                    LauncherAnimUtils.ofFloat(child, "scaleY", initScale),
+                    LauncherAnimUtils.ofFloat(child, "translationX", 0f),
+                    LauncherAnimUtils.ofFloat(child, "translationY", 0f)
+                );
+                s.setDuration(REORDER_ANIMATION_DURATION);
+                s.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
+                s.start();
+            }
         }
     }
 
@@ -3251,6 +3360,47 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             this.cellVSpan = cellVSpan;
         }
 
+        public void setup(int cellWidth, int cellHeight, boolean invertHorizontally, int colCount) {
+            setup(cellWidth, cellHeight, invertHorizontally, colCount, 1.0f, 1.0f);
+        }
+
+        /**
+         * Use this method, as opposed to {@link #setup(int, int, boolean, int)}, if the view needs
+         * to be scaled.
+         *
+         * ie. In multi-window mode, we setup widgets so that they are measured and laid out
+         * using their full/invariant device profile sizes.
+         */
+        public void setup(int cellWidth, int cellHeight, boolean invertHorizontally, int colCount,
+                float cellScaleX, float cellScaleY) {
+            if (isLockedToGrid) {
+                final int myCellHSpan = cellHSpan;
+                final int myCellVSpan = cellVSpan;
+                int myCellX = useTmpCoords ? tmpCellX : cellX;
+                int myCellY = useTmpCoords ? tmpCellY : cellY;
+
+                if (invertHorizontally) {
+                    myCellX = colCount - myCellX - cellHSpan;
+                }
+
+                width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
+                height = (int) (myCellVSpan * cellHeight / cellScaleY - topMargin - bottomMargin);
+                x = (myCellX * cellWidth + leftMargin);
+                y = (myCellY * cellHeight + topMargin);
+
+                // padding for the first row and for consecutive rows so it doesn't look wierd
+                if (myCellY == 0) {
+                    y += Launcher.workspaceTopPadding;
+                }
+                if (myCellY == 1) {
+                    y += Launcher.workspaceTopPadding / 2;
+                }
+                if (myCellY == 2) {
+                    y += Launcher.workspaceTopPadding / 4;
+                }
+            }
+        }
+
         public void setup(int cellWidth, int cellHeight, int widthGap, int heightGap,
                 boolean invertHorizontally, int colCount) {
             if (isLockedToGrid) {
@@ -3269,6 +3419,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                         topMargin - bottomMargin;
                 x = (int) (myCellX * (cellWidth + widthGap) + leftMargin);
                 y = (int) (myCellY * (cellHeight + heightGap) + topMargin);
+
+                // padding for the first row and for consecutive rows so it doesn't look wierd
+                if (myCellY == 0) {
+                    y += Launcher.workspaceTopPadding;
+                }
+                if (myCellY == 1) {
+                    y += Launcher.workspaceTopPadding / 2;
+                }
+                if (myCellY == 2) {
+                    y += Launcher.workspaceTopPadding / 4;
+                }
             }
         }
 

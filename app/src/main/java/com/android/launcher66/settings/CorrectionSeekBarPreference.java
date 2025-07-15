@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
+
+import android.view.View;
 import android.widget.SeekBar;
 
 import com.android.launcher66.R;
@@ -38,6 +40,18 @@ public class CorrectionSeekBarPreference extends Preference {
     @Override
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        View rootView = holder.itemView;
+        if (rootView != null) {
+            // Apply relative padding (start, top, end, bottom)
+            rootView.setPaddingRelative(
+                SettingsActivity.nestedPaddingStart,
+                rootView.getPaddingTop(),
+                SettingsActivity.nestedPaddingEnd,
+                rootView.getPaddingBottom()
+            );
+        }
+        
         SeekBar seekBar = (SeekBar) holder.findViewById(R.id.sun_seekbar);
         seekBar.setMax(MAX_VALUE - MIN_VALUE); // Adjust range for SeekBar
         seekBar.setProgress(currentValue - MIN_VALUE); // Map value to SeekBar progress
@@ -70,5 +84,17 @@ public class CorrectionSeekBarPreference extends Preference {
     // Method to set the external listener
     public void setOnSeekBarProgressChangeListener(OnSeekBarProgressChangeListener listener) {
         this.progressChangeListener = listener;
+    }    
+
+    public void resetPosition() {
+        if (DEFAULT_VALUE != currentValue) {
+            currentValue = DEFAULT_VALUE;
+            persistInt(currentValue);
+            notifyChanged(); 
+            callChangeListener(currentValue); 
+            if (progressChangeListener != null) {
+                progressChangeListener.onProgressChanged(currentValue); 
+            }
+        }
     }
 }

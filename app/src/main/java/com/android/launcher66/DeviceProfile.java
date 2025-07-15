@@ -148,9 +148,9 @@ public class DeviceProfile {
         Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
         this.cellWidthPx = this.iconSizePx;
         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.istextPaint_abroad)) {
-            this.cellHeightPx = ((this.iconSizePx - LauncherApplication.sApp.getResources().getInteger(R.integer.utility_icon_height)) + ((int) Math.ceil(fontMetrics.bottom - fontMetrics.top))) - LauncherApplication.sApp.getResources().getDimensionPixelSize(R.dimen.istextPaint_abroad);
+            this.cellHeightPx = (this.iconSizePx + ((int) Math.ceil(fontMetrics.bottom - fontMetrics.top))) - LauncherApplication.sApp.getResources().getDimensionPixelSize(R.dimen.istextPaint_abroad);
         } else {
-            this.cellHeightPx = this.iconSizePx - LauncherApplication.sApp.getResources().getInteger(R.integer.utility_icon_height);
+            this.cellHeightPx = this.iconSizePx;
         }
         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.hotseat_layout)) {
             this.hotseatBarHeightPx = this.edgeMarginPx * 4;

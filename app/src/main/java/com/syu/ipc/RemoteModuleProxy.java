@@ -2,8 +2,12 @@ package com.syu.ipc;
 
 import android.os.RemoteException;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class RemoteModuleProxy extends IRemoteModule.Stub {
     private IRemoteModule mRemoteModule;
+    private final ExecutorService mExecutor = Executors.newCachedThreadPool();
 
     public IRemoteModule getRemoteModule() {
         return this.mRemoteModule;
@@ -16,46 +20,66 @@ public class RemoteModuleProxy extends IRemoteModule.Stub {
     @Override
     public void cmd(int cmdCode, int[] ints, float[] flts, String[] strs) {
         IRemoteModule remoteModule = this.mRemoteModule;
-        if (remoteModule != null) {
+        if (remoteModule == null) return;
+        mExecutor.execute(() -> {
             try {
-                remoteModule.cmd(cmdCode, ints, flts, strs);
+                mRemoteModule.cmd(cmdCode, ints, flts, strs);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     public void cmd(int cmdCode) {
         IRemoteModule remoteModule = this.mRemoteModule;
-        if (remoteModule != null) {
+        if (remoteModule == null) return;
+        mExecutor.execute(() -> {
             try {
                 remoteModule.cmd(cmdCode, null, null, null);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     public void cmd(int cmdCode, int value) {
         IRemoteModule remoteModule = this.mRemoteModule;
-        if (remoteModule != null) {
+        if (remoteModule == null) return;
+        mExecutor.execute(() -> {
             try {
                 remoteModule.cmd(cmdCode, new int[]{value}, null, null);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     public void cmd(int cmdCode, int value1, int value2) {
         IRemoteModule remoteModule = this.mRemoteModule;
-        if (remoteModule != null) {
+        if (remoteModule == null) return;
+        mExecutor.execute(() -> {
             try {
                 remoteModule.cmd(cmdCode, new int[]{value1, value2}, null, null);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }
+        });
+    }
+
+    public void cmdAsync(int cmdCode) {
+        cmd(cmdCode, null, null, null);
+    }
+
+    public void cmdAsync(int cmdCode, int value) {
+        cmd(cmdCode, new int[]{value}, null, null);
+    }
+
+    public void cmdAsync(int cmdCode, int value1, int value2) {
+        cmd(cmdCode, new int[]{value1, value2}, null, null);
+    }
+
+    public void cmdAsync(int cmdCode, int[] ints, float[] flts, String[] strs) {
+        cmd(cmdCode, ints, flts, strs);
     }
 
     @Override

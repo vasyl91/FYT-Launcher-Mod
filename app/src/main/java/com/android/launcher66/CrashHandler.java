@@ -14,12 +14,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
     static CrashHandler mInstance;
     final String CARSH_DIR_PATH = "/sdcard/crash";
-    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.US);
     HashMap<String, String> infos;
     Context mContext;
     Thread.UncaughtExceptionHandler mDefaultHandler;

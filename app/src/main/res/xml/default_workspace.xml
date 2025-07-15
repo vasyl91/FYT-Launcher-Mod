@@ -1,10 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<favorites
-  xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
-    <favorite launcher:className="com.syu.car.activity.MainActivity" launcher:packageName="com.syu.car" launcher:screen="0" launcher:x="0" launcher:y="0" />
-    <favorite launcher:className="com.syu.dvd.ActivityLauncher" launcher:packageName="com.syu.dvd" launcher:screen="0" launcher:x="1" launcher:y="0" />
-    <favorite launcher:className="net.easyconn.WelcomeActivity" launcher:packageName="net.easyconn" launcher:screen="0" launcher:x="2" launcher:y="0" />
-    <favorite launcher:className="com.syu.filemanager.FileManagerActivity" launcher:packageName="com.syu.filemanager" launcher:screen="0" launcher:x="3" launcher:y="0" />
-    <favorite launcher:className="com.syu.guide.GuideActivity" launcher:packageName="com.syu.guide" launcher:screen="0" launcher:x="4" launcher:y="0" />
-    <appwidget launcher:className="com.syu.music.MAppWidget" launcher:packageName="com.syu.music" launcher:screen="0" launcher:x="0" launcher:y="1" launcher:spanX="5" launcher:spanY="1" />
-</favorites>
+<favorites />

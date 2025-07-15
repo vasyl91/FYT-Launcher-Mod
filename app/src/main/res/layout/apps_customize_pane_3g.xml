@@ -66,7 +66,7 @@
                 android:id="@+id/page_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/apps_customize_page_indicator_margin"
+                android:layout_marginBottom="@dimen/pageindicator_mariginBottom"
                 layout="@layout/page_indicator" />
         </FrameLayout>
     </LinearLayout>

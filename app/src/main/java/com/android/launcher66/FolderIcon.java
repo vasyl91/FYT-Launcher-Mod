@@ -133,8 +133,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         LinearLayout.LayoutParams lp =
                 (LinearLayout.LayoutParams) icon.mPreviewBackground.getLayoutParams();
         lp.topMargin = grid.folderBackgroundOffset;
-        lp.width = grid.folderIconSizePx;
-        lp.height = grid.folderIconSizePx;
+        lp.width = Launcher.workspaceIconAndFolderSize;
+        lp.height = Launcher.workspaceIconAndFolderSize;
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(launcher);

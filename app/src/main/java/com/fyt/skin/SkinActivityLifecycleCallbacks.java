@@ -55,5 +55,9 @@ public class SkinActivityLifecycleCallbacks implements Application.ActivityLifec
     public void onActivityDestroyed(Activity activity) {
         SkinFactory skinLayoutFactory = this.mLayoutFactoryMap.remove(activity);
         SkinUtils.getSkinManager().deleteObserver(skinLayoutFactory);
+
+        if (skinLayoutFactory != null) {
+            skinLayoutFactory.clear();
+        }
     }
 }

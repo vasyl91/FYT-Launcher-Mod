@@ -125,4 +125,9 @@ public class SkinView {
             }
         }
     }
+
+    public void clear() {
+        view = null;
+        parms = null;
+    }
 }

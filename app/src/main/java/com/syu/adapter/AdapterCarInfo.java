@@ -28,7 +28,7 @@ public class AdapterCarInfo extends BaseAdapter {
     LayoutInflater inflater;
     Context mContext;
     public SharedPreferences sp;
-    List<CarInfo> list = new ArrayList();
+    List<CarInfo> list = new ArrayList<>();
     int VehicleIdentifyFlag = 1;
 
     public AdapterCarInfo(Context context, List<CarInfo> list) {
@@ -302,7 +302,8 @@ public class AdapterCarInfo extends BaseAdapter {
                 });
                 break;
             case 11:
-                holder.mCvtSwitch.setOnClickListener(new View.OnClickListener() { 
+                holder.mCvtSwitch.setOnClickListener(new View.OnClickListener() {
+                    @SuppressWarnings("deprecation") // Suppress deprecation warning
                     @Override
                     public void onClick(View v) {
                         FragmentManager fragmentManager = ((Activity) AdapterCarInfo.this.mContext).getFragmentManager();
@@ -323,7 +324,6 @@ public class AdapterCarInfo extends BaseAdapter {
         Button mBtnMinus;
         Button mBtnPlus;
         CheckedTextView mCvtSwitch;
-        View mLayout;
         TextView mTextTitle;
         TextView mTextValue;
 

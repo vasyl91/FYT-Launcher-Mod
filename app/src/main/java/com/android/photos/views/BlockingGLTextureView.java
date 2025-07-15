@@ -264,10 +264,6 @@ public class BlockingGLTextureView extends TextureView implements SurfaceTexture
                 mEgl.eglDestroyContext(mEglDisplay, mEglContext);
                 mEglContext = null;
             }
-            if (mEglDisplay != null) {
-                mEgl.eglTerminate(mEglDisplay);
-                mEglDisplay = null;
-            }
         }
 
         private void throwEglException(String function) {

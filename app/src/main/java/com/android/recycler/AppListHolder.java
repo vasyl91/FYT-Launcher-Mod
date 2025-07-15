@@ -13,7 +13,6 @@ public class AppListHolder extends RecyclerView.ViewHolder {
 
     public AppListHolder(View view) {
         super(view);
-        this.mAppName = (TextView) view.findViewById(R.id.cycler_app_name);
         this.mAppIcon = (ImageView) view.findViewById(R.id.cycler_app_icon);
     }
 }

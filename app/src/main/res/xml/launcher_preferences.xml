@@ -9,11 +9,11 @@
         app:key="layout_category"
         app:title="@string/layout_category">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="transparent_statusbar"
             android:defaultValue="false"
             android:title="@string/transparent_statusbar" />
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="user_layout"
             android:defaultValue="false"
             android:title="@string/layout_type"
@@ -29,7 +29,7 @@
         app:key="misc_category"
         app:title="@string/misc_category">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="fyt_data"
             android:defaultValue="false"
             android:title="@string/fyt_title_source"
@@ -47,6 +47,12 @@
         <Preference
             android:key="wallpaper_picker"
             android:title="@string/wallpaper_picker" />
+        <SwitchPreferenceCompat
+            android:key="wallpaper_picker_source"
+            android:defaultValue="false"
+            android:title="@string/wallpaper_picker_source"
+            android:summaryOn="@string/wallpaper_picker_system"
+            android:summaryOff="@string/wallpaper_picker_launcher" />
         <Preference
             android:key="all_apps_textSize"
             android:title="@string/all_apps_textSize_str"
@@ -62,38 +68,36 @@
         app:key="night_mode_category"
         app:title="@string/night_mode">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="night_mode"
             android:defaultValue="false"
             android:title="@string/night_mode"
             android:summaryOn="@string/night_mode_summary"
             android:maxLines="5" />
         
-        <PreferenceCategory
+        <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="correction_category"
             app:title="@string/sun_corrections"
             style="@style/PreferenceCategoryStyle" >
 
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="sunrise_title_and_summary"
                 android:title="@string/sunrise_correction"
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.CorrectionSeekBarPreference
                 android:key="sunrise_correction"
                 android:defaultValue="0" />
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="sunset_title_and_summary"
                 android:title="@string/sunset_correction"
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.CorrectionSeekBarPreference
                 android:key="sunset_correction"
                 android:defaultValue="0" />
-            <Preference
-                android:key="empty1"/>
             
-        </PreferenceCategory>
+        </com.android.launcher66.settings.CustomPreferenceCategory>
         
-        <PreferenceCategory
+        <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="wallpapers_category"
             app:title="@string/pick_wallpaper"
             style="@style/PreferenceCategoryStyle" >
@@ -103,22 +107,22 @@
                 android:defaultValue="true"
                 android:title="@string/default_wallpapers"
                 app:layout="@layout/nested_preference_category_switch" />
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="save_day_wallpaper"
                 android:title="@string/save_day_wallpaper"
                 android:summary="@string/save_day_wallpaper_summary"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="save_night_wallpaper"
                 android:title="@string/save_night_wallpaper"
                 android:summary="@string/save_night_wallpaper_summary"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
             
-        </PreferenceCategory>
+        </com.android.launcher66.settings.CustomPreferenceCategory>
         
-        <PreferenceCategory
+        <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="brightness_category"
             app:title="@string/brightness"
             style="@style/PreferenceCategoryStyle" >
@@ -128,35 +132,48 @@
                 android:defaultValue="false"
                 android:title="@string/brightness"
                 app:layout="@layout/nested_preference_category_switch" />
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="day_title"
                 android:title="@string/day_seek_bar"
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.BrightnessSeekBarPreference
                 android:key="day_seek_bar"
                 android:defaultValue="50" />
-            <Preference
+            <com.android.launcher66.settings.CustomPreference
                 android:key="night_title"
                 android:title="@string/night_seek_bar"
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.BrightnessSeekBarPreference
                 android:key="night_seek_bar"
                 android:defaultValue="50" />
-            <Preference
-                android:key="empty2"/>
             
-        </PreferenceCategory>
+        </com.android.launcher66.settings.CustomPreferenceCategory>
+
+        <com.android.launcher66.settings.CustomPreferenceCategory
+            app:key="reset_night_mode_category"
+            app:title="@string/reset_night_mode_category"
+            style="@style/PreferenceCategoryStyle" >
+            
+            <com.android.launcher66.settings.CustomPreference
+                android:key="reset_night_mode"
+                android:title="@string/reset_night_mode"
+                app:layout="@layout/nested_preference_category_content" />
+            
+        </com.android.launcher66.settings.CustomPreferenceCategory>
         
     </PreferenceCategory>    
 
     <PreferenceCategory
         app:key="logcat_category"
-        app:title="@string/logcat_service">
+        app:title="@string/logcat_service_run">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="logcat_service"
             android:defaultValue="false"
             android:title="@string/logcat_service" />
+        <Preference
+            android:key="logcat_service_run"
+            android:title="@string/logcat_service_run"/>
         <Preference
             android:key="logcat_service_timeout"
             android:title="@string/logcat_service_timeout"
@@ -169,7 +186,11 @@
         app:title="@string/app_version">
 
         <Preference
-            android:key="empty3"/>
+            android:key="app_version_update"
+            android:title="@string/update_version_button" />        
+
+        <Preference
+            android:key="empty1"/>
             
     </PreferenceCategory>
 

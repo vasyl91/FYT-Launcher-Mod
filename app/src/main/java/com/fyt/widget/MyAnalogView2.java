@@ -12,8 +12,10 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 
 import java.util.Calendar;
 
@@ -53,8 +55,8 @@ public class MyAnalogView2 extends View {
 
     public MyAnalogView2(Context context) {
         super(context);
-        this.availableWidth = LauncherApplication.sApp.getResources().getInteger(R.integer.analogwidth);
-        this.availableHeight = LauncherApplication.sApp.getResources().getInteger(R.integer.analogheight);
+        this.availableWidth = Launcher.analogwidth;
+        this.availableHeight = Launcher.analogheight;
         this.tickRunnable = new Runnable() {
             @Override
             public void run() {
@@ -74,8 +76,8 @@ public class MyAnalogView2 extends View {
 
     public MyAnalogView2(Context context, String timeZone) {
         super(context);
-        this.availableWidth = LauncherApplication.sApp.getResources().getInteger(R.integer.analogwidth);
-        this.availableHeight = LauncherApplication.sApp.getResources().getInteger(R.integer.analogheight);
+        this.availableWidth = Launcher.analogwidth;
+        this.availableHeight = Launcher.analogheight;
         this.tickRunnable = new Runnable() {
             @Override
             public void run() {
@@ -84,10 +86,10 @@ public class MyAnalogView2 extends View {
             }
         };
         this.timeZoneStr = timeZone;
-        this.mBmpHour = BitmapFactory.decodeResource(getResources(), ResValue.getInstance().clock_hour);
-        this.mBmpMinute = BitmapFactory.decodeResource(getResources(), ResValue.getInstance().clock_minute);
-        this.mBmpSecond = BitmapFactory.decodeResource(getResources(), ResValue.getInstance().clock_second);
-        this.mBmpBg = BitmapFactory.decodeResource(getResources(), ResValue.getInstance().clock_bg);
+        this.mBmpHour = Helpers.glideLoader(ResValue.getInstance().clock_hour);
+        this.mBmpMinute = Helpers.glideLoader(ResValue.getInstance().clock_minute);
+        this.mBmpSecond = Helpers.glideLoader(ResValue.getInstance().clock_second);
+        this.mBmpBg = Helpers.glideLoader(ResValue.getInstance().clock_bg);
         this.bmdBg = new BitmapDrawable(getResources(), this.mBmpBg);
         this.bmdHour = new BitmapDrawable(getResources(), this.mBmpHour);
         this.bmdMinute = new BitmapDrawable(getResources(), this.mBmpMinute);

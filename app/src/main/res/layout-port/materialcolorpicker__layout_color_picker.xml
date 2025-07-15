@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.flexbox.FlexboxLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:alignItems="stretch" 
+    app:justifyContent="space_between"
+    app:flexWrap="wrap"
+    app:flexDirection="column"
+    android:background="#00FF00"
+    tools:context=".ColorPicker">
+
+    <View
+        android:id="@+id/colorView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_flexGrow="1"
+        app:layout_flexBasisPercent="25%" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/pickerContainer"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_flexGrow="1"
+        app:layout_flexBasisPercent="75%"
+        app:justifyContent="space_between"
+        app:flexWrap="wrap"
+        app:flexDirection="column"
+        android:background="@color/materialcolorpicker__white" >
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="70%"
+            app:justifyContent="space_around"
+            app:flexDirection="column" >
+
+            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+                android:id="@+id/alphaSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/materialcolorpicker__alpha_progress"
+                android:textColorHint="@android:color/black"
+                android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"/>
+
+            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+                android:id="@+id/redSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/alphaSeekBar"
+                android:max="255"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/materialcolorpicker__red_progress"
+                android:textColorHint="@android:color/holo_red_light"
+                android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"/>
+
+            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+                android:id="@+id/greenSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/redSeekBar"
+                android:max="255"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/materialcolorpicker__green_progress"
+                android:textColorHint="@android:color/holo_green_light"
+                android:thumb="@drawable/materialcolorpicker__green_thumb_drawable"/>
+
+            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+                android:id="@+id/blueSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/greenSeekBar"
+                android:max="255"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/materialcolorpicker__blue_progress"
+                android:textColorHint="@android:color/holo_blue_light"
+                android:thumb="@drawable/materialcolorpicker__blue_thumb_drawable"/>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/pickerContainerBottom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="30%"
+            app:alignItems="flex_end" 
+            app:justifyContent="space_between"
+            app:flexDirection="row" >
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:alignItems="center" 
+                app:justifyContent="space_between"
+                app:flexDirection="row" >
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@id/hexCode"
+                    android:text="@string/materialcolorpicker__hash"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/hexCode"
+                    style="@style/Widget.AppCompat.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|actionGo|actionSend"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColor="@android:color/primary_text_light"
+                    android:textColorHint="@android:color/primary_text_light"
+                    android:textSize="18sp"
+                    tools:text="123456"
+                    android:autofillHints="" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <Button
+                android:id="@+id/okColorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:clickable="true"
+                android:text="@string/materialcolorpicker__btnSelectColor"
+                android:textSize="18sp"
+                android:focusable="true"
+                tools:ignore="RelativeOverlap" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+</com.google.android.flexbox.FlexboxLayout>

@@ -114,6 +114,18 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
         toggleSelection(allApp.getPackageName());
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mGridView != null) {
+            mGridView.setAdapter(null);
+        }
+        mAdapter = null;
+        currentAppIcon = null;
+        currentAppName = null;
+        mGridView = null;
+    }
+
     public void toggleSelection(String packageName) {
         if (apps.contains(packageName)) {
             apps.remove(packageName);
@@ -135,6 +147,10 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     public int alphaToSet(String packageName) {
         if (apps.contains(packageName)) return 0;
         else return 90;
+    }
+
+    public boolean isShowing() {
+        return getDialog() != null && getDialog().isShowing();
     }
 
     class AppSelectAdapter extends BaseAdapter {

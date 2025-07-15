@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.launcher66;
 
 import android.app.Activity;
@@ -18,6 +34,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
+import com.android.photos.BitmapRegionTileSource;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,29 +43,51 @@ import java.util.ArrayList;
 
 
 public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
-    private static String TAG = "SavedWallpaperImages";
+    private static String TAG = "launcher66.SavedWallpaperImages";
     private ImageDb mDb;
     ArrayList<SavedWallpaperTile> mImages;
     Context mContext;
     LayoutInflater mLayoutInflater;
 
-    public static class SavedWallpaperTile extends WallpaperPickerActivity.FileWallpaperInfo {
+    public static class SavedWallpaperTile extends WallpaperPickerActivity.WallpaperTileInfo {
         private int mDbId;
-        public SavedWallpaperTile(int dbId, File target, Drawable thumb) {
-            super(target, thumb);
+        private Drawable mThumb;
+        public SavedWallpaperTile(int dbId, Drawable thumb) {
             mDbId = dbId;
+            mThumb = thumb;
         }
-
+        @Override
+        public void onClick(WallpaperPickerActivity a) {
+            String imageFilename = a.getSavedImages().getImageFilename(mDbId);
+            File file = new File(a.getFilesDir(), imageFilename);
+            CropView v = a.getCropView();
+            int rotation = WallpaperCropActivity.getRotationFromExif(file.getAbsolutePath());
+            v.setTileSource(
+                    new BitmapRegionTileSource(a, file.getAbsolutePath(), 1024, rotation), null);
+            v.moveToLeft();
+            v.setTouchEnabled(false);
+        }
+        @Override
+        public void onSave(WallpaperPickerActivity a) {
+            boolean finishActivityWhenDone = true;
+            String imageFilename = a.getSavedImages().getImageFilename(mDbId);
+            a.setWallpaper(imageFilename, finishActivityWhenDone);
+        }
         @Override
         public void onDelete(WallpaperPickerActivity a) {
             a.getSavedImages().deleteImage(mDbId);
         }
+        @Override
+        public boolean isSelectable() {
+            return true;
+        }
+        @Override
+        public boolean isNamelessWallpaper() {
+            return true;
+        }
     }
 
     public SavedWallpaperImages(Activity context) {
-        // We used to store the saved images in the cache directory, but that meant they'd get
-        // deleted sometimes-- move them to the data directory
-        ImageDb.moveFromCacheDirectoryIfNecessary(context);
         mDb = new ImageDb(context);
         mContext = context;
         mLayoutInflater = context.getLayoutInflater();
@@ -58,8 +98,7 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
         SQLiteDatabase db = mDb.getReadableDatabase();
         Cursor result = db.query(ImageDb.TABLE_NAME,
                 new String[] { ImageDb.COLUMN_ID,
-                    ImageDb.COLUMN_IMAGE_THUMBNAIL_FILENAME,
-                    ImageDb.COLUMN_IMAGE_FILENAME}, // cols to return
+                    ImageDb.COLUMN_IMAGE_THUMBNAIL_FILENAME }, // cols to return
                 null, // select query
                 null, // args to select query
                 null,
@@ -73,9 +112,7 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
 
             Bitmap thumb = BitmapFactory.decodeFile(file.getAbsolutePath());
             if (thumb != null) {
-                mImages.add(new SavedWallpaperTile(result.getInt(0),
-                        new File(mContext.getFilesDir(), result.getString(2)),
-                        new BitmapDrawable(LauncherApplication.sApp.getResources(), thumb)));
+                mImages.add(new SavedWallpaperTile(result.getInt(0), new BitmapDrawable(mContext.getResources(), thumb)));
             }
         }
         result.close();
@@ -99,7 +136,15 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
             Log.e(TAG, "Error decoding thumbnail for wallpaper #" + position);
         }
         return WallpaperPickerActivity.createImageTileView(
-                mLayoutInflater, convertView, parent, thumbDrawable);
+                mLayoutInflater, position, convertView, parent, thumbDrawable);
+    }
+
+    public String getImageFilename(int id) {
+        Pair<String, String> filenames = getImageFilenames(id);
+        if (filenames != null) {
+            return filenames.second;
+        }
+        return null;
     }
 
     private Pair<String, String> getImageFilenames(int id) {
@@ -118,7 +163,7 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
             String thumbFilename = result.getString(0);
             String imageFilename = result.getString(1);
             result.close();
-            return new Pair<>(thumbFilename, imageFilename);
+            return new Pair<String, String>(thumbFilename, imageFilename);
         } else {
             return null;
         }
@@ -173,20 +218,11 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
         Context mContext;
 
         public ImageDb(Context context) {
-            super(context, context.getDatabasePath(DB_NAME).getPath(), null, DB_VERSION);
+            super(context, new File(context.getCacheDir(), DB_NAME).getPath(), null, DB_VERSION);
             // Store the context for later use
             mContext = context;
         }
 
-        public static void moveFromCacheDirectoryIfNecessary(Context context) {
-            // We used to store the saved images in the cache directory, but that meant they'd get
-            // deleted sometimes-- move them to the data directory
-            File oldSavedImagesFile = new File(context.getCacheDir(), ImageDb.DB_NAME);
-            File savedImagesFile = context.getDatabasePath(ImageDb.DB_NAME);
-            if (oldSavedImagesFile.exists()) {
-                oldSavedImagesFile.renameTo(savedImagesFile);
-            }
-        }
         @Override
         public void onCreate(SQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +

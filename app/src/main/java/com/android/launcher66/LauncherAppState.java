@@ -151,7 +151,7 @@ public class LauncherAppState {
             this.mDynamicGrid = new DynamicGrid(context, context.getResources(), minWidth, minHeight, width, height, availableWidth, availableHeight);
         }
         DeviceProfile grid = this.mDynamicGrid.getDeviceProfile();
-        Utilities.setIconSize(context.getResources().getDimensionPixelSize(R.dimen.app_icon_size));
+        Utilities.setIconSize(Launcher.app_icon_size);
         grid.updateFromConfiguration(context.getResources(), width, height, availableWidth, availableHeight);
         return grid;
     }

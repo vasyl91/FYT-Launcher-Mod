@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Helpers;
 
 public class WaveCircleView extends View {
     Bitmap mBg;
@@ -75,7 +76,7 @@ public class WaveCircleView extends View {
         this.mPaint.setAntiAlias(true);
         this.mPaint.setFilterBitmap(true);
         this.mPaint.setFlags(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
-        this.mBg = BitmapFactory.decodeResource(getResources(), R.drawable.ic_flow_ring);
+        this.mBg = Helpers.glideLoader(R.drawable.ic_flow_ring);
         this.mCircleBitmap = Bitmap.createBitmap(this.mCircleWidth, this.mCircleHeight, Bitmap.Config.ARGB_8888);
         this.mWavePath = new Path();
         this.mWaveCanvas = new Canvas(this.mCircleBitmap);

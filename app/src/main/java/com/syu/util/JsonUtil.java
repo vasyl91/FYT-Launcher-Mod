@@ -1,13 +1,10 @@
 package com.syu.util;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Map;
 
 public class JsonUtil {
     public static String getRequestStr(String urlServer) {
@@ -25,11 +22,11 @@ public class JsonUtil {
         try {
             URL url = new URL(urlServer);
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-            httpConn.setDoOutput(true);
+            httpConn.setDoOutput(false);
             httpConn.setDoInput(true);
             httpConn.setUseCaches(false);
-            httpConn.setRequestMethod(HttpPost.METHOD_NAME);
-            httpConn.setRequestProperty(HTTP.CONTENT_TYPE, "application/json");
+            httpConn.setRequestMethod("GET");
+            httpConn.setRequestProperty("Content-Type", "application/json");
             httpConn.setRequestProperty("Charset", StandardCharsets.UTF_8.name());
             httpConn.setReadTimeout(10000);
             httpConn.setConnectTimeout(10000);
@@ -61,17 +58,26 @@ public class JsonUtil {
         }
     }
 
-    public static String doPostStr(List<NameValuePair> params, String str_http) {
-        HttpPost httpPost = new HttpPost(str_http);
+    public static String doPostStr(Map<String, String> params, String str_http) {
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8.name()));
-            HttpClient httpclient = HttpClientBuilder.create().build();
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-            if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                return "";
+            FormBody.Builder formBuilder = new FormBody.Builder(StandardCharsets.UTF_8);
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                formBuilder.add(entry.getKey(), entry.getValue());
             }
-            String str = EntityUtils.toString(httpResponse.getEntity());
-            return str;
+            RequestBody formBody = formBuilder.build();
+
+            Request request = new Request.Builder()
+                    .url(str_http)
+                    .post(formBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    return "";
+                }
+                return response.body().string();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "";

@@ -12,5 +12,10 @@
         android:id="@+id/brightness_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"  
+        android:thumb="@drawable/custom_seekbar_thumb"
+        android:splitTrack="false"
+        android:thumbOffset="8dp"
+        android:progressTint="#ff4285f4"  
         android:max="255" /> <!-- max = MAX_VALUE - MIN_VALUE -->
 </LinearLayout>

@@ -28,8 +28,6 @@ import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.util.Id3Info;
 import com.syu.util.Lrc;
-import com.syu.util.WeatherUtils;
-import com.syu.weather.WeatherDescription;
 import com.syu.widget.util.TimeUtil;
 
 import java.io.File;
@@ -65,7 +63,7 @@ public class DateRadioWidget extends Widget {
         int index;
         LogPreview.show("updateViews");
         if (Launcher.mainState == 8) {
-            if (MusicService.state.booleanValue()) {
+            if (MusicService.state) {
                 int i2 = ResValue.getInstance().widget_music_score;
                 int i3 = ResValue.getInstance().music_score_0;
                 int i4 = this.count;
@@ -142,7 +140,7 @@ public class DateRadioWidget extends Widget {
         } else {
             views.setTextViewText(ResValue.getInstance().music_art, this.mContext.getResources().getString(R.string.music_author));
         }  
-        if (MusicService.state.booleanValue()) {
+        if (MusicService.state) {
             views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_playpause_icon);
         } else {
             views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_pause_icon);
@@ -246,23 +244,6 @@ public class DateRadioWidget extends Widget {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        updateWeather(views);
-    }
-
-    private void updateWeather(RemoteViews views) {
-        if (Launcher.getLauncher() != null) {
-            refreshData(views, Launcher.getLauncher().mCurDescription);
-        }
-    }
-
-    private void refreshData(RemoteViews views, WeatherDescription weather) {
-        if (weather != null && weather.vaild()) {
-            views.setTextViewText(ResValue.getInstance().weather_city, weather.getCity());
-            views.setTextViewText(ResValue.getInstance().weather_temp_range, weather.getTemDescription());
-            views.setTextViewText(ResValue.getInstance().weather_temp, weather.getCurTem());
-            views.setTextViewText(ResValue.getInstance().weather_weather, weather.getWeather() + weather.getCurTem());
-            views.setImageViewResource(ResValue.getInstance().weather_imge, WeatherUtils.getWeatherImagId(weather.getWeather()));
         }
     }
 

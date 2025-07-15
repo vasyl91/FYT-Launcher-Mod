@@ -6,26 +6,44 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <com.google.android.flexbox.FlexboxLayout     
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:flexWrap="wrap"
-        app:flexDirection="column"
-        app:justifyContent="center"
-        app:alignItems="center" >
+    <androidx.constraintlayout.widget.ConstraintLayout     
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintVertical_chainStyle="packed" >
 
         <TextView
             android:id="@+id/dialog_loading_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/dialog_loading_space"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:textColor="#ffffff"
-            android:gravity="center" />    
+            android:gravity="center" />  
+
+        <Space
+            android:id="@+id/dialog_loading_space"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.07"
+            app:layout_constraintTop_toBottomOf="@id/dialog_loading_text"
+            app:layout_constraintBottom_toTopOf="@id/dialog_loading_progress"
+            app:layout_constraintLeft_toLeftOf="parent" 
+            app:layout_constraintRight_toRightOf="parent" />  
 
         <ProgressBar
-            android:layout_width="96dp"  
-            android:layout_height="96dp"  
+            android:id="@+id/dialog_loading_progress"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toBottomOf="@id/dialog_loading_space"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" 
+            app:layout_constraintRight_toRightOf="parent"
             android:indeterminate="true"  />
 
-    </com.google.android.flexbox.FlexboxLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

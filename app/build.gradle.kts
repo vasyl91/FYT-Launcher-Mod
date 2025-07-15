@@ -1,37 +1,48 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
     id("kotlin-parcelize")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.21"
+    id("com.google.devtools.ksp")
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
     namespace = "com.android.launcher66"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.android.launcher66"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
-        versionName = "1.1.4"
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
         vectorDrawables {
             useSupportLibrary = true
         }
-        multiDexEnabled = true
     }
 
     buildTypes {
         release {
             isCrunchPngs = false
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro", 
+                "proguard-widgets.pro"
             )
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
+        }
+        debug {
+            isCrunchPngs = false
         }
     }
 
@@ -51,24 +62,36 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    tasks.withType<KotlinJvmCompile>().configureEach {
+      compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+      }
+    }
+
+    tasks.withType<Test> {
+        useJUnit()
+        useJUnitPlatform()
     }
 
     buildFeatures {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+    packaging {
+        dex {
+            useLegacyPackaging = false
+        }
+        resources.excludes.add("META-INF/**")
     }
 
-    packaging {
-        resources.excludes.add("META-INF/**")
+    bundle {
+        storeArchive {
+            enable = false
+        }
     }
 
     lint {
@@ -86,42 +109,61 @@ configurations.all {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.junit.jupiter)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.recyclerview.selection)
-    implementation(libs.androidx.viewpager)
-    implementation(libs.eventbus)
-    implementation(libs.log4j)
-    implementation(libs.commons.codec)
-    implementation(libs.httpcore)
-    implementation(libs.httpclient)
-    implementation(libs.litepal)
-    implementation(libs.androidx.multidex)
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.preference)
-    implementation(libs.flexbox)
-    implementation(libs.play.services.location)
-    implementation(libs.material)
-    implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.lifecycle.livedata)
-    implementation(libs.androidx.lifecycle.common.java8)
-    implementation(libs.play.services.instantapps)
-    implementation(libs.androidx.core.google.shortcuts)
-
-    testImplementation(libs.junit)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom)) 
     
+    androidTestRuntimeOnly(libs.junit.jupiter.engine)
+    androidTestRuntimeOnly(libs.junit.vintage.engine)
+
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.leakcanary.android)
+
+    debugRuntimeOnly(libs.androidx.ui.test.manifest)
+
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.preference)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.viewpager)
+    implementation(libs.flexbox)
+    implementation(libs.glide)
+    implementation(libs.annotations)
+    implementation(libs.litepal)
+    implementation(libs.material)
+    implementation(libs.okhttp)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.legacy.support.core.utils)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.loader)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.ackpine.api)
+
+    debugImplementation(libs.leakcanary.android.core)
+    debugImplementation(libs.leakcanary.object1.watcher.android.androidx)
+    debugImplementation(libs.leakcanary.object1.watcher.android.support.fragments)
+    implementation(libs.androidx.coordinatorlayout)
+    implementation(libs.androidx.customview)
+    implementation(libs.androidx.drawerlayout)
+    implementation(libs.androidx.dynamicanimation)
+    implementation(libs.androidx.vectordrawable)
+    implementation(libs.androidx.vectordrawable.animated)
+
+
+    implementation(libs.androidx.runtime)
+
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(platform(libs.androidx.compose.bom))
+
+    ksp(libs.ksp)
+    ksp(libs.androidx.room.compiler)
+
+    runtimeOnly(libs.ackpine.core)
+    runtimeOnly(libs.androidx.startup.runtime)
+    
+    testRuntimeOnly(libs.junit.jupiter.engine)  
 }

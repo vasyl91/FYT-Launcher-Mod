@@ -29,13 +29,14 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private List<AppListBean> mData;
     private AppListDialogFragment mDialog;
     private Launcher mLauncher;
-    private int mMaxCount = 4;
+    private int mMaxCount;
     private boolean showAddAppView;
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
+        this.mMaxCount = 5;
         this.mData = data;
         this.mLauncher = launcher;
     }
@@ -49,7 +50,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
 
     @Override
     public int getItemCount() {
-        this.showAddAppView = this.mData.size() > this.mMaxCount;
+        this.showAddAppView = (this.mData.size() > this.mMaxCount);
         return this.mData.size();
     }
 
@@ -88,6 +89,13 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 LeftAppListAdapter.this.mLauncher.startActivity(settingsIntent);
                 onClickIcon(appListBean);
+            } else if (appListBean.className.contains("com.syu.radio")) {
+                LeftAppListAdapter.this.mLauncher.stopMusic();
+                final Intent intent = new Intent();
+                intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
+                LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
+                LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                onClickIcon(appListBean);
             } else {
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
@@ -99,6 +107,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     }
 
     private void onClickIcon(AppListBean appListBean) {
+        WindowUtil.removePip(null);
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);

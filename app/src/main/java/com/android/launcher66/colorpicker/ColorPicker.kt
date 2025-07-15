@@ -6,20 +6,27 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
+import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.View
+import android.view.WindowInsets
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import com.android.launcher66.colorpicker.ColorFormatHelper.formatColorValues
 import com.android.launcher66.R
+import com.google.android.flexbox.FlexboxLayout
 
 class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarChangeListener {
     private var colorView: View? = null
@@ -27,6 +34,7 @@ class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarC
     private var redSeekBar: SeekBar? = null
     private var greenSeekBar: SeekBar? = null
     private var blueSeekBar: SeekBar? = null
+    private var textView: TextView? = null
     private var hexCode: EditText? = null
     private var alpha = 255
     private var red = 0
@@ -94,22 +102,79 @@ class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarC
 
         setContentView(R.layout.materialcolorpicker__layout_color_picker)
 
+        var textSize = 0
+        var padding = 0
+
+        window?.apply {
+            val metrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val windowMetrics = activity.windowManager.currentWindowMetrics
+                val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+                windowMetrics.bounds.let {
+                    // Adjust for system bars if needed
+                    val screenWidth = it.width() + insets.left + insets.right
+                    val screenHeight = it.height() + insets.top + insets.bottom
+                    DisplayMetrics().apply {
+                        widthPixels = screenWidth
+                        heightPixels = screenHeight
+                    }
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                activity.windowManager.defaultDisplay.let { display ->
+                    DisplayMetrics().also { display.getRealMetrics(it) }
+                }
+            }
+
+            val width = (metrics.widthPixels * 0.7).toInt()
+            val height = (metrics.heightPixels * 0.6).toInt()
+            textSize = (metrics.widthPixels * 0.01).toInt()
+            padding = (metrics.widthPixels * 0.02).toInt()
+
+            setLayout(width, height)
+        }
+
+        val pickerContainer = findViewById<FlexboxLayout>(R.id.pickerContainer)
+        pickerContainer.updatePadding(
+            left = padding,
+            right = padding / 2
+        )
+
+        val pickerContainerBottom = findViewById<FlexboxLayout>(R.id.pickerContainerBottom)
+        pickerContainerBottom.updatePadding(
+            bottom = padding
+        )
+
         colorView = findViewById(R.id.colorView)
 
-        hexCode = findViewById(R.id.hexCode)
-
         alphaSeekBar = findViewById(R.id.alphaSeekBar)
+        alphaSeekBar?.updatePadding(
+            right = padding
+        )
         redSeekBar = findViewById(R.id.redSeekBar)
+        redSeekBar?.updatePadding(
+            right = padding
+        )
         greenSeekBar = findViewById(R.id.greenSeekBar)
+        greenSeekBar?.updatePadding(
+            right = padding
+        )
         blueSeekBar = findViewById(R.id.blueSeekBar)
+        blueSeekBar?.updatePadding(
+            right = padding
+        )
 
         alphaSeekBar?.setOnSeekBarChangeListener(this)
         redSeekBar?.setOnSeekBarChangeListener(this)
         greenSeekBar?.setOnSeekBarChangeListener(this)
         blueSeekBar?.setOnSeekBarChangeListener(this)
 
-        hexCode?.filters = arrayOf(InputFilter.LengthFilter(if (withAlpha) 8 else 6))
+        textView = findViewById(R.id.textView)
+        textView?.setTextSize(textSize.toFloat())
 
+        hexCode = findViewById(R.id.hexCode)
+        hexCode?.setTextColor(ContextCompat.getColor(getContext(), R.color.black))
+        hexCode?.setTextSize(textSize.toFloat())
+        hexCode?.filters = arrayOf(InputFilter.LengthFilter(if (withAlpha) 8 else 6))
         hexCode?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 actionId == EditorInfo.IME_ACTION_DONE ||
@@ -125,9 +190,14 @@ class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarC
         }
 
         val okColor = findViewById<Button>(R.id.okColorButton)
+        okColor?.setTextSize(textSize.toFloat())
         okColor.setOnClickListener {
             sendColor()
         }
+        okColor.updatePadding(
+            left = textSize,
+            right = textSize
+        )
     }
 
     private fun initUi() {

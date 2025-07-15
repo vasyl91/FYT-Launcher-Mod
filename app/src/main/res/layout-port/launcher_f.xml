@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/launcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher66">
+
+    <com.android.launcher66.DragLayer
+        android:id="@+id/drag_layer"
+        android:fitsSystemWindows="true"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <com.android.launcher66.Workspace
+            android:layout_gravity="center"
+            android:id="@+id/workspace"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            launcher:defaultScreen="@integer/config_workspaceDefaultScreen"
+            launcher:pageSpacing="@dimen/workspace_page_spacing" />
+
+        <include
+            android:layout_gravity="bottom"
+            android:id="@+id/hotseat"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/hotseat_btn_height"
+            layout="@layout/hotseat" />
+
+        <include
+            android:id="@+id/overview_panel"
+            android:visibility="gone"
+            layout="@layout/overview_panel" />
+
+        <include
+            android:layout_gravity="bottom|center"
+            android:id="@+id/page_indicator"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/page_indicator" />
+
+        <com.android.launcher66.ScrimView
+            android:id="@+id/cling_scrim"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <include
+            android:id="@+id/first_run_cling"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/first_run_cling" />
+
+        <include
+            android:id="@+id/workspace_cling"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/workspace_cling" />
+
+        <include
+            android:id="@+id/folder_cling"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/folder_cling" />
+
+        <include
+            android:id="@+id/apps_customize_pane"
+            android:visibility="invisible"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="0.0px"
+            layout="@layout/apps_customize_pane" />
+
+        <include
+            android:id="@+id/clickapp_cling"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/clickapp_cling" />
+    </com.android.launcher66.DragLayer>
+</FrameLayout>

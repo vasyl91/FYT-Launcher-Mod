@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Represents an item in the launcher.
  */
-class ItemInfo {
+public class ItemInfo {
     
     static final int NO_ID = -1;
     
@@ -44,22 +44,22 @@ class ItemInfo {
     /**
      * Indicates the X position of the associated cell.
      */
-    int cellX = -1;
+    public int cellX = -1;
 
     /**
      * Indicates the Y position of the associated cell.
      */
-    int cellY = -1;
+    public int cellY = -1;
 
     /**
      * Indicates the X cell span.
      */
-    int spanX = 1;
+    public int spanX = 1;
 
     /**
      * Indicates the Y cell span.
      */
-    int spanY = 1;
+    public int spanY = 1;
 
     /**
      * Indicates the minimum X cell span.

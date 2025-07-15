@@ -127,6 +127,7 @@ public class WidgetPreviewLoader {
     private IconCache mIconCache;
 
     private final float sWidgetPreviewIconPaddingPercentage = 0.25f;
+    private float widgetScaleFactor = 1.75f;
 
     private CacheDb mDb;
 
@@ -226,10 +227,15 @@ public class WidgetPreviewLoader {
 
             // write to db on a thread pool... this can be done lazily and improves the performance
             // of the first time widget previews are loaded
-            new AsyncTask<Void, Void, Void>() {
+            new AsyncTask<Void, Void, Void>(){
                 public Void doInBackground(Void[] args) {
                     writeToDb(o, generatedPreview);
                     return null;
+                }
+
+                @Override
+                protected void onProgress(Void[] progress) {
+                    //
                 }
 
                 @Override
@@ -371,6 +377,11 @@ public class WidgetPreviewLoader {
             }
 
             @Override
+            protected void onProgress(Void[] progress) {
+                //
+            }
+
+            @Override
             protected void onBackgroundError(Exception e) {
 
             }
@@ -385,6 +396,11 @@ public class WidgetPreviewLoader {
                         CacheDb.COLUMN_NAME + " = ? ", // SELECT query
                         new String[] { objectName }); // args to SELECT query
                 return null;
+            }
+
+            @Override
+            protected void onProgress(Void[] progress) {
+                //
             }
 
             @Override
@@ -459,7 +475,7 @@ public class WidgetPreviewLoader {
                 mWidgetSpacingLayout.estimateCellHeight(spanY));
     }
 
-    public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
+public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
             int iconId, int cellHSpan, int cellVSpan, int maxPreviewWidth, int maxPreviewHeight,
             Bitmap preview, int[] preScaledWidthOut) {
         // Load the preview image if possible
@@ -480,6 +496,7 @@ public class WidgetPreviewLoader {
         int previewHeight;
         Bitmap defaultPreview = null;
         boolean widgetPreviewExists = (drawable != null);
+        
         if (widgetPreviewExists) {
             previewWidth = drawable.getIntrinsicWidth();
             previewHeight = drawable.getIntrinsicHeight();
@@ -526,18 +543,36 @@ public class WidgetPreviewLoader {
                             (int) (mAppIconSize * iconScale));
                 }
             } catch (Resources.NotFoundException e) {
+                Log.w(TAG, "Icon not found", e);
             }
         }
 
-        // Scale to fit width only - let the widget preview be clipped in the
-        // vertical dimension
-        float scale = 1f;
+        // Store original dimensions for preScaledWidthOut and debug
+        int originalWidth = previewWidth;
+        int originalHeight = previewHeight;
+        
         if (preScaledWidthOut != null) {
             preScaledWidthOut[0] = previewWidth;
         }
+
+        // Apply upscale factor to max dimensions as well
+        final float upscaleFactor = widgetScaleFactor - 0.25f;
+        maxPreviewWidth = (int) (maxPreviewWidth * upscaleFactor);
+        maxPreviewHeight = (int) (maxPreviewHeight * upscaleFactor);
+        
+        // Apply upscale factor to preview dimensions
+        previewWidth = (int) (previewWidth * upscaleFactor);
+        previewHeight = (int) (previewHeight * upscaleFactor);
+
+        // Scale down to fit within max dimensions if necessary
+        float scale = 1f;
         if (previewWidth > maxPreviewWidth) {
-            scale = maxPreviewWidth / (float) previewWidth;
+            scale = Math.min(scale, maxPreviewWidth / (float) previewWidth);
         }
+        if (previewHeight > maxPreviewHeight) {
+            scale = Math.min(scale, maxPreviewHeight / (float) previewHeight);
+        }
+
         if (scale != 1f) {
             previewWidth = (int) (scale * previewWidth);
             previewHeight = (int) (scale * previewHeight);
@@ -550,15 +585,20 @@ public class WidgetPreviewLoader {
 
         // Draw the scaled preview into the final bitmap
         int x = (preview.getWidth() - previewWidth) / 2;
+        
         if (widgetPreviewExists) {
             renderDrawableToBitmap(drawable, preview, x, 0, previewWidth,
                     previewHeight);
         } else {
+            // Scale the defaultPreview to match the upscaled dimensions            
+            Bitmap scaledDefaultPreview = Bitmap.createScaledBitmap(defaultPreview, 
+                    previewWidth, previewHeight, true);
+            
             final Canvas c = mCachedAppWidgetPreviewCanvas.get();
             final Rect src = mCachedAppWidgetPreviewSrcRect.get();
             final Rect dest = mCachedAppWidgetPreviewDestRect.get();
             c.setBitmap(preview);
-            src.set(0, 0, defaultPreview.getWidth(), defaultPreview.getHeight());
+            src.set(0, 0, scaledDefaultPreview.getWidth(), scaledDefaultPreview.getHeight());
             dest.set(x, 0, x + previewWidth, previewHeight);
 
             Paint p = mCachedAppWidgetPreviewPaint.get();
@@ -567,8 +607,13 @@ public class WidgetPreviewLoader {
                 p.setFilterBitmap(true);
                 mCachedAppWidgetPreviewPaint.set(p);
             }
-            c.drawBitmap(defaultPreview, src, dest, p);
+            c.drawBitmap(scaledDefaultPreview, src, dest, p);
             c.setBitmap(null);
+            
+            // Clean up the scaled bitmap if it's different from the original
+            if (scaledDefaultPreview != defaultPreview) {
+                scaledDefaultPreview.recycle();
+            }
         }
         return preview;
     }

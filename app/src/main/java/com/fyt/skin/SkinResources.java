@@ -14,6 +14,8 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.android.launcher66.settings.Helpers;
+
 public class SkinResources {
     private final Resources appResources;
     protected boolean isDefaultSkin = true;
@@ -84,13 +86,13 @@ public class SkinResources {
 
     public Bitmap getBitmap(int resid) {
         if (this.isDefaultSkin) {
-            return BitmapFactory.decodeResource(this.appResources, resid);
+            return Helpers.glideLoader(resid);
         }
         int skinid = getIdentifier(resid);
         if (skinid == 0) {
-            return BitmapFactory.decodeResource(this.appResources, resid);
+            return Helpers.glideLoader(resid);
         }
-        return BitmapFactory.decodeResource(this.skinResources, skinid);
+        return Helpers.glideLoader(skinid);
     }
 
     public Object getBackground(int resid) {

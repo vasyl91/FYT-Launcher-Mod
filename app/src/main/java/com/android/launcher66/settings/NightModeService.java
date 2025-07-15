@@ -32,7 +32,6 @@ import java.time.ZoneId;
 public class NightModeService extends Service {
     private static final String TAG = "NightModeService";
     private static final String RECREATE = "recreate.view";
-    private FusedLocationProviderClient fusedLocationClient;
     private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
     private boolean isNightModeRunning = false;
     private final Handler checkTimeHandler = new Handler(Looper.getMainLooper());
@@ -85,14 +84,14 @@ public class NightModeService extends Service {
 
     private void checkTime() {
         if (!isCheckTimeRunning) {
-            checkTimeHandler.postDelayed(checkTimeRunnable, 14000); // check if device has updated the time
+            checkTimeHandler.post(checkTimeRunnable); // check if device has updated the time
             isCheckTimeRunning = true;
         }  
     }
 
     private void nightMode() { 
         if (!isNightModeRunning) {
-            nightModeHandler.postDelayed(nightModeRunnable, 20000); // prevents an error when wallpaper is half loaded half black on boot
+            nightModeHandler.postDelayed(nightModeRunnable, 4000); // prevents an error when wallpaper is half loaded half black on boot
             isNightModeRunning = true;
         }        
     }
@@ -116,7 +115,7 @@ public class NightModeService extends Service {
         } 
     }
 
-    /* checks every 5s if there was a change in the system time that was greater than one minute
+    /* checks every 3s if there was a change in the system time that was greater than one minute
     ** this function exists because the head unit displays incorret time whenever it was cut from the power for a longer peroid of time 
     ** having an internet connection or manual change updates the system time and this triggers checkWallpapers() that sets accurate wallpaper
     */
@@ -128,7 +127,7 @@ public class NightModeService extends Service {
                 timeChanged = true;
                 checkWallpapers();
             } 
-            checkTimeHandler.postDelayed(this, 5000);
+            checkTimeHandler.postDelayed(this, 3000);
         }
     };
 
@@ -169,7 +168,7 @@ public class NightModeService extends Service {
         if (ActivityCompat.checkSelfPermission(LauncherApplication.sApp, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(LauncherApplication.sApp, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(LauncherApplication.sApp);
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(LauncherApplication.sApp);
             fusedLocationClient.getLastLocation().addOnSuccessListener(Launcher.getLauncher(), new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -191,7 +190,7 @@ public class NightModeService extends Service {
                     final JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     jobScheduler.cancelAll();
                     String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt + "&date=today" + "&tzid=" + String.valueOf(ZoneId.systemDefault());
-                    SunTask sunTask = new SunTask(LauncherApplication.sApp, lat, longt);
+                    SunTask sunTask = new SunTask(LauncherApplication.sApp, lat, longt, false);
                     sunTask.execute(urlString);
                 }
             });

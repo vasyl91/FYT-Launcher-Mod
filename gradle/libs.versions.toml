@@ -1,102 +1,83 @@
 [versions]
-agp = "8.7.1"
-commonsCodec = "1.17.1"
-coreGoogleShortcut = "1.2.0"
-coreGoogleShortcuts = "1.1.0"
-eventbus = "3.3.1"
+ackpineCore = "0.13.2"
+annotation = "1.9.1"
+constraintlayout = "2.2.1"
+coordinatorlayout = "1.3.0"
+customview = "1.2.0"
+drawerlayout = "1.2.0"
+dynamicanimation = "1.1.0"
 flexbox = "3.0.0"
-guava = "31.1-android"
-httpclient = "4.5.14"
-httpcore = "4.4.16"
-kotlin = "1.9.0"
-coreKtx = "1.13.1"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.9.2"
-composeBom = "2024.04.01"
-junitJupiter = "5.8.1"
-appcompat = "1.7.0"
-lifecycleViewmodel = "2.8.7"
+fragmentKtx = "1.8.8"
+glide = "4.16.0"
+coreKtx = "1.16.0"
+kotlinxCoroutinesCore = "1.7.3"
+leakcanaryAndroid = "2.14"
+leakcanaryAndroidCore = "2.14"
+leakcanaryObjectWatcherAndroidAndroidx = "2.14"
+leakcanaryObjectWatcherAndroidSupportFragments = "2.14"
+legacySupportCoreUtils = "1.0.0"
+lifecycleRuntimeKtx = "2.9.1"
+activityCompose = "1.10.1"
+composeBom = "2025.06.00"
+junitJupiter = "5.10.2"
+appcompat = "1.7.1"
+lifecycleViewmodel = "2.9.1"
 litepal = "8ad8322cc6"
-log4j = "1.2.17"
-lombok = "1.18.34"
+loader = "1.1.0"
 material = "1.12.0"
-materialVersion = "1.1.0"
-multidex = "2.0.1"
-playServicesBase = "18.5.0"
+okhttp = "4.12.0"
 preference = "1.2.1"
-preferenceKtx = "1.2.1"
-preferenceVersion = "1.1.0"
-processPhoenix = "3.0.0"
-profileinstaller = "1.4.1"
-recyclerview = "1.3.2"
-recyclerviewSelection = "1.1.0"
-springContext = "6.2.2"
-viewpager = "1.0.0"
-navigationFragment = "2.8.3"
-navigationUi = "2.8.3"
-espressoDevice = "1.0.1"
+recyclerview = "1.4.0"
+roomCompiler = "2.7.1"
+runtime = "1.8.2"
+startupRuntime = "1.2.0"
+vectordrawable = "1.2.0"
+vectordrawableAnimated = "1.2.0"
+viewpager = "1.1.0"
 playServicesLocation = "21.3.0"
-lombokVersion = "1.18.30"
-espressoWeb = "3.6.1"
-playServicesInstantapps = "18.1.0"
 
 [libraries]
-androidx-core-google-shortcut = { module = "androidx.core:core-google-shortcut", version.ref = "coreGoogleShortcut" }
-androidx-core-google-shortcuts = { module = "androidx.core:core-google-shortcuts", version.ref = "coreGoogleShortcuts" }
+ackpine-api = { module = "ru.solrudev.ackpine:ackpine-api", version.ref = "ackpineCore" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activityCompose" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "coordinatorlayout" }
+androidx-core = { module = "androidx.core:core", version.ref = "coreKtx" }
+androidx-customview = { module = "androidx.customview:customview", version.ref = "customview" }
+androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
+androidx-dynamicanimation = { module = "androidx.dynamicanimation:dynamicanimation", version.ref = "dynamicanimation" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragmentKtx" }
+androidx-legacy-support-core-utils = { module = "androidx.legacy:legacy-support-core-utils", version.ref = "legacySupportCoreUtils" }
+androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "lifecycleRuntimeKtx" }
+androidx-loader = { module = "androidx.loader:loader", version.ref = "loader" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+androidx-vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
+androidx-vectordrawable-animated = { module = "androidx.vectordrawable:vectordrawable-animated", version.ref = "vectordrawableAnimated" }
+annotations = { module = "com.github.bumptech.glide:annotations", version.ref = "glide" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitJupiter" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+ackpine-core = { module = "ru.solrudev.ackpine:ackpine-core", version.ref = "ackpineCore" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycleViewmodel" }
-androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycleViewmodel" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
-androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
-androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
-androidx-preference-v110 = { module = "androidx.preference:preference", version.ref = "preferenceVersion" }
-androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
-androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
-commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
-eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
-guava = { module = "com.google.guava:guava", version.ref = "guava" }
-httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
-httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
+leakcanary-android-core = { module = "com.squareup.leakcanary:leakcanary-android-core", version.ref = "leakcanaryAndroidCore" }
+leakcanary-object1-watcher-android-androidx = { module = "com.squareup.leakcanary:leakcanary-object-watcher-android-androidx", version.ref = "leakcanaryObjectWatcherAndroidAndroidx" }
+leakcanary-object1-watcher-android-support-fragments = { module = "com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments", version.ref = "leakcanaryObjectWatcherAndroidSupportFragments" }
 litepal = { module = "com.github.guolindev:LitePal", version.ref = "litepal" }
-log4j = { module = "log4j:log4j", version.ref = "log4j" }
-lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-material-v110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
-androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
-androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
-androidx-espresso-device = { group = "androidx.test.espresso", name = "espresso-device", version.ref = "espressoDevice" }
-play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
-process-phoenix = { module = "com.jakewharton:process-phoenix", version.ref = "processPhoenix" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-spring-context = { module = "org.springframework:spring-context", version.ref = "springContext" }
-projectlombok-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombokVersion" }
-androidx-espresso-web = { group = "androidx.test.espresso", name = "espresso-web", version.ref = "espressoWeb" }
-play-services-instantapps = { group = "com.google.android.gms", name = "play-services-instantapps", version.ref = "playServicesInstantapps" }
-
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-android-library = { id = "com.android.library", version.ref = "agp" }
 

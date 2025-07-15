@@ -18,8 +18,6 @@ import android.text.format.Time;
 import com.syu.ipc.ModuleObject;
 import com.syu.ipc.data.FinalCanbus;
 
-import org.apache.http.cookie.ClientCookie;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -608,7 +606,7 @@ public class FuncUtils {
                             if (line == null) {
                                 break;
                             }
-                            if (!line.contains(ClientCookie.SECURE_ATTR) && !line.contains("asec")) {
+                            if (!line.contains("secure") && !line.contains("asec")) {
                                 if (line.contains("fat")) {
                                     String[] columns2 = line.split(" ");
                                     if (columns2 != null && columns2.length > 1) {

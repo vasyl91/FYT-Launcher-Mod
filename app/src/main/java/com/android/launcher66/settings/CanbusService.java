@@ -22,6 +22,7 @@ import android.os.Looper;
 import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,8 +76,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private WindowManager wm;  
     private String textColor = "#FFFFFFFF"; 
     private String curForegroundApp = "";
+    private String prevView = "";
     private static final String SYSTEM_DIALOG_REASON_KEY = "reason";
     private static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
+    private static final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
     private static final String ACCESIBILITY_SERVICE = "accesibility.service";
@@ -125,6 +128,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         filter.addAction(Workspace.OVERVIEW_MODE_CLOSE);
         filter.addAction(AppsCustomizePagedView.STATS_APP_FOREGROUND);
         filter.addAction(Launcher.ALL_APPS);
+        filter.addAction(Launcher.ALL_APPS_VISIBLE);
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(RECYCLER_APP);
         filter.addAction(RECYCLER_APP_MAP);
@@ -161,7 +165,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         mPropertyChangeClass.deleteObserver(FUELSTATS, this);
         unregisterReceiver(pipReceiver);
         removeNotify();
-        wm.removeView(absoluteStats);
+        removeView();
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
         sendBroadcast(broadcastIntent);
     }
@@ -221,7 +225,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                             if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
-                                removeView();  
+                                //removeView();  
                                 addStatsViewMainScreen();                          
                             } else {
                                 addStatsViewMainScreen();
@@ -231,7 +235,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             removeView();
                             break;
                         case RECYCLER_APP_MAP, AppsCustomizePagedView.STATS_APP_FOREGROUND:
-                            removeView();
+                            //removeView();
                             addStatsView(true);
                             break;
                         case AppListDialogFragment.LIST_OPEN, Workspace.OVERVIEW_MODE_OPEN:
@@ -243,7 +247,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                             if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
-                                removeView();
+                                //removeView();
                                 addStatsViewMainScreen();                                
                             }
                             break;
@@ -253,12 +257,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             // needs a while to properly return current page id
                             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                                 if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
-                                    removeView();
+                                    //removeView();
                                     addStatsViewMainScreen();
                                 }
                             }, 1000);
                             break;
-                        case Launcher.ALL_APPS:
+                        case Launcher.ALL_APPS, Launcher.ALL_APPS_VISIBLE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setBoolean(ALLAPPS, true);
                             mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
@@ -282,6 +286,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                         curForegroundApp = "com.android.launcher66";
                                         mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
                                     }
+                                } else if (reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
+                                    helpers.setWasInRecents(true);
+                                    mPropertyChangeClass.setBoolean(ALLAPPS, false);
                                 }                    
                             }
                             break;
@@ -328,12 +335,26 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     curForegroundApp = packageName;
                 }
             }
-            mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
+            
             if (Launcher.mAppsCustomizeTabHost != null) {
-                mPropertyChangeClass.setBoolean(ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
-            }      
+                if (helpers.userWasInRecents() && !getCurrentActivityName().equals("com.android.launcher66")) {
+                    helpers.setInRecent(false);
+                    helpers.setInAllApps(false);
+                    helpers.setWasInRecents(true);
+                    mPropertyChangeClass.setBoolean(ALLAPPS, false);
+                } else {
+                    mPropertyChangeClass.setBoolean(ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
+                }
+            }  
+            mPropertyChangeClass.setString(FUELSTATS, curForegroundApp);
         }
     };
+
+    private boolean pass() {
+        if (helpers.isInRecent() && curForegroundApp.equals("com.android.launcher66")) {
+            return true;
+        } else return false;
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -415,6 +436,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     private void addStatsView(boolean mapApp) {
+        if ((mapApp && prevView.equals("app"))
+         || (!mapApp && prevView.equals("main"))) {
+            return;
+        }
         removeView();
         userLayout = prefs.getBoolean(USER_LAYOUT, false);
         userStats = prefs.getBoolean("user_stats", false);
@@ -430,21 +455,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            int statsTopLeftX, statsTopLeftY, statsWidth, statsHeight, leftBarSize;
+            int leftBarSize = Launcher.calculatedLeftBarWidth;
+            int statsTopLeftX, statsTopLeftY, statsWidth, statsHeight;
 
-            if (getResources().getDisplayMetrics().widthPixels == 1024
-                || getResources().getDisplayMetrics().heightPixels == 1024) {
-                leftBarSize = 100;
+            if (getResources().getDisplayMetrics().widthPixels <= 1024
+                || (getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)) {
                 statsWidth = 245;
                 statsHeight = 55;
                 radius = 10;
             } else if (getResources().getDisplayMetrics().heightPixels == 720) {
-                leftBarSize = 110;
                 statsWidth = 245;
                 statsHeight = 55;
                 radius = 12;
             } else {
-                leftBarSize = 142;
                 statsWidth = 435;
                 statsHeight = 100;   
                 radius = 14;            
@@ -463,10 +486,18 @@ public class CanbusService extends Service implements PropertyChangeListener {
             }
             
             absoluteStats = li.inflate(R.layout.absolute_stats, null); 
+
+            TextView consumptionTV = absoluteStats.findViewById(R.id.instantaneous_consumption_str);
+            consumptionTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            TextView mileageTV = absoluteStats.findViewById(R.id.driving_mileage_str);
+            mileageTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+
             consumptionTextView = absoluteStats.findViewById(R.id.instantaneous_consumption_val);
-            mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
             consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+            consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
             mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-")); 
+            mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.stats_bg));
@@ -488,8 +519,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     PixelFormat.TRANSLUCENT
             );
             if (mapApp) {
+                prevView = "app";
                 absoluteStats.setTag("app");
             } else {
+                prevView = "main";
                 absoluteStats.setTag("main");
             }
             parameters.gravity = Gravity.TOP | Gravity.START;
@@ -503,7 +536,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void removeView() {   
         if (absoluteStats != null) {
             absoluteStats.setTag(null);
+            prevView = "";
             wm.removeView(absoluteStats);
+            consumptionTextView = null; 
+            mileageTextView = null;     
+            absoluteStats = null; 
         }
     }
 
@@ -672,7 +709,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public static class PropertyChangeClass {
         private String pString = "initial";
         private boolean pBoolean;
-        private final PropertyChangeSupport mPropertyChangeSupport = new  PropertyChangeSupport(this);
+        private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
         public void setString(String name, String str) {
             String old = pString;

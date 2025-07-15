@@ -83,4 +83,11 @@ public class SkinAttribute {
             skinView.applySkin();
         }
     }
+
+    public void clear() {
+        for (SkinView skinView : skinViews) {
+            skinView.clear(); 
+        }
+        skinViews.clear();
+    }
 }

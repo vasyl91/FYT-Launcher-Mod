@@ -15,11 +15,13 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ import com.android.launcher66.R;
 public class DrawView extends View implements View.OnClickListener {
 
     private Context mContext;
+    private AlertDialog alertDialog;
 
     Point[] point = new Point[20];
     int groupId;
@@ -190,8 +193,8 @@ public class DrawView extends View implements View.OnClickListener {
         radioMinHeight = 145;
         radioMinWidth = 320;
 
-        if (getResources().getDisplayMetrics().widthPixels == 1024
-            || getResources().getDisplayMetrics().heightPixels == 1024) {  // 1024x600 && 768x1024         
+        if (getResources().getDisplayMetrics().widthPixels <= 1024
+            || getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)  {     
             ballDiameter = 26.0f;
             coordinatesSize = 40;
             nameTextSize = 30;
@@ -200,7 +203,7 @@ public class DrawView extends View implements View.OnClickListener {
             mapMinHeight = 284;
             dateMinWidth = 320;
             musicMinHeight = 284;
-        } else if (getResources().getDisplayMetrics().heightPixels == 720) { // 1280x720 && 1920x720
+        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
             ballDiameter = 50.0f;
             coordinatesSize = 45;
             nameTextSize = 35;
@@ -220,23 +223,46 @@ public class DrawView extends View implements View.OnClickListener {
 
         Button mTopUp = rootView.findViewById(R.id.top_up);
         mTopUp.setOnClickListener(this);
+        setCalculatedButtonSizes(mTopUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
+
         mTopDown = rootView.findViewById(R.id.top_down);
         mTopDown.setOnClickListener(this);
+        setCalculatedButtonSizes(mTopDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
+
         mBottomUp = rootView.findViewById(R.id.bottom_up);
         mBottomUp.setOnClickListener(this);
+        setCalculatedButtonSizes(mBottomUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
+
         Button mBottomDown = rootView.findViewById(R.id.bottom_down);
         mBottomDown.setOnClickListener(this);
+        setCalculatedButtonSizes(mBottomDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
+
         Button mLeftToLeft = rootView.findViewById(R.id.left_to_left);
         mLeftToLeft.setOnClickListener(this);
+        setCalculatedButtonSizes(mLeftToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
+
         mLeftToRight = rootView.findViewById(R.id.left_to_right);
         mLeftToRight.setOnClickListener(this);
+        setCalculatedButtonSizes(mLeftToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
+ 
         mRightToLeft = rootView.findViewById(R.id.right_to_left);
         mRightToLeft.setOnClickListener(this);
+        setCalculatedButtonSizes(mRightToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
+ 
         Button mRightToRight = rootView.findViewById(R.id.right_to_right); 
-        mRightToRight.setOnClickListener(this);      
+        mRightToRight.setOnClickListener(this); 
+        setCalculatedButtonSizes(mRightToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);     
+
+        setCalculatedTextSize(rootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize);
+        setCalculatedTextSize(rootView, R.id.rectangle_name, SettingsActivity.selectionTextSize);
+        setCalculatedTextSize(rootView, R.id.top_button_string, SettingsActivity.arrowTextSize);
+        setCalculatedTextSize(rootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize);
+        setCalculatedTextSize(rootView, R.id.left_button_string, SettingsActivity.arrowTextSize);
+        setCalculatedTextSize(rootView, R.id.right_button_string, SettingsActivity.arrowTextSize);
         
         mConfirmLayout = rootView.findViewById(R.id.confirm_layout);
         mConfirmLayout.setOnClickListener(this);
+        mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);
 
         mapTopLeftX = sharedPrefs.getInt("mapTopLeftX", margin);
         mapTopLeftY = sharedPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin);  
@@ -289,6 +315,28 @@ public class DrawView extends View implements View.OnClickListener {
         initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 16, 17, 18, 19});
     }
 
+    private void setCalculatedTextSize(View view, int textViewId, int textSize) {
+        TextView textView = (TextView) view.findViewById(textViewId);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+    }
+
+    private void setCalculatedButtonSizes(Button button, int width, int height) {
+        // Get the current LayoutParams
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+
+        // Check if the LayoutParams is an instance of MarginLayoutParams
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+            marginParams.width = width;
+            marginParams.height = height;
+            button.setLayoutParams(marginParams);
+        } else {
+            // Handle cases where MarginLayoutParams aren't supported and create new LayoutParams if necessary
+            ViewGroup.MarginLayoutParams newParams = new ViewGroup.MarginLayoutParams(width, height);
+            button.setLayoutParams(newParams);
+        }
+    }
+
     private AppCompatActivity getActivity() {
         Context context = mContext;
         while (context instanceof ContextWrapper) {
@@ -317,7 +365,7 @@ public class DrawView extends View implements View.OnClickListener {
                         displayDialog();
                     } else {
                         savePrefs();
-                        getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
                     }
                     return true;
                 }
@@ -338,7 +386,7 @@ public class DrawView extends View implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
                 Helpers helpers = new Helpers();
                 helpers.resetPrefs();
-                getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentFirst()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
             }
         });
         builder.setNegativeButton(mContext.getString(R.string.dismiss), new DialogInterface.OnClickListener() {
@@ -348,7 +396,7 @@ public class DrawView extends View implements View.OnClickListener {
             }
         });
 
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         alertDialog.show();
         Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -482,6 +530,14 @@ public class DrawView extends View implements View.OnClickListener {
                     new Paint());
         }
         checkIntersection();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (alertDialog != null && alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
     }
 
     // events when touching the screen

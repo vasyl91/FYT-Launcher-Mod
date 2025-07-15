@@ -94,7 +94,7 @@ public class SkinFactory implements LayoutInflater.Factory2, PropertyChangeListe
 
     private Constructor<? extends View> findConstructor(Context context, String name) {
         Constructor<? extends View> constructor = sConstructorMap.get(name);
-        if (null == constructor && !sBadViewConstructorMap.contains(name) && !name.contains("android.widget.ViewStub")) {
+        if (null == constructor && !sBadViewConstructorMap.contains(name) && !name.contains("android.widget.ViewStub") && !name.contains("android.widget.View")) {
             try {
                 Class<? extends View> clazz = context.getClassLoader().loadClass(name).asSubclass(View.class);
                 constructor = clazz.getConstructor(mConstructorSignature);
@@ -110,5 +110,12 @@ public class SkinFactory implements LayoutInflater.Factory2, PropertyChangeListe
     @Override
     public View onCreateView(String s, Context context, AttributeSet attributeSet) {
         return null;
+    }
+
+    public void clear() {
+        if (mSkinAttribute != null) {
+            mSkinAttribute.clear();
+            mSkinAttribute = null;
+        }
     }
 }

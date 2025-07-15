@@ -14,6 +14,8 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.StrictMode;
+import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.util.Log;
 import android.view.View;
@@ -91,14 +93,13 @@ public class LauncherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        startService(new Intent(this, WakeDetectionService.class));
+        Log.d("LauncherApplication", "onCreate()");
+        long start = SystemClock.elapsedRealtime();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getBoolean("logcat_service", true)) {
+        boolean logcatBoolean = prefs.getBoolean("logcat_service", true);
+        boolean isDebug = BuildConfig.DEBUG;
+        if (logcatBoolean && isDebug) {
             startService(new Intent(this, LogcatService.class));
-            long logcatServiceTimeout = Integer.parseInt(prefs.getString("logcat_service_timeout", "30")) * 1000;
-            new Handler(Looper.getMainLooper()).postDelayed(()-> {
-                stopService(new Intent(this, LogcatService.class));
-            }, logcatServiceTimeout);
         }
         initData();
         initProperties();
@@ -110,6 +111,28 @@ public class LauncherApplication extends Application {
         initWindow();
         connectService();
         DataPack.init(this);
+        if (isDebug) {
+            enableStrictMode();
+        }
+        handler.postDelayed(() -> {
+            startService(new Intent(this, WakeDetectionService.class));
+        }, 1000);
+        Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
+    }
+
+    private void enableStrictMode() {
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+            .detectDiskReads()
+            .detectDiskWrites()
+            .detectNetwork()
+            .penaltyLog()
+            .build());
+            
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+            .detectLeakedSqlLiteObjects()
+            .detectLeakedClosableObjects()
+            .penaltyLog()
+            .build());
     }
 
     private void initProperties() {
@@ -136,9 +159,11 @@ public class LauncherApplication extends Application {
         CarStates.getCar(this);
         this.apkPath = String.valueOf(sApp.getFilesDir().getAbsolutePath()) + File.separator + "firenze.apk";
         File file = new File(this.apkPath);
-        if (!file.exists()) {
-            FileUtil.copyFileFromAssets(this, "firenze.apk", this.apkPath);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!file.exists()) {
+                FileUtil.copyFileFromAssets(this, "firenze.apk", this.apkPath);
+            }
+        }, 3000);
         //mAppWallPaper = Utils.getSp().getBoolean("mAppWallPaper", true);
         //mWallPaperUpdate = Utils.getSp().getBoolean("mWallPaperUpdate", true);
         initGaoDeCoverView();
@@ -324,6 +349,10 @@ public class LauncherApplication extends Application {
 
     public View getRootView() {
         return sRootView;
+    }
+
+    public static Context getAppContext() {
+        return sApp;
     }
 
     public static int getConfiguration() {
