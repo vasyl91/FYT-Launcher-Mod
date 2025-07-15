@@ -10,7 +10,7 @@ IMPORTANT: Note that some of the FYT devices do not support the PiP on the main 
 List of modifications:
 - ConstraintLayout which should adapt the launcher to any given resolution (vertical devices more than likely need some tweaks).
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
-- Enabled widgets (upscaled for better ineraction), shortcuts and folders on the main screen. Extra screens as well.
+- Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Extra screens as well.
 - Launcher creator allowing to adjust launcher layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify on which screen a map PiP should be displayed and which screen should be the main screen.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
@@ -223,6 +223,7 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 10. Then `Project` > `Properties` > `Java Build Path` > `Libraries` > `Add External JARs...` > choose `android.jar` from the step 1. and press `Apply and Close`. Check if `Build automatically` is checked in the `Project` tab (should be checked by default). Refresh your project again (ignore the errors displayed at the bottom of the window).
 11.  Go to `C:\Users\<your_user-name>\eclipse-workspace\androidJar\target\classes\android\app` and copy `IActivityManager.class`
 12. Download [android_jar_mod.rar](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_mod.rar) and paste `IActivityManager.class` to `android_jar_mod\android\app`. Also paste `android.jar` from step 1. to `android_jar_mod\`
+
 [<img src="./images/IActivityManagerJar.png" width="50%">](./images/IActivityManagerJar.png)
 13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one fater another).
 14. Finally you can use prepared `android.jar` from `android_jar_mod\` directory to run your project as described in `Generating app in Android Studio` caption.
