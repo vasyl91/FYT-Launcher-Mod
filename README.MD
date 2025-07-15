@@ -193,6 +193,7 @@ I can not guarantee fixing all errors.
 To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic. If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine). 
 If you need the drivers please use [this ones](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
 Go to Developer options, click on the three dots in the top right corner and select the second option from the popup (both are in chineese).
+
 [<img src="./images/3.png" width="50%">](./images/3.png)[<img src="./images/3.1.png" width="50%">](./images/3.1.png)
 
 Remember to enable USB debugging.
@@ -211,19 +212,28 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 2. Download and run [Recaf](https://github.com/Col-E/Recaf).
 3. Open `android.jar` in `Recaf`.
 4. Open and decompile `IActivityManager.class` located in `android/app` using i.e. FernFlower decompiler.
+
 [<img src="./images/IActivityManagerRecaf.png" width="50%">](./images/IActivityManagerRecaf.png)
+
 5. Copy the content of this file (omit the two first lines: `// Decompiled with: DecompilerName` `// Class Version: X`) and use it to create java file. Add `void setPinnedStackVisible(boolean bool);` to this file.
+
 [<img src="./images/IActivityManagerJava.png" width="50%">](./images/IActivityManagerJava.png)
+
 6. Download and run [Eclipse](https://eclipseide.org/).
 7. In Eclipse create new Java Project `File` > `New` > `Java Project`.
+
 [<img src="./images/IActivityManagerEclipse1.png" width="50%">](./images/IActivityManagerEclipse1.png)
+
 8. Remove the content of this project and paste there already predefined [project's](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_eclipse.rar) files.
+
 [<img src="./images/IActivityManagerEclipse2.png" width="50%">](./images/IActivityManagerEclipse2.png)
+
 9. In Eclipse refresh your project using `F5` or `Right click` on your project and `Refresh`.
 10. Then `Project` > `Properties` > `Java Build Path` > `Libraries` > `Add External JARs...` > choose `android.jar` from the step 1. and press `Apply and Close`. Check if `Build automatically` is checked in the `Project` tab (should be checked by default). Refresh your project again (ignore the errors displayed at the bottom of the window).
 11.  Go to `C:\Users\<your_user-name>\eclipse-workspace\androidJar\target\classes\android\app` and copy `IActivityManager.class`
 12. Download [android_jar_mod.rar](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_mod.rar) and paste `IActivityManager.class` to `android_jar_mod\android\app`. Also paste `android.jar` from step 1. to `android_jar_mod\`
 
 [<img src="./images/IActivityManagerJar.png" width="50%">](./images/IActivityManagerJar.png)
+
 13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one fater another).
 14. Finally you can use prepared `android.jar` from `android_jar_mod\` directory to run your project as described in `Generating app in Android Studio` caption.
