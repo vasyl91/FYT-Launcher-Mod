@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +42,18 @@ public class SettingsActivity extends AppCompatActivity {
     private final Helpers helpers = new Helpers(); 
     private boolean isReceiverRegistered = false;    
 
+    public static int orientationDimension;
+    public static int orientedWidth;
+    public static int calculatedStatsWidth;
+    public static int calculatedStatsHeight;
+    public static int calculatedMapMinHeight;
+    public static int calculatedMapMinWidth;
+    public static int calculatedDateMinHeight; 
+    public static int calculatedDateMinWidth;
+    public static int calculatedMusicMinHeight;
+    public static int calculatedMusicMinWidth;
+    public static int calculatedRadioMinHeight;
+    public static int calculatedRadioMinWidth;
     public static int statusBarHeight;
     public static int screenWidth;
     public static int screenHeight;
@@ -58,6 +71,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static int dialogTextView;
     public static int dialogMargin;
     public static int dialogPadding;
+    public static int adaptiveCoordinatesSize;
+    public static int adaptiveNameTextSize;
     
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,26 +110,49 @@ public class SettingsActivity extends AppCompatActivity {
         statusBarHeight = getStatusBarHeight();
         screenWidth = getResources().getDisplayMetrics().widthPixels; 
         screenHeight = getResources().getDisplayMetrics().heightPixels; 
+
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientationDimension = screenHeight;
+            orientedWidth = screenWidth;
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            orientationDimension = screenWidth - getStatusBarHeight();
+            orientedWidth = screenHeight + getStatusBarHeight();
+        } 
+
+        calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
+        calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
+        calculatedMapMinHeight = calculateDimension(orientationDimension, 18.0);
+        calculatedMapMinWidth = calculateDimension(orientedWidth, 44.0);
+        calculatedDateMinHeight = calculateDimension(orientationDimension, 7.2);
+        calculatedDateMinWidth = calculateDimension(orientedWidth, 44.0);
+        calculatedMusicMinHeight = calculateDimension(orientationDimension, 18.0);
+        calculatedMusicMinWidth = calculateDimension(orientedWidth, 25.1);
+        calculatedRadioMinHeight = calculateDimension(orientationDimension, 7.2);
+        calculatedRadioMinWidth = calculateDimension(orientedWidth, 25.1);    
         
-        arrowLongDim = calculateDimension(screenWidth, 8.5);
-        arrowShortDim = calculateDimension(screenWidth, 3.5);
-        arrowTextSize = calculateDimension(screenWidth, 0.7);
+        arrowLongDim = calculateDimension(orientationDimension, 8.5);
+        arrowShortDim = calculateDimension(orientationDimension, 3.5);
+        arrowTextSize = calculateAdaptiveTextSize(screenWidth, 14);
         
-        selectionTextSize = calculateDimension(screenWidth, 1.0);
-        confirmTextSize = calculateDimension(screenWidth, 1.1);
+        selectionTextSize = calculateAdaptiveTextSize(screenWidth, 20);
+        confirmTextSize = calculateAdaptiveTextSize(screenWidth, 22);
 
-        barHeight = calculateDimension(screenWidth, 9.0);
+        barHeight = calculateDimension(orientationDimension, 9.0);
 
-        progressWidth = calculateDimension(screenWidth, 35.0);
-        progressHeight = calculateDimension(screenWidth, 13.75);
+        progressWidth = calculateDimension(orientationDimension, 35.0);
+        progressHeight = calculateDimension(orientationDimension, 13.75);
 
-        nestedPaddingStart = calculateDimension(screenWidth, 6.5);
-        nestedPaddingEnd = calculateDimension(screenWidth, 0.8);
+        nestedPaddingStart = calculateDimension(orientationDimension, 6.5);
+        nestedPaddingEnd = calculateDimension(orientationDimension, 0.8);
 
-        dialogTitle = calculateDimension(screenWidth, 1.0);
-        dialogTextView = calculateDimension(screenWidth, 0.8);
-        dialogMargin = calculateDimension(screenWidth, 0.95);
-        dialogPadding = calculateDimension(screenWidth, 0.9);
+        dialogTitle = calculateAdaptiveTextSize(screenWidth, 20);
+        dialogTextView = calculateAdaptiveTextSize(screenWidth, 16);
+        dialogMargin = calculateDimension(orientationDimension, 0.95);
+        dialogPadding = calculateDimension(orientationDimension, 0.9);
+
+        adaptiveCoordinatesSize = calculateAdaptiveTextSize(orientationDimension, 50);
+        adaptiveNameTextSize = calculateAdaptiveTextSize(orientationDimension, 40);
     }
 
     public int calculateDimension(int dimension, double percentage) {
@@ -123,6 +161,17 @@ public class SettingsActivity extends AppCompatActivity {
         }
         double result = (percentage / 100.0) * dimension;
         return (int) result;
+    }
+
+    public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
+        if (screenWidth <= 0 || baseSize <= 0) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        double ratio = screenWidth / 2000.0;
+        double scaleFactor = Math.pow(ratio, 0.5); 
+        
+        return (int) (baseSize * scaleFactor);
     }
 
     public int getStatusBarHeight() { 
@@ -176,6 +225,12 @@ public class SettingsActivity extends AppCompatActivity {
                     boolean userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
                     if (initLayout != userLayoutBool) {
                         helpers.setLayoutTypeChanged(true);
+                    }
+                    boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
+                    if (leftBar) {
+                        if (helpers.hasLeftBarChanged()) {
+                            helpers.resetPrefs();
+                        }  
                     }
                     new VersionChecker().cancelDownload();
                     setBrightness();

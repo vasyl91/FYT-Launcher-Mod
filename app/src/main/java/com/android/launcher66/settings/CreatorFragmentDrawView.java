@@ -2,6 +2,7 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,14 +28,14 @@ public class CreatorFragmentDrawView extends Fragment {
     private SharedPreferences sharedPrefs;
 
     int margin;
-    int mapMinWidth = 561;
-    int mapMinHeight;
-    int dateMinWidth = 561;
-    int dateMinHeight = 145;
-    int musicMinWidth = 320;
-    int musicMinHeight;
-    int radioMinWidth = 320;
-    int radioMinHeight = 145;
+    int mapMinWidth = SettingsActivity.calculatedMapMinWidth;
+    int mapMinHeight = SettingsActivity.calculatedMapMinHeight;
+    int dateMinWidth = SettingsActivity.calculatedDateMinWidth;
+    int dateMinHeight = SettingsActivity.calculatedDateMinHeight;
+    int musicMinWidth = SettingsActivity.calculatedMusicMinWidth;
+    int musicMinHeight = SettingsActivity.calculatedMusicMinHeight;
+    int radioMinWidth = SettingsActivity.calculatedRadioMinWidth;
+    int radioMinHeight = SettingsActivity.calculatedRadioMinHeight;
     int mapTopLeftX, mapTopLeftY, mapTopRightX, mapTopRightY, mapBottomRightX, mapBottomRightY, mapBottomLeftX, mapBottomLeftY;
     int dateTopLeftX, dateTopLeftY, dateTopRightX, dateTopRightY, dateBottomRightX, dateBottomRightY, dateBottomLeftX, dateBottomLeftY;
     int musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY;
@@ -51,14 +52,6 @@ public class CreatorFragmentDrawView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mContext = container.getContext();
-        if (getResources().getDisplayMetrics().widthPixels <= 1024
-            || getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720) {
-            mapMinHeight = 284;
-            musicMinHeight = 284;
-        } else {
-            mapMinHeight = 340;
-            musicMinHeight = 340;               
-        } 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
         map = sharedPrefs.getBoolean("user_map", false);
@@ -72,7 +65,8 @@ public class CreatorFragmentDrawView extends Fragment {
         }
         if (leftBar) {
             if (helpers.hasLeftBarChanged()) {
-                resetPrefs();  
+                resetPrefs(); 
+                helpers.setLeftBarChanged(false); 
             }            
             rooView = inflater.inflate(R.layout.creator_left, container, false);
         } else {
@@ -125,26 +119,52 @@ public class CreatorFragmentDrawView extends Fragment {
             editor.putInt("dateBottomLeftX", margin);  
             editor.putInt("dateBottomLeftY", margin + dateMinHeight);
         }
-        if (music) {
-            editor.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
-            editor.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
-            editor.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editor.putInt("musicTopRightY", margin + radioMinHeight + margin); 
-            editor.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editor.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
-            editor.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
-            editor.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
+
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (music) {
+                editor.putInt("musicTopLeftX", margin);  
+                editor.putInt("musicTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
+                editor.putInt("musicTopRightX", margin + musicMinWidth);  
+                editor.putInt("musicTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+                editor.putInt("musicBottomRightX", margin + musicMinWidth);  
+                editor.putInt("musicBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight); 
+                editor.putInt("musicBottomLeftX", margin);  
+                editor.putInt("musicBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight);            
+            }
+            if (radio) {
+                editor.putInt("radioTopLeftX", margin + musicMinWidth + margin);  
+                editor.putInt("radioTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
+                editor.putInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);  
+                editor.putInt("radioTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+                editor.putInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);  
+                editor.putInt("radioBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight); 
+                editor.putInt("radioBottomLeftX", margin + musicMinWidth + margin);  
+                editor.putInt("radioBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight);            
+            }
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (music) {
+                editor.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
+                editor.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
+                editor.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+                editor.putInt("musicTopRightY", margin + radioMinHeight + margin); 
+                editor.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+                editor.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+                editor.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+                editor.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
+            }
+            if (radio) {
+                editor.putInt("radioTopLeftX", margin + dateMinWidth + margin);
+                editor.putInt("radioTopLeftY", margin);
+                editor.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
+                editor.putInt("radioTopRightY", margin); 
+                editor.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+                editor.putInt("radioBottomRightY", margin + radioMinHeight); 
+                editor.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+                editor.putInt("radioBottomLeftY", margin + radioMinHeight);         
+            }
         }
-        if (radio) {
-            editor.putInt("radioTopLeftX", margin + dateMinWidth + margin);
-            editor.putInt("radioTopLeftY", margin);
-            editor.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
-            editor.putInt("radioTopRightY", margin); 
-            editor.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
-            editor.putInt("radioBottomRightY", margin + radioMinHeight); 
-            editor.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
-            editor.putInt("radioBottomLeftY", margin + radioMinHeight);         
-        }
+
         if (stats) {
             editor.putInt("statsTopLeftX", 20);
             editor.putInt("statsTopLeftY", 20);         

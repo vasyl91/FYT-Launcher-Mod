@@ -451,14 +451,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean onBackPip = false;
     private DeviceProfile grid;
 
-    public static View rootView;
+    public static int calculatedStatsWidth;
+    public static int calculatedStatsHeight;
+    public static int calculatedMapMinHeight;
+    public static int calculatedMapMinWidth;
+    public static int calculatedDateMinHeight; 
+    public static int calculatedDateMinWidth;
+    public static int calculatedMusicMinHeight;
+    public static int calculatedMusicMinWidth;
+    public static int calculatedRadioMinHeight;
+    public static int calculatedRadioMinWidth;
+    public static int calculatedLeftBarWidth;
+    public static int orientationDimension;
+    public static int orientedWidth;
     public static int screenWidth;
     public static int screenHeight;
     public static int textSizeBasic;
     public static int textSizeTitle;
     public static int textSizeArtist;
     public static int textSizeWorkspace;
-    public static int calculatedLeftBarWidth;
     public static int radioButtonHeight;
     public static int radioButtonWidth;
     public static int radioTextFrequency;
@@ -481,10 +492,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int workspaceTopPadding;    
     public static int allAppsIconTextSize;
     public static int mainScreenIconTextSize;
-
-    public static View getRootView() {
-        return rootView;
-    }
 
     public DeviceProfile getDeviceProfile() {
         return grid;
@@ -1713,7 +1720,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
         helpers = new Helpers();
-        helpers.setWindowHeight(getResources().getDisplayMetrics().heightPixels);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
 
         calculateLayoutDimensions();       
@@ -1791,54 +1797,74 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void calculateLayoutDimensions() {
         screenWidth = getResources().getDisplayMetrics().widthPixels; 
         screenHeight = getResources().getDisplayMetrics().heightPixels; 
+
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientationDimension = screenHeight;
+            calculatedLeftBarWidth = calculateDimension(orientationDimension - getStatusBarHeight(), 7.1);
+            orientedWidth = screenWidth;
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            orientationDimension = screenWidth - getStatusBarHeight();
+            calculatedLeftBarWidth = calculateDimension(orientationDimension, 7.1);
+            orientedWidth = screenHeight + getStatusBarHeight();
+        } 
+
+        calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
+        calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
+        calculatedMapMinHeight = calculateDimension(orientationDimension, 18.0);
+        calculatedMapMinWidth = calculateDimension(orientedWidth, 44.0);
+        calculatedDateMinHeight = calculateDimension(orientationDimension, 7.2);
+        calculatedDateMinWidth = calculateDimension(orientedWidth, 44.0);
+        calculatedMusicMinHeight = calculateDimension(orientationDimension, 18.0);
+        calculatedMusicMinWidth = calculateDimension(orientedWidth, 25.1);
+        calculatedRadioMinHeight = calculateDimension(orientationDimension, 7.2);
+        calculatedRadioMinWidth = calculateDimension(orientedWidth, 25.1);    
         
         // Text size
-        textSizeBasic = calculateDimension(screenWidth, 0.9);
-        textSizeTitle = calculateDimension(screenWidth, 1.1);  
-        textSizeArtist = calculateDimension(screenWidth, 0.8);
-        textSizeWorkspace = calculateDimension(screenWidth, 1.6); 
+        textSizeBasic = calculateAdaptiveTextSize(orientationDimension, 18);
+        textSizeTitle = calculateAdaptiveTextSize(orientationDimension, 22);
+        textSizeArtist = calculateAdaptiveTextSize(orientationDimension, 16);
+        textSizeWorkspace = calculateAdaptiveTextSize(orientationDimension, 32);
 
         // RecyclerView
-        calculatedLeftBarWidth = calculateDimension(screenWidth, 7.1);
         leftBarIconMargin = calculateDimension(screenHeight, 3.2);
         bottomBarIconMargin = calculateDimension(screenWidth, 2.0);
 
         // Radio widget
-        radioButtonHeight = calculateDimension(screenWidth, 3.5);
-        radioButtonWidth = calculateDimension(screenWidth, 3.0);      
-        radioTextFrequency = calculateDimension(screenWidth, 1.5);
+        radioButtonHeight = calculateDimension(orientationDimension, 3.5);
+        radioButtonWidth = calculateDimension(orientationDimension, 3.0);      
+        radioTextFrequency = calculateAdaptiveTextSize(orientationDimension, 30);
 
         // Integers
-        analogwidth = calculateDimension(screenWidth, 13.8);
-        analogheight = calculateDimension(screenWidth, 13.8);
-        digit_clock_width = calculateDimension(screenWidth, 4.1);
-        digit_clock_height = calculateDimension(screenWidth, 5.5);
-        dot_clock_width = calculateDimension(screenWidth, 2.6);
-        dot_clock_height = calculateDimension(screenWidth, 5.5);
+        analogwidth = calculateDimension(orientationDimension, 13.8);
+        analogheight = calculateDimension(orientationDimension, 13.8);
+        digit_clock_width = calculateDimension(orientationDimension, 4.1);
+        digit_clock_height = calculateDimension(orientationDimension, 5.5);
+        dot_clock_width = calculateDimension(orientationDimension, 2.6);
+        dot_clock_height = calculateDimension(orientationDimension, 5.5);
 
         // Dimens
-        app_icon_size = calculateDimension(screenWidth, 6.6);
-        icon_size = calculateDimension(screenWidth, 3.5);
-        apps_customize_page_view_margin_top = calculateDimension(screenWidth, 2.0);
-        apps_customize_page_view_margin_bottom = calculateDimension(screenWidth, 2.0);
+        app_icon_size = calculateDimension(orientationDimension, 6.6);
+        icon_size = calculateDimension(orientationDimension, 3.5);
+        apps_customize_page_view_margin_top = calculateDimension(orientationDimension, 2.0);
+        apps_customize_page_view_margin_bottom = calculateDimension(orientationDimension, 2.0);
 
         // Workspace
-        workspaceIconAndFolderSize = calculateDimension(screenWidth, 6.5);
-        workspaceTopPadding = calculateDimension(screenWidth, 0.8);
+        workspaceIconAndFolderSize = calculateDimension(orientationDimension, 6.5);
+        workspaceTopPadding = calculateDimension(orientationDimension, 0.8);
 
         // Icons - different sizes on different resolutions
         SharedPreferences.Editor editor = mPrefs.edit();
         editor = mPrefs.edit();
         if (!helpers.allAppsTextSizeBoolean()) {
-            allAppsIconTextSize = calculateDimension(screenWidth, 0.9);
+            allAppsIconTextSize = calculateAdaptiveTextSize(orientationDimension, 18);
             editor.putString("all_apps_textSize", String.valueOf(allAppsIconTextSize));
         }
         if (!helpers.workspaceTextSizeBoolean()) {
-            mainScreenIconTextSize = calculateDimension(screenWidth, 1.45);
+            mainScreenIconTextSize = calculateAdaptiveTextSize(orientationDimension, 28);
             editor.putString("workspace_textSize", String.valueOf(mainScreenIconTextSize));
         }
         editor.apply();
-
     }
 
     public int calculateDimension(int dimension, double percentage) {
@@ -1847,6 +1873,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         double result = (percentage / 100.0) * dimension;
         return (int) result;
+    }
+
+    public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
+        if (screenWidth <= 0 || baseSize <= 0) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        double ratio = screenWidth / 2000.0;
+        double scaleFactor = Math.pow(ratio, 0.5); 
+        
+        return (int) (baseSize * scaleFactor);
     }
 
     private void initVariable() {
@@ -1894,10 +1931,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mViewModel.setFirstUse(mModel.mFirstUse);
         
         setContentView(R.layout.launcher);
-
-        // This prevents layout shift to the left
-        rootView = findViewById(R.id.launcher);
-        rootView.setTranslationX(-(screenWidth / 450));
         
         setupViews();
         grid.layout(this);
@@ -2370,7 +2403,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void pipOverview() {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
-        rootView.setTranslationX(-(screenWidth / 450));
         boolean userLayout = mPrefs.getBoolean("user_layout", false);
         boolean userStats = mPrefs.getBoolean("user_stats", false);
         if (userLayout && userStats) {
@@ -2418,35 +2450,34 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void setWindowLocUser() {
-        int mapTopLeftX, mapBottomRightX, leftBarSize, mapMinHeight; 
+        int mapTopLeftX, mapBottomRightX; 
         SystemProperties.set("persist.syu.launcher.haspip", "true");
         if (getResources().getDisplayMetrics().widthPixels <= 1024
             || (getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)) {
-            leftBarSize = 100;
-            mapMinHeight = 284;
             SystemProperties.set("persist.lsec.radius", "10");
         } else if (getResources().getDisplayMetrics().heightPixels == 720) {
-            leftBarSize = 110;
-            mapMinHeight = 340;
             SystemProperties.set("persist.lsec.radius", "12");
         } else {
-            leftBarSize = 142; 
-            mapMinHeight = 340;
             SystemProperties.set("persist.lsec.radius", "14");              
         }  
         leftBar = mPrefs.getBoolean("left_bar", false);
-        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));  
-        int mapMinWidth = 561;
-        int dateMinHeight = 145;
+        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
+        int orientedMargin = margin;
+
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientedMargin = 0;
+        } 
+
         if (leftBar) {
-            mapTopLeftX = mPrefs.getInt("mapTopLeftX", margin) + leftBarSize;
-            mapBottomRightX = mPrefs.getInt("mapBottomRightX", margin + mapMinWidth) + leftBarSize;   
+            mapTopLeftX = mPrefs.getInt("mapTopLeftX", margin) + orientedMargin + calculatedLeftBarWidth;
+            mapBottomRightX = mPrefs.getInt("mapBottomRightX", margin + calculatedMapMinWidth) + orientedMargin + calculatedLeftBarWidth;   
         } else {
             mapTopLeftX = mPrefs.getInt("mapTopLeftX", margin);
-            mapBottomRightX = mPrefs.getInt("mapBottomRightX", margin + mapMinWidth);
+            mapBottomRightX = mPrefs.getInt("mapBottomRightX", margin + calculatedMapMinWidth);
         }
-        int mapTopLeftY = mPrefs.getInt("mapTopLeftY", margin + dateMinHeight + margin) + getStatusBarHeight();
-        int mapBottomRightY = mPrefs.getInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight) + getStatusBarHeight();
+        int mapTopLeftY = mPrefs.getInt("mapTopLeftY", margin + calculatedDateMinHeight + margin) + getStatusBarHeight();
+        int mapBottomRightY = mPrefs.getInt("mapBottomRightY", margin + calculatedDateMinHeight + margin + calculatedMapMinHeight) + getStatusBarHeight();
 
         Intent intent = new Intent();
         intent.setAction("android.intent.action.MAIN");
@@ -3595,8 +3626,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
-                outRect.left = bottomBarIconMargin;
-                outRect.right = bottomBarIconMargin;
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    outRect.left = -bottomBarIconMargin;
+                    outRect.right = -bottomBarIconMargin;
+                } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    outRect.left = bottomBarIconMargin;
+                    outRect.right = bottomBarIconMargin;
+                }
             }
         });
         mRecyclerView.setAdapter(mAppListAdapter);
@@ -3692,8 +3729,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    outRect.top = leftBarIconMargin;
-                    outRect.bottom = leftBarIconMargin;
+                    int orientation = getResources().getConfiguration().orientation;
+                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        outRect.top = (int) (leftBarIconMargin * 1.5f);
+                        outRect.bottom = (int) (leftBarIconMargin * 1.5f);
+                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        outRect.top = leftBarIconMargin;
+                        outRect.bottom = leftBarIconMargin;
+                    }
                 }
             });
             mLeftRecyclerView.setAdapter(mLeftAppListAdapter);

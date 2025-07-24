@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.LauncherGlideBitmapLoader;
 
@@ -432,18 +434,6 @@ public class Helpers {
         editorSus.apply();
     }
 
-
-    private int windowHeight = 0;
-    public int returnWindowHeight() {
-        windowHeight = sharedPrefs.getInt("windowHeight", 0);
-        return windowHeight;
-    }
-    public void setWindowHeight(int windowHeight) {
-        this.windowHeight = windowHeight;
-        editor.putInt("windowHeight", windowHeight);
-        editor.apply();
-    }
-
     public boolean allAppsVisibility(int visibility) {
         if (visibility == View.INVISIBLE || visibility == View.GONE) {
             return false;
@@ -470,22 +460,14 @@ public class Helpers {
             Log.i("helpers", "resetprefs passed if statement");
             SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10")); 
-            int mapMinWidth = 561;
-            int mapMinHeight;
-            int dateMinWidth = 561;
-            int dateMinHeight = 145;
-            int musicMinWidth = 320;
-            int musicMinHeight;
-            int radioMinWidth = 320;
-            int radioMinHeight = 145;
-            if (LauncherApplication.sApp.getResources().getDisplayMetrics().widthPixels <= 1024
-                || (LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels <= 1024 && LauncherApplication.sApp.getResources().getDisplayMetrics().heightPixels != 720)) {
-                mapMinHeight = 284;
-                musicMinHeight = 284;
-            } else {
-                mapMinHeight = 340;
-                musicMinHeight = 340;               
-            } 
+            int mapMinWidth = Launcher.calculatedMapMinWidth;
+            int mapMinHeight = Launcher.calculatedMapMinHeight;
+            int dateMinWidth = Launcher.calculatedDateMinWidth;
+            int dateMinHeight = Launcher.calculatedDateMinHeight;
+            int musicMinWidth = Launcher.calculatedMusicMinWidth;
+            int musicMinHeight = Launcher.calculatedMusicMinHeight;
+            int radioMinWidth = Launcher.calculatedRadioMinWidth;
+            int radioMinHeight = Launcher.calculatedRadioMinHeight;
             if (margin < 0) {
                 margin = 10;
             }
@@ -507,22 +489,42 @@ public class Helpers {
             editorReset.putInt("dateBottomRightY", margin + dateMinHeight); 
             editorReset.putInt("dateBottomLeftX", margin);  
             editorReset.putInt("dateBottomLeftY", margin + dateMinHeight);
-            editorReset.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
-            editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
-            editorReset.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin); 
-            editorReset.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
-            editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
-            editorReset.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
-            editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
-            editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
-            editorReset.putInt("radioTopLeftY", margin);
-            editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
-            editorReset.putInt("radioTopRightY", margin); 
-            editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
-            editorReset.putInt("radioBottomRightY", margin + radioMinHeight); 
-            editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
-            editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);         
+            int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                editorReset.putInt("musicTopLeftX", margin);  
+                editorReset.putInt("musicTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
+                editorReset.putInt("musicTopRightX", margin + musicMinWidth);  
+                editorReset.putInt("musicTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+                editorReset.putInt("musicBottomRightX", margin + musicMinWidth);  
+                editorReset.putInt("musicBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight); 
+                editorReset.putInt("musicBottomLeftX", margin);  
+                editorReset.putInt("musicBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight);       
+                editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);  
+                editorReset.putInt("radioTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
+                editorReset.putInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);  
+                editorReset.putInt("radioTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+                editorReset.putInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);  
+                editorReset.putInt("radioBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight); 
+                editorReset.putInt("radioBottomLeftX", margin + musicMinWidth + margin);  
+                editorReset.putInt("radioBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight);
+            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                editorReset.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
+                editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
+                editorReset.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+                editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin); 
+                editorReset.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+                editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+                editorReset.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+                editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
+                editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
+                editorReset.putInt("radioTopLeftY", margin);
+                editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
+                editorReset.putInt("radioTopRightY", margin); 
+                editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+                editorReset.putInt("radioBottomRightY", margin + radioMinHeight); 
+                editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+                editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);    
+            }     
             editorReset.putInt("statsTopLeftX", 20);
             editorReset.putInt("statsTopLeftY", 20);         
             editorReset.apply();

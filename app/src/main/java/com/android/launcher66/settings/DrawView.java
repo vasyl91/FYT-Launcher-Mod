@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -178,40 +179,25 @@ public class DrawView extends View implements View.OnClickListener {
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
-
         ballDiameter = 75.0f;
-        coordinatesSize = 50;
-        nameTextSize = 40;
-        statsWidth = 435;
-        statsHeight = 100;
-        mapMinHeight = 340;
-        mapMinWidth = 561;
-        dateMinHeight = 145; 
-        dateMinWidth = 561;
-        musicMinHeight = 340;
-        musicMinWidth = 320;
-        radioMinHeight = 145;
-        radioMinWidth = 320;
+        coordinatesSize = SettingsActivity.adaptiveCoordinatesSize;
+        nameTextSize = SettingsActivity.adaptiveNameTextSize;
+        statsWidth = SettingsActivity.calculatedStatsWidth;
+        statsHeight = SettingsActivity.calculatedStatsHeight;
+        mapMinWidth = SettingsActivity.calculatedMapMinWidth;
+        mapMinHeight = SettingsActivity.calculatedMapMinHeight;
+        dateMinWidth = SettingsActivity.calculatedDateMinWidth;
+        dateMinHeight = SettingsActivity.calculatedDateMinHeight;
+        musicMinWidth = SettingsActivity.calculatedMusicMinWidth;
+        musicMinHeight = SettingsActivity.calculatedMusicMinHeight;
+        radioMinWidth = SettingsActivity.calculatedRadioMinWidth;
+        radioMinHeight = SettingsActivity.calculatedRadioMinHeight;
 
         if (getResources().getDisplayMetrics().widthPixels <= 1024
             || getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)  {     
             ballDiameter = 26.0f;
-            coordinatesSize = 40;
-            nameTextSize = 30;
-            statsWidth = 245;
-            statsHeight = 55;
-            mapMinHeight = 284;
-            dateMinWidth = 320;
-            musicMinHeight = 284;
         } else if (getResources().getDisplayMetrics().heightPixels == 720) {
             ballDiameter = 50.0f;
-            coordinatesSize = 45;
-            nameTextSize = 35;
-            statsWidth = 245;
-            statsHeight = 55;
-            mapMinHeight = 340;
-            dateMinWidth = 320;
-            musicMinHeight = 340;
         } 
 
         sizeOfRect = ballDiameter / 2.0f;
@@ -284,25 +270,49 @@ public class DrawView extends View implements View.OnClickListener {
         dateBottomLeftY = sharedPrefs.getInt("dateBottomLeftY", margin + dateMinHeight);
         initRect(context, new int[]{dateTopLeftX, dateTopLeftY, dateTopRightX, dateTopRightY, dateBottomRightX, dateBottomRightY, dateBottomLeftX, dateBottomLeftY, 4, 5, 6, 7});
 
-        musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);  
-        musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", margin + radioMinHeight + margin);            
-        musicTopRightX = sharedPrefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
-        musicTopRightY = sharedPrefs.getInt("musicTopRightY", margin + radioMinHeight + margin); 
-        musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
-        musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
-        musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", margin + mapMinWidth + margin);  
-        musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);     
-        initRect(context, new int[]{musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY, 8, 9, 10, 11});
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", margin);  
+            musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);            
+            musicTopRightX = sharedPrefs.getInt("musicTopRightX", margin + musicMinWidth);  
+            musicTopRightY = sharedPrefs.getInt("musicTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+            musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", margin + musicMinWidth);  
+            musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight); 
+            musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", margin);  
+            musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight);     
+            initRect(context, new int[]{musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY, 8, 9, 10, 11});
 
-        radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
-        radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", margin);      
-        radioTopRightX = sharedPrefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);     
-        radioTopRightY = sharedPrefs.getInt("radioTopRightY", margin); 
-        radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
-        radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", margin + radioMinHeight); 
-        radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", margin + dateMinWidth + margin); 
-        radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", margin + radioMinHeight);   
-        initRect(context, new int[]{radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY, 12, 13, 14, 15});               
+            // Radio (bottom-right, to the right of music)
+            radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", margin + musicMinWidth + margin);  
+            radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);      
+            radioTopRightX = sharedPrefs.getInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);     
+            radioTopRightY = sharedPrefs.getInt("radioTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
+            radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);  
+            radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight); 
+            radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", margin + musicMinWidth + margin); 
+            radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight);   
+            initRect(context, new int[]{radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY, 12, 13, 14, 15});
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);  
+            musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", margin + radioMinHeight + margin);            
+            musicTopRightX = sharedPrefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            musicTopRightY = sharedPrefs.getInt("musicTopRightY", margin + radioMinHeight + margin); 
+            musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
+            musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
+            musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", margin + mapMinWidth + margin);  
+            musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);     
+            initRect(context, new int[]{musicTopLeftX, musicTopLeftY, musicTopRightX, musicTopRightY, musicBottomRightX, musicBottomRightY, musicBottomLeftX, musicBottomLeftY, 8, 9, 10, 11});
+
+            radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
+            radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", margin);      
+            radioTopRightX = sharedPrefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);     
+            radioTopRightY = sharedPrefs.getInt("radioTopRightY", margin); 
+            radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
+            radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", margin + radioMinHeight); 
+            radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", margin + dateMinWidth + margin); 
+            radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", margin + radioMinHeight);   
+            initRect(context, new int[]{radioTopLeftX, radioTopLeftY, radioTopRightX, radioTopRightY, radioBottomRightX, radioBottomRightY, radioBottomLeftX, radioBottomLeftY, 12, 13, 14, 15});  
+        }           
     
         statsTopLeftX = sharedPrefs.getInt("statsTopLeftX", margin + 10);
         statsTopLeftY = sharedPrefs.getInt("statsTopLeftY", margin + 10);          
@@ -313,6 +323,17 @@ public class DrawView extends View implements View.OnClickListener {
         statsBottomLeftX = statsTopLeftX;
         statsBottomLeftY = statsTopLeftY + statsHeight;
         initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 16, 17, 18, 19});
+    }
+
+    public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
+        if (screenWidth <= 0 || baseSize <= 0) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        double ratio = screenWidth / 2000.0;
+        double scaleFactor = Math.pow(ratio, 0.5); 
+        
+        return (int) (baseSize * scaleFactor);
     }
 
     private void setCalculatedTextSize(View view, int textViewId, int textSize) {

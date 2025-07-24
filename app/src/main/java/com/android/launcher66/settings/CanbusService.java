@@ -456,20 +456,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int leftBarSize = Launcher.calculatedLeftBarWidth;
-            int statsTopLeftX, statsTopLeftY, statsWidth, statsHeight;
+            int statsWidth = Launcher.calculatedStatsWidth;
+            int statsHeight = Launcher.calculatedStatsHeight;
+            int statsTopLeftX, statsTopLeftY;
 
             if (getResources().getDisplayMetrics().widthPixels <= 1024
                 || (getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)) {
-                statsWidth = 245;
-                statsHeight = 55;
                 radius = 10;
             } else if (getResources().getDisplayMetrics().heightPixels == 720) {
-                statsWidth = 245;
-                statsHeight = 55;
                 radius = 12;
             } else {
-                statsWidth = 435;
-                statsHeight = 100;   
                 radius = 14;            
             } 
             if (mapApp) {

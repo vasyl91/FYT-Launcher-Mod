@@ -3,6 +3,7 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -81,23 +82,10 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         setFocusable(true); // necessary for getting the touch events
         canvas = new Canvas();
 
-        coordinatesSize = 50;
-        nameTextSize = 40;
-        statsWidth = 435;
-        statsHeight = 100;
-
-        if (getResources().getDisplayMetrics().widthPixels <= 1024
-            || getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)  {  
-            coordinatesSize = 40;
-            nameTextSize = 30;
-            statsWidth = 245;
-            statsHeight = 55;
-        } else if (getResources().getDisplayMetrics().heightPixels == 720) { 
-            coordinatesSize = 45;
-            nameTextSize = 35;
-            statsWidth = 245;
-            statsHeight = 55;
-        }  
+        coordinatesSize = SettingsActivity.adaptiveCoordinatesSize;
+        nameTextSize = SettingsActivity.adaptiveNameTextSize;
+        statsWidth = SettingsActivity.calculatedStatsWidth;
+        statsHeight = SettingsActivity.calculatedStatsHeight;
         
         barTop = rootView.findViewById(R.id.creator_bar_top);       
         barBottom = rootView.findViewById(R.id.creator_bar_bottom);
@@ -162,6 +150,17 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         statsBottomLeftY = statsTopLeftY + statsHeight;
 
         initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 0, 1, 2, 3});
+    }
+
+    public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
+        if (screenWidth <= 0 || baseSize <= 0) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        double ratio = screenWidth / 2000.0;
+        double scaleFactor = Math.pow(ratio, 0.5); 
+        
+        return (int) (baseSize * scaleFactor);
     }
 
     private void setCalculatedTextSize(View view, int dateId, int textSize) {

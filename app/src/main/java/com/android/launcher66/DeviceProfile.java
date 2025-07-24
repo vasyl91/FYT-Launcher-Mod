@@ -3,6 +3,7 @@ package com.android.launcher66;
 import android.appwidget.AppWidgetHostView;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -173,15 +174,21 @@ public class DeviceProfile {
     }
 
     void updateFromConfiguration(Resources resources, int wPx, int hPx, int awPx, int ahPx) {
-        this.isLandscape = resources.getConfiguration().orientation == 2;
+        this.isLandscape = resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         this.isTablet = resources.getBoolean(R.bool.is_tablet);
         this.isLargeTablet = resources.getBoolean(R.bool.is_large_tablet);
         this.widthPx = wPx;
         this.heightPx = hPx;
         this.availableWidthPx = awPx;
         this.availableHeightPx = ahPx;
-        this.allAppsNumRows = resources.getInteger(R.integer.all_apps_customize_rows);
-        this.allAppsNumCols = resources.getInteger(R.integer.all_apps_customize_cols);
+        int orientation = resources.getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            this.allAppsNumRows = 7;
+            this.allAppsNumCols = 4;
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            this.allAppsNumRows = 4;
+            this.allAppsNumCols = 7;
+        }
     }
 
     public void updateIconTextSize(int iSize) {

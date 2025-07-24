@@ -496,8 +496,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);
                 intentSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intentSettings.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                intentSettings.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                intentSettings.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 startActivity(intentSettings);
                 break;
             case NOTIFICATION_SETTINGS:

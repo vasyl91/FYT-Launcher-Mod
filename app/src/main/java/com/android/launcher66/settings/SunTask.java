@@ -135,8 +135,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
         } else {   
             TwilightCalculator sunCalc = new TwilightCalculator(mLatiude, mLongitude);
             if (notArctic()) {
-                sunrise = stringToLong(sunCalc.getSunrise());
-                sunset = stringToLong(sunCalc.getSunset());
+                sunrise = stringToLongCalc(sunCalc.getSunrise());
+                sunset = stringToLongCalc(sunCalc.getSunset());
             }
         }
         editor.putString("sunrise", longToHourZone(sunrise));
@@ -452,6 +452,25 @@ public class SunTask extends AsyncTask<String, Void, String> {
         String formattedTime = time.format(formatter);
 
         SimpleDateFormat format = new SimpleDateFormat(TIME_CONST, Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date;
+        try {
+            date = format.parse(formattedTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        assert date != null;
+        return date.getTime();
+    }
+
+    private long stringToLongCalc(String timeStr) {
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("h:mm:ss a", Locale.ENGLISH);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_CONST);
+        LocalTime time = LocalTime.parse(timeStr, parser);
+        String formattedTime = time.format(formatter);
+
+        SimpleDateFormat format = new SimpleDateFormat(TIME_CONST, Locale.US);
+        // Keep UTC to get correct milliseconds since midnight
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date;
         try {

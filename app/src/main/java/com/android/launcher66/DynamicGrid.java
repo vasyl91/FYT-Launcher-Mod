@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -15,6 +16,8 @@ public class DynamicGrid {
     private float mMinHeight;
     private float mMinWidth;
     private DeviceProfile mProfile;
+    private int numRows;
+    private int numCols;
 
     public static float dpiFromPx(int size, DisplayMetrics metrics) {
         float densityRatio = metrics.densityDpi / 160.0f;
@@ -32,11 +35,15 @@ public class DynamicGrid {
     public DynamicGrid(Context context, Resources resources, int minWidthPx, int minHeightPx, int widthPx, int heightPx, int awPx, int ahPx) {
         DisplayMetrics dm = resources.getDisplayMetrics();
         ArrayList<DeviceProfile> deviceProfiles = new ArrayList<>();
-        if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
-        }
         int iconSize = Launcher.workspaceIconAndFolderSize;
-        int numRows = LauncherApplication.sApp.getResources().getInteger(R.integer.numRows_size);
-        int numCols = LauncherApplication.sApp.getResources().getInteger(R.integer.numCols_size);
+        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            numRows = 10;
+            numCols = 6;
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            numRows = 6;
+            numCols = 10;
+        }
         LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseat3G_icon_size);
         int hotseatIcon_wifi = LauncherApplication.sApp.getResources().getInteger(R.integer.hoteseatwifi_icon_size);
         int iHotseatCount = LauncherApplication.sApp.getResources().getInteger(R.integer.nhotseat_count);

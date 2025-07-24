@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -625,25 +626,24 @@ public class Workspace extends SmoothPagedView
         }
 
         if (userLayout) {
-            int leftBarSize = this.mLauncher.calculatedLeftBarWidth;
+            int leftBarWidth = this.mLauncher.calculatedLeftBarWidth;
             int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int orientedMargin = margin;
+            int orientation = getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                orientedMargin = 0;
+            } 
             boolean userDate = prefs.getBoolean("user_date", true);
             boolean userMusic = prefs.getBoolean("user_music", true);
             boolean userRadio = prefs.getBoolean("user_radio", true);
             
-            int mapMinWidth = 561;    
-            int dateMinWidth = 561;
-            int dateMinHeight = 145;
-            int musicMinWidth = 320;
-            int musicMinHeight;
-            int radioMinWidth = 320;
-            int radioMinHeight = 145;
-
-            if (getResources().getDisplayMetrics().widthPixels <= 1024) {
-                musicMinHeight = 284;
-            } else {
-                musicMinHeight = 340;               
-            }  
+            int mapMinWidth = this.mLauncher.calculatedMapMinWidth;    
+            int dateMinWidth = this.mLauncher.calculatedDateMinWidth;
+            int dateMinHeight = this.mLauncher.calculatedDateMinHeight;
+            int musicMinWidth = this.mLauncher.calculatedMusicMinWidth;
+            int musicMinHeight = this.mLauncher.calculatedMusicMinHeight;
+            int radioMinWidth = this.mLauncher.calculatedRadioMinWidth;
+            int radioMinHeight = this.mLauncher.calculatedRadioMinHeight; 
 
             if (leftBar) {
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout_left);
@@ -654,8 +654,8 @@ public class Workspace extends SmoothPagedView
             if (userDate)  {
                 int dateTopLeftX, dateTopRightX;
                 if (leftBar) {
-                    dateTopLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarSize;
-                    dateTopRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + leftBarSize;
+                    dateTopLeftX = prefs.getInt("dateTopLeftX", margin) + orientedMargin + leftBarWidth;
+                    dateTopRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + orientedMargin + leftBarWidth;
                 } else {
                     dateTopLeftX = prefs.getInt("dateTopLeftX", margin);
                     dateTopRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth);
@@ -676,8 +676,8 @@ public class Workspace extends SmoothPagedView
             if (userMusic)  {
                 int musicTopLeftX, musicTopRightX;
                 if (leftBar) {
-                    musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarSize;
-                    musicTopRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + leftBarSize;
+                    musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + orientedMargin + leftBarWidth;
+                    musicTopRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + orientedMargin + leftBarWidth;
                 } else {
                     musicTopLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);
                     musicTopRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);
@@ -698,8 +698,8 @@ public class Workspace extends SmoothPagedView
             if (userRadio)  {
                 int radioTopLeftX, radioTopRightX;
                 if (leftBar) {
-                    radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarSize;
-                    radioTopRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth) + leftBarSize;
+                    radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + orientedMargin + leftBarWidth;
+                    radioTopRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth) + orientedMargin + leftBarWidth;
                 } else {
                     radioTopLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
                     radioTopRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);
@@ -1204,15 +1204,6 @@ public class Workspace extends SmoothPagedView
         } else {
             swipeInIgnoreDirection = true;
         }
-        if (swipeInIgnoreDirection && getScreenIdForPageIndex(getCurrentPage()) ==
-                CUSTOM_CONTENT_SCREEN_ID1 && passRightSwipesToCustomContent) {
-            // Pass swipes to the right to the custom content page.
-            mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
-            return;
-        } else {
-            mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
-        }
-
         if (theta > MAX_SWIPE_ANGLE) {
             // Above MAX_SWIPE_ANGLE, we don't want to ever start scrolling the workspace
             return;
@@ -1234,9 +1225,6 @@ public class Workspace extends SmoothPagedView
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         Log.i(TAG, "onPageBeginMoving()");
-        if (isInOverviewMode()) {
-            mLauncher.getRootView().setTranslationX(0);
-        }
         if (getChildCount() > 1) {
             WindowUtil.removePip(null);
         }
@@ -1282,10 +1270,6 @@ public class Workspace extends SmoothPagedView
                 WindowUtil.startMapPip(null, false);
             }
         }, 250);
-
-        if (isInOverviewMode()) {
-            mLauncher.getRootView().setTranslationX(0);
-        }
 
         if (isHardwareAccelerated()) {
             updateChildrenLayersEnabled(false);
@@ -2161,8 +2145,7 @@ public class Workspace extends SmoothPagedView
     public boolean enterOverviewMode() {
         // Do not allow to enter if widget has been long clicked
         if (helpers.isWidgetClickedBool()) return false;
-        
-        mLauncher.getRootView().setTranslationX(0);
+
         helpers.setInOverviewMode(true);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -2192,7 +2175,6 @@ public class Workspace extends SmoothPagedView
     }
 
     public void exitOverviewMode(int snapPage, boolean animated) {
-        mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -3073,7 +3055,6 @@ public class Workspace extends SmoothPagedView
     }
 
     public void onDrop(final DragObject d) {
-        mLauncher.getRootView().setTranslationX(-(mLauncher.screenWidth/450));
         mDragViewVisualCenter = getDragViewVisualCenter(d.x, d.y, d.xOffset, d.yOffset, d.dragView,
                 mDragViewVisualCenter);
 

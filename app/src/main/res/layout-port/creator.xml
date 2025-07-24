@@ -19,7 +19,7 @@
         android:id="@+id/creator_bar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.1638"
+        app:layout_constraintDimensionRatio="H,0.142"
         app:layout_constraintBottom_toBottomOf="parent"
         android:scaleType="fitXY"
         android:background="@color/colorPrimaryDark"

@@ -28,8 +28,6 @@
     <integer name="config_dragFadeOutAlpha">80</integer>
     <integer name="config_dragFadeOutDuration">250</integer>
     <integer name="config_cameraDistance">14000</integer>
-    <integer name="all_apps_customize_rows">4</integer>
-    <integer name="all_apps_customize_cols">7</integer>
     <integer name="Hotseat_navi_icon_index">0</integer>
     <integer name="Hotseat_bt_icon_index">1</integer>
     <integer name="Hotseat_radio_icon_index">2</integer>
@@ -49,7 +47,5 @@
     <integer name="apps_widget_pic_sum">3</integer>
     <integer name="hoteseat3G_icon_size">-100</integer>
     <integer name="hoteseatwifi_icon_size">-100</integer>
-    <integer name="numRows_size">6</integer>
-    <integer name="numCols_size">10</integer>
     <integer name="nhotseat_count">7</integer>
 </resources>
