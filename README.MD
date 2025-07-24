@@ -1,6 +1,6 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-Launcher Mod should get along with all resolutions on Android 8 up to 16 (vertical layout hasn't been tested yet and more than likely requires further improvements).
+Launcher Mod should get along with all resolutions on Android 8 up to 16.
 It has been tested on Android 10 with 2000x1200 resolution because this is the only device I own.
 
 IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
