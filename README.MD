@@ -11,7 +11,7 @@ List of modifications:
 - ConstraintLayout which should adapt the launcher to any given resolution and orientation.
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
 - Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Extra screens as well.
-- Launcher creator allowing to adjust launcher layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify on which screen a map PiP should be displayed and which screen should be the main screen.
+- Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify on which screen a map PiP should be displayed and which screen should be the main screen.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
