@@ -30,15 +30,15 @@ For the first installation download `installer.rar`, unpack it in a FAT32 format
 
 <details>
 
-[<img src="./images/1.png" width="50%">](./images/1.png)[<img src="./images/2.png" width="50%">](./images/2.png)
+[<img src="./images/1.png" width="50%">](./images/1.png) [<img src="./images/2.png" width="50%">](./images/2.png)
 [<img src="./images/4.png" width="50%">](./images/4.png)
-[<img src="./images/s1.png" width="50%">](./images/s1.png)[<img src="./images/s2.png" width="50%">](./images/s2.png)
-[<img src="./images/s3.png" width="50%">](./images/s3.png)[<img src="./images/s4.png" width="50%">](./images/s4.png)
-[<img src="./images/s5.png" width="50%">](./images/s5.png)[<img src="./images/s6.png" width="50%">](./images/s6.png)
-[<img src="./images/s7.png" width="50%">](./images/s7.png)[<img src="./images/s8.png" width="50%">](./images/s8.png)
-[<img src="./images/v1.png" width="50%">](./images/v1.png)[<img src="./images/v2.png" width="50%">](./images/v2.png)
-[<img src="./images/v3.png" width="50%">](./images/v3.png)[<img src="./images/v4.png" width="50%">](./images/v4.png)
-[<img src="./images/v5.png" width="50%">](./images/v5.png)[<img src="./images/v6.png" width="50%">](./images/v6.png)
+[<img src="./images/s1.png" width="50%">](./images/s1.png) [<img src="./images/s2.png" width="50%">](./images/s2.png)
+[<img src="./images/s3.png" width="50%">](./images/s3.png) [<img src="./images/s4.png" width="50%">](./images/s4.png)
+[<img src="./images/s5.png" width="50%">](./images/s5.png) [<img src="./images/s6.png" width="50%">](./images/s6.png)
+[<img src="./images/s7.png" width="50%">](./images/s7.png) [<img src="./images/s8.png" width="50%">](./images/s8.png)
+[<img src="./images/v1.png" width="50%">](./images/v1.png) [<img src="./images/v2.png" width="50%">](./images/v2.png)
+[<img src="./images/v3.png" width="50%">](./images/v3.png) [<img src="./images/v4.png" width="50%">](./images/v4.png)
+[<img src="./images/v5.png" width="50%">](./images/v5.png) [<img src="./images/v6.png" width="50%">](./images/v6.png)
 
 </details>
 
