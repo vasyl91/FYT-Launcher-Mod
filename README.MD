@@ -3,7 +3,7 @@
 Launcher Mod should get along with all resolutions on Android 8 up to 16.
 It has been tested on Android 10 with 2000x1200 resolution because this is the only device I own.
 
-IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
+IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
@@ -76,7 +76,7 @@ For the first installation download `installer.rar`, unpack it in a FAT32 format
 
 ## Fuel statistics
 
-To have it working you have to find the canbus codes. Without them enabled widget will show 0 by default. Yo can do it with the help the canbus logging tool (check the guide in the launcher's settings) or look for them manually in the source code as described below.
+To have it working you have to find the canbus codes. Without them enabled widget will show 0 by default. Yo can do it with the help of the canbus logging tool (check the guide in the launcher's settings) or look for them manually in the source code as described below.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_stats.gif)
 
