@@ -10,7 +10,7 @@ IMPORTANT: Note that some of the FYT devices do not support the PiP on the main 
 List of modifications:
 - ConstraintLayout which should adapt the launcher to any given resolution and orientation.
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
-- Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Extra screens as well.
+- Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Reworked screen's grid. Extra screens as well.
 - Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify on which screen a map PiP should be displayed and which screen should be the main screen.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
@@ -21,9 +21,9 @@ List of modifications:
 
 **Google Maps bug**
 
-Google Maps switches its UI to minimal whenever user enters the PiP mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't maintain the "full screen UI" in apps that do support the PiP mode.
+Google Maps switches its UI to minimal whenever the user enters the Picture in Picture mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't provide essential entry points maintaining the "full screen UI" for apps that do support the PiP mode.
 
-The only reliable way I have found to prevent Google Maps to switch its UI to minimal requires root LSPosed and this [LSPosed module](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/v1.1.6/maps_xposed.apk). It successfully forces the app to maintain its full UI inside FYT's PiP(Remember to select Google Maps in the LSPosed "Enable module" section).
+The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/v1.1.6/maps_xposed.apk). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (Remember to select Google Maps in the LSPosed "Enable module" section).
 
 
 Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
@@ -31,7 +31,7 @@ Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized
 
 **Installation:**
 
-For the first installation download `installer.rar`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates or debug versions without use of USB pendrive.
+For the first installation download `installer.rar`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (including the built-in updater) or debug versions without use of USB pendrive.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
