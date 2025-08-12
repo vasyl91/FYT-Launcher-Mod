@@ -19,6 +19,16 @@ List of modifications:
 - Update feature allowing user to perform easy updates in the launcher's settings.
 - Replaced part of deprecated code with the new one.
 
+**Google Maps bug**
+
+Google Maps switches its UI to minimal whenever user enters the PiP mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't maintain the "full screen UI" in apps that do support the PiP mode.
+
+The only reliable way I have found to prevent Google Maps to switch its UI to minimal requires root LSPosed and this [LSPosed module](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/v1.1.6/maps_xposed.apk). It successfully forces the app to maintain its full UI inside FYT's PiP(Remember to select Google Maps in the LSPosed "Enable module" section).
+
+
+Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
+
+
 **Installation:**
 
 For the first installation download `installer.rar`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates or debug versions without use of USB pendrive.
@@ -239,5 +249,5 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 
 [<img src="./images/IActivityManagerJar.png" width="50%">](./images/IActivityManagerJar.png)
 
-13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one fater another).
+13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one after another).
 14. Finally you can use prepared `android.jar` from `android_jar_mod\` directory to run your project as described in `Generating app in Android Studio` caption.
