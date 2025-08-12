@@ -21,7 +21,7 @@ List of modifications:
 
 **Google Maps bug**
 
-Google Maps switches its UI to minimal whenever the user enters the Picture in Picture mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't provide essential entry points maintaining the "full screen UI" for apps that do support the PiP mode.
+Google Maps switches its UI to minimal whenever user enters the Picture in Picture mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't provide essential entry points maintaining the "full screen UI" for apps that do support the PiP mode.
 
 The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/v1.1.6/maps_xposed.apk). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (Remember to select Google Maps in the LSPosed "Enable module" section).
 
