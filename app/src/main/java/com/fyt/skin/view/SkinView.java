@@ -17,30 +17,34 @@ import com.fyt.skin.SkinManager;
 import com.fyt.skin.SkinResources;
 import com.fyt.skin.SkinUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class SkinView {
     List<SkinAttrParms> parms;
-    View view;
+    private WeakReference<View> viewRef;  
 
     public List<SkinAttrParms> getParms() {
         return this.parms;
     }
 
     public SkinView(View view, List<SkinAttrParms> parms) {
-        this.view = view;
+        this.viewRef = new WeakReference<>(view);  
         this.parms = parms;
     }
 
     public View getView() {
-        return this.view;
+        return viewRef != null ? viewRef.get() : null;  
     }
 
     public void setView(View view) {
-        this.view = view;
+        this.viewRef = new WeakReference<>(view);  
     }
 
     public void applySkin() {
+        View view = getView();  
+        if (view == null) return;  
+        
         SkinResources skinResources = SkinUtils.getSkinResources();
         Resources res = LauncherApplication.sApp.getResources();
         for (SkinAttrParms parms : this.parms) {
@@ -60,17 +64,17 @@ public class SkinView {
                     if (attrName.equals("background")) {
                         Object background = skinResources.getBackground(parms.getId());
                         if (background instanceof Integer) {
-                            this.view.setBackgroundColor(((Integer) background).intValue());
+                            view.setBackgroundColor(((Integer) background).intValue());
                             break;
                         } else {
-                            this.view.setBackground((Drawable) background);
+                            view.setBackground((Drawable) background);
                             break;
                         }
                     }
                     break;
                 case -1063571914:
                     if (attrName.equals("textColor")) {
-                        ((TextView) this.view).setTextColor(skinResources.getColorStateList(parms.getId()));
+                        ((TextView) view).setTextColor(skinResources.getColorStateList(parms.getId()));
                         break;
                     }
                     break;
@@ -78,10 +82,10 @@ public class SkinView {
                     if (attrName.equals("src")) {
                         Object src = skinResources.getBackground(parms.getId());
                         if (src instanceof Integer) {
-                            ((ImageView) this.view).setImageDrawable(new ColorDrawable(((Integer) src).intValue()));
+                            ((ImageView) view).setImageDrawable(new ColorDrawable(((Integer) src).intValue()));
                             break;
                         } else {
-                            ((ImageView) this.view).setImageDrawable((Drawable) src);
+                            ((ImageView) view).setImageDrawable((Drawable) src);
                             break;
                         }
                     }
@@ -101,7 +105,7 @@ public class SkinView {
                         } else {
                             PackageManager pm = SkinManager.getContext().getPackageManager();
                             try {
-                                String packageName = (String) this.view.getTag(R.id.str_tag);
+                                String packageName = (String) view.getTag(R.id.str_tag);
                                 if (packageName != null) {
                                     bitmap = Utilities.createIconBitmap_minify(pm.getApplicationIcon(packageName));
                                 }
@@ -121,13 +125,16 @@ public class SkinView {
                     break;
             }
             if (left != null || right != null || top != null || bottom != null) {
-                ((TextView) this.view).setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
+                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
             }
         }
     }
 
     public void clear() {
-        view = null;
+        if (viewRef != null) {
+            viewRef.clear();  // Clear the WeakReference
+            viewRef = null;
+        }
         parms = null;
     }
 }

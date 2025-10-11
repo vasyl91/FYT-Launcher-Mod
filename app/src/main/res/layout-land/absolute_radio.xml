@@ -1,11 +1,11 @@
 <AbsoluteLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/absolute_radio" >
+    android:id="@+id/absolute_radio"
+    android:background="@drawable/custom_bg" >
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/rl_radio"
-            android:background="@drawable/radio_bg"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             app:alignItems="center"

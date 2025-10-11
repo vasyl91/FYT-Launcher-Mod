@@ -129,7 +129,7 @@ public class SkinManager {
         return this.mSkinFactory.getSkinAttribute();
     }
 
-    static SkinManager getInstance() {
+    public static SkinManager getInstance() {
         return Holder.instance;
     }
 

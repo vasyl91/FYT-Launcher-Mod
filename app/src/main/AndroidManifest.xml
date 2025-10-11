@@ -80,7 +80,9 @@
     <uses-permission android:name="com.android.launcher66.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_TASKS" />
+    <uses-permission android:name="android.permission.REAL_GET_TASKS" />
+    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_TASKS" tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS" tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
@@ -113,6 +115,18 @@
         <meta-data
             android:name="compile"
             android:value="2025-01-13 13:40:22/190001066_com.android.launcher66" />
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="FYT Launcher Mod with integrated module that blocks front app from entering minimal UI" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="93" />
+        <meta-data
+            android:name="xposedscope"
+            android:value="com.google.android.apps.maps" />
 
         <activity
             android:clearTaskOnLaunch="true"

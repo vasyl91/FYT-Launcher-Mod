@@ -11,12 +11,10 @@ import android.os.Build;
 import com.android.launcher66.Launcher;
 import com.fyt.widget.Clock;
 import com.fyt.widget.Date;
-import com.fyt.widget.Date2;
 import com.fyt.widget.Day;
 import com.fyt.widget.Modulation;
 import com.fyt.widget.Month;
 import com.fyt.widget.WeekDay;
-import com.fyt.widget.WeekDay2;
 import com.fyt.widget.Year;
 import com.syu.log.LogPreview;
 
@@ -44,17 +42,11 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
                     if (Date.getDate() != null) {
                         Date.getDate().setDate();
                     }
-                    if (Date2.getDate() != null) {
-                        Date2.getDate().setDate();
-                    }
                     if (Modulation.getModulation() != null) {
                         Modulation.getModulation().setModulation();
                     }
                     if (WeekDay.getWeekDay() != null) {
                         WeekDay.getWeekDay().setDate();
-                    }
-                    if (WeekDay2.getWeekDay() != null) {
-                        WeekDay2.getWeekDay().setDate();
                     }
                     if (WeekDay.getWeekDay() != null) {
                         WeekDay.getWeekDay().setDate();

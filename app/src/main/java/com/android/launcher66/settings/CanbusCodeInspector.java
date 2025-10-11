@@ -1,6 +1,6 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsFragmentSecond.CODE_INSPECTOR_TIMEOUT;
+import static com.android.launcher66.settings.Keys.CODE_INSPECTOR_TIMEOUT;
 
 import android.app.Service;
 import android.content.Intent;

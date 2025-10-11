@@ -38,6 +38,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
+import com.syu.util.WindowUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -157,7 +159,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     protected int mCellCountY = 0;
     protected boolean mCenterPagesVertically;
     protected boolean mAllowOverScroll = true;
-    protected int mUnboundedScrollX;
+    public int mUnboundedScrollX;
     protected int[] mTempVisiblePagesRange = new int[2];
     protected boolean mForceDrawAllChildrenNextFrame;
 
@@ -272,6 +274,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     private int mPageSnapAnimDuration = 600;
     private Class<?> mSystemProperties;
     private Method mSystemPropertiesMethodGetInt;
+    protected int mLogicalCurrentPage;
 
     public interface PageSwitchListener {
         void onPageSwitch(View newPage, int newPageIndex);
@@ -317,6 +320,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
      * Initializes various states for this workspace.
      */
     protected void init() {
+        mLogicalCurrentPage = 0;
         mDirtyPageContent = new ArrayList<Boolean>();
         mDirtyPageContent.ensureCapacity(32);
         mScroller = new Scroller(getContext(), new ScrollInterpolator());
@@ -446,10 +450,10 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
     // Convenience methods to get the actual width/height of the PagedView (since it is measured
     // to be larger to account for the minimum possible scale)
-    int getViewportWidth() {
+    public int getViewportWidth() {
         return mViewport.width();
     }
-    int getViewportHeight() {
+    public int getViewportHeight() {
         return mViewport.height();
     }
 
@@ -498,12 +502,22 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
     /**
      * Returns the index of the currently displayed page.
-     *
+     * Value changes to the next page's index when user starts to swipe.
      * @return The index of the currently displayed page.
      */
     public int getCurrentPage() {
+        return mLogicalCurrentPage;
+    }
+
+    /**
+     * Returns the index of the currently visible/moving page.
+     * Value changes to the next page's index onPageEndMoving().
+     * @return The index of the currently displayed page.
+     */
+    public int getCurrentlyUsedPage() {
         return mCurrentPage;
     }
+    
 
     int getNextPage() {
         // return (mNextPage != INVALID_PAGE) ? mNextPage : mCurrentPage;
@@ -567,17 +581,19 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     void setCurrentPage(int currentPage) {
         if (!mScroller.isFinished()) {
             mScroller.abortAnimation();
-            // We need to clean up the next page here to avoid computeScrollHelper from
-            // updating current page on the pass.
             mNextPage = INVALID_PAGE;
         }
-        // don't introduce any checks like mCurrentPage == currentPage here-- if we change the
-        // the default
+        
         if (getChildCount() == 0) {
             return;
         }
+        
         mForceScreenScrolled = true;
         mCurrentPage = Math.max(0, Math.min(currentPage, getPageCount() - 1));
+        
+        // UPDATE: Sync logical page
+        mLogicalCurrentPage = mCurrentPage;
+        
         updateCurrentPageScroll();
         notifyPageSwitchListener();
         invalidate();
@@ -600,6 +616,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         if (mPageIndicator != null && !isReordering(false)) {
             mPageIndicator.setActiveMarker(getNextPage());
         }
+
+        WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
     }
     protected void pageBeginMoving() {
         if (!mIsPageMoving) {
@@ -615,7 +633,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
-    protected boolean isPageMoving() {
+    public boolean isPageMoving() {
         return mIsPageMoving;
     }
 
@@ -736,6 +754,9 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 int scrollX = (int) (mScroller.getCurrX() * (1 / scaleX));
                 scrollTo(scrollX, mScroller.getCurrY());
             }
+
+            WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
+
             invalidate();
             return true;
         } else if (mNextPage != INVALID_PAGE) {
@@ -744,17 +765,28 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             // mCurrentPage = Math.max(0, Math.min(mNextPage, getPageCount() - 1));
             if (mIsSupportCircular && mNextPage == -1) {
                 mCurrentPage = getPageCount() - 1;
+                mLogicalCurrentPage = mCurrentPage;
                 int x = (isLayoutRtl() ? 0 : mCurrentPage) * mViewport.width();
                 scrollTo(x, getScrollY());
             } else if (mIsSupportCircular && mNextPage == getPageCount()) {
                 mCurrentPage = 0;
+                mLogicalCurrentPage = mCurrentPage;
                 int x = (isLayoutRtl() ? (getPageCount() - 1) : mCurrentPage) * mViewport.width();
                 scrollTo(x, getScrollY());
             } else {
                 mCurrentPage = Math.max(0, Math.min(mNextPage, getPageCount() - 1));
+                mLogicalCurrentPage = mCurrentPage;
             }
             mNextPage = INVALID_PAGE;
+            
+            // Only notify if logical page wasn't already updated
+            if (mPageSwitchListener != null) {
+                mPageSwitchListener.onPageSwitch(getPageAt(mCurrentPage), mCurrentPage);
+            }
+
             notifyPageSwitchListener();
+
+            WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
 
             // Load the associated pages if necessary
             if (mDeferLoadAssociatedPagesUntilScrollCompletes) {
@@ -1511,11 +1543,9 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
      * user moves their touch point too far.
      */
     protected void determineScrollingStart(MotionEvent ev, float touchSlopScale) {
-        // Disallow scrolling if we don't have a valid pointer index
         final int pointerIndex = ev.findPointerIndex(mActivePointerId);
         if (pointerIndex == -1) return;
 
-        // Disallow scrolling if we started the gesture from outside the viewport
         final float x = ev.getX(pointerIndex);
         final float y = ev.getY(pointerIndex);
         if (!isTouchPointInViewportWithBuffer((int) x, (int) y)) return;
@@ -1530,7 +1560,6 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
         if (xMoved || xPaged || yMoved) {
             if (mUsePagingTouchSlop ? xPaged : xMoved) {
-                // Scroll if the user moved far enough along the X axis
                 mTouchState = TOUCH_STATE_SCROLLING;
                 mTotalMotionX += Math.abs(mLastMotionX - x);
                 mLastMotionX = x;
@@ -1538,6 +1567,26 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 mTouchX = getViewportOffsetX() + getScrollX();
                 mSmoothingTime = System.nanoTime() / NANOTIME_DIV;
                 pageBeginMoving();
+                
+                // UPDATE: Predict and set logical page based on scroll direction
+                predictLogicalPageFromScroll(x);
+            }
+        }
+    }
+
+    protected void predictLogicalPageFromScroll(float currentX) {
+        float deltaX = mDownMotionX - currentX;
+        final boolean isRtl = isLayoutRtl();
+        boolean isDeltaXLeft = isRtl ? deltaX < 0 : deltaX > 0;
+        
+        // Only predict if movement is significant enough
+        if (Math.abs(deltaX) > mTouchSlop * 2) {
+            if (isDeltaXLeft && mCurrentPage > (mIsSupportCircular ? -1 : 0)) {
+                // Scrolling left (or right in RTL), predict previous page
+                setLogicalCurrentPage(mCurrentPage - 1);
+            } else if (!isDeltaXLeft && mCurrentPage < (mIsSupportCircular ? getChildCount() : getChildCount() - 1)) {
+                // Scrolling right (or left in RTL), predict next page  
+                setLogicalCurrentPage(mCurrentPage + 1);
             }
         }
     }
@@ -1923,8 +1972,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 int velocityX = (int) velocityTracker.getXVelocity(activePointerId);
                 final int deltaX = (int) (x - mDownMotionX);
                 final int pageWidth = getPageAt(mCurrentPage).getMeasuredWidth();
-                boolean isSignificantMove = Math.abs(deltaX) > pageWidth *
-                        SIGNIFICANT_MOVE_THRESHOLD;
+                boolean isSignificantMove = Math.abs(deltaX) > pageWidth * SIGNIFICANT_MOVE_THRESHOLD;
 
                 mTotalMotionX += Math.abs(mLastMotionX + mLastMotionXRemainder - x);
 
@@ -1932,9 +1980,6 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                         Math.abs(velocityX) > mFlingThresholdVelocity;
 
                 if (!mFreeScroll) {
-                    // In the case that the page is moved far to one direction and then is flung
-                    // in the opposite direction, we use a threshold to determine whether we should
-                    // just return to the starting page, or if we should skip one further.
                     boolean returnToOriginalPage = false;
                     if (Math.abs(deltaX) > pageWidth * RETURN_TO_ORIGINAL_PAGE_THRESHOLD &&
                             Math.signum(velocityX) != Math.signum(deltaX) && isFling) {
@@ -1942,30 +1987,35 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                     }
 
                     int finalPage;
-                    // We give flings precedence over large moves, which is why we short-circuit our
-                    // test for a large move if a fling has been registered. That is, a large
-                    // move to the left and fling to the right will register as a fling to the right.
                     final boolean isRtl = isLayoutRtl();
                     boolean isDeltaXLeft = isRtl ? deltaX > 0 : deltaX < 0;
                     boolean isVelocityXLeft = isRtl ? velocityX > 0 : velocityX < 0;
+                    
                     if (((isSignificantMove && !isDeltaXLeft && !isFling) ||
                             (isFling && !isVelocityXLeft)) && mCurrentPage > (mIsSupportCircular ? -1 : 0)) {
                         finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage - 1;
+                        
+                        // UPDATE: Set logical page immediately
+                        setLogicalCurrentPage(finalPage);
                         snapToPageWithVelocity(finalPage, velocityX);
+                        
                     } else if (((isSignificantMove && isDeltaXLeft && !isFling) ||
                             (isFling && isVelocityXLeft)) &&
                             mCurrentPage < (mIsSupportCircular ? getChildCount() : getChildCount() - 1)) {
                         finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage + 1;
+                        
+                        // UPDATE: Set logical page immediately
+                        setLogicalCurrentPage(finalPage);
                         snapToPageWithVelocity(finalPage, velocityX);
+                        
                     } else {
                         snapToDestination();
                     }
                 } else if (mTouchState == TOUCH_STATE_PREV_PAGE) {
-                    // at this point we have not moved beyond the touch slop
-                    // (otherwise mTouchState would be TOUCH_STATE_SCROLLING), so
-                    // we can just page
                     int nextPage = Math.max(0, mCurrentPage - 1);
                     if (nextPage != mCurrentPage) {
+                        // UPDATE: Set logical page immediately
+                        setLogicalCurrentPage(nextPage);
                         snapToPage(nextPage);
                     } else {
                         snapToDestination();
@@ -1984,11 +2034,10 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                     invalidate();
                 }
             } else if (mTouchState == TOUCH_STATE_NEXT_PAGE) {
-                // at this point we have not moved beyond the touch slop
-                // (otherwise mTouchState would be TOUCH_STATE_SCROLLING), so
-                // we can just page
                 int nextPage = Math.min(getChildCount() - 1, mCurrentPage + 1);
                 if (nextPage != mCurrentPage) {
+                    // UPDATE: Set logical page immediately
+                    setLogicalCurrentPage(nextPage);
                     snapToPage(nextPage);
                 } else {
                     snapToDestination();
@@ -2043,6 +2092,21 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
 
         return true;
+    }
+
+    protected void setLogicalCurrentPage(int page) {
+        int oldLogicalPage = mLogicalCurrentPage;
+        mLogicalCurrentPage = Math.max(0, Math.min(page, getPageCount() - 1));
+        
+        // Notify listeners immediately of logical page change
+        if (oldLogicalPage != mLogicalCurrentPage && mPageSwitchListener != null) {
+            mPageSwitchListener.onPageSwitch(getPageAt(mLogicalCurrentPage), mLogicalCurrentPage);
+        }
+        
+        // Update page indicator immediately
+        if (mPageIndicator != null && !isReordering(false)) {
+            mPageIndicator.setActiveMarker(mLogicalCurrentPage);
+        }
     }
 
     public void onFlingToDelete(View v) {}
@@ -2302,11 +2366,19 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     }
 
     public void scrollLeft() {
-        if (getNextPage() > 0) snapToPage(getNextPage() - 1);
+        int targetPage = getNextPage() - 1;
+        if (targetPage >= 0) {
+            setLogicalCurrentPage(targetPage);
+            snapToPage(targetPage);
+        }
     }
 
     public void scrollRight() {
-        if (getNextPage() < getChildCount() -1) snapToPage(getNextPage() + 1);
+        int targetPage = getNextPage() + 1;
+        if (targetPage < getChildCount()) {
+            setLogicalCurrentPage(targetPage);
+            snapToPage(targetPage);
+        }
     }
 
     public int getPageForView(View v) {

@@ -8,10 +8,11 @@ IMPORTANT: Note that some of the FYT devices do not support the PiP on the main 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
 List of modifications:
+- Up to four PiPs on the single screen or on multiple screens depending on user's choice.
 - ConstraintLayout which should adapt the launcher to any given resolution and orientation.
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
 - Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Reworked screen's grid. Extra screens as well.
-- Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify on which screen a map PiP should be displayed and which screen should be the main screen.
+- Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify which screen should be the main screen.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
@@ -222,7 +223,7 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 4. Install Termux terminal, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get some error with the last one).
 
 
-## Modifying android.jar
+## Modifying android.jar (Deprecated since 1.1.7)
 
 1. Download already modified [android.jar](https://github.com/Reginer/aosp-android-jar) for the android version you want to work on.
 2. Download and run [Recaf](https://github.com/Col-E/Recaf).

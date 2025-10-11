@@ -276,8 +276,7 @@ public class AllAppsList {
     private void setDefaultNavi() {
         try {
             String naviPackage = SystemProperties.get("persist.sys.navi.packagename", "");
-            PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
-            if ((naviPackage.equals("") || naviPackage == null) && Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+            if ((naviPackage.equals("") || naviPackage == null) && Helpers.isPackageInstalled(FytPackage.GaodeACTION)) {
                 CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, FytPackage.GaodeACTION);
             }
         } catch (Exception e) {

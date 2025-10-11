@@ -61,6 +61,8 @@
         app:layout_constraintHeight_percent="0.1638"
         app:layout_constraintWidth_percent="0.8795"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/iv_list_bg"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/rl_allapps"  />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

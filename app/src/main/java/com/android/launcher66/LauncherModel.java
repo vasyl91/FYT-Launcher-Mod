@@ -39,6 +39,7 @@ import android.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.InstallWidgetReceiver.WidgetMimeTypeHandlerData;
+import com.android.launcher66.settings.Keys;
 
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
@@ -1241,7 +1242,7 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     /** Loads the workspace screens db into a map of Rank -> ScreenId */
-    private static TreeMap<Integer, Long> loadWorkspaceScreensDb(Context context) {
+    public static TreeMap<Integer, Long> loadWorkspaceScreensDb(Context context) {
         final ContentResolver contentResolver = context.getContentResolver();
         final Uri screensUri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
         final Cursor sc = contentResolver.query(screensUri, null, null, null, null);
@@ -2266,7 +2267,7 @@ public class LauncherModel extends BroadcastReceiver {
             ArrayList<Long> orderedScreenIds = new ArrayList<Long>();
             synchronized (sBgLock) {
                 SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                boolean userLayoutBool = mPrefs.getBoolean("user_layout", false);
+                boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
                 if (userLayoutBool) {
                     appWidgets.addAll(sBgAppWidgets);
                     folders.putAll(sBgFolders);

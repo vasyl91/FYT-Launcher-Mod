@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.SystemProperties;
 import android.util.AttributeSet;
@@ -131,8 +130,7 @@ public class AppListView extends ListView {
         if (arg == 8) {
             if (Config.EXISTAMPAUTO) {
                 String str = SystemProperties.get("persist.sys.navi.packagename", "");
-                PackageManager packageManager = context.getPackageManager();
-                if ((str.equals("") || str == null || str.equals(FytPackage.GaodeACTION)) && Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+                if ((str.equals("") || str == null || str.equals(FytPackage.GaodeACTION)) && Helpers.isPackageInstalled(FytPackage.GaodeACTION)) {
                     SystemProperties.set("persist.sys.navi.packagename", FytPackage.GaodeACTION);
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));

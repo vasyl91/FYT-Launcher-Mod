@@ -76,6 +76,23 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     }
 
     public void setupLp(CellLayout.LayoutParams lp, View child) {
+        CellLayout parent = (CellLayout) getParent();
+        
+        // Check if this is a user widget - preserve exact positioning
+        if (parent != null && parent.isUserWidget(child)) {
+            // For user widgets, preserve the exact position and size
+            int[] position = parent.getUserWidgetPosition(child);
+            if (position != null) {
+                lp.x = position[0];
+                lp.y = position[1];
+                lp.width = position[2];
+                lp.height = position[3];
+            }
+            // Don't recalculate based on cells for user widgets
+            return;
+        }
+        
+        // Normal setup for other views
         if (child instanceof LauncherAppWidgetHostView) {
             final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
             AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
@@ -120,6 +137,18 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
 
     public void measureChild(View child) {
         CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+        CellLayout parent = (CellLayout) getParent();
+        
+        // Check if this is a user widget - preserve exact sizing
+        if (parent != null && parent.isUserWidget(child)) {
+            // Use the exact width and height already set
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
+            int childheightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
+            child.measure(childWidthMeasureSpec, childheightMeasureSpec);
+            return;
+        }
+        
+        // Normal measurement for other views
         if (!lp.isFullscreen) {
             final DeviceProfile profile = mLauncher.getDeviceProfile();
 
@@ -159,6 +188,15 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
                 CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+
+                CellLayout parent = (CellLayout) getParent();
+                if (parent != null && parent.isUserWidget(child)) {
+                    // Use the exact stored position
+                    int childLeft = lp.x;
+                    int childTop = lp.y;
+                    child.layout(childLeft, childTop, childLeft + lp.width, childTop + lp.height);
+                    continue;
+                }
 
                 if (child instanceof LauncherAppWidgetHostView) {
                     final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;

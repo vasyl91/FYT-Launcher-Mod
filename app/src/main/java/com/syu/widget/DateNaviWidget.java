@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -129,8 +128,7 @@ public class DateNaviWidget extends Widget {
     @Override
     void addLisenter(RemoteViews views) {
         try {
-            PackageManager packageManager = this.mContext.getPackageManager();
-            if (Helpers.isPackageInstalled(FytPackage.GaodeACTION, packageManager)) {
+            if (Helpers.isPackageInstalled(FytPackage.GaodeACTION)) {
                 Intent intent = new Intent();
                 intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
                 PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);

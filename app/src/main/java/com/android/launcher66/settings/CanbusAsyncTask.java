@@ -44,8 +44,8 @@ public class CanbusAsyncTask extends AsyncTask<Void, Void, Void> {
     }
     
     public void launchCanbus() {
-        boolean userStats = mPrefs.getBoolean("user_stats", false);
-        boolean userLayout = mPrefs.getBoolean("user_layout", false);
+        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         if (userLayout && userStats) {
             if (DataCanbus.DATA[1000] == 76 || DataCanbus.DATA[1000] == 67) {
                 if (DataCanbus.DATA[11] != 13 && DataCanbus.DATA[11] != 14 && FinalShare.CUSTOMER_ID != 31) {

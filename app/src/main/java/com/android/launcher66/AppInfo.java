@@ -17,12 +17,12 @@ public class AppInfo extends ItemInfo {
     static final int DOWNLOADED_FLAG = 1;
     private static final String TAG = "launcher66.AppInfo";
     static final int UPDATED_SYSTEM_APP_FLAG = 2;
-    ComponentName componentName;
+    public ComponentName componentName;
     long firstInstallTime;
     int flags;
     public Bitmap iconBitmap;
     private int iconResid;
-    Intent intent;
+    public Intent intent;
 
     public int getIconResid() {
         return this.iconResid;

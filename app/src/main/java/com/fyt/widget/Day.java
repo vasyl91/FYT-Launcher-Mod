@@ -3,11 +3,12 @@ package com.fyt.widget;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.syu.widget.util.TimeUtil;
 
-public class Day extends TextView {
+public class Day extends AppCompatTextView {
     public static Day mDate;
     private IntentFilter filter;
     private final Context mContext;

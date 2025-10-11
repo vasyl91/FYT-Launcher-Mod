@@ -155,8 +155,9 @@
     <item type="id" name="absolute_time" />   
     <item type="id" name="absolute_radio" />   
     <item type="id" name="absolute_music" /> 
-    <item type="id" name="creator_second" />
-    <item type="id" name="creator_stats" />
+    <item type="id" name="creator_first_screen" />
+    <item type="id" name="creator_other_screens" />
+    <item type="id" name="creator_stats_screen" />
     <item type="id" name="creator_bar" />
     <item type="id" name="rectangle_name" />
     <item type="id" name="top_up" />

@@ -3,12 +3,13 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Typeface;
+import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -26,42 +27,49 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import com.android.launcher66.R;
 
-public class DrawViewAppStats extends View implements View.OnClickListener {
+import java.lang.ref.WeakReference;
 
-    private Context mContext;
-    private final Helpers helpers = new Helpers();
+public class DrawViewAppStats extends View implements View.OnClickListener {
+    
     private View barTop;
     private View barBottom;
 
-    Point[] point = new Point[4];
-    int diffX = -1, diffY = -1;
-    Paint paint;
-    Paint textStatsPaint;
-    Paint statsPaint;
-    Paint statsWindowPaint;
-    Canvas canvas;  
-    boolean isInsideStats = false;
+    private Point[] point = new Point[4];
+    private int diffX = -1, diffY = -1;
+    private Paint paint;
+    private Paint statsWindowPaint;
+    private Canvas canvas;  
+    private boolean isInsideStats = false;
 
-    int margin;
-    int statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, statsWidth, statsHeight;
+    private int margin;
+    private int statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, statsWidth, statsHeight;
 
-    int minBorderX, minBorderY, maxBorderX, maxBorderY;
+    private int minBorderX, minBorderY, maxBorderX, maxBorderY;
 
-    int statsMinX = -1, statsMaxX = -1, statsMinY = -1, statsMaxY = -1;
-    int coordinatesSize, nameTextSize;
+    private int statsMinX = -1, statsMaxX = -1, statsMinY = -1, statsMaxY = -1;
+    private int coordinatesSize, nameTextSize;
+    private float coordinatesMargin;
 
     private SharedPreferences sharedPrefs;
     private Button mConfirmLayout;
     private Button mConfirmLayoutBottom;
     private View mRootView;
     private LayoutInflater mInflater;
+    private WeakReference<Context> mContextWeakRef;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private Runnable mInvalidateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            invalidate();
+        }
+    };
 
     public DrawViewAppStats(LayoutInflater inflater, View rootView, Context context) {
         super(context);
+        this.mContextWeakRef = new WeakReference<>(context);
         this.mInflater = inflater;
         this.mRootView = rootView;
-        this.mContext = context;
-        init(inflater, rootView, context);
+        initUi(rootView);
     }
 
 
@@ -72,9 +80,13 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     public DrawViewAppStats(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
+
+    private Context getSafeContext() {
+        return mContextWeakRef != null ? mContextWeakRef.get() : null;
+    }
     
-    private void init(LayoutInflater inflater, View rootView, Context context) {
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private void initUi(View rootView) {
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getSafeContext());
 
         margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
 
@@ -149,7 +161,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         statsBottomLeftX = statsTopLeftX;
         statsBottomLeftY = statsTopLeftY + statsHeight;
 
-        initStatsRect(context, new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 0, 1, 2, 3});
+        initStatsRect(getSafeContext(), new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 0, 1, 2, 3});
     }
 
     public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
@@ -222,6 +234,16 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     }
 
     @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacks(mInvalidateRunnable);
+        setOnKeyListener(null);
+        mContextWeakRef = null;
+        mInflater = null;
+        mRootView = null;
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         paint.setAntiAlias(true);
         paint.setDither(true);
@@ -236,24 +258,91 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         statsWindowPaint.setColor(Color.parseColor("#0ca7f5"));
         statsWindowPaint.setAlpha(128);
 
-        textStatsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        textStatsPaint.setColor(Color.WHITE); 
-        textStatsPaint.setTextSize(coordinatesSize - 8); 
-        textStatsPaint.setTextAlign(Paint.Align.CENTER);
-
-        statsPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        statsPaint.setColor(Color.WHITE); 
-        statsPaint.setTextSize(nameTextSize - 8); 
-        statsPaint.setTextAlign(Paint.Align.CENTER);
-        statsPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
         statsMinX = Math.min(point[0].x, point[2].x);
         statsMaxX = Math.max(point[0].x, point[2].x);
         statsMinY = Math.min(point[0].y, point[2].y);
         statsMaxY = Math.max(point[0].y, point[2].y);
         canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint); 
-        drawStatsCoordinates(canvas, 0, 1, 2, 3, mContext.getString(R.string.stats_category));
+        
+        RectF r = rectFromPoints(point[0], point[1], point[2], point[3]);
+        
+        // coordinates overlay
+        drawCoordinates(canvas, r);
+
+        // center label
+        drawLabel(canvas, r, mContext.getString(R.string.stats_category));
     }
+
+    private void drawLabel(Canvas canvas, RectF r, String label) {
+        if (label == null) return;
+        
+        // Create text paint
+        Paint txt = new Paint(Paint.ANTI_ALIAS_FLAG);
+        txt.setColor(Color.BLACK);
+        txt.setTextSize(nameTextSize);
+        txt.setShadowLayer(2, 1, 1, Color.WHITE);
+        
+        float textWidth = txt.measureText(label);
+        float cx = (r.left + r.right) / 2f;
+        float cy = (r.top + r.bottom) / 2f + nameTextSize / 3f;
+        
+        // Center text if it fits
+        canvas.drawText(label, cx - textWidth / 2f, cy, txt);
+    }
+
+    // Draw numeric coordinates around the rectangle (top, left, bottom, right)
+    private void drawCoordinates(Canvas canvas, RectF r) {
+        if (r == null || r.isEmpty()) return;
+
+        // Text paint for coordinates
+        Paint coordinatesText = new Paint(Paint.ANTI_ALIAS_FLAG);
+        coordinatesText.setColor(Color.BLACK);
+        // Slightly smaller than the name text size for readability
+        float size = Math.max(10f, nameTextSize * 0.6f);
+        coordinatesText.setTextSize(size);
+        coordinatesText.setShadowLayer(2, 1, 1, Color.WHITE);
+
+        // Values to display
+        String topVal = String.valueOf((int) r.top);
+        String leftVal = String.valueOf((int) r.left);
+        String bottomVal = String.valueOf((int) r.bottom);
+        String rightVal = String.valueOf((int) r.right);
+
+        // Basic padding in dp
+        float pad = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+
+        // Common positions
+        float cx = (r.left + r.right) / 2f;
+        float midY = (r.top + r.bottom) / 2f + coordinatesText.getTextSize() / 3f; // vertical centering tweak
+
+        // --- Top --- (centered on top edge, slightly inside)
+        float topW = coordinatesText.measureText(topVal);
+        canvas.drawText(topVal, cx - topW / 2f, r.top + coordinatesText.getTextSize() - pad, coordinatesText);
+
+        // --- Bottom --- (centered on bottom edge, slightly above the border)
+        float bottomW = coordinatesText.measureText(bottomVal);
+        canvas.drawText(bottomVal, cx - bottomW / 2f, r.bottom - pad, coordinatesText);
+
+        // --- Left --- (inside left edge with padding)
+        float leftW = coordinatesText.measureText(leftVal);
+        canvas.drawText(leftVal, r.left + pad, midY, coordinatesText);
+
+        // --- Right --- (inside right edge with padding)
+        float rightW = coordinatesText.measureText(rightVal);
+        canvas.drawText(rightVal, r.right - rightW - pad, midY, coordinatesText);
+
+        coordinatesMargin = leftW + rightW;
+    }
+
+    private RectF rectFromPoints(Point ptl, Point ptr, Point pbr, Point pbl) {
+        if (ptl == null || ptr == null || pbr == null || pbl == null) return new RectF();
+        float left = Math.min(ptl.x, pbl.x);
+        float right = Math.max(ptr.x, pbr.x);
+        float top = Math.min(ptl.y, ptr.y);
+        float bottom = Math.max(pbl.y, pbr.y);
+        if (right <= left || bottom <= top) return new RectF();
+        return new RectF(left, top, right, bottom);
+    }    
 
     public boolean onTouchEvent(MotionEvent event) {
         int eventaction = event.getAction();
@@ -398,57 +487,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         point[values[11]] = new Point();
         point[values[11]].x = bottomLeftX; 
         point[values[11]].y = bottomLeftY;
-    }
-
-    private void drawStatsCoordinates(Canvas canvas, int topLeft, int topRight, int bottomRight, int bottomLeft, String name) {
-        // top
-        String adjustedTop = String.valueOf(point[topLeft].y);
-        if (barBottom.getVisibility() == View.GONE) {
-            adjustedTop = String.valueOf(point[topLeft].y + SettingsActivity.barHeight);
-        } else {
-            adjustedTop = String.valueOf(point[topLeft].y);
-        }
-        canvas.drawText(adjustedTop, 
-            (point[topLeft].x + (point[topRight].x - point[topLeft].x) / 2.0f), 
-            (point[topLeft].y + (coordinatesSize - 15)), 
-            textStatsPaint);
-        // left
-        int padL;
-        if (point[bottomLeft].x < 9) {
-            padL = coordinatesSize / 2;
-        } else if (10 <= point[bottomLeft].x && point[bottomLeft].x < 99) {
-            padL = (coordinatesSize / 2) + 5;
-        } else if (100 <= point[bottomLeft].x && point[bottomLeft].x < 999) {
-            padL = (coordinatesSize / 2) + 20;
-        } else {
-            padL = (coordinatesSize / 2) + 25;
-        }
-        canvas.drawText(String.valueOf(point[bottomLeft].x), 
-            (point[bottomLeft].x + padL),
-            (point[bottomLeft].y - (point[bottomLeft].y - point[topLeft].y) / 2.0f) + coordinatesSize / 2.5f, 
-            textStatsPaint);
-        // bottom
-        String adjustedBottom = String.valueOf(point[bottomLeft].y);
-        if (barBottom.getVisibility() == View.GONE) {
-            adjustedBottom = String.valueOf(point[bottomLeft].y + SettingsActivity.barHeight);
-        } else {
-            adjustedBottom = String.valueOf(point[bottomLeft].y);
-        }
-        canvas.drawText(adjustedBottom, 
-            (point[bottomRight].x - (point[bottomRight].x - point[bottomLeft].x) / 2.0f), 
-            (point[bottomLeft].y), 
-            textStatsPaint);
-        // right
-        int padR = (coordinatesSize / 2) + 25;
-        canvas.drawText(String.valueOf(point[bottomRight].x), 
-            point[bottomRight].x - padR, 
-            (point[bottomRight].y - (point[bottomRight].y - point[topRight].y) / 2.0f) + coordinatesSize / 2.5f, 
-            textStatsPaint);
-        // widget name
-        canvas.drawText(name, 
-            (point[bottomRight].x - (point[bottomRight].x - point[bottomLeft].x) / 2.0f), 
-            (point[bottomLeft].y - (point[bottomLeft].y - point[topLeft].y) / 2.0f) + coordinatesSize / 3.5f, 
-            statsPaint);
     }
 
     private void moveStatsRect(int topLeft, int topRight, int bottomRight, int bottomLeft) {

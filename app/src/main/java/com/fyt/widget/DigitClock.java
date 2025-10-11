@@ -180,6 +180,16 @@ public class DigitClock extends RelativeLayout {
         this.timeHandler.post(this.timeRunnable);
     }
 
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        removeClockCallbacks();
+    }
+
+    public void removeClockCallbacks() {
+        timeHandler.removeCallbacks(timeRunnable);
+    }
+
     private void init(Context context) {
     }
 }

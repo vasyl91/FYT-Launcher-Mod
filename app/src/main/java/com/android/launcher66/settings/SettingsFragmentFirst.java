@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.InputFilter;
@@ -93,33 +94,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private ProgressDialog progressDialog;
     private CustomPreferenceColorAdapter customAdapter;
     private static final String TAG = "SettingsFragmentFirst";
-    private static final String DOWNLOAD_PERCENTAGE = "download_percentage";
-    private static final String STATUSBAR = "transparent_statusbar";
-    private static final String USER_LAYOUT = "user_layout";
-    private static final String USER_INIT_LAYOUT = "user_init_layout";
-    private static final String CREATOR_FIRST = "launcher_creator_first";
-    private static final String FYT_DATA = "fyt_data"; 
-    private static final String DEVICE_SETTINGS = "device_settings";
-    private static final String NOTIFICATION_SETTINGS = "notification_settings";
-    private static final String ACCESSIBILITY_SETTINGS = "accessibility_settings";
-    private static final String WALLPAPER_PICKER = "wallpaper_picker"; 
-    private static final String WALLPAPER_PICKER_SOURCE = "wallpaper_picker_source"; 
-    private static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
-    private static final String WORKSPACE_TEXT_SIZE = "workspace_textSize"; 
-    private static final String NIGHT_MODE = "night_mode";     
-    private static final String DEFAULT_WALLPAPERS = "default_wallpapers";
-    private static final String SAVE_DAY_WALLPAPER = "save_day_wallpaper";    
-    private static final String SAVE_NIGHT_WALLPAPER = "save_night_wallpaper";
-    private static final String BRIGHTNESS_PREF = "brightness";
-    private static final String DAY_SEEK_BAR = "day_seek_bar";
-    private static final String NIGHT_SEEK_BAR = "night_seek_bar";
-    private static final String SUNRISE_CORRECTION = "sunrise_correction";
-    private static final String SUNSET_CORRECTION = "sunset_correction";
-    private static final String RESET_NIGHT_MODE = "reset_night_mode";
-    private static final String LOGCAT_SERVICE = "logcat_service";
-    private static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
-    public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
-    private static final String APP_VERSION_UPDATE = "app_version_update";
     private int padding;
     private boolean initLayout;
     private boolean userLayoutBool;
@@ -203,9 +177,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
-                userStatusbarBool = sharedPrefs.getBoolean(STATUSBAR, false);
-                userFytBool = sharedPrefs.getBoolean(FYT_DATA, false);
+                userLayoutBool = sharedPrefs.getBoolean(Keys.USER_LAYOUT, false);
+                userStatusbarBool = sharedPrefs.getBoolean(Keys.STATUSBAR, false);
+                userFytBool = sharedPrefs.getBoolean(Keys.FYT_DATA, false);
                 if (initLayout != userLayoutBool) {
                     helpers.setLayoutTypeChanged(true);
                 }
@@ -215,10 +189,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 } else {
                     helpers.setFirstPreferenceWindow(true);
                     setBrightness();
-                }
+                }                
+                long updateOnce = SystemClock.uptimeMillis();
+                Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
+                mContext.getSharedPreferences("LauncherPrefs", Context.MODE_PRIVATE)
+                    .edit()
+                    .putLong(Keys.UPDATE_USER_PAGE, updateOnce)
+                    .apply();
                 requireActivity().finish();
-                Intent intentUpdateUserPage = new Intent("update.user.page");
-                mContext.sendBroadcast(intentUpdateUserPage);
             }
         };
         
@@ -231,71 +209,71 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         helpers.setLayoutTypeChanged(false);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
-        mPropertyChangeClass.addObserver(DOWNLOAD_PERCENTAGE, this);
-        initStatusbar = sharedPrefs.getBoolean(STATUSBAR, false);
-        initLayout = sharedPrefs.getBoolean(USER_INIT_LAYOUT, false);
-        initFyt = sharedPrefs.getBoolean(FYT_DATA, false);
+        mPropertyChangeClass.addObserver(Keys.DOWNLOAD_PERCENTAGE, this);
+        initStatusbar = sharedPrefs.getBoolean(Keys.STATUSBAR, false);
+        initLayout = sharedPrefs.getBoolean(Keys.USER_INIT_LAYOUT, false);
+        initFyt = sharedPrefs.getBoolean(Keys.FYT_DATA, false);
         addPreferencesFromResource(R.xml.launcher_preferences);
         padding = SettingsActivity.dialogPadding;
-        Preference transparentStatusbar = findPreference(STATUSBAR);
-        Preference userLayout = findPreference(USER_LAYOUT);
-        settingsSecondFragment = findPreference(CREATOR_FIRST);
-        Preference fytData = findPreference(FYT_DATA);
-        Preference deviceSettings = findPreference(DEVICE_SETTINGS);
-        Preference notificationPreference = findPreference(NOTIFICATION_SETTINGS);
-        Preference accessibilityPreference = findPreference(ACCESSIBILITY_SETTINGS);
-        Preference wallpaperPicker = findPreference(WALLPAPER_PICKER);
-        Preference wallpaperPickerSource = findPreference(WALLPAPER_PICKER_SOURCE);
+        Preference transparentStatusbar = findPreference(Keys.STATUSBAR);
+        Preference userLayout = findPreference(Keys.USER_LAYOUT);
+        settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
+        Preference fytData = findPreference(Keys.FYT_DATA);
+        Preference deviceSettings = findPreference(Keys.DEVICE_SETTINGS);
+        Preference notificationPreference = findPreference(Keys.NOTIFICATION_SETTINGS);
+        Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
+        Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
+        Preference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
 
-        allAppsTextSize = findPreference(ALL_APPS_TEXT_SIZE);
-        String allAppsTextSizeStr = sharedPrefs.getString(ALL_APPS_TEXT_SIZE, "18");
+        allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
+        String allAppsTextSizeStr = sharedPrefs.getString(Keys.ALL_APPS_TEXT_SIZE, "18");
         allAppsTextSize.setSummary(allAppsTextSizeStr);
         dialogAllAppsTextSizeEditText();
 
 
-        workspaceTextSize = findPreference(WORKSPACE_TEXT_SIZE);
-        String workspaceTextSizeStr = sharedPrefs.getString(WORKSPACE_TEXT_SIZE, "28");
+        workspaceTextSize = findPreference(Keys.WORKSPACE_TEXT_SIZE);
+        String workspaceTextSizeStr = sharedPrefs.getString(Keys.WORKSPACE_TEXT_SIZE, "28");
         workspaceTextSize.setSummary(workspaceTextSizeStr);
         dialogWorkspaceTextSizeEditText();
 
-        nightMode = findPreference(NIGHT_MODE);
+        nightMode = findPreference(Keys.NIGHT_MODE);
         wallpapersCategory = findPreference("wallpapers_category");
-        defaultWallpapers = findPreference(DEFAULT_WALLPAPERS);
-        saveDayWallpaper = findPreference(SAVE_DAY_WALLPAPER);
-        saveNightWallpaper = findPreference(SAVE_NIGHT_WALLPAPER);        
-        brightnessPref = findPreference(BRIGHTNESS_PREF);
+        defaultWallpapers = findPreference(Keys.DEFAULT_WALLPAPERS);
+        saveDayWallpaper = findPreference(Keys.SAVE_DAY_WALLPAPER);
+        saveNightWallpaper = findPreference(Keys.SAVE_NIGHT_WALLPAPER);
+        brightnessPref = findPreference(Keys.BRIGHTNESS_PREF);
         brightnessCategory = findPreference("brightness_category");
         dayTitle = findPreference("day_title");
         nightTitle = findPreference("night_title");
-        daySeekBar = findPreference(DAY_SEEK_BAR);
-        nightSeekBar = findPreference(NIGHT_SEEK_BAR);
+        daySeekBar = findPreference(Keys.DAY_SEEK_BAR);
+        nightSeekBar = findPreference(Keys.NIGHT_SEEK_BAR);
         correctionCategory = findPreference("correction_category");
         sunriseTitleAndSummary = findPreference("sunrise_title_and_summary");
         sunsetTitleAndSummary = findPreference("sunset_title_and_summary");
-        sunriseCorrectionSeekBar = findPreference(SUNRISE_CORRECTION);
-        sunsetCorrectionSeekBar = findPreference(SUNSET_CORRECTION);
+        sunriseCorrectionSeekBar = findPreference(Keys.SUNRISE_CORRECTION);
+        sunsetCorrectionSeekBar = findPreference(Keys.SUNSET_CORRECTION);
         resetNightModeCategory = findPreference("reset_night_mode_category");
-        resetNightMode = findPreference(RESET_NIGHT_MODE);
+        resetNightMode = findPreference(Keys.RESET_NIGHT_MODE);
 
         PreferenceCategory logcatCategory = findPreference("logcat_category");
-        logcatService = findPreference(LOGCAT_SERVICE);
-        logcatRun = findPreference(LOGCAT_SERVICE_RUN);
-        logcatServiceTimeout = findPreference(LOGCAT_SERVICE_TIMEOUT);
-        String logcatServiceTimeoutStr = sharedPrefs.getString(LOGCAT_SERVICE_TIMEOUT, "30");
+        logcatService = findPreference(Keys.LOGCAT_SERVICE);
+        logcatRun = findPreference(Keys.LOGCAT_SERVICE_RUN);
+        logcatServiceTimeout = findPreference(Keys.LOGCAT_SERVICE_TIMEOUT);
+        String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
         logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
         logcatServiceTimeoutEditText();
         boolean isDebug = BuildConfig.DEBUG;
 
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
-        Preference appVersionUpdate = findPreference(APP_VERSION_UPDATE);
+        Preference appVersionUpdate = findPreference(Keys.APP_VERSION_UPDATE);
 
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
         }
         if (settingsSecondFragment != null) {
             settingsSecondFragment.setOnPreferenceClickListener(this);
-            userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
+            userLayoutBool = sharedPrefs.getBoolean(Keys.USER_LAYOUT, false);
             settingsSecondFragment.setEnabled(userLayoutBool);
             if (userLayoutBool) {
                 String summaryText = getString(R.string.layout_summary_enabled);
@@ -340,7 +318,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatService != null) {
             logcatService.setOnPreferenceClickListener(this);
             //logcatService.setVisible(isDebug);
-            logcatServiceBool = sharedPrefs.getBoolean(LOGCAT_SERVICE, false);
+            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
             if (logcatServiceBool && isDebug) {
                 String summaryText = getString(R.string.logcat_service_summary);
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -410,7 +388,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (nightNonNull()) {
             nightMode.setOnPreferenceClickListener(this);
             handler.post(updateSummary);
-            nightModeBool = sharedPrefs.getBoolean(NIGHT_MODE, false);
+            nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
             correctionCategory.setVisible(nightModeBool);
             sunriseCorrectionSeekBar.setVisible(nightModeBool);
             sunsetCorrectionSeekBar.setVisible(nightModeBool);
@@ -426,7 +404,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             defaultWallpapers.setOnPreferenceClickListener(this);
             saveDayWallpaper.setOnPreferenceClickListener(this);
             saveNightWallpaper.setOnPreferenceClickListener(this);
-            defaultWallpapersBool = sharedPrefs.getBoolean(DEFAULT_WALLPAPERS, true);
+            defaultWallpapersBool = sharedPrefs.getBoolean(Keys.DEFAULT_WALLPAPERS, true);
             if (wallpaperBoolean()) {
                 saveDayWallpaper.setVisible(true);
                 saveNightWallpaper.setVisible(true);                
@@ -437,7 +415,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (brightnessNonNull()) {
             brightnessPref.setOnPreferenceClickListener(this);
-            brightnessBool = sharedPrefs.getBoolean(BRIGHTNESS_PREF, false);
+            brightnessBool = sharedPrefs.getBoolean(Keys.BRIGHTNESS_PREF, false);
             daySeekBar.setVisible(brightnessBool);
             nightSeekBar.setVisible(brightnessBool);
             dayTitle.setVisible(brightnessBool);
@@ -458,9 +436,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         customAdapter = new CustomPreferenceColorAdapter(this);
         if (settingsSecondFragment != null) {
             if (userLayoutBool) {
-                customAdapter.setPreferenceTitleColor(CREATOR_FIRST, Color.WHITE);
+                customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.WHITE);
             } else {
-                customAdapter.setPreferenceTitleColor(CREATOR_FIRST, Color.GRAY);
+                customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.GRAY);
             }
         }
         return customAdapter;
@@ -474,49 +452,44 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         );
         params.setMargins(0, 0, 80, 0);
         switch (preference.getKey()) {
-            case USER_LAYOUT:
-                userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
+            case Keys.USER_LAYOUT:
+                userLayoutBool = sharedPrefs.getBoolean(Keys.USER_LAYOUT, false);
                 settingsSecondFragment.setEnabled(userLayoutBool);
                 if (userLayoutBool) {
                     String summaryText = getString(R.string.layout_summary_enabled);
                     settingsSecondFragment.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
-                    customAdapter.setPreferenceTitleColor(CREATOR_FIRST, Color.WHITE);
+                    customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.WHITE);
                 } else {
                     String summaryText = getString(R.string.layout_summary_disabled);
                     settingsSecondFragment.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
-                    customAdapter.setPreferenceTitleColor(CREATOR_FIRST, Color.GRAY);
-                    editor.putString("start_page", "1");
-                    editor.putString("pip_screen", "1");
+                    customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.GRAY);
+                    editor.putString(Keys.START_PAGE, "1");
+                    editor.putInt(Keys.PIP_FIRST_SCREEN, 1);
                     editor.apply(); 
                 }
                 break;
-            case CREATOR_FIRST:
+            case Keys.CREATOR_FIRST:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
                 break;
-            case DEVICE_SETTINGS:
+            case Keys.DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);
-                intentSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intentSettings.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intentSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 startActivity(intentSettings);
                 break;
-            case NOTIFICATION_SETTINGS:
+            case Keys.NOTIFICATION_SETTINGS:
                 Intent intentNoti = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-                intentNoti.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intentNoti.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                intentNoti.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                intentNoti.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 startActivity(intentNoti);
                 break;
-            case ACCESSIBILITY_SETTINGS:
+            case Keys.ACCESSIBILITY_SETTINGS:
                 Intent intentAccessibility = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                intentAccessibility.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intentAccessibility.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                intentAccessibility.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                intentAccessibility.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 startActivity(intentAccessibility);
                 break;
-            case WALLPAPER_PICKER:
+            case Keys.WALLPAPER_PICKER:
                 onClickWallpaperPicker(rootView);
                 break;
-            case ALL_APPS_TEXT_SIZE:
+            case Keys.ALL_APPS_TEXT_SIZE:
                 alertAllAppsTextSizeDialog = displayAllAppsTextSizeDialog().create();
                 alertAllAppsTextSizeDialog.show();
 
@@ -534,7 +507,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 imm.showSoftInput(allAppsTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
                 allAppsTextSizeEditText.setSelection(allAppsTextSizeEditText.getText().length());
                 break;
-            case WORKSPACE_TEXT_SIZE:
+            case Keys.WORKSPACE_TEXT_SIZE:
                 alertWorkspaceTextSizeDialog = displayWorkspaceTextSizeDialog().create();
                 alertWorkspaceTextSizeDialog.show();
 
@@ -552,8 +525,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 imm.showSoftInput(workspaceTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
                 workspaceTextSizeEditText.setSelection(workspaceTextSizeEditText.getText().length());
                 break;
-            case NIGHT_MODE:
-                nightModeBool = sharedPrefs.getBoolean(NIGHT_MODE, false);
+            case Keys.NIGHT_MODE:
+                nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
                 handler.post(updateSummary);
                 correctionCategory.setVisible(nightModeBool);
                 sunriseTitleAndSummary.setVisible(nightModeBool);
@@ -562,7 +535,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 sunsetCorrectionSeekBar.setVisible(nightModeBool);
                 wallpapersCategory.setVisible(nightModeBool);
                 defaultWallpapers.setVisible(nightModeBool);
-                defaultWallpapersBool = sharedPrefs.getBoolean(DEFAULT_WALLPAPERS, true);
+                defaultWallpapersBool = sharedPrefs.getBoolean(Keys.DEFAULT_WALLPAPERS, true);
                 if (wallpaperBoolean()) {
                     saveDayWallpaper.setVisible(true);
                     saveNightWallpaper.setVisible(true);                
@@ -572,7 +545,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 } 
                 brightnessCategory.setVisible(nightModeBool);
                 brightnessPref.setVisible(nightModeBool);
-                brightnessBool = sharedPrefs.getBoolean(BRIGHTNESS_PREF, false);
+                brightnessBool = sharedPrefs.getBoolean(Keys.BRIGHTNESS_PREF, false);
                 dayTitle.setVisible(nightModeBool && brightnessBool);
                 nightTitle.setVisible(nightModeBool && brightnessBool);
                 daySeekBar.setVisible(nightModeBool && brightnessBool);
@@ -580,9 +553,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 resetNightModeCategory.setVisible(nightModeBool);
                 resetNightMode.setVisible(nightModeBool);
                 break;
-            case DEFAULT_WALLPAPERS:
+            case Keys.DEFAULT_WALLPAPERS:
                 wallpaperSet = true;
-                defaultWallpapersBool = sharedPrefs.getBoolean(DEFAULT_WALLPAPERS, true);
+                defaultWallpapersBool = sharedPrefs.getBoolean(Keys.DEFAULT_WALLPAPERS, true);
                 if (wallpaperBoolean()) {
                     saveDayWallpaper.setVisible(true);
                     saveNightWallpaper.setVisible(true);                
@@ -591,24 +564,24 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     saveNightWallpaper.setVisible(false);  
                 }
                 break;
-            case SAVE_DAY_WALLPAPER:
+            case Keys.SAVE_DAY_WALLPAPER:
                 helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
                 new SaveWallpaperTask().execute("Day");
                 break;
-            case SAVE_NIGHT_WALLPAPER:
+            case Keys.SAVE_NIGHT_WALLPAPER:
                 helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
                 new SaveWallpaperTask().execute("Night");
                 break;
-            case BRIGHTNESS_PREF:
-                brightnessBool = sharedPrefs.getBoolean(BRIGHTNESS_PREF, false);
+            case Keys.BRIGHTNESS_PREF:
+                brightnessBool = sharedPrefs.getBoolean(Keys.BRIGHTNESS_PREF, false);
                 dayTitle.setVisible(brightnessBool);
                 nightTitle.setVisible(brightnessBool);
                 daySeekBar.setVisible(brightnessBool);
                 nightSeekBar.setVisible(brightnessBool);
                 break;
-            case RESET_NIGHT_MODE:
+            case Keys.RESET_NIGHT_MODE:
                 sunriseCorrectionSeekBar.resetPosition();
                 sunsetCorrectionSeekBar.resetPosition();
                 daySeekBar.resetPosition(255);
@@ -623,8 +596,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 defaultWallpapers.setChecked(true);
                 brightnessPref.setChecked(false);
                 break;
-            case LOGCAT_SERVICE:
-                logcatServiceBool = sharedPrefs.getBoolean(LOGCAT_SERVICE, false);
+            case Keys.LOGCAT_SERVICE:
+                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
                 if (logcatServiceBool) {
                     String summaryText = getString(R.string.logcat_service_summary);
                     logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -632,10 +605,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     logcatService.setSummary(null);
                 }
                 break;
-            case LOGCAT_SERVICE_RUN:
+            case Keys.LOGCAT_SERVICE_RUN:
                 if (!helpers.logcatRunBoolean()) {
                     // start the service
-                    int logcatTimeout = Integer.parseInt(sharedPrefs.getString(LOGCAT_SERVICE_TIMEOUT, "30")) * 1000;
+                    int logcatTimeout = Integer.parseInt(sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30")) * 1000;
                     startLogcatRun();
                     setCountDownTimer(logcatTimeout);
                     setTickRunnable(logcatTimeout + 1000);
@@ -644,7 +617,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     stopLogcatRun();
                 }
                 break;
-            case LOGCAT_SERVICE_TIMEOUT:
+            case Keys.LOGCAT_SERVICE_TIMEOUT:
                 alertLogcatServiceTimeoutDialog = displayLogcatServiceTimeoutDialog().create();
                 alertLogcatServiceTimeoutDialog.show();
 
@@ -662,7 +635,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 imm.showSoftInput(logcatServiceTimeoutEditText, InputMethodManager.SHOW_IMPLICIT);
                 logcatServiceTimeoutEditText.setSelection(logcatServiceTimeoutEditText.getText().length());
                 break;
-            case APP_VERSION_UPDATE:
+            case Keys.APP_VERSION_UPDATE:
                 alertUpdateDialog = displayDownloadConfirmationDialog().create();
                 alertUpdateDialog.show();
                 Button negativeUpdateButton = alertUpdateDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
@@ -692,7 +665,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         removeTickRunnable();
         cancelCountDownTimer();
         dismissDialogs();
-        mPropertyChangeClass.deleteObserver(DOWNLOAD_PERCENTAGE, this);
+        mPropertyChangeClass.deleteObserver(Keys.DOWNLOAD_PERCENTAGE, this);
         SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
         if (skinAttribute != null) {
             skinAttribute.clear();
@@ -853,10 +826,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             String sunriseStr = sharedPrefs.getString("sunrise", "");
             String sunsetStr = sharedPrefs.getString("sunset", "");
             String nightModeStr = getString(R.string.night_mode_summary, sunriseStr, sunsetStr);
-            nightModeBool = sharedPrefs.getBoolean(NIGHT_MODE, false);
+            nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
             if (nightModeBool) {
-                long sunriseCorrectionValue = sharedPrefs.getInt(SUNRISE_CORRECTION, 0) * 60000L;
-                long sunsetCorrectionValue = sharedPrefs.getInt(SUNSET_CORRECTION, 0) * 60000L;
+                long sunriseCorrectionValue = sharedPrefs.getInt(Keys.SUNRISE_CORRECTION, 0) * 60000L;
+                long sunsetCorrectionValue = sharedPrefs.getInt(Keys.SUNSET_CORRECTION, 0) * 60000L;
                 String correctionStr;
                 if (sunriseCorrectionValue != 0 && sunsetCorrectionValue != 0) {
                     sunriseTitleAndSummary.setSummary(getString(R.string.user_sunrise, correctTime(sunriseStr, sunriseCorrectionValue)));
@@ -935,7 +908,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case DOWNLOAD_PERCENTAGE:
+            case Keys.DOWNLOAD_PERCENTAGE:
                 int progress = (int) evt.getNewValue(); 
                 if (progressDialog != null) {
                     progressDialog.updateProgress(progress);
@@ -955,7 +928,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
             @Override
             public void onDownloadProgress(int progress) {
-                mPropertyChangeClass.setInt(DOWNLOAD_PERCENTAGE, progress);
+                mPropertyChangeClass.setInt(Keys.DOWNLOAD_PERCENTAGE, progress);
             }
 
             @Override
@@ -1069,7 +1042,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
         grid.updateIconTextSize(Integer.parseInt(valueStr));
         allAppsTextSize.setSummary(valueStr);
-        editor.putString(ALL_APPS_TEXT_SIZE, valueStr);
+        editor.putString(Keys.ALL_APPS_TEXT_SIZE, valueStr);
         editor.apply();
     }
 
@@ -1078,7 +1051,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         String valueStr = workspaceTextSizeEditText.getText().toString();
         if (valueStr.isEmpty()) valueStr = "28";
         workspaceTextSize.setSummary(valueStr);
-        editor.putString(WORKSPACE_TEXT_SIZE, valueStr);
+        editor.putString(Keys.WORKSPACE_TEXT_SIZE, valueStr);
         editor.apply();
     }
 
@@ -1086,7 +1059,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         String valueStr = logcatServiceTimeoutEditText.getText().toString();
         if (valueStr.isEmpty()) valueStr = "30";
         logcatServiceTimeout.setSummary(valueStr);
-        editor.putString(LOGCAT_SERVICE_TIMEOUT, valueStr);
+        editor.putString(Keys.LOGCAT_SERVICE_TIMEOUT, valueStr);
         editor.apply();
     }
 
@@ -1100,8 +1073,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void setBrightness() {
-        final int dayBrightness = sharedPrefs.getInt(DAY_SEEK_BAR, 70);
-        final int nightBrightness = sharedPrefs.getInt(NIGHT_SEEK_BAR, 0);
+        final int dayBrightness = sharedPrefs.getInt(Keys.DAY_SEEK_BAR, 70);
+        final int nightBrightness = sharedPrefs.getInt(Keys.NIGHT_SEEK_BAR, 0);
         final boolean isDay = helpers.isDay();
         final boolean isPolarDay = helpers.isPolarDay();
         final boolean isPerpetualNight = helpers.isPerpetualNight();
@@ -1126,7 +1099,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     public void onClickWallpaperPicker(View v) {
-        if (sharedPrefs.getBoolean(WALLPAPER_PICKER_SOURCE, false)) {
+        if (sharedPrefs.getBoolean(Keys.WALLPAPER_PICKER_SOURCE, false)) {
             startWallpaperSystem(v);
         } else {
             startWallpaperInApp();

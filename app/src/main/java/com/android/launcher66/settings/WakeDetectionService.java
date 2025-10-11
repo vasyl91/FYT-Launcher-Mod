@@ -103,7 +103,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
 
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                boolean userMap = mPrefs.getBoolean("user_map", true);        
+                boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);        
                 if (userMap) {
                     resetPip();
                 }
@@ -123,7 +123,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         // this serves as some sort of checking function to make sure it starts
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Helpers helpers = new Helpers();
-            int pipScreen = Integer.parseInt(mPrefs.getString("pip_screen", "1")) - 1;
+            int pipScreen = mPrefs.getInt("pip_first_screen", 1) - 1;
             if (!Utils.topApp(WindowUtil.AppPackageName)
                 && !helpers.isFirstPreferenceWindow()
                 && !helpers.isWallpaperWindow()

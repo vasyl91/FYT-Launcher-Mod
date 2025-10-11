@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
@@ -84,6 +85,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
             } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 LeftAppListAdapter.this.mLauncher.onClickAllAppsButton(view);
             } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+                WindowUtil.removePip(null);
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 Intent settingsIntent = new Intent(LeftAppListAdapter.this.mLauncher, SettingsActivity.class);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -111,13 +113,14 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
+        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats)  {  
             SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
             helpers.setForegroundAppOpened(true);
             helpers.setInAllApps(false);
+            helpers.setInWidgets(false);
             helpers.setInRecent(false);
             if (apps.contains(appListBean.packageName)) {
                 Intent intentLeftAppMap = new Intent(RECYCLER_APP_MAP);

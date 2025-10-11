@@ -288,15 +288,12 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mIsEditingName = false;  
 
         Helpers helpers = new Helpers();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             if (!helpers.isFirstPreferenceWindow() 
                 && !helpers.isWallpaperWindow() 
                 && !helpers.isInOverviewMode()
                 && !mDragController.isDragging()
                 && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                && Launcher.getWorkspace().getCurrentPage() == pipScreen
                 || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
                     Log.d("closeFolder()", "startMapPip");

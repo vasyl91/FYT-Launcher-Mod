@@ -80,7 +80,11 @@ public class SkinAttribute {
         Iterator<SkinView> it = this.skinViews.iterator();
         while (it.hasNext()) {
             SkinView skinView = it.next();
-            skinView.applySkin();
+            if (skinView.getView() == null) {
+                it.remove();  
+            } else {
+                skinView.applySkin();
+            }
         }
     }
 

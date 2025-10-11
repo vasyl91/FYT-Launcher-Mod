@@ -1,6 +1,6 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsFragmentFirst.LOGCAT_SERVICE_TIMEOUT;
+import static com.android.launcher66.settings.Keys.LOGCAT_SERVICE_TIMEOUT;
 
 import android.app.Service;
 import android.content.Intent;

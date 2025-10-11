@@ -7,7 +7,7 @@
 
     <!-- Workspace -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/creator_second"
+        android:id="@+id/creator_first_screen"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -38,25 +38,33 @@
             android:layout_height="match_parent"
             app:layout_constraintWidth_percent="0.2"
             app:layout_constraintLeft_toLeftOf="@id/guideline"
-            app:alignItems="center" > 
-
+            app:flexDirection="column"
+            app:alignItems="flex_start"
+            app:justifyContent="center">
+            
             <TextView
                 android:id="@+id/selected_widget_string"
                 android:text="@string/selected_widget"
                 android:textColor="@color/black"
                 android:textSize="0sp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true" />
-
+                android:singleLine="true"
+                android:ellipsize="end" />
+            
             <TextView
                 android:id="@+id/rectangle_name"
                 android:textColor="@color/black"
                 android:textSize="0sp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true" />
-
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true" />
+                
         </com.google.android.flexbox.FlexboxLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

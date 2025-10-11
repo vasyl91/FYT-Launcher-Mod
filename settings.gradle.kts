@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "FYT Launcher Mod"
-include(":app")
+include(":app", ":hook")

@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,44 +64,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SharedPreferences.Editor editor;
     private final Helpers helpers = new Helpers();
 
-    private static final String USER_MAP = "user_map";
-    private static final String USER_DATE = "user_date";
-    private static final String USER_MUSIC = "user_music";
-    private static final String USER_RADIO = "user_radio";    
-    private static final String USER_STATS = "user_stats";
-    private static final String STATS_CODES = "stats_codes";
-    private static final String EXTRA_STATS_CODES = "extra_stats_codes";
-    private static final String MAIN_SCREEN_STATS = "main_screen_stats";
-    private static final String COLOR_PICKER = "color_picker";
-    private static final String STATS_BG = "stats_bg";
-    private static final String BG_DRAWABLE = "bg_drawable";
-    private static final String BG_COLOR = "bg_color";
-    private static final String BG_COLOR_PICKER = "bg_color_picker";
-    private static final String APP_LIST = "app_list";
-    private static final String APP_STATS_COORDINATES = "app_stats_coordinates";
-    private static final String DISPLAY_CANBUS_READER = "display_canbus_reader";
-    private static final String CODES_GUIDE = "codes_guide";
-    private static final String SKIP_CODES = "skip_codes";
-    private static final String CODE_LOGGER = "code_logger";
-    private static final String CODE_LOGGER_DATA = "code_logger_data";
-    private static final String STARTING_CMD_INT = "starting_cmd_int";
-    private static final String STARTING_CMD_ARR = "starting_cmd_arr";
-    private static final String MAX_CMD_INT = "max_cmd_int";
-    private static final String MAX_CMD_ARR = "max_cmd_arr";
-    private static final String CODE_LOGGER_TIMEOUT = "code_logger_timeout";
-    private static final String OMIT_DIGITS = "omit_digits";
-    private static final String CODE_INSPECTOR = "code_inspector";
-    private static final String CODE_INSPECTOR_DATA = "code_inspector_data";
-    private static final String INSPECTOR_CMD_INT = "inspector_cmd_int";
-    private static final String INSPECTOR_CMD_ARR = "inspector_cmd_arr";
-    public static final String CODE_INSPECTOR_TIMEOUT = "code_inspector_timeout";
-    private static final String LEFT_BAR = "left_bar";
-    private static final String START_PAGE = "start_page";
-    private static final String LAYOUT_MARGIN = "layout_margin";
-    private static final String PIP_SCREEN = "pip_screen";
-    private static final String CREATOR_SECOND = "launcher_creator_second";
-    private static final String CMD_INT = "cmdInt_code_int";
-    private static final String CMD_ARR = "cmdArr_code_int";
     private int defaultColorR = 255;
     private int defaultColorG = 255;
     private int defaultColorB = 255;
@@ -109,29 +72,31 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private int bgDefaultColorB = 255;
     private static final int TIMER_DURATION = 1000;
     private int padding;
-    private boolean mapBool = true; 
+    private boolean pipBool = true;
+    private boolean dualPipGuard = false;
     private boolean userStatsBool = false;
     private boolean backgroundBool = false;
     private boolean drawableBgBool = false;
-    private boolean colorBgBool = false; 
+    private boolean colorBgBool = false;
     private boolean displayCanbusReaderBool = false;
-    private boolean tickRunnableBool = false;   
-    private boolean loggerTickRunnableBool = false; 
-    private boolean countDownTimerBool = false;  
+    private boolean tickRunnableBool = false;
+    private boolean loggerTickRunnableBool = false;
+    private boolean countDownTimerBool = false;
     private SwitchPreferenceCompat userStats;
+    private CustomWidgetPreference statsScreen;
     private Preference statsCodes;
     private EditText fuelCodeInt;
     private String fuelCodeStr;
     private String rangeCodeStr;
     private String cmdIntCodeStr;
     private String cmdArrCodeStr;
-    private Preference extraStatsCodes; 
+    private Preference extraStatsCodes;
     private EditText rpmCodeInt;
     private String rpmCodeStr;
     private String horsePowerCodeStr;
     private String vehicleMassCodeStr;
     private String engineVolCodeStr;
-    private String numberOfCylindersCodeStr;   
+    private String numberOfCylindersCodeStr;
     private EditText startingInt;
     private String startingCmdInt;
     private String startingCmdArr;
@@ -145,7 +110,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SwitchPreferenceCompat mainScreenStats;
     private SwitchPreferenceCompat bgDrawable;
     private SwitchPreferenceCompat bgColor;
-    private Preference pipScreen;
     private Preference statsBg;
     private Preference colorPickerPref;
     private Preference bgColorPickerPref;
@@ -164,7 +128,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static final Handler loggerTickHandler = new Handler(Looper.getMainLooper());
     private Preference margin;
-    private EditText pipEditText;
     private EditText marginEditText;
     private EditText skipCodesEditText;
     private AlertDialog alertPipDialog;
@@ -172,7 +135,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertCodesDialog;
     private AlertDialog alertExtraCodesDialog;
     private AlertDialog alertCodesLoggerDialog;
-    private AlertDialog alertSkipCodesDialog; 
+    private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
     private Preference startPage;
     private EditText startPageEditText;
@@ -181,6 +144,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private ColorPicker colorPicker;
     private ColorPicker bgColorPicker;
     private InputMethodManager imm;
+
+    private CustomDualPipPreference pipDualPref;
+    private CustomPipSwitchPreference pipFirstPref;
+    private CustomPipSwitchPreference pipSecondPref;
+    private CustomPipSwitchPreference pipThirdPref;
+    private CustomPipSwitchPreference pipFourthPref;
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener pipPkgListener =
+            (prefs, key) -> {
+                if (Keys.PIP_FIRST_PACKAGE.equals(key) || Keys.PIP_SECOND_PACKAGE.equals(key)
+                        || Keys.PIP_THIRD_PACKAGE.equals(key) || Keys.PIP_FOURTH_PACKAGE.equals(key)) {
+                    updatePipSummaries();
+                }
+            };
 
     @NonNull
     @Override
@@ -192,7 +169,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getString(R.string.launcher_creator)); 
+            actionBar.setTitle(getString(R.string.launcher_creator));
         }
 
         return rootView;
@@ -205,7 +182,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                helpers.setBackFromCreator(true);     
+                helpers.setBackFromCreator(true);
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentFirst()).commit();
             }
         };
@@ -220,52 +197,51 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         addPreferencesFromResource(R.xml.creator_preferences);
         padding = SettingsActivity.dialogPadding;
 
-        Preference leftBar = findPreference(LEFT_BAR);
-        Preference userMap = findPreference(USER_MAP);
-        pipScreen = findPreference(PIP_SCREEN);
-        String pipScreenStr = sharedPrefs.getString(PIP_SCREEN, "1");
-        pipScreen.setSummary(pipScreenStr);
-
-        Preference userDate = findPreference(USER_DATE);
-        Preference userMusic = findPreference(USER_MUSIC);
-        Preference userRadio = findPreference(USER_RADIO); 
-        Preference launcherCreatorSecond = findPreference(CREATOR_SECOND);
-        
-        userStats = findPreference(USER_STATS); 
-        statsCodes = findPreference(STATS_CODES); 
+        Preference displayPip = findPreference(Keys.DISPLAY_PIP);
+        pipDualPref   = findPreference(Keys.PIP_DUAL);
+        pipFirstPref  = findPreference(Keys.PIP_FIRST);
+        pipSecondPref = findPreference(Keys.PIP_SECOND);
+        pipThirdPref  = findPreference(Keys.PIP_THIRD);
+        pipFourthPref = findPreference(Keys.PIP_FOURTH);
+        CustomWidgetSwitchPreference userDate = findPreference(Keys.USER_DATE);
+        CustomWidgetSwitchPreference userMusic = findPreference(Keys.USER_MUSIC);
+        CustomWidgetSwitchPreference userRadio = findPreference(Keys.USER_RADIO);
+        userStats = findPreference(Keys.USER_STATS);
+        statsScreen = findPreference(Keys.STATS_DISPLAY);
+        statsCodes = findPreference(Keys.STATS_CODES);
         fuelCodeStr = sharedPrefs.getString("fuel_code_int", "0");
         rangeCodeStr = sharedPrefs.getString("range_code_int", "0");
-        cmdIntCodeStr = sharedPrefs.getString(CMD_INT, "0");
-        cmdArrCodeStr = sharedPrefs.getString(CMD_ARR, "0");
-        extraStatsCodes = findPreference(EXTRA_STATS_CODES);
+        cmdIntCodeStr = sharedPrefs.getString(Keys.CMD_INT, "0");
+        cmdArrCodeStr = sharedPrefs.getString(Keys.CMD_ARR, "0");
+        extraStatsCodes = findPreference(Keys.EXTRA_STATS_CODES);
         rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
         horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
         vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
         engineVolCodeStr = sharedPrefs.getString("engine_volume_code_int", "0");
         numberOfCylindersCodeStr = sharedPrefs.getString("cylinders_number_code_int", "0");
 
-        mainScreenStats = findPreference(MAIN_SCREEN_STATS); 
-        colorPickerPref = findPreference(COLOR_PICKER);        
-        statsBg = findPreference(STATS_BG); 
-        bgDrawable = findPreference(BG_DRAWABLE);
-        bgColor = findPreference(BG_COLOR);
-        bgColorPickerPref = findPreference(BG_COLOR_PICKER); 
-        appList = findPreference(APP_LIST);
-        appStatsCoordinates = findPreference(APP_STATS_COORDINATES);
+        mainScreenStats = findPreference(Keys.MAIN_SCREEN_STATS);
+        colorPickerPref = findPreference(Keys.COLOR_PICKER);
+        statsBg = findPreference(Keys.STATS_BG);
+        bgDrawable = findPreference(Keys.BG_DRAWABLE);
+        bgColor = findPreference(Keys.BG_COLOR);
+        bgColorPickerPref = findPreference(Keys.BG_COLOR_PICKER);
+        appList = findPreference(Keys.APP_LIST);
+        appStatsCoordinates = findPreference(Keys.APP_STATS_COORDINATES);
 
-        SwitchPreferenceCompat displayCanbusReader = findPreference(DISPLAY_CANBUS_READER);
-        codesGuide = findPreference(CODES_GUIDE);
+        SwitchPreferenceCompat displayCanbusReader = findPreference(Keys.DISPLAY_CANBUS_READER);
+        codesGuide = findPreference(Keys.CODES_GUIDE);
         loggerCategory = findPreference("logger_category");
-        codeLogger = findPreference(CODE_LOGGER);
-        codeLoggerData = findPreference(CODE_LOGGER_DATA);
-        startingCmdInt = sharedPrefs.getString(STARTING_CMD_INT, "0");
-        startingCmdArr = sharedPrefs.getString(STARTING_CMD_ARR, "0");
-        maxCmdInt = sharedPrefs.getString(MAX_CMD_INT, "10");
-        maxCmdArr = sharedPrefs.getString(MAX_CMD_ARR, "10");
-        codeLoggerTimeoutStr = sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1");
-        skipCodes = findPreference(SKIP_CODES);
-        omitDigits = findPreference(OMIT_DIGITS);
-        Set<String> skipCodesSet = sharedPrefs.getStringSet(SKIP_CODES, Collections.singleton(""));
+        codeLogger = findPreference(Keys.CODE_LOGGER);
+        codeLoggerData = findPreference(Keys.CODE_LOGGER_DATA);
+        startingCmdInt = sharedPrefs.getString(Keys.STARTING_CMD_INT, "0");
+        startingCmdArr = sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0");
+        maxCmdInt = sharedPrefs.getString(Keys.MAX_CMD_INT, "10");
+        maxCmdArr = sharedPrefs.getString(Keys.MAX_CMD_ARR, "10");
+        codeLoggerTimeoutStr = sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1");
+        skipCodes = findPreference(Keys.SKIP_CODES);
+        omitDigits = findPreference(Keys.OMIT_DIGITS);
+        Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
         if (skipCodesStr.isEmpty()) {
             skipCodes.setSummary(getString(R.string.skip_codes_empty_summary));
@@ -274,18 +250,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
 
         inspectorCategory = findPreference("inspector_category");
-        codeInspector = findPreference(CODE_INSPECTOR);
-        codeInspectorData = findPreference(CODE_INSPECTOR_DATA);
-        inspectorCmdInt = sharedPrefs.getString(INSPECTOR_CMD_INT, "0");
-        inspectorCmdArr = sharedPrefs.getString(INSPECTOR_CMD_ARR, "0");
-        codeInspectorTimeoutStr = sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30");
+        codeInspector = findPreference(Keys.CODE_INSPECTOR);
+        codeInspectorData = findPreference(Keys.CODE_INSPECTOR_DATA);
+        inspectorCmdInt = sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0");
+        inspectorCmdArr = sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0");
+        codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30");
 
-        startPage = findPreference(START_PAGE);
-        String startPageStr = sharedPrefs.getString(START_PAGE, "1");
+        startPage = findPreference(Keys.START_PAGE);
+        String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
         startPage.setSummary(startPageStr);
 
-        margin = findPreference(LAYOUT_MARGIN);
-        String marginStr = sharedPrefs.getString(LAYOUT_MARGIN, "10");
+        Preference leftBar = findPreference(Keys.LEFT_BAR);
+
+        margin = findPreference(Keys.LAYOUT_MARGIN);
+        String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "10");
         margin.setSummary(marginStr);
 
         defaultColorR = sharedPrefs.getInt("red", 255);
@@ -295,30 +273,97 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         bgDefaultColorG = sharedPrefs.getInt("bg_green", 255);
         bgDefaultColorB = sharedPrefs.getInt("bg_blue", 255);
 
-        dialogPipEditText();
+        setPipGroupVisible(pipBool);
+        updatePipSummaries();
+        sharedPrefs.registerOnSharedPreferenceChangeListener(pipPkgListener);        
+
         dialogStartPageEditText();
         dialogMarginEditText();
         dialogSkipCodesEditText();
 
-        if (userMap != null) {
-            userMap.setOnPreferenceClickListener(this);
-        } 
-        mapBool = sharedPrefs.getBoolean(USER_MAP, true);
-        if (pipScreen != null) {
-            pipScreen.setVisible(mapBool);
-            pipScreen.setOnPreferenceClickListener(this);
+        if (displayPip != null) {
+            displayPip.setOnPreferenceClickListener(this);
         }
+        if (pipDualPref != null) {
+            pipDualPref.setScreenValuePrefKey(Keys.PIP_DUAL_SCREEN);
+            pipDualPref.setOnPositionClickListener(pref -> openPipAdjuster(Keys.PIP_DUAL_SCREEN));            
+            pipDualPref.setOnPreferenceChangeListener((p, v) -> {
+                enforceDualPiP(/*changedByDual=*/true, /*newState=*/(Boolean) v);
+                return true;
+            });
+        }
+        if (pipFirstPref != null) {
+            pipFirstPref.setScreenValuePrefKey(Keys.PIP_FIRST_SCREEN);
+            pipFirstPref.setOnPositionClickListener(pref -> openPipAdjuster(Keys.PIP_FIRST_SCREEN));
+            // Optional anywhere: change the "Position the PiP" button color
+            // pipFirstPref.setPositionButtonTextColor(Color.MAGENTA);
+
+            pipFirstPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_FIRST_PACKAGE); return true; });
+            pipFirstPref.setOnModeSwitchChangeListener(isPip -> {
+                enforceSinglePiP(pipFirstPref, isPip);
+                if (isPip) enforceDualPiP(false, true);    // child → PiP => Dual PiP OFF
+            });
+            pipFirstPref.setOnPreferenceChangeListener((p, v) -> {
+                boolean checked = (Boolean) v;
+                if (checked) enforceDualPiP(false, true);  // main switch ON => Dual PiP OFF
+                return true;
+            });
+        }
+        if (pipSecondPref != null) {
+            pipSecondPref.setScreenValuePrefKey(Keys.PIP_SECOND_SCREEN);
+            pipSecondPref.setOnPositionClickListener(pref -> openPipAdjuster(Keys.PIP_SECOND_SCREEN));
+
+            pipSecondPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_SECOND_PACKAGE); return true; });
+            pipSecondPref.setOnModeSwitchChangeListener(isPip -> {
+                enforceSinglePiP(pipSecondPref, isPip);
+                if (isPip) enforceDualPiP(false, true);
+            });
+            pipSecondPref.setOnPreferenceChangeListener((p, v) -> {
+                boolean checked = (Boolean) v;
+                if (checked) enforceDualPiP(false, true);
+                return true;
+            });
+        }
+        if (pipThirdPref != null) {
+            pipThirdPref.setScreenValuePrefKey(Keys.PIP_THIRD_SCREEN);
+            pipThirdPref.setOnPositionClickListener(pref -> openPipAdjuster(Keys.PIP_THIRD_SCREEN));
+
+            pipThirdPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_THIRD_PACKAGE); return true; });
+            pipThirdPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipThirdPref, isPip));
+            pipThirdPref.setOnPreferenceChangeListener((p, v) -> true);
+        }
+        if (pipFourthPref != null) {
+            pipFourthPref.setScreenValuePrefKey(Keys.PIP_FOURTH_SCREEN);
+            pipFourthPref.setOnPositionClickListener(pref -> openPipAdjuster(Keys.PIP_FOURTH_SCREEN));
+
+            pipFourthPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_FOURTH_PACKAGE); return true; });
+            pipFourthPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipFourthPref, isPip));
+            pipFourthPref.setOnPreferenceChangeListener((p, v) -> true);
+        }
+        pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         if (userDate != null) {
             userDate.setOnPreferenceClickListener(this);
+            userDate.setScreenValuePrefKey(Keys.DATE_SCREEN);
+            userDate.setOnPositionClickListener(pref -> openPipAdjuster(Keys.DATE_SCREEN));      
         }
         if (userMusic != null) {
             userMusic.setOnPreferenceClickListener(this);
+            userMusic.setScreenValuePrefKey(Keys.MUSIC_SCREEN);
+            userMusic.setOnPositionClickListener(pref -> openPipAdjuster(Keys.MUSIC_SCREEN));
         }
         if (userRadio != null) {
             userRadio.setOnPreferenceClickListener(this);
+            userRadio.setScreenValuePrefKey(Keys.RADIO_SCREEN);
+            userRadio.setOnPositionClickListener(pref -> openPipAdjuster(Keys.RADIO_SCREEN));
         }
         initUserStats();
-        userStatsBool = sharedPrefs.getBoolean(USER_STATS, false);
+        userStatsBool = sharedPrefs.getBoolean(Keys.USER_STATS, false);
+        if (statsScreen != null) {
+            statsScreen.setVisible(userStatsBool);
+            statsScreen.setOnPreferenceClickListener(this);
+            statsScreen.setScreenValuePrefKey(Keys.STATS_SCREEN);
+            statsScreen.setOnPositionClickListener(pref -> openPipAdjuster(Keys.STATS_SCREEN));    
+        }
         if (statsCodes != null) {
             statsCodes.setVisible(userStatsBool);
             statsCodes.setSummary(getString(R.string.stats_codes_summary, fuelCodeStr, rangeCodeStr, cmdIntCodeStr, cmdArrCodeStr));
@@ -341,7 +386,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsBg.setVisible(userStatsBool);
             statsBg.setOnPreferenceClickListener(this);
         }
-        backgroundBool = sharedPrefs.getBoolean(STATS_BG, false);
+        backgroundBool = sharedPrefs.getBoolean(Keys.STATS_BG, false);
         if (bgDrawable != null) {
             bgDrawable.setVisible(statsBackgroundBool());
             bgDrawable.setOnPreferenceClickListener(this);
@@ -351,143 +396,113 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             bgColor.setOnPreferenceClickListener(this);
         }
         if (bgColorPickerPref != null) {
-            colorBgBool = sharedPrefs.getBoolean(BG_COLOR, false);
+            colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
             bgColorPickerPref.setVisible(statsBackgroundBool() && colorBgBool);
             bgColorPickerPref.setOnPreferenceClickListener(this);
-        } 
+        }
         if (appList != null) {
             appList.setVisible(userStatsBool);
             appList.setOnPreferenceClickListener(this);
-        } 
+        }
         if (appStatsCoordinates != null) {
             appStatsCoordinates.setVisible(userStatsBool);
             appStatsCoordinates.setOnPreferenceClickListener(this);
-        } 
+        }
         if (displayCanbusReader != null) {
             displayCanbusReader.setOnPreferenceClickListener(this);
         }
-        displayCanbusReaderBool = sharedPrefs.getBoolean(DISPLAY_CANBUS_READER, false);
+        displayCanbusReaderBool = sharedPrefs.getBoolean(Keys.DISPLAY_CANBUS_READER, false);
         loggerCategory.setVisible(displayCanbusReaderBool);
         inspectorCategory.setVisible(displayCanbusReaderBool);
         if (codesGuide != null) {
             codesGuide.setVisible(displayCanbusReaderBool);
             codesGuide.setOnPreferenceClickListener(this);
-        } 
+        }
         if (skipCodes != null) {
             skipCodes.setVisible(displayCanbusReaderBool);
             skipCodes.setOnPreferenceClickListener(this);
-        } 
+        }
         if (codeLogger != null) {
             codeLogger.setVisible(displayCanbusReaderBool);
-            codeLogger.setOnPreferenceClickListener(this);     
+            codeLogger.setOnPreferenceClickListener(this);
             if (helpers.codeLoggerBoolean()) {
                 setLoggerTickRunnable();
             } else {
                 codeLogger.setSummary(getString(R.string.code_logger_summary));
                 helpers.setCountDownLogger(0);
             }
-        } 
+        }
         if (codeLoggerData != null) {
             codeLoggerData.setVisible(displayCanbusReaderBool);
             codeLoggerData.setOnPreferenceClickListener(this);
             codeLoggerData.setSummary(getString(R.string.code_logger_data_summary, startingCmdInt, startingCmdArr, maxCmdInt, maxCmdArr, codeLoggerTimeoutStr));
-        } 
+        }
         if (omitDigits != null) {
             omitDigits.setVisible(displayCanbusReaderBool);
             omitDigits.setOnPreferenceClickListener(this);
-        } 
+        }
         if (codeInspector != null) {
             codeInspector.setVisible(displayCanbusReaderBool);
-            codeInspector.setOnPreferenceClickListener(this);     
+            codeInspector.setOnPreferenceClickListener(this);
             if (helpers.codeInspectorBoolean()) {
-                int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
+                int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
                 setCountDownTimer(inspectorTimeout);
                 setTickRunnable(inspectorTimeout + 1000);
             } else {
                 codeInspector.setSummary(getString(R.string.code_inspector_summary));
                 helpers.setCountDownInspector(0);
             }
-        } 
+        }
         if (codeInspectorData != null) {
             codeInspectorData.setVisible(displayCanbusReaderBool);
             codeInspectorData.setOnPreferenceClickListener(this);
             codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary, inspectorCmdInt, inspectorCmdArr, codeInspectorTimeoutStr));
-        } 
+        }
         if (startPage != null) {
             startPage.setOnPreferenceClickListener(this);
         }
         if (leftBar != null) {
             leftBar.setOnPreferenceClickListener(this);
-        } 
+        }
         if (margin != null) {
             margin.setOnPreferenceClickListener(this);
         }
-        if (launcherCreatorSecond != null) {
-            launcherCreatorSecond.setOnPreferenceClickListener(this);
-        }
-    }
-
-    private void initUserStats() {
-        if (userStats != null) {
-            SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
-            String can = mPrefs.getString("canbus_class", "empty");
-            if (!can.equals("empty")) {
-                userStats.setVisible(true);
-                String formattedText = getString(R.string.stats_window_summary, can.replace("class ", ""));
-                userStats.setSummary(Html.fromHtml(formattedText, Html.FROM_HTML_MODE_LEGACY));
-                userStats.setOnPreferenceClickListener(this);
-            } else {              
-                userStats.setChecked(false);
-                userStats.setVisible(false);
-            }
-        }        
     }
 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
-        userStatsBool = sharedPrefs.getBoolean(USER_STATS, false);
-        backgroundBool = sharedPrefs.getBoolean(STATS_BG, false);
-        drawableBgBool = sharedPrefs.getBoolean(BG_DRAWABLE, false);
-        colorBgBool = sharedPrefs.getBoolean(BG_COLOR, false);
-        displayCanbusReaderBool = sharedPrefs.getBoolean(DISPLAY_CANBUS_READER, false);
+        userStatsBool = sharedPrefs.getBoolean(Keys.USER_STATS, false);
+        backgroundBool = sharedPrefs.getBoolean(Keys.STATS_BG, false);
+        drawableBgBool = sharedPrefs.getBoolean(Keys.BG_DRAWABLE, false);
+        colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
+        displayCanbusReaderBool = sharedPrefs.getBoolean(Keys.DISPLAY_CANBUS_READER, false);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(0, 0, 80, 0);
         switch (preference.getKey()) {
-            case USER_MAP:
-                mapBool = sharedPrefs.getBoolean(USER_MAP, true);
-                pipScreen.setVisible(mapBool);
+            case Keys.DISPLAY_PIP:
+                pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+                if (statsScreen != null) statsScreen.setVisible(pipBool);
+                setPipGroupVisible(pipBool);
+                if (!pipBool) {
+                    // Turn off all PiP switches when hidden
+                    if (pipDualPref != null) pipDualPref.setChecked(false);
+                    if (pipFirstPref != null) pipFirstPref.setChecked(false);
+                    if (pipSecondPref != null) pipSecondPref.setChecked(false);
+                    if (pipThirdPref != null) pipThirdPref.setChecked(false);
+                    if (pipFourthPref != null) pipFourthPref.setChecked(false);
+                }
                 break;
-            case PIP_SCREEN:
-                alertPipDialog = displayPipDialog().create();
-
-                alertPipDialog.setOnShowListener(dialog -> {
-                    Button negativePipButton = alertPipDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    negativePipButton.setLayoutParams(params);
-
-                    ViewGroup.LayoutParams editPipTextParams = pipEditText.getLayoutParams();
-                    if (editPipTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
-                        marginParams.setMargins(padding, padding, padding, padding);
-                        pipEditText.setLayoutParams(marginParams);
-                    }
-
-                    pipEditText.requestFocus();
-                    imm.showSoftInput(pipEditText, InputMethodManager.SHOW_IMPLICIT);
-                    pipEditText.setSelection(pipEditText.getText().length());
-                });
-                
-                alertPipDialog.show();
-                break;
-            case USER_STATS:
+            case Keys.USER_STATS:
                 userStatsSwitch();
                 break;
-            case STATS_CODES:
+            case Keys.STATS_CODES:
                 fuelCodeStr = sharedPrefs.getString("fuel_code_int", "0");
                 rangeCodeStr = sharedPrefs.getString("range_code_int", "0");
-                cmdIntCodeStr = sharedPrefs.getString(CMD_INT, "0");
-                cmdArrCodeStr = sharedPrefs.getString(CMD_ARR, "0");
+                cmdIntCodeStr = sharedPrefs.getString(Keys.CMD_INT, "0");
+                cmdArrCodeStr = sharedPrefs.getString(Keys.CMD_ARR, "0");
 
                 alertCodesDialog = displayCodesDialog().create();
 
@@ -496,18 +511,18 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     negativeCodesButton.setLayoutParams(params);
                     fuelCodeInt.requestFocus();
                     imm.showSoftInput(fuelCodeInt, InputMethodManager.SHOW_IMPLICIT);
-                    fuelCodeInt.setSelection(fuelCodeInt.getText().length());                    
+                    fuelCodeInt.setSelection(fuelCodeInt.getText().length());
                 });
 
                 alertCodesDialog.show();
                 break;
-            case EXTRA_STATS_CODES:
+            case Keys.EXTRA_STATS_CODES:
                 rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
                 horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
                 vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
                 engineVolCodeStr = sharedPrefs.getString("engine_volume_code_int", "0");
                 numberOfCylindersCodeStr = sharedPrefs.getString("cylinders_number_code_int", "0");
-                
+
                 alertExtraCodesDialog = displayExtraCodesDialog().create();
 
                 alertExtraCodesDialog.setOnShowListener(dialog -> {
@@ -515,12 +530,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     negativeExtraCodesButton.setLayoutParams(params);
                     rpmCodeInt.requestFocus();
                     imm.showSoftInput(rpmCodeInt, InputMethodManager.SHOW_IMPLICIT);
-                    rpmCodeInt.setSelection(rpmCodeInt.getText().length());                    
+                    rpmCodeInt.setSelection(rpmCodeInt.getText().length());
                 });
 
                 alertExtraCodesDialog.show();
                 break;
-            case COLOR_PICKER:
+            case Keys.COLOR_PICKER:
                 colorPicker = new ColorPicker(requireActivity(), defaultColorR, defaultColorG, defaultColorB);
                 colorPicker.enableAutoClose();
                 colorPicker.setCallback(color -> {
@@ -535,20 +550,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 });
                 colorPicker.show();
                 break;
-            case STATS_BG:            
+            case Keys.STATS_BG:
                 bgDrawable.setVisible(backgroundBool);
                 bgColor.setVisible(backgroundBool);
-                bgColorPickerPref.setVisible(backgroundBool && colorBgBool);                 
+                bgColorPickerPref.setVisible(backgroundBool && colorBgBool);
                 break;
-            case BG_DRAWABLE:
+            case Keys.BG_DRAWABLE:
                 bgColor.setChecked(!drawableBgBool);
-                bgColorPickerPref.setVisible(!drawableBgBool);             
+                bgColorPickerPref.setVisible(!drawableBgBool);
                 break;
-            case BG_COLOR:             
+            case Keys.BG_COLOR:
                 bgDrawable.setChecked(!colorBgBool);
-                bgColorPickerPref.setVisible(colorBgBool);           
+                bgColorPickerPref.setVisible(colorBgBool);
                 break;
-            case BG_COLOR_PICKER:
+            case Keys.BG_COLOR_PICKER:
                 bgColorPicker = new ColorPicker(requireActivity(), bgDefaultColorR, bgDefaultColorG, bgDefaultColorB);
                 bgColorPicker.enableAutoClose();
                 bgColorPicker.setCallback(color -> {
@@ -561,9 +576,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     editor.putInt("bg_blue", Color.blue(color));
                     editor.apply();
                 });
-                bgColorPicker.show();                
+                bgColorPicker.show();
                 break;
-            case APP_LIST:
+            case Keys.APP_LIST:
                 Log.i("checkStatsPermission()", String.valueOf(checkStatsPermission()));
                 if (checkStatsPermission()) {
                     if (appListStatsDialog != null && appListStatsDialog.isShowing()) {
@@ -576,16 +591,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     startActivity(intent);
                 }
                 break;
-            case APP_STATS_COORDINATES:
-                requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentDrawViewAppStats()).commit();
+            case Keys.APP_STATS_COORDINATES:
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorAppStats()).commit();
                 break;
-            case DISPLAY_CANBUS_READER:
+            case Keys.DISPLAY_CANBUS_READER:
                 displayCanbusReaderSwitch();
                 break;
-            case CODES_GUIDE:
+            case Keys.CODES_GUIDE:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CanbusGuide()).commit();
                 break;
-            case SKIP_CODES:
+            case Keys.SKIP_CODES:
                 alertSkipCodesDialog = displaySkipCodesDialog().create();
 
                 alertSkipCodesDialog.setOnShowListener(dialog -> {
@@ -600,12 +615,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                     skipCodesEditText.requestFocus();
                     imm.showSoftInput(skipCodesEditText, InputMethodManager.SHOW_IMPLICIT);
-                    skipCodesEditText.setSelection(skipCodesEditText.getText().length());                    
+                    skipCodesEditText.setSelection(skipCodesEditText.getText().length());
                 });
-                
+
                 alertSkipCodesDialog.show();
                 break;
-            case CODE_LOGGER:
+            case Keys.CODE_LOGGER:
                 if (!helpers.codeLoggerBoolean()) {
                     // start the service
                     startLoggerService();
@@ -615,12 +630,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     stopLoggerService();
                 }
                 break;
-            case CODE_LOGGER_DATA:
-                startingCmdInt = sharedPrefs.getString(STARTING_CMD_INT, "0");
-                startingCmdArr = sharedPrefs.getString(STARTING_CMD_ARR, "0");
-                maxCmdInt = sharedPrefs.getString(MAX_CMD_INT, "10");
-                maxCmdArr = sharedPrefs.getString(MAX_CMD_ARR, "10");
-                codeLoggerTimeoutStr = sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1");
+            case Keys.CODE_LOGGER_DATA:
+                startingCmdInt = sharedPrefs.getString(Keys.STARTING_CMD_INT, "0");
+                startingCmdArr = sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0");
+                maxCmdInt = sharedPrefs.getString(Keys.MAX_CMD_INT, "10");
+                maxCmdArr = sharedPrefs.getString(Keys.MAX_CMD_ARR, "10");
+                codeLoggerTimeoutStr = sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1");
 
                 alertCodesLoggerDialog = displayCodesLoggerDialog().create();
 
@@ -629,15 +644,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     negativeLoggerButton.setLayoutParams(params);
                     startingInt.requestFocus();
                     imm.showSoftInput(startingInt, InputMethodManager.SHOW_IMPLICIT);
-                    startingInt.setSelection(startingInt.getText().length());                    
+                    startingInt.setSelection(startingInt.getText().length());
                 });
-                
+
                 alertCodesLoggerDialog.show();
                 break;
-            case CODE_INSPECTOR:
+            case Keys.CODE_INSPECTOR:
                 if (!helpers.codeInspectorBoolean()) {
                     // start the service
-                    int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
+                    int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
                     startCanbusCodeInspector();
                     setCountDownTimer(inspectorTimeout);
                     setTickRunnable(inspectorTimeout + 1000);
@@ -646,10 +661,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     stopCanbusCodeInspector();
                 }
                 break;
-            case CODE_INSPECTOR_DATA:
-                inspectorCmdInt = sharedPrefs.getString(INSPECTOR_CMD_INT, "0");
-                inspectorCmdArr = sharedPrefs.getString(INSPECTOR_CMD_ARR, "0");
-                codeInspectorTimeoutStr = sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30");
+            case Keys.CODE_INSPECTOR_DATA:
+                inspectorCmdInt = sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0");
+                inspectorCmdArr = sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0");
+                codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30");
 
                 alertCodesInspectorDialog = displayCodesInspectorDialog().create();
 
@@ -658,12 +673,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     negativeInspectorButtonI.setLayoutParams(params);
                     inspectorInt.requestFocus();
                     imm.showSoftInput(inspectorInt, InputMethodManager.SHOW_IMPLICIT);
-                    inspectorInt.setSelection(inspectorInt.getText().length());                    
+                    inspectorInt.setSelection(inspectorInt.getText().length());
                 });
-                
+
                 alertCodesInspectorDialog.show();
-                break;  
-            case START_PAGE:
+                break;
+            case Keys.START_PAGE:
                 alertStartPageDialog = displayStartPageDialog().create();
 
                 alertStartPageDialog.setOnShowListener(dialog -> {
@@ -678,15 +693,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                     startPageEditText.requestFocus();
                     imm.showSoftInput(startPageEditText, InputMethodManager.SHOW_IMPLICIT);
-                    startPageEditText.setSelection(startPageEditText.getText().length());                    
+                    startPageEditText.setSelection(startPageEditText.getText().length());
                 });
-                
+
                 alertStartPageDialog.show();
                 break;
-            case LEFT_BAR:
+            case Keys.LEFT_BAR:
                 helpers.setLeftBarChanged(true);
                 break;
-            case LAYOUT_MARGIN:
+            case Keys.LAYOUT_MARGIN:
                 alertMarginsDialog = displayMarginsDialog().create();
 
                 alertMarginsDialog.setOnShowListener(dialog -> {
@@ -701,13 +716,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                     marginEditText.requestFocus();
                     imm.showSoftInput(marginEditText, InputMethodManager.SHOW_IMPLICIT);
-                    marginEditText.setSelection(marginEditText.getText().length());                    
+                    marginEditText.setSelection(marginEditText.getText().length());
                 });
-                
+
                 alertMarginsDialog.show();
-                break;
-            case CREATOR_SECOND:
-                requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFragmentDrawView()).commit();
                 break;
             default:
                 break;
@@ -729,15 +741,34 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (skinAttribute != null) {
             skinAttribute.clear();
         }
+        if (sharedPrefs != null) {
+            sharedPrefs.unregisterOnSharedPreferenceChangeListener(pipPkgListener);
+        }
+    }
+
+    private void initUserStats() {
+        if (userStats != null) {
+            SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+            String can = mPrefs.getString("canbus_class", "empty");
+            if (!can.equals("empty")) {
+                userStats.setVisible(true);
+                String formattedText = getString(R.string.stats_window_summary, can.replace("class ", ""));
+                userStats.setSummary(Html.fromHtml(formattedText, Html.FROM_HTML_MODE_LEGACY));
+                userStats.setOnPreferenceClickListener(this);
+            } else {
+                userStats.setChecked(false);
+                userStats.setVisible(false);
+            }
+        }
     }
 
     private void clearPreferenceListeners(PreferenceGroup group) {
         if (group == null) return;
-        
+
         for (int i = 0; i < group.getPreferenceCount(); i++) {
             Preference p = group.getPreference(i);
             p.setOnPreferenceClickListener(null);
-            
+
             if (p instanceof PreferenceGroup) {
                 clearPreferenceListeners((PreferenceGroup) p);
             }
@@ -766,15 +797,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (appListStatsDialog != null && appListStatsDialog.isShowing()) {
             appListStatsDialog.dismiss();
             appListStatsDialog = null;
-        }   
+        }
         if (alertSkipCodesDialog != null && alertSkipCodesDialog.isShowing()) {
             alertSkipCodesDialog.dismiss();
             alertSkipCodesDialog = null;
-        } 
+        }
         if (alertCodesLoggerDialog != null && alertCodesLoggerDialog.isShowing()) {
             alertCodesLoggerDialog.dismiss();
             alertCodesLoggerDialog = null;
-        } 
+        }
         if (alertCodesInspectorDialog != null && alertCodesInspectorDialog.isShowing()) {
             alertCodesInspectorDialog.dismiss();
             alertCodesInspectorDialog = null;
@@ -800,19 +831,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 int seconds = remainingSeconds % 60;
                 String timeFormat = String.format(Locale.ROOT, "%02d:%02d:%02d", hours, minutes, seconds);
                 codeInspector.setSummary(getString(
-                    R.string.code_inspector_summary_working, 
-                    timeFormat
+                        R.string.code_inspector_summary_working,
+                        timeFormat
                 ));
             }
 
             public void onFinish() {
                 codeInspector.setSummary(getString(
-                    R.string.code_inspector_summary_working, 
-                    "00:00:00"
+                        R.string.code_inspector_summary_working,
+                        "00:00:00"
                 ));
             }
         }.start();
-    }  
+    }
 
     public void cancelCountDownTimer() {
         if (countDownTimerBool) {
@@ -825,14 +856,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (!tickRunnableBool) {
             mHandler.postDelayed(tickRunnable, delay);
             tickRunnableBool = true;
-        } 
+        }
     }
 
     public void removeTickRunnable() {
         if (tickRunnableBool) {
             mHandler.removeCallbacks(tickRunnable);
-            tickRunnableBool = false; 
-        } 
+            tickRunnableBool = false;
+        }
     }
 
     private final Runnable tickRunnable = new Runnable() {
@@ -849,14 +880,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (!loggerTickRunnableBool) {
             loggerTickHandler.postDelayed(loggerTickRunnable, TIMER_DURATION);
             loggerTickRunnableBool = true;
-        } 
+        }
     }
 
     public void removeLoggerTickRunnable() {
         if (loggerTickRunnableBool) {
             loggerTickHandler.removeCallbacks(loggerTickRunnable);
-            loggerTickRunnableBool = false; 
-        } 
+            loggerTickRunnableBool = false;
+        }
     }
 
     private final Runnable loggerTickRunnable = new Runnable() {
@@ -870,13 +901,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 int seconds = remainingSeconds % 60;
                 String timeFormat = String.format(Locale.ROOT, "%02d:%02d:%02d", hours, minutes, seconds);
                 codeLogger.setSummary(getString(
-                    R.string.code_logger_summary_working, 
-                    timeFormat
+                        R.string.code_logger_summary_working,
+                        timeFormat
                 ));
                 loggerTickHandler.postDelayed(this, TIMER_DURATION);
             } else {
                 codeLogger.setSummary(getString(R.string.code_logger_summary));
-                loggerTickRunnableBool = false; 
+                loggerTickRunnableBool = false;
                 loggerTickHandler.removeCallbacks(loggerTickRunnable);
             }
         }
@@ -885,8 +916,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     public void startCanbusCodeInspector() {
         Intent intent = new Intent(this.requireContext(), CanbusCodeInspector.class);
         Bundle extras = new Bundle();
-        extras.putInt("cmdInt", Integer.parseInt(sharedPrefs.getString(CMD_INT, "0")));
-        extras.putInt("cmdArr", Integer.parseInt(sharedPrefs.getString(CMD_ARR, "0")));
+        extras.putInt("cmdInt", Integer.parseInt(sharedPrefs.getString(Keys.CMD_INT, "0")));
+        extras.putInt("cmdArr", Integer.parseInt(sharedPrefs.getString(Keys.CMD_ARR, "0")));
         intent.putExtras(extras);
         this.requireContext().startService(intent);
     }
@@ -903,25 +934,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Intent loggerIntent = new Intent(this.requireContext(), CanbusCommandLogger.class);
         this.requireContext().startService(loggerIntent);
     }
-    
+
     private void stopLoggerService() {
         CanbusCommandLogger.stopLogging();
         removeLoggerTickRunnable();
         codeLogger.setSummary(getString(R.string.code_logger_summary));
-    }
-
-    private void dialogPipEditText() {
-        pipEditText = new EditText(this.getContext());
-        pipEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "99")});
-        pipEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        pipEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        pipEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                savePip();
-                alertPipDialog.dismiss();
-            }
-            return false;
-        });
     }
 
     private void dialogStartPageEditText() {
@@ -976,7 +993,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             }
             return false;
         });
-    } 
+    }
 
     private void dialogSkipCodesEditText() {
         skipCodesEditText = new EditText(this.getContext());
@@ -990,7 +1007,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             }
             return false;
         });
-    }   
+    }
 
     private void dialogCodesLoggerEditText(EditText codesEditText) {
         codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "1199")});
@@ -1033,6 +1050,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     private void userStatsSwitch() {
         if (userStatsBool) {
+            statsScreen.setVisible(true);
             statsCodes.setVisible(true);
             extraStatsCodes.setVisible(true);
             mainScreenStats.setVisible(true);
@@ -1044,19 +1062,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 bgDrawable.setVisible(true);
                 bgColor.setVisible(true);
                 if (colorBgBool && !drawableBgBool) {
-                    bgColor.setChecked(true);       
+                    bgColor.setChecked(true);
                     bgDrawable.setChecked(false);
                     bgColorPickerPref.setVisible(true);
                 } else {
                     bgDrawable.setChecked(true);
                     bgColorPickerPref.setVisible(false);
-                }  
+                }
             } else {
                 bgDrawable.setVisible(false);
                 bgColor.setVisible(false);
                 bgColorPickerPref.setVisible(false);
-            } 
+            }
         } else {
+            statsScreen.setVisible(false);
             statsCodes.setVisible(false);
             extraStatsCodes.setVisible(false);
             mainScreenStats.setVisible(false);
@@ -1067,7 +1086,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             bgDrawable.setVisible(false);
             bgColor.setVisible(false);
             bgColorPickerPref.setVisible(false);
-        }          
+        }
     }
 
     private void displayCanbusReaderSwitch() {
@@ -1091,7 +1110,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             inspectorCategory.setVisible(false);
             codeInspector.setVisible(false);
             codeInspectorData.setVisible(false);
-        }          
+        }
     }
 
     private boolean statsBackgroundBool() {
@@ -1114,20 +1133,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
-    }
-
-    private AlertDialog.Builder displayPipDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setTitle(R.string.pip_dialog_str);
-        if(pipEditText.getParent() != null) {
-            ((ViewGroup)pipEditText.getParent()).removeView(pipEditText);
-        }
-        builder.setView(pipEditText);
-        pipEditText.setText(pipScreen.getSummary());
-        pipEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> savePip());
-        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
-        return builder;
     }
 
     private AlertDialog.Builder displayStartPageDialog() {
@@ -1178,7 +1183,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         setCalculatedSizes(dialogView, R.id.range_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.cmdInt_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.cmdArr_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        
+
         dialogCodesEditText(fuelCodeInt);
         dialogCodesEditText(rangeCodeInt);
         dialogCodesEditText(cmdIntCodeInt);
@@ -1218,7 +1223,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 dialog.dismiss();
             });
         return builder;
-    }    
+    }
 
     private AlertDialog.Builder displayExtraCodesDialog() {
         EditText numberOfCylindersCodeInt;
@@ -1301,14 +1306,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             ((ViewGroup)skipCodesEditText.getParent()).removeView(skipCodesEditText);
         }
         builder.setView(skipCodesEditText);
-        Set<String> skipCodesSet = sharedPrefs.getStringSet(SKIP_CODES, Collections.singleton(""));
+        Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
         skipCodesEditText.setText(skipCodesStr);
         skipCodesEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveSkipCodes());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
-    }  
+    }
 
     private AlertDialog.Builder displayCodesLoggerDialog() {
         EditText startingArr;
@@ -1380,14 +1385,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 dialog.dismiss();
             });
         return builder;
-    }  
+    }
 
     private AlertDialog.Builder displayCodesInspectorDialog() {
         EditText inspectorArr;
         EditText inspectorTimeout;
         LayoutInflater inflater = LayoutInflater.from(this.requireContext());
         View dialogView = inflater.inflate(R.layout.dialog_inspector_codes_layout, null);
-        
+
         inspectorInt = dialogView.findViewById(R.id.inspector_cmd_int);
         inspectorArr = dialogView.findViewById(R.id.inspector_cmd_arr);
         inspectorTimeout = dialogView.findViewById(R.id.code_inspector_timeout);
@@ -1432,12 +1437,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 dialog.dismiss();
             });
         return builder;
-    } 
+    }
 
     private void setCalculatedSizes(View view, int textViewId, int textSize, int margin) {
         TextView textView = view.findViewById(textViewId);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-        
+
         if (textView.getLayoutParams() instanceof ConstraintLayout.LayoutParams params) {
             if (textViewId == R.id.code_inspector_data_title
              || textViewId == R.id.code_logger_data_title
@@ -1451,19 +1456,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
 
-    private void savePip() {
-        String valueStr = pipEditText.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "1";
-        pipScreen.setSummary(valueStr);
-        editor.putString(PIP_SCREEN, valueStr);
-        editor.apply();
-    }
-
     private void saveStartPage() {
         String valueStr = startPageEditText.getText().toString();
         if (valueStr.isEmpty()) valueStr = "1";
         startPage.setSummary(valueStr);
-        editor.putString(START_PAGE, valueStr);
+        editor.putString(Keys.START_PAGE, valueStr);
         editor.apply();
     }
 
@@ -1471,7 +1468,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String valueStr = marginEditText.getText().toString();
         if (valueStr.isEmpty()) valueStr = "10";
         margin.setSummary(valueStr);
-        editor.putString(LAYOUT_MARGIN, valueStr);
+        editor.putString(Keys.LAYOUT_MARGIN, valueStr);
         editor.apply();
     }
 
@@ -1480,25 +1477,25 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (valueStr.isEmpty()) valueStr = "0";
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
-        statsCodes.setSummary(getString(R.string.stats_codes_summary, 
-            sharedPrefs.getString("fuel_code_int", "0"), 
-            sharedPrefs.getString("range_code_int", "0"), 
-            sharedPrefs.getString(CMD_INT, "0"), 
-            sharedPrefs.getString(CMD_ARR, "0")));
-    }    
+        statsCodes.setSummary(getString(R.string.stats_codes_summary,
+            sharedPrefs.getString("fuel_code_int", "0"),
+            sharedPrefs.getString("range_code_int", "0"),
+            sharedPrefs.getString(Keys.CMD_INT, "0"),
+            sharedPrefs.getString(Keys.CMD_ARR, "0")));
+    }
 
     private void saveExtraCode(EditText code) {
         String valueStr = code.getText().toString();
         if (valueStr.isEmpty()) valueStr = "0";
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
-        extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary,  
+        extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary,
             sharedPrefs.getString("rpm_code_int", "0"),
-            sharedPrefs.getString("horse_power_code_int", "0"), 
-            sharedPrefs.getString("vehicle_mass_code_int", "0"), 
-            sharedPrefs.getString("engine_volume_code_int", "0"), 
+            sharedPrefs.getString("horse_power_code_int", "0"),
+            sharedPrefs.getString("vehicle_mass_code_int", "0"),
+            sharedPrefs.getString("engine_volume_code_int", "0"),
             sharedPrefs.getString("cylinders_number_code_int", "0")));
-    }  
+    }
 
     private void saveSkipCodes() {
         String input = skipCodesEditText.getText().toString().trim();
@@ -1507,14 +1504,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         if (input.isEmpty()) {
             skipCodes.setSummary(getString(R.string.skip_codes_empty_summary));
-            editor.putStringSet(SKIP_CODES, stringSet);
+            editor.putStringSet(Keys.SKIP_CODES, stringSet);
             editor.apply();
             return;
         }
 
         // Split input and convert to Set<String>
         String[] codes = input.split(",");
-        
+
         for (String code : codes) {
             try {
                 // Validate & trim each code
@@ -1530,7 +1527,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String skipCodesString = stringSet != null ? String.join(", ", stringSet) : "";
         skipCodes.setSummary(getString(R.string.skip_codes_summary, skipCodesString));
 
-        editor.putStringSet(SKIP_CODES, stringSet);
+        editor.putStringSet(Keys.SKIP_CODES, stringSet);
         editor.apply();
     }
 
@@ -1540,54 +1537,54 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (valueStr.isEmpty()) valueStr = "0";
         int codeToSaveVal = Integer.parseInt(valueStr);
 
-        if ((codeToSaveStr.equals(STARTING_CMD_INT) && codeToSaveVal >= getIntFromPrefs(MAX_CMD_INT, "10"))
-            || (codeToSaveStr.equals(MAX_CMD_INT) && codeToSaveVal <= getIntFromPrefs(STARTING_CMD_INT, "0"))) {
+        if ((codeToSaveStr.equals(Keys.STARTING_CMD_INT) && codeToSaveVal >= getIntFromPrefs(Keys.MAX_CMD_INT, "10"))
+            || (codeToSaveStr.equals(Keys.MAX_CMD_INT) && codeToSaveVal <= getIntFromPrefs(Keys.STARTING_CMD_INT, "0"))) {
             editor.putString(code.getResources().getResourceEntryName(code.getId()), "0");
-            editor.putString(STARTING_CMD_INT, "0");
-            editor.putString(MAX_CMD_INT, "10");
+            editor.putString(Keys.STARTING_CMD_INT, "0");
+            editor.putString(Keys.MAX_CMD_INT, "10");
             editor.apply();
             startingCmdInt = "0";
             maxCmdInt = "10";
             codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(STARTING_CMD_ARR, "0"), 
-                sharedPrefs.getString(MAX_CMD_INT, "10"),
-                sharedPrefs.getString(MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1"))); 
+                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
+                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
+                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
+                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
+                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
             Toast.makeText(
-                this.requireContext(), 
-                R.string.code_logger_dialog_toast, 
+                this.requireContext(),
+                R.string.code_logger_dialog_toast,
                 Toast.LENGTH_LONG
             ).show();
-        } else if ((codeToSaveStr.equals(STARTING_CMD_ARR) && codeToSaveVal >= getIntFromPrefs(MAX_CMD_ARR, "10"))
-            || (codeToSaveStr.equals(MAX_CMD_ARR) && codeToSaveVal <= getIntFromPrefs(STARTING_CMD_ARR, "0"))) {
+        } else if ((codeToSaveStr.equals(Keys.STARTING_CMD_ARR) && codeToSaveVal >= getIntFromPrefs(Keys.MAX_CMD_ARR, "10"))
+            || (codeToSaveStr.equals(Keys.MAX_CMD_ARR) && codeToSaveVal <= getIntFromPrefs(Keys.STARTING_CMD_ARR, "0"))) {
             editor.putString(code.getResources().getResourceEntryName(code.getId()), "0");
-            editor.putString(STARTING_CMD_ARR, "0");
-            editor.putString(MAX_CMD_ARR, "10");
-            editor.apply(); 
+            editor.putString(Keys.STARTING_CMD_ARR, "0");
+            editor.putString(Keys.MAX_CMD_ARR, "10");
+            editor.apply();
             startingCmdArr = "0";
-            maxCmdArr = "10";     
+            maxCmdArr = "10";
             codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(STARTING_CMD_ARR, "0"), 
-                sharedPrefs.getString(MAX_CMD_INT, "10"),
-                sharedPrefs.getString(MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1")));  
+                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
+                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
+                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
+                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
+                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
             Toast.makeText(
-                this.requireContext(), 
-                R.string.code_logger_dialog_toast, 
+                this.requireContext(),
+                R.string.code_logger_dialog_toast,
                 Toast.LENGTH_LONG
             ).show();
-        } else if (valueStr.equals("0") && codeToSaveStr.equals(CODE_LOGGER_TIMEOUT)) {
+        } else if (valueStr.equals("0") && codeToSaveStr.equals(Keys.CODE_LOGGER_TIMEOUT)) {
             valueStr = "1";
             editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
             editor.apply();
             codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(STARTING_CMD_ARR, "0"), 
-                sharedPrefs.getString(MAX_CMD_INT, "10"),
-                sharedPrefs.getString(MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1")));  
+                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
+                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
+                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
+                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
+                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
         } else {
             saveVerifiedLoggerCode(code);
         }
@@ -1602,17 +1599,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         editor.putString(code.getResources().getResourceEntryName(code.getId()), code.getText().toString());
         editor.apply();
         codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-            sharedPrefs.getString(STARTING_CMD_INT, "0"),
-            sharedPrefs.getString(STARTING_CMD_ARR, "0"), 
-            sharedPrefs.getString(MAX_CMD_INT, "10"),
-            sharedPrefs.getString(MAX_CMD_ARR, "10"),
-            sharedPrefs.getString(CODE_LOGGER_TIMEOUT, "1")));        
+            sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
+            sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
+            sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
+            sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
+            sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
     }
 
     private void saveInspectorCode(EditText code) {
         String codeToSaveStr = code.getResources().getResourceEntryName(code.getId());
         String valueStr = code.getText().toString();
-        if ((valueStr.isEmpty() || valueStr.equals("0")) && codeToSaveStr.equals(CODE_INSPECTOR_TIMEOUT)) {
+        if ((valueStr.isEmpty() || valueStr.equals("0")) && codeToSaveStr.equals(Keys.CODE_INSPECTOR_TIMEOUT)) {
             valueStr = "30";
         } else if (valueStr.isEmpty()) {
             valueStr = "0";
@@ -1620,8 +1617,103 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
         codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary,
-            sharedPrefs.getString(INSPECTOR_CMD_INT, "0"),
-            sharedPrefs.getString(INSPECTOR_CMD_ARR, "0"), 
-            sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30")));        
+            sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0"),
+            sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0"),
+            sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")));
+    }
+
+    private void setPipGroupVisible(boolean visible) {
+        if (pipDualPref != null)   pipDualPref.setVisible(visible);
+        if (pipFirstPref != null)  pipFirstPref.setVisible(visible);
+        if (pipSecondPref != null) pipSecondPref.setVisible(visible);
+        if (pipThirdPref != null)  pipThirdPref.setVisible(visible);
+        if (pipFourthPref != null) pipFourthPref.setVisible(visible);
+    }
+
+    private void updatePipSummaries() {
+        if (pipFirstPref != null) {
+            String pkg = sharedPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+            pipFirstPref.setSummary(pkg == null || pkg.isEmpty() ? getString(R.string.pref_no_app_selected) : getAppLabel(pkg));
+        }
+        if (pipSecondPref != null) {
+            String pkg = sharedPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+            pipSecondPref.setSummary(pkg == null || pkg.isEmpty() ? getString(R.string.pref_no_app_selected) : getAppLabel(pkg));
+        }
+        if (pipThirdPref != null) {
+            String pkg = sharedPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+            pipThirdPref.setSummary(pkg == null || pkg.isEmpty() ? getString(R.string.pref_no_app_selected) : getAppLabel(pkg));
+        }
+        if (pipFourthPref != null) {
+            String pkg = sharedPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+            pipFourthPref.setSummary(pkg == null || pkg.isEmpty() ? getString(R.string.pref_no_app_selected) : getAppLabel(pkg));
+        }
+    }
+
+    private String getAppLabel(String pkg) {
+        try {
+            PackageManager pm = requireContext().getPackageManager();
+            ApplicationInfo ai = pm.getApplicationInfo(pkg, 0);
+            CharSequence label = pm.getApplicationLabel(ai);
+            return label != null ? label.toString() : pkg;
+        } catch (Exception e) {
+            return pkg != null ? pkg : "";
+        }
+    }
+
+    private void showAppPicker(String whichKey) {
+        AppListPipDialogFragment dlg = new AppListPipDialogFragment();
+        Bundle args = new Bundle();
+        args.putString("pip_key", whichKey);
+        dlg.setArguments(args);
+        dlg.show(requireActivity().getSupportFragmentManager(), "AppListPipDialog");
+    }
+
+    private void enforceSinglePiP(@Nullable CustomPipSwitchPreference source, boolean isPip) {
+        if (!isPip) return; 
+
+        CustomPipSwitchPreference[] all = new CustomPipSwitchPreference[] {
+                pipFirstPref, pipSecondPref, pipThirdPref, pipFourthPref
+        };
+
+        for (CustomPipSwitchPreference pref : all) {
+            if (pref == null || pref == source) continue;
+            if (pref.isModeChecked()) {
+                pref.setModeChecked(false);
+                // Optional: persist here if you store per-slot mode
+                // persistModeFor(pref, /*isPip=*/false);
+            }
+        }
+    }
+
+    private void enforceDualPiP(boolean changedByDual, boolean newState) {
+        if (dualPipGuard) return;
+        dualPipGuard = true;
+        try {
+            if (changedByDual) {
+                // Dual PiP toggled
+                if (newState) {
+                    // Dual PiP = ON → disable First/Second and set their custom switches to Window
+                    if (pipFirstPref  != null) { pipFirstPref.setChecked(false);  pipFirstPref.setModeChecked(false); }
+                    if (pipSecondPref != null) { pipSecondPref.setChecked(false); pipSecondPref.setModeChecked(false); }
+                }
+            } else {
+                // A child (First/Second) was turned ON or its custom mode set to PiP
+                if (newState && pipDualPref != null && pipDualPref.isChecked()) {
+                    pipDualPref.setChecked(false); // Dual PiP = OFF
+                }
+            }
+        } finally {
+            dualPipGuard = false;
+        }
+    }
+
+    private void openPipAdjuster(String pipScreenKey) {
+        int selectedScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
+        Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + String.valueOf(selectedScreen));
+        if (selectedScreen == 0) {
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFirstScreen()).commit();
+        } else {
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorOtherScreens(selectedScreen)).commit();
+        }
     }
 }

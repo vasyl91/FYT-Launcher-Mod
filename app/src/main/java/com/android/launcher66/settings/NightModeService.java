@@ -31,7 +31,6 @@ import java.time.ZoneId;
 
 public class NightModeService extends Service {
     private static final String TAG = "NightModeService";
-    private static final String RECREATE = "recreate.view";
     private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
     private boolean isNightModeRunning = false;
     private final Handler checkTimeHandler = new Handler(Looper.getMainLooper());
@@ -49,7 +48,7 @@ public class NightModeService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Service started"); 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(RECREATE);
+        filter.addAction(Keys.RECREATE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(recreateReceiver, filter, Context.RECEIVER_EXPORTED);
         } else {
@@ -67,7 +66,7 @@ public class NightModeService extends Service {
             try {
                 if(intent.getAction() != null) {
                     switch (intent.getAction()) {
-                        case RECREATE:
+                        case Keys.RECREATE:
                             Log.i(TAG, "Recreate broadcast received"); 
                             removeNightRunnables(false);
                             nightMode();
@@ -131,7 +130,7 @@ public class NightModeService extends Service {
         }
     };
 
-    // runs once when the service starts or whenever the view has been recreated by the user
+    // runs once when the service starts or whenever the view has been Keys.RECREATEd by the user
     private final Runnable nightModeRunnable = new Runnable() {
         @Override
         public void run() {

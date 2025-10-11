@@ -3,13 +3,16 @@ package com.fyt.widget;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.util.TypedValue;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
+import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.syu.widget.util.TimeUtil;
 
-public class Date extends TextView {
+public class Date extends AppCompatTextView {
     public static Date mDate;
     private IntentFilter filter;
     private final Context mContext;
@@ -49,10 +52,64 @@ public class Date extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-    }
+    }  
+
+    private boolean isTextSizeAdjusted = false;
 
     public void setDate() {
-        setText(TimeUtil.getDateOfToday(this.mContext, getDateStringFormat(LauncherApplication.sApp.getResources().getInteger(R.integer.apps_timewidget_show))));
+        String mText = TimeUtil.getDateOfToday(this.mContext, getDateStringFormat(LauncherApplication.sApp.getResources().getInteger(R.integer.apps_timewidget_show)));
+        float targetSize = Launcher.textSizeBasic;
+        
+        setText(mText);
+        
+        // Only adjust size once, or when text actually changes
+        if (!isTextSizeAdjusted) {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSize);
+            
+            getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    getViewTreeObserver().removeOnPreDrawListener(this);
+                    
+                    if (!isAttachedToWindow()) {
+                        return true;
+                    }
+                    
+                    int maxWidth = 0;
+                    if (getParent() instanceof android.view.View) {
+                        android.view.View parent = (android.view.View) getParent();
+                        maxWidth = parent.getWidth() - (int) TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+                    }
+                    
+                    if (maxWidth <= 0) {
+                        maxWidth = getWidth();
+                    }
+                    
+                    if (maxWidth > 0) {
+                        setMaxWidth(maxWidth);
+                        
+                        int availableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
+                        
+                        if (availableWidth > 0) {
+                            android.text.TextPaint paint = new android.text.TextPaint();
+                            paint.setTextSize(TypedValue.applyDimension(
+                                TypedValue.COMPLEX_UNIT_SP, targetSize, getResources().getDisplayMetrics()));
+                            
+                            float textWidth = paint.measureText(mText);
+                            
+                            if (textWidth > availableWidth) {
+                                float scaledSize = targetSize * (availableWidth / textWidth) * 0.95f;
+                                setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
+                            }
+                        }
+                    }
+                    
+                    isTextSizeAdjusted = true;
+                    return true;
+                }
+            });
+        }
     }
 
     private String getDateStringFormat(int timeWidgetShow) {

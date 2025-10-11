@@ -109,15 +109,15 @@ public class FytPackage {
             intent = new Intent("android.settings.SETTINGS");
             mainIntent = new Intent("android.settings.SETTINGS", null);
         } else {
-            mainIntent = new Intent("android.intent.action.MAIN", null);
-            intent = new Intent("android.intent.action.MAIN");
+            mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            intent = new Intent(Intent.ACTION_MAIN);
         }
         mainIntent.setPackage(pkg);
         PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
         for (ResolveInfo res : apps) {
             if (res.activityInfo.packageName.equals(pkg)) {
-                intent = new Intent("android.intent.action.MAIN");
+                intent = new Intent(Intent.ACTION_MAIN);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
             }

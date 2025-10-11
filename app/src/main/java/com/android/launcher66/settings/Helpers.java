@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
 
@@ -158,6 +159,18 @@ public class Helpers {
     }
 
 
+    private boolean inWidgets = false;
+    public boolean isInWidgets() {
+        inWidgets = sharedPrefs.getBoolean("inWidgets", false);
+        return inWidgets;
+    }
+    public void setInWidgets(boolean inWidgets) {
+        this.inWidgets = inWidgets;
+        editor.putBoolean("inWidgets", inWidgets);
+        editor.apply();
+    }
+
+
     private boolean foregroundAppOpened = false;
     public boolean isForegroundAppOpened() {
         foregroundAppOpened = sharedPrefs.getBoolean("foregroundAppOpened", false);
@@ -298,6 +311,30 @@ public class Helpers {
     public void setWidgetClicked(boolean isWidgetClicked) {
         this.isWidgetClicked = isWidgetClicked;
         editor.putBoolean("isWidgetClicked", isWidgetClicked);
+        editor.apply();
+    }
+
+
+    private boolean onWidgetDropPip = false;
+    public boolean onWidgetDropPipBool() {
+        onWidgetDropPip = sharedPrefs.getBoolean("onWidgetDropPip", false);
+        return onWidgetDropPip;
+    }
+    public void setWidgetDropPip(boolean onWidgetDropPip) {
+        this.onWidgetDropPip = onWidgetDropPip;
+        editor.putBoolean("onWidgetDropPip", onWidgetDropPip);
+        editor.apply();
+    }
+
+
+    private boolean arePipsAdded = false;
+    public boolean pipsAdded() {
+        arePipsAdded = sharedPrefs.getBoolean("arePipsAdded", false);
+        return arePipsAdded;
+    }
+    public void setPipsAdded(boolean arePipsAdded) {
+        this.arePipsAdded = arePipsAdded;
+        editor.putBoolean("arePipsAdded", arePipsAdded);
         editor.apply();
     }
 
@@ -454,85 +491,385 @@ public class Helpers {
         }
     }
 
-    public void resetPrefs() {
-        Log.i("helpers", "resetprefs");
-        if ((hasLayoutTypeChanged() || hasLeftBarChanged()) && !hasUserOpenedCreator()) {
-            Log.i("helpers", "resetprefs passed if statement");
-            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-            int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10")); 
-            int mapMinWidth = Launcher.calculatedMapMinWidth;
-            int mapMinHeight = Launcher.calculatedMapMinHeight;
-            int dateMinWidth = Launcher.calculatedDateMinWidth;
-            int dateMinHeight = Launcher.calculatedDateMinHeight;
-            int musicMinWidth = Launcher.calculatedMusicMinWidth;
-            int musicMinHeight = Launcher.calculatedMusicMinHeight;
-            int radioMinWidth = Launcher.calculatedRadioMinWidth;
-            int radioMinHeight = Launcher.calculatedRadioMinHeight;
-            if (margin < 0) {
-                margin = 10;
-            }
-            
-            SharedPreferences.Editor editorReset = mPrefs.edit();
-            editorReset.putInt("mapTopLeftX", margin);  
-            editorReset.putInt("mapTopLeftY", margin + dateMinHeight + margin); 
-            editorReset.putInt("mapTopRightX", margin + mapMinWidth);    
-            editorReset.putInt("mapTopRightY", margin + dateMinHeight + margin); 
-            editorReset.putInt("mapBottomRightX", margin + mapMinWidth);   
-            editorReset.putInt("mapBottomRightY", margin + dateMinHeight + margin + mapMinHeight);  
-            editorReset.putInt("mapBottomLeftX", margin);  
-            editorReset.putInt("mapBottomLeftY", margin + dateMinHeight + margin + mapMinHeight);
-            editorReset.putInt("dateTopLeftX", margin);  
-            editorReset.putInt("dateTopLeftY", margin);          
-            editorReset.putInt("dateTopRightX", margin + dateMinWidth);    
-            editorReset.putInt("dateTopRightY", margin); 
-            editorReset.putInt("dateBottomRightX", margin + dateMinWidth);  
-            editorReset.putInt("dateBottomRightY", margin + dateMinHeight); 
-            editorReset.putInt("dateBottomLeftX", margin);  
-            editorReset.putInt("dateBottomLeftY", margin + dateMinHeight);
-            int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                editorReset.putInt("musicTopLeftX", margin);  
-                editorReset.putInt("musicTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
-                editorReset.putInt("musicTopRightX", margin + musicMinWidth);  
-                editorReset.putInt("musicTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
-                editorReset.putInt("musicBottomRightX", margin + musicMinWidth);  
-                editorReset.putInt("musicBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight); 
-                editorReset.putInt("musicBottomLeftX", margin);  
-                editorReset.putInt("musicBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + musicMinHeight);       
-                editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);  
-                editorReset.putInt("radioTopLeftY", margin + dateMinHeight + margin + mapMinHeight + margin);         
-                editorReset.putInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);  
-                editorReset.putInt("radioTopRightY", margin + dateMinHeight + margin + mapMinHeight + margin); 
-                editorReset.putInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);  
-                editorReset.putInt("radioBottomRightY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight); 
-                editorReset.putInt("radioBottomLeftX", margin + musicMinWidth + margin);  
-                editorReset.putInt("radioBottomLeftY", margin + dateMinHeight + margin + mapMinHeight + margin + radioMinHeight);
-            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                editorReset.putInt("musicTopLeftX", margin + mapMinWidth + margin);  
-                editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);         
-                editorReset.putInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);  
-                editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin); 
-                editorReset.putInt("musicBottomRightX", margin + mapMinWidth + margin + musicMinWidth);  
-                editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight); 
-                editorReset.putInt("musicBottomLeftX", margin + mapMinWidth + margin);  
-                editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);            
-                editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
-                editorReset.putInt("radioTopLeftY", margin);
-                editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin  + radioMinWidth);   
-                editorReset.putInt("radioTopRightY", margin); 
-                editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin  + radioMinWidth);  
-                editorReset.putInt("radioBottomRightY", margin + radioMinHeight); 
-                editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin); 
-                editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);    
-            }     
-            editorReset.putInt("statsTopLeftX", 20);
-            editorReset.putInt("statsTopLeftY", 20);         
-            editorReset.apply();
+    /** -1 Check all screens, reset overlapping rectangles on same screen
+     *   0 Check only screen 0, reset overlapping rectangles on that screen
+     *   1 Check only screen 1, reset overlapping rectangles on that screen
+     *   and so on..
+     */
+    public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        
+        // Rectangle configurations with their screen keys
+        String[] rectangleKeys = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth", "date", "music", "radio"};
+        String[] screenKeys = {Keys.PIP_DUAL_SCREEN, Keys.PIP_FIRST_SCREEN, Keys.PIP_SECOND_SCREEN, 
+                              Keys.PIP_THIRD_SCREEN, Keys.PIP_FOURTH_SCREEN, Keys.DATE_SCREEN, 
+                              Keys.MUSIC_SCREEN, Keys.RADIO_SCREEN};
+        
+        // Check which rectangles are enabled
+        boolean dualPip = mPrefs.getBoolean(Keys.PIP_DUAL, false);
+        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
+        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
+        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+        boolean pip = mPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+        boolean date = mPrefs.getBoolean(Keys.USER_DATE, false);
+        boolean music = mPrefs.getBoolean(Keys.USER_MUSIC, false);
+        boolean radio = mPrefs.getBoolean(Keys.USER_RADIO, false);
+        
+        boolean[] enabledStates = {
+            pip && dualPip && !firstPip && !secondPip,  // pipDual
+            pip && firstPip && !dualPip,                // pipFirst
+            pip && secondPip && !dualPip,               // pipSecond
+            pip && thirdPip,                            // pipThird
+            pip && fourthPip,                           // pipFourth
+            date,                                       // date
+            music,                                      // music
+            radio,                                      // radio
+        };
+        
+        // Get screen assignments for each rectangle
+        int[] screens = new int[rectangleKeys.length];
+        for (int i = 0; i < screenKeys.length; i++) {
+            screens[i] = mPrefs.getInt(screenKeys[i], 1) - 1;
         }
+        
+        boolean foundOverlap = false;
+        boolean[] needsReset = new boolean[rectangleKeys.length];
+        
+        // Check for overlaps
+        for (int i = 0; i < rectangleKeys.length; i++) {
+            if (!enabledStates[i]) continue;
+            
+            // Skip if screenToCompare is specified and this rectangle is not on that screen
+            if (screenToCompare >= 0 && screens[i] != screenToCompare) continue;
+            
+            // Get rectangle bounds for first rectangle
+            RectF rectA = getRectangleBounds(mPrefs, rectangleKeys[i]);
+            if (rectA.isEmpty()) continue;
+            
+            for (int j = i + 1; j < rectangleKeys.length; j++) {
+                if (!enabledStates[j]) continue;
+                
+                // Check if rectangles are on the same screen
+                if (screenToCompare == -1) {
+                    // Check all screens - rectangles must be on same screen to overlap
+                    if (screens[i] != screens[j]) continue;
+                } else {
+                    // Check specific screen - both rectangles must be on the specified screen
+                    if (screens[j] != screenToCompare) continue;
+                }
+                
+                // Get rectangle bounds for second rectangle
+                RectF rectB = getRectangleBounds(mPrefs, rectangleKeys[j]);
+                if (rectB.isEmpty()) continue;
+                
+                // Check for overlap (including touching edges)
+                if (overlapsOrTouches(rectA, rectB)) {
+                    foundOverlap = true;
+                    needsReset[i] = true;
+                    needsReset[j] = true;
+                }
+            }
+        }
+        
+        // Reset overlapping rectangles if any were found
+        if (foundOverlap) {
+            resetOverlappingRectangles(mPrefs, rectangleKeys, needsReset, enabledStates, screenToCompare);
+        }
+        
+        return foundOverlap;
+    }
+
+    private RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
+        int topLeftX = mPrefs.getInt(key + "TopLeftX", 0);
+        int topLeftY = mPrefs.getInt(key + "TopLeftY", 0);
+        int topRightX = mPrefs.getInt(key + "TopRightX", 0);
+        int topRightY = mPrefs.getInt(key + "TopRightY", 0);
+        int bottomRightX = mPrefs.getInt(key + "BottomRightX", 0);
+        int bottomRightY = mPrefs.getInt(key + "BottomRightY", 0);
+        int bottomLeftX = mPrefs.getInt(key + "BottomLeftX", 0);
+        int bottomLeftY = mPrefs.getInt(key + "BottomLeftY", 0);
+        
+        // Calculate bounds from the four corner points
+        float left = Math.min(topLeftX, bottomLeftX);
+        float right = Math.max(topRightX, bottomRightX);
+        float top = Math.min(topLeftY, topRightY);
+        float bottom = Math.max(bottomLeftY, bottomRightY);
+        
+        if (right <= left || bottom <= top) return new RectF();
+        return new RectF(left, top, right, bottom);
+    }
+
+    private static boolean overlapsOrTouches(RectF a, RectF b) {
+        // If there is any separating gap, they don't intersect.
+        return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
+    }
+
+    private void resetOverlappingRectangles(SharedPreferences mPrefs, String[] rectangleKeys, 
+                                          boolean[] needsReset, boolean[] enabledStates, int screenToCompare) {
+        SharedPreferences.Editor editorReset = mPrefs.edit();
+        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
+        if (margin < 0) margin = 10;
+        
+        // Get dimensions
+        int pipMinWidth = Launcher.calculatedPipMinWidth;
+        int pipMinWidthStandard = pipMinWidth;
+        int pipMinHeight = Launcher.calculatedPipMinHeight;
+        int dateMinWidth = Launcher.calculatedDateMinWidth;
+        int dateMinHeight = Launcher.calculatedDateMinHeight;
+        int musicMinWidth = Launcher.calculatedMusicMinWidth;
+        int musicMinHeight = Launcher.calculatedMusicMinHeight;
+        int radioMinWidth = Launcher.calculatedRadioMinWidth;
+        int radioMinHeight = Launcher.calculatedRadioMinHeight;
+        
+        boolean dualPip = mPrefs.getBoolean(Keys.PIP_DUAL, false);
+        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
+        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
+        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+        
+        // Calculate adjusted pip width
+        pipMinWidth = (pipMinWidth / countEnabledPips(dualPip, firstPip, secondPip, thirdPip, fourthPip)) - (margin / 2);
+        
+        // Get actual count of enabled individual pips for positioning logic
+        int enabledPipCount = 0;
+        if (dualPip) {
+            enabledPipCount = 2;
+        } else {
+            if (firstPip) enabledPipCount++;
+            if (secondPip) enabledPipCount++;
+        }
+        if (thirdPip) enabledPipCount++;
+        if (fourthPip) enabledPipCount++;
+        
+        // Base position for first PIP
+        int baseX = margin;
+        int baseY = margin + dateMinHeight + margin;
+        int pipIndex = 0;
+        
+        for (int i = 0; i < rectangleKeys.length; i++) {
+            if (!needsReset[i] || !enabledStates[i]) continue;
+            
+            String key = rectangleKeys[i];
+            
+            switch (key) {
+                case "pipDual":
+                    if (compareScreensForReset(Keys.PIP_DUAL_SCREEN, screenToCompare, mPrefs)) {
+                        int x = baseX;
+                        int y = baseY;
+                        
+                        editorReset.putInt("pipDualTopLeftX", x);
+                        editorReset.putInt("pipDualTopLeftY", y);
+                        editorReset.putInt("pipDualTopRightX", x + pipMinWidthStandard);
+                        editorReset.putInt("pipDualTopRightY", y);
+                        editorReset.putInt("pipDualBottomRightX", x + pipMinWidthStandard);
+                        editorReset.putInt("pipDualBottomRightY", y + pipMinHeight);
+                        editorReset.putInt("pipDualBottomLeftX", x);
+                        editorReset.putInt("pipDualBottomLeftY", y + pipMinHeight);
+                        pipIndex++;
+                    }
+                    break;
+                    
+                case "pipFirst":
+                    if (compareScreensForReset(Keys.PIP_FIRST_SCREEN, screenToCompare, mPrefs)) {
+                        int x = baseX;
+                        int y = baseY;
+                        
+                        editorReset.putInt("pipFirstTopLeftX", x);
+                        editorReset.putInt("pipFirstTopLeftY", y);
+                        editorReset.putInt("pipFirstTopRightX", x + pipMinWidth);
+                        editorReset.putInt("pipFirstTopRightY", y);
+                        editorReset.putInt("pipFirstBottomRightX", x + pipMinWidth);
+                        editorReset.putInt("pipFirstBottomRightY", y + pipMinHeight);
+                        editorReset.putInt("pipFirstBottomLeftX", x);
+                        editorReset.putInt("pipFirstBottomLeftY", y + pipMinHeight);
+                        pipIndex++;
+                    }
+                    break;
+                    
+                case "pipSecond":
+                    if (compareScreensForReset(Keys.PIP_SECOND_SCREEN, screenToCompare, mPrefs)) {
+                        int x, y;
+                        
+                        if (enabledPipCount == 1) {
+                            x = baseX;
+                            y = baseY;
+                        } else if (enabledPipCount == 2) {
+                            if (firstPip) {
+                                x = baseX + pipMinWidth + margin;
+                            } else {
+                                x = baseX;
+                            }
+                            y = baseY;
+                        } else {
+                            x = baseX + pipMinWidth + margin;
+                            y = baseY;
+                        }
+                        
+                        editorReset.putInt("pipSecondTopLeftX", x);
+                        editorReset.putInt("pipSecondTopLeftY", y);
+                        editorReset.putInt("pipSecondTopRightX", x + pipMinWidth);
+                        editorReset.putInt("pipSecondTopRightY", y);
+                        editorReset.putInt("pipSecondBottomRightX", x + pipMinWidth);
+                        editorReset.putInt("pipSecondBottomRightY", y + pipMinHeight);
+                        editorReset.putInt("pipSecondBottomLeftX", x);
+                        editorReset.putInt("pipSecondBottomLeftY", y + pipMinHeight);
+                        pipIndex++;
+                    }
+                    break;
+                    
+                case "pipThird":
+                    if (compareScreensForReset(Keys.PIP_THIRD_SCREEN, screenToCompare, mPrefs)) {
+                        int x, y;
+                        
+                        if (enabledPipCount == 1) {
+                            x = baseX;
+                            y = baseY;
+                        } else if (enabledPipCount == 2) {
+                            if (pipIndex == 0) {
+                                x = baseX;
+                            } else {
+                                x = baseX + pipMinWidth + margin;
+                            }
+                            y = baseY;
+                        } else {
+                            if (dualPip) {
+                                x = baseX;
+                            } else {
+                                x = baseX;
+                            }
+                            y = baseY + pipMinHeight + margin;
+                        }
+                        
+                        editorReset.putInt("pipThirdTopLeftX", x);
+                        editorReset.putInt("pipThirdTopLeftY", y);
+                        editorReset.putInt("pipThirdTopRightX", x + pipMinWidth);
+                        editorReset.putInt("pipThirdTopRightY", y);
+                        editorReset.putInt("pipThirdBottomRightX", x + pipMinWidth);
+                        editorReset.putInt("pipThirdBottomRightY", y + pipMinHeight);
+                        editorReset.putInt("pipThirdBottomLeftX", x);
+                        editorReset.putInt("pipThirdBottomLeftY", y + pipMinHeight);
+                        pipIndex++;
+                    }
+                    break;
+                    
+                case "pipFourth":
+                    if (compareScreensForReset(Keys.PIP_FOURTH_SCREEN, screenToCompare, mPrefs)) {
+                        int x, y;
+                        
+                        if (enabledPipCount == 1) {
+                            x = baseX;
+                            y = baseY;
+                        } else if (enabledPipCount == 2) {
+                            if (pipIndex == 0) {
+                                x = baseX;
+                            } else {
+                                x = baseX + pipMinWidth + margin;
+                            }
+                            y = baseY;
+                        } else {
+                            x = baseX + pipMinWidth + margin;
+                            y = baseY + pipMinHeight + margin;
+                        }
+                        
+                        editorReset.putInt("pipFourthTopLeftX", x);
+                        editorReset.putInt("pipFourthTopLeftY", y);
+                        editorReset.putInt("pipFourthTopRightX", x + pipMinWidth);
+                        editorReset.putInt("pipFourthTopRightY", y);
+                        editorReset.putInt("pipFourthBottomRightX", x + pipMinWidth);
+                        editorReset.putInt("pipFourthBottomRightY", y + pipMinHeight);
+                        editorReset.putInt("pipFourthBottomLeftX", x);
+                        editorReset.putInt("pipFourthBottomLeftY", y + pipMinHeight);
+                    }
+                    break;
+                    
+                case "date":
+                    if (compareScreensForReset(Keys.DATE_SCREEN, screenToCompare, mPrefs)) {
+                        editorReset.putInt("dateTopLeftX", margin);
+                        editorReset.putInt("dateTopLeftY", margin);
+                        editorReset.putInt("dateTopRightX", margin + dateMinWidth);
+                        editorReset.putInt("dateTopRightY", margin);
+                        editorReset.putInt("dateBottomRightX", margin + dateMinWidth);
+                        editorReset.putInt("dateBottomRightY", margin + dateMinHeight);
+                        editorReset.putInt("dateBottomLeftX", margin);
+                        editorReset.putInt("dateBottomLeftY", margin + dateMinHeight);
+                    }
+                    break;
+                    
+                case "music":
+                    if (compareScreensForReset(Keys.MUSIC_SCREEN, screenToCompare, mPrefs)) {
+                        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+                        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            editorReset.putInt("musicTopLeftX", margin);
+                            editorReset.putInt("musicTopLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("musicTopRightX", margin + musicMinWidth);
+                            editorReset.putInt("musicTopRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("musicBottomRightX", margin + musicMinWidth);
+                            editorReset.putInt("musicBottomRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + musicMinHeight);
+                            editorReset.putInt("musicBottomLeftX", margin);
+                            editorReset.putInt("musicBottomLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + musicMinHeight);
+                        } else {
+                            editorReset.putInt("musicTopLeftX", margin + pipMinWidthStandard + margin);
+                            editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);
+                            editorReset.putInt("musicTopRightX", margin + pipMinWidthStandard + margin + musicMinWidth);
+                            editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin);
+                            editorReset.putInt("musicBottomRightX", margin + pipMinWidthStandard + margin + musicMinWidth);
+                            editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight);
+                            editorReset.putInt("musicBottomLeftX", margin + pipMinWidthStandard + margin);
+                            editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);
+                        }
+                    }
+                    break;
+                    
+                case "radio":
+                    if (compareScreensForReset(Keys.RADIO_SCREEN, screenToCompare, mPrefs)) {
+                        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+                        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);
+                            editorReset.putInt("radioTopLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);
+                            editorReset.putInt("radioTopRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);
+                            editorReset.putInt("radioBottomRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + radioMinHeight);
+                            editorReset.putInt("radioBottomLeftX", margin + musicMinWidth + margin);
+                            editorReset.putInt("radioBottomLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + radioMinHeight);
+                        } else {
+                            editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
+                            editorReset.putInt("radioTopLeftY", margin);
+                            editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth);
+                            editorReset.putInt("radioTopRightY", margin);
+                            editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin + radioMinWidth);
+                            editorReset.putInt("radioBottomRightY", margin + radioMinHeight);
+                            editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin);
+                            editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        editorReset.apply();
+    }
+
+    private boolean compareScreensForReset(String pipScreenKey, int screenToCompare, SharedPreferences mPrefs) {
+        if (screenToCompare == -1) return true;
+        int pipScreen = mPrefs.getInt(pipScreenKey, 1) - 1;
+        return screenToCompare == pipScreen;
+    }
+
+    // Never returns 0, max value is 2
+    private static int countEnabledPips(boolean dualPip, boolean firstPip, boolean secondPip, boolean thirdPip, boolean fourthPip) {
+        int count = 0;
+        if (firstPip || dualPip) count++;
+        if (secondPip || dualPip) count++;
+        if (thirdPip) count++;
+        if (fourthPip) count++;
+        return Math.min(Math.max(1, count), 2);
     }
     
-    public static boolean isPackageInstalled(String packageName, PackageManager packageManager) {
+    public static boolean isPackageInstalled(String packageName) {
         try {
+            PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
             return packageManager.getApplicationInfo(packageName, 0).enabled;
         }
         catch (PackageManager.NameNotFoundException e) {

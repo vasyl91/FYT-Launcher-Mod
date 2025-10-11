@@ -14,14 +14,14 @@ import androidx.activity.OnBackPressedCallback;
 
 import com.android.launcher66.R;
 
-public class CreatorFragmentDrawViewAppStats extends Fragment {
+public class CreatorAppStats extends Fragment {
 
     // Fragment that opens DrawViewAppStats.java where user specifies positon for in-app stats window
 
     private Context mContext;
     private final Helpers helpers = new Helpers();
 
-    public CreatorFragmentDrawViewAppStats() {
+    public CreatorAppStats() {
         super();
     }
 
@@ -30,7 +30,7 @@ public class CreatorFragmentDrawViewAppStats extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mContext = container.getContext();
         View rooView = inflater.inflate(R.layout.creator_stats, container, false);
-        ConstraintLayout layout = rooView.findViewById(R.id.creator_second);
+        ConstraintLayout layout = rooView.findViewById(R.id.creator_stats_screen);
         DrawViewAppStats canvas = new DrawViewAppStats(inflater, rooView, mContext);
         layout.addView(canvas);
         return rooView;

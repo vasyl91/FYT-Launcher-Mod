@@ -21,6 +21,7 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
@@ -145,14 +146,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
+        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
         if (userLayout && userStats)  {  
             SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
             helpers.setForegroundAppOpened(true);
             helpers.setInAllApps(false);
+            helpers.setInWidgets(false);
             helpers.setInRecent(false);
             if (apps.contains(appListBean.packageName)) {
                 Intent intentAppMap = new Intent(RECYCLER_APP_MAP);

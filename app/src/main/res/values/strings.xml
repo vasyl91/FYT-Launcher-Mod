@@ -260,8 +260,7 @@
     <string name="left_bar">Use left bar</string> 
     <string name="left_bar_on">Left bar + bottom bar</string> 
     <string name="left_bar_off">Only bottom bar</string>
-    <string name="map_widget">Navi widget</string>
-    <string name="pip_dialog">Set the screen that will display the navi app</string>   
+    <string name="stats_screen_summary">Set the screen that will display the stats</string>   
     <string name="pip_dialog_str">Display navi on the screen (1 is default):</string>  
     <string name="date_widget">Date and time widget</string> 
     <string name="music_widget">Music widget</string> 
@@ -269,8 +268,6 @@
     <string name="start_page">Set the start page</string> 
     <string name="start_page_str">Set the start page (1 is default):</string> 
     <string name="margins_str">Margins (max. 25)</string> 
-    <string name="open_creator">OPEN CREATOR</string> 
-    <string name="open_creator_summary">Adjust your widgets</string> 
     <string name="transparent_statusbar">Transparent status bar</string>  
     <string name="notification_str">Notification listener settings</string> 
     <string name="accessibility_str">Accessibility service settings</string> 
@@ -285,7 +282,6 @@
     <string name="misc_category">Miscellaneous</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Fuel statistics</string>
-    <string name="creator_category">Creator</string>
     <string name="layout_set">Layout has been set! Press Home button to see the result.</string>
     <string name="stats_pos_set">In-app window location saved!</string>
     <string name="creator_map">Navi</string>    
@@ -429,4 +425,19 @@
     <string name="prompt_folder_full">The folder is full.</string>
     <string name="prompt_gallery_disable">The gallery process is not started!</string>
     <string name="circular_sliding_screen">Desktop cycle</string>
+
+    <string name="display_pip">Display PiP</string>
+    <string name="pref_dual_pip_title">Dual PiP</string>
+    <string name="pref_dual_pip_summary">First PiP for the left app and Second PiP for the right one.</string>
+    <string name="pref_first_pip_title">First PiP</string>
+    <string name="pref_second_pip_title">Second PiP</string>
+    <string name="pref_third_pip_title">Third PiP</string>
+    <string name="pref_fourth_pip_title">Fourth PiP</string>
+    <string name="pref_no_app_selected">No app selected</string>
+    <string name="pip_list_dialog">Select the front app (not every app is supported)</string>
+    <string name="pip_screen_button">Screen:</string>
+    <string name="pip_position_button">\u0020\u0020\u0020ADJUST\u0020\u0020\u0020</string>
+    <string name="double_tap">Screen: %1$s \nDouble tap anywhere \nto disable/enable bottom bar</string>
+    <string name="screen_first">Screen: 1</string>
+    <string name="adjust_widget">Adjust your widget</string>
 </resources>

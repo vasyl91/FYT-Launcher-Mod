@@ -42,6 +42,7 @@ import androidx.preference.PreferenceManager;
 import com.android.async.AsyncTask;
 import com.android.launcher66.DropTarget.DragObject;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.android.recycler.AppListBean;
 import com.syu.util.WindowUtil;
@@ -254,7 +255,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private boolean mNeedToUpdatePageCountsAndInvalidateData;
    
     private static String[] containsWidgets = {"com.syu.widget.DateTimeProvider", "com.syu.music.MAppWidget"};
-    public static final String STATS_APP_FOREGROUND = "stats.app.foreground";
     private Helpers helpers = new Helpers();
 
     public AppsCustomizePagedView(Context context, AttributeSet attrs) {
@@ -531,6 +531,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (v instanceof PagedViewIcon) {
             helpers.setInOverviewMode(false);
             helpers.setListOpen(false);
+            helpers.setInAllApps(false);
+            helpers.setInWidgets(false);
+            helpers.setInRecent(false);
             // Animate some feedback to the click
             final AppInfo appInfo = (AppInfo) v.getTag();
 
@@ -554,8 +557,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             } 
             
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            boolean userLayout = prefs.getBoolean("user_layout", false);
-            boolean userStats = prefs.getBoolean("user_stats", false);
+            boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+            boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
             mLauncher.refreshLeftCycle(bean);
             if (userLayout && userStats)  {
                 SharedPreferences statsPrefs = AppsCustomizePagedView.this.getContext().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
@@ -564,9 +567,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                     Launcher.mAppsCustomizeTabHost.setVisibility(View.GONE);
                     helpers.setAllAppsShouldBeVisible(true);
                     helpers.setForegroundAppOpened(true);
-                    helpers.setInAllApps(false);
-                    helpers.setInRecent(false);
-                    Intent intent = new Intent(STATS_APP_FOREGROUND);
+                    Intent intent = new Intent(Keys.STATS_APP_FOREGROUND);
                     LauncherApplication.sApp.sendBroadcast(intent);
                 }                    
             }
@@ -946,13 +947,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                int pipScreen = Integer.parseInt(prefs.getString("pip_screen", "1")) - 1;
                 if (!helpers.isFirstPreferenceWindow() 
                     && !helpers.isWallpaperWindow() 
-                    && !helpers.isInOverviewMode()
-                    && mLauncher.getWorkspace().getCurrentPage() == pipScreen) {
+                    && !helpers.isInOverviewMode()) {
                     
+                    helpers.setWidgetDropPip(true);
                     Log.i("onDropCompleted()", "startMapPip");
                     WindowUtil.startMapPip(null, false, 250);
                 }

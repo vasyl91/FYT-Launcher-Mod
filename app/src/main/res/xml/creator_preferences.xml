@@ -10,25 +10,63 @@
         app:title="@string/widgets_category">
 
         <SwitchPreferenceCompat
-            android:key="user_map"
-            android:defaultValue="true"
-            android:title="@string/map_widget" />        
-        <Preference
-            android:key="pip_screen"
-            android:title="@string/pip_dialog"
-            android:summary="1" />
-        <SwitchPreferenceCompat
+            android:key="display_pip"
+            android:title="@string/display_pip"
+            android:defaultValue="true" />
+        <com.android.launcher66.settings.CustomDualPipPreference
+            app:key="pip_dual"
+            app:title="@string/pref_dual_pip_title"
+            app:defaultValue="false"
+            app:summary="@string/pref_dual_pip_summary" />
+        <com.android.launcher66.settings.CustomPipSwitchPreference
+            app:key="pip_first"
+            app:title="@string/pref_first_pip_title"
+            app:defaultValue="false"
+            app:summary="@string/pref_no_app_selected" />
+        <com.android.launcher66.settings.CustomPipSwitchPreference
+            app:key="pip_second"
+            app:title="@string/pref_second_pip_title"
+            app:defaultValue="false"
+            app:summary="@string/pref_no_app_selected" />
+        <com.android.launcher66.settings.CustomPipSwitchPreference
+            app:key="pip_third"
+            app:title="@string/pref_third_pip_title"
+            app:defaultValue="false"
+            app:summary="@string/pref_no_app_selected" />   
+        <com.android.launcher66.settings.CustomPipSwitchPreference
+            app:key="pip_fourth"
+            app:title="@string/pref_fourth_pip_title"
+            app:defaultValue="false"
+            app:summary="@string/pref_no_app_selected" />  
+        <com.android.launcher66.settings.CustomWidgetSwitchPreference
             android:key="user_date"
             android:defaultValue="true"
-            android:title="@string/date_widget" />
-        <SwitchPreferenceCompat
+            android:title="@string/date_widget"
+            app:summary="@string/adjust_widget" />
+        <com.android.launcher66.settings.CustomWidgetSwitchPreference
             android:key="user_music"
             android:defaultValue="true"
-            android:title="@string/music_widget" />
-        <SwitchPreferenceCompat
+            android:title="@string/music_widget"
+            app:summary="@string/adjust_widget" />
+        <com.android.launcher66.settings.CustomWidgetSwitchPreference
             android:key="user_radio"
             android:defaultValue="true"
-            android:title="@string/radio_widget" />
+            android:title="@string/radio_widget"
+            app:summary="@string/adjust_widget" />
+        <Preference
+            android:key="start_page"
+            android:title="@string/start_page"
+            android:summary="1" />       
+        <SwitchPreferenceCompat
+            android:key="left_bar"
+            android:defaultValue="false"
+            android:title="@string/left_bar"
+            android:summaryOn="@string/left_bar_on"
+            android:summaryOff="@string/left_bar_off" />
+        <Preference
+            android:key="layout_margin"
+            android:title="@string/margins_str"
+            android:summary="10" />
 
     </PreferenceCategory>
 
@@ -40,7 +78,11 @@
             android:key="user_stats"
             android:defaultValue="false"
             android:title="@string/stats_window"
-            android:maxLines="5" />     
+            android:maxLines="5" />  
+        <com.android.launcher66.settings.CustomWidgetPreference
+            android:key="stats_display"
+            android:title="@string/stats_screen_summary"
+            app:summary="@string/adjust_widget" />   
         <Preference
             android:key="stats_codes"
             android:title="@string/stats_codes"
@@ -88,7 +130,7 @@
         <SwitchPreferenceCompat
             android:key="display_canbus_reader"
             android:defaultValue="false"
-            android:title="@string/display_canbus_reader" />       
+            android:title="@string/display_canbus_reader" />     
         <Preference
             android:key="codes_guide"
             android:title="@string/codes_guide"  />
@@ -137,35 +179,8 @@
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
-
-    </PreferenceCategory>
-    
-    <PreferenceCategory
-        app:key="creator_category"
-        app:title="@string/creator_category">
-
-        <Preference
-            android:key="start_page"
-            android:title="@string/start_page"
-            android:summary="1" />       
-        <SwitchPreferenceCompat
-            android:key="left_bar"
-            android:defaultValue="false"
-            android:title="@string/left_bar"
-            android:summaryOn="@string/left_bar_on"
-            android:summaryOff="@string/left_bar_off" />
-        <Preference
-            android:key="layout_margin"
-            android:title="@string/margins_str"
-            android:summary="10" />
-        <Preference
-            android:key="launcher_creator_second"
-            android:title="@string/open_creator"
-            android:summary="@string/open_creator_summary" />
         <Preference
             android:key="empty"/>
-        <Preference
-            android:key="empty1"/>
 
     </PreferenceCategory>
 

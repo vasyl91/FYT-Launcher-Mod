@@ -19,7 +19,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.1.6"
+        versionName = "1.1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
@@ -153,10 +153,11 @@ dependencies {
     implementation(libs.androidx.vectordrawable)
     implementation(libs.androidx.vectordrawable.animated)
 
-
     implementation(libs.androidx.runtime)
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(files("libs/cn.jar"))
+    compileOnly(files("libs/api-82.jar"))
+    implementation(project(":hook"))
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.ksp)
@@ -165,5 +166,5 @@ dependencies {
     runtimeOnly(libs.ackpine.core)
     runtimeOnly(libs.androidx.startup.runtime)
     
-    testRuntimeOnly(libs.junit.jupiter.engine)  
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }

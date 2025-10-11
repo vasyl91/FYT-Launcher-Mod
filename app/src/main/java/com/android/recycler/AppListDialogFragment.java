@@ -28,6 +28,7 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
+import com.android.launcher66.settings.Keys;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
@@ -41,8 +42,6 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     GridView mGridView;
     private ItemClickDataListener mItemClickDataListener;
     private Helpers helpers = new Helpers();
-    public static final String LIST_OPEN = "list.open";
-    public static final String LIST_CLOSE = "list.close";
 
     public interface ItemClickDataListener {
         void onClickData(AppInfo appInfo);
@@ -53,13 +52,14 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         helpers.setListOpen(true);
         helpers.setInOverviewMode(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean userLayout = prefs.getBoolean("user_layout", false);
-        boolean userStats = prefs.getBoolean("user_stats", false);
+        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats)  {  
             helpers.setForegroundAppOpened(false);
             helpers.setInAllApps(false);
+            helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            Intent intentOpen = new Intent(LIST_OPEN);
+            Intent intentOpen = new Intent(Keys.LIST_OPEN);
             LauncherApplication.sApp.sendBroadcast(intentOpen);
         }
         View view = inflater.inflate(R.layout.dialog_fragment_applist, container);
@@ -73,7 +73,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         view.setOnClickListener(v -> {
             AppListDialogFragment.this.dismiss(); 
             helpers.setListOpen(false);
-            Intent intentClose = new Intent(LIST_CLOSE);
+            Intent intentClose = new Intent(Keys.LIST_CLOSE);
             LauncherApplication.sApp.sendBroadcast(intentClose);        
         });
         getDialog().getWindow().requestFeature(1);
@@ -106,12 +106,12 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             public void handleOnBackPressed() {
                 AppListDialogFragment.this.dismiss(); 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                boolean userLayout = prefs.getBoolean("user_layout", false);
-                boolean userStats = prefs.getBoolean("user_stats", false);
+                boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+                boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
                 if (userLayout && userStats)  {  
                     helpers.setListOpen(false);
                     helpers.setInRecent(false);
-                    Intent intentClose = new Intent(LIST_CLOSE);
+                    Intent intentClose = new Intent(Keys.LIST_CLOSE);
                     LauncherApplication.sApp.sendBroadcast(intentClose);  
                 }    
             }
@@ -132,10 +132,6 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         currentAppName = null;
         mGridView = null;
         mAdapter = null;
-        SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
-        if (skinAttribute != null) {
-            skinAttribute.clear();
-        }
     }
 
     public void clearReferences() {

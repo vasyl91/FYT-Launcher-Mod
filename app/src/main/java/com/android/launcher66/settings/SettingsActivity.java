@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -35,10 +36,6 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sharedPrefs;
     private SunTask mSunTask;
     private static final String TAG = "SettingsActivity";
-    private static final String USER_LAYOUT = "user_layout";
-    private static final String USER_INIT_LAYOUT = "user_init_layout";
-    static final String SYSTEM_DIALOG_REASON_KEY = "reason";
-    static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
     private final Helpers helpers = new Helpers(); 
     private boolean isReceiverRegistered = false;    
 
@@ -46,8 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static int orientedWidth;
     public static int calculatedStatsWidth;
     public static int calculatedStatsHeight;
-    public static int calculatedMapMinHeight;
-    public static int calculatedMapMinWidth;
+    public static int calculatedPipMinHeight;
+    public static int calculatedPipMinWidth;
     public static int calculatedDateMinHeight; 
     public static int calculatedDateMinWidth;
     public static int calculatedMusicMinHeight;
@@ -87,12 +84,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (!nightMode) {
             getSunriseAndSunsetTimes();
         }
-        
-        try {
-            startWatch();
-        } catch (Exception e) {
-            Log.e(TAG, "Error starting watch", e);
-        }
 
         calculateLayoutDimensions();
 
@@ -122,8 +113,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
         calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
-        calculatedMapMinHeight = calculateDimension(orientationDimension, 18.0);
-        calculatedMapMinWidth = calculateDimension(orientedWidth, 44.0);
+        calculatedPipMinHeight = calculateDimension(orientationDimension, 18.0);
+        calculatedPipMinWidth = calculateDimension(orientedWidth, 44.0);
         calculatedDateMinHeight = calculateDimension(orientationDimension, 7.2);
         calculatedDateMinWidth = calculateDimension(orientedWidth, 44.0);
         calculatedMusicMinHeight = calculateDimension(orientationDimension, 18.0);
@@ -211,36 +202,35 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
-                if (SYSTEM_DIALOG_REASON_HOME_KEY.equals(reason)) {
+                String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
+                if (Keys.SYSTEM_DIALOG_REASON_HOME_KEY.equals(reason)) {
                     stopWatch();
                     Log.i("Home Receiver", "home clicked"); 
                     helpers.setBackFromCreator(false);
-                    boolean initLayout = sharedPrefs.getBoolean(USER_INIT_LAYOUT, false);
-                    boolean userLayoutBool = sharedPrefs.getBoolean(USER_LAYOUT, false);
+                    boolean initLayout = sharedPrefs.getBoolean(Keys.USER_INIT_LAYOUT, false);
+                    boolean userLayoutBool = sharedPrefs.getBoolean(Keys.USER_LAYOUT, false);
                     if (initLayout != userLayoutBool) {
                         helpers.setLayoutTypeChanged(true);
                     }
-                    boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
-                    if (leftBar) {
-                        if (helpers.hasLeftBarChanged()) {
-                            helpers.resetPrefs();
-                        }  
-                    }
+                    helpers.checkAndResetIfOverlappingOnScreen(-1);
                     new VersionChecker().cancelDownload();
                     setBrightness();
-                    Intent intentUpdateUserPage = new Intent("update.user.page");
-                    LauncherApplication.sApp.sendBroadcast(intentUpdateUserPage);
+
+                    long updateOnce = SystemClock.uptimeMillis();
+                    Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
+                    getSharedPreferences("LauncherPrefs", Context.MODE_PRIVATE)
+                        .edit()
+                        .putLong(Keys.UPDATE_USER_PAGE, updateOnce)
+                        .apply();
                 }
             }
         }
     };
-
 
     private void getSunriseAndSunsetTimes() {
         if (ActivityCompat.checkSelfPermission(LauncherApplication.sApp, 
@@ -308,12 +298,49 @@ public class SettingsActivity extends AppCompatActivity {
         }).start();
     }
 
+    private void clearSkinReferences() {
+        try {
+            if (getLayoutInflater() != null) {
+                try {
+                    getLayoutInflater().setFactory2(null);
+                } catch (IllegalStateException e) {
+                    Log.d(TAG, "Layout inflater factory already set");
+                }
+            }
+            
+        } catch (Exception e) {
+            Log.w(TAG, "Error clearing skin references", e);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.gc();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startWatch();
+    }
+
+    @Override
+    protected void onStop() {
+        stopWatch();
+        super.onStop();
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        stopWatch();
+        stopWatch(); 
         if (mSunTask != null) {
             mSunTask.cancel(true);
+            mSunTask = null;
         }
+        helpers.setSettingsOpenedBoolean(false);
+        clearSkinReferences();
+        sharedPrefs = null;
+        super.onDestroy();
     }
 }
