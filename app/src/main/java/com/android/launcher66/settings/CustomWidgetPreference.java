@@ -33,10 +33,11 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 public class CustomWidgetPreference extends Preference {
-
+    
     private SwitchCompat mMainSwitch;  
     private TouchDelegateGroup mTouchDelegateGroup;
     private LinearLayout mScreenButtonContainer;   
@@ -44,11 +45,14 @@ public class CustomWidgetPreference extends Preference {
     private EditText mScreenInput;             
     private AppCompatButton mPositionButton;        
     private View mImeMaskOverlay;
-
     private View mBoundItemView;
+    private WidgetPageManager mPageManager;
 
     public interface OnPositionClickListener { void onPositionClick(CustomWidgetPreference pref); }
     @Nullable private OnPositionClickListener mPositionListener;
+
+    public interface OnPreferenceValuesChangedListener { void onPreferenceValuesChanged(); }
+    @Nullable private OnPreferenceValuesChangedListener mValuesChangedListener;
 
     @Nullable private String mScreenValuePrefKey;
 
@@ -70,6 +74,10 @@ public class CustomWidgetPreference extends Preference {
         if (mPositionButton != null) {
             mPositionButton.setTextColor(color);
         }
+    }
+
+    public void setOnPreferenceValuesChangedListener(@Nullable OnPreferenceValuesChangedListener listener) {
+        mValuesChangedListener = listener;
     }
 
     @Override public void onBindViewHolder(PreferenceViewHolder holder) {
@@ -383,22 +391,52 @@ public class CustomWidgetPreference extends Preference {
 
     private void saveScreenNumberFromInput() {
         if (mScreenInput == null) return;
+        
         String s = mScreenInput.getText() != null ? mScreenInput.getText().toString() : "";
         int value;
         if (TextUtils.isEmpty(s)) {
-            value = 1; // default when empty/null
+            value = 1;
         } else {
             try {
                 value = Integer.parseInt(s);
             } catch (NumberFormatException e) {
-                value = 1; // default on parse error
+                value = 1;
             }
         }
-        value = Math.max(1, Math.min(99, value));
-        mScreenInput.setText(String.valueOf(value));
-        if (!TextUtils.isEmpty(mScreenValuePrefKey) && getPreferenceManager() != null) {
-            SharedPreferences sp = getPreferenceManager().getSharedPreferences();
-            if (sp != null) sp.edit().putInt(mScreenValuePrefKey, value).apply();
+        
+        // Initialize manager if needed
+        if (mPageManager == null && !TextUtils.isEmpty(mScreenValuePrefKey)) {
+            mPageManager = new WidgetPageManager(LauncherApplication.sApp, mScreenValuePrefKey);
+            
+            // Set the callback when initializing
+            mPageManager.setOnPreferencesUpdatedListener(() -> {
+                if (mValuesChangedListener != null) {
+                    mValuesChangedListener.onPreferenceValuesChanged();
+                }
+            });
+        }
+        
+        if (mPageManager == null) return;
+        
+        // Validate and save the page number
+        mPageManager.validateAndSavePage(value);
+        int currentPageIndex = mPageManager.getCurrentWidgetPageIndex();
+        if (currentPageIndex >= 0) {
+            mScreenInput.setText(String.valueOf(currentPageIndex + 1));
+        }
+    }
+    
+    /**
+     * Refresh the displayed screen number from SharedPreferences
+     */
+    public void refreshDisplayedValue() {
+        if (mScreenInput == null || TextUtils.isEmpty(mScreenValuePrefKey)) return;
+        
+        SharedPreferences sp = getPreferenceManager() != null ? 
+            getPreferenceManager().getSharedPreferences() : null;
+        if (sp != null) {
+            int current = Math.max(1, Math.min(99, sp.getInt(mScreenValuePrefKey, 1)));
+            mScreenInput.setText(String.valueOf(current));
         }
     }
 

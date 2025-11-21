@@ -72,7 +72,7 @@ public class CreatorOtherScreens extends Fragment {
         
         View rootView;
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean leftBar = sharedPrefs.getBoolean("left_bar", false);
+        boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
         pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
@@ -85,9 +85,9 @@ public class CreatorOtherScreens extends Fragment {
         String fourthPkg = sharedPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
         String pipFirstName = getAppNameFromPackage(firstPkg);
         String pipSecondName = getAppNameFromPackage(secondPkg);
-        date = sharedPrefs.getBoolean("user_date", true);
-        music = sharedPrefs.getBoolean("user_music", true);
-        radio = sharedPrefs.getBoolean("user_radio", true); 
+        date = sharedPrefs.getBoolean(Keys.USER_DATE, true);
+        music = sharedPrefs.getBoolean(Keys.USER_MUSIC, true);
+        radio = sharedPrefs.getBoolean(Keys.USER_RADIO, true); 
         stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);       
         checkIfOverlappingMargins();
         if (overlappingMargins) {

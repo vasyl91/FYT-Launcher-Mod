@@ -80,6 +80,8 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
     private int activeBallId = -1;
     private String activeRectKey = null;
     private boolean draggingWholeRect = false;
+    private boolean draggingEdge = false;
+    private int activeEdgeIndex = -1; // 0=top, 1=right, 2=bottom, 3=left
     private int lastX = 0, lastY = 0;
 
     // Bounds
@@ -193,21 +195,21 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                 if (compareScreens(Keys.DATE_SCREEN)) {
                     minWidth = SettingsActivity.calculatedDateMinWidth;
                     minHeight = SettingsActivity.calculatedDateMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_date", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_DATE, false);
                 }
                 break;
             case "music":
                 if (compareScreens(Keys.MUSIC_SCREEN)) {
                     minWidth = SettingsActivity.calculatedMusicMinWidth;
                     minHeight = SettingsActivity.calculatedMusicMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_music", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_MUSIC, false);
                 }
                 break;
             case "radio":
                 if (compareScreens(Keys.RADIO_SCREEN)) {
                     minWidth = SettingsActivity.calculatedRadioMinWidth;
                     minHeight = SettingsActivity.calculatedRadioMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_radio", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_RADIO, false);
                 }
                 break;
             case "stats":
@@ -253,15 +255,15 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
     private void initUi(View rootView) {
         helpers = new Helpers();
+        helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);
-        helpers.setLeftBarChanged(false);
+        helpers.setBarSettingsChanged(false);
 
         handleRadiusPx = 20f * getResources().getDisplayMetrics().density;
 
         if (rootView != null) {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
-
             View creatorView = rootView.findViewById(R.id.creator_other_screens);   
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -567,23 +569,43 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
+                // First, check for corner ball hit
                 activeBallId = hitTestBall(X, Y);
                 if (activeBallId >= 0) {
                     activeRectKey = findRectKeyByBall(activeBallId);
                     selectedWidgetKey = activeRectKey;
                     updateSelectedLabel();
                     draggingWholeRect = false;
+                    draggingEdge = false;
                     lastX = X; lastY = Y;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     return true;
                 }
 
+                // Check if inside a rectangle
                 String insideKey = hitTestRect(X, Y);
                 if (insideKey != null) {
+                    // Check for edge hit first
+                    int edgeIdx = hitTestEdge(X, Y, insideKey);
+                    if (edgeIdx >= 0) {
+                        activeRectKey = insideKey;
+                        selectedWidgetKey = activeRectKey;
+                        updateSelectedLabel();
+                        draggingEdge = true;
+                        activeEdgeIndex = edgeIdx;
+                        draggingWholeRect = false;
+                        lastX = X; lastY = Y;
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        invalidate();
+                        return true;
+                    }
+                    
+                    // Otherwise, drag whole rectangle
                     activeRectKey = insideKey;
                     selectedWidgetKey = activeRectKey;
                     updateSelectedLabel();
                     draggingWholeRect = true;
+                    draggingEdge = false;
                     lastX = X; lastY = Y;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     invalidate();
@@ -593,6 +615,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             }
             case MotionEvent.ACTION_MOVE: {
                 if (activeRectKey == null) return false;
+                
                 if (activeBallId >= 0) {
                     Integer[] ids = rectangleBallIds.get(activeRectKey);
                     RectangleConfig cfg = getConfig(activeRectKey);
@@ -603,6 +626,15 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                         moveCorner(ids, cfg, cornerIndex, X, Y);
                         invalidate();
                     }
+                    lastX = X; lastY = Y;
+                    return true;
+                } else if (draggingEdge) {
+                    Integer[] ids = rectangleBallIds.get(activeRectKey);
+                    RectangleConfig cfg = getConfig(activeRectKey);
+                    if (ids == null || cfg == null) return false;
+
+                    moveEdge(ids, cfg, activeEdgeIndex, X, Y);
+                    invalidate();
                     lastX = X; lastY = Y;
                     return true;
                 } else if (draggingWholeRect) {
@@ -642,6 +674,8 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                 activeBallId = -1;
                 activeRectKey = null;
                 draggingWholeRect = false;
+                draggingEdge = false;
+                activeEdgeIndex = -1;
                 getParent().requestDisallowInterceptTouchEvent(false);
                 invalidate();
                 return true;
@@ -673,6 +707,43 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             if (!r.isEmpty() && r.contains(x, y)) return cfg.key;
         }
         return null;
+    }
+
+    private int hitTestEdge(int x, int y, String rectKey) {
+        Integer[] ids = rectangleBallIds.get(rectKey);
+        if (ids == null) return -1;
+        
+        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+        if (r.isEmpty()) return -1;
+        
+        // Edge hit detection with generous touch area
+        float edgeTolerance = Math.max(30f * getResources().getDisplayMetrics().density, handleRadiusPx);
+        
+        // Check if inside the rectangle bounds (with tolerance)
+        if (x < r.left - edgeTolerance || x > r.right + edgeTolerance ||
+            y < r.top - edgeTolerance || y > r.bottom + edgeTolerance) {
+            return -1;
+        }
+        
+        // Determine which edge is closest
+        float distToTop = Math.abs(y - r.top);
+        float distToBottom = Math.abs(y - r.bottom);
+        float distToLeft = Math.abs(x - r.left);
+        float distToRight = Math.abs(x - r.right);
+        
+        float minDist = Math.min(Math.min(distToTop, distToBottom), Math.min(distToLeft, distToRight));
+        
+        if (minDist > edgeTolerance) {
+            return -1; // Not close enough to any edge
+        }
+        
+        // Return edge index: 0=top, 1=right, 2=bottom, 3=left
+        if (minDist == distToTop) return 0;
+        if (minDist == distToRight) return 1;
+        if (minDist == distToBottom) return 2;
+        if (minDist == distToLeft) return 3;
+        
+        return -1;
     }
 
     private RectangleConfig getConfig(String key) {
@@ -763,8 +834,61 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         point[bl].x = blx; point[bl].y = bly;
     }
 
+    private void moveEdge(Integer[] ids, RectangleConfig cfg, int edgeIndex, int x, int y) {
+        int tl = ids[0], tr = ids[1], br = ids[2], bl = ids[3];
+
+        // Current corners
+        int tlx = point[tl].x, tly = point[tl].y;
+        int trx = point[tr].x, try_ = point[tr].y;
+        int brx = point[br].x, bry = point[br].y;
+        int blx = point[bl].x, bly = point[bl].y;
+
+        int nx = Math.max(minBorderX, Math.min(x, maxBorderX));
+        int ny = Math.max(minBorderY, Math.min(y, maxBorderY));
+
+        switch (edgeIndex) {
+            case 0: // Top edge
+                ny = Math.min(ny, bry - cfg.minHeight);
+                tly = ny;
+                try_ = ny;
+                break;
+            case 1: // Right edge
+                nx = Math.max(nx, tlx + cfg.minWidth);
+                trx = nx;
+                brx = nx;
+                break;
+            case 2: // Bottom edge
+                ny = Math.max(ny, tly + cfg.minHeight);
+                bly = ny;
+                bry = ny;
+                break;
+            case 3: // Left edge
+                nx = Math.min(nx, trx - cfg.minWidth);
+                tlx = nx;
+                blx = nx;
+                break;
+        }
+
+        // Clamp to margins
+        RectF cand = new RectF(Math.min(tlx, blx), Math.min(tly, try_), Math.max(trx, brx), Math.max(bly, bry));
+        float dx = 0, dy = 0;
+        if (cand.left < minBorderX) dx = minBorderX - cand.left;
+        if (cand.right > maxBorderX) dx = Math.min(dx, maxBorderX - cand.right);
+        if (cand.top < minBorderY) dy = minBorderY - cand.top;
+        if (cand.bottom > maxBorderY) dy = Math.min(dy, maxBorderY - cand.bottom);
+        if (dx != 0 || dy != 0) {
+            tlx += dx; trx += dx; brx += dx; blx += dx;
+            tly += dy; try_ += dy; bry += dy; bly += dy;
+        }
+
+        // Commit
+        point[tl].x = tlx; point[tl].y = tly;
+        point[tr].x = trx; point[tr].y = try_;
+        point[br].x = brx; point[br].y = bry;
+        point[bl].x = blx; point[bl].y = bly;
+    }
     
-@Override
+    @Override
     public void onClick(View v) {
         if (selectedWidgetKey == null) return;
         Integer[] ids = rectangleBallIds.get(selectedWidgetKey);
@@ -802,7 +926,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             }
             case R.id.left_to_left: {
                 RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
-                if (cand.left >= (minBorderX + margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
                 break;
             }
             case R.id.left_to_right: {

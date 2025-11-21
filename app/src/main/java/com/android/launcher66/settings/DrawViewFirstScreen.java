@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -67,6 +68,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private int nextBallId = 0;
 
     // UI
+    private GestureDetector gestureDetector;
     private Button mTopDown, mBottomUp, mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight, mTopUp, mBottomDown, mConfirmLayout;
     private TextView rectangleName;
     private AlertDialog alertDialog;
@@ -82,6 +84,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private int activeBallId = -1;
     private String activeRectKey = null;
     private boolean draggingWholeRect = false;
+    private boolean draggingEdge = false;
+    private int activeEdgeIndex = -1; // 0=top, 1=right, 2=bottom, 3=left
     private int lastX = 0, lastY = 0;
 
     // Bounds
@@ -194,21 +198,21 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 if (compareScreens(Keys.DATE_SCREEN)) {
                     minWidth = SettingsActivity.calculatedDateMinWidth;
                     minHeight = SettingsActivity.calculatedDateMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_date", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_DATE, false);
                 }
                 break;
             case "music":
                 if (compareScreens(Keys.MUSIC_SCREEN)) {
                     minWidth = SettingsActivity.calculatedMusicMinWidth;
                     minHeight = SettingsActivity.calculatedMusicMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_music", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_MUSIC, false);
                 }
                 break;
             case "radio":
                 if (compareScreens(Keys.RADIO_SCREEN)) {
                     minWidth = SettingsActivity.calculatedRadioMinWidth;
                     minHeight = SettingsActivity.calculatedRadioMinHeight;
-                    enabled = sharedPrefs.getBoolean("user_radio", false);
+                    enabled = sharedPrefs.getBoolean(Keys.USER_RADIO, false);
                 }
                 break;
             case "stats":
@@ -254,13 +258,42 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     private void initUi(View rootView) {
         helpers = new Helpers();
+        helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);
-        helpers.setLeftBarChanged(false);
+        helpers.setBarSettingsChanged(false);
 
         handleRadiusPx = 20f * getResources().getDisplayMetrics().density;
 
         if (rootView != null) {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
+
+            if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+                View creatorBar = rootView.findViewById(R.id.creator_bar); 
+                View creatorBarAutoHide = rootView.findViewById(R.id.creator_bar_auto_hide); 
+                View creatorView = rootView.findViewById(R.id.creator_first_screen);   
+                gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        if (creatorBar.getVisibility() == View.VISIBLE) {
+                            creatorBar.setVisibility(View.GONE); 
+                            creatorBarAutoHide.setVisibility(View.VISIBLE); 
+                        } else {
+                            creatorBar.setVisibility(View.VISIBLE); 
+                            creatorBarAutoHide.setVisibility(View.GONE); 
+                        }
+                        return true; 
+                    }
+                });
+
+                creatorView.setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        boolean gestureHandled = gestureDetector.onTouchEvent(event);
+                        if (gestureHandled) return true; 
+                        return true; 
+                    }
+                });                
+            }
 
             mTopUp = rootView.findViewById(R.id.top_up);
             mTopDown = rootView.findViewById(R.id.top_down);
@@ -369,9 +402,20 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         hint.setTextAlign(Paint.Align.CENTER);
         hint.setShadowLayer(2, 1, 1, Color.WHITE);
         float centerX = getWidth() / 2f;
-        float centerY = getHeight() / 2f;
-        String centerText = getSafeContext().getString(R.string.screen_first);
-        canvas.drawText(centerText, centerX, centerY, hint);
+        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+            float centerY = SettingsActivity.screenHeight / 2f;
+            float lineHeight = hint.getTextSize() * 1.2f; 
+            String centerText = getSafeContext().getString(R.string.double_tap, "1");
+            String[] lines = centerText.split("\\n");
+            float startY = centerY - ((lines.length - 1) * lineHeight / 2f);
+            for (int i = 0; i < lines.length; i++) {
+                canvas.drawText(lines[i], centerX, startY + (i * lineHeight), hint);
+            }
+        } else {
+            float centerY = getHeight() / 2f;
+            String centerText = getSafeContext().getString(R.string.screen_first);
+            canvas.drawText(centerText, centerX, centerY, hint);
+        }
 
         // Draw rectangles (and glare if both opted-in and overlapping)
         for (RectangleConfig config : rectangleConfigs) {
@@ -529,6 +573,10 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         final int X = (int) event.getX();
         final int Y = (int) event.getY();
 
+        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false) && gestureDetector.onTouchEvent(event)) {
+            return true;
+        }
+
         minBorderX = margin;
         minBorderY = margin;
         maxBorderX = getWidth() - margin;
@@ -536,23 +584,43 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
+                // First, check for corner ball hit
                 activeBallId = hitTestBall(X, Y);
                 if (activeBallId >= 0) {
                     activeRectKey = findRectKeyByBall(activeBallId);
                     selectedWidgetKey = activeRectKey;
                     updateSelectedLabel();
                     draggingWholeRect = false;
+                    draggingEdge = false;
                     lastX = X; lastY = Y;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     return true;
                 }
 
+                // Check if inside a rectangle
                 String insideKey = hitTestRect(X, Y);
                 if (insideKey != null) {
+                    // Check for edge hit first
+                    int edgeIdx = hitTestEdge(X, Y, insideKey);
+                    if (edgeIdx >= 0) {
+                        activeRectKey = insideKey;
+                        selectedWidgetKey = activeRectKey;
+                        updateSelectedLabel();
+                        draggingEdge = true;
+                        activeEdgeIndex = edgeIdx;
+                        draggingWholeRect = false;
+                        lastX = X; lastY = Y;
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        invalidate();
+                        return true;
+                    }
+                    
+                    // Otherwise, drag whole rectangle
                     activeRectKey = insideKey;
                     selectedWidgetKey = activeRectKey;
                     updateSelectedLabel();
                     draggingWholeRect = true;
+                    draggingEdge = false;
                     lastX = X; lastY = Y;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     invalidate();
@@ -562,6 +630,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             }
             case MotionEvent.ACTION_MOVE: {
                 if (activeRectKey == null) return false;
+                
                 if (activeBallId >= 0) {
                     Integer[] ids = rectangleBallIds.get(activeRectKey);
                     RectangleConfig cfg = getConfig(activeRectKey);
@@ -572,6 +641,15 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                         moveCorner(ids, cfg, cornerIndex, X, Y);
                         invalidate();
                     }
+                    lastX = X; lastY = Y;
+                    return true;
+                } else if (draggingEdge) {
+                    Integer[] ids = rectangleBallIds.get(activeRectKey);
+                    RectangleConfig cfg = getConfig(activeRectKey);
+                    if (ids == null || cfg == null) return false;
+
+                    moveEdge(ids, cfg, activeEdgeIndex, X, Y);
+                    invalidate();
                     lastX = X; lastY = Y;
                     return true;
                 } else if (draggingWholeRect) {
@@ -595,9 +673,18 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                     if (after.top < minBorderY) clampedDy += (minBorderY - after.top);
                     if (after.bottom > maxBorderY) clampedDy -= (after.bottom - maxBorderY);
 
+                    // Apply clamped offset
+                    RectF clampedRect = new RectF(before);
+                    clampedRect.offset(clampedDx, clampedDy);
+                    
+                    // Clamp away from auto-hide bar
+                    RectF finalRect = clampAwayFromAutoHideBar(clampedRect);
+                    float finalDx = finalRect.left - before.left;
+                    float finalDy = finalRect.top - before.top;
+
                     for (int id : ids) {
-                        point[id].x += (int) clampedDx;
-                        point[id].y += (int) clampedDy;
+                        point[id].x += (int) finalDx;
+                        point[id].y += (int) finalDy;
                     }
                     lastX = X; lastY = Y;
                     invalidate();
@@ -611,6 +698,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 activeBallId = -1;
                 activeRectKey = null;
                 draggingWholeRect = false;
+                draggingEdge = false;
+                activeEdgeIndex = -1;
                 getParent().requestDisallowInterceptTouchEvent(false);
                 invalidate();
                 return true;
@@ -642,6 +731,43 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             if (!r.isEmpty() && r.contains(x, y)) return cfg.key;
         }
         return null;
+    }
+
+    private int hitTestEdge(int x, int y, String rectKey) {
+        Integer[] ids = rectangleBallIds.get(rectKey);
+        if (ids == null) return -1;
+        
+        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+        if (r.isEmpty()) return -1;
+        
+        // Edge hit detection with generous touch area
+        float edgeTolerance = Math.max(30f * getResources().getDisplayMetrics().density, handleRadiusPx);
+        
+        // Check if inside the rectangle bounds (with tolerance)
+        if (x < r.left - edgeTolerance || x > r.right + edgeTolerance ||
+            y < r.top - edgeTolerance || y > r.bottom + edgeTolerance) {
+            return -1;
+        }
+        
+        // Determine which edge is closest
+        float distToTop = Math.abs(y - r.top);
+        float distToBottom = Math.abs(y - r.bottom);
+        float distToLeft = Math.abs(x - r.left);
+        float distToRight = Math.abs(x - r.right);
+        
+        float minDist = Math.min(Math.min(distToTop, distToBottom), Math.min(distToLeft, distToRight));
+        
+        if (minDist > edgeTolerance) {
+            return -1; // Not close enough to any edge
+        }
+        
+        // Return edge index: 0=top, 1=right, 2=bottom, 3=left
+        if (minDist == distToTop) return 0;
+        if (minDist == distToRight) return 1;
+        if (minDist == distToBottom) return 2;
+        if (minDist == distToLeft) return 3;
+        
+        return -1;
     }
 
     private RectangleConfig getConfig(String key) {
@@ -725,6 +851,14 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             tly += dy; try_ += dy; bry += dy; bly += dy;
         }
 
+        // Check if the new position would collide with auto-hide bar
+        RectF finalRect = new RectF(Math.min(tlx, blx), Math.min(tly, try_), Math.max(trx, brx), Math.max(bly, bry));
+        
+        // If it would collide, don't commit the move
+        if (collidesWithAutoHideBar(finalRect)) {
+            return;
+        }
+
         // Commit
         point[tl].x = tlx; point[tl].y = tly;
         point[tr].x = trx; point[tr].y = try_;
@@ -732,8 +866,70 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         point[bl].x = blx; point[bl].y = bly;
     }
 
+    private void moveEdge(Integer[] ids, RectangleConfig cfg, int edgeIndex, int x, int y) {
+        int tl = ids[0], tr = ids[1], br = ids[2], bl = ids[3];
+
+        // Current corners
+        int tlx = point[tl].x, tly = point[tl].y;
+        int trx = point[tr].x, try_ = point[tr].y;
+        int brx = point[br].x, bry = point[br].y;
+        int blx = point[bl].x, bly = point[bl].y;
+
+        int nx = Math.max(minBorderX, Math.min(x, maxBorderX));
+        int ny = Math.max(minBorderY, Math.min(y, maxBorderY));
+
+        switch (edgeIndex) {
+            case 0: // Top edge
+                ny = Math.min(ny, bry - cfg.minHeight);
+                tly = ny;
+                try_ = ny;
+                break;
+            case 1: // Right edge
+                nx = Math.max(nx, tlx + cfg.minWidth);
+                trx = nx;
+                brx = nx;
+                break;
+            case 2: // Bottom edge
+                ny = Math.max(ny, tly + cfg.minHeight);
+                bly = ny;
+                bry = ny;
+                break;
+            case 3: // Left edge
+                nx = Math.min(nx, trx - cfg.minWidth);
+                tlx = nx;
+                blx = nx;
+                break;
+        }
+
+        // Clamp to margins
+        RectF cand = new RectF(Math.min(tlx, blx), Math.min(tly, try_), Math.max(trx, brx), Math.max(bly, bry));
+        float dx = 0, dy = 0;
+        if (cand.left < minBorderX) dx = minBorderX - cand.left;
+        if (cand.right > maxBorderX) dx = Math.min(dx, maxBorderX - cand.right);
+        if (cand.top < minBorderY) dy = minBorderY - cand.top;
+        if (cand.bottom > maxBorderY) dy = Math.min(dy, maxBorderY - cand.bottom);
+        if (dx != 0 || dy != 0) {
+            tlx += dx; trx += dx; brx += dx; blx += dx;
+            tly += dy; try_ += dy; bry += dy; bly += dy;
+        }
+
+        // Check and clamp away from auto-hide bar
+        RectF finalRect = new RectF(Math.min(tlx, blx), Math.min(tly, try_), Math.max(trx, brx), Math.max(bly, bry));
+        RectF clampedRect = clampAwayFromAutoHideBar(finalRect);
+        
+        // If the rectangle had to be moved away, don't commit the edge move
+        if (!clampedRect.equals(finalRect)) {
+            return;
+        }
+
+        // Commit
+        point[tl].x = tlx; point[tl].y = tly;
+        point[tr].x = trx; point[tr].y = try_;
+        point[br].x = brx; point[br].y = bry;
+        point[bl].x = blx; point[bl].y = bly;
+    }
     
-@Override
+    @Override
     public void onClick(View v) {
         if (selectedWidgetKey == null) return;
         Integer[] ids = rectangleBallIds.get(selectedWidgetKey);
@@ -747,48 +943,47 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
         if (r.isEmpty()) return;
 
+        RectF cand = null;
+
         switch (v.getId()) {
             case R.id.top_up: {
-                RectF cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
-                if (cand.top >= margin) { candToPoints(ids, cand); saveAndRedraw(); }
+                cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
+                if (cand.top < margin) cand = null;
                 break;
             }
             case R.id.top_down: {
-                RectF cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
-                if (cand.height() >= cfg.minHeight) { candToPoints(ids, cand); saveAndRedraw(); }
+                cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
+                if (cand.height() < cfg.minHeight) cand = null;
                 break;
             }
             case R.id.bottom_up: {
                 float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
-                RectF cand = new RectF(r.left, r.top, r.right, newBottom);
-                candToPoints(ids, cand); saveAndRedraw();
+                cand = new RectF(r.left, r.top, r.right, newBottom);
                 break;
             }
             case R.id.bottom_down: {
-                RectF cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
-                if (cand.bottom <= (maxBorderY - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
+                if (cand.bottom > (maxBorderY - margin)) cand = null;
                 break;
             }
             case R.id.left_to_left: {
-                RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
-                if (cand.left >= (minBorderX + margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
+                if (cand.left < minBorderX) cand = null;
                 break;
             }
             case R.id.left_to_right: {
                 float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
-                RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
-                candToPoints(ids, cand); saveAndRedraw();
+                cand = new RectF(newLeft, r.top, r.right, r.bottom);
                 break;
             }
             case R.id.right_to_left: {
                 float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
-                RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
-                candToPoints(ids, cand); saveAndRedraw();
+                cand = new RectF(r.left, r.top, newRight, r.bottom);
                 break;
             }
             case R.id.right_to_right: {
-                RectF cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
-                if (cand.right <= (maxBorderX - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
+                if (cand.right > (maxBorderX - margin)) cand = null;
                 break;
             }
             case R.id.confirm_layout: {
@@ -810,9 +1005,112 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                         Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
                     }
                 }
-                break;
+                return;
             }
         }
+
+        // Apply the movement if valid and doesn't collide
+        if (cand != null) {
+            RectF clampedCand = clampAwayFromAutoHideBar(cand);
+            // Only apply if the clamping didn't change the rectangle (no collision)
+            if (clampedCand.equals(cand)) {
+                candToPoints(ids, cand);
+                saveAndRedraw();
+            }
+        }
+    }
+
+    private boolean collidesWithAutoHideBar(float left, float top, float right, float bottom) {
+        if (mRootView == null) return false;
+        
+        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
+        if (creatorBarAutoHide == null) {
+            return false;
+        }
+        
+        // Get auto-hide bar position and dimensions
+        int[] location = new int[2];
+        creatorBarAutoHide.getLocationOnScreen(location);
+        int[] viewLocation = new int[2];
+        getLocationOnScreen(viewLocation);
+        
+        float barLeft = location[0] - viewLocation[0];
+        float barTop = location[1] - viewLocation[1];
+        float barRight = barLeft + creatorBarAutoHide.getWidth();
+        float barBottom = barTop + creatorBarAutoHide.getHeight();
+        
+        // Add margins around the auto-hide bar
+        barLeft -= margin;
+        barTop -= margin;
+        barRight += margin;
+        barBottom += margin;
+        
+        // Check if rectangles overlap
+        return !(right <= barLeft || left >= barRight || bottom <= barTop || top >= barBottom);
+    }
+
+    private boolean collidesWithAutoHideBar(RectF rect) {
+        return collidesWithAutoHideBar(rect.left, rect.top, rect.right, rect.bottom);
+    }
+
+    private RectF clampAwayFromAutoHideBar(RectF rect) {
+        if (mRootView == null) return rect;
+        
+        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
+        if (creatorBarAutoHide == null) {
+            return rect;
+        }
+        
+        // Get auto-hide bar position and dimensions
+        int[] location = new int[2];
+        creatorBarAutoHide.getLocationOnScreen(location);
+        int[] viewLocation = new int[2];
+        getLocationOnScreen(viewLocation);
+        
+        float barLeft = location[0] - viewLocation[0] - margin;
+        float barTop = location[1] - viewLocation[1] - margin;
+        float barRight = barLeft + creatorBarAutoHide.getWidth() + (2 * margin);
+        float barBottom = barTop + creatorBarAutoHide.getHeight() + (2 * margin);
+        
+        RectF result = new RectF(rect);
+        
+        // Check if rectangles overlap
+        if (!(rect.right <= barLeft || rect.left >= barRight || rect.bottom <= barTop || rect.top >= barBottom)) {
+            // They overlap - find the smallest displacement to separate them
+            float pushLeft = barLeft - rect.right;    // negative = move rect left
+            float pushRight = barRight - rect.left;   // positive = move rect right
+            float pushUp = barTop - rect.bottom;      // negative = move rect up
+            float pushDown = barBottom - rect.top;    // positive = move rect down
+            
+            // Find the smallest absolute displacement
+            float minDisplacement = Float.MAX_VALUE;
+            float chosenDx = 0, chosenDy = 0;
+            
+            if (Math.abs(pushLeft) < minDisplacement && rect.left + pushLeft >= minBorderX) {
+                minDisplacement = Math.abs(pushLeft);
+                chosenDx = pushLeft;
+                chosenDy = 0;
+            }
+            if (Math.abs(pushRight) < minDisplacement && rect.right + pushRight <= maxBorderX) {
+                minDisplacement = Math.abs(pushRight);
+                chosenDx = pushRight;
+                chosenDy = 0;
+            }
+            if (Math.abs(pushUp) < minDisplacement && rect.top + pushUp >= minBorderY) {
+                minDisplacement = Math.abs(pushUp);
+                chosenDx = 0;
+                chosenDy = pushUp;
+            }
+            if (Math.abs(pushDown) < minDisplacement && rect.bottom + pushDown <= maxBorderY) {
+                minDisplacement = Math.abs(pushDown);
+                chosenDx = 0;
+                chosenDy = pushDown;
+            }
+            
+            result.offset(chosenDx, chosenDy);
+        }
+        
+        return result;
     }
 
     private void candToPoints(Integer[] ids, RectF cand) {

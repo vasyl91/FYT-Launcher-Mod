@@ -3,23 +3,24 @@ package com.android.launcher66.settings;
 public final class Keys {
     private Keys() { throw new AssertionError("No instances."); }
 
-    public static final String PIP_REMOVED = "pip.removed";
-    public static final String RECREATE = "recreate.view";
-    public static final String ACCESIBILITY_SERVICE = "accesibility.service";
+    public static final String PIP_REMOVED = "pip_removed";
+    public static final String RECREATE = "recreate_view";
+    public static final String ACCESIBILITY_SERVICE = "accesibility_service";
     public static final String USER_LAYOUT = "user_layout";
     public static final String USER_INIT_LAYOUT = "user_init_layout";
     public static final String SYSTEM_DIALOG_REASON_KEY = "reason";
     public static final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
     public static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
-    public static final String ALL_APPS = "all.apps";
-    public static final String ALL_APPS_VISIBLE = "all.apps.visible";
-    public static final String STATS_APP_FOREGROUND = "stats.app.foreground";
-    public static final String UPDATE_USER_PAGE = "update.user.page";
-    public static final String PIP_STARTED = "pip.started";
-    public static final String LIST_OPEN = "list.open";
-    public static final String LIST_CLOSE = "list.close";
-    public static final String OVERVIEW_MODE_OPEN = "overview.mode.open";
-    public static final String OVERVIEW_MODE_CLOSE = "overview.mode.close";
+    public static final String ALL_APPS = "all_apps";
+    public static final String ALL_APPS_VISIBLE = "all_apps_visible";
+    public static final String STATS_APP_FOREGROUND = "stats_app_foreground";
+    public static final String UPDATE_USER_PAGE = "update_user_page";
+    public static final String PIP_STARTED = "pip_started";
+    public static final String LIST_OPEN = "list_open";
+    public static final String LIST_CLOSE = "list_close";
+    public static final String OVERVIEW_MODE_OPEN = "overview_mode_open";
+    public static final String OVERVIEW_MODE_CLOSE = "overview_mode_close";
+    public static final String START_ADDING_CUSTOM_ELEMETNS = "start_adding_custom_elements";
     public static final String NIGHT_MODE = "night_mode"; 
 
     public static final String DOWNLOAD_PERCENTAGE = "download_percentage";
@@ -86,14 +87,24 @@ public final class Keys {
     public static final String INSPECTOR_CMD_ARR = "inspector_cmd_arr";
     public static final String CODE_INSPECTOR_TIMEOUT = "code_inspector_timeout";
     public static final String LEFT_BAR = "left_bar";
+    public static final String WIDGET_BAR = "widget_bar";
+    public static final String WIDGETS_BACKGROUND = "choose_widgets_background";
+    public static final String BAR_BACKGROUND = "choose_bar_background";
+    public static final String WIDGETS_SELECTED_BACKGROUND = "widgets_selected_background";
+    public static final String BAR_SELECTED_BACKGROUND = "bar_selected_background";
+    public static final String BLACK_BAR = "black_bar";
+    public static final String BLACK_WIDGETS = "black_widgets";
     public static final String START_PAGE = "start_page";
     public static final String LAYOUT_MARGIN = "layout_margin";
+    public static final String AUTO_HIDE_BOTTOM_BAR = "auto_hide_bottom_bar";
+    public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";
     public static final String PIP_SECOND = "pip_second";
     public static final String PIP_THIRD = "pip_third";
     public static final String PIP_FOURTH = "pip_fourth";
+    public static final String RESTART_PIP = "restart_pip";
     public static final String PIP_DUAL_KEY = "pipDual";
     public static final String PIP_FIRST_KEY = "pipFirst";
     public static final String PIP_SECOND_KEY = "pipSecond";
@@ -114,8 +125,18 @@ public final class Keys {
     public static final String PIP_THIRD_PACKAGE = "pip_third_package";
     public static final String PIP_FOURTH_PACKAGE = "pip_fourth_package";
 
-    public static final String RECYCLER_APP = "recycler.app";
-    public static final String RECYCLER_APP_MAP = "recycler.app.map";
+    public static final String MUSIC_SCREEN_ID = "music_screen_id";
+    public static final String RADIO_SCREEN_ID = "radio_screen_id";
+    public static final String DATE_SCREEN_ID = "date_screen_id";
+    public static final String STATS_SCREEN_ID = "stats_screen_id";
+    public static final String PIP_DUAL_SCREEN_ID = "pip_dual_screen_id";
+    public static final String PIP_FIRST_SCREEN_ID = "pip_first_screen_id";
+    public static final String PIP_SECOND_SCREEN_ID = "pip_second_screen_id";
+    public static final String PIP_THIRD_SCREEN_ID = "pip_third_screen_id";
+    public static final String PIP_FOURTH_SCREEN_ID = "pip_fourth_screen_id";
+
+    public static final String RECYCLER_APP = "recycler_app";
+    public static final String RECYCLER_APP_MAP = "recycler_app_map";
     public static final String ALLAPPS = "ALLAPPS";
     public static final String FUELSTATS = "FUELSTATS";
 }

@@ -7,9 +7,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -20,6 +25,7 @@ import com.android.launcher66.LauncherGlideBitmapLoader;
 
 public class Helpers {
 
+    private static final String TAG = "Helpers";
     // These prefs are reseted on each onCreate or on recreateView in Launcher.java
     private final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
     private final SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -35,6 +41,17 @@ public class Helpers {
     public void setDay(boolean day) {
         this.day = day;
         editorSus.putBoolean("day", day);
+        editorSus.apply();
+    }
+
+    private boolean disableMovingPage = false;
+    public boolean getDisableMovingPage() {
+        disableMovingPage = sharedPrefsSus.getBoolean("disableMovingPage", false);
+        return disableMovingPage;
+    }
+    public void setDisableMovingPage(boolean disableMovingPage) {
+        this.disableMovingPage = disableMovingPage;
+        editorSus.putBoolean("disableMovingPage", disableMovingPage);
         editorSus.apply();
     }
 
@@ -75,14 +92,14 @@ public class Helpers {
     }
 
 
-    private boolean leftBarHasChanged = false;
-    public boolean hasLeftBarChanged() {
-        leftBarHasChanged = sharedPrefs.getBoolean("leftBarHasChanged", false);
-        return leftBarHasChanged;
+    private boolean barSettingsChanged = false;
+    public boolean hasBarSettingsChanged() {
+        barSettingsChanged = sharedPrefs.getBoolean("barSettingsChanged", false);
+        return barSettingsChanged;
     }
-    public void setLeftBarChanged(boolean leftBarHasChanged) {
-        this.leftBarHasChanged = leftBarHasChanged;
-        editor.putBoolean("leftBarHasChanged", leftBarHasChanged);
+    public void setBarSettingsChanged(boolean barSettingsChanged) {
+        this.barSettingsChanged = barSettingsChanged;
+        editor.putBoolean("barSettingsChanged", barSettingsChanged);
         editor.apply();
     }
 
@@ -536,7 +553,35 @@ public class Helpers {
         boolean foundOverlap = false;
         boolean[] needsReset = new boolean[rectangleKeys.length];
         
-        // Check for overlaps
+        // Check if we should exclude last row (bottom bar area)
+        RectF bottomBarRect = null; 
+        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false); 
+        float bottomBarWidth = Launcher.screenWidth * 0.071f; // 7.1% of screen width
+        float bottomBarHeight = Launcher.screenHeight * 0.1638f; // 16.38% of screen height
+        float bottomBarTop = Launcher.screenHeight - bottomBarHeight;
+        if (screenToCompare == 0 && !leftBar) {
+            // Check if bottom bar should be excluded on screen 0
+            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);        
+            if (!autoHideBottomBar) {
+                // Calculate bottom bar area if needed
+                bottomBarRect = new RectF(0, bottomBarTop, Launcher.screenWidth, Launcher.screenHeight);
+            } else {
+                // Always occupy the first cell on the scren 0
+                bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, Launcher.screenHeight);
+            }
+        } else if (screenToCompare == 0 && leftBar) {
+            // Check if bottom bar should be excluded on screen 0
+            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);        
+            if (!autoHideBottomBar) {
+                // Calculate bottom bar area if needed
+                bottomBarRect = new RectF(0, bottomBarTop, Launcher.screenWidth, Launcher.screenHeight);
+            } else {
+                // Always occupy the first cell on the scren 0
+                bottomBarRect = new RectF(0, bottomBarTop, 0, Launcher.screenHeight);
+            }
+        } 
+        
+        // Check for overlaps between rectangles
         for (int i = 0; i < rectangleKeys.length; i++) {
             if (!enabledStates[i]) continue;
             
@@ -546,6 +591,13 @@ public class Helpers {
             // Get rectangle bounds for first rectangle
             RectF rectA = getRectangleBounds(mPrefs, rectangleKeys[i]);
             if (rectA.isEmpty()) continue;
+            
+            // Check for overlap with bottom bar
+            if (bottomBarRect != null && overlapsOrTouches(rectA, bottomBarRect)) {
+                foundOverlap = true;
+                needsReset[i] = true;
+                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with bottom bar");
+            }
             
             for (int j = i + 1; j < rectangleKeys.length; j++) {
                 if (!enabledStates[j]) continue;
@@ -642,9 +694,31 @@ public class Helpers {
         if (thirdPip) enabledPipCount++;
         if (fourthPip) enabledPipCount++;
         
-        // Base position for first PIP
+        // Calculate bottom bar area to avoid
+        float bottomBarHeight = Launcher.screenHeight * 0.1638f; // 16.38% of screen height
+        float bottomBarTop = Launcher.screenHeight - bottomBarHeight;
+        
+        // Base position for first PIP - ensure it doesn't overlap with bottom bar
         int baseX = margin;
         int baseY = margin + dateMinHeight + margin;
+        
+        // Adjust baseY if it would overlap with bottom bar
+        float pipBottom = baseY + pipMinHeight;
+        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false); 
+        if (screenToCompare == 0 && !leftBar && pipBottom > bottomBarTop) {
+            // Calculate available space above bottom bar
+            float availableHeight = bottomBarTop - (margin + dateMinHeight + margin);
+            
+            if (availableHeight >= pipMinHeight) {
+                // Can fit PIPs above bottom bar
+                baseY = (int) (bottomBarTop - pipMinHeight - margin);
+            } else {
+                // Not enough space, need to reduce PIP height or adjust layout
+                // For now, just position at the top of available space
+                baseY = margin + dateMinHeight + margin;
+            }
+        }
+        
         int pipIndex = 0;
         
         for (int i = 0; i < rectangleKeys.length; i++) {
@@ -657,6 +731,11 @@ public class Helpers {
                     if (compareScreensForReset(Keys.PIP_DUAL_SCREEN, screenToCompare, mPrefs)) {
                         int x = baseX;
                         int y = baseY;
+                        
+                        // Ensure PIP doesn't overlap with bottom bar
+                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        }
                         
                         editorReset.putInt("pipDualTopLeftX", x);
                         editorReset.putInt("pipDualTopLeftY", y);
@@ -674,6 +753,11 @@ public class Helpers {
                     if (compareScreensForReset(Keys.PIP_FIRST_SCREEN, screenToCompare, mPrefs)) {
                         int x = baseX;
                         int y = baseY;
+                        
+                        // Ensure PIP doesn't overlap with bottom bar
+                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        }
                         
                         editorReset.putInt("pipFirstTopLeftX", x);
                         editorReset.putInt("pipFirstTopLeftY", y);
@@ -704,6 +788,11 @@ public class Helpers {
                         } else {
                             x = baseX + pipMinWidth + margin;
                             y = baseY;
+                        }
+                        
+                        // Ensure PIP doesn't overlap with bottom bar
+                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                            y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipSecondTopLeftX", x);
@@ -741,6 +830,11 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
+                        // Ensure PIP doesn't overlap with bottom bar
+                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        }
+                        
                         editorReset.putInt("pipThirdTopLeftX", x);
                         editorReset.putInt("pipThirdTopLeftY", y);
                         editorReset.putInt("pipThirdTopRightX", x + pipMinWidth);
@@ -772,6 +866,11 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
+                        // Ensure PIP doesn't overlap with bottom bar
+                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        }
+                        
                         editorReset.putInt("pipFourthTopLeftX", x);
                         editorReset.putInt("pipFourthTopLeftY", y);
                         editorReset.putInt("pipFourthTopRightX", x + pipMinWidth);
@@ -785,14 +884,20 @@ public class Helpers {
                     
                 case "date":
                     if (compareScreensForReset(Keys.DATE_SCREEN, screenToCompare, mPrefs)) {
+                        // Ensure date doesn't overlap with bottom bar
+                        int dateY = margin;
+                        if (screenToCompare == 0 && (dateY + dateMinHeight) > bottomBarTop) {
+                            dateY = (int) (bottomBarTop - dateMinHeight - margin);
+                        }
+                        
                         editorReset.putInt("dateTopLeftX", margin);
-                        editorReset.putInt("dateTopLeftY", margin);
+                        editorReset.putInt("dateTopLeftY", dateY);
                         editorReset.putInt("dateTopRightX", margin + dateMinWidth);
-                        editorReset.putInt("dateTopRightY", margin);
+                        editorReset.putInt("dateTopRightY", dateY);
                         editorReset.putInt("dateBottomRightX", margin + dateMinWidth);
-                        editorReset.putInt("dateBottomRightY", margin + dateMinHeight);
+                        editorReset.putInt("dateBottomRightY", dateY + dateMinHeight);
                         editorReset.putInt("dateBottomLeftX", margin);
-                        editorReset.putInt("dateBottomLeftY", margin + dateMinHeight);
+                        editorReset.putInt("dateBottomLeftY", dateY + dateMinHeight);
                     }
                     break;
                     
@@ -800,23 +905,37 @@ public class Helpers {
                     if (compareScreensForReset(Keys.MUSIC_SCREEN, screenToCompare, mPrefs)) {
                         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            int musicY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
+                            
+                            // Ensure music doesn't overlap with bottom bar
+                            if (screenToCompare == 0 && (musicY + musicMinHeight) > bottomBarTop) {
+                                musicY = (int) (bottomBarTop - musicMinHeight - margin);
+                            }
+                            
                             editorReset.putInt("musicTopLeftX", margin);
-                            editorReset.putInt("musicTopLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("musicTopLeftY", musicY);
                             editorReset.putInt("musicTopRightX", margin + musicMinWidth);
-                            editorReset.putInt("musicTopRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("musicTopRightY", musicY);
                             editorReset.putInt("musicBottomRightX", margin + musicMinWidth);
-                            editorReset.putInt("musicBottomRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + musicMinHeight);
+                            editorReset.putInt("musicBottomRightY", musicY + musicMinHeight);
                             editorReset.putInt("musicBottomLeftX", margin);
-                            editorReset.putInt("musicBottomLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + musicMinHeight);
+                            editorReset.putInt("musicBottomLeftY", musicY + musicMinHeight);
                         } else {
+                            int musicY = margin + radioMinHeight + margin;
+                            
+                            // Ensure music doesn't overlap with bottom bar
+                            if (screenToCompare == 0 && (musicY + musicMinHeight) > bottomBarTop) {
+                                musicY = (int) (bottomBarTop - musicMinHeight - margin);
+                            }
+                            
                             editorReset.putInt("musicTopLeftX", margin + pipMinWidthStandard + margin);
-                            editorReset.putInt("musicTopLeftY", margin + radioMinHeight + margin);
+                            editorReset.putInt("musicTopLeftY", musicY);
                             editorReset.putInt("musicTopRightX", margin + pipMinWidthStandard + margin + musicMinWidth);
-                            editorReset.putInt("musicTopRightY", margin + radioMinHeight + margin);
+                            editorReset.putInt("musicTopRightY", musicY);
                             editorReset.putInt("musicBottomRightX", margin + pipMinWidthStandard + margin + musicMinWidth);
-                            editorReset.putInt("musicBottomRightY", margin + radioMinHeight + margin + musicMinHeight);
+                            editorReset.putInt("musicBottomRightY", musicY + musicMinHeight);
                             editorReset.putInt("musicBottomLeftX", margin + pipMinWidthStandard + margin);
-                            editorReset.putInt("musicBottomLeftY", margin + radioMinHeight + margin + musicMinHeight);
+                            editorReset.putInt("musicBottomLeftY", musicY + musicMinHeight);
                         }
                     }
                     break;
@@ -825,23 +944,37 @@ public class Helpers {
                     if (compareScreensForReset(Keys.RADIO_SCREEN, screenToCompare, mPrefs)) {
                         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            int radioY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
+                            
+                            // Ensure radio doesn't overlap with bottom bar
+                            if (screenToCompare == 0 && (radioY + radioMinHeight) > bottomBarTop) {
+                                radioY = (int) (bottomBarTop - radioMinHeight - margin);
+                            }
+                            
                             editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);
-                            editorReset.putInt("radioTopLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("radioTopLeftY", radioY);
                             editorReset.putInt("radioTopRightX", margin + musicMinWidth + margin + radioMinWidth);
-                            editorReset.putInt("radioTopRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2));
+                            editorReset.putInt("radioTopRightY", radioY);
                             editorReset.putInt("radioBottomRightX", margin + musicMinWidth + margin + radioMinWidth);
-                            editorReset.putInt("radioBottomRightY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + radioMinHeight);
+                            editorReset.putInt("radioBottomRightY", radioY + radioMinHeight);
                             editorReset.putInt("radioBottomLeftX", margin + musicMinWidth + margin);
-                            editorReset.putInt("radioBottomLeftY", margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2) + radioMinHeight);
+                            editorReset.putInt("radioBottomLeftY", radioY + radioMinHeight);
                         } else {
+                            int radioY = margin;
+                            
+                            // Ensure radio doesn't overlap with bottom bar
+                            if (screenToCompare == 0 && (radioY + radioMinHeight) > bottomBarTop) {
+                                radioY = (int) (bottomBarTop - radioMinHeight - margin);
+                            }
+                            
                             editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
-                            editorReset.putInt("radioTopLeftY", margin);
+                            editorReset.putInt("radioTopLeftY", radioY);
                             editorReset.putInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth);
-                            editorReset.putInt("radioTopRightY", margin);
+                            editorReset.putInt("radioTopRightY", radioY);
                             editorReset.putInt("radioBottomRightX", margin + dateMinWidth + margin + radioMinWidth);
-                            editorReset.putInt("radioBottomRightY", margin + radioMinHeight);
+                            editorReset.putInt("radioBottomRightY", radioY + radioMinHeight);
                             editorReset.putInt("radioBottomLeftX", margin + dateMinWidth + margin);
-                            editorReset.putInt("radioBottomLeftY", margin + radioMinHeight);
+                            editorReset.putInt("radioBottomLeftY", radioY + radioMinHeight);
                         }
                     }
                     break;
@@ -892,5 +1025,28 @@ public class Helpers {
             }
         });
         return iconBitmap[0];
+    }
+
+    public static void applyColorFilterToButton(Button button) {
+        Drawable buttonDrawable = button.getBackground();
+        if (buttonDrawable != null) {
+            buttonDrawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    public static void applyColorFilterToImageView(ImageView imageView) {
+        Drawable imageDrawable = imageView.getDrawable();
+        if (imageDrawable != null) {
+            imageDrawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    public static void removeColorFilterFromImageView(ImageView imageView) {
+        Drawable imageDrawable = imageView.getDrawable();
+        if (imageDrawable != null) {
+            imageDrawable.clearColorFilter();
+        }
+        imageView.clearColorFilter();
+        imageView.invalidate();
     }
 }

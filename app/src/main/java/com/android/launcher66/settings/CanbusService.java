@@ -434,7 +434,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             textColor = prefs.getString("stats_color", "#FFFFFFFF");
             String bgColor = prefs.getString("bg_stats_color", "#FF000000");
             boolean background = prefs.getBoolean("stats_bg", true);
-            boolean leftBar = prefs.getBoolean("left_bar", false);
+            boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
             boolean drawableBg = prefs.getBoolean("bg_drawable", false);
             boolean colorBg = prefs.getBoolean("bg_color", false);
             int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
@@ -482,7 +482,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             if (background) {
                 if (drawableBg) {
-                    absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.custom_bg));
+                    absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
                 } else if (colorBg) {
                     GradientDrawable shape =  new GradientDrawable();
                     shape.setCornerRadius(radius);

@@ -262,7 +262,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
         logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
         logcatServiceTimeoutEditText();
-        boolean isDebug = BuildConfig.DEBUG;
+        boolean isDebug = true; //BuildConfig.DEBUG;
 
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
@@ -687,6 +687,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     public void setCountDownTimer(int delay) {
         countDownTimerBool = true;
+        final Context appContext = requireContext().getApplicationContext();
+
         countDownTimer = new CountDownTimer(delay, 1000) {
             public void onTick(long millisUntilFinished) {
                 int remainingTime = (int) (millisUntilFinished / 1000);
@@ -695,17 +697,27 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 int minutes = remainingSeconds / 60;
                 int seconds = remainingSeconds % 60;
                 String timeFormat = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                logcatRun.setSummary(getString(
-                    R.string.logcat_service_run_working, 
-                    timeFormat
-                ));
+
+                // Use application context which is always available
+                String summary = appContext.getString(
+                        R.string.logcat_service_run_working,
+                        timeFormat
+                );
+
+                // Only update UI if fragment is still active
+                if (isAdded()) {
+                    logcatRun.setSummary(summary);
+                }
             }
 
             public void onFinish() {
-                logcatRun.setSummary(getString(
-                    R.string.logcat_service_run_working, 
-                    "00:00:00"
-                ));
+                if (isAdded()) {
+                    String summary = appContext.getString(
+                            R.string.logcat_service_run_working,
+                            "00:00:00"
+                    );
+                    logcatRun.setSummary(summary);
+                }
             }
         }.start();
     }

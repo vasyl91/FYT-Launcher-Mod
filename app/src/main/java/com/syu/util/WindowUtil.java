@@ -105,7 +105,9 @@ public class WindowUtil {
             if (helpers == null) {
                 helpers = new Helpers();
             }
-            /*Log.i(TAG, "openPip(): " + "Utils.topApp() " + String.valueOf(Utils.topApp()) 
+            Log.i(TAG, "openPip(): " +  "show: "+ String.valueOf(show)
+                + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
+                + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
                 + " helpers.pipsAdded() " + String.valueOf(helpers.pipsAdded()) 
                 + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
                 + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
@@ -114,7 +116,7 @@ public class WindowUtil {
                 + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
                 + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
                 + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
-                + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));*/
+                + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
             if ((show && !helpers.pipsAdded()) || (Utils.topApp()
                 && !helpers.pipsAdded()
                 && !helpers.isInWidgets()
@@ -590,7 +592,7 @@ public class WindowUtil {
     }
 
     private static void setPinnedPipBounds(String pipKey, String screenKey) {
-        boolean leftBar = prefs.getBoolean("left_bar", false);
+        boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         int margin = Integer.valueOf(prefs.getString("layout_margin", "10"));
         int orientedMargin = margin;

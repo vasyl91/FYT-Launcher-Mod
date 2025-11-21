@@ -139,6 +139,7 @@ public class LauncherModel extends BroadcastReceiver {
 
     // sBgWorkspaceScreens is the ordered set of workspace screens.
     static final ArrayList<Long> sBgWorkspaceScreens = new ArrayList<Long>();
+    private SharedPreferences mPrefs;
 
     // </ only access in worker thread >
 
@@ -406,6 +407,18 @@ public class LauncherModel extends BroadcastReceiver {
         };
         /* @} */
         runOnWorkerThread(r);
+    }
+
+    public void updateScreens(final Context context) {
+        ArrayList<Long> workspaceScreens = new ArrayList<Long>();
+        TreeMap<Integer, Long> orderedScreens = loadWorkspaceScreensDb(context);
+        for (Integer i : orderedScreens.keySet()) {
+            long screenId = orderedScreens.get(i);
+            workspaceScreens.add(screenId);
+        }   
+        
+        // Update the workspace screens
+        updateWorkspaceScreenOrder(context, workspaceScreens);     
     }
 
     public Bitmap getFallbackIcon() {
@@ -905,6 +918,9 @@ public class LauncherModel extends BroadcastReceiver {
                             break;
                     }
                 }
+
+                Launcher.getLauncher().triggerAppData();
+                initCustomElements();
             }
         };
         runOnWorkerThread(r);
@@ -979,6 +995,10 @@ public class LauncherModel extends BroadcastReceiver {
             long id = iter.next();
             if (id < 0) {
                 iter.remove();
+            }
+            if (id == -201) {
+                LauncherProvider lp = LauncherAppState.getLauncherProvider();
+                screensCopy.add(lp.generateNewScreenId());
             }
         }
 
@@ -1142,7 +1162,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    private void forceReload() {
+    public void forceReload() {
         resetLoadedState(true, true);
 
         // Do this here because if the launcher activity is running it will be restarted.
@@ -1716,9 +1736,25 @@ public class LauncherModel extends BroadcastReceiver {
                             case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
                             case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
                                 id = c.getLong(idIndex);
+                                
                                 intentDescription = c.getString(intentIndex);
+                                if (intentDescription == null) {
+                                    Log.w(TAG, "Skipping item with null intent, id=" + id);
+                                    itemsToRemove.add(id);
+                                    continue;
+                                }
+                                
+                                String trimmedIntent = intentDescription.trim();
+                                if (trimmedIntent.isEmpty()) {
+                                    Log.w(TAG, "Skipping item with empty intent, id=" + id);
+                                    itemsToRemove.add(id);
+                                    continue;
+                                }
+                                
+                                intentDescription = trimmedIntent;
+
                                 try {
-                                    intent = Intent.parseUri(intentDescription, 0);
+                                    intent = Intent.parseUri(trimmedIntent, 0);
                                     ComponentName cn = intent.getComponent();
                                     if (cn != null && !isValidPackageComponent(manager, cn)) {
                                         if (!mAppsCanBeOnRemoveableStorage) {
@@ -1981,12 +2017,57 @@ public class LauncherModel extends BroadcastReceiver {
                     LauncherAppState.getLauncherProvider().updateMaxItemId(maxItemId);
                 } else {
                     TreeMap<Integer, Long> orderedScreens = loadWorkspaceScreensDb(mContext);
+                    Log.i(TAG, "orderedScreens: " + orderedScreens);
                     for (Integer i : orderedScreens.keySet()) {
                         sBgWorkspaceScreens.add(orderedScreens.get(i));
                     }
+                    Log.i(TAG, "sBgWorkspaceScreens: " + sBgWorkspaceScreens);
+                    mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+                    // Collect all pages that contain custom widgets, per user mPrefs
+                    ArrayList<Long> unusedScreens = new ArrayList<Long>(sBgWorkspaceScreens);
+                    Log.i(TAG, "unusedScreens: " + unusedScreens);
+                    ArrayList<Integer> customScreens = new ArrayList<>();
+                    if (mPrefs.getBoolean(Keys.USER_MUSIC, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.USER_DATE, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.DATE_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.USER_RADIO, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.RADIO_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.PIP_DUAL, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.PIP_FIRST, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.PIP_SECOND, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.PIP_THIRD, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 2);
+                    }
+                    if (mPrefs.getBoolean(Keys.PIP_FOURTH, false)) {
+                        customScreens.add(mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 2);
+                    }
+
+
+                    Log.i(TAG, "customScreens: " + customScreens);
+
+                    // Convert ranks to actual screenIds in sBgWorkspaceScreens
+                    for (Integer rank : customScreens) {
+                        if (rank >= 0 && rank < sBgWorkspaceScreens.size()) {
+                            long customScreenId = sBgWorkspaceScreens.get(rank);
+                            if (unusedScreens.contains(customScreenId)) {
+                                unusedScreens.remove(customScreenId);
+                                Log.i(TAG, "Preserving custom widget screenId=" + customScreenId + " (rank=" + rank + ")");
+                            }
+                        }
+                    }
 
                     // Remove any empty screens
-                    ArrayList<Long> unusedScreens = new ArrayList<Long>(sBgWorkspaceScreens);
                     for (ItemInfo item: sBgItemsIdMap.values()) {
                         long screenId = item.screenId;
                         if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP &&
@@ -1995,17 +2076,19 @@ public class LauncherModel extends BroadcastReceiver {
                         }
                     }
 
-                    for (long screenId: needRetainScreens) {
-                        if (unusedScreens.contains(screenId)) {
-                            unusedScreens.remove(screenId);
-                        }
+                    if (needRetainScreens != null) {
+                        for (long screenId: needRetainScreens) {
+                            if (unusedScreens.contains(screenId)) {
+                                unusedScreens.remove(screenId);
+                            }
+                        }                
                     }
 
                     // If there are any empty screens remove them, and update.
-                    if (unusedScreens.size() != 0) {
+                    if (!unusedScreens.isEmpty()) {
                         sBgWorkspaceScreens.removeAll(unusedScreens);
-                        updateWorkspaceScreenOrder(context, sBgWorkspaceScreens);
-                    }
+                        updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
+                    }      
                 }
                 unsetWorkspaceLoadingProtect();
 
@@ -2266,7 +2349,7 @@ public class LauncherModel extends BroadcastReceiver {
             HashMap<Long, ItemInfo> itemsIdMap = new HashMap<Long, ItemInfo>();
             ArrayList<Long> orderedScreenIds = new ArrayList<Long>();
             synchronized (sBgLock) {
-                SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
                 if (userLayoutBool) {
                     appWidgets.addAll(sBgAppWidgets);
@@ -2383,18 +2466,18 @@ public class LauncherModel extends BroadcastReceiver {
             @SuppressWarnings("unchecked")
             final ArrayList<AppInfo> list
                     = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
-            Runnable r = new Runnable() {
-                public void run() {
-                    final long t = SystemClock.uptimeMillis();
-                    final Callbacks callbacks = tryGetCallbacks(oldCallbacks);
-                    if (callbacks != null) {
-                        callbacks.bindAllApplications(list);
-                    }
-                    if (DEBUG_LOADERS) {
-                        Log.d(TAG, "bound all " + list.size() + " apps from cache in "
-                                + (SystemClock.uptimeMillis()-t) + "ms");
-                    }
+            Runnable r = () -> {
+                final long t = SystemClock.uptimeMillis();
+                final Callbacks callbacks = tryGetCallbacks(oldCallbacks);
+                if (callbacks != null) {
+                    callbacks.bindAllApplications(list);
                 }
+                if (DEBUG_LOADERS) {
+                    Log.d(TAG, "bound all " + list.size() + " apps from cache in "
+                            + (SystemClock.uptimeMillis()-t) + "ms");
+                }
+                Launcher.getLauncher().triggerAppData();
+                initCustomElements();
             };
             boolean isRunningOnMainThread = !(sWorkerThread.getThreadId() == Process.myTid());
             if (isRunningOnMainThread) {
@@ -2468,6 +2551,8 @@ public class LauncherModel extends BroadcastReceiver {
                     } else {
                         Log.i(TAG, "not binding apps: no Launcher activity");
                     }
+                    Launcher.getLauncher().triggerAppData();
+                    initCustomElements();
                 }
             });
 
@@ -2486,6 +2571,11 @@ public class LauncherModel extends BroadcastReceiver {
                 Log.d(TAG, "mItems size=" + sBgWorkspaceItems.size());
             }
         }
+    }
+
+    private static void initCustomElements() {
+        Intent intentCustomElements = new Intent(Keys.START_ADDING_CUSTOM_ELEMETNS);
+        LauncherApplication.sApp.sendBroadcast(intentCustomElements);
     }
 
     void enqueuePackageUpdated(PackageUpdatedTask task) {

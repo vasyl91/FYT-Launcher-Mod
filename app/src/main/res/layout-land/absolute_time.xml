@@ -3,9 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/absolute_time"
-    android:background="@drawable/custom_bg" >
+    android:background="@drawable/bg_custom" >
 
     <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/ll_time"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         app:flexWrap="wrap"

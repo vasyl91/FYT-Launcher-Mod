@@ -66,6 +66,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.TextKeyListener;
 import android.text.style.RelativeSizeSpan;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -97,6 +98,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -139,8 +141,11 @@ import com.syu.util.Id3Info;
 import com.syu.util.JLog;
 import com.syu.util.Lrc;
 import com.syu.util.Utils;
+import com.syu.util.WeatherUtils;
 import com.syu.util.WindowUtil;
 import com.syu.utils.W3Utils;
+import com.syu.weather.WeatherDescription;
+import com.syu.weather.WeatherManager;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.DateTimeProvider;
 import com.syu.widget.TimeUpdateReceiver;
@@ -151,6 +156,7 @@ import org.litepal.LitePal;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -167,6 +173,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -240,6 +247,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     RelativeLayout firstLayout;
     private RadioRuler img_freq_point;
     public ImageView ivALbumBg;
+    public ImageView ivALbumBgTwo;
     public ImageView ivMusicScore;
     public ImageView ivMusicScore2;
     private Button kuwomusic_next;
@@ -267,6 +275,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mCamera_DisView;
     private ImageView mCarLightView;
     private TextView mCurCityView;
+    public WeatherDescription mCurDescription;
     private TextView mCurDis_AllView;
     private TextView mCurDis_RemainView;
     private TextView mCurDis_SurplusView;
@@ -351,18 +360,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private String mVideoPlayState;
     private boolean mWaitingForResult;
     private BubbleTextView mWaitingForResume;
+    private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
+    public WeatherManager manager;
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
-    private Button music_playpause;
-    private Button music_playpause_two;
+    private Button mPlayPauseButton;
+    private Button mPlayPauseButtonTwo;
     public View pipViews;
     long preOnResumeTime;
     public boolean showKuwoContent;
     RemoteTools tools;
     private TextView tvAlbum;
     private TextView tvAritst;
+    private TextView tvAritstTwo;
     private TextView tvBand;
     private TextView tvBtavCurTime;
     private TextView tvBtavTotalTime;
@@ -375,6 +387,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button video_next;
     private Button video_playpause;
     private Button video_prev;
+    private TextView weatherCity;
+    public TextView weatherCity1;
+    private ImageView weatherImg;
+    public ImageView weatherImg1;
+    private TextView weatherTemp;
+    public TextView weatherTemp1;
+    private TextView weatherTempRange;
+    private TextView weatherTempRange1;
+    private TextView weatherWeather;
+    public TextView weatherWeather1;
+    private TextView weatherWind;
     static final int APPWIDGET_HOST_ID = LauncherApplication.appWidget_Host_Id;
     private static final Object sLock = new Object();
     private static int sScreen = 0;
@@ -412,7 +435,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public Handler handler = new Handler(Looper.getMainLooper());
     private ItemInfo mPendingAddInfo = new ItemInfo();
     private int[] mTmpAddItemCellCoordinates = new int[2];
-    public HashMap<String, View> customView = new HashMap<>();
+    private Map<String, View> customViewMap = new HashMap<>();
     private boolean mAutoAdvanceRunning = false;
     private State mOnResumeState = State.NONE;
     private SpannableStringBuilder mDefaultKeySsb = null;
@@ -446,16 +469,37 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Handler connectionHandler = new Handler(Looper.getMainLooper());
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
     private final AtomicBoolean atomicInitAppData = new AtomicBoolean(false);
-    private final AtomicBoolean atomicDontInitOnCreate = new AtomicBoolean(false);
+    private Handler appDataHandler = new Handler(Looper.getMainLooper());
+    private Runnable pendingAction;
+    private static final long APP_DATA_DELAY = 1500;
+    private static final int MAX_INIT_RETRIES = 10;
+    private int mInitRetryCount = 0;
+    private boolean mIsInitializingAppData = false;
     public boolean onResumePip = false;
     private boolean onBackPip = false;
     private boolean onWorkspacePip = false;
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
     private boolean mSkipPostResume = false;
+    private boolean widgetBar = false;
+    private boolean barTint = false;
+    private boolean widgetTint = false;
     private DeviceProfile grid;
     private static final AtomicLong LAST_PROCESSED_NONCE = new AtomicLong(-1L);
     private final Executor bg = Executors.newSingleThreadExecutor();
+    private static final String PREF_LAST_ALBUM_ART = "last_album_art_bitmap";
+    private static final String PREF_LAST_ALBUM_PATH = "last_album_path";
+    private static final String MUSIC_TITLE_PREF = "music_title_pref";
+    private static final String ARTIST_PREF = "artist_pref";
+    private String lastProcessedPath = null;
+    private String lastMusictitle = null;
+    private String lastArtist = null;
+    private ConstraintLayout prevLayout;
+    private ConstraintLayout playPauseLayout;
+    private ConstraintLayout nextLayout;
+    private ConstraintLayout prevLayoutTwo ;
+    private ConstraintLayout playPauseLayoutTwo;
+    private ConstraintLayout nextLayoutTwo;
 
     public static int calculatedStatsWidth;
     public static int calculatedStatsHeight;
@@ -703,11 +747,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (ints != null && ints.length > 0) {
                 int mDvrRecState = ints[0];
                 if (mDvrRecState == 1) {
-                    if (Launcher.this.customView.get(Config.WS_Dvr_Rec) != null) {
-                        Launcher.this.customView.get(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_stop_btn);
+                    if (Launcher.this.getCustomView(Config.WS_Dvr_Rec) != null) {
+                        Launcher.this.getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_stop_btn);
                     }
-                } else if (mDvrRecState == 0 && Launcher.this.customView.get(Config.WS_Dvr_Rec) != null) {
-                    Launcher.this.customView.get(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_rec_btn);
+                } else if (mDvrRecState == 0 && Launcher.this.getCustomView(Config.WS_Dvr_Rec) != null) {
+                    Launcher.this.getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_rec_btn);
                 }
             }
         }
@@ -939,7 +983,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     };
     private int[] images = {ResValue.getInstance().num00, ResValue.getInstance().num01, ResValue.getInstance().num02, ResValue.getInstance().num03, ResValue.getInstance().num04, ResValue.getInstance().num05, ResValue.getInstance().num06, ResValue.getInstance().num07, ResValue.getInstance().num08, ResValue.getInstance().num09};
     String lastpath = null;
-    private IUiRefresher refreshMusic = new IUiRefresher() {
+    public IUiRefresher refreshMusic = new IUiRefresher() {
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -981,14 +1025,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (Launcher.this.tvMusicNameTwo != null) {
                         Launcher.this.tvMusicNameTwo.setText(R.string.music_name);
                     }
-                    if (Launcher.this.music_playpause != null) {
-                        Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    if (Launcher.this.mPlayPauseButton != null) {
+                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        setWidgetButtonsTint(mPlayPauseButton);
                     }
-                    if (Launcher.this.music_playpause_two != null) {
-                        Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    if (Launcher.this.mPlayPauseButtonTwo != null) {
+                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        setBarButtonsTint(mPlayPauseButtonTwo);
                     }
                     if (Launcher.this.tvAritst != null) {
                         Launcher.this.tvAritst.setText(R.string.music_author);
+                    }
+                    if (Launcher.this.tvAritstTwo != null) {
+                        Launcher.this.tvAritstTwo.setText(R.string.music_author);
                     }
                     if (Launcher.this.tvAlbum != null) {
                         Launcher.this.tvAlbum.setText(R.string.music_album);
@@ -1028,15 +1077,42 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 bp = Launcher.makeRoundCorner(bp);
                             }
                         }
+                        
+                        // Only save if this is a new path
+                        if (!path.equals(lastProcessedPath)) {
+                            saveBitmapToPreferences(bp, path);
+                        }
+                        
                         Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), bp);
                         if (Launcher.this.ivALbumBg != null) {
                             Launcher.this.ivALbumBg.setImageDrawable(drawable);
                         }
+                        if (Launcher.this.ivALbumBgTwo != null) {
+                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+                        }
                     }
                 } else {
                     Launcher.this.lastpath = null;
-                    if (Launcher.this.ivALbumBg != null) {
-                        Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
+                    lastProcessedPath = null; // Reset when no image data
+                    
+                    // Try to load the last saved bitmap
+                    Bitmap savedBitmap = getBitmapFromPreferences();
+                    if (savedBitmap != null) {
+                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
+                        if (Launcher.this.ivALbumBg != null) {
+                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
+                        }
+                        if (Launcher.this.ivALbumBgTwo != null) {
+                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+                        }
+                    } else {
+                        // Use default if no saved bitmap
+                        if (Launcher.this.ivALbumBg != null) {
+                            Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
+                        }
+                        if (Launcher.this.ivALbumBgTwo != null) {
+                            Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
+                        }
                     }
                 }
                 if (Launcher.this.ivMusicScore != null) {
@@ -1047,6 +1123,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
 
                 if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
+                    saveTitleToPreferences(musictitle);
                     if (Launcher.this.tvMusicName != null) {
                         if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
                             Launcher.this.tvMusicName.setText(musictitle); 
@@ -1070,13 +1147,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         Launcher.this.tvMusicNameTwo.setSelected(true);  
                     }
                 }
-                if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
+                if (artist != null && !artist.isEmpty()) {
+                    saveArtistToPreferences(artist);
                     if (Launcher.this.tvAritst != null) {
                         if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
                             Launcher.this.tvAritst.setText(artist);                         
                         }
                         Launcher.this.tvAritst.setSelected(true); 
-                    }                   
+                    }  
+                    if (Launcher.this.tvAritstTwo != null) {
+                        if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
+                            Launcher.this.tvAritstTwo.setText(artist);                         
+                        }
+                        Launcher.this.tvAritstTwo.setSelected(true); 
+                    }                  
                 }
                 if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.this.tvAlbum != null) {
                     Launcher.this.tvAlbum.setText(album);
@@ -1111,6 +1195,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }  
                         if (Launcher.this.tvAritst != null) {
                             Launcher.this.tvAritst.setText("Live");
+                        }    
+                        if (Launcher.this.tvAritstTwo != null) {
+                            Launcher.this.tvAritstTwo.setText("Live");
                         }                   
                     }
                     String cur = Launcher.this.timeParse(curProgress);
@@ -1136,16 +1223,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         musictitle = filename.substring(0, filename.lastIndexOf("."));
                     }
                     Utils.setTextStr(Launcher.this.tvMusicName, musictitle);
+                    Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle); 
                     if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
                         Utils.setTextStr(Launcher.this.tvAritst, MusicService.author_name);
+                        Utils.setTextStr(Launcher.this.tvAritstTwo, MusicService.author_name);
                     } else {
                         Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                    }
-                    Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle);                             
+                        Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);
+                    }                            
                 } else {
                     Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
+                    Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name); 
                     Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                    Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name);          
+                    Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);         
                 }
 
                 Utils.setTextStr(Launcher.this.tvCurTime, "00:00");
@@ -1156,8 +1246,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (Launcher.this.musicProgress != null) {
                     Launcher.this.musicProgress.setProgress(0);
                 }
-                if (Launcher.this.music_playpause != null) {
-                    Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                if (Launcher.this.mPlayPauseButton != null) {
+                    Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    setWidgetButtonsTint(mPlayPauseButton);
+                    return;
+                }
+                if (Launcher.this.mPlayPauseButtonTwo != null) {
+                    Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    setBarButtonsTint(mPlayPauseButtonTwo);
                     return;
                 }
                 return;
@@ -1170,11 +1266,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
                 ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
             }
-            /*if (Launcher.this.music_playpause != null) {
-                Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            /*if (Launcher.this.mPlayPauseButton != null) {
+                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
-            if (Launcher.this.music_playpause_two != null) {
-                Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            if (Launcher.this.mPlayPauseButtonTwo != null) {
+                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
             if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
                 if (Launcher.this.tvMusicName != null) {
@@ -1198,6 +1294,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     Launcher.this.tvAritst.setSelected(true);
                 }                   
             }
+            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritstTwo != null) {
+                if (Launcher.this.tvAritstTwo != null) {
+                    if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
+                        Launcher.this.tvAritstTwo.setText(artist);              
+                    }
+                    Launcher.this.tvAritstTwo.setSelected(true);
+                }                   
+            }
             Widget.update(LauncherApplication.sApp);
         }
     };
@@ -1205,7 +1309,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     // set play/pause icon for stock and other music players
     public void setPlayPauseIcon(boolean wait) {
         if (wait) {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     setPlayPauseIcon();
@@ -1218,18 +1322,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void setPlayPauseIcon() {
-        if (Launcher.this.music_playpause != null && !temporarilyDisablePlayPauseButton) {
+        if (Launcher.this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                setWidgetButtonsTint(mPlayPauseButton);
             } else {
-                Launcher.this.music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setWidgetButtonsTint(mPlayPauseButton);
             }
         }
-        if (Launcher.this.music_playpause_two != null && !temporarilyDisablePlayPauseButton) {
+        if (Launcher.this.mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                setBarButtonsTint(mPlayPauseButtonTwo);
             } else {
-                Launcher.this.music_playpause_two.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setBarButtonsTint(mPlayPauseButtonTwo);
             }
         }         
     }
@@ -1252,6 +1360,176 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return isRadioRunning;
     }
 
+    public void preSetMusicWidgets() {
+        Bitmap savedBitmap = getBitmapFromPreferences();
+        if (savedBitmap != null) {
+            Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
+            if (Launcher.this.ivALbumBg != null) {
+                Launcher.this.ivALbumBg.setImageDrawable(drawable);
+            }
+            if (Launcher.this.ivALbumBgTwo != null) {
+                Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+            }
+        } else {
+            // Use default if no saved bitmap
+            if (Launcher.this.ivALbumBg != null) {
+                Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
+            }
+            if (Launcher.this.ivALbumBgTwo != null) {
+                Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
+            }
+        }
+
+        String musictitle = mPrefs.getString(MUSIC_TITLE_PREF, null);
+        if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
+            if (Launcher.this.tvMusicName != null) {
+                if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
+                    Launcher.this.tvMusicName.setText(musictitle); 
+                } else {
+                    if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
+                        helpers.setMediaSourcePre(mediaSource);
+                        Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
+                    }                       
+                }
+                Launcher.this.tvMusicName.setSelected(true);
+            }
+            if (Launcher.this.tvMusicNameTwo != null) {
+                if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+                    Launcher.this.tvMusicNameTwo.setText(musictitle); 
+                } else {
+                    if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
+                        helpers.setMediaSourcePre(mediaSource);
+                        Launcher.this.tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
+                    }                           
+                }
+                Launcher.this.tvMusicNameTwo.setSelected(true);  
+            }
+        }
+
+        String artist = mPrefs.getString(ARTIST_PREF, null);
+        if (artist != null && !artist.isEmpty()) {
+            if (Launcher.this.tvAritst != null) {
+                if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
+                    Launcher.this.tvAritst.setText(artist);                         
+                }
+                Launcher.this.tvAritst.setSelected(true); 
+            }  
+            if (Launcher.this.tvAritstTwo != null) {
+                if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
+                    Launcher.this.tvAritstTwo.setText(artist);                         
+                }
+                Launcher.this.tvAritstTwo.setSelected(true); 
+            }                  
+        }
+
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (Launcher.this.mPlayPauseButton != null) {
+            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                setWidgetButtonsTint(mPlayPauseButton);
+            } else {
+                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setWidgetButtonsTint(mPlayPauseButton);
+            }
+        }
+        if (Launcher.this.mPlayPauseButtonTwo != null) {
+            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                setBarButtonsTint(mPlayPauseButtonTwo);
+            } else {
+                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setBarButtonsTint(mPlayPauseButtonTwo);
+            }
+        }    
+    }
+
+    private void saveTitleToPreferences(String currentTitle) {
+        if (currentTitle.equals(lastMusictitle)) {
+            return;
+        }
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putString(MUSIC_TITLE_PREF, currentTitle);
+        editor.apply();        
+    }
+
+    private void saveArtistToPreferences(String currentArtist) {
+        if (currentArtist.equals(lastArtist)) {
+            return;
+        }
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putString(ARTIST_PREF, currentArtist);
+        editor.apply();        
+    }
+
+    private void saveBitmapToPreferences(Bitmap bitmap, String currentPath) {
+        if (bitmap == null || currentPath == null) return;
+        
+        // Check if this is the same path we just processed
+        if (currentPath.equals(lastProcessedPath)) {
+            return;
+        }
+        
+        new AsyncTask<Object, Void, Void>() {
+            @Override
+            protected void onProgress(Void[] progress) {
+                //
+            }
+
+            @Override
+            protected Void doInBackground(Object... params) {
+                Bitmap bitmapToSave = (Bitmap) params[0];
+                String path = (String) params[1];
+                
+                try {
+                    // Double-check with persisted path
+                    String lastSavedPath = mPrefs.getString(PREF_LAST_ALBUM_PATH, "");
+                    
+                    if (path.equals(lastSavedPath)) {
+                        return null; // Already saved for this path
+                    }
+                    
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmapToSave.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putString(PREF_LAST_ALBUM_ART, encodedBitmap);
+                    editor.putString(PREF_LAST_ALBUM_PATH, path);
+                    editor.apply();
+                    
+                    // Update in-memory cache
+                    lastProcessedPath = path;
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onBackgroundError(Exception e) {
+                Log.e(TAG, "saveBitmapToPreferences: " + e.getMessage());
+            }
+        }.execute(bitmap, currentPath);
+    }
+
+    private Bitmap getBitmapFromPreferences() {
+        try {
+            String encodedBitmap = mPrefs.getString(PREF_LAST_ALBUM_ART, null);
+            
+            if (encodedBitmap != null) {
+                byte[] decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT);
+                return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private int radioBand = -1;
     Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
         @Override
@@ -1271,7 +1549,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 1 && ints != null && ints.length > 0) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                mHandler.postDelayed(() -> {
                     if (isRadioPlaying()) stopMusic();
                 }, 500);
                 Launcher.radioFreqState = ints[0];
@@ -1637,8 +1915,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         Log.i("onCreate", "onCreate----->");
         atomicOnCreate.set(true);
-        atomicDontInitOnCreate.set(true);
         mContext = this;
+
+        if (customViewMap == null) {
+            customViewMap = new HashMap<>();
+        }
 
         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
         helpers = new Helpers();
@@ -1656,10 +1937,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         fytData = mPrefs.getBoolean("fyt_data", true);   
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean("left_bar", false); 
-        if (userLayout) {
-            //setWindowLocUser();
-        }
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false); 
 
         getWindow().addFlags(Integer.MIN_VALUE);
 
@@ -1859,6 +2138,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mStats = new Stats(this);
         
+        manager = WeatherManager.initialize(this);
         kwAPi = KWAPI.createKWAPI(this, "fangyitong");
         if (kwAPi != null) {
             kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
@@ -1873,6 +2153,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (isAllAppsVisible()) {
                     if (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
                         Log.d(TAG, "showWorkspace");
+                        helpers.setInAllApps(false);
                         onBackPip = true;
                         showWorkspace(true);
                     } else {
@@ -1954,51 +2235,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         mSkipPostResume = false;
-        Log.d(TAG, "onResume----->");
-        // Poll any pending updateOnce that the app-level receiver saved while launcher was stopped.
-        long pending = PendingUpdateStore.pollPendingAndClear(this);
         isRecreateActive = false;
-        if (pending > 0) {
-            Log.d("onResume", "Found pending updateOnce: " + pending);
-            if (!shouldProcessUpdateOnce(pending)) {
-                Log.d("Recreate page", "Started (onResume pending)");
-                isRecreateActive = true;
-                boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false); 
-                boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
-                if (userLayoutBool && displayPip && (helpers.hasLayoutTypeChanged() || helpers.hasLeftBarChanged() || helpers.hasUserOpenedCreator())) {
-                    Log.i("Recreate page", "user layout");
-                    WindowUtil.restartMultiplePips();
-                }
+        Log.d(TAG, "onResume----->");
 
-                if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
-                    Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                    if (isServiceRunning(NightModeService.class)) {
-                        stopService(nightModeServiceIntent);
-                    }
-                    startService(nightModeServiceIntent);
-                }
-
-                if (helpers.hasCorrectionChanged()) {
-                    sendBroadcast(new Intent(Keys.RECREATE));
-                    helpers.setCorrectionChanged(false);
-                }
-
-                helpers.setUserOpenedCreator(false);
-                helpers.setLeftBarChanged(false);
-
-                getWindow().addFlags(Integer.MIN_VALUE);       
-                if (mPrefs.getBoolean("transparent_statusbar", false)) {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
-                    getWindow().setStatusBarColor(Color.TRANSPARENT);
-                } else {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
-                }
-
-                recreateView(userLayoutBool);
-            } else {
-                Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
-            }
-        }
         // broadcast for CanbusService
         if (mAppsCustomizeTabHost.getVisibility() == View.VISIBLE) {
             Intent intent = new Intent(Keys.ALL_APPS_VISIBLE);
@@ -2013,25 +2252,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBeVisible(false);
         }
-
-        if (isAllAppsVisible()) {
-            WindowUtil.removePip(null);
-        } else {
-            if (atomicOnCreate.get()) {
-                atomicOnCreate.set(false);
-                // Proceed without initPip because it starts inside initializeAppList()
-            } else {
-                if (!onWorkspacePip) {
-                    onResumePip = true;
-                    if (!isRecreateActive || !helpers.onWidgetDropPipBool()) {
-                        initPip("onResume", null, false);
-                    }
-                }
-                onWorkspacePip = false;
-                onBackPip = false;
-            }
-        }
-        
         handleView();
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
         }
@@ -2047,7 +2267,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         sPausedFromUserAction = false;
         if (mRestoring || mOnResumeNeedsLoad) {
             mWorkspaceLoading = true;
-            mModel.startLoader(true, -1);
+            mModel.startLoader(true, -1);        
             mRestoring = false;
             mOnResumeNeedsLoad = false;
         }
@@ -2114,6 +2334,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             firstLayout.setVisibility(View.VISIBLE);
         }
         isfirstlayout = false;
+        showWeatherInfo();
         lastpath = null;
         if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
             showKuwoContent = false;
@@ -2132,6 +2353,71 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         setPlayPauseIcon(true);
+
+        // Poll any pending updateOnce that the app-level receiver saved while launcher was stopped.
+        long pending = PendingUpdateStore.pollPendingAndClear(this);
+        if (pending > 0) {
+            Log.d("onResume", "Found pending updateOnce: " + pending);
+            if (!shouldProcessUpdateOnce(pending)) {
+                Log.d("Recreate page", "Started (onResume pending)");
+                isRecreateActive = true;
+                boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false); 
+                boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
+                if (userLayoutBool && displayPip && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
+                    Log.i("Recreate page", "user layout");
+                    WindowUtil.restartMultiplePips();
+                }
+                helpers.checkAndResetIfOverlappingOnScreen(-1);
+
+                if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                    Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+                    if (isServiceRunning(NightModeService.class)) {
+                        stopService(nightModeServiceIntent);
+                    }
+                    startService(nightModeServiceIntent);
+                }
+
+                if (helpers.hasCorrectionChanged()) {
+                    sendBroadcast(new Intent(Keys.RECREATE));
+                    helpers.setCorrectionChanged(false);
+                }
+
+                helpers.setUserOpenedCreator(false);
+                helpers.setBarSettingsChanged(false);
+
+                getWindow().addFlags(Integer.MIN_VALUE);       
+                if (mPrefs.getBoolean("transparent_statusbar", false)) {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
+                    getWindow().setStatusBarColor(Color.TRANSPARENT);
+                } else {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
+                }
+
+                recreateView(userLayoutBool);
+            } else {
+                Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
+            }
+        }
+
+        if (isAllAppsVisible()) {
+            WindowUtil.removePip(null);
+        } else {
+            if (atomicOnCreate.get()) {
+                atomicOnCreate.set(false);
+                // Proceed without initPip because it starts inside initializeAppList()
+                mModel.forceReload();
+                triggerAppData(); 
+            } else {
+                if (!onWorkspacePip) {
+                    onResumePip = true;
+                    if (!isRecreateActive || !helpers.onWidgetDropPipBool()) {
+                        initPip("onResume", null, false);
+                    }
+                }
+                onWorkspacePip = false;
+                onBackPip = false;
+            }
+        }
     }
 
     private boolean shouldProcessUpdateOnce(long updateOnce) {
@@ -2163,40 +2449,100 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private void recreateView(boolean userLayoutBool) {
+    void recreateView(boolean userLayoutBool) {
         Log.d(TAG, "recreateView");
-        mWorkspace.createUserPage();
-        mAppWidgetHost.startListening();
-        setupViews();
-        bindOnclickListener();
-        restoreState(mSavedState);
+
+        if (mModel == null || mWorkspace == null) {
+            Log.w(TAG, "recreateView: model or workspace null — aborting reload");
+            return;
+        }
+
+        try {
+            Log.d(TAG, "recreateView: forceReload()");
+            mModel.forceReload();
+        } catch (Exception e) {
+            Log.e(TAG, "recreateView: forceReload failed", e);
+        }
+
+        mIsInitializingAppData = false;
+
+        try {
+            mWorkspace.createUserPage();
+            mAppWidgetHost.startListening();
+            initViews();
+            setupViews();
+            bindOnclickListener();
+            restoreState(mSavedState);
+        } catch (Exception e) {
+            Log.e(TAG, "recreateView: setup failed", e);
+        }
+
+        // --- Restore visibility of bottom panels ---
         if (userLayoutBool) {
-            bottomButtons.setVisibility(android.view.View.GONE); 
-            bottomButtonsWidgets.setVisibility(android.view.View.VISIBLE); 
+            bottomButtons.setVisibility(View.GONE);
+            bottomButtonsWidgets.setVisibility(View.VISIBLE);
         } else {
-            bottomButtons.setVisibility(android.view.View.VISIBLE); 
-            bottomButtonsWidgets.setVisibility(android.view.View.GONE);
+            bottomButtons.setVisibility(View.VISIBLE);
+            bottomButtonsWidgets.setVisibility(View.GONE);
         }
-        if (mModel != null) {
-            mModel.resetLoadedState(true, true);
-            mModel.startLoader(false, mWorkspace.getCurrentPage());
+
+        // --- Restore interaction (fix for immovable shortcuts/widgets) ---
+        try {
+            // Make workspace focusable & touch-enabled
+            mWorkspace.setFocusable(true);
+            mWorkspace.setClickable(true);
+            mWorkspace.setLongClickable(true);
+
+            // Reattach workspace to drag layer / drag controller if they exist
+            if (mDragLayer != null && mWorkspace.getParent() != mDragLayer) {
+                mDragLayer.removeAllViews();
+                mDragLayer.addView(mWorkspace);
+                Log.d(TAG, "recreateView: workspace reattached to drag layer");
+            }
+
+            if (mDragController != null) {
+                mDragController.setDragScoller(mWorkspace);
+                mDragController.setScrollView(mDragLayer);
+                mDragController.setMoveTarget(mWorkspace);
+                Log.d(TAG, "recreateView: drag controller relinked");
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "recreateView: drag setup skipped", e);
         }
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);  
+
+        // --- Re-register your UI elements ---
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+
         Log.d("recreateView", "remove and open Pip");
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+
+        mHandler.postDelayed(() -> {
             helpers.setFirstPreferenceWindow(false);
             helpers.setWallpaperWindow(false);
             helpers.setWasInRecents(false);
             closeSystemDialogs();
         }, 250);
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
-            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit(); 
-        }, 350);  
-    }    
+
+        mHandler.postDelayed(() -> {
+            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+        }, 350);
+
+        triggerAppData();
+
+        // --- Post layout stabilization ---
+        mHandler.postDelayed(() -> {
+            try {
+                mWorkspace.requestLayout();
+                mWorkspace.invalidate();
+                Log.d(TAG, "recreateView: layout refresh done");
+            } catch (Exception e) {
+                Log.w(TAG, "recreateView: post layout refresh failed", e);
+            }
+        }, 200);
+    }
 
     private void initPip(String whereInitiated, View view, boolean forceOpen) {
         // mWorkspace.getCurrentPage() is determined with slight delay
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mHandler.postDelayed(()-> {
             if (helpers.displayStateBoolean()
                 && !helpers.isFirstPreferenceWindow() 
                 && !helpers.isWallpaperWindow() 
@@ -2231,14 +2577,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         editor.apply();
 
         if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(Keys.NIGHT_MODE, false) && helpers.displayStateBoolean()) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            mHandler.postDelayed(() -> {
                 Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                 startService(nightModeServiceIntent);
             }, 7000);
         }
 
         if (!isServiceRunning(CanbusService.class)) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            mHandler.postDelayed(() -> {
                 new CanbusAsyncTask(LauncherApplication.sApp).execute();
             }, 7000); 
         }
@@ -2268,7 +2614,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             });
         } 
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        mHandler.postDelayed(()-> {
+            closeSystemDialogs();
+        }, 250);
+
+        mHandler.postDelayed(() -> {
             onBackPip = false;
             onResumePip = false; 
         }, 1500); 
@@ -2277,9 +2627,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override 
     protected void onPause() {
         super.onPause();
+        cleanWidgetBar();
         if (mHomeButtonPressed && isOnMainWorkspaceScreen()) return;
         Log.d(TAG, "---->>> onPause");
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mHandler.postDelayed(()-> {
             if (Utils.topApp(FytPackage.hicarAction)
                 || Utils.topApp(FytPackage.fourcamera2Action)) {
                 WindowUtil.removePip(this.pipViews);
@@ -2326,8 +2677,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer = null;
         }
         Log.d("Launcher", "onStop: unregistering dynamic receiver");
-        unregisterReceiver(mReceiver);
-        unregisterReceiver(mCloseSystemDialogsReceiver);
+        try {
+            unregisterReceiver(mReceiver);
+            unregisterReceiver(mCloseSystemDialogsReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+        }
     }
 
     @Override
@@ -2383,6 +2738,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mDragController = null;
         mWorkspace = null;
         ivALbumBg = null;
+        ivALbumBgTwo = null;
+        tvMusicNameTwo = null;
+        tvAritstTwo = null;
+        weatherImg1 = null;
+        weatherCity1 = null;
+        weatherTemp = null;
+        weatherWeather1 = null;
+        clearAllCustomViews();
         LauncherAnimUtils.onDestroyActivity();
         stopServicesOnDestroy();
     }    
@@ -2434,6 +2797,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 String appTitle = appInfo.loadLabel(pm).toString();
                                 AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
                                 Launcher.this.refreshLeftCycle(bean);
+                                cleanWidgetBar();
                             } catch (PackageManager.NameNotFoundException e) {
                                 throw new RuntimeException(e);
                             }
@@ -2491,79 +2855,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             helpers.setInOverviewMode(false);
             Intent intentpip = new Intent(Keys.PIP_STARTED);
             sendBroadcast(intentpip);
-        }
-    }
-
-    // top-left x, top left y, bottom right x, bottom right y
-    private void setWindowLocDefault() {
-        SystemProperties.set("persist.syu.launcher.haspip", "true");
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.MAIN");
-        intent.addCategory("android.intent.category.HOME");
-        if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
-            View iv_map = findViewById(R.id.iv_map1);
-            if (getResources().getDisplayMetrics().widthPixels == 1024) { // 1024x600 (notification bar 50)
-                SystemProperties.set("persist.lsec.radius", "10");
-                SystemProperties.set("sys.lsec.pip_rect", "107 57 687 513");
-            }  else if (getResources().getDisplayMetrics().heightPixels == 768) { // 768x1024 (notification bar 60)
-                SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "107 67 756 937");
-            }  else if (getResources().getDisplayMetrics().widthPixels == 1280) { // 1280x720 (notification bar 60)
-                SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 852 594");
-            } else if (getResources().getDisplayMetrics().widthPixels == 1920 && getResources().getDisplayMetrics().heightPixels == 720) { // 1920x720 (notification bar 60)
-                SystemProperties.set("persist.lsec.radius", "12");
-                SystemProperties.set("sys.lsec.pip_rect", "124 74 1497 594");
-            } else {
-                SystemProperties.set("persist.lsec.radius", "14");
-                if (getResources().getDisplayMetrics().heightPixels == 1080) { // 1920x1080 (notification bar 100)
-                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1222 880");
-                } else if (getResources().getDisplayMetrics().heightPixels == 1100) { // 2000x1100 (notification bar 100)
-                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1000");
-                } else if (getResources().getDisplayMetrics().heightPixels == 1200) { // 2000x1200 (notification bar 100)
-                    SystemProperties.set("sys.lsec.pip_rect", "162 120 1302 1000");
-                }           
-            }   
-        }
-    }
-
-    private void setWindowLocUser() {
-        int mapTopLeftX, mapBottomRightX; 
-        SystemProperties.set("persist.syu.launcher.haspip", "true");
-        if (getResources().getDisplayMetrics().widthPixels <= 1024
-            || (getResources().getDisplayMetrics().heightPixels <= 1024 && getResources().getDisplayMetrics().heightPixels != 720)) {
-            SystemProperties.set("persist.lsec.radius", "10");
-        } else if (getResources().getDisplayMetrics().heightPixels == 720) {
-            SystemProperties.set("persist.lsec.radius", "12");
-        } else {
-            SystemProperties.set("persist.lsec.radius", "14");              
-        }  
-        leftBar = mPrefs.getBoolean("left_bar", false);
-        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
-        int orientedMargin = margin;
-
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientedMargin = 0;
-        } 
-
-        if (leftBar) {
-            mapTopLeftX = mPrefs.getInt("pipFirstTopLeftX", margin) + orientedMargin + calculatedLeftBarWidth;
-            mapBottomRightX = mPrefs.getInt("pipFirstBottomRightX", margin + calculatedPipMinWidth) + orientedMargin + calculatedLeftBarWidth;   
-        } else {
-            mapTopLeftX = mPrefs.getInt("pipFirstTopLeftX", margin);
-            mapBottomRightX = mPrefs.getInt("pipFirstBottomRightX", margin + calculatedPipMinWidth);
-        }
-        int mapTopLeftY = mPrefs.getInt("pipFirstTopLeftY", margin + calculatedDateMinHeight + margin) + getStatusBarHeight();
-        int mapBottomRightY = mPrefs.getInt("pipFirstBottomRightY", margin + calculatedDateMinHeight + margin + calculatedPipMinHeight) + getStatusBarHeight();
-
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.MAIN");
-        intent.addCategory("android.intent.category.HOME");
-        if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(getPackageName())) {
-            View iv_map = findViewById(R.id.iv_map1);
-            // top-left x, top left y, bottom right x, bottom right y
-            SystemProperties.set("sys.lsec.pip_rect", String.valueOf(mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY));
         }
     }
 
@@ -2648,6 +2939,53 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (mTvEq != null) {
             mTvEq.setText(R.string.car_eq);
+        }
+    }
+
+    public void showWeatherInfo() {
+        if (this.manager != null) {
+            this.manager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { 
+                @Override 
+                public void onWeatherChanged(WeatherDescription weather) {
+                    if (weather != null) {
+                        if (Launcher.this.weatherImg != null) {
+                            Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                        }
+                        String range = weather.getTemDescription().replaceAll("\\.\\d", "");
+                        String temp = weather.getCurTem().replaceAll("\\.\\d", "");
+                        if (Launcher.this.weatherCity != null) {
+                            Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                        }
+                        if (Launcher.this.weatherWeather != null) {
+                            Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                        }
+                        if (Launcher.this.weatherTemp != null) {
+                            Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
+                        }
+                        if (Launcher.this.weatherTempRange != null) {
+                            Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
+                        }
+                        if (Launcher.this.weatherImg1 != null) {
+                            Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                        }
+                        if (Launcher.this.weatherCity1 != null) {
+                            Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                        }
+                        if (Launcher.this.weatherWeather1 != null) {
+                            Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                        }
+                        if (Launcher.this.weatherTemp1 != null) {
+                            Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
+                        }
+                        if (Launcher.this.weatherTempRange1 != null) {
+                            Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
+                        }
+                        if (Launcher.this.weatherWind != null) {
+                            Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -2929,6 +3267,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             } else {
                 completeTwoStageWidgetDrop(resultCode, appWidgetId);
             }
+            mWorkspace.triggerStripEmptyScreens("Launcher, onActivityResult(), 1", false);
             return;
         }
 
@@ -2951,7 +3290,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 delayExitSpringLoadedMode = completeAdd(args);
             }
         } else if (resultCode == RESULT_CANCELED) {
-            mWorkspace.stripEmptyScreens();
+            mWorkspace.triggerStripEmptyScreens("Launcher, onActivityResult(), 2", false);
         }
         mDragLayer.clearAnimatedView();
         // Exit spring loaded mode if necessary after cancelling the configuration of a widget
@@ -3024,43 +3363,38 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void setSoundBtn() {
-        if (customView.get(Config.SOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.SOUND)).setBackgroundResource(R.drawable.car_sound_icon);
+        if (getCustomView(Config.SOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.SOUND)).setBackgroundResource(R.drawable.car_sound_icon);
         }
-        if (customView.get(Config.CLOLSESOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.CLOLSESOUND)).setBackgroundResource(R.drawable.car_sound_icon);
+        if (getCustomView(Config.CLOLSESOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.CLOLSESOUND)).setBackgroundResource(R.drawable.car_sound_icon);
         }
-        if (customView.get(Config.WS_SOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.WS_SOUND)).setBackgroundResource(R.drawable.car_sound_icon);
+        if (getCustomView(Config.WS_SOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.WS_SOUND)).setBackgroundResource(R.drawable.car_sound_icon);
         }
-        if (customView.get(Config.WS_CLOSESOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.WS_CLOSESOUND)).setBackgroundResource(R.drawable.car_sound_icon);
+        if (getCustomView(Config.WS_CLOSESOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.WS_CLOSESOUND)).setBackgroundResource(R.drawable.car_sound_icon);
         }
     }
 
     public void setSoundCloseBtn() {
-        if (customView.get(Config.SOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.SOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
+        if (getCustomView(Config.SOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.SOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
         }
-        if (customView.get(Config.CLOLSESOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.CLOLSESOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
+        if (getCustomView(Config.CLOLSESOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.CLOLSESOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
         }
-        if (customView.get(Config.WS_SOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.WS_SOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
+        if (getCustomView(Config.WS_SOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.WS_SOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
         }
-        if (customView.get(Config.WS_CLOSESOUND) != null) {
-            Objects.requireNonNull(customView.get(Config.WS_CLOSESOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
+        if (getCustomView(Config.WS_CLOSESOUND) != null) {
+            Objects.requireNonNull(getCustomView(Config.WS_CLOSESOUND)).setBackgroundResource(R.drawable.car_sound_close_icon);
         }
     }
 
     protected void onFinishBindingItems() {
         if (mWorkspace != null && hasCustomContentToLeft() && mWorkspace.hasCustomContent()) {
             addCustomContentToLeft();
-        }
-        if (!atomicDontInitOnCreate.get()) {           
-            handler.postDelayed(()-> {
-                initAppData();
-            }, 1000);
         }
     }
 
@@ -3182,122 +3516,202 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    public void putCustomView(String key, View view) {
+        if (view == null) return;
+        customViewMap.put(key, view);
+    }
+
+    @Nullable
+    public View getCustomView(String key) {
+        if (customViewMap == null) return null; 
+        return customViewMap.get(key);
+    }
+
+    public void clearAllCustomViews() {
+        try {
+            Map<String, View> map = this.customViewMap;
+            if (map == null || map.isEmpty()) return;
+            for (Iterator<Map.Entry<String, View>> it = map.entrySet().iterator(); it.hasNext();) {
+                Map.Entry<String, View> e = it.next();
+                View v = e.getValue();
+                if (v != null) {
+                    try {
+                        v.setOnClickListener(null);
+                        v.setOnLongClickListener(null);
+                        v.setOnTouchListener(null);
+                    } catch (Throwable ignored) {}
+                    if (v.getParent() instanceof ViewGroup) {
+                        try {
+                            ((ViewGroup) v.getParent()).removeView(v);
+                        } catch (Throwable ignored) {}
+                    }
+                }
+                it.remove();
+            }
+            map.clear();
+        } catch (Throwable t) {
+            Log.w("Launcher", "clearAllCustomViews failed", t);
+        }
+    }
+
+    public void removeCustomView(String key) {
+        if (key == null) return;
+        try {
+            Map<String, View> map = this.customViewMap; // adjust name if different
+            if (map == null) return;
+            View v = map.remove(key);
+            if (v != null) {
+                // detach listeners we may have added from Launcher side (best-effort)
+                try {
+                    v.setOnClickListener(null);
+                    v.setOnLongClickListener(null);
+                    v.setOnTouchListener(null);
+                } catch (Throwable ignored) {}
+
+                // remove from parent if any
+                if (v.getParent() instanceof ViewGroup) {
+                    try {
+                        ((ViewGroup) v.getParent()).removeView(v);
+                    } catch (Throwable ignored) {}
+                }
+            }
+        } catch (Throwable t) {
+            Log.w("Launcher", "removeCustomView failed for key=" + key, t);
+        }
+    }
+
     private void initHashMap() {
         if (mHotseat != null) {
-            customView.put(Config.NAVI, mHotseat.findViewById(ResValue.getInstance().m_navi_btn));
-            customView.put(Config.VOICE, mHotseat.findViewById(ResValue.getInstance().m_voice_btn));
-            customView.put(Config.SETTING, mHotseat.findViewById(ResValue.getInstance().m_set_btn));
-            customView.put(Config.VIDEO, mHotseat.findViewById(ResValue.getInstance().m_video_btn));
-            customView.put(Config.BT, mHotseat.findViewById(ResValue.getInstance().m_bt_btn));
-            customView.put(Config.RADIO, mHotseat.findViewById(ResValue.getInstance().m_radio_btn));
-            customView.put(Config.MUSIC, mHotseat.findViewById(ResValue.getInstance().m_music_btn));
-            customView.put(Config.BTAV, mHotseat.findViewById(ResValue.getInstance().m_btav_btn));
-            customView.put(Config.ECAR, mHotseat.findViewById(ResValue.getInstance().m_ecar_btn));
-            customView.put(Config.SOS, mHotseat.findViewById(ResValue.getInstance().m_sos_btn));
-            customView.put(Config.KUWO, mHotseat.findViewById(ResValue.getInstance().m_kuwo_btn));
-            customView.put(Config.UNICAR, mHotseat.findViewById(ResValue.getInstance().m_unicar_btn));
-            customView.put(Config.KLFM, mHotseat.findViewById(ResValue.getInstance().m_klfm_btn));
-            customView.put(Config.HONGFANS, mHotseat.findViewById(ResValue.getInstance().m_hongfans_btn));
-            customView.put(Config.DVR, mHotseat.findViewById(ResValue.getInstance().m_dvr_btn));
-            customView.put(Config.LIGHT, mHotseat.findViewById(ResValue.getInstance().m_light_btn));
-            customView.put(Config.CLOLSESCREEN, mHotseat.findViewById(ResValue.getInstance().m_screen_btn));
-            customView.put(Config.WIFI, mHotseat.findViewById(ResValue.getInstance().m_wifi_btn));
-            customView.put(Config.SOUND, mHotseat.findViewById(ResValue.getInstance().m_sound_btn));
-            customView.put(Config.CLOLSESOUND, mHotseat.findViewById(ResValue.getInstance().m_closesound_btn));
-            customView.put(Config.BRIGHT, mHotseat.findViewById(ResValue.getInstance().m_bright_btn));
-            customView.put(Config.EQ, mHotseat.findViewById(ResValue.getInstance().m_eq_btn));
-            customView.put(Config.TIME, mHotseat.findViewById(ResValue.getInstance().m_time_btn));
-            customView.put(Config.ALLAPP, mHotseat.findViewById(ResValue.getInstance().m_allapp_btn));
-            customView.put(Config.BROWSER, mHotseat.findViewById(ResValue.getInstance().m_browser_btn));
-            customView.put(Config.NEWEYE, mHotseat.findViewById(ResValue.getInstance().m_neweye_btn));
-            customView.put(Config.CANBUS, mHotseat.findViewById(ResValue.getInstance().m_canbus_btn));
-            customView.put(Config.FILE, mHotseat.findViewById(ResValue.getInstance().m_file_btn));
+            putCustomView(Config.NAVI, mHotseat.findViewById(ResValue.getInstance().m_navi_btn));
+            putCustomView(Config.VOICE, mHotseat.findViewById(ResValue.getInstance().m_voice_btn));
+            putCustomView(Config.SETTING, mHotseat.findViewById(ResValue.getInstance().m_set_btn));
+            putCustomView(Config.VIDEO, mHotseat.findViewById(ResValue.getInstance().m_video_btn));
+            putCustomView(Config.BT, mHotseat.findViewById(ResValue.getInstance().m_bt_btn));
+            putCustomView(Config.RADIO, mHotseat.findViewById(ResValue.getInstance().m_radio_btn));
+            putCustomView(Config.MUSIC, mHotseat.findViewById(ResValue.getInstance().m_music_btn));
+            putCustomView(Config.BTAV, mHotseat.findViewById(ResValue.getInstance().m_btav_btn));
+            putCustomView(Config.ECAR, mHotseat.findViewById(ResValue.getInstance().m_ecar_btn));
+            putCustomView(Config.SOS, mHotseat.findViewById(ResValue.getInstance().m_sos_btn));
+            putCustomView(Config.KUWO, mHotseat.findViewById(ResValue.getInstance().m_kuwo_btn));
+            putCustomView(Config.UNICAR, mHotseat.findViewById(ResValue.getInstance().m_unicar_btn));
+            putCustomView(Config.KLFM, mHotseat.findViewById(ResValue.getInstance().m_klfm_btn));
+            putCustomView(Config.HONGFANS, mHotseat.findViewById(ResValue.getInstance().m_hongfans_btn));
+            putCustomView(Config.DVR, mHotseat.findViewById(ResValue.getInstance().m_dvr_btn));
+            putCustomView(Config.LIGHT, mHotseat.findViewById(ResValue.getInstance().m_light_btn));
+            putCustomView(Config.CLOLSESCREEN, mHotseat.findViewById(ResValue.getInstance().m_screen_btn));
+            putCustomView(Config.WIFI, mHotseat.findViewById(ResValue.getInstance().m_wifi_btn));
+            putCustomView(Config.SOUND, mHotseat.findViewById(ResValue.getInstance().m_sound_btn));
+            putCustomView(Config.CLOLSESOUND, mHotseat.findViewById(ResValue.getInstance().m_closesound_btn));
+            putCustomView(Config.BRIGHT, mHotseat.findViewById(ResValue.getInstance().m_bright_btn));
+            putCustomView(Config.EQ, mHotseat.findViewById(ResValue.getInstance().m_eq_btn));
+            putCustomView(Config.TIME, mHotseat.findViewById(ResValue.getInstance().m_time_btn));
+            putCustomView(Config.ALLAPP, mHotseat.findViewById(ResValue.getInstance().m_allapp_btn));
+            putCustomView(Config.BROWSER, mHotseat.findViewById(ResValue.getInstance().m_browser_btn));
+            putCustomView(Config.NEWEYE, mHotseat.findViewById(ResValue.getInstance().m_neweye_btn));
+            putCustomView(Config.CANBUS, mHotseat.findViewById(ResValue.getInstance().m_canbus_btn));
+            putCustomView(Config.FILE, mHotseat.findViewById(ResValue.getInstance().m_file_btn));
             mHotseatApps = (TextView) mHotseat.findViewById(ResValue.getInstance().hotseat_apps);
-            if (customView.get(Config.NAVI) != null) {
-                customView.get(Config.NAVI).setOnClickListener(this);
+            if (LauncherApplication.sApp.getResources().getBoolean(R.bool.weather_show)) {
+                weatherImg = (ImageView) mHotseat.findViewById(ResValue.getInstance().weather_imge);
+                weatherCity = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_city);
+                weatherWeather = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_weather);
+                weatherTemp = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_temp);
+                weatherTempRange = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_temp_range);
+                weatherTempRange1 = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_temp_range1);
+                weatherWind = (TextView) mHotseat.findViewById(ResValue.getInstance().weather_wind);
             }
-            if (customView.get(Config.VOICE) != null) {
-                customView.get(Config.VOICE).setOnClickListener(this);
+            if (getCustomView(Config.NAVI) != null) {
+                getCustomView(Config.NAVI).setOnClickListener(this);
             }
-            if (customView.get(Config.SETTING) != null) {
-                customView.get(Config.SETTING).setOnClickListener(this);
+            if (getCustomView(Config.VOICE) != null) {
+                getCustomView(Config.VOICE).setOnClickListener(this);
             }
-            if (customView.get(Config.VIDEO) != null) {
-                customView.get(Config.VIDEO).setOnClickListener(this);
+            if (getCustomView(Config.SETTING) != null) {
+                getCustomView(Config.SETTING).setOnClickListener(this);
             }
-            if (customView.get(Config.BRIGHT) != null) {
-                customView.get(Config.BRIGHT).setOnClickListener(this);
+            if (getCustomView(Config.VIDEO) != null) {
+                getCustomView(Config.VIDEO).setOnClickListener(this);
             }
-            if (customView.get(Config.BT) != null) {
-                customView.get(Config.BT).setOnClickListener(this);
+            if (getCustomView(Config.BRIGHT) != null) {
+                getCustomView(Config.BRIGHT).setOnClickListener(this);
             }
-            if (customView.get(Config.RADIO) != null) {
-                customView.get(Config.RADIO).setOnClickListener(this);
+            if (getCustomView(Config.BT) != null) {
+                getCustomView(Config.BT).setOnClickListener(this);
             }
-            if (customView.get(Config.MUSIC) != null) {
-                customView.get(Config.MUSIC).setOnClickListener(this);
+            if (getCustomView(Config.RADIO) != null) {
+                getCustomView(Config.RADIO).setOnClickListener(this);
             }
-            if (customView.get(Config.BTAV) != null) {
-                customView.get(Config.BTAV).setOnClickListener(this);
+            if (getCustomView(Config.MUSIC) != null) {
+                getCustomView(Config.MUSIC).setOnClickListener(this);
             }
-            if (customView.get(Config.ECAR) != null) {
-                customView.get(Config.ECAR).setOnClickListener(this);
+            if (getCustomView(Config.BTAV) != null) {
+                getCustomView(Config.BTAV).setOnClickListener(this);
             }
-            if (customView.get(Config.SOS) != null) {
-                customView.get(Config.SOS).setOnClickListener(this);
+            if (getCustomView(Config.ECAR) != null) {
+                getCustomView(Config.ECAR).setOnClickListener(this);
             }
-            if (customView.get(Config.KUWO) != null) {
-                customView.get(Config.KUWO).setOnClickListener(this);
+            if (getCustomView(Config.SOS) != null) {
+                getCustomView(Config.SOS).setOnClickListener(this);
             }
-            if (customView.get(Config.UNICAR) != null) {
-                customView.get(Config.UNICAR).setOnClickListener(this);
+            if (getCustomView(Config.KUWO) != null) {
+                getCustomView(Config.KUWO).setOnClickListener(this);
             }
-            if (customView.get(Config.KLFM) != null) {
-                customView.get(Config.KLFM).setOnClickListener(this);
+            if (getCustomView(Config.UNICAR) != null) {
+                getCustomView(Config.UNICAR).setOnClickListener(this);
             }
-            if (customView.get(Config.HONGFANS) != null) {
-                customView.get(Config.HONGFANS).setOnClickListener(this);
+            if (getCustomView(Config.KLFM) != null) {
+                getCustomView(Config.KLFM).setOnClickListener(this);
             }
-            if (customView.get(Config.DVR) != null) {
-                customView.get(Config.DVR).setOnClickListener(this);
+            if (getCustomView(Config.HONGFANS) != null) {
+                getCustomView(Config.HONGFANS).setOnClickListener(this);
             }
-            if (customView.get(Config.LIGHT) != null) {
-                customView.get(Config.LIGHT).setOnClickListener(this);
+            if (getCustomView(Config.DVR) != null) {
+                getCustomView(Config.DVR).setOnClickListener(this);
             }
-            if (customView.get(Config.CLOLSESCREEN) != null) {
-                customView.get(Config.CLOLSESCREEN).setOnClickListener(this);
+            if (getCustomView(Config.LIGHT) != null) {
+                getCustomView(Config.LIGHT).setOnClickListener(this);
             }
-            if (customView.get(Config.WIFI) != null) {
-                customView.get(Config.WIFI).setOnClickListener(this);
+            if (getCustomView(Config.CLOLSESCREEN) != null) {
+                getCustomView(Config.CLOLSESCREEN).setOnClickListener(this);
             }
-            if (customView.get(Config.SOUND) != null) {
-                customView.get(Config.SOUND).setOnClickListener(this);
+            if (getCustomView(Config.WIFI) != null) {
+                getCustomView(Config.WIFI).setOnClickListener(this);
             }
-            if (customView.get(Config.CLOLSESOUND) != null) {
-                customView.get(Config.CLOLSESOUND).setOnClickListener(this);
+            if (getCustomView(Config.SOUND) != null) {
+                getCustomView(Config.SOUND).setOnClickListener(this);
             }
-            if (customView.get(Config.EQ) != null) {
-                customView.get(Config.EQ).setOnClickListener(this);
+            if (getCustomView(Config.CLOLSESOUND) != null) {
+                getCustomView(Config.CLOLSESOUND).setOnClickListener(this);
             }
-            if (customView.get(Config.TIME) != null) {
-                customView.get(Config.TIME).setOnClickListener(this);
+            if (getCustomView(Config.EQ) != null) {
+                getCustomView(Config.EQ).setOnClickListener(this);
             }
-            if (customView.get(Config.ALLAPP) != null) {
-                customView.get(Config.ALLAPP).setOnClickListener(this);
+            if (getCustomView(Config.TIME) != null) {
+                getCustomView(Config.TIME).setOnClickListener(this);
             }
-            if (customView.get(Config.BROWSER) != null) {
-                customView.get(Config.BROWSER).setOnClickListener(this);
+            if (getCustomView(Config.ALLAPP) != null) {
+                getCustomView(Config.ALLAPP).setOnClickListener(this);
             }
-            if (customView.get(Config.CANBUS) != null) {
-                customView.get(Config.CANBUS).setOnClickListener(this);
+            if (getCustomView(Config.BROWSER) != null) {
+                getCustomView(Config.BROWSER).setOnClickListener(this);
             }
-            if (customView.get(Config.FILE) != null) {
-                customView.get(Config.FILE).setOnClickListener(this);
+            if (getCustomView(Config.CANBUS) != null) {
+                getCustomView(Config.CANBUS).setOnClickListener(this);
             }
-            if (customView.get(Config.NEWEYE) != null) {
-                customView.get(Config.NEWEYE).setOnClickListener(this);
+            if (getCustomView(Config.FILE) != null) {
+                getCustomView(Config.FILE).setOnClickListener(this);
+            }
+            if (getCustomView(Config.NEWEYE) != null) {
+                getCustomView(Config.NEWEYE).setOnClickListener(this);
             }
         }
+    }
+
+    public void initBarWeatherView(View barWeatherView) {
+        weatherImg1 = (ImageView) barWeatherView.findViewById(ResValue.getInstance().weather_imge1);
+        weatherCity1 = (TextView) barWeatherView.findViewById(ResValue.getInstance().weather_city1);
+        weatherWeather1 = (TextView) barWeatherView.findViewById(ResValue.getInstance().weather_weather1);
+        weatherTemp1 = (TextView) barWeatherView.findViewById(ResValue.getInstance().weather_temp1);
     }
 
     private void setupViews() {
@@ -3336,7 +3750,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         initHashMap();
 
         if (mAllAppsButton != null) {
-            mAllAppsButton.setOnClickListener(arg0 -> onClickAllAppsButton(arg0));
+            mAllAppsButton.setOnClickListener(arg0 -> onClickAllAppsButton());
             mAllAppsButton.setOnTouchListener(getHapticFeedbackTouchListener());
         } 
 
@@ -3503,6 +3917,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             String appTitle = appInfo.loadLabel(pm).toString();
             AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
             refreshLeftCycle(bean);
+            cleanWidgetBar();
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -3510,15 +3925,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         startActivity(settingsIntent);
     }
 
+    public void initDateWidgetView(View dateWidgeView) {
+        if (dateWidgeView != null) {
+            putCustomView(Config.WS_Time, dateWidgeView.findViewById(ResValue.getInstance().ll_time));
+            if (getCustomView(Config.WS_Time) != null) {
+                getCustomView(Config.WS_Time).setOnClickListener(this);
+            }
+        }
+    }
+
     public void initMusicWidgetView(View musicWidgetView) {
         if (musicWidgetView != null) {
-            music_playpause = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_playpause);
+            mPlayPauseButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_playpause);
             mMusicPrevButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_prev);
-            mMusicPrevButtonTwo = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_prev_two);
             mMusicNextButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_next);
-            mMusicNextButtonTwo = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_next_two);            
+            setWidgetButtonsTint(mPlayPauseButton);
+            setWidgetButtonsTint(mMusicPrevButton);
+            setWidgetButtonsTint(mMusicNextButton);          
             tvMusicName = musicWidgetView.findViewById(ResValue.getInstance().tv_musicName);
-            tvMusicNameTwo = musicWidgetView.findViewById(ResValue.getInstance().tv_musicName_two);
             ivALbumBg = musicWidgetView.findViewById(ResValue.getInstance().iv_album_bg);
             ivMusicScore = musicWidgetView.findViewById(ResValue.getInstance().music_score);
             ivMusicScore2 = musicWidgetView.findViewById(ResValue.getInstance().music_score2);
@@ -3529,9 +3953,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mTvMusic = musicWidgetView.findViewById(ResValue.getInstance().tv_music);
             musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
             musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
-            customView.put(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
-            if (customView.get(Config.WS_Music) != null) {
-                customView.get(Config.WS_Music).setOnClickListener(this);
+            widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
+            if (widgetTint && musicProgress != null) {
+                musicProgress.getProgressDrawable().setColorFilter(
+                    Color.BLACK, 
+                    PorterDuff.Mode.SRC_IN
+                );
+            } else if (musicProgress != null) {
+                musicProgress.getProgressDrawable().clearColorFilter();
+            }
+            putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
+            if (getCustomView(Config.WS_Music) != null) {
+                getCustomView(Config.WS_Music).setOnClickListener(this);
+            }
+        }
+    }
+
+    public void initMusicBarView(View musicBarView) {
+        if (musicBarView != null) {
+            mPlayPauseButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_playpause_two);
+            mMusicPrevButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_prev_two);
+            mMusicNextButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_next_two);
+            setBarButtonsTint(mPlayPauseButtonTwo);
+            setBarButtonsTint(mMusicPrevButtonTwo);
+            setBarButtonsTint(mMusicNextButtonTwo);
+            tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
+            ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
+            tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
+            putCustomView(Config.WS_Music_Two, musicBarView.findViewById(ResValue.getInstance().rl_music_two));
+            if (getCustomView(Config.WS_Music_Two) != null) {
+                getCustomView(Config.WS_Music_Two).setOnClickListener(this);
             }
         }
     }
@@ -3539,8 +3990,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void initRadioWidgetView(View radioWidgetView) {
         if (radioWidgetView != null) {
             mRadioPrevButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_prev);
-            mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
             mRadioNextButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_next);
+            setWidgetButtonsTint(mRadioPrevButton);
+            setWidgetButtonsTint(mRadioNextButton);
+            mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
             mRadioBandButton = radioWidgetView.findViewById(ResValue.getInstance().radio_btn_band);
             mRadioIcon = radioWidgetView.findViewById(ResValue.getInstance().mRadioIcon);
             tvBand = radioWidgetView.findViewById(ResValue.getInstance().tv_band);
@@ -3548,9 +4001,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             img_freq_point = radioWidgetView.findViewById(ResValue.getInstance().radio_point);
             tvCurFreq = radioWidgetView.findViewById(ResValue.getInstance().tv_freq);
             mTvRadio = radioWidgetView.findViewById(ResValue.getInstance().tv_radio);
-            customView.put(Config.WS_Radio, radioWidgetView.findViewById(ResValue.getInstance().rl_radio));
-            if (customView.get(Config.WS_Radio) != null) {
-                customView.get(Config.WS_Radio).setOnClickListener(this);
+            putCustomView(Config.WS_Radio, radioWidgetView.findViewById(ResValue.getInstance().rl_radio));
+            if (getCustomView(Config.WS_Radio) != null) {
+                getCustomView(Config.WS_Radio).setOnClickListener(this);
             }
         }
     }
@@ -3579,12 +4032,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mTvEq = mWorkspace.findViewById(ResValue.getInstance().tv_eq);
             mTurntableView = mWorkspace.findViewById(ResValue.getInstance().turntableview);
             mTvSpeed = mWorkspace.findViewById(ResValue.getInstance().tv_speed);
-            customView.put(Config.WS_Video, mWorkspace.findViewById(ResValue.getInstance().rl_video));
-            customView.put(Config.WS_Bt, mWorkspace.findViewById(ResValue.getInstance().rl_bt));
-            customView.put(Config.WS_Navi, mWorkspace.findViewById(ResValue.getInstance().rl_navi));
-            customView.put(Config.WS_Settings, mWorkspace.findViewById(ResValue.getInstance().rl_settings));
-            customView.put(Config.WS_Time, mWorkspace.findViewById(ResValue.getInstance().ll_time));
-            customView.put(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
+            putCustomView(Config.WS_Video, mWorkspace.findViewById(ResValue.getInstance().rl_video));
+            putCustomView(Config.WS_Bt, mWorkspace.findViewById(ResValue.getInstance().rl_bt));
+            putCustomView(Config.WS_Navi, mWorkspace.findViewById(ResValue.getInstance().rl_navi));
+            putCustomView(Config.WS_Settings, mWorkspace.findViewById(ResValue.getInstance().rl_settings));
+            putCustomView(Config.WS_Time, mWorkspace.findViewById(ResValue.getInstance().ll_time));
+            putCustomView(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
+            putCustomView(Config.WS_Showbar, mWorkspace.findViewById(ResValue.getInstance().show_bar));
         }
         if (tvMusicName != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
@@ -3635,15 +4089,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (musicSeekBar != null) {
             musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(this, null));
         }
-        /*if (music_playpause != null) {
+        /*if (mPlayPauseButton != null) {
             if (MusicService.state.booleanValue()) {
-                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
             } else {
-                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
         }*/
         if (tvAritst != null) {
             tvAritst.setText(R.string.music_author);
+        }
+        if (tvAritstTwo != null) {
+            tvAritstTwo.setText(R.string.music_author);
         }
         if (tvAlbum != null) {
             tvAlbum.setText(R.string.music_album);
@@ -3670,25 +4127,67 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 tvBand.setText("FM");
             }
         }
-        if (customView.get(Config.WS_Bt) != null) {
-            customView.get(Config.WS_Bt).setOnClickListener(this);
+        if (getCustomView(Config.WS_Bt) != null) {
+            getCustomView(Config.WS_Bt).setOnClickListener(this);
         }
-        if (customView.get(Config.WS_Navi) != null) {
-            customView.get(Config.WS_Navi).setOnClickListener(this);
+        if (getCustomView(Config.WS_Navi) != null) {
+            getCustomView(Config.WS_Navi).setOnClickListener(this);
         }
-        if (customView.get(Config.WS_Settings) != null) {
-            customView.get(Config.WS_Settings).setOnClickListener(this);
+        if (getCustomView(Config.WS_Settings) != null) {
+            getCustomView(Config.WS_Settings).setOnClickListener(this);
         }
-        if (customView.get(Config.WS_Allapps) != null) {
-            customView.get(Config.WS_Allapps).setOnClickListener(this);
+        if (getCustomView(Config.WS_Allapps) != null) {
+            getCustomView(Config.WS_Allapps).setOnClickListener(this);
         }
-        if (customView.get(Config.WS_Time) != null) {
-            customView.get(Config.WS_Time).setOnClickListener(this);
+        if (getCustomView(Config.WS_Showbar) != null) {
+            getCustomView(Config.WS_Showbar).setOnClickListener(this);
+        }
+        if (getCustomView(Config.WS_Time) != null) {
+            getCustomView(Config.WS_Time).setOnClickListener(this);
         }
         updateView();
     }
 
+    public void triggerAppData() {
+        if (pendingAction != null) {
+            appDataHandler.removeCallbacks(pendingAction);
+        }
+        
+        pendingAction = new Runnable() {
+            @Override
+            public void run() {
+                initAppData();
+            }
+        };
+        
+        appDataHandler.postDelayed(pendingAction, APP_DATA_DELAY);
+    }
+
     public void initAppData() {
+        // Prevent re-entrant calls
+        if (mIsInitializingAppData) {
+            Log.i(TAG, "initAppData() already in progress, skipping duplicate call");
+            return;
+        }
+        
+        mIsInitializingAppData = true;
+        mInitRetryCount++;
+        Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
+        
+        if (!checkDependenciesReady()) {
+            Log.w(TAG, "Dependencies not ready, will retry...");
+            mIsInitializingAppData = false;
+            
+            if (mInitRetryCount < MAX_INIT_RETRIES) {
+                mHandler.postDelayed(() -> initAppData(), 1000);
+            } else {
+                Log.e(TAG, "Max retries reached, initializing with defaults");
+                mInitRetryCount = 0;
+                forceInitializeWithDefaults();
+            }
+            return;
+        }
+        
         // bottom recycler
         if (mWorkspace == null) {
             Log.i(TAG, "mWorkspace null on initAppData(), reinitializing workspace");
@@ -3701,31 +4200,101 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         
         RecyclerView mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-
         if (mRecyclerView == null) {
-            Log.e("Launcher", "RecyclerView not found in workspace! Waiting for layout...");
+            Log.e(TAG, "RecyclerView not found in workspace! Waiting for layout...");
             
-            // Wait for the workspace to be laid out properly
-            if (mWorkspace.getViewTreeObserver().isAlive()) {
-                mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        initAppData();
-                    }
-                });
+            // Reset flag before early return so retry can work
+            mIsInitializingAppData = false;
+            
+            if (mInitRetryCount < MAX_INIT_RETRIES) {
+                // Wait for the workspace to be laid out properly
+                if (mWorkspace.getViewTreeObserver().isAlive()) {
+                    mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            initAppData();
+                        }
+                    });
+                } else {
+                    mHandler.postDelayed(() -> initAppData(), 1000);
+                }
             } else {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> initAppData(), 500);
+                Log.e(TAG, "Max retries reached for RecyclerView, resetting");
+                mInitRetryCount = 0;
             }
             return; 
         }
         
+        Log.d(TAG, "All dependencies ready, proceeding with setup");
         setupRecyclerView(mRecyclerView);
-        setupLeftRecyclerView();
-        atomicDontInitOnCreate.set(false);
+        mHandler.post(() -> setupLeftRecyclerView());
+        
+        // Reset retry count on success
+        mInitRetryCount = 0;
+    }
+
+    private boolean checkDependenciesReady() {
+        // Check if AllAppsList is populated
+        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
+            Log.w(TAG, "AllAppsList not ready");
+            return false;
+        }
+        
+        // Check if database is accessible
+        try {
+            List<AppMultiple> testQuery = LitePal.limit(1).find(AppMultiple.class);
+            // Query succeeded, database is ready
+        } catch (Exception e) {
+            Log.w(TAG, "Database not ready: " + e.getMessage());
+            return false;
+        }
+        
+        // Check if PackageManager is ready
+        try {
+            PackageManager pm = getPackageManager();
+            if (pm == null) {
+                Log.w(TAG, "PackageManager not ready");
+                return false;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "PackageManager error: " + e.getMessage());
+            return false;
+        }
+        
+        // Check if workspace is laid out
+        if (mWorkspace == null || !mWorkspace.isLaidOut()) {
+            Log.w(TAG, "Workspace not laid out yet");
+            return false;
+        }
+        
+        return true;
+    }
+
+    private void forceInitializeWithDefaults() {
+        // Last resort: initialize with empty data and let user configure
+        mIsInitializingAppData = true;
+        
+        if (mAppListAdapter == null) {
+            mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
+        }
+        
+        mHandler.postDelayed(() -> {
+            RecyclerView mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+            if (mRecyclerView != null) {
+                setupRecyclerView(mRecyclerView);
+                setupLeftRecyclerView();
+            }
+            mIsInitializingAppData = false;
+        }, 500);
     }
 
     private void setupRecyclerView(RecyclerView mRecyclerView) {
+        Log.d(TAG, "setupRecyclerView started");
+        
+        // Force visibility
+        mRecyclerView.setVisibility(View.VISIBLE);
+        
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -3738,11 +4307,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     super.getItemOffsets(outRect, view, parent, state);
                     int orientation = getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        outRect.left = -bottomBarIconMargin;
-                        outRect.right = -bottomBarIconMargin;
+                        if (userLayout && widgetBar) {
+                            outRect.left = (int) (-bottomBarIconMargin * 2.0f);
+                            outRect.right = (int) (-bottomBarIconMargin * 2.0f);
+                        } else {
+                            outRect.left = -bottomBarIconMargin;
+                            outRect.right = -bottomBarIconMargin; 
+                        }
                     } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        outRect.left = bottomBarIconMargin;
-                        outRect.right = bottomBarIconMargin;
+                        if (userLayout && widgetBar) {
+                            outRect.left = (int) (bottomBarIconMargin / 2.0f);
+                            outRect.right = (int) (bottomBarIconMargin / 2.0f);
+                        } else {
+                            outRect.left = bottomBarIconMargin;
+                            outRect.right = bottomBarIconMargin;
+                        }
                     }
                 }
             });
@@ -3752,13 +4331,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         mRecyclerView.setAdapter(mAppListAdapter);
         
+        Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) + 
+              ", ItemCount: " + (mAppListAdapter != null ? mAppListAdapter.getItemCount() : 0) +
+              ", Visibility: " + mRecyclerView.getVisibility());
+        
         // Initialize app data
         initializeAppList();
+        
+        // Force a layout pass
+        mRecyclerView.requestLayout();
     }
 
     private void setupLeftRecyclerView() {
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean("left_bar", false);
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         
         if (!(userLayout && leftBar || !userLayout)) {
             return;
@@ -3777,132 +4363,150 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 });
             } else {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> setupLeftRecyclerView(), 500);
+                mHandler.postDelayed(() -> setupLeftRecyclerView(), 500);
             }
             return;
         }
         
-        // Check if already initialized
-        if (mLeftRecyclerView.getTag() != null) {
-            Log.d(TAG, "Left RecyclerView already initialized, skipping setup");
-            return;
-        }
-        
         Log.d(TAG, "Setting up left RecyclerView");
+
+        mLeftRecyclerView.setVisibility(View.VISIBLE);
         
         // Initialize adapter FIRST, before any layout might occur
         if (mLeftAppListAdapter == null) {
             mLeftAppListAdapter = new LeftAppListAdapter(this, Collections.emptyList());
         }
-        
-        // SET ADAPTER IMMEDIATELY, even with empty data
-        mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
-        
+
         // Then setup layout manager
         LinearLayoutManager leftLayoutManager = new LinearLayoutManager(getApplicationContext());
         leftLayoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.VERTICAL); 
         mLeftRecyclerView.setLayoutManager(leftLayoutManager);
         
-        // Add item decoration
-        RecyclerView.ItemDecoration leftItemDecoration = new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    outRect.top = (int) (leftBarIconMargin * 1.5f);
-                    outRect.bottom = (int) (leftBarIconMargin * 1.5f);
-                } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    outRect.top = leftBarIconMargin;
-                    outRect.bottom = leftBarIconMargin;
+        // Check if decoration already added to prevent duplicates
+        if (mLeftRecyclerView.getTag() == null) {
+            mLeftRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                    super.getItemOffsets(outRect, view, parent, state);
+                    int orientation = getResources().getConfiguration().orientation;
+                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        outRect.top = (int) (leftBarIconMargin * 1.5f);
+                        outRect.bottom = (int) (leftBarIconMargin * 1.5f);
+                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        outRect.top = leftBarIconMargin;
+                        outRect.bottom = leftBarIconMargin;
+                    }
                 }
-            }
-        };
-        
-        mLeftRecyclerView.addItemDecoration(leftItemDecoration);
-        
-        // Mark as initialized
-        mLeftRecyclerView.setTag("initialized");
+            });
+            mLeftRecyclerView.addItemDecoration(new SimpleDividerDecoration());
+            mLeftRecyclerView.setTag(1);
+        }
+
+        mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
         
         // Initialize left app data
         initializeLeftAppData();
+
+        mLeftRecyclerView.requestLayout();
     }
 
     private void initializeLeftAppData() {
         if (mLeftAppListData == null) {
             mLeftAppListData = new ArrayList<AppListBean>();
+        } else {
+            mLeftAppListData.clear();  // Make sure this is mLeftAppListData, not mAppListData
         }
         
         // Ensure adapter exists
         if (mLeftAppListAdapter == null) {
             mLeftAppListAdapter = new LeftAppListAdapter(this, mLeftAppListData);
             
-            // Also set it to the RecyclerView if it exists
             RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
             if (mLeftRecyclerView != null) {
                 mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
             }
         }
         
-        // Use AsyncTask for background loading
-        new AsyncTask<Void, Void, List<AppListBean>>() {
-            @Override
-            protected void onProgress(Void[] progress) {
-                //
-            }
-
-            @Override
-            protected List<AppListBean> doInBackground(Void... params) {
-                List<AppListBean> leftAppBeans = new ArrayList<>();
-                List<LeftAppMultiple> leftAppData = LitePal.findAll(LeftAppMultiple.class);
+        List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        
+        if (leftAppData != null && !leftAppData.isEmpty()) {
+            for (LeftAppMultiple multiple : leftAppData) {
+                if (!helpers.isPackageInstalled(multiple.packageName) || 
+                    multiple.packageName.isEmpty() || multiple.name.isEmpty()) {
+                    continue;
+                }
                 
-                if (leftAppData != null && !leftAppData.isEmpty()) {
-                    for (LeftAppMultiple multiple : leftAppData) {
-                        if (!helpers.isPackageInstalled(multiple.packageName)) {
-                            continue;
-                        }
-                        
-                        for (AppInfo allApp : AllAppsList.data) {
-                            if (allApp.getPackageName().equals(multiple.packageName) 
-                                && allApp.getClassName().equals(multiple.className)) {
-                                AppListBean ab = new AppListBean(
-                                    allApp.title.toString(), 
-                                    allApp.iconBitmap, 
-                                    multiple.packageName, 
-                                    multiple.className
-                                );
-                                leftAppBeans.add(ab);
-                                break;
-                            }
+                boolean found = false;
+                // Try to find app in AllAppsList first
+                if (AllAppsList.data != null) {
+                    for (AppInfo allApp : AllAppsList.data) {
+                        if (allApp.getPackageName().equals(multiple.packageName) 
+                            && allApp.getClassName().equals(multiple.className)) {
+                            AppListBean ab = new AppListBean(
+                                allApp.title.toString(), 
+                                allApp.iconBitmap, 
+                                multiple.packageName, 
+                                multiple.className
+                            );
+                            mLeftAppListData.add(ab);
+                            found = true;
+                            break;
                         }
                     }
                 }
-                return leftAppBeans;
-            }
-
-            @Override
-            protected void onPostExecute(List<AppListBean> result) {
-                if (mLeftAppListData != null && mLeftAppListAdapter != null) {
-                    mLeftAppListData.clear();
-                    mLeftAppListData.addAll(result);
-                    mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
-                    Log.d(TAG, "Left app data initialized with " + result.size() + " items");
+                
+                // If not found in AllAppsList but package is installed, load icon from package manager
+                if (!found && helpers.isPackageInstalled(multiple.packageName)) {
+                    Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
+                    if (icon != null) {
+                        AppListBean ab = new AppListBean(
+                            multiple.name, 
+                            icon, 
+                            multiple.packageName, 
+                            multiple.className
+                        );
+                        mLeftAppListData.add(ab);
+                    }
                 }
             }
-
-            @Override
-            protected void onBackgroundError(Exception e) {
-                //
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        
+        if (mLeftAppListData != null && mLeftAppListAdapter != null) {
+            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+            Log.d(TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
+        }
     }
 
     private void initializeAppList() {
-        mAppListData = new ArrayList<AppListBean>();
-        List<AppMultiple> appData = LitePal.findAll(AppMultiple.class, new long[0]);
+        Log.d(TAG, "initializeAppList");
+
+        if (mAppListData == null) {
+            mAppListData = new ArrayList<AppListBean>();
+        } else {
+            mAppListData.clear();
+        }
+        
+        List<AppMultiple> appData = null;
+        try {
+            appData = LitePal.findAll(AppMultiple.class, new long[0]);
+        } catch (Exception e) {
+            Log.e(TAG, "Database error in initializeAppList: " + e.getMessage());
+        }
+        
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
+        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        
         if (appData != null && !appData.isEmpty()) {
             for (int i2 = 0; i2 < appData.size(); i2++) {
                 AppMultiple multiple2 = appData.get(i2);
+                
+                // Skip apps that shouldn't be shown when widgetBar is true
+                if (userLayout && widgetBar) {
+                    if (i2 == 0 || i2 == 2 || i2 == 3) {
+                        continue;
+                    }
+                }
+                
                 if (multiple2.packageName.equals(FytPackage.AppAction)) {
                     Bitmap bmp = helpers.glideLoader(R.drawable.ic_apps);
                     AppListBean ab2 = new AppListBean(Utils.getNameToStr("car_app"), bmp, multiple2.packageName, multiple2.className);
@@ -3912,32 +4516,52 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     AppListBean ab3 = new AppListBean(multiple2.name, bmp2, multiple2.packageName, multiple2.className);
                     mAppListData.add(ab3);
                 } else {
-                    Iterator<AppInfo> it2 = AllAppsList.data.iterator();
-                    while (true) {
-                        if (it2.hasNext()) {
-                            AppInfo allApp2 = it2.next();
+                    boolean found = false;
+                    // Try AllAppsList first
+                    if (AllAppsList.data != null) {
+                        for (AppInfo allApp2 : AllAppsList.data) {
                             if (allApp2.getPackageName().equals(multiple2.packageName) && allApp2.getClassName().equals(multiple2.className)) {
                                 AppListBean ab4 = new AppListBean(allApp2.title.toString(), allApp2.iconBitmap, multiple2.packageName, multiple2.className);
                                 mAppListData.add(ab4);
+                                found = true;
                                 break;
                             }
                         }
                     }
+                    
+                    // If not found in AllAppsList but package is installed, load from package manager
+                    if (!found && helpers.isPackageInstalled(multiple2.packageName)) {
+                        Bitmap icon = loadAppIconFromPackageManager(multiple2.packageName, multiple2.className);
+                        AppListBean ab = new AppListBean(multiple2.name, icon, multiple2.packageName, multiple2.className);
+                        mAppListData.add(ab);
+                    } else if (!found) {
+                        // Not installed and not found
+                        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
+                        AppListBean ab = new AppListBean(multiple2.name, bmp, multiple2.packageName, multiple2.className);
+                        mAppListData.add(ab);
+                    }
                 }
             }
         } else {
-            createDefaultAppEntries(); // Your new function from before
+            Log.w(TAG, "Creating default app entries (appData or AllAppsList not ready)");
+            createDefaultAppEntries(); 
         }
-        mAppListAdapter.notifyDataSetChanged(mAppListData);
+        
+        if (mAppListAdapter != null) {
+            mAppListAdapter.notifyDataSetChanged(mAppListData);
+        }
+        
         atomicInitAppData.set(true);
         if (!onResumePip) {
             onResumePip = false;
             initPip("initializeAppList()", null, true);
         }
-        
+
+        mHandler.postDelayed(() -> {
+            mIsInitializingAppData = false;
+        }, 3000);  
     }
 
-    // Add this method to handle orientation changes
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -3955,7 +4579,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         // Refresh left recycler view
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean("left_bar", false);
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         if (userLayout && leftBar || !userLayout) {
             RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
             if (mLeftRecyclerView != null && mLeftAppListAdapter != null) {
@@ -3966,9 +4590,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void refreshCycle(List<AppMultiple> data) {
         mAppListData.clear();
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
+        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+
         if (data != null && !data.isEmpty()) {
             for (int i = 0; i < data.size(); i++) {
                 AppMultiple multiple = data.get(i);
+
+                // Skip apps that shouldn't be shown when widgetBar is true
+                if (userLayout && widgetBar) {
+                    // Only show 2nd, 5th, 6th, 7th and 8th apps (indices 1, 4, 5, 6, 7)
+                    // Skip 1st, 3rd, and 4th apps (indices 0, 2, 3)
+                    if (i == 0 || i == 2 || i == 3) {
+                        continue; // Skip these indices when widgetBar is true
+                    }
+                }
 
                 // Check if app is uninstalled and update database if needed
                 if (!multiple.packageName.equals(FytPackage.AddAction) && 
@@ -4026,60 +4662,78 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void refreshLeftCycle(AppListBean bean) {
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean("left_bar", false);
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         if (!(userLayout && leftBar || !userLayout)) return;
-
+        
         Log.d(TAG, "--------------->>>   refreshLeftCycle");
-
+        
+        // Get all physical rows from database
         List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
-        List<LeftAppMultiple> installedRows = new ArrayList<>();
-        for (LeftAppMultiple r : physical) {
-            if (helpers.isPackageInstalled(r.packageName)) {
-                installedRows.add(r);
-            }
-        }
-        for (int i = 0; i < installedRows.size(); i++) {
-            LeftAppMultiple r = installedRows.get(i);
-            if (bean.packageName.equals(r.packageName) && bean.className.equals(r.className)) {
-                installedRows.remove(i);
-                break;
-            }
-        }
-        List<LeftAppMultiple> desired = new ArrayList<>(MAX_LEFT);
-        desired.add(new LeftAppMultiple(0, bean.name, bean.packageName, bean.className));
-        for (LeftAppMultiple r : installedRows) {
-            if (desired.size() == MAX_LEFT) break;
-            desired.add(r);
-        }
+        
+        // Ensure we have enough placeholder rows
         if (physical.size() < MAX_LEFT) {
             int need = MAX_LEFT - physical.size();
             for (int i = 0; i < need; i++) {
-                new LeftAppMultiple(0, "", "", "").save(); // placeholders
+                new LeftAppMultiple(0, "", "", "").save();
             }
             physical = LitePal.order("id asc").find(LeftAppMultiple.class);
         }
-        int writeCount = Math.min(MAX_LEFT, physical.size());
-        for (int i = 0; i < writeCount; i++) {
-            LeftAppMultiple src = (i < desired.size())
-                    ? desired.get(i)
-                    : new LeftAppMultiple(0, "", "", ""); // blank if fewer than 5 installed
-            LeftAppMultiple dst = physical.get(i);       // real row with a valid ID
-
+        
+        // Create a list of currently installed apps (excluding placeholders)
+        List<LeftAppMultiple> currentInstalled = new ArrayList<>();
+        for (LeftAppMultiple row : physical) {
+            if (helpers.isPackageInstalled(row.packageName) && 
+                !row.packageName.isEmpty() && !row.name.isEmpty()) {
+                currentInstalled.add(row);
+            }
+        }
+        
+        // Remove the app if it already exists in current list
+        Iterator<LeftAppMultiple> iterator = currentInstalled.iterator();
+        while (iterator.hasNext()) {
+            LeftAppMultiple existing = iterator.next();
+            if (bean.packageName.equals(existing.packageName) && 
+                bean.className.equals(existing.className)) {
+                iterator.remove();
+                break;
+            }
+        }
+        
+        // Create new desired order: new app at position 0, then existing apps
+        List<LeftAppMultiple> desired = new ArrayList<>(MAX_LEFT);
+        desired.add(new LeftAppMultiple(0, bean.name, bean.packageName, bean.className));
+        
+        // Add existing installed apps until we reach MAX_LEFT
+        for (LeftAppMultiple existing : currentInstalled) {
+            if (desired.size() >= MAX_LEFT) break;
+            desired.add(existing);
+        }
+        
+        // Fill remaining slots with empty placeholders if needed
+        while (desired.size() < MAX_LEFT) {
+            desired.add(new LeftAppMultiple(0, "", "", ""));
+        }
+        
+        // Update database with new order
+        for (int i = 0; i < MAX_LEFT; i++) {
+            LeftAppMultiple src = desired.get(i);
+            LeftAppMultiple dst = physical.get(i);
+            
             ContentValues v = new ContentValues();
             v.put("name", src.name);
             v.put("packageName", src.packageName);
             v.put("className", src.className);
             LitePal.update(LeftAppMultiple.class, v, dst.id);
         }
-        List<LeftAppMultiple> topRows =
-                LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-        //refreshLeftBar(topRows);
+        
+        // Refresh the display
+        List<LeftAppMultiple> topRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        refreshLeftBar(topRows);
     }
-
 
     public void refreshLeftBar(@Nullable List<LeftAppMultiple> leftAppData) {
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean("left_bar", false);
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         if (!(userLayout && leftBar || !userLayout)) return;
 
         Log.d(TAG, "--------------->>>   refreshLeftBar");
@@ -4123,13 +4777,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         String appName7 = Utils.getNameToStr("car_settings");
         String appName8 = Utils.getNameToStr("");
         
-        Bitmap icon1 = getHighResAppIcon(FytPackage.naviAction);
-        Bitmap icon2 = getHighResAppIcon("com.syu.music");
-        Bitmap icon3 = getHighResAppIcon("com.syu.video");
-        Bitmap icon4 = getHighResAppIcon("com.syu.radio");
-        Bitmap icon5 = getHighResAppIcon("com.syu.bt");
+        Bitmap icon1 = loadAppIconFromPackageManager(FytPackage.naviAction, "com.syu.onekeynavi.MainActivity");
+        Bitmap icon2 = loadAppIconFromPackageManager("com.syu.music", "com.syu.app.Activity_All");
+        Bitmap icon3 = loadAppIconFromPackageManager("com.syu.video", "com.syu.video.main.VideoListActivity");
+        Bitmap icon4 = loadAppIconFromPackageManager("com.syu.radio", "com.syu.radio.Launch");
+        Bitmap icon5 = loadAppIconFromPackageManager("com.syu.bt", "com.syu.bt.BtAct");
         Bitmap icon6 = helpers.glideLoader(R.drawable.icon_settings);
-        Bitmap icon7 = getHighResAppIcon("com.syu.settings");
+        Bitmap icon7 = loadAppIconFromPackageManager("com.syu.settings", "com.syu.settings.MainActivity");
         Bitmap icon8 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
 
         // AppListBean entries for UI
@@ -4189,61 +4843,49 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         ab8 = new AppListBean(appName8, icon8, FytPackage.AddAction, "");
         new AppMultiple(7, appName8, FytPackage.AddAction, "").save();
         
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
+        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+
         // Add all beans to the list
-        mAppListData.add(ab1);
-        mAppListData.add(ab22);
-        mAppListData.add(ab32);
-        mAppListData.add(ab42);
-        mAppListData.add(ab5);
-        mAppListData.add(ab6);
-        mAppListData.add(ab7);
-        mAppListData.add(ab8);
+        if (userLayout && widgetBar) {
+            mAppListData.add(ab22);
+            mAppListData.add(ab5);
+            mAppListData.add(ab6);
+            mAppListData.add(ab7);
+            mAppListData.add(ab8); 
+        } else {
+            mAppListData.add(ab1);
+            mAppListData.add(ab22);
+            mAppListData.add(ab32);
+            mAppListData.add(ab42);
+            mAppListData.add(ab5);
+            mAppListData.add(ab6);
+            mAppListData.add(ab7);
+            mAppListData.add(ab8);            
+        }
     }
 
-    public Bitmap getHighResAppIcon(String packageName) {
-        PackageManager pm = getPackageManager();
-        ApplicationInfo appInfo = null;
+    private Bitmap loadAppIconFromPackageManager(String packageName, String className) {
         try {
-            appInfo = pm.getApplicationInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        Drawable iconDrawable = null;
-
-        if (appInfo.icon != 0) {
-            try {
-                Resources resources = pm.getResourcesForApplication(appInfo);
-                int[] densities = new int[]{640, 480, 320, 240, 160};  // From XXXHIGH to MEDIUM
-
-                for (int density : densities) {
-                    try {
-                        iconDrawable = resources.getDrawableForDensity(appInfo.icon, density, getTheme());
-                    } catch (Resources.NotFoundException e) {
-                        iconDrawable = null;
-                    }
-                    if (iconDrawable != null) break;
-                }
-            } catch (Exception e) {
-                Log.e("NotificationListener", "Error getting high res icon: " + e.getMessage());
+            PackageManager pm = getPackageManager();
+            ComponentName component = new ComponentName(packageName, className);
+            Drawable drawable = pm.getActivityIcon(component);
+            
+            if (drawable instanceof BitmapDrawable) {
+                return ((BitmapDrawable) drawable).getBitmap();
+            } else {
+                // Convert drawable to bitmap
+                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), 
+                        drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                drawable.draw(canvas);
+                return bitmap;
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading icon for " + packageName + ": " + e.getMessage());
+            return BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
         }
-
-        // Fallback to default icon if there's no high res icon
-        try {
-            iconDrawable = (iconDrawable != null) ? iconDrawable : pm.getApplicationIcon(packageName);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        return drawableToBitmap(iconDrawable);
-    }
-
-    public Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
     }
 
     private void initAnim() {
@@ -4277,7 +4919,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     
     public void needStartKuwo() {
         if (!AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
-            startActivitySafely(customView.get(Config.WS_Kuwo), FytPackage.getIntent(this, FytPackage.KWACTION), "music");
+            startActivitySafely(getCustomView(Config.WS_Kuwo), FytPackage.getIntent(this, FytPackage.KWACTION), "music");
         }
         switchSoundChannelThirdPlayer();
     }
@@ -4289,273 +4931,255 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void bindMusicWidgetOnclickListener() {
+    public void bindMusicWidgetOnclickListener(View musicWidgetView) {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        prevLayout = musicWidgetView.findViewById(R.id.constraint_layout_prev);
+        playPauseLayout = musicWidgetView.findViewById(R.id.constraint_layout_playpause);
+        nextLayout = musicWidgetView.findViewById(R.id.constraint_layout_next);
+        
+        // Set up previous button
+        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(false);
+        prevLayout.setOnClickListener(prevClickListener);
         if (mMusicPrevButton != null) {
-            mMusicPrevButton.setOnClickListener(v -> {
-                if (mediaSource == "fyt") {
-                    Intent intent = new Intent();
-                    intent.setAction("com.syu.music.prev");
-                    intent.setPackage("com.syu.music");
-                    Launcher.this.startService(intent);
-                } else if (mediaSource == "mediaController") {
-                    boolean activeControllerAppRunning = false;
-                    ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                    List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                    for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                        if (appProcess.processName.contains(activeController)) {
-                            activeControllerAppRunning = true;
-                            if (activeController != null && !activeController.isEmpty()) {
-                                sendBroadcast(new Intent("media.play.previous"));
-                            }
-                        }
-                    }
-                    if (!activeControllerAppRunning || isRadioPlaying()) {
-                        WindowUtil.removePip(Launcher.this.pipViews);
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            Launcher.this.refreshLeftCycle(bean);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivity(launchIntent);
-                    }
-                }
-            });
+            mMusicPrevButton.setOnClickListener(prevClickListener);
         }
-        if (mMusicPrevButtonTwo != null) {
-            mMusicPrevButtonTwo.setOnClickListener(v -> {
-                if (mediaSource == "fyt") {
-                    Intent intent = new Intent();
-                    intent.setAction("com.syu.music.prev");
-                    intent.setPackage("com.syu.music");
-                    Launcher.this.startService(intent);
-                } else if (mediaSource == "mediaController") {
-                    boolean activeControllerAppRunning = false;
-                    ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                    List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                    for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                        if (appProcess.processName.contains(activeController)) {
-                            activeControllerAppRunning = true;
-                            if (activeController != null && !activeController.isEmpty()) {
-                                sendBroadcast(new Intent("media.play.previous"));
-                            }
-                        }
-                    }
-                    if (!activeControllerAppRunning || isRadioPlaying()) {
-                        WindowUtil.removePip(Launcher.this.pipViews);
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            Launcher.this.refreshLeftCycle(bean);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivity(launchIntent);
-                    }
-                }
-            });
+        
+        // Set up play/pause button
+        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(mPlayPauseButton, false);
+        playPauseLayout.setOnClickListener(playPauseClickListener);
+        if (mPlayPauseButton != null) {
+            mPlayPauseButton.setOnClickListener(playPauseClickListener);
         }
+        
+        // Set up next button
+        View.OnClickListener nextClickListener = v -> onNextButtonClicked(false);
+        nextLayout.setOnClickListener(nextClickListener);
         if (mMusicNextButton != null) {
-            mMusicNextButton.setOnClickListener(v -> {
-                if (mediaSource == "fyt") {
-                    Intent intent = new Intent();
-                    intent.setAction("com.syu.music.next");
-                    intent.setPackage("com.syu.music");
-                    Launcher.this.startService(intent);
-                } else if (mediaSource == "mediaController") {
-                    boolean activeControllerAppRunning = false;
-                    ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                    List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                    for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                        if (appProcess.processName.contains(activeController)) {
-                            activeControllerAppRunning = true;
-                            if (activeController != null && !activeController.isEmpty()) {
-                                sendBroadcast(new Intent("media.play.next"));
-                            }
-                        }
-                    }
-                    if (!activeControllerAppRunning || isRadioPlaying()) {
-                        WindowUtil.removePip(Launcher.this.pipViews);
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            Launcher.this.refreshLeftCycle(bean);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivity(launchIntent);
-                    }
-                }
-            });
+            mMusicNextButton.setOnClickListener(nextClickListener);
         }
+        
+        // Make layouts clickable
+        prevLayout.setClickable(true);
+        playPauseLayout.setClickable(true);
+        nextLayout.setClickable(true);
+        
+        prevLayout.setFocusable(true);
+        playPauseLayout.setFocusable(true);
+        nextLayout.setFocusable(true);
+    }
+
+    public void bindMusicBarOnclickListener(View musicBarView) {
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        prevLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_prev_two);
+        playPauseLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_playpause_two);
+        nextLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_next_two);
+        
+        // Set up previous button
+        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(true);
+        prevLayoutTwo.setOnClickListener(prevClickListener);
+        if (mMusicPrevButtonTwo != null) {
+            mMusicPrevButtonTwo.setOnClickListener(prevClickListener);
+        }
+        
+        // Set up play/pause button
+        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(mPlayPauseButtonTwo, true);
+        playPauseLayoutTwo.setOnClickListener(playPauseClickListener);
+        if (mPlayPauseButtonTwo != null) {
+            mPlayPauseButtonTwo.setOnClickListener(playPauseClickListener);
+        }
+        
+        // Set up next button
+        View.OnClickListener nextClickListener = v -> onNextButtonClicked(true);
+        nextLayoutTwo.setOnClickListener(nextClickListener);
         if (mMusicNextButtonTwo != null) {
-            mMusicNextButtonTwo.setOnClickListener(v -> {
-                if (mediaSource == "fyt") {
-                    Intent intent = new Intent();
-                    intent.setAction("com.syu.music.next");
-                    intent.setPackage("com.syu.music");
-                    Launcher.this.startService(intent);
-                } else if (mediaSource == "mediaController") {
-                    boolean activeControllerAppRunning = false;
-                    ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                    List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                    for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                        if (appProcess.processName.contains(activeController)) {
-                            activeControllerAppRunning = true;
-                            if (activeController != null && !activeController.isEmpty()) {
-                                sendBroadcast(new Intent("media.play.next"));
-                            }
-                        }
-                    }
-                    if (!activeControllerAppRunning || isRadioPlaying()) {
-                        WindowUtil.removePip(Launcher.this.pipViews);
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            Launcher.this.refreshLeftCycle(bean);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivity(launchIntent);
-                    }
-                }
-            });
+            mMusicNextButtonTwo.setOnClickListener(nextClickListener);
         }
-        if (music_playpause != null) {
-            music_playpause.setOnClickListener(v -> {
-                if (!temporarilyDisablePlayPauseButton) {
-                    if (mediaSource == "fyt") {
-                        if (MusicService.state.booleanValue()) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        }
-                        Intent intent = new Intent();
-                        intent.setAction("com.syu.music.playpause");
-                        intent.setPackage("com.syu.music");
-                        Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController") {
-                        boolean activeControllerAppRunning = false;
-                        ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                        for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                            if (appProcess.processName.contains(activeController)) {
-                                activeControllerAppRunning = true;
-                                if (activeController != null && !activeController.isEmpty()) {
-                                    if (mAudioManager.isMusicActive()) {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        sendBroadcast(new Intent("media.play.pause"));
-                                    } else {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        sendBroadcast(new Intent("media.play.play"));
-                                    }
-                                }
-                            }
-                        }
-                        if (!activeControllerAppRunning || isRadioPlaying()) {
-                            WindowUtil.removePip(Launcher.this.pipViews);
-                            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                            try {
-                                ComponentName componentName = launchIntent.getComponent();
-                                PackageManager pm = getPackageManager();
-                                ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                                String appTitle = appInfo.loadLabel(pm).toString();
-                                AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                            startActivity(launchIntent);
-                        }
-                    }
-                }
-
-                temporarilyDisablePlayPauseButton = true;
-
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        temporarilyDisablePlayPauseButton = false;
-                    }
-                }, 500);
-            });
+        
+        // Make LayoutTwos clickable
+        prevLayoutTwo.setClickable(true);
+        playPauseLayoutTwo.setClickable(true);
+        nextLayoutTwo.setClickable(true);
+        
+        prevLayoutTwo.setFocusable(true);
+        playPauseLayoutTwo.setFocusable(true);
+        nextLayoutTwo.setFocusable(true);
+    }
+    
+    public void onPrevButtonClicked(boolean barView) {
+        if (barView) {
+            mWorkspace.scheduleAutoHide();
         }
-        if (music_playpause_two != null) {
-            music_playpause_two.setOnClickListener(v -> {
-                if (!temporarilyDisablePlayPauseButton) {
-                    if (mediaSource == "fyt") {
-                        if (MusicService.state.booleanValue()) {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        } else {
-                            music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        }
-                        Intent intent = new Intent();
-                        intent.setAction("com.syu.music.playpause");
-                        intent.setPackage("com.syu.music");
-                        Launcher.this.startService(intent);
-                    } else if (mediaSource == "mediaController") {
-                        boolean activeControllerAppRunning = false;
-                        ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                        for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                            if (appProcess.processName.contains(activeController)) {
-                                activeControllerAppRunning = true;
-                                if (activeController != null && !activeController.isEmpty()) {
-                                    if (mAudioManager.isMusicActive()) {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        sendBroadcast(new Intent("media.play.pause"));
-                                    } else {
-                                        music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        sendBroadcast(new Intent("media.play.play"));
-                                    }
+        if (mediaSource == "fyt") {
+            Intent intent = new Intent();
+            intent.setAction("com.syu.music.prev");
+            intent.setPackage("com.syu.music");
+            Launcher.this.startService(intent);
+        } else if (mediaSource == "mediaController") {
+            boolean activeControllerAppRunning = false;
+            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.processName.contains(activeController)) {
+                    activeControllerAppRunning = true;
+                    if (activeController != null && !activeController.isEmpty()) {
+                        sendBroadcast(new Intent("media.play.previous"));
+                    }
+                }
+            }
+            if (!activeControllerAppRunning || isRadioPlaying()) {
+                WindowUtil.removePip(Launcher.this.pipViews);
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                try {
+                    ComponentName componentName = launchIntent.getComponent();
+                    PackageManager pm = getPackageManager();
+                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                    String appTitle = appInfo.loadLabel(pm).toString();
+                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                    Launcher.this.refreshLeftCycle(bean);
+                    cleanWidgetBar();
+                } catch (PackageManager.NameNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(launchIntent);
+            }
+        }
+    }
+
+    public void onPlayPauseButtonClicked(Button playPauseButton, boolean barView) {
+        if (barView) {
+            mWorkspace.scheduleAutoHide();
+        }
+        if (!temporarilyDisablePlayPauseButton) {
+            if (mediaSource == "fyt") {
+                if (MusicService.state.booleanValue()) {
+                    playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    if (barView) {
+                        setBarButtonsTint(playPauseButton);
+                    } else {
+                        setWidgetButtonsTint(playPauseButton);
+                    }
+                } else {
+                    playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                    if (barView) {
+                        setBarButtonsTint(playPauseButton);
+                    } else {
+                        setWidgetButtonsTint(playPauseButton);
+                    }
+                }
+                Intent intent = new Intent();
+                intent.setAction("com.syu.music.playpause");
+                intent.setPackage("com.syu.music");
+                Launcher.this.startService(intent);
+            } else if (mediaSource == "mediaController") {
+                boolean activeControllerAppRunning = false;
+                ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+                List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+                for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                    if (appProcess.processName.contains(activeController)) {
+                        activeControllerAppRunning = true;
+                        if (activeController != null && !activeController.isEmpty()) {
+                            if (mAudioManager.isMusicActive()) {
+                                playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                if (barView) {
+                                    setBarButtonsTint(playPauseButton);
+                                } else {
+                                    setWidgetButtonsTint(playPauseButton);
                                 }
+                                sendBroadcast(new Intent("media.play.pause"));
+                            } else {
+                                playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                if (barView) {
+                                    setBarButtonsTint(playPauseButton);
+                                } else {
+                                    setWidgetButtonsTint(playPauseButton);
+                                }
+                                sendBroadcast(new Intent("media.play.play"));
                             }
-                        }
-                        if (!activeControllerAppRunning || isRadioPlaying()) {
-                            WindowUtil.removePip(Launcher.this.pipViews);
-                            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                            try {
-                                ComponentName componentName = launchIntent.getComponent();
-                                PackageManager pm = getPackageManager();
-                                ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                                String appTitle = appInfo.loadLabel(pm).toString();
-                                AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                            startActivity(launchIntent);
                         }
                     }
                 }
-
-                temporarilyDisablePlayPauseButton = true;
-
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        temporarilyDisablePlayPauseButton = false;
+                if (!activeControllerAppRunning || isRadioPlaying()) {
+                    WindowUtil.removePip(Launcher.this.pipViews);
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                    try {
+                        ComponentName componentName = launchIntent.getComponent();
+                        PackageManager pm = getPackageManager();
+                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                        String appTitle = appInfo.loadLabel(pm).toString();
+                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                        Launcher.this.refreshLeftCycle(bean);
+                        cleanWidgetBar();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
-                }, 500);
-            });
+                    startActivity(launchIntent);
+                }
+            }
+        }
+
+        temporarilyDisablePlayPauseButton = true;
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                temporarilyDisablePlayPauseButton = false;
+            }
+        }, 500);
+    }
+
+    public void onNextButtonClicked(boolean barView) {
+        if (barView) {
+            mWorkspace.scheduleAutoHide();
+        }
+        if (mediaSource == "fyt") {
+            Intent intent = new Intent();
+            intent.setAction("com.syu.music.next");
+            intent.setPackage("com.syu.music");
+            Launcher.this.startService(intent);
+        } else if (mediaSource == "mediaController") {
+            boolean activeControllerAppRunning = false;
+            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.processName.contains(activeController)) {
+                    activeControllerAppRunning = true;
+                    if (activeController != null && !activeController.isEmpty()) {
+                        sendBroadcast(new Intent("media.play.next"));
+                    }
+                }
+            }
+            if (!activeControllerAppRunning || isRadioPlaying()) {
+                WindowUtil.removePip(Launcher.this.pipViews);
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                try {
+                    ComponentName componentName = launchIntent.getComponent();
+                    PackageManager pm = getPackageManager();
+                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                    String appTitle = appInfo.loadLabel(pm).toString();
+                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                    Launcher.this.refreshLeftCycle(bean);
+                    cleanWidgetBar();
+                } catch (PackageManager.NameNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(launchIntent);
+            }
+        }
+    }
+
+    private void setBarButtonsTint(Button button) {
+        barTint = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+        if (barTint) {
+            helpers.applyColorFilterToButton(button);
+        }
+    }
+
+    private void setWidgetButtonsTint(Button button) {
+        widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
+        if (widgetTint) {
+            helpers.applyColorFilterToButton(button);
         }
     }
 
@@ -4770,7 +5394,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void needStartAmap() {
         if (!AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.GaodeACTION)) {
-            startActivitySafely(customView.get(Config.WS_Gaode), FytPackage.getIntent(this, FytPackage.GaodeACTION), "amap");
+            startActivitySafely(getCustomView(Config.WS_Gaode), FytPackage.getIntent(this, FytPackage.GaodeACTION), "amap");
         }
     }
 
@@ -5266,6 +5890,47 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mVisible = false;
         mAttached = false;
         updateRunning();
+        cleanWidgetBar();
+    }
+
+    public void cleanWidgetBar() {
+        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        if (autoHideBottomBar && widgetBar) {
+            if (mWorkspace != null) {
+                mWorkspace.hideOverlayBottomBar();
+                mWorkspace.cancelPendingAutoHide();
+                mWorkspace.clearWidgetReferences();
+            }
+            ivALbumBgTwo = null;
+            tvMusicNameTwo = null;
+            tvAritstTwo = null;
+            weatherImg1 = null;
+            weatherCity1 = null;
+            weatherTemp = null;
+            weatherWeather1 = null;
+            cleanupViewRecursively(prevLayoutTwo);
+            cleanupViewRecursively(playPauseLayoutTwo);
+            cleanupViewRecursively(nextLayoutTwo);
+            cleanupViewRecursively(mMusicNextButtonTwo);
+            cleanupViewRecursively(mMusicPrevButtonTwo);
+            cleanupViewRecursively(mPlayPauseButtonTwo);
+            prevLayoutTwo = null;
+            playPauseLayoutTwo = null;
+            nextLayoutTwo = null;
+            mMusicNextButtonTwo = null;
+            mMusicPrevButtonTwo = null;
+            mPlayPauseButtonTwo = null;
+            removeCustomView("WS_Music_Two");
+        }
+    }    
+
+    private void cleanupViewRecursively(View view) {
+        if (view == null) return;
+        
+        // Clear listeners from the parent
+        view.setOnClickListener(null);
+        view.setOnTouchListener(null);
+        view.setOnLongClickListener(null);
     }
 
     public void onWindowVisibilityChanged(int visibility) {
@@ -5830,7 +6495,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         toggleShowWeightWatcher();
                         return;
                     } else if (shortcutClass.equals(AppAct.class.getName())) {
-                        onClickAllAppsButton(v);
+                        onClickAllAppsButton();
                         return;
                     } else if (shortcutClass.contains("com.syu.radio")) {
                         stopMusic();
@@ -5851,6 +6516,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         settingsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(settingsIntent);
                     }
+                    cleanWidgetBar();
                 } catch (PackageManager.NameNotFoundException e) {
                     throw new RuntimeException(e);
                 }
@@ -5869,29 +6535,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 return;
             }
-            if (v == mAllAppsButton || v == customView.get(Config.WS_Allapps) || v == customView.get(Config.ALLAPP)) {
+            if (v == mAllAppsButton || v == getCustomView(Config.WS_Allapps) || v == getCustomView(Config.ALLAPP)) {
                 if (isAllAppsVisible()) {
                     showWorkspace(true);
                     return;
                 } else {
-                    onClickAllAppsButton(v);
+                    onClickAllAppsButton();
                     return;
                 }
             }
-            if (v == customView.get(Config.NAVI)) {
+            if (v == getCustomView(Config.WS_Showbar)) {
+                onClickShowBarButton();
+            }
+            if (v == getCustomView(Config.NAVI)) {
                 CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
                 return;
             }
-            if (v == customView.get(Config.VOICE)) {
+            if (v == getCustomView(Config.VOICE)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.voiceAction), "bt");
                 return;
             }
-            if (v == customView.get(Config.BT)) {
+            if (v == getCustomView(Config.BT)) {
                 startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.RADIO)) {
+            if (v == getCustomView(Config.RADIO)) {
                 if (CarStates.mExistCarRadio == 1) {
                     startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
                 } else {
@@ -5900,7 +6569,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.WS_Radio)) {
+            if (v == getCustomView(Config.WS_Radio)) {
                 stopMusic();
                 if (CarStates.mExistCarRadio == 1) {
                     startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
@@ -5910,7 +6579,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.WS_Music) || v == customView.get(Config.WS_Music_Two) || v == customView.get(Config.WS_Music3)) {
+            if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
                 if (mediaSource == "fyt") {
                     WindowUtil.removePip(pipViews);
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
@@ -5921,6 +6590,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         String appTitle = appInfo.loadLabel(pm).toString();
                         AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
                         refreshLeftCycle(bean);
+                        cleanWidgetBar();
                     } catch (PackageManager.NameNotFoundException e) {
                         throw new RuntimeException(e);
                     }
@@ -5936,6 +6606,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             String appTitle = appInfo.loadLabel(pm).toString();
                             AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
                             refreshLeftCycle(bean);
+                            cleanWidgetBar();
                         } catch (PackageManager.NameNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -5944,66 +6615,66 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }         
                 return;
             }
-            if (v == customView.get(Config.WS_Maps)) {
+            if (v == getCustomView(Config.WS_Maps)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.mapsAction), "maps");
                 return;
             }
-            if (v == customView.get(Config.WS_Spotify)) {
+            if (v == getCustomView(Config.WS_Spotify)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.spotifyAction), "spotify");
                 return;
             }
-            if (v == customView.get(Config.WS_YouTube)) {
+            if (v == getCustomView(Config.WS_YouTube)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.youtubeAction), "youtube");
                 return;
             }
-            if (v == customView.get(Config.WS_Chrome)) {
+            if (v == getCustomView(Config.WS_Chrome)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.chromeAction), "chrome");
                 return;
             }
-            if (v == customView.get(Config.WS_MusicIV)) {
+            if (v == getCustomView(Config.WS_MusicIV)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Video)) {
+            if (v == getCustomView(Config.WS_Video)) {
                 WindowUtil.removePip(pipViews);
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Gallery)) {
+            if (v == getCustomView(Config.WS_Gallery)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.galleryAction), "galleryAction");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.WS_Miudrive)) {
+            if (v == getCustomView(Config.WS_Miudrive)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.miudriveAction), "miudriveAction");
                 return;
             }
-            if (v == customView.get(Config.WS_Aux)) {
+            if (v == getCustomView(Config.WS_Aux)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.auxAction), "auxAction");
                 return;
             }
-            if (v == customView.get(Config.WS_Bt) || v == mBtavView) {
+            if (v == getCustomView(Config.WS_Bt) || v == mBtavView) {
                 startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.WS_Navi)) {
+            if (v == getCustomView(Config.WS_Navi)) {
                 CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
                 return;
             }
-            if (v == customView.get(Config.WS_Gaode)) {
+            if (v == getCustomView(Config.WS_Gaode)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.GaodeACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_KLFM)) {
+            if (v == getCustomView(Config.WS_KLFM)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.KLFMACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Kuwo)) {
+            if (v == getCustomView(Config.WS_Kuwo)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.KWACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Dvr)) {
+            if (v == getCustomView(Config.WS_Dvr)) {
                 if (Utils.getNameToBool("iscamera360")) {
                     startActivitySafely(v, FytPackage.getIntent(this, "com.syu.camera360"), "camera360");
                     return;
@@ -6012,59 +6683,54 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     return;
                 }
             }
-            if (v == customView.get(Config.WS_Dvd)) {
+            if (v == getCustomView(Config.WS_Dvd)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.dvdAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Steer)) {
+            if (v == getCustomView(Config.WS_Steer)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.steerACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Easyconn)) {
+            if (v == getCustomView(Config.WS_Easyconn)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "net.easyconn"), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Recharge)) {
+            if (v == getCustomView(Config.WS_Recharge)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.unicar"), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Voice)) {
+            if (v == getCustomView(Config.WS_Voice)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.voiceAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_File) || v == customView.get(Config.FILE)) {
+            if (v == getCustomView(Config.WS_File) || v == getCustomView(Config.FILE)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.filemanagerAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Car)) {
+            if (v == getCustomView(Config.WS_Car)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.carAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Tire)) {
+            if (v == getCustomView(Config.WS_Tire)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.extireAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_Time) || v == customView.get(Config.WS_Time_Two)) {
-                Intent mIntent = new Intent("android.settings.DATE_SETTINGS");
-                startActivitySafely(v, mIntent, "date");
-                return;
-            }
-            if (v == customView.get(Config.SETTING) || v == customView.get(Config.WS_Settings)) {
+            if (v == getCustomView(Config.SETTING) || v == getCustomView(Config.WS_Settings)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.settings"), "music");
                 return;
             }
-            if (v == customView.get(Config.VIDEO)) {
+            if (v == getCustomView(Config.VIDEO)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.BTAV)) {
+            if (v == getCustomView(Config.BTAV)) {
                 Intent intent2 = new Intent();
                 intent2.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
                 startActivity(intent2);
                 return;
             }
-            if (v == customView.get(Config.ECAR)) {
+            if (v == getCustomView(Config.ECAR)) {
                 Intent intent3 = new Intent();
                 intent3.setComponent(new ComponentName(FytPackage.ecarAction, FytPackage.ecarOnlineClassName));
                 intent3.addCategory("android.intent.category.MAIN");
@@ -6072,32 +6738,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 startActivity(intent3);
                 return;
             }
-            if (v == customView.get(Config.SOS)) {
+            if (v == getCustomView(Config.SOS)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.sosAction), "music");
                 return;
             }
-            if (v == customView.get(Config.KUWO)) {
+            if (v == getCustomView(Config.KUWO)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.KWACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.UNICAR)) {
+            if (v == getCustomView(Config.UNICAR)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.unicar"), "unicar");
                 return;
             }
-            if (v == customView.get(Config.MUSIC)) {
+            if (v == getCustomView(Config.MUSIC)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.KLFM)) {
+            if (v == getCustomView(Config.KLFM)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.KLFMACTION), "music");
                 return;
             }
-            if (v == customView.get(Config.HONGFANS)) {
+            if (v == getCustomView(Config.HONGFANS)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.hongfansAction), "hongfansAction");
                 return;
             }
-            if (v == customView.get(Config.DVR)) {
+            if (v == getCustomView(Config.DVR)) {
                 if (Utils.getNameToBool("iscamera360")) {
                     startActivitySafely(v, FytPackage.getIntent(this, "com.syu.camera360"), "camera360");
                     return;
@@ -6106,83 +6772,88 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     return;
                 }
             }
-            if (v == customView.get(Config.LIGHT)) {
+            if (v == getCustomView(Config.LIGHT)) {
                 CarStates.getCar(getApplicationContext()).getTools().sendInt(0, 10, -3);
                 return;
             }
-            if (v == customView.get(Config.CLOLSESCREEN) || v == customView.get(Config.WS_CLOLSESCREEN)) {
+            if (v == getCustomView(Config.CLOLSESCREEN) || v == getCustomView(Config.WS_CLOLSESCREEN)) {
                 CarStates.getCar(getApplicationContext()).getTools().sendInt(0, 18, 1);
                 return;
             }
-            if (v == customView.get(Config.WIFI)) {
+            if (v == getCustomView(Config.WIFI)) {
                 startActivitySafely(v, new Intent("android.settings.WIFI_SETTINGS"), "settings");
                 return;
             }
-            if (v == customView.get(Config.SOUND) || v == customView.get(Config.WS_SOUND)) {
+            if (v == getCustomView(Config.SOUND) || v == getCustomView(Config.WS_SOUND)) {
                 CarStates.getCar(getApplicationContext()).getTools().sendInt(4, 0, -6);
                 return;
             }
-            if (v == customView.get(Config.CLOLSESOUND) || v == customView.get(Config.WS_CLOSESOUND)) {
+            if (v == getCustomView(Config.CLOLSESOUND) || v == getCustomView(Config.WS_CLOSESOUND)) {
                 CarStates.getCar(getApplicationContext()).getTools().sendInt(4, 0, -6);
                 CarStates.getCar(getApplicationContext()).getTools().sendInt(4, 0, -5);
                 return;
             }
-            if (v == customView.get(Config.EQ) || v == customView.get(Config.WS_EQ)) {
+            if (v == getCustomView(Config.EQ) || v == getCustomView(Config.WS_EQ)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.eqACTION), "eq");
                 WindowUtil.removePip(pipViews);
                 return;
             }
-            if (v == customView.get(Config.TIME)) {
+            if (v == getCustomView(Config.WS_Time) || v == getCustomView(Config.WS_Time_Two)) {
+                Intent mIntent = new Intent("android.settings.DATE_SETTINGS");
+                startActivitySafely(v, mIntent, "date");
+                return;
+            }
+            if (v == getCustomView(Config.TIME)) {
                 Intent mIntent2 = new Intent("android.settings.DATE_SETTINGS");
                 startActivitySafely(v, mIntent2, "date");
                 return;
             }
-            if (v == customView.get(Config.WS_Dvr_Rec)) {
+            if (v == getCustomView(Config.WS_Dvr_Rec)) {
                 Intent intent4 = new Intent(FytPackage.DVRSERVICE);
                 intent4.setAction(FytPackage.RECACTION);
                 intent4.setPackage(FytPackage.INNER_DVR);
                 startService(intent4);
                 return;
             }
-            if (v == customView.get(Config.WS_Dvr_Lock)) {
+            if (v == getCustomView(Config.WS_Dvr_Lock)) {
                 Intent intent5 = new Intent(FytPackage.DVRSERVICE);
                 intent5.setAction(FytPackage.LOCKACTION);
                 intent5.setPackage(FytPackage.INNER_DVR);
                 startService(intent5);
                 return;
             }
-            if (v == customView.get(Config.WS_Dvr_Catch)) {
+            if (v == getCustomView(Config.WS_Dvr_Catch)) {
                 Intent intent6 = new Intent(FytPackage.DVRSERVICE);
                 intent6.setAction(FytPackage.PHOTOACTION);
                 intent6.setPackage(FytPackage.INNER_DVR);
                 startService(intent6);
                 return;
             }
-            if (v == customView.get(Config.WS_BRIGHT) || v == customView.get(Config.BRIGHT)) {
+            if (v == getCustomView(Config.WS_BRIGHT) || v == getCustomView(Config.BRIGHT)) {
                 new PopWindowBright(mLauncher, mBrightLevel).showPopupWindow(mDragLayer);
                 return;
             }
-            if (v == customView.get(Config.WS_BROWSER) || v == customView.get(Config.BROWSER)) {
+            if (v == getCustomView(Config.WS_BROWSER) || v == getCustomView(Config.BROWSER)) {
                 LogPreview.show("Config.WS_BROWSER");
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.browserAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_GUIDE)) {
+            if (v == getCustomView(Config.WS_GUIDE)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.guideAction), "music");
                 return;
             }
-            if (v == customView.get(Config.WS_CALCULATOR)) {
+            if (v == getCustomView(Config.WS_CALCULATOR)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.calculatorAction), "music");
                 return;
             }
-            if (v == customView.get(Config.NEWEYE)) {
+            if (v == getCustomView(Config.NEWEYE)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.newsmy.ncarmanagerclient"), "newsmy");
                 return;
             }
-            if (v == customView.get(Config.WS_CANBUS) || v == customView.get(Config.CANBUS)) {
+            if (v == getCustomView(Config.WS_CANBUS) || v == getCustomView(Config.CANBUS)) {
                 LogPreview.show("Config.WS_CANBUS");
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.carBus), "canbus");
-            } else if (v == customView.get(Config.WS_360)) {
+            } else if (v == getCustomView(Config.WS_360)) {
                 if (SystemProperties.getInt("persist.sys.inner360", 0) == 0) {
                     startActivitySafely(v, FytPackage.getIntent(this, FytPackage.INNER360), "360");
                 } else {
@@ -6194,8 +6865,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void stopMusic() {
         if (mediaSource == "mediaController") {
-            if (Launcher.this.music_playpause != null) {
-                music_playpause.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            if (Launcher.this.mPlayPauseButton != null) {
+                mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setWidgetButtonsTint(mPlayPauseButton);
+                mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                setBarButtonsTint(mPlayPauseButtonTwo);
             }
             sendBroadcast(new Intent("media.play.pause")); 
         }
@@ -6252,8 +6926,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void onClickAllAppsButton(View v) {
+    public void onClickAllAppsButton() {
         Launcher.this.showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true);
+    }
+
+    public void onClickShowBarButton() {
+        mWorkspace.toggleBottomBar();
     }
 
     public void onTouchDownAllAppsButton(View v) {
@@ -6354,7 +7032,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Toast.makeText(getApplicationContext(), R.string.activity_not_found, Toast.LENGTH_LONG).show();
             return success;
         }
-        if (intent.getComponent() == null && ((v == customView.get(Config.WS_Dvr) || v == customView.get(Config.DVR)) && !Utils.getNameToBool("iscamera360"))) {
+        if (intent.getComponent() == null && ((v == getCustomView(Config.WS_Dvr) || v == getCustomView(Config.DVR)) && !Utils.getNameToBool("iscamera360"))) {
             Toast.makeText(getApplicationContext(), R.string.dvr_switch, android.widget.Toast.LENGTH_LONG).show();
             return success;
         }
@@ -7544,7 +8222,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindScreens(ArrayList<Long> orderedScreenIds) {
         bindAddScreens(orderedScreenIds);
-        Log.d(TAG, "bindScreens");
+        Log.i(TAG, "bindScreens order: " + orderedScreenIds);
         if (orderedScreenIds.size() == 0 && LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_add_extarscreen)) {
             mWorkspace.addExtraEmptyScreen();
         }
@@ -7758,7 +8436,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (DEBUG_WIDGETS) {
             Log.d(TAG, "bound widget id="+item.appWidgetId+" in "
-                    + (SystemClock.uptimeMillis()-start) + "ms");
+                    + (SystemClock.uptimeMillis()-start) + "ms, to screen ID: " + item.screenId);
         }
     }
 
@@ -7840,11 +8518,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         } else if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.setApps(apps);
-        }
-        if (atomicDontInitOnCreate.get()) {           
-            handler.postDelayed(()-> {
-                initAppData();
-            }, 1000);
         }
     }
 

@@ -6,9 +6,13 @@ import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetProviderInfo;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -21,6 +25,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -37,6 +44,7 @@ import androidx.core.content.ContextCompat;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,6 +58,7 @@ import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.settings.Keys;
 
 public class CellLayout extends ViewGroup implements View.OnLongClickListener {
@@ -191,6 +200,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private View mThirdPipPlaceholder = null;
     private View mFourthPipPlaceholder = null;
     private View mStatsPlaceholder = null;
+    private String selectedBackground;
 
     private SharedPreferences prefs;
     private boolean leftBar = false;
@@ -199,6 +209,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private HashMap<View, int[]> mUserWidgetCells = new HashMap<>();
     private HashMap<View, int[]> mPipPlaceholderCells = new HashMap<>();
     private HashMap<View, int[]> mStatsCells = new HashMap<>();
+    private final ArrayList<View> mActiveFullWidgets = new ArrayList<>();
+
+    private BroadcastReceiver mSetupReadyReceiver;
+    private boolean mIsReceiverRegistered = false;
+    private Handler receiverHandler = new Handler(Looper.getMainLooper());
+    private Runnable receiverAction;
 
     public CellLayout(Context context) {
         this(context, null);
@@ -1085,16 +1101,60 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             // Add widgets after size is determined, but only for the correct page
             if (mNeedsWidgetSetup && w > 0 && h > 0 && mCellWidth > 0 && mCellHeight > 0) {
                 mNeedsWidgetSetup = false;
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLauncher.handler.postDelayed(() -> {
-                            addCustomElements();
-                        }, 1000);
-                    }
-                });
+                registerSetupReceiver();
             }            
         }
+    }
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private void registerSetupReceiver() {
+        if (mIsReceiverRegistered) return;
+        
+        mSetupReadyReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                triggerAddCustomElements();
+            }
+        };
+        
+        IntentFilter filter = new IntentFilter(Keys.START_ADDING_CUSTOM_ELEMETNS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getContext().registerReceiver(mSetupReadyReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            getContext().registerReceiver(mSetupReadyReceiver, filter);
+        }
+        mIsReceiverRegistered = true;
+    }
+
+    /**
+     * Receiver might be called in multiple places to guarantee adding custom elements, 
+     * however it also might be called few times in a very short succesion. 
+     * This function exists to ensure addCustomElements() runs only once.
+     */
+    public void triggerAddCustomElements() {
+        if (receiverAction != null) {
+            receiverHandler.removeCallbacks(receiverAction);
+        }
+        
+        receiverAction = () -> {
+            post(() -> addCustomElements());
+            unregisterSetupReceiver();
+        };
+        
+        receiverHandler.postDelayed(receiverAction, 1500);
+    }
+
+    private void unregisterSetupReceiver() {
+        if (mIsReceiverRegistered && mSetupReadyReceiver != null) {
+            getContext().unregisterReceiver(mSetupReadyReceiver);
+            mIsReceiverRegistered = false;
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        unregisterSetupReceiver();
     }
 
     @Override
@@ -1424,6 +1484,16 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
+    private boolean shouldExcludeFirstBottomCell() {
+        return (mLauncher.getWorkspace().getCurrentPage() == 0 && 
+                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+    }
+
+    private boolean shouldExcludeLastRow() {
+        return (mLauncher.getWorkspace().getCurrentPage() == 0 && 
+                !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+    }
+
     /**
      * Find a vacant area that will fit the given bounds nearest the requested
      * cell location. Uses Euclidean distance to score multiple vacant areas.
@@ -1462,8 +1532,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final int countX = mCountX;
         final int countY;
         // Apply only for the first page that contains the bottom bar
-        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean shouldExcludeLastRow = shouldExcludeLastRow();
+        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+
+        if (shouldExcludeLastRow) {
             countY = mCountY - excludeLastRow;
+        } else if (shouldExcludeFirstCell) {
+            countY = mCountY; // Only exclude specific cell, not the whole row
         } else {
             countY = mCountY;
         }
@@ -1476,12 +1552,20 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         for (int y = 0; y < countY - (minSpanY - 1); y++) {
             inner:
             for (int x = 0; x < countX - (minSpanX - 1); x++) {
+                // Check if this is the excluded first bottom cell
+                if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                    continue inner; // Skip the first cell in bottom row
+                }
                 int ySize = -1;
                 int xSize = -1;
                 if (ignoreOccupied) {
                     // First, let's see if this thing fits anywhere
                     for (int i = 0; i < minSpanX; i++) {
                         for (int j = 0; j < minSpanY; j++) {
+                            // Also check if any part of the span would cover the excluded cell
+                            if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                                continue inner;
+                            }
                             if (occupied[x + i][y + j]) {
                                 continue inner;
                             }
@@ -1601,8 +1685,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final int countX = mCountX;
         final int countY;
         // apply only for the first page that contains the bottom bar
-        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean shouldExcludeLastRow = shouldExcludeLastRow();
+        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+
+        if (shouldExcludeLastRow) {
             countY = mCountY - excludeLastRow;
+        } else if (shouldExcludeFirstCell) {
+            countY = mCountY;
         } else {
             countY = mCountY;
         }
@@ -1610,9 +1700,18 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         for (int y = 0; y < countY - (spanY - 1); y++) {
             inner:
             for (int x = 0; x < countX - (spanX - 1); x++) {
+                // Check if this is the excluded first bottom cell
+                if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                    continue inner;
+                }
+                
                 // First, let's see if this thing fits anywhere
                 for (int i = 0; i < spanX; i++) {
                     for (int j = 0; j < spanY; j++) {
+                        // Check if any part of the span would cover the excluded cell
+                        if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                            continue inner;
+                        }
                         if (occupied[x + i][y + j] && (blockOccupied == null || blockOccupied[i][j])) {
                             continue inner;
                         }
@@ -1982,8 +2081,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         // Do not allow to reorder objects to the last row of the first screen
         // where the bottom bar has it's place
         int fixedCountY;
-        if (mLauncher.getWorkspace().getCurrentPage() == 0) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean shouldExcludeLastRow = shouldExcludeLastRow();
+        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+
+        if (shouldExcludeLastRow) {
             fixedCountY = mCountY - excludeLastRow;
+        } else if (shouldExcludeFirstCell) {
+            fixedCountY = mCountY;
         } else {
             fixedCountY = mCountY;
         }
@@ -3005,6 +3110,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         // mark space take by ignoreView as available (method checks if ignoreView is null)
         markCellsAsUnoccupiedForView(ignoreView, occupied);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+
         boolean foundCell = false;
         while (true) {
             int startX = 0;
@@ -3027,8 +3135,17 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             for (int y = startY; y < endY && !foundCell; y++) {
                 inner:
                 for (int x = startX; x < endX; x++) {
+                    // Check if this is the excluded first bottom cell
+                    if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                        continue inner;
+                    }
+                    
                     for (int i = 0; i < spanX; i++) {
                         for (int j = 0; j < spanY; j++) {
+                            // Check if any part of the span would cover the excluded cell
+                            if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                                continue inner;
+                            }
                             if (occupied[x + i][y + j]) {
                                 // small optimization: we can skip to after the column we just found
                                 // an occupied cell
@@ -3593,14 +3710,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         checkAndAddWidgetsView(pageIndex);
         checkAndAddPipPlaceholders(pageIndex);   
 
-        addStatsPlaceholder(Keys.STATS_SCREEN);          
+        addStatsPlaceholder(Keys.STATS_SCREEN);
     }
 
     private void ensurePagesExistForCustomElements(Workspace workspace) {
-        leftBar = prefs.getBoolean("left_bar", false);
-        userDate = prefs.getBoolean("user_date", true);
-        userMusic = prefs.getBoolean("user_music", true);
-        userRadio = prefs.getBoolean("user_radio", true);
+        leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
+        userDate = prefs.getBoolean(Keys.USER_DATE, true);
+        userMusic = prefs.getBoolean(Keys.USER_MUSIC, true);
+        userRadio = prefs.getBoolean(Keys.USER_RADIO, true);
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
@@ -3695,7 +3812,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 try {
                     long createdScreenId = mLauncher.getWorkspace().getScreenIdForPageIndex(newPageIndex);
                     ContentValues cv = new ContentValues();
-                    cv.put("_id", createdScreenId); // dbInsertAndCheck requires _id
+                    cv.put(LauncherSettings.WorkspaceScreens._ID, createdScreenId); // dbInsertAndCheck requires _id
                     cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, newPageIndex);
                     // LauncherSettings.WorkspaceScreens.CONTENT_URI == "content://com.android.launcher66.settings/workspaceScreens?notify=true"
                     mLauncher.getContentResolver().insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
@@ -3775,33 +3892,42 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        mLauncher.handler.postDelayed(() -> {
-            if (userDate) {
-                int dateScreen = prefs.getInt(Keys.DATE_SCREEN, 1) - 1;
-                if (currentPageIndex == dateScreen) {
-                    mUserDateWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_time, null);
-                    addCustomWidgetToGrid("date", mUserDateWidget, currentPageIndex);
-                }
-            }
+        selectedBackground = prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, "bg_custom");       
 
-            if (userMusic) {
-                int musicScreen = prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1;
-                if (currentPageIndex == musicScreen) {
-                    mUserMusicWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, null);
-                    addCustomWidgetToGrid("music", mUserMusicWidget, currentPageIndex);
-                }
+        if (userDate) {
+            int dateScreen = prefs.getInt(Keys.DATE_SCREEN, 1) - 1;
+            if (currentPageIndex == dateScreen) {
+                mUserDateWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_time, null);
+                if (!selectedBackground.equals("bg_custom")) {
+                    mUserDateWidget.setBackgroundResource(getResId(selectedBackground));
+                } 
+                addCustomWidgetToGrid("date", mUserDateWidget, currentPageIndex);
             }
+        }
 
-            if (userRadio) {
-                int radioScreen = prefs.getInt(Keys.RADIO_SCREEN, 1) - 1;
-                if (currentPageIndex == radioScreen) {
-                    mUserRadioWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, null);
-                    addCustomWidgetToGrid("radio", mUserRadioWidget, currentPageIndex);
-                }
+        if (userMusic) {
+            int musicScreen = prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1;
+            if (currentPageIndex == musicScreen) {
+                mUserMusicWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, null);
+                if (!selectedBackground.equals("bg_custom")) {
+                    mUserMusicWidget.setBackgroundResource(getResId(selectedBackground));
+                } 
+                addCustomWidgetToGrid("music", mUserMusicWidget, currentPageIndex);
             }
+        }
 
-            mHasUserWidgets = true;
-        }, 200);
+        if (userRadio) {
+            int radioScreen = prefs.getInt(Keys.RADIO_SCREEN, 1) - 1;
+            if (currentPageIndex == radioScreen) {
+                mUserRadioWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, null);
+                if (!selectedBackground.equals("bg_custom")) {
+                    mUserRadioWidget.setBackgroundResource(getResId(selectedBackground));
+                } 
+                addCustomWidgetToGrid("radio", mUserRadioWidget, currentPageIndex);
+            }
+        }
+
+        mHasUserWidgets = true;
     }
 
     private void addCustomWidgetToGrid(String prefix, View widgetView, int currentScreen) {
@@ -3845,8 +3971,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 width = topRightX - topLeftX;
                 height = bottomLeftY - topLeftY;
 
-                setCalculatedTextSize(widgetView, R.id.tv_musicName, mLauncher.textSizeTitle);
-                setCalculatedTextSize(widgetView, R.id.tv_artist, mLauncher.textSizeArtist);
+                setCalculatedTextSizeAndColor(widgetView, R.id.tv_musicName, mLauncher.textSizeTitle);
+                setCalculatedTextSizeAndColor(widgetView, R.id.tv_artist, mLauncher.textSizeArtist);
                 break;
 
             case "radio":
@@ -3863,9 +3989,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 width = topRightX - topLeftX;
                 height = bottomLeftY - topLeftY;
 
-                setCalculatedTextSize(widgetView, R.id.tv_unit, mLauncher.textSizeBasic);
-                setCalculatedTextSize(widgetView, R.id.tv_band, mLauncher.textSizeBasic);
-                setCalculatedTextSize(widgetView, R.id.tv_freq, mLauncher.radioTextFrequency);
+                setCalculatedTextSizeAndColor(widgetView, R.id.tv_unit, mLauncher.textSizeBasic);
+                setCalculatedTextSizeAndColor(widgetView, R.id.tv_band, mLauncher.textSizeBasic);
+                setCalculatedTextSizeAndColor(widgetView, R.id.tv_freq, mLauncher.radioTextFrequency);
                 setCalculatedButtonSizes(widgetView, R.id.radio_btn_prev, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);
                 setCalculatedButtonSizes(widgetView, R.id.radio_btn_next, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);
                 break;
@@ -3935,46 +4061,56 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         info.spanX = spanX;
         info.spanY = spanY;
 
+        // Persist
         LauncherModel.addItemToDatabase(mLauncher, info, LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 info.screenId, info.cellX, info.cellY, false);
 
-        addViewToCellLayout(widgetView, 0, childId, lp, true);
+        mLauncher.handler.postDelayed(() -> {
+            addViewToCellLayout(widgetView, 0, childId, lp, true);
+        }, 200);
 
         // Initialize widget-specific behavior
         mLauncher.handler.postDelayed(() -> {
             switch (prefix) {
+                case "date":
+                    mLauncher.initDateWidgetView(widgetView);
+                    break;
                 case "music":
                     mLauncher.initMusicWidgetView(widgetView);
-                    mLauncher.bindMusicWidgetOnclickListener();
+                    mLauncher.bindMusicWidgetOnclickListener(widgetView);
+                    mLauncher.preSetMusicWidgets();
                     break;
                 case "radio":
                     mLauncher.initRadioWidgetView(widgetView);
                     mLauncher.bindRadioWidgetOnclickListener();
                     break;
             }
-        }, 100);
+        }, 400);
 
         Log.i(TAG, prefix + " widget added at [" + startCell[0] + "," + startCell[1] + "] spanning " + spanX + "x" + spanY);
+
+        Workspace workspace = Launcher.getWorkspace();
+        if (workspace != null) {
+            workspace.triggerStripEmptyScreens("CellLayout, addCustomWidgetToGrid()", false);
+        }
     }
 
     public void checkAndAddPipPlaceholders(int pageIndex) {
-        mLauncher.handler.postDelayed(() -> {
-            if (dualPip && prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == pageIndex) {
-                addPipPlaceholder("dual", Keys.PIP_DUAL_KEY, Keys.PIP_DUAL_SCREEN);
-            }
-            if (firstPip && prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == pageIndex) {
-                addPipPlaceholder("first", Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
-            }
-            if (secondPip && prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == pageIndex) {
-                addPipPlaceholder("second", Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
-            }
-            if (thirdPip && prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == pageIndex) {
-                addPipPlaceholder("third", Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
-            }
-            if (fourthPip && prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 == pageIndex) {
-                addPipPlaceholder("fourth", Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
-            }
-        }, 200);
+        if (dualPip && prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == pageIndex) {
+            addPipPlaceholder("dual", Keys.PIP_DUAL_KEY, Keys.PIP_DUAL_SCREEN);
+        }
+        if (firstPip && prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == pageIndex) {
+            addPipPlaceholder("first", Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
+        }
+        if (secondPip && prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == pageIndex) {
+            addPipPlaceholder("second", Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
+        }
+        if (thirdPip && prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == pageIndex) {
+            addPipPlaceholder("third", Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
+        }
+        if (fourthPip && prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 == pageIndex) {
+            addPipPlaceholder("fourth", Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
+        }
     }
 
     private void addPipPlaceholder(String pipType, String pipKey, String screenKey) {
@@ -4027,7 +4163,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         int spanY = endCell[1] - startCell[1] + 1;
         
         // Create placeholder view
+        selectedBackground = prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, "bg_custom");
         View placeholder = mLauncher.getLayoutInflater().inflate(R.layout.absolute_placeholder, null);
+        if (!selectedBackground.equals("bg_custom")) {
+            placeholder.setBackgroundResource(getResId(selectedBackground));
+        } 
         
         // Find and handle conflicting views - incremental delay is necessay to prevent the race condtion
         // Then store reference based on type
@@ -4035,31 +4175,31 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             case "dual":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 250);   
+                }, 300);   
                 mDualPipPlaceholder = placeholder;
                 break;
             case "first":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 300);   
+                }, 350);   
                 mFirstPipPlaceholder = placeholder;
                 break;
             case "second":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 350);   
+                }, 400);   
                 mSecondPipPlaceholder = placeholder;
                 break;
             case "third":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 400);   
+                }, 450);   
                 mThirdPipPlaceholder = placeholder;
                 break;
             case "fourth":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 450);   
+                }, 500);   
                 mFourthPipPlaceholder = placeholder;
                 break;
         }
@@ -4099,10 +4239,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         LauncherModel.addItemToDatabase(mLauncher, info, LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 info.screenId, info.cellX, info.cellY, false);
         
-        addViewToCellLayout(placeholder, 0, childId, lp, false); 
+        mLauncher.handler.postDelayed(() -> {
+            addViewToCellLayout(placeholder, 0, childId, lp, false); 
+        }, 200); 
         
         Log.i(TAG, "Added " + pipType + " PiP placeholder at [" + startCell[0] + "," + startCell[1] + 
               "] spanning " + spanX + "x" + spanY);
+
+        Workspace workspace = Launcher.getWorkspace();
+        if (workspace != null) {
+            workspace.triggerStripEmptyScreens("CellLayout, addPipPlaceholder()", false);
+        }
     }
 
     // Get placeholder position for WindowUtil
@@ -4208,10 +4355,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         info.spanX = spanX;
         info.spanY = spanY;
         
-        addViewToCellLayout(mStatsPlaceholder, 0, childId, lp, false); 
-        
+        mLauncher.handler.postDelayed(() -> {
+            addViewToCellLayout(mStatsPlaceholder, 0, childId, lp, false);
+        }, 200); 
+             
         Log.i(TAG, "Added stats placeholder at [" + startCell[0] + "," + startCell[1] + 
               "] spanning " + spanX + "x" + spanY);
+
+        Workspace workspace = Launcher.getWorkspace();
+        if (workspace != null) {
+            workspace.triggerStripEmptyScreens("CellLayout, addStatsPlaceholder()", false);
+        }
     }
 
     public int[] getStatsPlaceholderPosition() {      
@@ -4222,10 +4376,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     // Helper methods
-    private void setCalculatedTextSize(View view, int viewId, int textSize) {
+    private void setCalculatedTextSizeAndColor(View view, int viewId, int textSize) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            boolean blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
+            if (blackTintWidgets) {
+                textView.setTextColor(Color.BLACK);
+            }
         }
     }
 
@@ -4249,14 +4407,33 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return mUserWidgetPositions.get(userWidget);
     }
 
-    boolean isUserWidget(View view) {
+    public boolean isUserWidget(View view) {
         return view == mUserDateWidget || view == mUserMusicWidget || view == mUserRadioWidget
             || view == mDualPipPlaceholder || view == mFirstPipPlaceholder 
             || view == mSecondPipPlaceholder || view == mThirdPipPlaceholder 
             || view == mFourthPipPlaceholder || view == mStatsPlaceholder;
     }
 
-    private final ArrayList<View> mActiveFullWidgets = new ArrayList<>();
+    public String getUserWidgetKey(View view) {
+        String widgetKey = "null";
+        if (view == mUserDateWidget) {
+            widgetKey = Keys.DATE_SCREEN;
+        } else if (view == mUserMusicWidget) {
+            widgetKey = Keys.MUSIC_SCREEN;
+        } else if (view == mUserRadioWidget) {
+            widgetKey = Keys.RADIO_SCREEN;
+        }
+        return widgetKey;
+    }
+
+    private static int getResId(String resName) {
+        try {
+            Field idField = R.drawable.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return R.drawable.app_list_bg;
+        }
+    }
 
     /**
      * Handle views that conflict with a custom element being placed.
@@ -4299,18 +4476,50 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         
         Log.i(TAG, "Found " + conflictingViews.size() + " conflicting views");
         
-        if (conflictingViews.isEmpty()) {
-            Log.i(TAG, "=== handleConflictingViews END (no conflicts) ===");
-            return;
-        }
-        
-        // Determine if we need to exclude the last row
+        // Determine if we need to exclude the last row or just the first cell
         int currentPage = -1;
         if (mLauncher != null && mLauncher.getWorkspace() != null) {
             currentPage = mLauncher.getWorkspace().indexOfChild(this);
         }
-        boolean shouldExcludeLastRow = (currentPage == 0);
-        Log.i(TAG, "Current page: " + currentPage + ", shouldExcludeLastRow: " + shouldExcludeLastRow);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean shouldExcludeLastRow = shouldExcludeLastRow();
+        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+
+        if (shouldExcludeLastRow || shouldExcludeFirstCell) {
+            Log.i(TAG, "Checking for elements in excluded areas");
+            for (int i = 0; i < count; i++) {
+                View child = mShortcutsAndWidgets.getChildAt(i);
+                
+                if (isUserWidget(child) || conflictingViews.contains(child)) {
+                    continue;
+                }
+                
+                LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                
+                if (shouldExcludeLastRow) {
+                    // Exclude entire last row
+                    boolean isInLastRow = (lp.cellY + lp.cellVSpan > mCountY - excludeLastRow);
+                    if (isInLastRow && !conflictingViews.contains(child)) {
+                        conflictingViews.add(child);
+                    }
+                } else if (shouldExcludeFirstCell) {
+                    // Only exclude if it occupies the first cell of the bottom row
+                    boolean occupiesExcludedCell = (lp.cellY == mCountY - 1 && lp.cellX == 0) ||
+                                                  (lp.cellY + lp.cellVSpan > mCountY - 1 && 
+                                                   lp.cellX == 0);
+                    if (occupiesExcludedCell && !conflictingViews.contains(child)) {
+                        conflictingViews.add(child);
+                    }
+                }
+            }
+        }
+        
+        Log.i(TAG, "Total views to process (conflicts + last row): " + conflictingViews.size());
+        
+        if (conflictingViews.isEmpty()) {
+            Log.i(TAG, "=== handleConflictingViews END (no conflicts) ===");
+            return;
+        }
         
         // Create a modified occupied array that respects excludeLastRow
         boolean[][] searchOccupied = new boolean[mCountX][mCountY];
@@ -4343,9 +4552,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             markCellsAsUnoccupiedForView(conflictingView);
             markCellsForView(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, searchOccupied, false);
             
-            // Mark the custom element's area as occupied in both arrays
-            markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
-            markCellsForView(cellX, cellY, spanX, spanY, searchOccupied, true);
+            // If we're adding a custom element, mark its area as occupied
+            if (customRect != null) {
+                markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
+                markCellsForView(cellX, cellY, spanX, spanY, searchOccupied, true);
+            }
             
             // Try to find a new location for this view using the modified occupied array
             int[] newLocation = new int[2];
@@ -4412,9 +4623,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 removed++;
             }
             
-            // Unmark custom element's area from searchOccupied (will be marked properly when adding)
-            markCellsForView(cellX, cellY, spanX, spanY, mOccupied, false);
-            markCellsForView(cellX, cellY, spanX, spanY, searchOccupied, false);
+            // Unmark custom element's area from searchOccupied if it was marked
+            if (customRect != null) {
+                markCellsForView(cellX, cellY, spanX, spanY, mOccupied, false);
+                markCellsForView(cellX, cellY, spanX, spanY, searchOccupied, false);
+            }
         }
         
         Log.i(TAG, "Summary: " + relocated + " relocated, " + removed + " removed");

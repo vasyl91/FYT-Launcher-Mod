@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <RelativeLayout android:id="@+id/dt_layout" android:background="@drawable/custom_bg" android:layout_width="420.0px" android:layout_height="140.0px" android:layout_alignParentTop="true">
+    <RelativeLayout android:id="@+id/dt_layout" android:background="@drawable/bg_custom" android:layout_width="420.0px" android:layout_height="140.0px" android:layout_alignParentTop="true">
         <RelativeLayout android:id="@+id/ll_time" android:layout_width="wrap_content" android:layout_height="fill_parent">
             <LinearLayout android:orientation="horizontal" android:id="@+id/mtu_ll_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0px" android:layout_centerVertical="true">
                 <ImageView android:id="@+id/mtu_img_ht1" android:tag="@string/skin_ruleless" android:layout_width="50.0px" android:layout_height="60.0px" android:src="@drawable/time02" android:scaleType="fitXY" />

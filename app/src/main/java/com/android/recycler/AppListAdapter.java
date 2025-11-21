@@ -42,9 +42,17 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
+    private SharedPreferences mPrefs;
 
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
-        this.mMaxCount = 8;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        if (userLayout && widgetBar) { 
+            this.mMaxCount = 5;
+        }else {
+            this.mMaxCount = 8;
+        }
         this.mData = mData;
         this.mLauncher = mLauncher;
     }
@@ -89,49 +97,49 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         }
         appListHolder.itemView.setOnClickListener(view -> {
             final String packageName = appListBean.packageName;
-                    switch (packageName.hashCode()) {
-                        case -1958346218: {
-                            if (!packageName.equals("com.google.android.googlequicksearchbox")) {
-                                break;
-                            }
-                        }
-                        case 877333343: {
-                            if (packageName.equals("net.easyconn")) {
-                                WindowUtil.removePip(null);
-                            }
-                            break;
-                        }
-                        case 1489048446: {
-                            if (packageName.equals("com.nng.igo.primong.igoworld")) {
-                                WindowUtil.removePip(null);
-                            }
-                            break;
-                        }
+            switch (packageName.hashCode()) {
+                case -1958346218: {
+                    if (!packageName.equals("com.google.android.googlequicksearchbox")) {
+                        break;
                     }
-                    if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                        AppListDialogFragment dialog = getDialog();
-                        dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
-                        AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
-                    } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
-                        AppListAdapter.this.mLauncher.onClickAllAppsButton(view);
-                    } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
-                        AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                        Intent settingsIntent = new Intent(AppListAdapter.this.mLauncher, SettingsActivity.class);
-                        settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        AppListAdapter.this.mLauncher.startActivity(settingsIntent);
-                        onClickIcon(appListBean);
-                    } else if (appListBean.className.contains("com.syu.radio")) {
-                        AppListAdapter.this.mLauncher.stopMusic();
-                        final Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
-                        AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                        onClickIcon(appListBean);
-                    } else {
-                        final Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
-                        AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                        onClickIcon(appListBean);
+                }
+                case 877333343: {
+                    if (packageName.equals("net.easyconn")) {
+                        WindowUtil.removePip(null);
                     }
+                    break;
+                }
+                case 1489048446: {
+                    if (packageName.equals("com.nng.igo.primong.igoworld")) {
+                        WindowUtil.removePip(null);
+                    }
+                    break;
+                }
+            }
+            if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
+                AppListDialogFragment dialog = getDialog();
+                dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
+                AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
+            } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+                AppListAdapter.this.mLauncher.onClickAllAppsButton();
+            } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+                AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                Intent settingsIntent = new Intent(AppListAdapter.this.mLauncher, SettingsActivity.class);
+                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                AppListAdapter.this.mLauncher.startActivity(settingsIntent);
+                onClickIcon(appListBean);
+            } else if (appListBean.className.contains("com.syu.radio")) {
+                AppListAdapter.this.mLauncher.stopMusic();
+                final Intent intent = new Intent();
+                intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
+                AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
+                onClickIcon(appListBean);
+            } else {
+                final Intent intent = new Intent();
+                intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
+                AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
+                onClickIcon(appListBean);
+            }
         });
         appListHolder.itemView.setOnLongClickListener(view -> {
             AppListDialogFragment dialog = getDialog();
@@ -145,9 +153,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         WindowUtil.removePip(null);
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
         if (userLayout && userStats)  {  
             SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
@@ -163,7 +171,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                 Intent intentApp = new Intent(RECYCLER_APP);
                 AppListAdapter.this.mLauncher.sendBroadcast(intentApp);
             }
-        }        
+        } 
+        AppListAdapter.this.mLauncher.cleanWidgetBar();    
     }
 
     @Override
@@ -172,7 +181,29 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         this.mData.remove(this.lastClickIndex);
         this.mData.add(this.lastClickIndex, appListBean);
         notifyDataSetChanged();
-        new AppMultiple(this.lastClickIndex, appListBean.name, appListBean.packageName, appListBean.className).saveOrUpdate("index = ?", new StringBuilder(String.valueOf(this.lastClickIndex)).toString());
+        
+        // Convert adapter position to database index when widgetBar is true
+        int dbIndex = lastClickIndex;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        
+        if (userLayout && widgetBar) {
+            // Map adapter positions to database indices
+            // Adapter shows: 2nd(1), 5th(4), 6th(5), 7th(6), 8th(7)
+            // Database indices: 0, 1, 2, 3, 4, 5, 6, 7
+            switch (lastClickIndex) {
+                case 0: dbIndex = 1; break;  // 2nd app
+                case 1: dbIndex = 4; break;  // 5th app
+                case 2: dbIndex = 5; break;  // 6th app
+                case 3: dbIndex = 6; break;  // 7th app
+                case 4: dbIndex = 7; break;  // 8th app
+                default: dbIndex = lastClickIndex; break;
+            }
+        }
+        
+        new AppMultiple(dbIndex, appListBean.name, appListBean.packageName, appListBean.className)
+            .saveOrUpdate("index = ?", String.valueOf(dbIndex));
     }
 
     public AppListHolder onCreateViewHolder(final ViewGroup viewGroup, final int n) {

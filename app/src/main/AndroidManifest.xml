@@ -102,7 +102,9 @@
         android:largeHeap="@bool/config_largeHeap"
         android:name="com.android.launcher66.LauncherApplication"
         android:supportsRtl="false"
-        android:requestLegacyExternalStorage="true" >
+        android:requestLegacyExternalStorage="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false" >
         <meta-data
             android:name="client"
             android:value="SYU" />
@@ -115,18 +117,6 @@
         <meta-data
             android:name="compile"
             android:value="2025-01-13 13:40:22/190001066_com.android.launcher66" />
-        <meta-data
-            android:name="xposedmodule"
-            android:value="true" />
-        <meta-data
-            android:name="xposeddescription"
-            android:value="FYT Launcher Mod with integrated module that blocks front app from entering minimal UI" />
-        <meta-data
-            android:name="xposedminversion"
-            android:value="93" />
-        <meta-data
-            android:name="xposedscope"
-            android:value="com.google.android.apps.maps" />
 
         <activity
             android:clearTaskOnLaunch="true"

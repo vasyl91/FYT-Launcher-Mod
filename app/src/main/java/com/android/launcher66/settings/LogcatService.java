@@ -97,6 +97,7 @@ public class LogcatService extends Service {
             return;
         }
 
+        BufferedReader dumpReader = null;
         BufferedReader bufferedReader = null;
         try {
             // Create log directory
@@ -115,22 +116,35 @@ public class LogcatService extends Service {
             File logFile = new File(downloadsDir, timestamp + LOG_FILE_SUFFIX);
             fileWriter = new FileWriter(logFile, true);
 
-            // Clear existing log buffer
-            try {
-                java.lang.Process clearProcess = Runtime.getRuntime().exec("logcat -c");
-                clearProcess.waitFor();  // Wait for clearing to complete
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to clear log buffer: " + e.getMessage());
-            }
+            // STEP 1: First, dump existing logs (including startup logs)
+            Log.i(TAG, "Dumping existing logs...");
+            String[] dumpCommand = new String[]{"logcat", "-d", "-v", "threadtime"};
+            java.lang.Process dumpProcess = Runtime.getRuntime().exec(dumpCommand);
+            dumpReader = new BufferedReader(
+                new InputStreamReader(dumpProcess.getInputStream()));
 
-            // Start logcat process
+            String line;
+            int dumpCount = 0;
+            while ((line = dumpReader.readLine()) != null) {
+                if (line.contains(String.valueOf(myPid)) && 
+                    !line.contains("ContextImpl") && 
+                    !line.contains("Unisoc_Location")) {
+                    fileWriter.write(line + "\n");
+                    dumpCount++;
+                }
+            }
+            dumpReader.close();
+            fileWriter.flush();
+            Log.i(TAG, "Dumped " + dumpCount + " existing log lines");
+
+            // STEP 2: Now start continuous logging (without clearing buffer)
+            Log.i(TAG, "Starting continuous log capture...");
             String[] command = new String[]{"logcat", "-v", "threadtime"};
             logcatProcess = Runtime.getRuntime().exec(command);
             bufferedReader = new BufferedReader(
                 new InputStreamReader(logcatProcess.getInputStream()));
 
-            // Read logcat output
-            String line;
+            // Read logcat output continuously
             isRunning = true;
             while (isRunning && (line = bufferedReader.readLine()) != null) {
                 if (line.contains(String.valueOf(myPid)) && 
@@ -143,6 +157,11 @@ public class LogcatService extends Service {
             Log.e(TAG, "Log capture error: " + e.getMessage());
         } finally {
             // Ensure resources are closed
+            try {
+                if (dumpReader != null) dumpReader.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Error closing dump reader", e);
+            }
             closeResources(bufferedReader, fileWriter, logcatProcess);
         }
     }

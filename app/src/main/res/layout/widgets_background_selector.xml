@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/def_bg_small"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/widgets_background_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/widgets_background_dialog_title"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:layout_marginBottom="16dp"
+        android:background="#ff4285f4"
+        android:textColor="#FFFFFF" />
+
+    <ScrollView
+        android:id="@+id/widgets_background_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <GridLayout
+            android:id="@+id/widgets_background_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="4"
+            android:useDefaultMargins="true" />
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/widgets_background_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#ff4285f4"
+        android:text="Cancel"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="end" />
+
+</LinearLayout>

@@ -155,9 +155,7 @@ dependencies {
 
     implementation(libs.androidx.runtime)
 
-    implementation(files("libs/cn.jar"))
-    compileOnly(files("libs/api-82.jar"))
-    implementation(project(":hook"))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.ksp)

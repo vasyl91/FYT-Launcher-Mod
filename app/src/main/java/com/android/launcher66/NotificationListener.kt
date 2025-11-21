@@ -453,7 +453,9 @@ class NotificationListener : NotificationListenerService() {
             super.onPlaybackStateChanged(state)
             service.currentState = state?.state
             service.prevMinutes = 0
-            if (service.currentState == PlaybackState.STATE_PAUSED) {
+            if (service.currentState == PlaybackState.STATE_PAUSED
+                || service.currentState == PlaybackState.STATE_STOPPED
+                || service.currentState == PlaybackState.STATE_BUFFERING) {
                 val intent = Intent("pause.button")
                 service.sendBroadcast(intent)
                 service.settings?.edit {
@@ -489,7 +491,10 @@ class NotificationListener : NotificationListenerService() {
                         }
                     }
                     // prevState: 1 - STOPPED, 2 - PAUSED, 3 - PLAYING
-                    if (!service.songCur.equals(service.settings?.getString("songPrev", "prev")) || service.settings?.getInt("prevState", 1) == 2) {
+                    if (!service.songCur.equals(service.settings?.getString("songPrev", "prev")) 
+                        || service.settings!!.getInt("prevState", PlaybackState.STATE_STOPPED) == PlaybackState.STATE_STOPPED 
+                        || service.settings!!.getInt("prevState", PlaybackState.STATE_STOPPED) == PlaybackState.STATE_PAUSED
+                        || service.settings!!.getInt("prevState", PlaybackState.STATE_STOPPED) == PlaybackState.STATE_BUFFERING) {
                         service.settings?.edit {
                             this.putString("songPrev", service.songCur)
                             this.putInt("prevState", service.currentState!!)

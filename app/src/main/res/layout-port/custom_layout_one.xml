@@ -61,7 +61,7 @@
     <!-- Date Widget -->
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/ll_time"
-        android:background="@drawable/custom_bg"
+        android:background="@drawable/bg_custom"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintWidth_percent="0.8795"
@@ -112,7 +112,7 @@
     <!-- Music Widget -->
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/rl_music"
-        android:background="@drawable/custom_bg"
+        android:background="@drawable/bg_custom"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintWidth_percent="0.8795"
@@ -188,31 +188,68 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             app:flexWrap="wrap"
-            app:justifyContent="space_evenly" >
+            app:flexDirection="row"
+            app:justifyContent="space_between" >
 
-            <Button
-                android:id="@+id/music_prev"
-                android:background="@drawable/btn_ic_prev"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_prev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/music_playpause"
-                android:layout_toStartOf="@id/music_playpause" />
+                app:layout_flexGrow="1"
+                app:layout_constraintDimensionRatio="1:1">
 
-            <Button
-                android:id="@+id/music_playpause"
-                android:background="@drawable/music_pause_icon"
+                <Button
+                    android:id="@+id/music_prev"
+                    android:background="@drawable/btn_ic_prev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_playpause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_artist"
-                android:layout_centerHorizontal="true" />
+                app:layout_flexGrow="1"
+                app:layout_constraintDimensionRatio="1:1">
 
-            <Button
-                android:id="@+id/music_next"
-                android:background="@drawable/btn_ic_next"
+                <Button
+                    android:id="@+id/music_playpause"
+                    android:background="@drawable/music_pause_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/music_playpause"
-                android:layout_toEndOf="@id/music_playpause" />
+                app:layout_flexGrow="1"
+                app:layout_constraintDimensionRatio="1:1">
+
+                <Button
+                    android:id="@+id/music_next"
+                    android:background="@drawable/btn_ic_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.flexbox.FlexboxLayout>
     </com.google.android.flexbox.FlexboxLayout>

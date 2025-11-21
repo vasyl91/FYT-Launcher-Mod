@@ -38,6 +38,10 @@
             app:title="@string/pref_fourth_pip_title"
             app:defaultValue="false"
             app:summary="@string/pref_no_app_selected" />  
+        <com.android.launcher66.settings.CustomPipRestartPreference 
+            android:key="restart_pip"
+            android:title="@string/restart_pip"
+            app:summary="@string/restart_pip_summary" />
         <com.android.launcher66.settings.CustomWidgetSwitchPreference
             android:key="user_date"
             android:defaultValue="true"
@@ -54,9 +58,39 @@
             android:title="@string/radio_widget"
             app:summary="@string/adjust_widget" />
         <Preference
+            android:key="choose_widgets_background"
+            android:title="@string/widgets_background_preference"/>
+        <SwitchPreferenceCompat
+            android:key="black_widgets"
+            android:defaultValue="false"
+            android:title="@string/black_widgets"
+            android:summaryOn="@string/black_color"
+            android:summaryOff="@string/white_color" />
+        <Preference
             android:key="start_page"
             android:title="@string/start_page"
-            android:summary="1" />       
+            android:summary="1" />   
+        <SwitchPreferenceCompat
+            android:key="auto_hide_bottom_bar"
+            android:defaultValue="false"
+            android:title="@string/auto_hide_bottom_bar"
+            android:summaryOn="@string/auto_hide_timeout" />     
+        <com.android.launcher66.settings.AutoHideSeekBarPreference
+            android:key="auto_hide_timeout"
+            android:defaultValue="5" /> 
+        <Preference
+            android:key="choose_bar_background"
+            android:title="@string/bar_background_preference"/>  
+        <SwitchPreferenceCompat
+            android:key="black_bar"
+            android:defaultValue="false"
+            android:title="@string/black_bar"
+            android:summaryOn="@string/black_color"
+            android:summaryOff="@string/white_color" />
+        <SwitchPreferenceCompat
+            android:key="widget_bar"
+            android:defaultValue="false"
+            android:title="@string/widget_bar" />
         <SwitchPreferenceCompat
             android:key="left_bar"
             android:defaultValue="false"

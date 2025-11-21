@@ -63,10 +63,12 @@ public class ResValue {
     public int music_playpause_icon = getResId("music_playpause_icon", R.drawable.class);
     public int music_playpause_icon_n = getResId("music_playpause_icon_n", R.drawable.class);
     public int iv_album_bg = getResId("iv_album_bg", R.id.class);
+    public int iv_album_bg_two = getResId("iv_album_bg_two", R.id.class);
     public int music_album_def = getResId("music_album_def", R.drawable.class);
     public int tv_musicName = getResId("tv_musicName", R.id.class);
     public int tv_musicName_two = getResId("tv_musicName_two", R.id.class);
     public int tv_artist = getResId("tv_artist", R.id.class);
+    public int tv_artist_two = getResId("tv_artist_two", R.id.class);
     public int tv_album = getResId("tv_album", R.id.class);
     public int tv_music = getResId("tv_music", R.id.class);
     public int music_cur_time = getResId("music_cur_time", R.id.class);
@@ -101,6 +103,7 @@ public class ResValue {
     public int all_apps1_btn_icon = getResId("all_apps1_btn_icon", R.drawable.class);
     public int m_allapp_btn = getResId("m_allapp_btn", R.id.class);
     public int rl_allapps = getResId("rl_allapps", R.id.class);
+    public int show_bar = getResId("show_bar", R.id.class);
     public int syu_app_button = getResId("syu_app_button", R.id.class);
     public int tv_apps = getResId("tv_apps", R.id.class);
     public int hotseat_apps = getResId("hotseat_apps", R.id.class);

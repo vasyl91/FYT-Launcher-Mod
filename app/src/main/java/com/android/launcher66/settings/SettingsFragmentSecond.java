@@ -44,6 +44,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
+import androidx.preference.TwoStatePreference;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
@@ -73,6 +74,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private static final int TIMER_DURATION = 1000;
     private int padding;
     private boolean pipBool = true;
+    private boolean autoHideBool = false;
     private boolean dualPipGuard = false;
     private boolean userStatsBool = false;
     private boolean backgroundBool = false;
@@ -82,6 +84,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private boolean tickRunnableBool = false;
     private boolean loggerTickRunnableBool = false;
     private boolean countDownTimerBool = false;
+    private Preference startPage;
+    private EditText startPageEditText;
+    private AlertDialog alertStartPageDialog;
+    private SwitchPreferenceCompat autoHidePreference;
+    private AutoHideSeekBarPreference autoHideSeekBar;
+    private Preference margin;
+    private EditText marginEditText;
     private SwitchPreferenceCompat userStats;
     private CustomWidgetPreference statsScreen;
     private Preference statsCodes;
@@ -126,9 +135,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference codeInspectorData;
     private CountDownTimer countDownTimer;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private static final Handler loggerTickHandler = new Handler(Looper.getMainLooper());
-    private Preference margin;
-    private EditText marginEditText;
+    private static final Handler loggerTickHandler = new Handler(Looper.getMainLooper());  
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private EditText skipCodesEditText;
     private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
@@ -137,9 +145,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertCodesLoggerDialog;
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
-    private Preference startPage;
-    private EditText startPageEditText;
-    private AlertDialog alertStartPageDialog;
     private AppListStatsDialogFragment appListStatsDialog;
     private ColorPicker colorPicker;
     private ColorPicker bgColorPicker;
@@ -150,6 +155,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomPipSwitchPreference pipSecondPref;
     private CustomPipSwitchPreference pipThirdPref;
     private CustomPipSwitchPreference pipFourthPref;
+    private CustomPipRestartPreference restartPip;
+    private CustomWidgetSwitchPreference userDate;
+    private CustomWidgetSwitchPreference userMusic;
+    private CustomWidgetSwitchPreference userRadio;
 
     private final SharedPreferences.OnSharedPreferenceChangeListener pipPkgListener =
             (prefs, key) -> {
@@ -203,9 +212,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         pipSecondPref = findPreference(Keys.PIP_SECOND);
         pipThirdPref  = findPreference(Keys.PIP_THIRD);
         pipFourthPref = findPreference(Keys.PIP_FOURTH);
-        CustomWidgetSwitchPreference userDate = findPreference(Keys.USER_DATE);
-        CustomWidgetSwitchPreference userMusic = findPreference(Keys.USER_MUSIC);
-        CustomWidgetSwitchPreference userRadio = findPreference(Keys.USER_RADIO);
+        restartPip = findPreference(Keys.RESTART_PIP);
+        userDate = findPreference(Keys.USER_DATE);
+        userMusic = findPreference(Keys.USER_MUSIC);
+        userRadio = findPreference(Keys.USER_RADIO);
         userStats = findPreference(Keys.USER_STATS);
         statsScreen = findPreference(Keys.STATS_DISPLAY);
         statsCodes = findPreference(Keys.STATS_CODES);
@@ -256,11 +266,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         inspectorCmdArr = sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0");
         codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30");
 
+        Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
+        Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
+        SwitchPreferenceCompat widgetsTintBlack = findPreference(Keys.BLACK_WIDGETS);
+        SwitchPreferenceCompat barTintBlack = findPreference(Keys.BLACK_BAR);
         startPage = findPreference(Keys.START_PAGE);
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
         startPage.setSummary(startPageStr);
 
+        autoHidePreference = findPreference(Keys.AUTO_HIDE_BOTTOM_BAR);
+        autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
+
         Preference leftBar = findPreference(Keys.LEFT_BAR);
+        Preference widgetBar = findPreference(Keys.WIDGET_BAR);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
         String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "10");
@@ -273,7 +291,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         bgDefaultColorG = sharedPrefs.getInt("bg_green", 255);
         bgDefaultColorB = sharedPrefs.getInt("bg_blue", 255);
 
-        setPipGroupVisible(pipBool);
         updatePipSummaries();
         sharedPrefs.registerOnSharedPreferenceChangeListener(pipPkgListener);        
 
@@ -291,6 +308,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 enforceDualPiP(/*changedByDual=*/true, /*newState=*/(Boolean) v);
                 return true;
             });
+            pipDualPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
         if (pipFirstPref != null) {
             pipFirstPref.setScreenValuePrefKey(Keys.PIP_FIRST_SCREEN);
@@ -308,6 +326,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 if (checked) enforceDualPiP(false, true);  // main switch ON => Dual PiP OFF
                 return true;
             });
+            pipFirstPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
         if (pipSecondPref != null) {
             pipSecondPref.setScreenValuePrefKey(Keys.PIP_SECOND_SCREEN);
@@ -323,6 +342,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 if (checked) enforceDualPiP(false, true);
                 return true;
             });
+            pipSecondPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
         if (pipThirdPref != null) {
             pipThirdPref.setScreenValuePrefKey(Keys.PIP_THIRD_SCREEN);
@@ -331,6 +351,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipThirdPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_THIRD_PACKAGE); return true; });
             pipThirdPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipThirdPref, isPip));
             pipThirdPref.setOnPreferenceChangeListener((p, v) -> true);
+            pipThirdPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
         if (pipFourthPref != null) {
             pipFourthPref.setScreenValuePrefKey(Keys.PIP_FOURTH_SCREEN);
@@ -339,22 +360,75 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipFourthPref.setOnPreferenceClickListener(p -> { showAppPicker(Keys.PIP_FOURTH_PACKAGE); return true; });
             pipFourthPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipFourthPref, isPip));
             pipFourthPref.setOnPreferenceChangeListener((p, v) -> true);
+            pipFourthPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
+        if (restartPip != null) {
+            restartPip.setOnPreferenceClickListener(this);
+        } 
         pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+        setPipGroupVisible(pipBool);
         if (userDate != null) {
             userDate.setOnPreferenceClickListener(this);
             userDate.setScreenValuePrefKey(Keys.DATE_SCREEN);
-            userDate.setOnPositionClickListener(pref -> openPipAdjuster(Keys.DATE_SCREEN));      
+            userDate.setOnPositionClickListener(pref -> openPipAdjuster(Keys.DATE_SCREEN));  
+            userDate.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);    
         }
         if (userMusic != null) {
             userMusic.setOnPreferenceClickListener(this);
             userMusic.setScreenValuePrefKey(Keys.MUSIC_SCREEN);
             userMusic.setOnPositionClickListener(pref -> openPipAdjuster(Keys.MUSIC_SCREEN));
+            userMusic.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
         }
         if (userRadio != null) {
             userRadio.setOnPreferenceClickListener(this);
             userRadio.setScreenValuePrefKey(Keys.RADIO_SCREEN);
             userRadio.setOnPositionClickListener(pref -> openPipAdjuster(Keys.RADIO_SCREEN));
+            userRadio.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+        }
+        if (widgetsBackground != null) {
+            widgetsBackground.setOnPreferenceClickListener(preference -> {
+                BackgroundWidgetsSelectorDialog widgetsDialog = new BackgroundWidgetsSelectorDialog();
+                widgetsDialog.show(getParentFragmentManager(), "widgets_background_selector");
+                return true;
+            });
+        }
+        if (widgetsTintBlack != null) {
+            widgetsTintBlack.setOnPreferenceClickListener(this);
+        }
+        if (barBackground != null) {
+            barBackground.setOnPreferenceClickListener(preference -> {
+                BackgroundBarSelectorDialog barDialog = new BackgroundBarSelectorDialog();
+                barDialog.show(getParentFragmentManager(), "bar_background_selector");
+                return true;
+            });
+        }
+        if (barTintBlack != null) {
+            barTintBlack.setOnPreferenceClickListener(this);
+        }
+        if (startPage != null) {
+            startPage.setOnPreferenceClickListener(this);
+        }
+        autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        if (autoHidePreference != null) {
+            autoHidePreference.setOnPreferenceClickListener(this);
+            if (autoHideBool) {
+                handler.post(updateSummary);
+            } else {
+                autoHidePreference.setSummary(null);    
+            }
+        } 
+        if (autoHideSeekBar != null) {
+            autoHideSeekBar.setVisible(autoHideBool);
+            autoHideSeekBarProgress(autoHideSeekBar);
+        }
+        if (leftBar != null) {
+            leftBar.setOnPreferenceClickListener(this);
+        }
+        if (widgetBar != null) {
+            widgetBar.setOnPreferenceClickListener(this);
+        }
+        if (margin != null) {
+            margin.setOnPreferenceClickListener(this);
         }
         initUserStats();
         userStatsBool = sharedPrefs.getBoolean(Keys.USER_STATS, false);
@@ -362,7 +436,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsScreen.setVisible(userStatsBool);
             statsScreen.setOnPreferenceClickListener(this);
             statsScreen.setScreenValuePrefKey(Keys.STATS_SCREEN);
-            statsScreen.setOnPositionClickListener(pref -> openPipAdjuster(Keys.STATS_SCREEN));    
+            statsScreen.setOnPositionClickListener(pref -> openPipAdjuster(Keys.STATS_SCREEN));  
+            statsScreen.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);  
         }
         if (statsCodes != null) {
             statsCodes.setVisible(userStatsBool);
@@ -458,15 +533,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             codeInspectorData.setOnPreferenceClickListener(this);
             codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary, inspectorCmdInt, inspectorCmdArr, codeInspectorTimeoutStr));
         }
-        if (startPage != null) {
-            startPage.setOnPreferenceClickListener(this);
-        }
-        if (leftBar != null) {
-            leftBar.setOnPreferenceClickListener(this);
-        }
-        if (margin != null) {
-            margin.setOnPreferenceClickListener(this);
-        }
     }
 
     @Override
@@ -494,6 +560,59 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     if (pipThirdPref != null) pipThirdPref.setChecked(false);
                     if (pipFourthPref != null) pipFourthPref.setChecked(false);
                 }
+                break;
+            case Keys.START_PAGE:
+                alertStartPageDialog = displayStartPageDialog().create();
+
+                alertStartPageDialog.setOnShowListener(dialog -> {
+                    Button negativeButtonPage = alertStartPageDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    negativeButtonPage.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams editStartPageTextParams = startPageEditText.getLayoutParams();
+                    if (editStartPageTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
+                        marginParams.setMargins(padding, padding, padding, padding);
+                        startPageEditText.setLayoutParams(marginParams);
+                    }
+
+                    startPageEditText.requestFocus();
+                    imm.showSoftInput(startPageEditText, InputMethodManager.SHOW_IMPLICIT);
+                    startPageEditText.setSelection(startPageEditText.getText().length());
+                });
+
+                alertStartPageDialog.show();
+                break;
+            case Keys.AUTO_HIDE_BOTTOM_BAR:
+                autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+                if (autoHideBool) {
+                    handler.post(updateSummary);
+                } else {
+                    autoHidePreference.setSummary(null);    
+                }                
+                autoHideSeekBar.setVisible(autoHideBool);
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.LEFT_BAR:
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.LAYOUT_MARGIN:
+                alertMarginsDialog = displayMarginsDialog().create();
+
+                alertMarginsDialog.setOnShowListener(dialog -> {
+                    Button negativeButtonMargin = alertMarginsDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    negativeButtonMargin.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams editMarginTextParams = marginEditText.getLayoutParams();
+                    if (editMarginTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
+                        marginParams.setMargins(padding, padding, padding, padding);
+                        marginEditText.setLayoutParams(marginParams);
+                    }
+
+                    marginEditText.requestFocus();
+                    imm.showSoftInput(marginEditText, InputMethodManager.SHOW_IMPLICIT);
+                    marginEditText.setSelection(marginEditText.getText().length());
+                });
+
+                alertMarginsDialog.show();
                 break;
             case Keys.USER_STATS:
                 userStatsSwitch();
@@ -678,49 +797,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                 alertCodesInspectorDialog.show();
                 break;
-            case Keys.START_PAGE:
-                alertStartPageDialog = displayStartPageDialog().create();
-
-                alertStartPageDialog.setOnShowListener(dialog -> {
-                    Button negativeButtonPage = alertStartPageDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    negativeButtonPage.setLayoutParams(params);
-
-                    ViewGroup.LayoutParams editStartPageTextParams = startPageEditText.getLayoutParams();
-                    if (editStartPageTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
-                        marginParams.setMargins(padding, padding, padding, padding);
-                        startPageEditText.setLayoutParams(marginParams);
-                    }
-
-                    startPageEditText.requestFocus();
-                    imm.showSoftInput(startPageEditText, InputMethodManager.SHOW_IMPLICIT);
-                    startPageEditText.setSelection(startPageEditText.getText().length());
-                });
-
-                alertStartPageDialog.show();
-                break;
-            case Keys.LEFT_BAR:
-                helpers.setLeftBarChanged(true);
-                break;
-            case Keys.LAYOUT_MARGIN:
-                alertMarginsDialog = displayMarginsDialog().create();
-
-                alertMarginsDialog.setOnShowListener(dialog -> {
-                    Button negativeButtonMargin = alertMarginsDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    negativeButtonMargin.setLayoutParams(params);
-
-                    ViewGroup.LayoutParams editMarginTextParams = marginEditText.getLayoutParams();
-                    if (editMarginTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
-                        marginParams.setMargins(padding, padding, padding, padding);
-                        marginEditText.setLayoutParams(marginParams);
-                    }
-
-                    marginEditText.requestFocus();
-                    imm.showSoftInput(marginEditText, InputMethodManager.SHOW_IMPLICIT);
-                    marginEditText.setSelection(marginEditText.getText().length());
-                });
-
-                alertMarginsDialog.show();
-                break;
             default:
                 break;
         }
@@ -730,7 +806,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        clearPreferenceListeners(getPreferenceScreen());
+        clearPreferenceListeners(getPreferenceScreen()); 
+        handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
         loggerTickHandler.removeCallbacksAndMessages(null);
         dismissDialogs();
@@ -744,6 +821,18 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (sharedPrefs != null) {
             sharedPrefs.unregisterOnSharedPreferenceChangeListener(pipPkgListener);
         }
+    }
+
+    private void refreshAllWidgetPreferences() {
+        if (pipDualPref != null) { pipDualPref.refreshDisplayedValue(); }
+        if (pipFirstPref != null) { pipFirstPref.refreshDisplayedValue(); }
+        if (pipSecondPref != null) { pipSecondPref.refreshDisplayedValue(); }
+        if (pipThirdPref != null) { pipThirdPref.refreshDisplayedValue(); }
+        if (pipFourthPref != null) { pipFourthPref.refreshDisplayedValue(); }
+        if (userDate != null) { userDate.refreshDisplayedValue(); }
+        if (userMusic != null) { userMusic.refreshDisplayedValue(); }
+        if (userRadio != null) { userRadio.refreshDisplayedValue(); }
+        if (statsScreen != null) { statsScreen.refreshDisplayedValue(); }
     }
 
     private void initUserStats() {
@@ -819,6 +908,30 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             alertMarginsDialog = null;
         }
     }
+    
+    private void autoHideSeekBarProgress(AutoHideSeekBarPreference autoHidePreference) {
+        autoHidePreference.setOnSeekBarProgressChangeListener(new AutoHideSeekBarPreference.OnSeekBarProgressChangeListener() {
+            @Override
+            public void onProgressChanged(int progress) {
+                handler.post(updateSummary);
+            }
+        });
+    }
+
+    private Runnable updateSummary = new Runnable() { 
+        @Override
+        public void run() {
+            if (autoHidePreference instanceof TwoStatePreference) {
+                ((TwoStatePreference) autoHidePreference).setSummaryOn(autoHideSumary());
+            }
+        }        
+
+        private String autoHideSumary() {
+            int progress = sharedPrefs.getInt(Keys.AUTO_HIDE_TIMEOUT, 3);
+            String autoHideStr = getString(R.string.auto_hide_timeout, String.valueOf(progress));
+            return autoHideStr;
+        }
+    };
 
     public void setCountDownTimer(int delay) {
         countDownTimerBool = true;
@@ -1628,6 +1741,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (pipSecondPref != null) pipSecondPref.setVisible(visible);
         if (pipThirdPref != null)  pipThirdPref.setVisible(visible);
         if (pipFourthPref != null) pipFourthPref.setVisible(visible);
+        if (restartPip != null)    restartPip.setVisible(visible);
     }
 
     private void updatePipSummaries() {

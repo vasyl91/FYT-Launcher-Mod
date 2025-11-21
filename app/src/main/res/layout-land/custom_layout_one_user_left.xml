@@ -54,6 +54,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:src="@drawable/all_apps_btn_icon" />
 
+    <ImageView
+        android:id="@+id/show_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.11"
+        app:layout_constraintWidth_percent="0.06"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_list_bg"
+        app:layout_constraintTop_toTopOf="@+id/iv_list_bg"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/iv_list_bg"
+        app:layout_constraintEnd_toEndOf="@+id/iv_list_bg"
+        android:src="@drawable/show_bar"
+        android:scaleType="fitCenter"
+        android:visibility="invisible" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"

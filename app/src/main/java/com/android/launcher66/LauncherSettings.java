@@ -3,7 +3,7 @@ package com.android.launcher66;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-class LauncherSettings {
+public class LauncherSettings {
 
     interface BaseLauncherColumns extends ChangeLogColumns {
         public static final String ICON = "icon";
@@ -34,13 +34,13 @@ class LauncherSettings {
         }
     }
 
-    static final class Favorites implements BaseLauncherColumns {
+    public static final class Favorites implements BaseLauncherColumns {
         static final String APPWIDGET_ID = "appWidgetId";
         public static final String APPWIDGET_PROVIDER = "appWidgetProvider";
         static final String CELLX = "cellX";
         static final String CELLY = "cellY";
-        static final String CONTAINER = "container";
-        static final int CONTAINER_DESKTOP = -100;
+        public static final String CONTAINER = "container";
+        public static final int CONTAINER_DESKTOP = -100;
         static final int CONTAINER_HOTSEAT = -101;
         static final String DISPLAY_MODE = "displayMode";
 
@@ -52,11 +52,11 @@ class LauncherSettings {
         static final int ITEM_TYPE_WIDGET_CLOCK = 1000;
         static final int ITEM_TYPE_WIDGET_PHOTO_FRAME = 1002;
         static final int ITEM_TYPE_WIDGET_SEARCH = 1001;
-        static final String SCREEN = "screen";
+        public static final String SCREEN = "screen";
         static final String SPANX = "spanX";
         static final String SPANY = "spanY";
         static final String URI = "uri";
-        static final Uri CONTENT_URI = Uri.parse("content://com.android.launcher66.settings/favorites?notify=true");
+        public static final Uri CONTENT_URI = Uri.parse("content://com.android.launcher66.settings/favorites?notify=true");
         static final Uri OLD_CONTENT_URI = Uri.parse("content://com.android.launcher66.settings/favorites?notify=true");
         static final Uri CONTENT_URI_NO_NOTIFICATION = Uri.parse("content://com.android.launcher66.settings/favorites?notify=false");
 

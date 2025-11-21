@@ -29,12 +29,3 @@
 -keepclassmembers class **.R$* {
     public static <fields>;
 }
-
--keep class com.custompip.** { *; }
--keep class de.robv.android.xposed.** { *; }
--dontwarn de.robv.android.xposed.**
--keepattributes *Annotation*
-
-# Keep all hook entry points by interface
--keep class * implements de.robv.android.xposed.IXposedHookLoadPackage { *; }
--keep class * implements de.robv.android.xposed.IXposedHookZygoteInit { *; }

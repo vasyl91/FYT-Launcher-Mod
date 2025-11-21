@@ -38,6 +38,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
+import com.android.launcher66.settings.Helpers;
 import com.syu.util.WindowUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -45,11 +46,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 interface Page {
-    public int getPageChildCount();
-    public View getChildOnPageAt(int i);
-    public void removeAllViewsOnPage();
-    public void removeViewOnPageAt(int i);
-    public int indexOfChildOnPage(View v);
+    int getPageChildCount();
+    View getChildOnPageAt(int i);
+    void removeAllViewsOnPage();
+    void removeViewOnPageAt(int i);
+    int indexOfChildOnPage(View v);
 }
 
 /**
@@ -275,6 +276,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     private Class<?> mSystemProperties;
     private Method mSystemPropertiesMethodGetInt;
     protected int mLogicalCurrentPage;
+
+    private final Helpers helpers = new Helpers();
 
     public interface PageSwitchListener {
         void onPageSwitch(View newPage, int newPageIndex);
@@ -620,7 +623,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
     }
     protected void pageBeginMoving() {
-        if (!mIsPageMoving) {
+        if (!helpers.getDisableMovingPage() && !mIsPageMoving) {
             mIsPageMoving = true;
             onPageBeginMoving();
         }

@@ -37,6 +37,7 @@ public class Config {
     public static final String WIFI = "Wifi";
     public static final String WS_360 = "WS360";
     public static final String WS_Allapps = "WS_Allapps";
+    public static final String WS_Showbar = "WS_Showbar";
     public static final String WS_Aux = "WS_Aux";
     public static final String WS_BRIGHT = "WS_BRIGHT";
     public static final String WS_BROWSER = "WS_BROWSER";

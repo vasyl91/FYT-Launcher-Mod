@@ -121,23 +121,47 @@ public class SunTask extends AsyncTask<String, Void, String> {
         if (isConnectionAvailable(this.mContext)) {
             try {
                 JSONObject sunInfoObject = readJsonFromUrl(url);
-                dayLength = dayStringToLong(Objects.requireNonNull(sunInfoObject).getString("day_length"));
-                sunrise = stringToLong(Objects.requireNonNull(sunInfoObject).getString("sunrise"));
-                sunset = stringToLong(Objects.requireNonNull(sunInfoObject).getString("sunset"));
-                if (isPolarDay()) {
-                    helpers.setPolarDay(true);
-                } else if (isPerpetualNight()) {
-                    helpers.setPerpetualNight(true);
+                if (sunInfoObject == null) {
+                    Log.e(TAG, "JSON response is null, using fallback calculation");
+                    useFallbackCalculation();
+                    return;
                 }
+                
+                dayLength = dayStringToLong(sunInfoObject.getString("day_length"));
+                sunrise = stringToLong(sunInfoObject.getString("sunrise"));
+                sunset = stringToLong(sunInfoObject.getString("sunset"));
             } catch (IOException | JSONException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "Error getting times from API", e);
+                useFallbackCalculation();
+                return;
             }
         } else {   
-            TwilightCalculator sunCalc = new TwilightCalculator(mLatiude, mLongitude);
-            if (notArctic()) {
-                sunrise = stringToLongCalc(sunCalc.getSunrise());
-                sunset = stringToLongCalc(sunCalc.getSunset());
-            }
+            useFallbackCalculation();
+            return;
+        }               
+        if (isPolarDay()) {
+            helpers.setPolarDay(true);
+        } else if (isPerpetualNight()) {
+            helpers.setPerpetualNight(true);
+        }
+        editor.putString("sunrise", longToHourZone(sunrise));
+        editor.putString("sunset", longToHourZone(sunset));
+        editor.apply();
+        sunrise = sunrise + sunriseCorrectionValue;
+        sunset = sunset + sunsetCorrectionValue;
+        dayOrNight();
+    }
+
+    private void useFallbackCalculation() {
+        TwilightCalculator sunCalc = new TwilightCalculator(this.mContext, mLatiude, mLongitude);
+        if (notArctic()) {
+            sunrise = stringToLongCalc(sunCalc.getSunrise());
+            sunset = stringToLongCalc(sunCalc.getSunset());
+        }               
+        if (isPolarDay()) {
+            helpers.setPolarDay(true);
+        } else if (isPerpetualNight()) {
+            helpers.setPerpetualNight(true);
         }
         editor.putString("sunrise", longToHourZone(sunrise));
         editor.putString("sunset", longToHourZone(sunset));
@@ -246,6 +270,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
                     SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
                     SharedPreferences.Editor idEditor = idPrefs.edit();
                     idEditor.putInt("previousDrawableId", 0);
+                    idEditor.putString("previousDayState", "null");
                     idEditor.apply();
                     setWallpaperIfDifferent(newWallpaperBitmap, name, 0, INITIAL_DELAY_MS);
                 } catch (Exception e) {
@@ -257,20 +282,22 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     private void setDefaultWallpaper(String name) {
         SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
-        int previousDrawableId = idPrefs.getInt("previousDrawableId", 0);
+        int previousDrawableId = idPrefs.getInt("previousDrawableId", 0);  
+        String previousDayState = idPrefs.getString("previousDayState", "null");
         int drawableId = name.equals("Day") ? ResValue.getInstance().def_bg : ResValue.getInstance().def_bg_n;
-        if (previousDrawableId != drawableId) {
+        if (!previousDayState.equals(name) && previousDrawableId != drawableId) {
             try {
                 mWallpaperManager.setResource(drawableId);           
                 SharedPreferences.Editor idEditor = idPrefs.edit();
                 idEditor.putInt("previousDrawableId", drawableId);
+                idEditor.putString("previousDayState", name);
                 idEditor.apply();
-                Log.d(TAG, "Default wallpaper set successfully.");
+                Log.d(TAG, "Default wallpaper set successfully: " + name);
             } catch (IOException e) {
                 Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
             }
         } else {
-            Log.d(TAG, "Default wallpaper already set.");
+            Log.d(TAG, "Default wallpaper already set: " + name);
         }
     }
 
@@ -566,14 +593,16 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onBackgroundError(Exception e) {
-        Log.d(TAG, "Background error: " + e.getMessage());
+        Log.d(TAG, "Background error: " + e);
     }
 
     public static class TwilightCalculator {
         
         private final Helpers helpers = new Helpers();
+        private final Context mContext; // Add context to access timezone info
         
-        public TwilightCalculator(double latiude, double longitude) {
+        public TwilightCalculator(Context context, double latiude, double longitude) {
+            this.mContext = context; // Store context
             calculateTwilight(latiude, longitude);
         }
 
@@ -581,24 +610,13 @@ public class SunTask extends AsyncTask<String, Void, String> {
         private String dateSunrise = "";
 
         private static final double DEGREES_TO_RADIANS = Math.PI / 180.0f;
-
-        // element for calculating solar transit.
         private static final double J0 = 0.0009f;
-
-        // correction for civil twilight
-        private static final double ALTIDUTE_CORRECTION_CIVIL_TWILIGHT = 0; //ZK for sunset/sunrise remove 6 degree horizon correction -0.104719755f;
-
-        // coefficients for calculating Equation of Center.
+        private static final double ALTIDUTE_CORRECTION_CIVIL_TWILIGHT = 0;
         private static final double C1 = 0.0334196f;
         private static final double C2 = 0.000349066f;
         private static final double C3 = 0.000005236f;
-
         private static final double OBLIQUITY = 0.40927971f;
-
-        // Java time on Jan 1, 2000 12:00 UTC.
         private static final long UTC_2000 = 946728000000L;
-
-
 
         public String getSunrise() {
             return dateSunrise;
@@ -641,8 +659,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
             double cosHourAngle = (Math.sin(ALTIDUTE_CORRECTION_CIVIL_TWILIGHT) - Math.sin(latRad)
                     * Math.sin(solarDec)) / (Math.cos(latRad) * Math.cos(solarDec));
-            // The day or night never ends for the given date and location, if this value is out of
-            // range.
+            
+            // The day or night never ends for the given date and location, if this value is out of range.
             if (cosHourAngle >= 1) {
                 helpers.setPerpetualNight(true);
                 return;
@@ -652,12 +670,29 @@ public class SunTask extends AsyncTask<String, Void, String> {
             }
 
             double hourAngle = (Math.acos(cosHourAngle) / (2 * Math.PI));
-            long mSunset = Math.round((solarTransitJ2000 + hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
-            long mSunrise = Math.round((solarTransitJ2000 - hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
-
+            
+            // Calculate sunrise and sunset in UTC
+            long sunsetUtc = Math.round((solarTransitJ2000 + hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
+            long sunriseUtc = Math.round((solarTransitJ2000 - hourAngle) * DateUtils.DAY_IN_MILLIS) + UTC_2000;
+            
+            // Convert to local time with DST consideration
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a", Locale.ENGLISH);
-            dateSunrise = Instant.ofEpochMilli(mSunrise).atZone(ZoneId.systemDefault()).format(formatter);
-            dateSunset = Instant.ofEpochMilli(mSunset).atZone(ZoneId.systemDefault()).format(formatter);           
-        }        
+            
+            // Use system default timezone which automatically handles DST
+            ZoneId systemZone = ZoneId.systemDefault();
+            
+            dateSunrise = Instant.ofEpochMilli(sunriseUtc)
+                    .atZone(systemZone)
+                    .format(formatter);
+            dateSunset = Instant.ofEpochMilli(sunsetUtc)
+                    .atZone(systemZone)
+                    .format(formatter);
+            
+            Log.d("TwilightCalculator", "Latiude: " + String.valueOf(latiude) + ", Longitude: " + String.valueOf(longitude));
+            Log.d("TwilightCalculator", "Sunrise (UTC): " + Instant.ofEpochMilli(sunriseUtc) +
+                  " -> Local: " + dateSunrise);
+            Log.d("TwilightCalculator", "Sunset (UTC): " + Instant.ofEpochMilli(sunsetUtc) + 
+                  " -> Local: " + dateSunset);
+        }  
     }
 }

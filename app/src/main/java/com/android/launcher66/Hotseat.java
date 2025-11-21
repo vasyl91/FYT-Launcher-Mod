@@ -209,7 +209,7 @@ public class Hotseat extends FrameLayout {
             @Override
             public void onClick(View v) {
                 if (Hotseat.this.mLauncher != null) {
-                    Hotseat.this.mLauncher.onClickAllAppsButton(v);
+                    Hotseat.this.mLauncher.onClickAllAppsButton();
                 }
             }
         });

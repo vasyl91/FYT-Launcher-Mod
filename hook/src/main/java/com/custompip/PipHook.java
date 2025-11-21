@@ -13,10 +13,20 @@ public class PipHook implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // Hook will apply only for the front app
-        String pipAppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-        if (!pipAppPackageName.equals(lpparam.packageName) || !pipAppPackageName.equals("com.google.android.apps.maps") || pipAppPackageName.isEmpty()) return;
+        if ("com.android.launcher66".equals(lpparam.packageName)) {
+            return; 
+        }
 
-        XposedBridge.log("PipHook: Hook active for front app");
+        String pipAppPackageName = SystemProperties.get("persist.launcher.packagename", "");
+        if (pipAppPackageName.isEmpty() || !pipAppPackageName.equals(lpparam.packageName)) {
+            return;
+        }
+
+        if (!"com.google.android.apps.maps".equals(lpparam.packageName)) {
+            return;
+        }
+        
+        XposedBridge.log("PipHook: Hook active for " + lpparam.packageName);
 
         try {
             XposedHelpers.findAndHookMethod(

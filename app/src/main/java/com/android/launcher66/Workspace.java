@@ -1,5 +1,7 @@
 package com.android.launcher66;
 
+import static com.android.launcher66.Launcher.bottomBarIconMargin;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -14,7 +16,6 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -29,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -44,6 +47,7 @@ import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,14 +55,19 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 import com.android.launcher66.Launcher.CustomContentCallbacks;
@@ -66,13 +75,20 @@ import com.android.launcher66.LauncherSettings.Favorites;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -275,8 +291,11 @@ public class Workspace extends SmoothPagedView
 
     public static CellLayout[] customScreen = new CellLayout[LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count)];
     public static int apps_customepage_count = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count);
-    private SharedPreferences prefs;
+    private SharedPreferences mPrefs;
     public static AbsoluteLayout absoluteLayout;
+    private Handler stripHandler = new Handler(Looper.getMainLooper());
+    private Runnable stripAction;
+    private static final long STRIP_DELAY = 2000;
     private Helpers helpers = new Helpers();
     public static final long CUSTOM_CONTENT_SCREEN_ID1 = -302;
     private View workspaceView;
@@ -294,6 +313,35 @@ public class Workspace extends SmoothPagedView
     private WindowManager.LayoutParams radioParams;
     private WindowManager.LayoutParams musicParams;
     private WindowManager.LayoutParams timeParams;
+    private View overlayBottomBar;
+    private WindowManager.LayoutParams overlayWindowParams;
+    private WindowManager overlayWindowManager;
+    private View mBarMusicWidget;
+    private View mBarDateWidget;
+    private View mBarWeatherWidget;
+    private ImageView showBarIcon;
+    private ImageView bottomBarAllApps;
+    private RecyclerView bottomBarRecycler;
+    private ImageView bottomBarBg;
+    private String selectedBackground;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> autoHideFuture;
+    private boolean blackTintBar = false;
+    private boolean widgetBar = false;
+    private boolean autoHideBottomBar = false;  
+    private int autoHideTimeout = 5;
+    private boolean isOverlayShowing = false;
+    private boolean isOverlayAnimating = false;
+    private final Object overlayLock = new Object();
+
+    private TextView titleText;
+    private TextView artistText;
+    private TextView cityText;
+    private TextView weatherText;
+    private TextView tempText;
+    private TextView dateText;
+    private TextView weekText;
 
     private final Runnable mBindPages = new Runnable() {
         @Override
@@ -565,25 +613,58 @@ public class Workspace extends SmoothPagedView
     }
 
     private long createPersistedWorkspaceScreen(int desiredRank) {
+        Log.i(TAG, "createPersistedWorkspaceScreen: rank=" + desiredRank +
+              " current mScreenOrder=" + mScreenOrder);
+
         ContentResolver resolver = mLauncher.getContentResolver();
+
+        if (desiredRank < mScreenOrder.size()) {
+            long existingScreenId = mScreenOrder.get(desiredRank);
+            Log.i(TAG, "createPersistedWorkspaceScreen: reusing existing screen at rank="
+                  + desiredRank + " id=" + existingScreenId);
+            return existingScreenId;
+        }
+
+        long maxId = 0;
+        Cursor c = null;
+        try {
+            c = resolver.query(
+                LauncherSettings.WorkspaceScreens.CONTENT_URI,
+                new String[]{LauncherSettings.WorkspaceScreens._ID},
+                null, null, null
+            );
+            if (c != null) {
+                while (c.moveToNext()) {
+                    long id = c.getLong(0);
+                    if (id > maxId) maxId = id;
+                }
+            }
+        } finally {
+            if (c != null) c.close();
+        }
+
+        for (Long id : mScreenOrder) {
+            if (id > maxId) maxId = id;
+        }
+
+        long newId = maxId + 1;
+
         ContentValues cv = new ContentValues();
-        cv.put("_id", desiredRank);
+        cv.put(LauncherSettings.WorkspaceScreens._ID, newId);
         cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, desiredRank);
 
-        Uri result = resolver.insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
-        if (result == null) {
-            Log.e(TAG, "createPersistedWorkspaceScreen: insert returned null for rank=" + desiredRank);
+        Uri result;
+        try {
+            result = resolver.insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
+        } catch (Exception e) {
+            Log.e(TAG, "createPersistedWorkspaceScreen: insert failed", e);
             return -1;
         }
 
-        try {
-            long persistedId = ContentUris.parseId(result);
-            Log.i(TAG, "createPersistedWorkspaceScreen: persistedId=" + persistedId + " rank=" + desiredRank);
-            return persistedId;
-        } catch (NumberFormatException nfe) {
-            Log.e(TAG, "createPersistedWorkspaceScreen: cannot parse id from uri=" + result, nfe);
-            return -1;
-        }
+        Log.i(TAG, "createPersistedWorkspaceScreen: created NEW screen id=" +
+              newId + " rank=" + desiredRank);
+
+        return newId;
     }
 
     private void setupLayoutTransition() {
@@ -685,36 +766,80 @@ public class Workspace extends SmoothPagedView
     }
 
     public long insertNewWorkspaceScreen(long screenId, int insertIndex) {
-        if (mWorkspaceScreens.containsKey(screenId)) {
-            return 0;
-            //throw new RuntimeException("Screen id " + screenId + " already exists!");
+        // Check for duplicates
+        if (mScreenOrder.contains(screenId)) {
+            Log.e(TAG, "insertNewWorkspaceScreen: DUPLICATE! screen id=" + screenId + " already in mScreenOrder=" + mScreenOrder);
+            return screenId;
         }
-
-        CellLayout newScreen = (CellLayout)
-                mLauncher.getLayoutInflater().inflate(R.layout.workspace_screen, null);
-
+        
+        if (mWorkspaceScreens.containsKey(screenId)) {
+            Log.e(TAG, "insertNewWorkspaceScreen: screen id=" + screenId + " already in mWorkspaceScreens");
+            return screenId;
+        }
+        
+        Log.i(TAG, "insertNewWorkspaceScreen: adding screen id=" + screenId + " at index=" + insertIndex);
+        
+        // Create the CellLayout
+        CellLayout newScreen = (CellLayout) LayoutInflater.from(getContext())
+                .inflate(R.layout.workspace_screen, this, false);
+        
         newScreen.setOnLongClickListener(mLongClickListener);
         newScreen.setOnClickListener(mLauncher);
         newScreen.setSoundEffectsEnabled(false);
-        mWorkspaceScreens.put(screenId, newScreen);
+        
+        // Add to data structures
+        if (screenId == EXTRA_EMPTY_SCREEN_ID) {
+            mScreenOrder.remove(EXTRA_EMPTY_SCREEN_ID);
+            Long maxScreen = Math.abs(Collections.max(mScreenOrder));
+            if (maxScreen == 302) {
+                screenId = 1;
+            } else {
+                screenId = maxScreen + 1;
+            }
+            // Persist
+            try {
+                ContentValues cv = new ContentValues();
+                cv.put(LauncherSettings.WorkspaceScreens._ID, screenId); // dbInsertAndCheck requires _id
+                cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, insertIndex);
+                // LauncherSettings.WorkspaceScreens.CONTENT_URI == "content://com.android.launcher66.settings/workspaceScreens?notify=true"
+                mLauncher.getContentResolver().insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
+                Log.i(TAG, "Persisted workspace screen to provider: id=" + screenId + " rank=" + insertIndex);
+            } catch (Exception e) {
+                // Don't crash if the provider insert fails — log and continue (but this is the important part).
+                Log.w(TAG, "Failed to persist new workspace screen to provider: " + e);
+            }
+        }
         mScreenOrder.add(insertIndex, screenId);
-        addView(newScreen, insertIndex);
+        mWorkspaceScreens.put(screenId, newScreen);
+        
+        // Add view
+        PagedView.LayoutParams lp = new PagedView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        );
+        addView(newScreen, insertIndex, lp);
+        
+        Log.i(TAG, "insertNewWorkspaceScreen: final mScreenOrder=" + mScreenOrder);
         return screenId;
     }
 
     public void createUserPage() {
+        cleanupAllResources();
+        cancelPendingAutoHide();
+        clearWidgetReferences();
         helpers.setInAllApps(false);
         helpers.setInWidgets(false);
         helpers.setInOverviewMode(false);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        leftBar = prefs.getBoolean("left_bar", false);
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
 
         if (customScreen[0] != null) {
             mWorkspaceScreens.remove(CUSTOM_CONTENT_SCREEN_ID1);
             mScreenOrder.remove(CUSTOM_CONTENT_SCREEN_ID1);
-
             removeView(customScreen[0]);
         }
 
@@ -723,11 +848,47 @@ public class Workspace extends SmoothPagedView
 
         if (userLayout) {
             if (leftBar) {
-                workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user_left, workspaceLayout, false);
-                customScreen[0].addView(workspaceView);
+                if (widgetBar) {
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_two_user_left, workspaceLayout, false);
+                    customScreen[0].addView(workspaceView);
+                } else {
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user_left, workspaceLayout, false);
+                    customScreen[0].addView(workspaceView);
+                }
             } else {
-                workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user, workspaceLayout, false);
-                customScreen[0].addView(workspaceView);
+                if (widgetBar) {
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_two_user, workspaceLayout, false);
+                    customScreen[0].addView(workspaceView);
+                } else {
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user, workspaceLayout, false);
+                    customScreen[0].addView(workspaceView);
+                }
+            }
+
+            if (widgetBar) {
+                mLauncher.removeCustomView("WS_Music_Two");
+                mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
+                mLauncher.initMusicBarView(mBarMusicWidget);
+                mLauncher.preSetMusicWidgets();
+                mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+            }
+            
+            bottomBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
+            if (blackTintBar) {
+                Helpers.applyColorFilterToImageView(bottomBarAllApps);
+            }
+
+            bottomBarRecycler = workspaceView.findViewById(R.id.recycler_view);
+            
+            bottomBarBg = workspaceView.findViewById(R.id.iv_list_bg);
+            selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
+            if (!selectedBackground.equals("app_list_bg")) {
+                bottomBarBg.setImageResource(getResId(selectedBackground));
+            }
+
+            autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            if (autoHideBottomBar) {
+                toggleBottomBar();              
             }
         } else {
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
@@ -743,6 +904,11 @@ public class Workspace extends SmoothPagedView
             titleTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle);
             TextView artistTextSize = (TextView) workspaceView.findViewById(R.id.tv_artist);
             artistTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeArtist);
+
+            View mUserMusicWidget = workspaceView.findViewById(R.id.rl_music);
+            mLauncher.initMusicWidgetView(mUserMusicWidget);
+            mLauncher.bindMusicWidgetOnclickListener(mUserMusicWidget);
+            mLauncher.preSetMusicWidgets();
         }
 
         for (int i = 0; i < LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count); i++) {
@@ -770,7 +936,7 @@ public class Workspace extends SmoothPagedView
                 absoluteLayout = (AbsoluteLayout) this.findViewById(R.id.user_layout);
             }  
         }
-        int startPage = Integer.parseInt(prefs.getString("start_page", "1"));
+        int startPage = Integer.parseInt(mPrefs.getString(Keys.START_PAGE, "1"));
         if (getChildCount() >= startPage) {
             setCurrentPage(startPage - 1);
         } else {
@@ -778,15 +944,841 @@ public class Workspace extends SmoothPagedView
             setCurrentPage(index);
         }
 
+        if (userLayout && widgetBar) {
+            // Music bar buttons
+            mLauncher.bindMusicBarOnclickListener(mBarMusicWidget);
+
+            // Weather
+            mLauncher.initBarWeatherView(mBarWeatherWidget);
+
+            // Bar text sizes
+            setWidgetBarTextView(workspaceView);
+        }
+
         new CanbusAsyncTask(LauncherApplication.sApp).execute();
 
         invalidate();
+    }
+
+    private void setWidgetBarTextView(View barView) {
+        titleText = (TextView) barView.findViewById(R.id.tv_musicName_two);
+        if (titleText != null) {
+            titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
+        }
+        artistText = (TextView) barView.findViewById(R.id.tv_artist_two);
+        if (artistText != null) {
+            artistText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeArtist * 0.85f);
+        }
+        cityText = (TextView) barView.findViewById(R.id.weather_city1);
+        if (cityText != null) {
+            cityText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
+        }
+        weatherText = (TextView) barView.findViewById(R.id.weather_weather1);
+        if (weatherText != null) {
+            weatherText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
+        }
+        tempText = (TextView) barView.findViewById(R.id.weather_temp1);
+        if (tempText != null) {
+            tempText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
+        }
+        dateText = (TextView) barView.findViewById(R.id.date);
+        if (dateText != null) {
+            dateText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f); 
+        }
+        weekText = (TextView) barView.findViewById(R.id.curWeek);
+        if (weekText != null) {
+            weekText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
+        }
+        if (blackTintBar) {
+            if (titleText != null) {
+                titleText.setTextColor(Color.BLACK);
+            }
+            if (artistText != null) {
+                artistText.setTextColor(Color.BLACK);
+            }
+            if (cityText != null) {
+                cityText.setTextColor(Color.BLACK);
+            }
+            if (weatherText != null) {
+                weatherText.setTextColor(Color.BLACK);
+            }
+            if (tempText != null) {
+                tempText.setTextColor(Color.BLACK);
+            }
+            if (dateText != null) {
+                dateText.setTextColor(Color.BLACK);
+            }
+            if (weekText != null) {
+                weekText.setTextColor(Color.BLACK);
+            }
+        }
+    }
+
+    private static int getResId(String resName) {
+        try {
+            Field idField = R.drawable.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            return R.drawable.app_list_bg;
+        }
+    }
+
+    public void toggleBottomBar() {
+        synchronized (overlayLock) {
+            // Prevent multiple simultaneous calls
+            if (isOverlayAnimating) {
+                return;
+            }
+
+            final int screenWidth = mLauncher.screenWidth;
+            final float collapsedWidth = (float) (0.071 * screenWidth);
+            final float expandedWidth = screenWidth;
+
+            showBarIcon = workspaceView.findViewById(R.id.show_bar);
+
+            if (bottomBarAllApps.getVisibility() == View.VISIBLE) {
+                // Hide the normal bottom bar
+                hideNormalBottomBar(collapsedWidth);
+            } else {
+                // Prevent showing if already showing or animating
+                if (isOverlayShowing || isOverlayAnimating) {
+                    return;
+                }
+                isOverlayAnimating = true;
+
+                if (showBarIcon != null && showBarIcon.getVisibility() == View.VISIBLE) {
+                    showBarIcon.animate()
+                        .alpha(0f)
+                        .setDuration(0)
+                        .withEndAction(() -> showBarIcon.setVisibility(View.INVISIBLE))
+                        .start();
+                }
+                if (bottomBarBg != null && bottomBarBg.getVisibility() == View.VISIBLE) {
+                    bottomBarBg.animate()
+                        .alpha(0f)
+                        .setDuration(0)
+                        .withEndAction(() -> bottomBarBg.setVisibility(View.INVISIBLE))
+                        .start();
+                }
+
+                if (widgetBar) {
+                    if (workspaceView != null) {
+                        mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
+                        mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+                        mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+                        if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
+                        if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
+                        if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+                    }
+                }
+                // Show using overlay
+                showOverlayBottomBar();
+            }
+        }
+    }
+
+    private void hideNormalBottomBar(float collapsedWidth) {
+        bottomBarRecycler.animate()
+                .alpha(0f)
+                .setDuration(0)
+                .withEndAction(() -> bottomBarRecycler.setVisibility(View.INVISIBLE))
+                .start();
+
+        bottomBarAllApps.animate()
+                .alpha(0f)
+                .setDuration(0)
+                .withEndAction(() -> {
+                    bottomBarAllApps.setVisibility(View.INVISIBLE);
+                    showBarIcon.setAlpha(0f);
+                    showBarIcon.setVisibility(View.VISIBLE);
+                    blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+                    if (blackTintBar) {
+                        Helpers.applyColorFilterToImageView(showBarIcon);
+                    } else {
+                        Helpers.removeColorFilterFromImageView(showBarIcon);
+                    }
+                    showBarIcon.animate().alpha(0.5f).setDuration(0).start();
+                })
+                .start();
+
+        if (widgetBar) {
+            if (workspaceView != null) {
+                mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
+                mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+                mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+                if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
+                if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
+                if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), (int) collapsedWidth);
+        widthAnim.addUpdateListener(animator -> {
+            ViewGroup.LayoutParams params = bottomBarBg.getLayoutParams();
+            params.width = (int) animator.getAnimatedValue();
+            bottomBarBg.setLayoutParams(params);
+        });
+        widthAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+        widthAnim.setDuration(0);
+        widthAnim.start();
+
+        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(showBarIcon, "scaleX", 1f, 0.85f, 1f);
+        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(showBarIcon, "scaleY", 1f, 0.85f, 1f);
+        scaleDownX.setDuration(0);
+        scaleDownY.setDuration(0);
+        scaleDownX.start();
+        scaleDownY.start();
+    }
+
+    private void showOverlayBottomBar() {
+        synchronized (overlayLock) {
+            if (overlayBottomBar != null) {
+                if (isOverlayShowing) {
+                    return;
+                } else {
+                    cleanupOverlayImmediately();
+                }
+            }
+            overlayWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            
+            // Calculate dimensions
+            int screenWidth = mLauncher.screenWidth;
+            int screenHeight = mLauncher.screenHeight;
+            int bottomBarHeight = (int) (screenHeight * 0.1638);
+            
+            // Create overlay window parameters
+            overlayWindowParams = new WindowManager.LayoutParams(
+                screenWidth,
+                bottomBarHeight,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT
+            );
+            
+            // Position at bottom
+            overlayWindowParams.gravity = Gravity.BOTTOM;
+            overlayWindowParams.x = 0;
+            overlayWindowParams.y = 0;
+            
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            
+            // Choose layout based on widgetBar setting
+            if (widgetBar) {
+                overlayBottomBar = inflater.inflate(R.layout.custom_layout_two_user, null);
+            } else {
+                overlayBottomBar = inflater.inflate(R.layout.custom_layout_one_user, null);
+            }
+
+            ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+            blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+            if (blackTintBar) {
+                Helpers.applyColorFilterToImageView(overlayAllApps);
+            }
+        
+            overlayBottomBar.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, bottomBarHeight));
+            
+            // Setup the overlay view
+            setupOverlayView(screenWidth, bottomBarHeight);
+            
+            // Add to window manager
+            try {
+                overlayWindowManager.addView(overlayBottomBar, overlayWindowParams);
+                isOverlayShowing = true;
+                showOverlayWithAnimation();
+                setupAutoHideForOverlay();
+            } catch (Exception e) {
+                Log.e("OverlayBottomBar", "Failed to add overlay view", e);
+                cleanupOverlayImmediately();
+            } finally {
+                isOverlayAnimating = false;
+            }
+        }
+    }
+
+    private void setupOverlayView(int screenWidth, int bottomBarHeight) {
+        AbsoluteLayout userLayout = overlayBottomBar.findViewById(R.id.user_layout);
+        if (userLayout != null) {
+            userLayout.setVisibility(View.GONE);
+        }
+        
+        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
+
+        selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
+        if (!selectedBackground.equals("app_list_bg")) {
+            overlayBg.setImageResource(getResId(selectedBackground));
+        }
+        
+        forceOriginalSizes(screenWidth, bottomBarHeight);
+        
+        // Setup RecyclerView
+        overlayRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        if (bottomBarRecycler.getAdapter() != null) {
+            setupRecyclerView(bottomBarRecycler, overlayRecycler);
+        }
+        
+        // Setup widget bar if enabled
+        if (widgetBar) {
+            setupOverlayWidgetBar();
+        }
+        
+        overlayAllApps.setOnClickListener(v -> {
+            hideOverlayBottomBar();
+            mLauncher.onClickAllAppsButton();
+        });
+
+        overlayBottomBar.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                hideOverlayBottomBar();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setupOverlayWidgetBar() {
+        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
+        if (musicWidget != null) {
+            mLauncher.initMusicBarView(musicWidget);
+            mLauncher.preSetMusicWidgets();
+            mLauncher.bindMusicBarOnclickListener(musicWidget);
+        }
+
+        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        if (weatherWidget != null) {
+            mLauncher.initBarWeatherView(weatherWidget);
+            mLauncher.showWeatherInfo();
+        }
+        
+        setWidgetBarTextView(overlayBottomBar);
+    }
+
+    private void forceOriginalSizes(int screenWidth, int bottomBarHeight) {
+        if (widgetBar) {
+            forceOriginalSizesLayoutTwo(screenWidth, bottomBarHeight);
+        } else {
+            forceOriginalSizesLayoutOne(screenWidth, bottomBarHeight);
+        }
+    }
+
+    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight) {
+        int allAppsWidth = (int) (screenWidth * 0.11);  
+        int allAppsHeight = (int) (bottomBarHeight * 0.67); 
+        
+        int recyclerWidth = (int) (screenWidth * 0.8795); 
+        int recyclerHeight = bottomBarHeight; 
+        
+        int showBarWidth = (int) (screenWidth * 0.06);
+        int showBarHeight = (int) (bottomBarHeight * 0.67); 
+        
+        // Apply forced dimensions
+        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
+        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
+        
+        // Force background to full size
+        ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
+        bgParams.width = screenWidth;
+        bgParams.height = bottomBarHeight;
+        overlayBg.setLayoutParams(bgParams);
+        
+        // Force all apps button size
+        ViewGroup.LayoutParams allAppsParams = overlayAllApps.getLayoutParams();
+        if (allAppsParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) allAppsParams;
+            constraintParams.width = allAppsWidth;
+            constraintParams.height = allAppsHeight;
+            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayAllApps.setLayoutParams(constraintParams);
+        }
+        
+        // Force recycler view size
+        ViewGroup.LayoutParams recyclerParams = overlayRecycler.getLayoutParams();
+        if (recyclerParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) recyclerParams;
+            constraintParams.width = recyclerWidth;
+            constraintParams.height = recyclerHeight;
+            constraintParams.startToEnd = R.id.rl_allapps;
+            constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayRecycler.setLayoutParams(constraintParams);
+        }
+        
+        // Force show bar icon size and position
+        ViewGroup.LayoutParams showBarParams = overlayShowBar.getLayoutParams();
+        if (showBarParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) showBarParams;
+            constraintParams.width = showBarWidth;
+            constraintParams.height = showBarHeight;
+            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayShowBar.setLayoutParams(constraintParams);
+        }
+    }
+
+    private void forceOriginalSizesLayoutTwo(int screenWidth, int bottomBarHeight) {
+        int allAppsWidth = (int) (screenWidth * 0.09);  
+        int allAppsHeight = (int) (bottomBarHeight * 0.67); 
+        
+        int recyclerWidth = (int) (screenWidth * 0.4395); 
+        int recyclerHeight = bottomBarHeight; 
+        
+        int showBarWidth = (int) (screenWidth * 0.06);
+        int showBarHeight = (int) (bottomBarHeight * 0.67);
+        
+        int musicWidgetWidth = (int) (screenWidth * 0.28);
+        int dateWidgetWidth = (int) (screenWidth * 0.05);
+        int weatherWidgetWidth = (int) (screenWidth * 0.12);
+        
+        // Apply forced dimensions
+        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
+        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
+        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
+        ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        
+        // Force background to full size
+        ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
+        bgParams.width = screenWidth;
+        bgParams.height = bottomBarHeight;
+        overlayBg.setLayoutParams(bgParams);
+        
+        // Force all apps button size
+        ViewGroup.LayoutParams allAppsParams = overlayAllApps.getLayoutParams();
+        if (allAppsParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) allAppsParams;
+            constraintParams.width = allAppsWidth;
+            constraintParams.height = allAppsHeight;
+            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayAllApps.setLayoutParams(constraintParams);
+        }
+        
+        // Force recycler view size
+        ViewGroup.LayoutParams recyclerParams = overlayRecycler.getLayoutParams();
+        if (recyclerParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) recyclerParams;
+            constraintParams.width = recyclerWidth;
+            constraintParams.height = recyclerHeight;
+            constraintParams.startToEnd = R.id.rl_allapps;
+            constraintParams.endToStart = R.id.rl_music_two;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayRecycler.setLayoutParams(constraintParams);
+        }
+        
+        // Force music widget size
+        if (musicWidget != null) {
+            ViewGroup.LayoutParams musicParams = musicWidget.getLayoutParams();
+            if (musicParams instanceof ConstraintLayout.LayoutParams) {
+                ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) musicParams;
+                constraintParams.width = musicWidgetWidth;
+                constraintParams.height = bottomBarHeight;
+                constraintParams.startToEnd = R.id.recycler_view;
+                constraintParams.endToStart = R.id.bar_widget_date;
+                constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+                constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                musicWidget.setLayoutParams(constraintParams);
+            }
+        }
+        
+        // Force date widget size
+        if (dateWidget != null) {
+            ViewGroup.LayoutParams dateParams = dateWidget.getLayoutParams();
+            if (dateParams instanceof ConstraintLayout.LayoutParams) {
+                ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) dateParams;
+                constraintParams.width = dateWidgetWidth;
+                constraintParams.height = bottomBarHeight;
+                constraintParams.startToEnd = R.id.rl_music_two;
+                constraintParams.endToStart = R.id.bar_widget_weather;
+                constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+                constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                dateWidget.setLayoutParams(constraintParams);
+            }
+        }
+        
+        // Force weather widget size
+        if (weatherWidget != null) {
+            ViewGroup.LayoutParams weatherParams = weatherWidget.getLayoutParams();
+            if (weatherParams instanceof ConstraintLayout.LayoutParams) {
+                ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) weatherParams;
+                constraintParams.width = weatherWidgetWidth;
+                constraintParams.height = bottomBarHeight;
+                constraintParams.startToEnd = R.id.bar_widget_date;
+                constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+                constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+                constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                weatherWidget.setLayoutParams(constraintParams);
+            }
+        }
+        
+        // Force show bar icon size and position
+        ViewGroup.LayoutParams showBarParams = overlayShowBar.getLayoutParams();
+        if (showBarParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) showBarParams;
+            constraintParams.width = showBarWidth;
+            constraintParams.height = showBarHeight;
+            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            overlayShowBar.setLayoutParams(constraintParams);
+        }
+    }
+
+    private void setupRecyclerView(RecyclerView mBottomRecycler, RecyclerView mOverlayRecycler) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(LauncherApplication.sApp);
+        layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
+        mOverlayRecycler.setLayoutManager(layoutManager);
+        
+        // Check if decoration already added to prevent duplicates
+        if (mOverlayRecycler.getTag() == null) {
+            mOverlayRecycler.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                    super.getItemOffsets(outRect, view, parent, state);
+                    int orientation = getResources().getConfiguration().orientation;
+                    boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+                    widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        if (userLayout && widgetBar) {
+                            outRect.left = (int) (-bottomBarIconMargin * 2.0f);
+                            outRect.right = (int) (-bottomBarIconMargin * 2.0f);
+                        } else {
+                            outRect.left = -bottomBarIconMargin;
+                            outRect.right = -bottomBarIconMargin; 
+                        }
+                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (userLayout && widgetBar) {
+                            outRect.left = (int) (bottomBarIconMargin / 2.0f);
+                            outRect.right = (int) (bottomBarIconMargin / 2.0f);
+                        } else {
+                            outRect.left = bottomBarIconMargin;
+                            outRect.right = bottomBarIconMargin;
+                        }
+                    }
+                }
+            });
+            mOverlayRecycler.addItemDecoration(new SimpleDividerDecoration());
+            mOverlayRecycler.setTag(1);
+        }
+        
+        mOverlayRecycler.setAdapter(mBottomRecycler.getAdapter());
+    }
+
+    private void showOverlayWithAnimation() {
+        if (overlayBottomBar == null) return;
+        
+        // Start with invisible and animate in
+        overlayBottomBar.setAlpha(0f);
+        overlayBottomBar.setVisibility(View.VISIBLE);
+        
+        overlayBottomBar.animate()
+                .alpha(1f)
+                .setDuration(250)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
+                
+        // Show all apps icon in overlay
+        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
+        
+        overlayShowBar.setVisibility(View.INVISIBLE);
+        overlayAllApps.setVisibility(View.VISIBLE);
+        overlayAllApps.setAlpha(1f);
+        
+        // Bounce animation for all apps icon
+        ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(overlayAllApps, "scaleX", 1f, 1.1f, 1f);
+        ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(overlayAllApps, "scaleY", 1f, 1.1f, 1f);
+        scaleUpX.setDuration(250);
+        scaleUpY.setDuration(250);
+        scaleUpX.start();
+        scaleUpY.start();
+    }
+
+    public void hideOverlayBottomBar() {
+        synchronized (overlayLock) {
+            if (isOverlayAnimating) {
+                return;
+            }
+            
+            isOverlayAnimating = true;
+            
+            if (overlayBottomBar != null && overlayWindowManager != null) {
+                // Clean up RecyclerView first to break the reference chain
+                cleanupOverlayRecyclerView();
+                
+                // Cancel any pending auto-hide first
+                cancelPendingAutoHide();
+                
+                // Animate out and remove
+                overlayBottomBar.animate()
+                        .alpha(0f)
+                        .setDuration(0)
+                        .setInterpolator(new AccelerateDecelerateInterpolator())
+                        .withEndAction(() -> {
+                            synchronized (overlayLock) {
+                                try {
+                                    overlayWindowManager.removeView(overlayBottomBar);
+                                } catch (Exception e) {
+                                    Log.e("OverlayBottomBar", "Error removing overlay", e);
+                                }
+                                // Clear all overlay references
+                                clearOverlayReferences();
+                                isOverlayShowing = false;
+                                isOverlayAnimating = false;
+                            }
+                        })
+                        .start();
+            } else {
+                // No overlay to hide, just reset state
+                isOverlayShowing = false;
+                isOverlayAnimating = false;
+            }
+        }
+        
+        // Also make sure to cancel any pending auto-hide (outside sync for thread safety)
+        cancelPendingAutoHide();
+
+        if (showBarIcon != null && showBarIcon.getVisibility() == View.INVISIBLE) {
+            showBarIcon.animate()
+                .alpha(0.5f)
+                .setDuration(0)
+                .withEndAction(() -> showBarIcon.setVisibility(View.VISIBLE))
+                .start();
+                if (blackTintBar) {
+                    Helpers.applyColorFilterToImageView(showBarIcon);
+                } else {
+                    Helpers.removeColorFilterFromImageView(showBarIcon);
+                }
+        }
+        if (bottomBarBg != null && bottomBarBg.getVisibility() == View.INVISIBLE) {
+            bottomBarBg.animate()
+                .alpha(1f)
+                .setDuration(0)
+                .withEndAction(() -> bottomBarBg.setVisibility(View.VISIBLE))
+                .start();
+        }
+    }
+
+    private void clearOverlayReferences() {
+        // Clear widget references that might point to overlay views
+        clearWidgetReferences();
+        
+        // Clear overlay view references
+        overlayBottomBar = null;
+        overlayWindowParams = null;
+        overlayWindowManager = null;
+        
+        // Re-initialize widget references to point to normal workspace views
+        if (workspaceView != null && widgetBar) {
+            mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
+            mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+            mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+            
+            // Re-initialize text views
+            setWidgetBarTextView(workspaceView);
+        }
+    }
+
+    private void cleanupOverlayImmediately() {
+        synchronized (overlayLock) {
+            if (overlayBottomBar != null && overlayWindowManager != null) {
+                try {
+                    cleanupOverlayRecyclerView();
+                    overlayWindowManager.removeView(overlayBottomBar);
+                } catch (Exception e) {
+                    Log.e("OverlayBottomBar", "Error in immediate cleanup", e);
+                }
+            }
+            clearOverlayReferences();
+            isOverlayAnimating = false;
+        }
+        cancelPendingAutoHide();
+    }
+
+    private void cleanupOverlayRecyclerView() {
+        if (overlayBottomBar == null) return;
+        
+        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        if (overlayRecycler != null) {
+            // Clear adapter and break reference chain
+            RecyclerView.Adapter adapter = overlayRecycler.getAdapter();
+            if (adapter != null) {
+                overlayRecycler.setAdapter(null);
+            }
+            
+            // Clear layout manager
+            overlayRecycler.setLayoutManager(null);
+            
+            // Remove all item decorations
+            for (int i = overlayRecycler.getItemDecorationCount() - 1; i >= 0; i--) {
+                overlayRecycler.removeItemDecorationAt(i);
+            }
+            
+            // Clear all listeners
+            overlayRecycler.clearOnScrollListeners();
+            overlayRecycler.setOnTouchListener(null);
+            overlayRecycler.setOnClickListener(null);
+            
+            // Remove all child views
+            overlayRecycler.removeAllViews();
+            
+            // Clear the tag
+            overlayRecycler.setTag(null);
+        }
+        
+        // Enhanced widget cleanup
+        cleanupOverlayWidgetBar();
+    }
+
+    private void cleanupOverlayWidgetBar() {
+        if (overlayBottomBar == null) return;
+        
+        // Cleanup music widget
+        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
+        if (musicWidget != null) {
+            cleanupViewGroupRecursively(musicWidget);
+        }
+        
+        // Cleanup weather widget  
+        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        if (weatherWidget != null) {
+            cleanupViewGroupRecursively(weatherWidget);
+        }
+        
+        // Cleanup date widget
+        ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+        if (dateWidget != null) {
+            cleanupViewGroupRecursively(dateWidget);
+        }
+    }
+
+    private void cleanupViewGroupRecursively(ViewGroup viewGroup) {
+        if (viewGroup == null) return;
+        
+        // Clear listeners from the parent
+        viewGroup.setOnClickListener(null);
+        viewGroup.setOnTouchListener(null);
+        viewGroup.setOnLongClickListener(null);
+        
+        // Recursively cleanup all children
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                cleanupViewGroupRecursively((ViewGroup) child);
+            } else {
+                // Clear listeners from child views
+                child.setOnClickListener(null);
+                child.setOnTouchListener(null);
+                child.setOnLongClickListener(null);
+            }
+        }
+    }
+
+    private void cleanupAllResources() {
+        // Cancel any pending operations
+        cancelPendingAutoHide();
+        
+        // Clean up overlay
+        if (isOverlayShowing) {
+            cleanupOverlayImmediately();
+        }
+        
+        // Clean up widget references
+        clearWidgetReferences();
+        
+        // Clean up workspace view references
+        if (workspaceView != null) {
+            cleanupViewGroupRecursively((ViewGroup) workspaceView);
+            workspaceView = null;
+        }
+        
+        // Clear RecyclerView adapter references
+        if (bottomBarRecycler != null) {
+            bottomBarRecycler.setAdapter(null);
+            bottomBarRecycler.setLayoutManager(null);
+        }
+        
+        // Clear other view references
+        bottomBarAllApps = null;
+        bottomBarRecycler = null;
+        bottomBarBg = null;
+        showBarIcon = null;
+        absoluteLayout = null;
+    }
+
+    private void setupAutoHideForOverlay() {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        if (autoHideBottomBar) {
+            scheduleAutoHide();
+        }
+    }
+
+    public void scheduleAutoHide() {
+        cancelPendingAutoHide(); 
+        autoHideTimeout = mPrefs.getInt(Keys.AUTO_HIDE_TIMEOUT, 3);
+        autoHideFuture = scheduler.schedule(() -> {
+            synchronized (overlayLock) {
+                if (isOverlayShowing && !isOverlayAnimating) {
+                    mainHandler.post(() -> hideOverlayBottomBar());
+                }
+            }
+        }, autoHideTimeout, TimeUnit.SECONDS);
+    }
+
+    public void cancelPendingAutoHide() {
+        if (autoHideFuture != null && !autoHideFuture.isDone()) {
+            autoHideFuture.cancel(false);
+        }
+    }
+
+    public void clearWidgetReferences() {
+        // Clear instance references
+        mBarMusicWidget = null;
+        mBarWeatherWidget = null; 
+        mBarDateWidget = null;
+        titleText = null;
+        artistText = null;
+        cityText = null;
+        weatherText = null;
+        tempText = null;
+        dateText = null;
+        weekText = null;
+        
+        if (mLauncher != null) {
+            mLauncher.weatherCity1 = null;
+            mLauncher.weatherImg1 = null;
+            mLauncher.weatherWeather1 = null;
+            mLauncher.weatherTemp1 = null;
+        }
     }
 
     public void onWorkspaceDestroy() {
         mLauncher = null;
         mIconCache = null;
         mDragController = null;
+
+        hideOverlayBottomBar();
+        cancelPendingAutoHide();
+        clearWidgetReferences();
 
         if (mBindPages != null) {
             removeCallbacks(mBindPages);
@@ -949,14 +1941,41 @@ public class Workspace extends SmoothPagedView
     }
 
     public long getIdForScreen(CellLayout layout) {
-        Iterator<Long> iter = mWorkspaceScreens.keySet().iterator();
-        while (iter.hasNext()) {
-            long id = iter.next();
-            if (mWorkspaceScreens.get(id) == layout) {
-                return id;
+        // 1) Check existing mapping
+        for (Map.Entry<Long, CellLayout> e : mWorkspaceScreens.entrySet()) {
+            if (e.getValue() == layout) {
+                return e.getKey();
             }
         }
-        return -1;
+
+        // 2) Infer ID from mScreenOrder / child index
+        int index = indexOfChild(layout);
+        if (index >= 0 && index < mScreenOrder.size()) {
+            long screenId = mScreenOrder.get(index);
+            // Repair missing map
+            mWorkspaceScreens.put(screenId, layout);
+            return screenId;
+        }
+
+        // 3) Check if layout is already present elsewhere in mScreenOrder
+        for (Map.Entry<Long, CellLayout> entry : mWorkspaceScreens.entrySet()) {
+            if (entry.getValue() != layout && mScreenOrder.contains(entry.getKey())) {
+                continue; // skip IDs already assigned to other layouts
+            }
+        }
+
+        // 4) Layout has no ID, assign a new ID 
+        Long maxScreen = Math.abs(Collections.max(mScreenOrder));
+        long newId;
+        if (maxScreen == 302) {
+            newId = 1;
+        } else {
+            newId = maxScreen + 1;
+        }
+        mScreenOrder.add(newId);
+        mWorkspaceScreens.put(newId, layout);
+        Log.i(TAG, "getIdForScreen(): assigned new virtual screenId=" + newId);
+        return newId;
     }
 
     public int getPageIndexForScreenId(long screenId) {
@@ -974,28 +1993,104 @@ public class Workspace extends SmoothPagedView
         return mScreenOrder;
     }
 
-    public void stripEmptyScreens() {
+    /**
+     * This function might be called in multiple places. It's puropse is to avoid 
+     * calling stripEmptyScreens() few times in a very short succesion
+     */
+    public void triggerStripEmptyScreens(String sourceClass, boolean instant) {
+        Log.i(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
+        if (stripAction != null) {
+            stripHandler.removeCallbacks(stripAction);
+        }
+
+        helpers.setDisableMovingPage(true);
+        
+        stripAction = () -> {
+            stripEmptyScreens(sourceClass);
+        };
+        
+        if (instant) {
+            stripHandler.post(stripAction);
+        } else {
+            stripHandler.postDelayed(stripAction, STRIP_DELAY);
+        }
+    }
+
+    public void stripEmptyScreens(String sourceClass) {
+        Log.i(TAG, "stripEmptyScreens called in: " + sourceClass);
         if (isPageMoving()) {
             mStripScreensOnPageStopMoving = true;
+            helpers.setDisableMovingPage(false);
             return;
         }
 
         int currentPage = getNextPage();
-        ArrayList<Long> removeScreens = new ArrayList<Long>();
-        for (Long id: mWorkspaceScreens.keySet()) {
-            CellLayout cl = mWorkspaceScreens.get(id);
+        ArrayList<Long> removeScreens = new ArrayList<>();
+        CellLayout cl;
+
+        // Detect empty screens (no widgets/shortcuts)
+        for (Long id : mWorkspaceScreens.keySet()) {
+            cl = mWorkspaceScreens.get(id);
             if (id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
                 removeScreens.add(id);
             }
         }
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        
+        ArrayList<Integer> customScreens = new ArrayList<>();
+        if (mPrefs.getBoolean(Keys.USER_MUSIC, false)) {
+            customScreens.add(mPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.USER_DATE, false)) {
+            customScreens.add(mPrefs.getInt(Keys.DATE_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.USER_RADIO, false)) {
+            customScreens.add(mPrefs.getInt(Keys.RADIO_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.PIP_DUAL, false)) {
+            customScreens.add(mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.PIP_FIRST, false)) {
+            customScreens.add(mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.PIP_SECOND, false)) {
+            customScreens.add(mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.PIP_THIRD, false)) {
+            customScreens.add(mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.PIP_FOURTH, false)) {
+            customScreens.add(mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1);
+        }
+        if (mPrefs.getBoolean(Keys.USER_STATS, false)) {
+            customScreens.add(mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1);
+        }
 
-        // We enforce at least one page to add new items to. In the case that we remove the last
-        // such screen, we convert the last screen to the empty screen
+        for (Integer rank : customScreens) {
+            if (rank >= 0 && rank < mWorkspaceScreens.size()) {
+                cl = ((CellLayout) getChildAt(rank));
+                long customScreenId = getIdForScreen(cl);
+                if (removeScreens.contains(customScreenId)) {
+                    removeScreens.remove(customScreenId);
+                }
+            }
+        }   
+
+        cl = ((CellLayout) getChildAt(0));
+        long customScreenId = getIdForScreen(cl);
+        if (removeScreens.contains(customScreenId)) {
+            removeScreens.remove(customScreenId);
+        }
+
         int minScreens = 1 + numCustomPages();
-
         int pageShift = 0;
-        for (Long id: removeScreens) {
-            CellLayout cl = mWorkspaceScreens.get(id);
+
+        // Take a snapshot of old screen order before removal
+        ArrayList<Long> oldOrder = new ArrayList<>(mScreenOrder);
+
+        // Remove empty screens
+        for (Long id : removeScreens) {
+            cl = mWorkspaceScreens.get(id);
             mWorkspaceScreens.remove(id);
             mScreenOrder.remove(id);
 
@@ -1011,15 +2106,82 @@ public class Workspace extends SmoothPagedView
             }
         }
 
-        if (!removeScreens.isEmpty()) {
-            // Update the model if we have changed any screens
-            mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
+        if (removeScreens.isEmpty()) {
+            if (pageShift >= 0) setCurrentPage(currentPage - pageShift);
+            helpers.setDisableMovingPage(false);
+            return;
+        }
+
+        mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        ContentResolver resolver = mLauncher.getContentResolver();
+
+        ArrayList<Long> newOrder = new ArrayList<>(mScreenOrder);
+        Log.i(TAG, "stripEmptyScreens: oldOrder=" + oldOrder + " newOrder=" + newOrder + " removed=" + removeScreens);
+
+        final boolean[] prefsChanged = {false};
+
+        BiConsumer<String, String> maybeShiftPref = (prefKey, enabledKey) -> {
+            if (prefs.contains(prefKey) && (!prefs.contains(enabledKey) || prefs.getBoolean(enabledKey, false))) {
+                int oldIndex = prefs.getInt(prefKey, 1) - 1;
+                if (oldIndex < 0) {
+                    helpers.setDisableMovingPage(false);
+                    return;
+                }
+
+                // Determine how many removed screens were before this index
+                int removedBefore = 0;
+                for (Long removedId : removeScreens) {
+                    int removedRank = oldOrder.indexOf(removedId);
+                    if (removedRank >= 0 && removedRank < oldIndex) removedBefore++;
+                }
+                int newIndex = Math.max(0, oldIndex - removedBefore);
+
+                if (newIndex != oldIndex) {
+                    editor.putInt(prefKey, newIndex + 1);
+                    prefsChanged[0] = true;
+                    Log.i(TAG, "Shifted pref " + prefKey + " from " + (oldIndex + 1) + " → " + (newIndex + 1));
+                }
+            }
+        };
+
+        maybeShiftPref.accept(Keys.MUSIC_SCREEN, Keys.USER_MUSIC);
+        maybeShiftPref.accept(Keys.DATE_SCREEN, Keys.USER_DATE);
+        maybeShiftPref.accept(Keys.RADIO_SCREEN, Keys.USER_RADIO);
+        maybeShiftPref.accept(Keys.PIP_DUAL_SCREEN, Keys.PIP_DUAL);
+        maybeShiftPref.accept(Keys.PIP_FIRST_SCREEN, Keys.PIP_FIRST);
+        maybeShiftPref.accept(Keys.PIP_SECOND_SCREEN, Keys.PIP_SECOND);
+        maybeShiftPref.accept(Keys.PIP_THIRD_SCREEN, Keys.PIP_THIRD);
+        maybeShiftPref.accept(Keys.PIP_FOURTH_SCREEN, Keys.PIP_FOURTH);
+        maybeShiftPref.accept(Keys.STATS_SCREEN, Keys.USER_STATS);
+        editor.apply();
+
+        for (int rank = 0; rank < newOrder.size(); rank++) {
+            long screenId = newOrder.get(rank);
+            ContentValues values = new ContentValues();
+            values.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, rank);
+            try {
+                resolver.update(
+                    LauncherSettings.WorkspaceScreens.CONTENT_URI,
+                    values,
+                    "_id=?",
+                    new String[]{String.valueOf(screenId)}
+                );
+                Log.i(TAG, "Updated screenId=" + screenId + " → rank=" + rank);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update screen rank for " + screenId, e);
+            }
         }
 
         if (pageShift >= 0) {
             setCurrentPage(currentPage - pageShift);
         }
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+
+        helpers.setDisableMovingPage(false);
+
+        mainHandler.postDelayed(() -> {
             if (!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
                 Log.d("stripEmptyScreens", "startMapPip");
                 WindowUtil.startMapPip(null, false);
@@ -1239,7 +2401,7 @@ public class Workspace extends SmoothPagedView
         boolean passRightSwipesToCustomContent =
                 (mTouchDownTime - mCustomContentShowTime) > CUSTOM_CONTENT_GESTURE_DELAY;
 
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);       
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);       
         boolean swipeInIgnoreDirection;
         if (userLayout) {
             swipeInIgnoreDirection = isLayoutRtl() ? deltaX < 0 : deltaX > 0;
@@ -1307,7 +2469,7 @@ public class Workspace extends SmoothPagedView
 
         backPressed = false;
 
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode() 
                 && !helpers.openedFromOverviewBoolean() 
                 && getChildCount() > 1 
@@ -1348,7 +2510,7 @@ public class Workspace extends SmoothPagedView
             mDelayedSnapToPageRunnable = null;
         }
         if (mStripScreensOnPageStopMoving) {
-            stripEmptyScreens();
+            triggerStripEmptyScreens("Workspace, onPageEndMoving()", false);
             mStripScreensOnPageStopMoving = false;
         }
     }
@@ -2199,9 +3361,9 @@ public class Workspace extends SmoothPagedView
 
         helpers.setInOverviewMode(true);
         helpers.setListOpen(false);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats)  { 
             helpers.setForegroundAppOpened(false);
             helpers.setInAllApps(false);
@@ -2229,9 +3391,9 @@ public class Workspace extends SmoothPagedView
     public void exitOverviewMode(int snapPage, boolean animated) {
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats)  {        
             helpers.setForegroundAppOpened(false);
             helpers.setInAllApps(false);
@@ -2241,7 +3403,7 @@ public class Workspace extends SmoothPagedView
             LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
         }
 
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mainHandler.postDelayed(()-> {
             Log.d("exitOverviewMode", "startMapPip");
             WindowUtil.startMapPip(null, false);
         }, 250);
@@ -2889,7 +4051,7 @@ public class Workspace extends SmoothPagedView
      * {@inheritDoc}
      */
     public boolean acceptDrop(DragObject d) {
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         if (userLayout) {
             // If it's an external drop (e.g. from All Apps), check if it should be accepted
             CellLayout dropTargetLayout = mDropToLayout;
@@ -3104,7 +4266,8 @@ public class Workspace extends SmoothPagedView
         return false;
     }
 
-    public void onDrop(final DragObject d) {
+    public void onDrop(final DragObject d) {      
+        Log.i(TAG, "Screen order onDrop(): " + mScreenOrder);
         mDragViewVisualCenter = getDragViewVisualCenter(d.x, d.y, d.xOffset, d.yOffset, d.dragView,
                 mDragViewVisualCenter);
 
@@ -3173,13 +4336,13 @@ public class Workspace extends SmoothPagedView
                 // cell also contains a shortcut, then create a folder with the two shortcuts.
                 if (!mInScrollArea && createUserFolderIfNecessary(cell, container,
                         dropTargetLayout, mTargetCell, distance, false, d.dragView, null)) {
-                    stripEmptyScreens();
+                    triggerStripEmptyScreens("Workspace, onDrop(), 1", false);
                     return;
                 }
 
                 if (addToExistingFolderIfNecessary(cell, dropTargetLayout, mTargetCell,
                         distance, d, false)) {
-                    stripEmptyScreens();
+                    triggerStripEmptyScreens("Workspace, onDrop(), 2", false);
                     return;
                 } else {
                     promptFolderFullIfNecessary(dropTargetLayout, mTargetCell, (ItemInfo) d.dragInfo);
@@ -3292,7 +4455,7 @@ public class Workspace extends SmoothPagedView
                     if (finalResizeRunnable != null) {
                         finalResizeRunnable.run();
                     }
-                    stripEmptyScreens();
+                    triggerStripEmptyScreens("Workspace, onDrop(), 3", true);
                 }
             };
             mAnimatingViewIntoPlace = true;
@@ -4218,7 +5381,7 @@ public class Workspace extends SmoothPagedView
 
         helpers.setWidgetDropPip(true);
         helpers.setInWidgets(false);
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("animateWidgetDrop", "startMapPip");
                 WindowUtil.startMapPip(null, false);
@@ -4365,7 +5528,7 @@ public class Workspace extends SmoothPagedView
                 // If we move the item to anything not on the Workspace, check if any empty
                 // screens need to be removed. If we dropped back on the workspace, this will
                 // be done post drop animation.
-                stripEmptyScreens();
+                triggerStripEmptyScreens("Workspace, onDropCompleted()", true);
             }
         } else if (mDragInfo != null) {
             CellLayout cellLayout;
@@ -4909,7 +6072,7 @@ public class Workspace extends SmoothPagedView
         }
 
         // Strip all the empty screens
-        stripEmptyScreens();
+        triggerStripEmptyScreens("Workspace, removeItemsByComponentName()", false);
     }
 
     void updateShortcuts(ArrayList<AppInfo> apps) {
@@ -4958,8 +6121,8 @@ public class Workspace extends SmoothPagedView
     }
 
     void moveToDefaultScreen(boolean animate) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        int startPage = Integer.parseInt(prefs.getString("start_page", "1"));
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        int startPage = Integer.parseInt(mPrefs.getString("start_page", "1"));
         if (getChildCount() >= startPage) {
             moveToScreen(startPage - 1, animate);
         } else {
@@ -5103,7 +6266,7 @@ public class Workspace extends SmoothPagedView
         if (pageShift >= 0) {
             setCurrentPage(currentPage - pageShift);
         }
-        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+        mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("stripEmptyScreensBaseOnDB", "startMapPip");
                 WindowUtil.startMapPip(null, false);

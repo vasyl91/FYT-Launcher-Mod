@@ -2,6 +2,9 @@ package com.fyt.widget;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.format.DateFormat;
@@ -11,9 +14,11 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.Launcher;
+import com.android.launcher66.settings.Keys;
 import com.syu.util.TimeUtil;
-import com.syu.util.Utils;
 
 import share.ResValue;
 
@@ -32,9 +37,13 @@ public class DigitClock extends RelativeLayout {
     private TextView tv3;
     private TextView tv4;
     private TextView tv5;
+    private SharedPreferences prefs;
+    private boolean blackTintWidgets;
 
     public DigitClock(Context context, AttributeSet arg1, int arg2) {
         super(context, arg1, arg2);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
         this.timeRunnable = new Runnable() { 
             @Override
@@ -58,6 +67,17 @@ public class DigitClock extends RelativeLayout {
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
                 int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
+                if (blackTintWidgets) {
+                    applyColorFilter(DigitClock.this.tv1);
+                    applyColorFilter(DigitClock.this.tv2);
+                    applyColorFilter(DigitClock.this.tv4);
+                    applyColorFilter(DigitClock.this.tv5);
+                } else {
+                    removeColorFilter(DigitClock.this.tv1);
+                    removeColorFilter(DigitClock.this.tv2);
+                    removeColorFilter(DigitClock.this.tv4);
+                    removeColorFilter(DigitClock.this.tv5);
+                }
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
         };
@@ -68,6 +88,8 @@ public class DigitClock extends RelativeLayout {
 
     public DigitClock(Context context, AttributeSet arg1) {
         super(context, arg1);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
         this.timeRunnable = new Runnable() { 
             @Override
@@ -91,6 +113,17 @@ public class DigitClock extends RelativeLayout {
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
                 int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
+                if (blackTintWidgets) {
+                    applyColorFilter(DigitClock.this.tv1);
+                    applyColorFilter(DigitClock.this.tv2);
+                    applyColorFilter(DigitClock.this.tv4);
+                    applyColorFilter(DigitClock.this.tv5);
+                } else {
+                    removeColorFilter(DigitClock.this.tv1);
+                    removeColorFilter(DigitClock.this.tv2);
+                    removeColorFilter(DigitClock.this.tv4);
+                    removeColorFilter(DigitClock.this.tv5);
+                }
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
         };
@@ -101,6 +134,8 @@ public class DigitClock extends RelativeLayout {
 
     public DigitClock(Context context) {
         super(context);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
         this.images = new int[]{ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
         this.timeRunnable = new Runnable() { 
             @Override
@@ -124,6 +159,17 @@ public class DigitClock extends RelativeLayout {
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length))]);
                 int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length))]);
+                if (blackTintWidgets) {
+                    applyColorFilter(DigitClock.this.tv1);
+                    applyColorFilter(DigitClock.this.tv2);
+                    applyColorFilter(DigitClock.this.tv4);
+                    applyColorFilter(DigitClock.this.tv5);
+                } else {
+                    removeColorFilter(DigitClock.this.tv1);
+                    removeColorFilter(DigitClock.this.tv2);
+                    removeColorFilter(DigitClock.this.tv4);
+                    removeColorFilter(DigitClock.this.tv5);
+                }
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
         };
@@ -172,6 +218,11 @@ public class DigitClock extends RelativeLayout {
         params5.addRule(17, this.tv4.getId());
         addView(this.tv5, params5);
         this.tv3.setBackgroundResource(ResValue.getInstance().timedot);
+        if (blackTintWidgets) {
+            applyColorFilter(DigitClock.this.tv3);
+        } else {
+            removeColorFilter(DigitClock.this.tv3);
+        }
         timeRun();
     }
 
@@ -191,5 +242,18 @@ public class DigitClock extends RelativeLayout {
     }
 
     private void init(Context context) {
+    }
+
+    private void applyColorFilter(TextView textView) {
+        if (textView.getBackground() != null) {
+            textView.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    private void removeColorFilter(TextView textView) {
+        if (textView.getBackground() != null) {
+            textView.getBackground().clearColorFilter();
+        }
+        textView.invalidate();
     }
 }
